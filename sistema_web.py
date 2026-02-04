@@ -18,7 +18,7 @@ import time
 # --- 1. CONFIGURACIÓN E INICIO ---
 st.set_page_config(page_title="SISTEMA YACHAY 2026", page_icon="🎓", layout="wide")
 
-# Inicializar Cola de Impresión
+# Inicializar Cola de Impresión (Carrito)
 if 'cola_carnets' not in st.session_state:
     st.session_state.cola_carnets = []
 
@@ -49,7 +49,7 @@ try:
 except ImportError:
     HAS_BARCODE = False
 
-# --- 2. GESTIÓN DE FUENTES ---
+# --- 2. GESTIÓN DE FUENTES (CRÍTICO PARA TAMAÑO GIGANTE) ---
 def descargar_fuentes():
     urls = {
         "Roboto-Bold.ttf": "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf",
@@ -65,11 +65,11 @@ def descargar_fuentes():
 descargar_fuentes()
 
 def obtener_fuente_bold(size):
-    try: return ImageFont.truetype("Roboto-Bold.ttf", size)
+    try: return ImageFont.truetype("Roboto-Bold.ttf", int(size))
     except: return ImageFont.load_default()
 
 def obtener_fuente_normal(size):
-    try: return ImageFont.truetype("Roboto-Regular.ttf", size)
+    try: return ImageFont.truetype("Roboto-Regular.ttf", int(size))
     except: return ImageFont.load_default()
 
 # --- 3. FUNCIONES DE BASE DE DATOS ---
@@ -94,8 +94,8 @@ def limpiar_datos():
     claves = ['alumno', 'dni', 'grado', 'apoderado', 'dni_apo']
     for k in claves:
         if k in st.session_state: st.session_state[k] = ""
-    if 'cola_carnets' in st.session_state:
-        st.session_state.cola_carnets = []
+    # No limpiamos la cola aquí para no perder el trabajo
+    pass
 
 # --- 4. LOGIN DE SEGURIDAD ---
 if "rol" not in st.session_state: st.session_state.rol = None
@@ -107,6 +107,8 @@ if st.session_state.rol is None:
         if os.path.exists("escudo_upload.png"):
             st.image("escudo_upload.png", width=150)
             st.markdown("""<style>div[data-testid="stImage"]{display:block;margin-left:auto;margin-right:auto;width:50%;}</style>""", unsafe_allow_html=True)
+        else:
+            st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100)
         
         st.markdown('<div class="frase-login">EDUCAR PARA<br>LA VIDA</div>', unsafe_allow_html=True)
         
@@ -166,7 +168,7 @@ def generar_pdf_doc(tipo, datos, config):
     mx = 60
     ancho = w - 120
 
-    # --- LÓGICA DE CADA DOCUMENTO ---
+    # --- LÓGICA DE CADA DOCUMENTO (COMPLETA) ---
     if tipo == "CONSTANCIA DE VACANTE":
         y = dibujar_parrafo(c, "LA DIRECCIÓN DE LA INSTITUCIÓN EDUCATIVA PARTICULAR ALTERNATIVO YACHAY DE CHINCHERO, SUSCRIBE LA PRESENTE CONSTANCIA:", mx, y, ancho, estilo_normal)
         c.setFont("Helvetica-Bold", 11); c.drawString(mx, y, "HACE CONSTAR:"); y -= 20
@@ -208,7 +210,9 @@ def generar_pdf_doc(tipo, datos, config):
         c.setFont("Helvetica", 10)
         c.drawString(tx, y, datos['grado'].upper())
         c.drawString(tx+100, y, str(int(config['anio']) - 1))
-        c.drawString(tx+200, y, "A (AD)")
+        # Nota vacía para llenar o valor por defecto
+        nota_val = datos['conducta'][0]['nota'] if 'conducta' in datos and datos['conducta'] else "A"
+        c.drawString(tx+200, y, nota_val)
         y -= 30
         y = dibujar_parrafo(c, "Se le expide el presente documento a solicitud del interesado para los fines que viera por conveniencia.", mx, y, ancho, estilo_normal)
 
@@ -219,21 +223,22 @@ def generar_pdf_doc(tipo, datos, config):
         consciente = "Consciente de las normas y disposiciones de la Dirección del Colegio y la importancia que tiene para la formación de los aprendizajes de mi hij@ en los valores de DISCIPLINA, respeto, puntualidad, responsabilidad y solidaridad. Me doy por enterado y me comprometo a contribuir como padre de familia a respetar y cumplir las siguientes disposiciones:"
         y = dibujar_parrafo(c, consciente, mx, y, ancho, estilo_comp)
         
+        # LOS 14 PUNTOS COMPLETOS
         pts = [
-            "1. Cuidaré que mi hij@ asista al colegio, con puntualidad en la hora de entrada y sin faltar los días laborables.",
-            "2. Cuidaré que mi hijo cumpla diariamente con sus tareas escolares dándole el apoyo necesario.",
-            "3. Enviaré a mi hij@ al colegio bien aseado, con cabello corto varones y con uniforme.",
-            "4. Será mi responsabilidad, exigir permanentemente a mi hij@ que sea respetuoso.",
-            "5. Colaboraré en las necesidades que el docente requiera en aula.",
-            "6. Trataré bien y sin violencia física y verbal a mi hijo@.",
-            "7. Atenderé los problemas de conducta y aprendizaje de mi hijo@.",
-            "8. Me responsabilizaré de los daños que ocasione mi hija@ en el local escolar.",
-            "9. Estaré comprometido a vigilar que mi hijo no use vocabulario inadecuado.",
-            "10. Acudiré a la escuela en caso de llamado del docente.",
-            "11. Asistiré puntualmente cuando sea convocado a reunión.",
-            "12. Justificaré oportunamente las inasistencias.",
-            "13. Pagaré oportunamente cada fin de mes la pensión mensual.",
-            "14. Me comprometo a no interferir en las actividades pedagógicas."
+            "1. Cuidaré que mi hij@ asista al colegio, con puntualidad en la hora de entrada y sin faltar los días laborables y con mayor razón en las actividades que programe el colegio.",
+            "2. Cuidaré que mi hijo cumpla diariamente con sus tareas escolares dándole el apoyo necesario para que las realice satisfactoriamente, haré que lea 20 minutos algún texto cada día y estoy en pleno conocimiento que de no ser así ello impactaría en sus aprendizajes y evaluaciones.",
+            "3. Enviaré a mi hij@ al colegio bien aseado, con cabello corto varones y con uniforme o buzo del colegio en los días que corresponda asistir, con mayor énfasis en los desfiles y actividades importantes que programe el colegio.",
+            "4. Será mi responsabilidad, exigir permanentemente a mi hij@ que sea respetuoso (saludar, agradecer, pedir favor y pedir disculpas) en la casa en la calle y en el colegio, hasta que le sea un hábito.",
+            "5. Colaboraré en las necesidades que el docente requiera en aula, así como cumplir con los acuerdos del comité de aula así como del colegio.",
+            "6. Trataré bien y sin violencia física y verbal a mi hijo@ a fin de que se encuentre en condiciones de dar un buen rendimiento escolar.",
+            "7. Atenderé los problemas de conducta y aprendizaje de mi hijo@, manteniendo comunicación con su maestr@, tomando en cuenta sus sugerencia, indicaciones u observaciones. Todo esto lo haré cuando su maestr@ solicite mi presencia en la institución Educativa.",
+            "8. Me responsabilizaré de los daños que ocasione mi hija@ en el local escolar, mobiliario y otros enseres del aula, reparándolo o reponiendo según corresponda.",
+            "9. Estaré comprometido a vigilar que mi hijo no use vocabulario inadecuado, conductas impropias, agresiones físicas o verbales a sus compañeros o adultos que laboran en esta institución y fuera de ella.",
+            "10. Acudiré a la escuela en caso de llamado del docente, Auxiliar de Educación o Directora, así como cumpliré con las medidas disciplinarias adoptadas por la dirección del colegio o docente.",
+            "11. Asistiré puntualmente cuando sea convocado a la reunión o llamado por parte del docente o Directora de la institución.",
+            "12. Justificaré oportunamente llamando o por escrito las inasistencia de mi hijo@, ya que el 30% de inasistencias da lugar al retiro por inasistencia de la Institución Educativa.",
+            "13. Pagaré oportunamente cada fin de mes la pensión mensual de enseñanza a la Dirección del Colegio, conforme lo acordado.",
+            "14. Me comprometo a no interferir en las actividades pedagógicas y administrativas de la Institución Educativa y/o interrumpir a los profesores en horas de clase."
         ]
         
         estilo_items = ParagraphStyle('ItemsComp', parent=styles['Normal'], fontSize=8.5, leading=10, leftIndent=10)
@@ -245,12 +250,13 @@ def generar_pdf_doc(tipo, datos, config):
         final = "Por su parte el Consejo Directivo del colegio seguirá mejorando el servicio educativo en base a: Disciplina, responsabilidad, seguridad de sus hijo@s... Confíe en su colegio y asegure la buena formación de su hij@. <i>La mejor herencia a los hijos es la educación.</i>"
         y = dibujar_parrafo(c, final, mx, y, ancho, estilo_comp)
         
+        # Firmas
         y = 80
         c.line(80,y,220,y); c.line(240,y,380,y); c.line(400,y,540,y); y-=10
         c.setFont("Helvetica",7)
         c.drawCentredString(150,y,"FIRMA PADRE/MADRE"); 
         c.drawCentredString(310,y,config['directora'].upper()); c.drawCentredString(310,y-10,"DIRECTORA"); 
-        c.drawCentredString(470,y,"PROMOTOR"); c.drawCentredString(470,y-10,"PROMOTOR")
+        c.drawCentredString(470,y,config['promotor'].upper()); c.drawCentredString(470,y-10,"PROMOTOR")
         c.save(); buffer.seek(0); return buffer
 
     # Firmas y QR para otros docs
@@ -276,14 +282,14 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (FINAL) ---
+# --- 6. GENERADOR CARNET PNG (CORREGIDO: TAMAÑOS GIGANTES 90/70) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
     draw = ImageDraw.Draw(img)
     AZUL_INST = (0, 30, 120)
 
-    # 1. Escudo de fondo
+    # 1. ESCUDO FONDO
     if os.path.exists("escudo_upload.png"):
         try:
             escudo = Image.open("escudo_upload.png").convert("RGBA")
@@ -296,20 +302,22 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(capa, (0,0), mask=capa)
         except: pass
 
-    # 2. Barras Azules
-    draw.rectangle([(0, 0), (W, 130)], fill=AZUL_INST) 
-    draw.rectangle([(0, H-100), (W, H)], fill=AZUL_INST) 
+    # 2. BARRAS (Tamaños Ajustados para letras gigantes)
+    draw.rectangle([(0, 0), (W, 140)], fill=AZUL_INST) # Aumentado para título 90
+    draw.rectangle([(0, H-110), (W, H)], fill=AZUL_INST) # Aumentado para frase 70
 
-    # 3. Encabezado y Pie
-    font_header = obtener_fuente_bold(65) 
-    font_motto = obtener_fuente_bold(50) 
+    # 3. TEXTOS CABECERA Y PIE (GIGANTES)
+    # TAMAÑO 90 para el título superior
+    font_header = obtener_fuente_bold(90) 
+    # TAMAÑO 70 para la frase inferior
+    font_motto = obtener_fuente_bold(70) 
     
-    draw.text((W/2, 65), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
-    draw.text((W/2, H-50), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
+    draw.text((W/2, 70), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
+    draw.text((W/2, H-55), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
 
-    # 4. Foto
-    x_foto, y_foto = 50, 160
-    w_foto, h_foto = 290, 360
+    # 4. FOTO
+    x_foto, y_foto = 50, 170
+    w_foto, h_foto = 290, 350
     if foto_bytes:
         try:
             foto_img = Image.open(foto_bytes).convert("RGB").resize((w_foto, h_foto))
@@ -319,7 +327,7 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
         draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], fill="#eeeeee")
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=6)
 
-    # 5. DATOS DEL ALUMNO (Lógica Dinámica)
+    # 5. DATOS
     x_text = 370
     y_nombre_base = 170
     y_dni = 290
@@ -328,30 +336,27 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
     
     nom = datos['alumno'].upper()
     
-    # REGLA: Si es largo, sube y se divide. Si es corto, grande y normal.
+    # Lógica de nombre (Largo/Corto)
     if len(nom) > 22:
-        font_n = obtener_fuente_bold(40)
-        wrapper = textwrap.TextWrapper(width=25) 
+        font_n = obtener_fuente_bold(40) # Tamaño reducido para nombre largo
+        wrapper = textwrap.TextWrapper(width=25)
         lines = wrapper.wrap(nom)
         y_cursor = y_nombre_base - 10 
-        for line in lines[:2]: 
+        for line in lines[:2]:
             draw.text((x_text, y_cursor), line, font=font_n, fill="black")
             y_cursor += 45
     else:
-        font_n = obtener_fuente_bold(55) 
+        font_n = obtener_fuente_bold(60) # Tamaño GRANDE para nombre corto
         draw.text((x_text, y_nombre_base), nom, font=font_n, fill="black")
 
-    # DNI
-    font_lbl = obtener_fuente_normal(45) 
+    font_lbl = obtener_fuente_normal(45)
     draw.text((x_text, y_dni), f"DNI: {datos['dni']}", font=font_lbl, fill="black")
-
-    # GRADO
+    
     grado_txt = f"GRADO: {datos['grado'].upper()}"
     font_g = obtener_fuente_normal(45)
     if len(grado_txt) > 22: font_g = obtener_fuente_normal(35)
     draw.text((x_text, y_grado), grado_txt, font=font_g, fill="black")
     
-    # VIGENCIA
     draw.text((x_text, y_vigencia), f"VIGENCIA: {anio}", font=font_lbl, fill="black")
 
     # 6. CÓDIGO DE BARRAS
@@ -362,7 +367,7 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             Code128(datos['dni'], writer=writer).write(buffer_bar, options={'write_text': False})
             buffer_bar.seek(0)
             img_bar = Image.open(buffer_bar).resize((450, 100))
-            img.paste(img_bar, (x_text, H - 210))
+            img.paste(img_bar, (x_text, H - 220)) # Ajustado
         except: pass
 
     # 7. QR CARNET
@@ -384,27 +389,27 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
 
 # --- 7. BARRA LATERAL ---
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=80)
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=90)
     st.title("YACHAY PRO")
     
     if st.session_state.rol == "admin":
-        st.success("Modo Admin")
-        st.markdown("### ⚙️ Datos")
-        up_bd = st.file_uploader("📂 Excel Alumnos", type=["xlsx"])
+        st.markdown("### ⚙️ Admin")
+        up_bd = st.file_uploader("📂 Base Datos (Excel)", type=["xlsx"])
         if up_bd:
             with open("base_datos.xlsx", "wb") as f: f.write(up_bd.getbuffer())
-            st.toast("Datos Actualizados")
-
+            st.toast("Base Actualizada")
+        
         up_escudo = st.file_uploader("🛡️ Escudo", type=["png"])
         if up_escudo:
             with open("escudo_upload.png", "wb") as f: f.write(up_escudo.getbuffer())
             
-        st.markdown("---")
         directora = st.text_input("Directora", "Prof. Ana María CUSI INCA")
-        frase = st.text_area("Frase", "AÑO DE LA ESPERANZA Y EL FORTALECIMIENTO DE LA DEMOCRACIA")
+        promotor = st.text_input("Promotor", "Prof. Leandro CORDOVA TOCRE")
+        frase = st.text_area("Frase", "AÑO DE LA INTEGRACIÓN")
     else:
         st.info("Modo Docente")
         directora = "Prof. Ana María CUSI INCA"
+        promotor = "Prof. Leandro CORDOVA TOCRE"
         frase = "AÑO DE LA INTEGRACIÓN"
 
     st.markdown("---")
@@ -418,13 +423,13 @@ with st.sidebar:
 tab1, tab2, tab3 = st.tabs(["📄 DOCUMENTOS", "🪪 CARNETS (ACUMULAR)", "📊 BASE DATOS"])
 
 with tab1:
-    st.header("Emisión de Documentos")
+    st.header("Generador de Documentos")
     col1, col2 = st.columns([1,2])
     with col1:
-        tipo_doc = st.selectbox("Tipo:", ["CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR", "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA", "CARTA COMPROMISO PADRE DE FAMILIA"])
-        dni_doc = st.text_input("🔍 Buscar DNI (Docs):")
+        tipo_doc = st.selectbox("Seleccione:", ["CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR", "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA", "CARTA COMPROMISO PADRE DE FAMILIA"])
+        dni_search_doc = st.text_input("🔍 Buscar DNI (Docs):")
         if st.button("Buscar Doc"):
-            res = buscar_alumno(dni_doc)
+            res = buscar_alumno(dni_search_doc)
             if res is not None:
                 st.session_state.alumno = res['Alumno']
                 st.session_state.dni = res['DNI']
@@ -441,11 +446,18 @@ with tab1:
             gra = st.text_input("Grado", key="grado")
             apo = st.text_input("Apoderado", key="apoderado")
             dap = st.text_input("DNI Apoderado", key="dni_apo")
+            
+            cond_list = []
+            if tipo_doc == "CONSTANCIA DE CONDUCTA":
+                st.warning("Notas de Conducta:")
+                cols = st.columns(1) # Simple imput
+                val = st.text_input("Nota Final (Ej: A, AD):", key="cn0")
+                cond_list.append({'nota':val})
 
             if st.button("✨ GENERAR PDF", type="primary", use_container_width=True):
                 if nom and did:
-                    pack = {'alumno':nom, 'dni':did, 'grado':gra, 'apoderado':apo, 'dni_apo':dap}
-                    conf = {'anio':anio_sel, 'frase':frase, 'y_frase':700, 'y_titulo':630, 'qr_x':435, 'qr_y':47, 'directora':directora}
+                    pack = {'alumno':nom, 'dni':did, 'grado':gra, 'apoderado':apo, 'dni_apo':dap, 'conducta':cond_list}
+                    conf = {'anio':anio_sel, 'frase':frase, 'y_frase':700, 'y_titulo':630, 'qr_x':435, 'qr_y':47, 'directora':directora, 'promotor':promotor}
                     pdf = generar_pdf_doc(tipo_doc, pack, conf)
                     st.balloons()
                     st.download_button("⬇️ DESCARGAR PDF", pdf, f"{tipo_doc}.pdf", "application/pdf", use_container_width=True)
@@ -454,61 +466,62 @@ with tab1:
 with tab2:
     st.markdown("## 🏭 Fábrica de Carnets (Acumulador)")
     
-    col_izq, col_der = st.columns([1, 1.2])
+    # DIVISIÓN: IZQUIERDA (BUSCAR) - DERECHA (LISTA)
+    c_izq, c_der = st.columns([1, 1.3])
     
-    # LADO IZQUIERDO: BUSCAR Y AGREGAR
-    with col_izq:
-        st.info("1. Busca al alumno y agrégalo a la cola:")
-        search_dni = st.text_input("🔍 Buscar DNI para Carnet:")
-        if st.button("Buscar Alumno"):
-            res = buscar_alumno(search_dni)
+    with c_izq:
+        st.info("1. Buscar y Agregar a la Cola")
+        s_dni = st.text_input("🔍 Buscar Alumno Carnet:")
+        if st.button("Buscar para Carnet"):
+            res = buscar_alumno(s_dni)
             if res is not None:
                 st.session_state.temp_alumno = res['Alumno']
                 st.session_state.temp_dni = res['DNI']
                 st.session_state.temp_grado = res['Grado']
                 st.success("Encontrado")
-            else: st.error("No encontrado")
+            else: st.error("No existe")
 
         c_nom = st.text_input("Nombre:", value=st.session_state.get('temp_alumno',''))
         c_dni = st.text_input("DNI:", value=st.session_state.get('temp_dni',''))
         c_gra = st.text_input("Grado:", value=st.session_state.get('temp_grado',''))
-        c_foto = st.file_uploader("Foto (Opcional)", type=['jpg','png','jpeg'], key="foto_up")
+        c_foto = st.file_uploader("Foto", type=['jpg','png','jpeg'], key="cfot")
 
-        if st.button("➕ AGREGAR A LA COLA", type="primary"):
+        if st.button("➕ AGREGAR A LA LISTA", type="primary"):
             if c_nom and c_dni:
-                f_bytes = c_foto.getvalue() if c_foto else None
-                item = {'alumno': c_nom, 'dni': c_dni, 'grado': c_gra, 'foto_bytes': f_bytes}
+                fb = c_foto.getvalue() if c_foto else None
+                it = {'alumno': c_nom, 'dni': c_dni, 'grado': c_gra, 'foto_bytes': fb}
                 
-                # Evitar duplicados
+                # Verificar duplicados
                 if c_dni not in [x['dni'] for x in st.session_state.cola_carnets]:
-                    st.session_state.cola_carnets.append(item)
+                    st.session_state.cola_carnets.append(it)
                     st.toast(f"Agregado: {c_nom}")
                 else: st.warning("Ya está en la lista")
             else: st.error("Faltan datos")
 
-    # LADO DERECHO: LISTA Y DESCARGA
-    with col_der:
-        cantidad = len(st.session_state.cola_carnets)
-        st.warning(f"📦 EN COLA: {cantidad} CARNETS")
+    with c_der:
+        cnt = len(st.session_state.cola_carnets)
+        st.warning(f"📦 LISTA DE ESPERA: {cnt} CARNETS")
         
-        if cantidad > 0:
-            df_c = pd.DataFrame(st.session_state.cola_carnets)
-            st.dataframe(df_c[['alumno', 'dni', 'grado']], hide_index=True, use_container_width=True)
+        if cnt > 0:
+            df_col = pd.DataFrame(st.session_state.cola_carnets)
+            st.dataframe(df_col[['alumno', 'dni', 'grado']], hide_index=True, use_container_width=True)
             
+            st.markdown("---")
             if st.button("🚀 DESCARGAR PACK ZIP", type="primary", use_container_width=True):
-                z_buf = io.BytesIO()
+                buf = io.BytesIO()
                 prog = st.progress(0)
-                with zipfile.ZipFile(z_buf, "w") as zf:
-                    for i, it in enumerate(st.session_state.cola_carnets):
-                        f_io = io.BytesIO(it['foto_bytes']) if it['foto_bytes'] else None
-                        img = generar_carnet_png(it, anio_sel, f_io)
-                        zf.writestr(f"Carnet_{it['dni']}.png", img.getvalue())
-                        prog.progress((i+1)/cantidad)
-                z_buf.seek(0)
+                with zipfile.ZipFile(buf, "w") as zf:
+                    for i, item in enumerate(st.session_state.cola_carnets):
+                        f_io = io.BytesIO(item['foto_bytes']) if item['foto_bytes'] else None
+                        img_bytes = generar_carnet_png(item, anio_sel, f_io)
+                        zf.writestr(f"Carnet_{item['dni']}.png", img_bytes.getvalue())
+                        prog.progress((i+1)/cnt)
+                
+                buf.seek(0)
                 st.balloons()
-                st.download_button("⬇️ GUARDAR ZIP", z_buf, "Pack_Carnets.zip", "application/zip", use_container_width=True)
+                st.download_button("⬇️ GUARDAR TODO (ZIP)", buf, "Pack_Carnets.zip", "application/zip", use_container_width=True)
             
-            if st.button("🗑️ VACIAR LISTA"):
+            if st.button("🗑️ LIMPIAR LISTA"):
                 st.session_state.cola_carnets = []
                 st.rerun()
         else:
