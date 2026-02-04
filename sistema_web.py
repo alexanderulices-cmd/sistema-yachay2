@@ -86,7 +86,7 @@ def limpiar_datos():
     for i in range(5):
         if f"cn{i}" in st.session_state: st.session_state[f"cn{i}"] = ""
 
-# --- 4. LOGIN CON ROLES (SEGURIDAD) ---
+# --- 4. LOGIN CON ROLES (SEGURIDAD ACTUALIZADA) ---
 if "rol" not in st.session_state: st.session_state.rol = None
 
 if st.session_state.rol is None:
@@ -97,11 +97,11 @@ if st.session_state.rol is None:
         pwd = st.text_input("Contraseña:", type="password")
         
         if st.button("INGRESAR AL SISTEMA", use_container_width=True):
-            if pwd == "yachay2026":
+            if pwd == "306020":
                 st.session_state.rol = "admin"
                 st.success("✅ MODO ADMINISTRADOR (Control Total)")
                 st.rerun()
-            elif pwd == "docente":
+            elif pwd == "deyanira":
                 st.session_state.rol = "docente"
                 st.success("👤 MODO DOCENTE (Solo Generación)")
                 st.rerun()
@@ -109,7 +109,7 @@ if st.session_state.rol is None:
                 st.error("⛔ Contraseña incorrecta")
     st.stop()
 
-# --- 5. GENERADOR PDF (TEXTOS COMPLETOS Y FORMATO) ---
+# --- 5. GENERADOR PDF (TEXTOS COMPLETOS) ---
 def obtener_fecha(anio):
     meses = {1:"Enero", 2:"Febrero", 3:"Marzo", 4:"Abril", 5:"Mayo", 6:"Junio", 7:"Julio", 8:"Agosto", 9:"Septiembre", 10:"Octubre", 11:"Noviembre", 12:"Diciembre"}
     hoy = datetime.now()
@@ -160,7 +160,6 @@ def generar_pdf_doc(tipo, datos, config):
         y = dibujar_parrafo(c, txt, mx, y, ancho, estilo_normal)
         y = dibujar_parrafo(c, "Por lo que se debe consignar los siguientes documentos:", mx, y, ancho, estilo_normal)
         
-        # LISTA COMPLETA DE REQUISITOS
         reqs = [
             "• Certificado de Estudios original.",
             "• Resolución de traslado.",
@@ -254,7 +253,7 @@ def generar_pdf_doc(tipo, datos, config):
         estilo_items = ParagraphStyle('ItemsComp', parent=styles['Normal'], fontSize=8.5, leading=10, leftIndent=10)
         for p in pts: 
             y = dibujar_parrafo(c, p, mx, y, ancho, estilo_items)
-            y += 5 # Ajuste de espaciado
+            y += 5
             
         y -= 10
         final = "Por su parte el Consejo Directivo del colegio seguirá mejorando el servicio educativo en base a: Disciplina, responsabilidad, seguridad de sus hijo@s... Confíe en su colegio y asegure la buena formación de su hij@. <i>La mejor herencia a los hijos es la educación.</i>"
@@ -269,17 +268,19 @@ def generar_pdf_doc(tipo, datos, config):
         c.drawCentredString(470,y,config['promotor'].upper()); c.drawCentredString(470,y-10,"PROMOTOR")
         c.save(); buffer.seek(0); return buffer
 
-    # --- PIE DE PÁGINA NORMAL (FIRMAS BAJAS PARA QUE NO TAPE) ---
+    # --- PIE DE PÁGINA NORMAL ---
     if tipo != "CARTA COMPROMISO PADRE DE FAMILIA":
-        yf = 110 # Altura de la firma (Más baja)
+        yf = 110
         c.line(200, yf, 395, yf)
         c.setFont("Helvetica-Bold", 10)
         c.drawCentredString(w/2, yf-15, config['directora'].upper())
         c.setFont("Helvetica", 9)
         c.drawCentredString(w/2, yf-28, "DIRECTORA")
 
-        # QR Validación
-        url_val = f"https://sistema-yachay2.streamlit.app/?validar={datos['dni']}"
+        # QR Validación (Usar URL pública de Streamlit)
+        # NOTA: Debes asegurarte de que tu App en Streamlit Cloud sea "Public"
+        base_url = "https://sistema-yachay2.streamlit.app"
+        url_val = f"{base_url}/?validar={datos['dni']}"
         qr = qrcode.make(url_val)
         qr.save("temp_qr.png")
         c.drawImage("temp_qr.png", config['qr_x'], config['qr_y'], width=70, height=70)
@@ -290,7 +291,25 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (LETRAS GIGANTES Y ESCUDO) ---
+# --- 6. GENERADOR CARNET PNG (SOLUCIÓN FUENTES GRANDES) ---
+# Función para cargar fuente robusta (Linux/Windows)
+def cargar_fuente_bold(size):
+    # Lista de fuentes comunes en Linux (Streamlit Cloud) y Windows
+    fuentes = ["arialbd.ttf", "DejaVuSans-Bold.ttf", "LiberationSans-Bold.ttf", "FreeSansBold.ttf"]
+    for f in fuentes:
+        try:
+            return ImageFont.truetype(f, size)
+        except: continue
+    return ImageFont.load_default()
+
+def cargar_fuente_normal(size):
+    fuentes = ["arial.ttf", "DejaVuSans.ttf", "LiberationSans-Regular.ttf", "FreeSans.ttf"]
+    for f in fuentes:
+        try:
+            return ImageFont.truetype(f, size)
+        except: continue
+    return ImageFont.load_default()
+
 def generar_carnet_png(datos, anio, foto_bytes):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
@@ -303,9 +322,7 @@ def generar_carnet_png(datos, anio, foto_bytes):
             escudo = Image.open("escudo_upload.png").convert("RGBA")
             escudo = escudo.resize((380, 380))
             capa = Image.new('RGBA', (W, H), (0,0,0,0))
-            # Centrar escudo
             capa.paste(escudo, (int((W-380)/2), int((H-380)/2)))
-            # Transparencia
             datos_p = capa.getdata()
             new_data = [(d[0], d[1], d[2], 35) if d[3]>0 else d for d in datos_p]
             capa.putdata(new_data)
@@ -316,18 +333,10 @@ def generar_carnet_png(datos, anio, foto_bytes):
     draw.rectangle([(0, 0), (W, 130)], fill=AZUL_INST)
     draw.rectangle([(0, H-60), (W, H)], fill=AZUL_INST)
 
-    # 3. Fuentes (Intentar cargar Arial Bold para que se vea grueso)
-    try:
-        font_header = ImageFont.truetype("arialbd.ttf", 60)
-        font_nombre = ImageFont.truetype("arialbd.ttf", 55) # Nombre MUY GRANDE
-        font_datos = ImageFont.truetype("arial.ttf", 45)    # Datos GRANDES
-        font_motto = ImageFont.truetype("arialbd.ttf", 30)
-    except:
-        font_header = ImageFont.load_default()
-        font_nombre = ImageFont.load_default()
-        font_datos = ImageFont.load_default()
-        font_motto = ImageFont.load_default()
-
+    # 3. Textos Cabecera (Fuentes Grandes)
+    font_header = cargar_fuente_bold(60)
+    font_motto = cargar_fuente_bold(30)
+    
     draw.text((W/2, 65), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
     draw.text((W/2, H-30), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
 
@@ -341,35 +350,36 @@ def generar_carnet_png(datos, anio, foto_bytes):
         except: pass
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=5)
 
-    # 5. Datos (Ajuste de coordenadas para letras grandes)
+    # 5. Datos (LETRAS MUY GRANDES)
     x_text = 360
     y_cursor = 170
     
-    # Nombre con auto-ajuste si es muy largo
+    # Nombre
     nom = datos['alumno'].upper()
-    size_n = 55
-    if len(nom) > 20: size_n = 45
-    try: font_n = ImageFont.truetype("arialbd.ttf", size_n)
-    except: font_n = font_nombre
+    size_n = 70 # Tamaño gigante inicial
+    if len(nom) > 20: size_n = 55 # Reducir un poco si es largo
+    font_n = cargar_fuente_bold(size_n)
     
     draw.text((x_text, y_cursor), nom, font=font_n, fill="black")
-    y_cursor += 80 # Espacio para la siguiente línea
+    y_cursor += 90
 
-    draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_datos, fill="black")
+    # DNI
+    font_d = cargar_fuente_normal(50)
+    draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_d, fill="black")
     y_cursor += 70
 
     # Grado
     grado_txt = f"GRADO: {datos['grado'].upper()}"
-    size_g = 45
-    if len(grado_txt) > 22: size_g = 35
-    try: font_g = ImageFont.truetype("arial.ttf", size_g)
-    except: font_g = font_datos
+    size_g = 50
+    if len(grado_txt) > 25: size_g = 40
+    font_g = cargar_fuente_normal(size_g)
+    
     draw.text((x_text, y_cursor), grado_txt, font=font_g, fill="black")
     y_cursor += 70
     
-    draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_datos, fill="black")
+    draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_d, fill="black")
 
-    # 6. Código Barras (Más grande y movido)
+    # 6. Código Barras
     if HAS_BARCODE:
         try:
             writer = ImageWriter()
@@ -377,7 +387,6 @@ def generar_carnet_png(datos, anio, foto_bytes):
             Code128(datos['dni'], writer=writer).write(buffer_bar)
             buffer_bar.seek(0)
             img_bar = Image.open(buffer_bar).resize((500, 110))
-            # Posición ajustada para no chocar con el texto
             img.paste(img_bar, (x_text, H - 190))
         except: pass
 
@@ -388,9 +397,7 @@ def generar_carnet_png(datos, anio, foto_bytes):
     img_qr = qr.make_image(fill_color="black", back_color="white").resize((170, 170))
     img.paste(img_qr, (W - 200, 180)) # A la derecha
     
-    # Texto "ESCANEAR"
-    try: font_s = ImageFont.truetype("arial.ttf", 20)
-    except: font_s = ImageFont.load_default()
+    font_s = cargar_fuente_normal(20)
     draw.text((W - 165, 360), "VERIFICAR", font=font_s, fill="black")
 
     output = io.BytesIO()
@@ -437,7 +444,7 @@ with st.sidebar:
         # ROL DOCENTE (Usuario limitado)
         st.info("Modo Docente")
         st.write("Solo tiene permisos para generar documentos.")
-        # Valores por defecto para el docente (No puede editar)
+        # Valores por defecto
         frase = "AÑO DE LA ESPERANZA Y EL FORTALECIMIENTO DE LA DEMOCRACIA"
         directora = "Prof. Ana María CUSI INCA"
         promotor = "Prof. Leandro CORDOVA TOCRE"
