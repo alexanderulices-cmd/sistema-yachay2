@@ -15,7 +15,6 @@ import textwrap
 import zipfile
 import time
 from pathlib import Path
-import hashlib
 
 # ========================================
 # CONFIGURACIÓN INICIAL
@@ -42,8 +41,8 @@ def init_session_state():
         'c_temp_nom': '',
         'c_temp_dni': '',
         'c_temp_gra': '',
-        'busqueda_counter': 0,  # Para evitar duplicate key
-        'agregar_counter': 0     # Para evitar duplicate key
+        'busqueda_counter': 0,
+        'agregar_counter': 0
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -124,7 +123,7 @@ class RecursoManager:
                     r.raise_for_status()
                     with open(nombre, 'wb') as f:
                         f.write(r.content)
-                except Exception as e:
+                except Exception:
                     pass
     
     @staticmethod
@@ -136,7 +135,6 @@ class RecursoManager:
         except Exception:
             return ImageFont.load_default()
 
-# Descargar fuentes al inicio
 RecursoManager.descargar_fuentes()
 
 # ========================================
@@ -187,11 +185,11 @@ class BaseDatos:
         return {'total_alumnos': 0, 'grados': 0, 'con_apoderado': 0}
 
 # ========================================
-# GENERADOR DE PDFs CON REDACCIÓN FORMAL MEJORADA
+# GENERADOR DE PDFs CORREGIDO
 # ========================================
 
 class GeneradorPDF:
-    """Genera documentos PDF con diseño profesional y redacción formal"""
+    """Genera documentos PDF profesionales"""
     
     def __init__(self, config):
         self.config = config
@@ -277,7 +275,7 @@ class GeneradorPDF:
             pass
     
     def generar_constancia_vacante(self, datos):
-        """Genera constancia de vacante con redacción formal"""
+        """Genera constancia de vacante"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE VACANTE")
         
@@ -335,18 +333,13 @@ class GeneradorPDF:
             mx, y, ancho, estilo_normal
         )
         
-        y -= 20
-        self.canvas.setFont("Helvetica", 10)
-        self.canvas.drawString(mx, y, f"Solicitante: {datos['apoderado'].upper()}")
-        self.canvas.drawString(mx, y - 15, f"DNI N°: {datos['dni_apo']}")
-        
         self._agregar_firmas()
         self._agregar_qr(datos, "CONSTANCIA DE VACANTE")
         
         return self._finalizar()
     
     def generar_constancia_no_deudor(self, datos):
-        """Genera constancia de no deudor con redacción formal"""
+        """Genera constancia de no adeudo"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE NO ADEUDO")
         
@@ -368,9 +361,11 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "HACE CONSTAR:")
         y -= 25
         
+        # AGREGADO: Datos del apoderado
         texto = (
             f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional "
-            f"de Identidad (DNI) N° <b>{datos['dni']}</b>, ha cumplido satisfactoriamente con todas sus "
+            f"de Identidad (DNI) N° <b>{datos['dni']}</b>, hijo(a) de <b>{datos['apoderado'].upper()}</b> "
+            f"con DNI N° <b>{datos['dni_apo']}</b>, ha cumplido satisfactoriamente con todas sus "
             f"obligaciones económicas ante esta Institución Educativa, no registrando deuda alguna por concepto "
             f"de matrícula, pensiones de enseñanza, ni cualquier otro compromiso pecuniario derivado de su "
             f"permanencia en el plantel."
@@ -388,7 +383,7 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_constancia_estudios(self, datos):
-        """Genera constancia de estudios con redacción formal"""
+        """Genera constancia de estudios"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE ESTUDIOS")
         
@@ -410,9 +405,11 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "HACE CONSTAR:")
         y -= 25
         
+        # AGREGADO: Datos del apoderado
         texto = (
             f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional "
-            f"de Identidad (DNI) N° <b>{datos['dni']}</b>, se encuentra <b>DEBIDAMENTE MATRICULADO(A)</b> "
+            f"de Identidad (DNI) N° <b>{datos['dni']}</b>, hijo(a) de <b>{datos['apoderado'].upper()}</b> "
+            f"con DNI N° <b>{datos['dni_apo']}</b>, se encuentra <b>DEBIDAMENTE MATRICULADO(A)</b> "
             f"en esta Institución Educativa para el año académico <b>{self.config['anio']}</b>, cursando "
             f"estudios en el nivel de <b>{datos['grado'].upper()}</b>, conforme consta en los registros "
             f"oficiales del plantel."
@@ -431,7 +428,7 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_constancia_conducta(self, datos):
-        """Genera constancia de conducta con redacción formal"""
+        """Genera constancia de conducta (5 años completos)"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE CONDUCTA")
         
@@ -440,7 +437,7 @@ class GeneradorPDF:
         
         estilo_normal = ParagraphStyle(
             'Normal', parent=self.styles['Normal'],
-            fontSize=11, leading=15, alignment=TA_JUSTIFY
+            fontSize=10, leading=14, alignment=TA_JUSTIFY
         )
         
         y = self._dibujar_parrafo(
@@ -453,32 +450,44 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "CERTIFICA:")
         y -= 25
         
+        # AGREGADO: Datos del apoderado
         texto = (
-            f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional "
-            f"de Identidad (DNI) N° <b>{datos['dni']}</b>, cursó estudios en el nivel de Educación Secundaria "
-            f"durante el año académico <b>{int(self.config['anio']) - 1}</b>, habiendo obtenido las siguientes "
+            f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con DNI N° <b>{datos['dni']}</b>, "
+            f"hijo(a) de <b>{datos['apoderado'].upper()}</b> con DNI N° <b>{datos['dni_apo']}</b>, "
+            f"cursó estudios de Educación Secundaria en esta institución, obteniendo las siguientes "
             f"calificaciones en el Área de Formación Ciudadana y Cívica (Conducta):"
         )
         y = self._dibujar_parrafo(texto, mx, y, ancho, estilo_normal)
         
-        y -= 20
-        tx = self.width/2 - 150
+        y -= 15
+        tx = self.width/2 - 200
         
-        self.canvas.setFont("Helvetica-Bold", 11)
-        self.canvas.drawString(tx, y, "GRADO/AÑO ACADÉMICO")
-        self.canvas.drawString(tx + 200, y, "AÑO")
-        self.canvas.drawString(tx + 300, y, "CALIFICACIÓN")
+        # Tabla de 5 años
+        self.canvas.setFont("Helvetica-Bold", 10)
+        self.canvas.drawString(tx, y, "GRADO")
+        self.canvas.drawString(tx + 120, y, "AÑO ACADÉMICO")
+        self.canvas.drawString(tx + 280, y, "CALIFICACIÓN")
         
         y -= 5
         self.canvas.line(tx - 10, y, tx + 380, y)
         y -= 20
         
-        self.canvas.setFont("Helvetica", 10)
-        self.canvas.drawString(tx, y, datos['grado'].upper())
-        self.canvas.drawString(tx + 200, y, str(int(self.config['anio']) - 1))
-        self.canvas.drawString(tx + 300, y, datos.get('nota_conducta', 'AD'))
+        self.canvas.setFont("Helvetica", 9)
         
-        y -= 30
+        # CORREGIDO: Mostrar 5 años de conducta
+        grados = ["PRIMERO", "SEGUNDO", "TERCERO", "CUARTO", "QUINTO"]
+        anio_base = int(self.config['anio']) - 5
+        
+        for i, grado in enumerate(grados):
+            anio_actual = anio_base + i + 1
+            nota = datos.get(f'nota_conducta_{i+1}', 'AD')  # nota_conducta_1, nota_conducta_2, etc.
+            
+            self.canvas.drawString(tx, y, grado)
+            self.canvas.drawString(tx + 120, y, str(anio_actual))
+            self.canvas.drawString(tx + 280, y, nota)
+            y -= 18
+        
+        y -= 10
         y = self._dibujar_parrafo(
             "Se expide la presente certificación a solicitud del interesado(a), para los fines que "
             "estime por conveniente.",
@@ -491,83 +500,73 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_carta_compromiso(self, datos):
-        """Genera carta compromiso con redacción formal"""
+        """Genera carta compromiso AJUSTADA A UNA PÁGINA"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CARTA DE COMPROMISO DEL PADRE DE FAMILIA")
         
-        y = self.config['y_titulo'] - 50
-        mx, ancho = 60, self.width - 120
+        y = self.config['y_titulo'] - 40  # Menos espacio arriba
+        mx, ancho = 50, self.width - 100  # Márgenes más pequeños
         
+        # TEXTO MÁS COMPACTO
         estilo_comp = ParagraphStyle(
             'Compromiso', parent=self.styles['Normal'],
-            fontSize=9.5, leading=13, alignment=TA_JUSTIFY
+            fontSize=8.5, leading=11, alignment=TA_JUSTIFY  # Reducido de 9.5 a 8.5
         )
         
         intro = (
-            f"Yo, <b>{datos['apoderado'].upper()}</b>, identificado(a) con Documento Nacional de Identidad (DNI) "
-            f"N° <b>{datos['dni_apo']}</b>, en mi calidad de padre, madre y/o apoderado(a) del/de la estudiante "
-            f"<b>{datos['alumno'].upper()}</b>, mediante el presente documento me comprometo formalmente a cumplir "
-            f"con las siguientes obligaciones y disposiciones establecidas por la Institución Educativa Particular "
-            f"ALTERNATIVO YACHAY:"
+            f"Yo, <b>{datos['apoderado'].upper()}</b>, con DNI N° <b>{datos['dni_apo']}</b>, "
+            f"padre/madre/apoderado(a) de <b>{datos['alumno'].upper()}</b>, me comprometo formalmente "
+            f"a cumplir las siguientes obligaciones establecidas por la I.E. ALTERNATIVO YACHAY:"
         )
         y = self._dibujar_parrafo(intro, mx, y, ancho, estilo_comp)
         
+        y -= 5  # Menos espacio entre secciones
+        
+        # COMPROMISOS MÁS CONCISOS
         compromisos = [
-            "1. Velar por la asistencia puntual y regular de mi hijo(a) al centro educativo, garantizando su presencia en el horario establecido.",
-            
-            "2. Supervisar el cumplimiento diario de las tareas escolares y trabajos académicos asignados por los docentes.",
-            
-            "3. Asegurar que mi hijo(a) asista correctamente uniformado(a) conforme al reglamento interno de la institución.",
-            
-            "4. Inculcar en mi hijo(a) el respeto hacia los docentes, personal administrativo, compañeros de estudios y normas de convivencia escolar.",
-            
-            "5. Participar activamente en las actividades organizadas por el comité de aula y colaborar con los docentes en el proceso educativo.",
-            
-            "6. Ejercer una crianza positiva, libre de violencia física, psicológica o verbal hacia mi hijo(a), promoviendo su desarrollo integral.",
-            
-            "7. Atender de manera oportuna cualquier problema de conducta, rendimiento académico o situación especial que presente mi hijo(a).",
-            
-            "8. Asumir la responsabilidad pecuniaria por los daños materiales que mi hijo(a) ocasione a la infraestructura, mobiliario o equipamiento de la institución.",
-            
-            "9. Vigilar que mi hijo(a) mantenga un vocabulario apropiado y conducta respetuosa dentro y fuera del plantel.",
-            
-            "10. Acudir inmediatamente a la institución cuando sea requerida mi presencia por parte del personal directivo o docente.",
-            
-            "11. Asistir puntualmente a las reuniones, asambleas y citaciones programadas por la dirección o comité de aula.",
-            
-            "12. Justificar de manera oportuna y documentada las inasistencias de mi hijo(a), dentro de las 24 horas posteriores.",
-            
-            "13. Cumplir puntualmente con el pago de las pensiones de enseñanza en las fechas establecidas por la institución.",
-            
-            "14. Respetar la autonomía pedagógica de los docentes, absteniéndome de interferir en las metodologías y estrategias educativas."
+            "1. Velar por la asistencia puntual y regular de mi hijo(a) al centro educativo.",
+            "2. Supervisar el cumplimiento diario de tareas escolares y trabajos académicos.",
+            "3. Asegurar que asista correctamente uniformado(a) según el reglamento interno.",
+            "4. Inculcar respeto hacia docentes, personal, compañeros y normas de convivencia.",
+            "5. Participar en actividades del comité de aula y colaborar con los docentes.",
+            "6. Ejercer crianza positiva, libre de violencia, promoviendo desarrollo integral.",
+            "7. Atender oportunamente problemas de conducta, rendimiento o situaciones especiales.",
+            "8. Asumir responsabilidad por daños materiales que ocasione a la institución.",
+            "9. Vigilar que mantenga vocabulario apropiado y conducta respetuosa.",
+            "10. Acudir inmediatamente cuando sea requerida mi presencia.",
+            "11. Asistir puntualmente a reuniones, asambleas y citaciones programadas.",
+            "12. Justificar inasistencias de manera oportuna y documentada (24 horas).",
+            "13. Cumplir puntualmente con el pago de pensiones de enseñanza.",
+            "14. Respetar la autonomía pedagógica, sin interferir en metodologías educativas."
         ]
         
         estilo_item = ParagraphStyle(
-            'Item', parent=estilo_comp, leftIndent=15
+            'Item', parent=estilo_comp, leftIndent=10
         )
         
         for compromiso in compromisos:
             y = self._dibujar_parrafo(compromiso, mx, y, ancho, estilo_item)
+            y += 2  # Compensar un poco el espacio
         
+        y -= 5
         y = self._dibujar_parrafo(
-            "Declaro conocer y aceptar todas las disposiciones anteriormente señaladas, comprometiéndome "
-            "a su estricto cumplimiento durante la permanencia de mi hijo(a) en la institución educativa.",
+            "Declaro conocer y aceptar el estricto cumplimiento de lo establecido.",
             mx, y, ancho, estilo_comp
         )
         
-        # Firmas
-        y = 100
-        self.canvas.line(80, y, 220, y)
-        self.canvas.line(240, y, 380, y)
-        self.canvas.line(400, y, 540, y)
+        # FIRMAS CON MÁS ESPACIO
+        y = 120  # Más arriba para dar espacio
+        self.canvas.line(80, y, 200, y)
+        self.canvas.line(220, y, 340, y)
+        self.canvas.line(360, y, 480, y)
         
         y -= 10
-        self.canvas.setFont("Helvetica-Bold", 8)
-        self.canvas.drawCentredString(150, y, "FIRMA DEL PADRE/MADRE/APODERADO")
-        self.canvas.drawCentredString(310, y, self.config['directora'].upper())
-        self.canvas.drawCentredString(310, y - 10, "DIRECTORA")
-        self.canvas.drawCentredString(470, y, self.config['promotor'].upper())
-        self.canvas.drawCentredString(470, y - 10, "PROMOTOR")
+        self.canvas.setFont("Helvetica-Bold", 7)
+        self.canvas.drawCentredString(140, y, "FIRMA PADRE/MADRE/APODERADO")
+        self.canvas.drawCentredString(280, y, self.config['directora'].upper())
+        self.canvas.drawCentredString(280, y - 10, "DIRECTORA")
+        self.canvas.drawCentredString(420, y, self.config['promotor'].upper())
+        self.canvas.drawCentredString(420, y - 10, "PROMOTOR")
         
         return self._finalizar()
     
@@ -588,13 +587,12 @@ class GeneradorPDF:
         return self.buffer
 
 # ========================================
-# GENERADOR DE CARNETS CON TEXTO GRANDE
+# GENERADOR DE CARNETS MEJORADO (SOLO DNI EN CÓDIGOS)
 # ========================================
 
 class GeneradorCarnet:
-    """Genera carnets con texto MUCHO MÁS GRANDE"""
+    """Genera carnets con ENCABEZADO Y PIE GIGANTES"""
     
-    # Dimensiones
     WIDTH = 1012
     HEIGHT = 638
     AZUL_INST = (0, 30, 120)
@@ -630,37 +628,37 @@ class GeneradorCarnet:
                 pass
     
     def _dibujar_barras_superiores(self):
-        """Dibuja barras decorativas GRANDES"""
-        # Barra superior MÁS ALTA (para texto grande)
-        self.draw.rectangle([(0, 0), (self.WIDTH, 160)], fill=self.AZUL_INST)
-        # Barra inferior MÁS ALTA
+        """Dibuja barras MUY GRANDES"""
+        # Barra superior GIGANTE: 180px (antes 160)
+        self.draw.rectangle([(0, 0), (self.WIDTH, 180)], fill=self.AZUL_INST)
+        # Barra inferior GIGANTE: 150px (antes 130)
         self.draw.rectangle(
-            [(0, self.HEIGHT - 130), (self.WIDTH, self.HEIGHT)], 
+            [(0, self.HEIGHT - 150), (self.WIDTH, self.HEIGHT)], 
             fill=self.AZUL_INST
         )
     
     def _dibujar_textos_institucionales(self):
-        """Dibuja nombre de institución y lema MUY GRANDES"""
-        # ENCABEZADO GIGANTE: 110px (antes 90)
-        font_header = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 110, bold=True)
-        # PIE GIGANTE: 85px (antes 70)
-        font_motto = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 85, bold=True)
+        """Dibuja textos GIGANTES"""
+        # ENCABEZADO MÁXIMO: 130px (antes 110)
+        font_header = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 130, bold=True)
+        # PIE MÁXIMO: 100px (antes 85)
+        font_motto = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 100, bold=True)
         
         self.draw.text(
-            (self.WIDTH/2, 80), 
+            (self.WIDTH/2, 90), 
             "I.E. ALTERNATIVO YACHAY",
             font=font_header, fill="white", anchor="mm"
         )
         
         self.draw.text(
-            (self.WIDTH/2, self.HEIGHT - 65),
+            (self.WIDTH/2, self.HEIGHT - 75),
             "EDUCAR PARA LA VIDA",
             font=font_motto, fill="white", anchor="mm"
         )
     
     def _insertar_foto(self):
         """Inserta foto del alumno"""
-        x_foto, y_foto = 50, 185  # Ajustado por barra más alta
+        x_foto, y_foto = 50, 200
         w_foto, h_foto = 290, 350
         
         if self.foto_bytes:
@@ -673,7 +671,6 @@ class GeneradorCarnet:
         else:
             self._dibujar_placeholder_foto(x_foto, y_foto, w_foto, h_foto)
         
-        # Marco
         self.draw.rectangle(
             [(x_foto, y_foto), (x_foto + w_foto, y_foto + h_foto)],
             outline="black", width=6
@@ -690,88 +687,83 @@ class GeneradorCarnet:
         )
     
     def _dibujar_datos_alumno(self):
-        """Dibuja información del alumno CON TEXTO MUCHO MÁS GRANDE"""
+        """Dibuja datos MÁS GRANDES Y VISIBLES"""
         x_text = 370
-        y_nombre = 185  # Ajustado
-        y_dni = 310
-        y_grado = 390
-        y_vigencia = 470
+        y_nombre = 200
+        y_dni = 330
+        y_grado = 420
+        y_vigencia = 510
         
         nombre = self.datos['alumno'].upper()
         
-        # NOMBRE: 75px para nombres cortos, 50px para largos (antes 60/40)
+        # NOMBRE: 85px corto, 60px largo (antes 75/50)
         if len(nombre) > 22:
-            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 50, bold=True)
+            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 60, bold=True)
             wrapper = textwrap.TextWrapper(width=25)
             lineas = wrapper.wrap(nombre)
             y_cursor = y_nombre - 10
             for linea in lineas[:2]:
                 self.draw.text((x_text, y_cursor), linea, font=font_nombre, fill="black")
-                y_cursor += 55
+                y_cursor += 65
         else:
-            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 75, bold=True)
+            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 85, bold=True)
             self.draw.text((x_text, y_nombre), nombre, font=font_nombre, fill="black")
         
-        # ETIQUETAS Y DATOS: 55px (antes 45)
-        font_label = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 55, bold=True)
-        font_data = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 55)
+        # ETIQUETAS Y DATOS: 65px (antes 55)
+        font_label = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 65, bold=True)
+        font_data = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 65)
         
         # DNI
         self.draw.text((x_text, y_dni), "DNI:", font=font_label, fill="black")
-        self.draw.text((x_text + 120, y_dni), self.datos['dni'], font=font_data, fill="black")
+        self.draw.text((x_text + 130, y_dni), self.datos['dni'], font=font_data, fill="black")
         
         # Grado
         self.draw.text((x_text, y_grado), "GRADO:", font=font_label, fill="black")
         grado_text = self.datos['grado'].upper()
-        font_grado = font_data if len(grado_text) <= 20 else RecursoManager.obtener_fuente("Roboto-Regular.ttf", 42)
-        self.draw.text((x_text + 200, y_grado), grado_text, font=font_grado, fill="black")
+        font_grado = font_data if len(grado_text) <= 15 else RecursoManager.obtener_fuente("Roboto-Regular.ttf", 48)
+        self.draw.text((x_text + 220, y_grado), grado_text, font=font_grado, fill="black")
         
         # Vigencia
         self.draw.text((x_text, y_vigencia), "VIGENCIA:", font=font_label, fill="black")
-        self.draw.text((x_text + 260, y_vigencia), str(self.anio), font=font_data, fill="black")
+        self.draw.text((x_text + 280, y_vigencia), str(self.anio), font=font_data, fill="black")
     
     def _agregar_codigo_barras(self):
-        """Agrega código de barras del DNI"""
+        """Agrega código de barras SOLO CON DNI"""
         if not HAS_BARCODE:
             return
         
         try:
             writer = ImageWriter()
             buffer_bar = io.BytesIO()
+            # SOLO DNI
             Code128(self.datos['dni'], writer=writer).write(
                 buffer_bar, 
                 options={'write_text': False}
             )
             buffer_bar.seek(0)
             
-            # Código de barras más grande
-            img_bar = Image.open(buffer_bar).resize((480, 110), Image.LANCZOS)
-            self.img.paste(img_bar, (360, self.HEIGHT - 240))
+            img_bar = Image.open(buffer_bar).resize((500, 115), Image.LANCZOS)
+            self.img.paste(img_bar, (350, self.HEIGHT - 260))
         except Exception:
             pass
     
     def _agregar_qr(self):
-        """Agrega código QR"""
+        """Agrega código QR SOLO CON DNI"""
         try:
             qr = qrcode.QRCode(box_size=10, border=1)
-            qr.add_data(
-                f"I.E. ALTERNATIVO YACHAY\n"
-                f"ALUMNO: {self.datos['alumno']}\n"
-                f"DNI: {self.datos['dni']}\n"
-                f"GRADO: {self.datos['grado']}\n"
-                f"AÑO: {self.anio}"
-            )
+            # SOLO DNI
+            qr.add_data(self.datos['dni'])
             qr.make(fit=True)
             
             img_qr_pil = qr.make_image(fill_color="black", back_color="white")
-            # QR más grande: 200x200 (antes 180)
-            img_qr = img_qr_pil.resize((200, 200), Image.LANCZOS)
-            self.img.paste(img_qr, (self.WIDTH - 220, 185))
+            # QR GRANDE: 220x220 (antes 200)
+            img_qr = img_qr_pil.resize((220, 220), Image.LANCZOS)
+            self.img.paste(img_qr, (self.WIDTH - 240, 200))
             
-            # Texto más grande: 24px (antes 20)
-            font_small = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 24)
+            # Texto: 28px (antes 24)
+            font_small = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 28)
             self.draw.text(
-                (self.WIDTH - 120, 395),
+                (self.WIDTH - 130, 430),
                 "ESCANEAR",
                 font=font_small, fill="black", anchor="mm"
             )
@@ -794,11 +786,11 @@ class GeneradorCarnet:
         return output
 
 # ========================================
-# SISTEMA DE LOGIN
+# SISTEMA DE LOGIN (SIN CONTRASEÑAS VISIBLES)
 # ========================================
 
 def pantalla_login():
-    """Pantalla de inicio de sesión"""
+    """Pantalla de inicio de sesión LIMPIA"""
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -816,6 +808,7 @@ def pantalla_login():
         st.markdown("<div class='separator'></div>", unsafe_allow_html=True)
         
         with st.container():
+            # CONTRASEÑA SIN MOSTRAR
             pwd = st.text_input("🔑 Contraseña de acceso:", type="password", key="login_pwd")
             
             col_btn1, col_btn2 = st.columns(2)
@@ -838,9 +831,6 @@ def pantalla_login():
                         st.rerun()
                     else:
                         st.error("⛔ Contraseña incorrecta")
-        
-        st.markdown("<div class='separator'></div>", unsafe_allow_html=True)
-        st.info("💡 **Usuario Admin:** 306020 | **Usuario Docente:** deyanira")
 
 # ========================================
 # CONFIGURACIÓN SIDEBAR
@@ -914,7 +904,7 @@ def configurar_sidebar():
     }
 
 # ========================================
-# TAB DOCUMENTOS
+# TAB DOCUMENTOS (CON 5 AÑOS DE CONDUCTA)
 # ========================================
 
 def tab_documentos(config):
@@ -964,13 +954,22 @@ def tab_documentos(config):
             apoderado = st.text_input("👨‍👩‍👧 Apoderado:", key="apoderado")
             dni_apo = st.text_input("🆔 DNI Apoderado:", key="dni_apo")
             
-            nota_conducta = ""
+            # PARA CONSTANCIA DE CONDUCTA: 5 AÑOS
+            notas_conducta = {}
             if tipo_doc == "CONSTANCIA DE CONDUCTA":
-                nota_conducta = st.selectbox(
-                    "📊 Nota de Conducta:",
-                    ["AD", "A", "B", "C"],
-                    key="nota_conducta_select"
-                )
+                st.markdown("**📊 Calificaciones de Conducta (5 años):**")
+                col_n1, col_n2, col_n3, col_n4, col_n5 = st.columns(5)
+                
+                with col_n1:
+                    notas_conducta['nota_conducta_1'] = st.selectbox("1°", ["AD", "A", "B", "C"], key="nota1")
+                with col_n2:
+                    notas_conducta['nota_conducta_2'] = st.selectbox("2°", ["AD", "A", "B", "C"], key="nota2")
+                with col_n3:
+                    notas_conducta['nota_conducta_3'] = st.selectbox("3°", ["AD", "A", "B", "C"], key="nota3")
+                with col_n4:
+                    notas_conducta['nota_conducta_4'] = st.selectbox("4°", ["AD", "A", "B", "C"], key="nota4")
+                with col_n5:
+                    notas_conducta['nota_conducta_5'] = st.selectbox("5°", ["AD", "A", "B", "C"], key="nota5")
         
         st.markdown("---")
         
@@ -983,7 +982,7 @@ def tab_documentos(config):
                         'grado': grado,
                         'apoderado': apoderado,
                         'dni_apo': dni_apo,
-                        'nota_conducta': nota_conducta
+                        **notas_conducta
                     }
                     
                     gen = GeneradorPDF(config)
@@ -1071,7 +1070,6 @@ def tab_carnets(config):
         st.caption("Agrega múltiples alumnos y descarga en ZIP")
         
         with st.expander("➕ Agregar al Carrito", expanded=True):
-            # SOLUCIÓN CLAVE: Usar counter para keys únicas
             st.session_state.busqueda_counter += 1
             s_dni = st.text_input("🔍 Buscar por DNI:", key=f"s_dni_{st.session_state.busqueda_counter}")
             
@@ -1119,7 +1117,6 @@ def tab_carnets(config):
                         st.session_state.cola_carnets.append(item)
                         st.success(f"✅ {c_nom} agregado al carrito")
                         
-                        # Limpiar y forzar rerun para resetear inputs
                         st.session_state.c_temp_nom = ""
                         st.session_state.c_temp_dni = ""
                         st.session_state.c_temp_gra = ""
