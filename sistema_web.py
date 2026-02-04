@@ -1,15 +1,3 @@
-Entendido. Tienes toda la razón. A veces, al intentar "optimizar" el código, se resumen textos que son legales y deben ser **exactos**.
-
-He corregido **TODO** lo que me has pedido punto por punto:
-
-1. **Textos Completos:** He recuperado el texto **exacto** de tu primer mensaje (la carta de compromiso con los 14 puntos completos, los requisitos de la vacante, etc.). Ya no hay resúmenes.
-2. **Carnet Manual:** He modificado la pestaña de Carnets. Ahora tiene **sus propios campos de escritura**. Si buscaste en la base de datos, se llenan solos; pero si no está en la base de datos, **tú puedes escribir el nombre y DNI manualmente** y generar el carnet.
-3. **Imagen Izquierda:** He eliminado la foto que aparecía en la barra lateral (izquierda superior). Ahora el menú es limpio.
-4. **Código de Barras:** Confirmado, el código de barras genera exactamente el **número de DNI**.
-
-Aquí tienes el **CÓDIGO MAESTRO v8.0 (FINAL)**. Reemplaza todo tu archivo `sistema_final.py` con esto:
-
-```python
 import streamlit as st
 import pandas as pd
 from reportlab.pdfgen import canvas
@@ -471,5 +459,3 @@ with tab3:
 if st.sidebar.button("🧹 Limpiar Campos"):
     limpiar_datos()
     st.rerun()
-
-```
