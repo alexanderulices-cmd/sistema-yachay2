@@ -1,8 +1,9 @@
 streamlit
-reportlab
-qrcode
 pandas
 openpyxl
-python-barcode
+reportlab
+qrcode[pil]
 pillow
-requests
+python-barcode
+opencv-python
+pyzbar
