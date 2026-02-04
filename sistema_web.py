@@ -40,7 +40,37 @@ try:
 except ImportError:
     HAS_BARCODE = False
 
-# --- 2. FUNCIONES DE BASE DE DATOS ---
+# --- 2. GESTIÓN DE FUENTES (CRÍTICO: EVITAR LETRA PEQUEÑA) ---
+# Descargamos las fuentes al inicio para asegurar que existan
+def descargar_fuentes():
+    urls = {
+        "Roboto-Bold.ttf": "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf",
+        "Roboto-Regular.ttf": "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf"
+    }
+    for nombre, url in urls.items():
+        if not os.path.exists(nombre):
+            try:
+                r = requests.get(url)
+                with open(nombre, 'wb') as f: f.write(r.content)
+            except: pass
+
+descargar_fuentes() # Ejecutar al inicio
+
+def obtener_fuente_gigante(size):
+    # Intentar cargar Roboto Bold (local descargada)
+    try: return ImageFont.truetype("Roboto-Bold.ttf", size)
+    except:
+        # Intentar ruta Linux común (Streamlit Cloud)
+        try: return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size)
+        except: return ImageFont.load_default() # Solo si falla todo (letra pequeña)
+
+def obtener_fuente_normal(size):
+    try: return ImageFont.truetype("Roboto-Regular.ttf", size)
+    except:
+        try: return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", size)
+        except: return ImageFont.load_default()
+
+# --- 3. FUNCIONES DE BASE DE DATOS ---
 def cargar_bd():
     try:
         if os.path.exists("base_datos.xlsx"):
@@ -65,7 +95,7 @@ def limpiar_datos():
     for i in range(5):
         if f"cn{i}" in st.session_state: st.session_state[f"cn{i}"] = ""
 
-# --- 3. LOGIN DE SEGURIDAD ---
+# --- 4. LOGIN DE SEGURIDAD ---
 if "rol" not in st.session_state: st.session_state.rol = None
 
 if st.session_state.rol is None:
@@ -87,35 +117,6 @@ if st.session_state.rol is None:
             else:
                 st.error("⛔ Contraseña incorrecta")
     st.stop()
-
-# --- 4. GESTOR DE FUENTES (GARANTÍA DE LETRA GRANDE) ---
-def obtener_fuente_gigante(size):
-    font_path = "Roboto-Bold.ttf"
-    # Descargar fuente si no existe para asegurar que sea GRUESA
-    if not os.path.exists(font_path):
-        url = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf"
-        try:
-            r = requests.get(url)
-            with open(font_path, 'wb') as f: f.write(r.content)
-        except: pass
-    
-    try: 
-        return ImageFont.truetype(font_path, size)
-    except:
-        return ImageFont.load_default()
-
-def obtener_fuente_normal(size):
-    font_path = "Roboto-Regular.ttf"
-    if not os.path.exists(font_path):
-        url = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf"
-        try:
-            r = requests.get(url)
-            with open(font_path, 'wb') as f: f.write(r.content)
-        except: pass
-    try: 
-        return ImageFont.truetype(font_path, size)
-    except:
-        return ImageFont.load_default()
 
 # --- 5. GENERADOR PDF (DOCUMENTOS) ---
 def obtener_fecha(anio):
@@ -268,7 +269,6 @@ def generar_pdf_doc(tipo, datos, config):
         c.setFont("Helvetica", 9)
         c.drawCentredString(w/2, yf-28, "DIRECTORA")
 
-        # QR PDF (Validación documento)
         data_qr = f"✅ I.E. YACHAY - DOCUMENTO VÁLIDO\nTIPO: {tipo}\nALUMNO: {datos['alumno']}\nDNI: {datos['dni']}\nEMISIÓN: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
         qr = qrcode.QRCode(box_size=10, border=1)
         qr.add_data(data_qr)
@@ -283,7 +283,7 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (CORREGIDO QR + LETRA GRANDE) ---
+# --- 6. GENERADOR CARNET PNG (LETRAS MASSIVAS) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
@@ -303,19 +303,20 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(capa, (0,0), mask=capa)
         except: pass
 
-    # 2. Barras Azules
-    draw.rectangle([(0, 0), (W, 130)], fill=AZUL_INST)
-    draw.rectangle([(0, H-60), (W, H)], fill=AZUL_INST)
+    # 2. Barras Azules (AMPLIADAS para letra grande)
+    draw.rectangle([(0, 0), (W, 150)], fill=AZUL_INST) # Aumentado a 150px
+    draw.rectangle([(0, H-80), (W, H)], fill=AZUL_INST) # Aumentado a 80px
 
-    # 3. Encabezado Gigante
-    font_header = obtener_fuente_gigante(65)
-    font_motto = obtener_fuente_gigante(30)
+    # 3. Encabezado y Pie (GIGANTES)
+    font_header = obtener_fuente_gigante(90) # AUMENTADO A 90 (Muy grande)
+    font_motto = obtener_fuente_gigante(45)  # AUMENTADO A 45
     
-    draw.text((W/2, 65), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
-    draw.text((W/2, H-30), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
+    # Ajuste de posición vertical para que quede centrado en la barra más grande
+    draw.text((W/2, 75), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
+    draw.text((W/2, H-40), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
 
     # 4. Marco de Foto
-    x_foto, y_foto = 50, 160
+    x_foto, y_foto = 50, 170
     w_foto, h_foto = 280, 350
     if foto_bytes:
         try:
@@ -326,40 +327,39 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
         draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], fill="#eeeeee")
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=5)
 
-    # 5. DATOS DEL ALUMNO (Letra Grande y Ajustada)
+    # 5. DATOS DEL ALUMNO (LETRAS GRANDES)
     x_text = 360
     y_cursor = 170
     
     nom = datos['alumno'].upper()
     
-    # Ajustar nombre
-    wrapper = textwrap.TextWrapper(width=22) 
+    wrapper = textwrap.TextWrapper(width=20) 
     lines = wrapper.wrap(nom)
     
     if len(lines) > 1:
-        font_n = obtener_fuente_gigante(55) # Tamaño Grande para nombre largo
+        font_n = obtener_fuente_gigante(60) # Grande pero doble línea
         for line in lines[:2]: 
             draw.text((x_text, y_cursor), line, font=font_n, fill="black")
-            y_cursor += 60
+            y_cursor += 70
     else:
-        font_n = obtener_fuente_gigante(65) # Tamaño GIGANTE para nombre corto
+        font_n = obtener_fuente_gigante(80) # GIGANTE (Una línea)
         draw.text((x_text, y_cursor), nom, font=font_n, fill="black")
-        y_cursor += 75
+        y_cursor += 90
 
-    y_cursor += 20
+    y_cursor += 15
 
     # DNI y Grado
-    font_d = obtener_fuente_normal(50) # Tamaño 50 (Grande)
+    font_d = obtener_fuente_normal(55) # Subido a 55
     draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_d, fill="black")
-    y_cursor += 70
+    y_cursor += 75
 
     grado_txt = f"GRADO: {datos['grado'].upper()}"
-    size_g = 50
-    if len(grado_txt) > 25: size_g = 40
+    size_g = 55
+    if len(grado_txt) > 25: size_g = 45
     font_g = obtener_fuente_normal(size_g)
     
     draw.text((x_text, y_cursor), grado_txt, font=font_g, fill="black")
-    y_cursor += 70
+    y_cursor += 75
     draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_d, fill="black")
 
     # 6. CÓDIGO DE BARRAS
@@ -373,10 +373,9 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(img_bar, (x_text, H - 190))
         except: pass
 
-    # 7. QR CARNET (CORREGIDO PARA QUE FUNCIONE)
+    # 7. QR CARNET
     try:
         qr_content = str(datos['dni'])
-        # Usamos QRCode objeto para evitar AttributeError
         qr = qrcode.QRCode(box_size=10, border=1)
         qr.add_data(qr_content)
         qr.make(fit=True)
