@@ -40,8 +40,7 @@ try:
 except ImportError:
     HAS_BARCODE = False
 
-# --- 2. GESTIÓN DE FUENTES (CRÍTICO: EVITAR LETRA PEQUEÑA) ---
-# Descargamos las fuentes al inicio para asegurar que existan
+# --- 2. GESTIÓN DE FUENTES (CRÍTICO) ---
 def descargar_fuentes():
     urls = {
         "Roboto-Bold.ttf": "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf",
@@ -54,15 +53,13 @@ def descargar_fuentes():
                 with open(nombre, 'wb') as f: f.write(r.content)
             except: pass
 
-descargar_fuentes() # Ejecutar al inicio
+descargar_fuentes()
 
 def obtener_fuente_gigante(size):
-    # Intentar cargar Roboto Bold (local descargada)
     try: return ImageFont.truetype("Roboto-Bold.ttf", size)
     except:
-        # Intentar ruta Linux común (Streamlit Cloud)
         try: return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size)
-        except: return ImageFont.load_default() # Solo si falla todo (letra pequeña)
+        except: return ImageFont.load_default()
 
 def obtener_fuente_normal(size):
     try: return ImageFont.truetype("Roboto-Regular.ttf", size)
@@ -283,7 +280,7 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (LETRAS MASSIVAS) ---
+# --- 6. GENERADOR CARNET PNG (CALIBRADO EQUILIBRADO) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
@@ -303,20 +300,19 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(capa, (0,0), mask=capa)
         except: pass
 
-    # 2. Barras Azules (AMPLIADAS para letra grande)
-    draw.rectangle([(0, 0), (W, 150)], fill=AZUL_INST) # Aumentado a 150px
-    draw.rectangle([(0, H-80), (W, H)], fill=AZUL_INST) # Aumentado a 80px
+    # 2. Barras Azules (ALTURA CORRECTA)
+    draw.rectangle([(0, 0), (W, 125)], fill=AZUL_INST) # Reducido de 150 a 125
+    draw.rectangle([(0, H-80), (W, H)], fill=AZUL_INST) # Pie correcto
 
-    # 3. Encabezado y Pie (GIGANTES)
-    font_header = obtener_fuente_gigante(90) # AUMENTADO A 90 (Muy grande)
-    font_motto = obtener_fuente_gigante(45)  # AUMENTADO A 45
+    # 3. Encabezado y Pie (TAMAÑOS EQUILIBRADOS)
+    font_header = obtener_fuente_gigante(60) # Ajustado a 60 (Ideal)
+    font_motto = obtener_fuente_gigante(45)  # Mantenido (User approved)
     
-    # Ajuste de posición vertical para que quede centrado en la barra más grande
-    draw.text((W/2, 75), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
+    draw.text((W/2, 62), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
     draw.text((W/2, H-40), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
 
     # 4. Marco de Foto
-    x_foto, y_foto = 50, 170
+    x_foto, y_foto = 50, 160
     w_foto, h_foto = 280, 350
     if foto_bytes:
         try:
@@ -327,39 +323,40 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
         draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], fill="#eeeeee")
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=5)
 
-    # 5. DATOS DEL ALUMNO (LETRAS GRANDES)
+    # 5. DATOS DEL ALUMNO (LETRAS CLARAS PERO NO GIGANTES)
     x_text = 360
-    y_cursor = 170
+    y_cursor = 165
     
     nom = datos['alumno'].upper()
-    
-    wrapper = textwrap.TextWrapper(width=20) 
+    wrapper = textwrap.TextWrapper(width=22) 
     lines = wrapper.wrap(nom)
     
+    # Nombre
     if len(lines) > 1:
-        font_n = obtener_fuente_gigante(60) # Grande pero doble línea
+        font_n = obtener_fuente_gigante(45) # Doble línea equilibrado
         for line in lines[:2]: 
             draw.text((x_text, y_cursor), line, font=font_n, fill="black")
-            y_cursor += 70
+            y_cursor += 55
     else:
-        font_n = obtener_fuente_gigante(80) # GIGANTE (Una línea)
+        font_n = obtener_fuente_gigante(55) # Una línea (Grande pero no enorme)
         draw.text((x_text, y_cursor), nom, font=font_n, fill="black")
-        y_cursor += 90
+        y_cursor += 65
 
     y_cursor += 15
 
     # DNI y Grado
-    font_d = obtener_fuente_normal(55) # Subido a 55
+    font_d = obtener_fuente_normal(42) # Reducido de 55 a 42 (Estándar legible)
+    
     draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_d, fill="black")
-    y_cursor += 75
+    y_cursor += 60
 
     grado_txt = f"GRADO: {datos['grado'].upper()}"
-    size_g = 55
-    if len(grado_txt) > 25: size_g = 45
+    size_g = 42
+    if len(grado_txt) > 25: size_g = 35
     font_g = obtener_fuente_normal(size_g)
     
     draw.text((x_text, y_cursor), grado_txt, font=font_g, fill="black")
-    y_cursor += 75
+    y_cursor += 60
     draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_d, fill="black")
 
     # 6. CÓDIGO DE BARRAS
@@ -369,23 +366,23 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             buffer_bar = io.BytesIO()
             Code128(datos['dni'], writer=writer).write(buffer_bar)
             buffer_bar.seek(0)
-            img_bar = Image.open(buffer_bar).resize((500, 110))
+            img_bar = Image.open(buffer_bar).resize((480, 100)) # Ligeramente más pequeño
             img.paste(img_bar, (x_text, H - 190))
         except: pass
 
-    # 7. QR CARNET
+    # 7. QR CARNET (FUNCIONAL)
     try:
         qr_content = str(datos['dni'])
         qr = qrcode.QRCode(box_size=10, border=1)
         qr.add_data(qr_content)
         qr.make(fit=True)
-        img_qr = qr.make_image(fill_color="black", back_color="white").resize((170, 170))
-        img.paste(img_qr, (W - 200, 180)) 
+        img_qr = qr.make_image(fill_color="black", back_color="white").resize((160, 160))
+        img.paste(img_qr, (W - 190, 170)) 
     except Exception as e:
         print(f"Error QR: {e}")
     
-    font_s = obtener_fuente_normal(20)
-    draw.text((W - 165, 360), "ESCANEAR", font=font_s, fill="black")
+    font_s = obtener_fuente_normal(18)
+    draw.text((W - 155, 340), "ESCANEAR", font=font_s, fill="black")
 
     output = io.BytesIO()
     img.save(output, format='PNG')
