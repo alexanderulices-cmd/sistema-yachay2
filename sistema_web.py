@@ -17,7 +17,7 @@ import zipfile
 # --- 1. CONFIGURACIÓN E INICIO ---
 st.set_page_config(page_title="SISTEMA YACHAY 2026", page_icon="🎓", layout="wide")
 
-# Estilos CSS (Botones y alertas)
+# Estilos CSS
 st.markdown("""
     <style>
     .stButton>button {
@@ -44,7 +44,6 @@ except ImportError:
 def cargar_bd():
     try:
         if os.path.exists("base_datos.xlsx"):
-            # Leemos todo como texto para conservar ceros a la izquierda en DNI
             return pd.read_excel("base_datos.xlsx", dtype=str, engine='openpyxl')
         return None
     except: return None
@@ -53,8 +52,6 @@ def buscar_alumno(dni_busqueda):
     df = cargar_bd()
     if df is not None:
         dni_busqueda = str(dni_busqueda).strip()
-        # Aseguramos compatibilidad de nombres de columnas (ignorando mayúsculas/minúsculas si fuera necesario)
-        # Se asume formato estándar: 'Alumno', 'DNI', 'Grado', 'Apoderado', 'DNI_Apoderado'
         if 'DNI' in df.columns:
             df['DNI'] = df['DNI'].astype(str).str.strip()
             res = df[df['DNI'] == dni_busqueda]
@@ -91,17 +88,21 @@ if st.session_state.rol is None:
                 st.error("⛔ Contraseña incorrecta")
     st.stop()
 
-# --- 4. GESTOR DE FUENTES (LETRAS GIGANTES) ---
+# --- 4. GESTOR DE FUENTES (GARANTÍA DE LETRA GRANDE) ---
 def obtener_fuente_gigante(size):
     font_path = "Roboto-Bold.ttf"
+    # Descargar fuente si no existe para asegurar que sea GRUESA
     if not os.path.exists(font_path):
         url = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf"
         try:
             r = requests.get(url)
             with open(font_path, 'wb') as f: f.write(r.content)
         except: pass
-    try: return ImageFont.truetype(font_path, size)
-    except: return ImageFont.load_default()
+    
+    try: 
+        return ImageFont.truetype(font_path, size)
+    except:
+        return ImageFont.load_default()
 
 def obtener_fuente_normal(size):
     font_path = "Roboto-Regular.ttf"
@@ -111,10 +112,12 @@ def obtener_fuente_normal(size):
             r = requests.get(url)
             with open(font_path, 'wb') as f: f.write(r.content)
         except: pass
-    try: return ImageFont.truetype(font_path, size)
-    except: return ImageFont.load_default()
+    try: 
+        return ImageFont.truetype(font_path, size)
+    except:
+        return ImageFont.load_default()
 
-# --- 5. GENERADOR PDF (DOCUMENTOS COMPLETOS) ---
+# --- 5. GENERADOR PDF (DOCUMENTOS) ---
 def obtener_fecha(anio):
     meses = {1:"Enero", 2:"Febrero", 3:"Marzo", 4:"Abril", 5:"Mayo", 6:"Junio", 7:"Julio", 8:"Agosto", 9:"Septiembre", 10:"Octubre", 11:"Noviembre", 12:"Diciembre"}
     hoy = datetime.now()
@@ -132,16 +135,13 @@ def generar_pdf_doc(tipo, datos, config):
     w, h = A4
     styles = getSampleStyleSheet()
     
-    # Estilos de texto
     estilo_normal = ParagraphStyle('NormalY', parent=styles['Normal'], fontSize=11, leading=15, fontName="Helvetica", alignment=TA_JUSTIFY)
     estilo_lista = ParagraphStyle('ListaY', parent=styles['Normal'], fontSize=10, leading=13, fontName="Helvetica", leftIndent=25, alignment=TA_JUSTIFY)
     
-    # 1. Fondo (Marca de agua)
     if os.path.exists("fondo.png"):
         try: c.drawImage("fondo.png", 0, 0, width=w, height=h)
         except: pass
 
-    # 2. Encabezado
     c.setFont("Helvetica-Oblique", 8)
     if tipo != "CARTA COMPROMISO PADRE DE FAMILIA":
         c.drawCentredString(w/2, config['y_frase'], f'"{config["frase"]}"')
@@ -149,7 +149,6 @@ def generar_pdf_doc(tipo, datos, config):
     c.setFont("Helvetica", 11)
     c.drawRightString(w-60, config['y_frase']-25, obtener_fecha(config['anio']))
 
-    # 3. Título del Documento
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(w/2, config['y_titulo'], tipo)
     c.setLineWidth(1)
@@ -159,17 +158,14 @@ def generar_pdf_doc(tipo, datos, config):
     mx = 60
     ancho = w - 120
 
-    # --- LÓGICA DE CONTENIDO POR TIPO ---
     if tipo == "CONSTANCIA DE VACANTE":
         y = dibujar_parrafo(c, "LA DIRECCIÓN DE LA INSTITUCIÓN EDUCATIVA PARTICULAR ALTERNATIVO YACHAY DE CHINCHERO, SUSCRIBE LA PRESENTE CONSTANCIA:", mx, y, ancho, estilo_normal)
         c.setFont("Helvetica-Bold", 11); c.drawString(mx, y, "HACE CONSTAR:"); y -= 20
         txt = f"Que, existe vacante disponible en el NIVEL <b>{datos['grado'].upper()}</b> - Para el/la alumno(a) <b>{datos['alumno'].upper()}</b> CON DNI <b>{datos['dni']}</b>. Para el año escolar {config['anio']}."
         y = dibujar_parrafo(c, txt, mx, y, ancho, estilo_normal)
         y = dibujar_parrafo(c, "Por lo que se debe consignar los siguientes documentos:", mx, y, ancho, estilo_normal)
-        
         reqs = ["• Certificado de Estudios original.", "• Resolución de traslado.", "• Libreta de SIAGIE.", "• Ficha única de matrícula de SIAGIE.", "• DNI (FOTOCOPIAS) del alumno y de los padres.", "• SIS O ESSALUD (Fotocopia).", "• Constancia de no Deudor.", "• Una mica para los documentos."]
         for r in reqs: y = dibujar_parrafo(c, r, mx, y, ancho, estilo_lista)
-        
         y -= 10
         c.drawString(mx, y, "Se le expide el presente documento a solicitud de:")
         y -= 20
@@ -224,7 +220,6 @@ def generar_pdf_doc(tipo, datos, config):
         c.drawString(mx, y, "Se le expide la presente constancia a solicitud del interesado.")
 
     elif tipo == "CARTA COMPROMISO PADRE DE FAMILIA":
-        # Texto COMPLETO de 14 PUNTOS
         estilo_comp = ParagraphStyle('Compromiso', parent=styles['Normal'], fontSize=9, leading=11, alignment=TA_JUSTIFY)
         intro = f"Por medio del presente Yo <b>{datos['apoderado'].upper()}</b> identificado con DNI N° <b>{datos['dni_apo']}</b>, padre o madre de familia de mi menor hijo(a), llamado(a) <b>{datos['alumno'].upper()}</b>."
         y = dibujar_parrafo(c, intro, mx, y, ancho, estilo_comp)
@@ -257,7 +252,6 @@ def generar_pdf_doc(tipo, datos, config):
         final = "Por su parte el Consejo Directivo del colegio seguirá mejorando el servicio educativo en base a: Disciplina, responsabilidad, seguridad de sus hijo@s... Confíe en su colegio y asegure la buena formación de su hij@. <i>La mejor herencia a los hijos es la educación.</i>"
         y = dibujar_parrafo(c, final, mx, y, ancho, estilo_comp)
         
-        # Firmas para el compromiso
         y = 80
         c.line(80,y,220,y); c.line(240,y,380,y); c.line(400,y,540,y); y-=10
         c.setFont("Helvetica",7)
@@ -266,7 +260,6 @@ def generar_pdf_doc(tipo, datos, config):
         c.drawCentredString(470,y,config['promotor'].upper()); c.drawCentredString(470,y-10,"PROMOTOR")
         c.save(); buffer.seek(0); return buffer
 
-    # PIE DE PÁGINA (SOLO PARA EL RESTO DE DOCUMENTOS)
     if tipo != "CARTA COMPROMISO PADRE DE FAMILIA":
         yf = 110
         c.line(200, yf, 395, yf)
@@ -275,15 +268,12 @@ def generar_pdf_doc(tipo, datos, config):
         c.setFont("Helvetica", 9)
         c.drawCentredString(w/2, yf-28, "DIRECTORA")
 
-        # --- QR DE DOCUMENTO (SEGURIDAD COMPLETA) ---
-        # Contiene: Check verde, Nombre, DNI, Fecha y Hora exacta.
+        # QR PDF (Validación documento)
         data_qr = f"✅ I.E. YACHAY - DOCUMENTO VÁLIDO\nTIPO: {tipo}\nALUMNO: {datos['alumno']}\nDNI: {datos['dni']}\nEMISIÓN: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
         qr = qrcode.QRCode(box_size=10, border=1)
         qr.add_data(data_qr)
         qr.make(fit=True)
         img_qr_doc = qr.make_image(fill_color="black", back_color="white")
-        
-        # Guardamos temporalmente para reportlab
         img_qr_doc.save("temp_qr.png")
         c.drawImage("temp_qr.png", config['qr_x'], config['qr_y'], width=70, height=70)
         c.setFont("Helvetica", 6)
@@ -293,21 +283,20 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (CORREGIDO PARA EVITAR ERROR QR) ---
+# --- 6. GENERADOR CARNET PNG (CORREGIDO QR + LETRA GRANDE) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
     draw = ImageDraw.Draw(img)
     AZUL_INST = (0, 30, 120)
 
-    # 1. Escudo (Marca de agua)
+    # 1. Escudo
     if os.path.exists("escudo_upload.png"):
         try:
             escudo = Image.open("escudo_upload.png").convert("RGBA")
             escudo = escudo.resize((380, 380))
             capa = Image.new('RGBA', (W, H), (0,0,0,0))
             capa.paste(escudo, (int((W-380)/2), int((H-380)/2)))
-            # Transparencia
             datos_p = capa.getdata()
             new_data = [(d[0], d[1], d[2], 35) if d[3]>0 else d for d in datos_p]
             capa.putdata(new_data)
@@ -318,8 +307,8 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
     draw.rectangle([(0, 0), (W, 130)], fill=AZUL_INST)
     draw.rectangle([(0, H-60), (W, H)], fill=AZUL_INST)
 
-    # 3. Texto Institucional (Gigante)
-    font_header = obtener_fuente_gigante(60)
+    # 3. Encabezado Gigante
+    font_header = obtener_fuente_gigante(65)
     font_motto = obtener_fuente_gigante(30)
     
     draw.text((W/2, 65), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
@@ -334,35 +323,33 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(foto_img, (x_foto, y_foto))
         except: pass
     else:
-        # Placeholder gris
         draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], fill="#eeeeee")
-        
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=5)
 
-    # 5. DATOS DEL ALUMNO
+    # 5. DATOS DEL ALUMNO (Letra Grande y Ajustada)
     x_text = 360
     y_cursor = 170
     
     nom = datos['alumno'].upper()
     
-    # Lógica de ajuste de nombre largo
+    # Ajustar nombre
     wrapper = textwrap.TextWrapper(width=22) 
     lines = wrapper.wrap(nom)
     
     if len(lines) > 1:
-        font_n = obtener_fuente_gigante(55)
-        for line in lines[:2]: # Max 2 lineas
+        font_n = obtener_fuente_gigante(55) # Tamaño Grande para nombre largo
+        for line in lines[:2]: 
             draw.text((x_text, y_cursor), line, font=font_n, fill="black")
-            y_cursor += 65
+            y_cursor += 60
     else:
-        font_n = obtener_fuente_gigante(65)
+        font_n = obtener_fuente_gigante(65) # Tamaño GIGANTE para nombre corto
         draw.text((x_text, y_cursor), nom, font=font_n, fill="black")
-        y_cursor += 80 
+        y_cursor += 75
 
-    y_cursor += 15
+    y_cursor += 20
 
     # DNI y Grado
-    font_d = obtener_fuente_normal(50)
+    font_d = obtener_fuente_normal(50) # Tamaño 50 (Grande)
     draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_d, fill="black")
     y_cursor += 70
 
@@ -375,30 +362,28 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
     y_cursor += 70
     draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_d, fill="black")
 
-    # 6. CÓDIGO DE BARRAS (Funcional)
+    # 6. CÓDIGO DE BARRAS
     if HAS_BARCODE:
         try:
             writer = ImageWriter()
             buffer_bar = io.BytesIO()
-            # El código de barras contiene el DNI
             Code128(datos['dni'], writer=writer).write(buffer_bar)
             buffer_bar.seek(0)
             img_bar = Image.open(buffer_bar).resize((500, 110))
             img.paste(img_bar, (x_text, H - 190))
         except: pass
 
-    # 7. QR CARNET (SOLO NÚMERO DE DNI) - CORREGIDO
+    # 7. QR CARNET (CORREGIDO PARA QUE FUNCIONE)
     try:
         qr_content = str(datos['dni'])
-        # Creamos instancia de QRCode explícitamente para evitar errores de atributo
+        # Usamos QRCode objeto para evitar AttributeError
         qr = qrcode.QRCode(box_size=10, border=1)
         qr.add_data(qr_content)
         qr.make(fit=True)
         img_qr = qr.make_image(fill_color="black", back_color="white").resize((170, 170))
         img.paste(img_qr, (W - 200, 180)) 
     except Exception as e:
-        # En caso de error, no rompe el programa, solo imprime en consola
-        print(f"Error generando QR: {e}")
+        print(f"Error QR: {e}")
     
     font_s = obtener_fuente_normal(20)
     draw.text((W - 165, 360), "ESCANEAR", font=font_s, fill="black")
@@ -408,7 +393,7 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
     output.seek(0)
     return output
 
-# --- 7. BARRA LATERAL (CONFIGURACIÓN) ---
+# --- 7. BARRA LATERAL ---
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=80)
     st.title("YACHAY PRO")
@@ -416,7 +401,6 @@ with st.sidebar:
     if st.session_state.rol == "admin":
         st.success("Modo Administrador")
         st.markdown("### ⚙️ Carga de Archivos")
-        
         up_bd = st.file_uploader("📂 Base de Datos (Excel)", type=["xlsx"])
         if up_bd:
             with open("base_datos.xlsx", "wb") as f: f.write(up_bd.getbuffer())
@@ -428,19 +412,16 @@ with st.sidebar:
             st.toast("Escudo cargado")
             
         st.markdown("---")
-        st.markdown("### ⚙️ Textos")
         frase = st.text_area("Frase del Año", "AÑO DE LA ESPERANZA Y EL FORTALECIMIENTO DE LA DEMOCRACIA")
         directora = st.text_input("Directora", "Prof. Ana María CUSI INCA")
         promotor = st.text_input("Promotor", "Prof. Leandro CORDOVA TOCRE")
-        
-        with st.expander("🛠️ Calibración Avanzada PDF"):
+        with st.expander("🛠️ Calibración PDF"):
             y_frase = st.slider("Altura Frase", 600, 800, 700)
             y_titulo = st.slider("Altura Título", 500, 750, 631)
             qr_y = st.slider("Posición Y QR (PDF)", 0, 200, 47)
             
     else:
         st.info("Modo Docente")
-        # Valores por defecto para docente
         frase = "AÑO DE LA ESPERANZA Y EL FORTALECIMIENTO DE LA DEMOCRACIA"
         directora = "Prof. Ana María CUSI INCA"
         promotor = "Prof. Leandro CORDOVA TOCRE"
@@ -453,19 +434,14 @@ with st.sidebar:
         st.session_state.rol = None
         st.rerun()
 
-# --- 8. ÁREA PRINCIPAL (TABS) ---
+# --- 8. ÁREA PRINCIPAL ---
 tab1, tab2, tab3 = st.tabs(["📄 DOCUMENTOS PDF", "🪪 CARNETS HD", "📊 BASE DE DATOS"])
 
-# --- PESTAÑA 1: DOCUMENTOS ---
 with tab1:
     c1, c2 = st.columns([1,2])
     with c1:
         st.markdown("### 1. Selección y Búsqueda")
-        tipo_doc = st.selectbox("Tipo de Documento:", [
-            "CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR", 
-            "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA", 
-            "CONSTANCIA DE TRABAJO", "CARTA COMPROMISO PADRE DE FAMILIA"
-        ])
+        tipo_doc = st.selectbox("Tipo de Documento:", ["CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR", "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA", "CONSTANCIA DE TRABAJO", "CARTA COMPROMISO PADRE DE FAMILIA"])
         st.info("Ingrese DNI para autocompletar:")
         dni_search = st.text_input("🔍 Buscar DNI:")
         if st.button("Buscar Alumno", use_container_width=True):
@@ -476,8 +452,8 @@ with tab1:
                 st.session_state.grado = res['Grado']
                 st.session_state.apoderado = res['Apoderado']
                 st.session_state.dni_apo = res['DNI_Apoderado']
-                st.success("✅ Datos Cargados Exitosamente")
-            else: st.error("❌ DNI no encontrado en Base de Datos")
+                st.success("✅ Datos Cargados")
+            else: st.error("❌ DNI no encontrado")
 
     with c2:
         st.markdown("### 2. Edición y Emisión")
@@ -492,7 +468,7 @@ with tab1:
         
         cond_list = []
         if tipo_doc == "CONSTANCIA DE CONDUCTA":
-            st.warning("⚠️ Ingrese las notas de conducta manualmente:")
+            st.warning("⚠️ Ingrese notas de conducta:")
             cols = st.columns(5)
             for i in range(5):
                 with cols[i]:
@@ -500,30 +476,23 @@ with tab1:
                     cond_list.append({'nota':val})
 
         st.markdown("---")
-        if st.button("✨ GENERAR DOCUMENTO PDF", type="primary", use_container_width=True):
+        if st.button("✨ GENERAR PDF", type="primary", use_container_width=True):
             if nom and doc_id:
                 pack_d = {'alumno':nom, 'dni':doc_id, 'grado':grad, 'apoderado':apo, 'dni_apo':dni_apo, 'conducta':cond_list}
                 pack_c = {'anio':anio_sel, 'frase':frase, 'y_frase':y_frase, 'y_titulo':y_titulo, 'qr_x':435, 'qr_y':qr_y, 'directora':directora, 'promotor':promotor}
-                
                 pdf_bytes = generar_pdf_doc(tipo_doc, pack_d, pack_c)
                 st.balloons()
-                st.markdown('<div class="success-box">DOCUMENTO GENERADO CORRECTAMENTE</div>', unsafe_allow_html=True)
                 st.download_button("⬇️ DESCARGAR PDF", pdf_bytes, f"{tipo_doc}_{doc_id}.pdf", "application/pdf", use_container_width=True)
-            else:
-                st.error("Faltan datos del alumno.")
+            else: st.error("Faltan datos.")
 
-# --- PESTAÑA 2: CARNETS (INDIVIDUAL Y MASIVO) ---
 with tab2:
     st.markdown("## 🎨 Centro de Carnetización")
-    
-    # SECCION A: Generación Individual
-    st.markdown("### 👤 Generar Un Solo Carnet")
     col_a, col_b = st.columns(2)
     with col_a:
         cn_nom = st.text_input("Alumno:", value=st.session_state.get('alumno',''))
         cn_dni = st.text_input("DNI:", value=st.session_state.get('dni',''))
         cn_gra = st.text_input("Grado:", value=st.session_state.get('grado',''))
-        cn_foto = st.file_uploader("Subir Foto Alumno (Opcional)", type=['jpg','png','jpeg'])
+        cn_foto = st.file_uploader("Subir Foto", type=['jpg','png','jpeg'])
     
     with col_b:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -532,55 +501,32 @@ with tab2:
                 pack_carnet = {'alumno':cn_nom, 'dni':cn_dni, 'grado':cn_gra}
                 img_final = generar_carnet_png(pack_carnet, anio_sel, cn_foto)
                 st.image(img_final, caption="Vista Previa", use_container_width=True)
-                st.download_button("⬇️ DESCARGAR CARNET (PNG)", img_final, f"Carnet_{cn_dni}.png", "image/png", use_container_width=True)
-            else:
-                st.warning("Ingrese nombre y DNI para generar.")
+                st.download_button("⬇️ DESCARGAR CARNET", img_final, f"Carnet_{cn_dni}.png", "image/png", use_container_width=True)
+            else: st.warning("Ingrese nombre y DNI.")
 
-    st.markdown("---")
-    
-    # SECCION B: Generación Masiva (ZIP)
     st.markdown("### 📦 Generación Masiva (LOTE)")
-    st.info("Esta opción generará carnets para TODOS los alumnos en la base de datos y los descargará en un archivo ZIP comprimido.")
-    
-    if st.button("🚀 GENERAR Y DESCARGAR ZIP (TODOS)"):
+    if st.button("🚀 GENERAR ZIP (TODOS)"):
         df_lote = cargar_bd()
         if df_lote is not None:
             zip_buffer = io.BytesIO()
             progreso = st.progress(0)
-            status_text = st.empty()
             total = len(df_lote)
-            
             with zipfile.ZipFile(zip_buffer, "w") as zf:
                 for idx, row in df_lote.iterrows():
-                    # Verificar que existan las columnas
                     if 'Alumno' in row and 'DNI' in row:
                         d_temp = {'alumno': str(row['Alumno']), 'dni': str(row['DNI']), 'grado': str(row.get('Grado',''))}
-                        # Generar carnet (sin foto personal en lote)
                         img_bytes = generar_carnet_png(d_temp, anio_sel, None)
                         zf.writestr(f"Carnet_{row['DNI']}.png", img_bytes.getvalue())
-                        
-                        # Actualizar barra
                         progreso.progress((idx + 1) / total)
-                        status_text.text(f"Procesando: {row['Alumno']}")
-            
             zip_buffer.seek(0)
-            progreso.empty()
-            status_text.empty()
-            st.balloons()
-            st.success(f"✅ Proceso completado. Se generaron {total} carnets.")
-            st.download_button("⬇️ DESCARGAR ARCHIVO ZIP", zip_buffer, "Carnets_Yachay_Lote.zip", "application/zip", use_container_width=True)
-        else:
-            st.error("❌ No se encontró la Base de Datos. Por favor cárguela en el menú lateral.")
+            st.success(f"✅ {total} carnets generados.")
+            st.download_button("⬇️ DESCARGAR ZIP", zip_buffer, "Carnets_Yachay_Lote.zip", "application/zip", use_container_width=True)
+        else: st.error("Falta Base de Datos.")
 
-# --- PESTAÑA 3: VER BASE DE DATOS ---
 with tab3:
-    st.markdown("### 📊 Padrón General de Estudiantes")
     df = cargar_bd()
-    if df is not None:
-        st.dataframe(df, use_container_width=True)
-        st.caption(f"Total de registros: {len(df)}")
-    else:
-        st.warning("⚠️ No hay base de datos cargada. Suba el archivo 'base_datos.xlsx' en el menú lateral.")
+    if df is not None: st.dataframe(df, use_container_width=True)
+    else: st.warning("⚠️ Cargue la base de datos en el menú lateral.")
 
 if st.sidebar.button("Limpiar Campos"):
     limpiar_datos()
