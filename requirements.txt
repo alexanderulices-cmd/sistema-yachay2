@@ -1,4 +1,7 @@
 streamlit
 reportlab
 qrcode
-pypng
+pandas
+openpyxl
+python-barcode
+pillow
