@@ -25,9 +25,23 @@ st.markdown("""
         height: 50px; font-size: 16px;
     }
     .stButton>button:hover { background-color: #1565c0; transform: scale(1.02); }
-    .success-box {
-        padding: 15px; background-color: #e8f5e9; color: #1b5e20; border-radius: 10px;
-        border-left: 5px solid #2e7d32; text-align: center; font-weight: bold;
+    
+    /* Estilo para la frase del Login */
+    .frase-login {
+        font-size: 45px !important;
+        font-weight: 900;
+        color: #0d47a1;
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        line-height: 1.2;
+        font-family: 'Arial Black', sans-serif;
+    }
+    .subtitulo-login {
+        font-size: 18px;
+        color: #666;
+        text-align: center;
+        margin-bottom: 30px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -40,7 +54,7 @@ try:
 except ImportError:
     HAS_BARCODE = False
 
-# --- 2. GESTIÓN DE FUENTES (CRÍTICO) ---
+# --- 2. GESTIÓN DE FUENTES ---
 def descargar_fuentes():
     urls = {
         "Roboto-Bold.ttf": "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf",
@@ -57,15 +71,11 @@ descargar_fuentes()
 
 def obtener_fuente_gigante(size):
     try: return ImageFont.truetype("Roboto-Bold.ttf", size)
-    except:
-        try: return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size)
-        except: return ImageFont.load_default()
+    except: return ImageFont.load_default()
 
 def obtener_fuente_normal(size):
     try: return ImageFont.truetype("Roboto-Regular.ttf", size)
-    except:
-        try: return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", size)
-        except: return ImageFont.load_default()
+    except: return ImageFont.load_default()
 
 # --- 3. FUNCIONES DE BASE DE DATOS ---
 def cargar_bd():
@@ -92,17 +102,27 @@ def limpiar_datos():
     for i in range(5):
         if f"cn{i}" in st.session_state: st.session_state[f"cn{i}"] = ""
 
-# --- 4. LOGIN DE SEGURIDAD ---
+# --- 4. LOGIN DE SEGURIDAD (CON ESCUDO Y FRASE GRANDE) ---
 if "rol" not in st.session_state: st.session_state.rol = None
 
 if st.session_state.rol is None:
     c1, c2, c3 = st.columns([1,2,1])
     with c2:
-        st.markdown("<br><h1 style='text-align:center; color:#0d47a1'>🔐 ACCESO AL SISTEMA</h1>", unsafe_allow_html=True)
-        st.info("Sistema de Gestión Documental Yachay")
-        pwd = st.text_input("Ingrese Contraseña:", type="password")
+        # 1. Mostrar Escudo en el Login (Si existe)
+        if os.path.exists("escudo_upload.png"):
+            st.image("escudo_upload.png", width=150, use_container_width=False)
+            st.markdown("""<style>div[data-testid="stImage"] {display: block; margin-left: auto; margin-right: auto; width: 50%;}</style>""", unsafe_allow_html=True)
+        else:
+            st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100)
+
+        # 2. Frase Grande Solicitada
+        st.markdown('<div class="frase-login">EDUCAR PARA<br>LA VIDA</div>', unsafe_allow_html=True)
+        st.markdown('<div class="subtitulo-login">Sistema de Gestión Institucional Yachay</div>', unsafe_allow_html=True)
+
+        # 3. Formulario
+        pwd = st.text_input("🔑 Contraseña de Acceso:", type="password")
         
-        if st.button("INGRESAR", use_container_width=True):
+        if st.button("INGRESAR AL SISTEMA", use_container_width=True):
             if pwd == "306020":
                 st.session_state.rol = "admin"
                 st.success("✅ BIENVENIDO ADMINISTRADOR")
@@ -280,14 +300,14 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (CALIBRADO EQUILIBRADO) ---
+# --- 6. GENERADOR CARNET PNG (SOLUCIÓN NOMBRES LARGOS) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
     draw = ImageDraw.Draw(img)
     AZUL_INST = (0, 30, 120)
 
-    # 1. Escudo
+    # 1. Escudo de fondo
     if os.path.exists("escudo_upload.png"):
         try:
             escudo = Image.open("escudo_upload.png").convert("RGBA")
@@ -300,13 +320,13 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(capa, (0,0), mask=capa)
         except: pass
 
-    # 2. Barras Azules (ALTURA CORRECTA)
-    draw.rectangle([(0, 0), (W, 125)], fill=AZUL_INST) # Reducido de 150 a 125
-    draw.rectangle([(0, H-80), (W, H)], fill=AZUL_INST) # Pie correcto
+    # 2. Barras Azules
+    draw.rectangle([(0, 0), (W, 125)], fill=AZUL_INST) 
+    draw.rectangle([(0, H-80), (W, H)], fill=AZUL_INST) 
 
-    # 3. Encabezado y Pie (TAMAÑOS EQUILIBRADOS)
-    font_header = obtener_fuente_gigante(60) # Ajustado a 60 (Ideal)
-    font_motto = obtener_fuente_gigante(45)  # Mantenido (User approved)
+    # 3. Encabezado y Pie
+    font_header = obtener_fuente_gigante(60) 
+    font_motto = obtener_fuente_gigante(45) 
     
     draw.text((W/2, 62), "I.E. ALTERNATIVO YACHAY", font=font_header, fill="white", anchor="mm")
     draw.text((W/2, H-40), "EDUCAR PARA LA VIDA", font=font_motto, fill="white", anchor="mm")
@@ -323,40 +343,53 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
         draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], fill="#eeeeee")
     draw.rectangle([(x_foto, y_foto), (x_foto+w_foto, y_foto+h_foto)], outline="black", width=5)
 
-    # 5. DATOS DEL ALUMNO (LETRAS CLARAS PERO NO GIGANTES)
+    # 5. DATOS DEL ALUMNO (LÓGICA MEJORADA: APELLIDOS + NOMBRES)
     x_text = 360
     y_cursor = 165
     
     nom = datos['alumno'].upper()
-    wrapper = textwrap.TextWrapper(width=22) 
-    lines = wrapper.wrap(nom)
     
-    # Nombre
-    if len(lines) > 1:
-        font_n = obtener_fuente_gigante(45) # Doble línea equilibrado
+    # REGLA: Si el nombre completo tiene más de 20 caracteres (Ej: Perez Rodriguez Juan Carlos)
+    # se divide en 2 líneas y se reduce la letra para que encaje.
+    if len(nom) > 20:
+        # --- MODO NOMBRE LARGO (APELLIDOS + NOMBRES) ---
+        wrapper = textwrap.TextWrapper(width=22) 
+        lines = wrapper.wrap(nom)
+        
+        # Usamos fuente tamaño 45 (Grande pero manejable)
+        font_n = obtener_fuente_gigante(45)
+        
+        # Imprimimos máximo 2 líneas para no invadir el DNI
         for line in lines[:2]: 
             draw.text((x_text, y_cursor), line, font=font_n, fill="black")
-            y_cursor += 55
+            y_cursor += 48 # Salto de línea ajustado
+        
+        if len(lines) == 1: y_cursor += 10 # Si por suerte entró en 1 linea siendo largo
+    
     else:
-        font_n = obtener_fuente_gigante(55) # Una línea (Grande pero no enorme)
+        # --- MODO NOMBRE CORTO ---
+        font_n = obtener_fuente_gigante(55) # Fuente Gigante Original
         draw.text((x_text, y_cursor), nom, font=font_n, fill="black")
         y_cursor += 65
 
-    y_cursor += 15
+    # Espacio extra de seguridad antes del DNI
+    y_cursor = max(y_cursor, 275) 
 
-    # DNI y Grado
-    font_d = obtener_fuente_normal(42) # Reducido de 55 a 42 (Estándar legible)
-    
+    # DNI
+    font_d = obtener_fuente_normal(42) 
     draw.text((x_text, y_cursor), f"DNI: {datos['dni']}", font=font_d, fill="black")
     y_cursor += 60
 
+    # GRADO
     grado_txt = f"GRADO: {datos['grado'].upper()}"
     size_g = 42
-    if len(grado_txt) > 25: size_g = 35
+    if len(grado_txt) > 25: size_g = 35 # Si el grado es muy largo, reduce
     font_g = obtener_fuente_normal(size_g)
     
     draw.text((x_text, y_cursor), grado_txt, font=font_g, fill="black")
     y_cursor += 60
+    
+    # VIGENCIA
     draw.text((x_text, y_cursor), f"VIGENCIA: {anio}", font=font_d, fill="black")
 
     # 6. CÓDIGO DE BARRAS
@@ -366,11 +399,11 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             buffer_bar = io.BytesIO()
             Code128(datos['dni'], writer=writer).write(buffer_bar)
             buffer_bar.seek(0)
-            img_bar = Image.open(buffer_bar).resize((480, 100)) # Ligeramente más pequeño
-            img.paste(img_bar, (x_text, H - 190))
+            img_bar = Image.open(buffer_bar).resize((420, 90)) # Ancho ajustado para no chocar
+            img.paste(img_bar, (x_text, H - 185))
         except: pass
 
-    # 7. QR CARNET (FUNCIONAL)
+    # 7. QR CARNET
     try:
         qr_content = str(datos['dni'])
         qr = qrcode.QRCode(box_size=10, border=1)
