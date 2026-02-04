@@ -275,7 +275,7 @@ class GeneradorPDF:
             pass
     
     def generar_constancia_vacante(self, datos):
-        """Genera constancia de vacante"""
+        """Genera constancia de vacante CON APODERADO"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE VACANTE")
         
@@ -300,11 +300,13 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "CONSTANCIA DE VACANTE")
         y -= 25
         
+        # CORREGIDO: SIEMPRE incluir apoderado
         texto = (
             f"Que, mediante el presente documento se hace constar que la Institución Educativa cuenta "
             f"con <b>VACANTE DISPONIBLE</b> en el nivel de {datos['grado'].upper()}, para el/la estudiante "
             f"<b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional de Identidad (DNI) "
-            f"N° <b>{datos['dni']}</b>, correspondiente al año escolar <b>{self.config['anio']}</b>."
+            f"N° <b>{datos['dni']}</b>, hijo(a) de <b>{datos['apoderado'].upper()}</b> con DNI N° "
+            f"<b>{datos['dni_apo']}</b>, correspondiente al año escolar <b>{self.config['anio']}</b>."
         )
         y = self._dibujar_parrafo(texto, mx, y, ancho, estilo_normal)
         
@@ -339,7 +341,7 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_constancia_no_deudor(self, datos):
-        """Genera constancia de no adeudo"""
+        """Genera constancia de no adeudo CON APODERADO"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE NO ADEUDO")
         
@@ -361,7 +363,7 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "HACE CONSTAR:")
         y -= 25
         
-        # AGREGADO: Datos del apoderado
+        # CORREGIDO: SIEMPRE incluir apoderado
         texto = (
             f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional "
             f"de Identidad (DNI) N° <b>{datos['dni']}</b>, hijo(a) de <b>{datos['apoderado'].upper()}</b> "
@@ -383,7 +385,7 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_constancia_estudios(self, datos):
-        """Genera constancia de estudios"""
+        """Genera constancia de estudios CON APODERADO"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE ESTUDIOS")
         
@@ -405,7 +407,7 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "HACE CONSTAR:")
         y -= 25
         
-        # AGREGADO: Datos del apoderado
+        # CORREGIDO: SIEMPRE incluir apoderado
         texto = (
             f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con Documento Nacional "
             f"de Identidad (DNI) N° <b>{datos['dni']}</b>, hijo(a) de <b>{datos['apoderado'].upper()}</b> "
@@ -428,7 +430,7 @@ class GeneradorPDF:
         return self._finalizar()
     
     def generar_constancia_conducta(self, datos):
-        """Genera constancia de conducta (5 años completos)"""
+        """Genera constancia de conducta CON APODERADO y SOLO 'CONDUCTA'"""
         self._aplicar_fondo()
         self._dibujar_encabezado("CONSTANCIA DE CONDUCTA")
         
@@ -450,12 +452,12 @@ class GeneradorPDF:
         self.canvas.drawString(mx, y, "CERTIFICA:")
         y -= 25
         
-        # AGREGADO: Datos del apoderado
+        # CORREGIDO: SIEMPRE incluir apoderado y SOLO "CONDUCTA"
         texto = (
             f"Que el/la estudiante <b>{datos['alumno'].upper()}</b>, identificado(a) con DNI N° <b>{datos['dni']}</b>, "
             f"hijo(a) de <b>{datos['apoderado'].upper()}</b> con DNI N° <b>{datos['dni_apo']}</b>, "
             f"cursó estudios de Educación Secundaria en esta institución, obteniendo las siguientes "
-            f"calificaciones en el Área de Formación Ciudadana y Cívica (Conducta):"
+            f"calificaciones en <b>CONDUCTA</b>:"
         )
         y = self._dibujar_parrafo(texto, mx, y, ancho, estilo_normal)
         
@@ -474,13 +476,12 @@ class GeneradorPDF:
         
         self.canvas.setFont("Helvetica", 9)
         
-        # CORREGIDO: Mostrar 5 años de conducta
         grados = ["PRIMERO", "SEGUNDO", "TERCERO", "CUARTO", "QUINTO"]
         anio_base = int(self.config['anio']) - 5
         
         for i, grado in enumerate(grados):
             anio_actual = anio_base + i + 1
-            nota = datos.get(f'nota_conducta_{i+1}', 'AD')  # nota_conducta_1, nota_conducta_2, etc.
+            nota = datos.get(f'nota_conducta_{i+1}', 'AD')
             
             self.canvas.drawString(tx, y, grado)
             self.canvas.drawString(tx + 120, y, str(anio_actual))
@@ -504,13 +505,12 @@ class GeneradorPDF:
         self._aplicar_fondo()
         self._dibujar_encabezado("CARTA DE COMPROMISO DEL PADRE DE FAMILIA")
         
-        y = self.config['y_titulo'] - 40  # Menos espacio arriba
-        mx, ancho = 50, self.width - 100  # Márgenes más pequeños
+        y = self.config['y_titulo'] - 40
+        mx, ancho = 50, self.width - 100
         
-        # TEXTO MÁS COMPACTO
         estilo_comp = ParagraphStyle(
             'Compromiso', parent=self.styles['Normal'],
-            fontSize=8.5, leading=11, alignment=TA_JUSTIFY  # Reducido de 9.5 a 8.5
+            fontSize=8.5, leading=11, alignment=TA_JUSTIFY
         )
         
         intro = (
@@ -520,9 +520,8 @@ class GeneradorPDF:
         )
         y = self._dibujar_parrafo(intro, mx, y, ancho, estilo_comp)
         
-        y -= 5  # Menos espacio entre secciones
+        y -= 5
         
-        # COMPROMISOS MÁS CONCISOS
         compromisos = [
             "1. Velar por la asistencia puntual y regular de mi hijo(a) al centro educativo.",
             "2. Supervisar el cumplimiento diario de tareas escolares y trabajos académicos.",
@@ -546,7 +545,7 @@ class GeneradorPDF:
         
         for compromiso in compromisos:
             y = self._dibujar_parrafo(compromiso, mx, y, ancho, estilo_item)
-            y += 2  # Compensar un poco el espacio
+            y += 2
         
         y -= 5
         y = self._dibujar_parrafo(
@@ -554,8 +553,8 @@ class GeneradorPDF:
             mx, y, ancho, estilo_comp
         )
         
-        # FIRMAS CON MÁS ESPACIO
-        y = 120  # Más arriba para dar espacio
+        # Firmas
+        y = 120
         self.canvas.line(80, y, 200, y)
         self.canvas.line(220, y, 340, y)
         self.canvas.line(360, y, 480, y)
@@ -587,11 +586,11 @@ class GeneradorPDF:
         return self.buffer
 
 # ========================================
-# GENERADOR DE CARNETS MEJORADO (SOLO DNI EN CÓDIGOS)
+# GENERADOR DE CARNETS ULTRA MEJORADO
 # ========================================
 
 class GeneradorCarnet:
-    """Genera carnets con ENCABEZADO Y PIE GIGANTES"""
+    """Genera carnets con LETRAS GIGANTESCAS y VIGENCIA MARZO-DICIEMBRE"""
     
     WIDTH = 1012
     HEIGHT = 638
@@ -628,37 +627,37 @@ class GeneradorCarnet:
                 pass
     
     def _dibujar_barras_superiores(self):
-        """Dibuja barras MUY GRANDES"""
-        # Barra superior GIGANTE: 180px (antes 160)
-        self.draw.rectangle([(0, 0), (self.WIDTH, 180)], fill=self.AZUL_INST)
-        # Barra inferior GIGANTE: 150px (antes 130)
+        """Dibuja barras GIGANTES"""
+        # Barra superior: 200px (antes 180)
+        self.draw.rectangle([(0, 0), (self.WIDTH, 200)], fill=self.AZUL_INST)
+        # Barra inferior: 170px (antes 150)
         self.draw.rectangle(
-            [(0, self.HEIGHT - 150), (self.WIDTH, self.HEIGHT)], 
+            [(0, self.HEIGHT - 170), (self.WIDTH, self.HEIGHT)], 
             fill=self.AZUL_INST
         )
     
     def _dibujar_textos_institucionales(self):
-        """Dibuja textos GIGANTES"""
-        # ENCABEZADO MÁXIMO: 130px (antes 110)
-        font_header = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 130, bold=True)
-        # PIE MÁXIMO: 100px (antes 85)
-        font_motto = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 100, bold=True)
+        """Dibuja textos GIGANTESCOS"""
+        # ENCABEZADO ULTRA GRANDE: 150px (antes 130)
+        font_header = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 150, bold=True)
+        # PIE ULTRA GRANDE: 120px (antes 100)
+        font_motto = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 120, bold=True)
         
         self.draw.text(
-            (self.WIDTH/2, 90), 
+            (self.WIDTH/2, 100), 
             "I.E. ALTERNATIVO YACHAY",
             font=font_header, fill="white", anchor="mm"
         )
         
         self.draw.text(
-            (self.WIDTH/2, self.HEIGHT - 75),
+            (self.WIDTH/2, self.HEIGHT - 85),
             "EDUCAR PARA LA VIDA",
             font=font_motto, fill="white", anchor="mm"
         )
     
     def _insertar_foto(self):
         """Inserta foto del alumno"""
-        x_foto, y_foto = 50, 200
+        x_foto, y_foto = 50, 220  # Ajustado por barra más alta
         w_foto, h_foto = 290, 350
         
         if self.foto_bytes:
@@ -687,45 +686,41 @@ class GeneradorCarnet:
         )
     
     def _dibujar_datos_alumno(self):
-        """Dibuja datos MÁS GRANDES Y VISIBLES"""
+        """Dibuja SOLO NOMBRE, DNI y VIGENCIA (sin grado ni año)"""
         x_text = 370
-        y_nombre = 200
-        y_dni = 330
-        y_grado = 420
-        y_vigencia = 510
+        y_nombre = 220
+        y_dni = 360
+        y_vigencia = 480
         
         nombre = self.datos['alumno'].upper()
         
-        # NOMBRE: 85px corto, 60px largo (antes 75/50)
+        # NOMBRE: 95px corto, 70px largo (MÁS GRANDE)
         if len(nombre) > 22:
-            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 60, bold=True)
+            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 70, bold=True)
             wrapper = textwrap.TextWrapper(width=25)
             lineas = wrapper.wrap(nombre)
             y_cursor = y_nombre - 10
             for linea in lineas[:2]:
                 self.draw.text((x_text, y_cursor), linea, font=font_nombre, fill="black")
-                y_cursor += 65
+                y_cursor += 75
         else:
-            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 85, bold=True)
+            font_nombre = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 95, bold=True)
             self.draw.text((x_text, y_nombre), nombre, font=font_nombre, fill="black")
         
-        # ETIQUETAS Y DATOS: 65px (antes 55)
-        font_label = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 65, bold=True)
-        font_data = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 65)
+        # ETIQUETAS Y DATOS: 75px (MÁS GRANDE)
+        font_label = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 75, bold=True)
+        font_data = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 75)
         
         # DNI
         self.draw.text((x_text, y_dni), "DNI:", font=font_label, fill="black")
-        self.draw.text((x_text + 130, y_dni), self.datos['dni'], font=font_data, fill="black")
+        self.draw.text((x_text + 140, y_dni), self.datos['dni'], font=font_data, fill="black")
         
-        # Grado
-        self.draw.text((x_text, y_grado), "GRADO:", font=font_label, fill="black")
-        grado_text = self.datos['grado'].upper()
-        font_grado = font_data if len(grado_text) <= 15 else RecursoManager.obtener_fuente("Roboto-Regular.ttf", 48)
-        self.draw.text((x_text + 220, y_grado), grado_text, font=font_grado, fill="black")
-        
-        # Vigencia
+        # VIGENCIA: MARZO - DICIEMBRE (sin año ni grado)
         self.draw.text((x_text, y_vigencia), "VIGENCIA:", font=font_label, fill="black")
-        self.draw.text((x_text + 280, y_vigencia), str(self.anio), font=font_data, fill="black")
+        
+        # Texto de vigencia
+        font_vigencia = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 60)
+        self.draw.text((x_text + 300, y_vigencia + 5), "MARZO - DICIEMBRE", font=font_vigencia, fill="black")
     
     def _agregar_codigo_barras(self):
         """Agrega código de barras SOLO CON DNI"""
@@ -735,15 +730,14 @@ class GeneradorCarnet:
         try:
             writer = ImageWriter()
             buffer_bar = io.BytesIO()
-            # SOLO DNI
             Code128(self.datos['dni'], writer=writer).write(
                 buffer_bar, 
                 options={'write_text': False}
             )
             buffer_bar.seek(0)
             
-            img_bar = Image.open(buffer_bar).resize((500, 115), Image.LANCZOS)
-            self.img.paste(img_bar, (350, self.HEIGHT - 260))
+            img_bar = Image.open(buffer_bar).resize((520, 120), Image.LANCZOS)
+            self.img.paste(img_bar, (340, self.HEIGHT - 280))
         except Exception:
             pass
     
@@ -751,19 +745,18 @@ class GeneradorCarnet:
         """Agrega código QR SOLO CON DNI"""
         try:
             qr = qrcode.QRCode(box_size=10, border=1)
-            # SOLO DNI
             qr.add_data(self.datos['dni'])
             qr.make(fit=True)
             
             img_qr_pil = qr.make_image(fill_color="black", back_color="white")
-            # QR GRANDE: 220x220 (antes 200)
-            img_qr = img_qr_pil.resize((220, 220), Image.LANCZOS)
-            self.img.paste(img_qr, (self.WIDTH - 240, 200))
+            # QR ULTRA GRANDE: 240x240 (antes 220)
+            img_qr = img_qr_pil.resize((240, 240), Image.LANCZOS)
+            self.img.paste(img_qr, (self.WIDTH - 260, 220))
             
-            # Texto: 28px (antes 24)
-            font_small = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 28)
+            # Texto: 32px (antes 28)
+            font_small = RecursoManager.obtener_fuente("Roboto-Regular.ttf", 32)
             self.draw.text(
-                (self.WIDTH - 130, 430),
+                (self.WIDTH - 140, 470),
                 "ESCANEAR",
                 font=font_small, fill="black", anchor="mm"
             )
@@ -786,11 +779,11 @@ class GeneradorCarnet:
         return output
 
 # ========================================
-# SISTEMA DE LOGIN (SIN CONTRASEÑAS VISIBLES)
+# SISTEMA DE LOGIN
 # ========================================
 
 def pantalla_login():
-    """Pantalla de inicio de sesión LIMPIA"""
+    """Pantalla de inicio de sesión"""
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -808,7 +801,6 @@ def pantalla_login():
         st.markdown("<div class='separator'></div>", unsafe_allow_html=True)
         
         with st.container():
-            # CONTRASEÑA SIN MOSTRAR
             pwd = st.text_input("🔑 Contraseña de acceso:", type="password", key="login_pwd")
             
             col_btn1, col_btn2 = st.columns(2)
@@ -904,7 +896,7 @@ def configurar_sidebar():
     }
 
 # ========================================
-# TAB DOCUMENTOS (CON 5 AÑOS DE CONDUCTA)
+# TAB DOCUMENTOS
 # ========================================
 
 def tab_documentos(config):
@@ -954,7 +946,6 @@ def tab_documentos(config):
             apoderado = st.text_input("👨‍👩‍👧 Apoderado:", key="apoderado")
             dni_apo = st.text_input("🆔 DNI Apoderado:", key="dni_apo")
             
-            # PARA CONSTANCIA DE CONDUCTA: 5 AÑOS
             notas_conducta = {}
             if tipo_doc == "CONSTANCIA DE CONDUCTA":
                 st.markdown("**📊 Calificaciones de Conducta (5 años):**")
@@ -974,7 +965,7 @@ def tab_documentos(config):
         st.markdown("---")
         
         if st.button("✨ GENERAR DOCUMENTO", type="primary", use_container_width=True, key="btn_generar_doc"):
-            if nombre and dni:
+            if nombre and dni and apoderado and dni_apo:
                 with st.spinner("Generando documento..."):
                     datos = {
                         'alumno': nombre,
@@ -1010,7 +1001,7 @@ def tab_documentos(config):
                         key="btn_descargar_pdf"
                     )
             else:
-                st.error("⚠️ Complete al menos el nombre y DNI del alumno")
+                st.error("⚠️ Complete todos los datos requeridos (alumno, DNI, apoderado y DNI apoderado)")
 
 # ========================================
 # TAB CARNETS
@@ -1030,7 +1021,6 @@ def tab_carnets(config):
         with st.container(border=True):
             i_nom = st.text_input("👤 Nombre Completo:", key="i_nom")
             i_dni = st.text_input("🆔 DNI:", key="i_dni")
-            i_gra = st.text_input("📚 Grado:", key="i_gra")
             i_foto = st.file_uploader(
                 "📸 Foto (Opcional):", 
                 type=['jpg', 'png', 'jpeg'],
@@ -1047,7 +1037,7 @@ def tab_carnets(config):
                         datos = {
                             'alumno': i_nom,
                             'dni': i_dni,
-                            'grado': i_gra
+                            'grado': ''  # No se usa
                         }
                         
                         gen = GeneradorCarnet(datos, config['anio'], foto_bytes)
@@ -1078,7 +1068,6 @@ def tab_carnets(config):
                 if resultado:
                     st.session_state.c_temp_nom = resultado.get('Alumno', '')
                     st.session_state.c_temp_dni = resultado.get('Dni', '')
-                    st.session_state.c_temp_gra = resultado.get('Grado', '')
                     st.success("✅ Datos encontrados")
                     st.rerun()
                 else:
@@ -1094,11 +1083,6 @@ def tab_carnets(config):
                 value=st.session_state.get('c_temp_dni', ''),
                 key=f"c_dni_input_{st.session_state.busqueda_counter}"
             )
-            c_gra = st.text_input(
-                "Grado:", 
-                value=st.session_state.get('c_temp_gra', ''),
-                key=f"c_gra_input_{st.session_state.busqueda_counter}"
-            )
             c_foto = st.file_uploader(
                 "Foto:", 
                 type=['jpg', 'png', 'jpeg'],
@@ -1111,7 +1095,7 @@ def tab_carnets(config):
                         item = {
                             'alumno': c_nom,
                             'dni': c_dni,
-                            'grado': c_gra,
+                            'grado': '',
                             'foto_bytes': c_foto.getvalue() if c_foto else None
                         }
                         st.session_state.cola_carnets.append(item)
@@ -1119,7 +1103,6 @@ def tab_carnets(config):
                         
                         st.session_state.c_temp_nom = ""
                         st.session_state.c_temp_dni = ""
-                        st.session_state.c_temp_gra = ""
                         st.session_state.busqueda_counter += 1
                         st.rerun()
                     else:
@@ -1135,8 +1118,7 @@ def tab_carnets(config):
             df_carrito = pd.DataFrame([
                 {
                     'Alumno': item['alumno'],
-                    'DNI': item['dni'],
-                    'Grado': item['grado']
+                    'DNI': item['dni']
                 }
                 for item in st.session_state.cola_carnets
             ])
