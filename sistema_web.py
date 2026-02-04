@@ -44,7 +44,7 @@ except ImportError:
 def cargar_bd():
     try:
         if os.path.exists("base_datos.xlsx"):
-            # Leemos todo como texto (dtype=str) para evitar que el DNI pierda ceros
+            # Leemos todo como texto para conservar ceros a la izquierda en DNI
             return pd.read_excel("base_datos.xlsx", dtype=str, engine='openpyxl')
         return None
     except: return None
@@ -53,7 +53,8 @@ def buscar_alumno(dni_busqueda):
     df = cargar_bd()
     if df is not None:
         dni_busqueda = str(dni_busqueda).strip()
-        # Aseguramos que la columna DNI sea string y sin espacios
+        # Aseguramos compatibilidad de nombres de columnas (ignorando mayúsculas/minúsculas si fuera necesario)
+        # Se asume formato estándar: 'Alumno', 'DNI', 'Grado', 'Apoderado', 'DNI_Apoderado'
         if 'DNI' in df.columns:
             df['DNI'] = df['DNI'].astype(str).str.strip()
             res = df[df['DNI'] == dni_busqueda]
@@ -142,7 +143,6 @@ def generar_pdf_doc(tipo, datos, config):
 
     # 2. Encabezado
     c.setFont("Helvetica-Oblique", 8)
-    # En Carta Compromiso no va la frase arriba
     if tipo != "CARTA COMPROMISO PADRE DE FAMILIA":
         c.drawCentredString(w/2, config['y_frase'], f'"{config["frase"]}"')
     
@@ -278,8 +278,13 @@ def generar_pdf_doc(tipo, datos, config):
         # --- QR DE DOCUMENTO (SEGURIDAD COMPLETA) ---
         # Contiene: Check verde, Nombre, DNI, Fecha y Hora exacta.
         data_qr = f"✅ I.E. YACHAY - DOCUMENTO VÁLIDO\nTIPO: {tipo}\nALUMNO: {datos['alumno']}\nDNI: {datos['dni']}\nEMISIÓN: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
-        qr = qrcode.make(data_qr)
-        qr.save("temp_qr.png")
+        qr = qrcode.QRCode(box_size=10, border=1)
+        qr.add_data(data_qr)
+        qr.make(fit=True)
+        img_qr_doc = qr.make_image(fill_color="black", back_color="white")
+        
+        # Guardamos temporalmente para reportlab
+        img_qr_doc.save("temp_qr.png")
         c.drawImage("temp_qr.png", config['qr_x'], config['qr_y'], width=70, height=70)
         c.setFont("Helvetica", 6)
         c.drawCentredString(config['qr_x']+35, config['qr_y']-5, "ESCANEAR PARA VALIDAR")
@@ -288,7 +293,7 @@ def generar_pdf_doc(tipo, datos, config):
     buffer.seek(0)
     return buffer
 
-# --- 6. GENERADOR CARNET PNG (CON QR DE SOLO DNI) ---
+# --- 6. GENERADOR CARNET PNG (CORREGIDO PARA EVITAR ERROR QR) ---
 def generar_carnet_png(datos, anio, foto_bytes=None):
     W, H = 1012, 638 
     img = Image.new('RGB', (W, H), 'white')
@@ -382,12 +387,18 @@ def generar_carnet_png(datos, anio, foto_bytes=None):
             img.paste(img_bar, (x_text, H - 190))
         except: pass
 
-    # 7. QR CARNET (SOLO NÚMERO DE DNI)
-    # Esto permite lectura rápida con pistola o celular
-    qr_content = str(datos['dni']) 
-    qr = qrcode.make(qr_content)
-    img_qr = qr.make_image(fill_color="black", back_color="white").resize((170, 170))
-    img.paste(img_qr, (W - 200, 180)) 
+    # 7. QR CARNET (SOLO NÚMERO DE DNI) - CORREGIDO
+    try:
+        qr_content = str(datos['dni'])
+        # Creamos instancia de QRCode explícitamente para evitar errores de atributo
+        qr = qrcode.QRCode(box_size=10, border=1)
+        qr.add_data(qr_content)
+        qr.make(fit=True)
+        img_qr = qr.make_image(fill_color="black", back_color="white").resize((170, 170))
+        img.paste(img_qr, (W - 200, 180)) 
+    except Exception as e:
+        # En caso de error, no rompe el programa, solo imprime en consola
+        print(f"Error generando QR: {e}")
     
     font_s = obtener_fuente_normal(20)
     draw.text((W - 165, 360), "ESCANEAR", font=font_s, fill="black")
