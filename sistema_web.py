@@ -879,10 +879,10 @@ def main():
             tab_asistencias()
         with tab2:
             st.subheader("➕ Registrar Estudiante")
-            nuevo_nombre = st.text_input("Nombre completo:")
-            nuevo_dni = st.text_input("DNI:")
-            nuevo_grado = st.text_input("Grado:")
-            if st.button("💾 GUARDAR"):
+            nuevo_nombre = st.text_input("Nombre completo:", key="reg_nombre_estudiante")
+            nuevo_dni = st.text_input("DNI:", key="reg_dni_estudiante")
+            nuevo_grado = st.text_input("Grado:", key="reg_grado_estudiante")
+            if st.button("💾 GUARDAR", key="btn_guardar_estudiante"):
                 if nuevo_nombre and nuevo_dni and nuevo_grado:
                     BaseDatos.registrar_estudiante(nuevo_nombre, nuevo_dni, nuevo_grado)
                     st.success("✅ Estudiante registrado")
@@ -907,3 +907,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
