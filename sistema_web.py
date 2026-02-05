@@ -3,8 +3,8 @@ import pandas as pd
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import Paragraph, Table, TableStyle, Image as PlatypusImage, Spacer
-from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_LEFT
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib import colors
 import qrcode
 import os
@@ -21,26 +21,36 @@ import webbrowser
 import urllib.parse
 import streamlit.components.v1 as components
 
-# --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
+# --- CONFIGURACIÓN INICIAL ---
+st.set_page_config(
+    page_title="SISTEMA YACHAY PRO", 
+    page_icon="🎓", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# --- CÓDIGO JAVASCRIPT PARA EL ESCÁNER (NO BORRAR) ---
-# Este bloque permite usar la cámara en Web y Celular sin errores de servidor
+# --- ESCÁNER QR JAVASCRIPT (MODIFICADO PARA STREAMLIT) ---
+# Este es el bloque mágico que reemplaza a OpenCV
 CAMARA_HTML = """
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <div style="margin-bottom: 10px; font-weight: bold; color: #444;">👇 Apunta tu cámara al código QR 👇</div>
-    <video id="video" style="width: 100%; max-width: 400px; border-radius: 10px; border: 4px solid #0052cc; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" autoplay playsinline></video>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+    <h3 style="color: #0052cc; margin-bottom: 10px;">📸 Escáner de Carnet</h3>
+    <video id="video" style="width: 100%; max-width: 500px; border-radius: 10px; border: 4px solid #0052cc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" autoplay playsinline></video>
     <canvas id="canvas" style="display: none;"></canvas>
-    <div id="resultado" style="margin-top: 15px; padding: 10px; background-color: #e3f2fd; border-radius: 5px; color: #0052cc; font-weight: bold; width: 100%; max-width: 400px; text-align: center;">Esperando cámara...</div>
+    <div id="status" style="margin-top: 15px; padding: 10px; border-radius: 5px; background-color: white; width: 100%; max-width: 500px; text-align: center; border: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #555;">Estado:</span> <span id="resultado" style="color: #0052cc;">Esperando cámara...</span>
+    </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const resultado = document.getElementById('resultado');
+const statusDiv = document.getElementById('status');
 let scanning = true;
 
+// Configuración de la cámara
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
 .then(function(stream) {
     video.srcObject = stream;
@@ -50,6 +60,7 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
 })
 .catch(function(err) {
     resultado.innerText = "Error: No se pudo acceder a la cámara. Verifique permisos.";
+    resultado.style.color = "red";
 });
 
 function tick() {
@@ -57,26 +68,42 @@ function tick() {
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
         
         if (code) {
-            resultado.innerText = "✅ DNI DETECTADO: " + code.data;
-            resultado.style.backgroundColor = "#d4edda";
-            resultado.style.color = "#155724";
+            // QR ENCONTRADO
+            const colorExito = "#d4edda";
+            const textoExito = "#155724";
             
-            // Lógica para enviar el dato a Streamlit
+            resultado.innerText = "✅ DNI DETECTADO: " + code.data;
+            statusDiv.style.backgroundColor = colorExito;
+            resultado.style.color = textoExito;
+            
+            // INTENTO DE ENVIAR A STREAMLIT (INPUT OCULTO)
             try {
-                const streamlitInput = window.parent.document.querySelector('input[aria-label="DNI detectado:"]');
-                if (streamlitInput) {
-                    streamlitInput.value = code.data;
-                    streamlitInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    streamlitInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    // Hacemos una pausa para no escanear el mismo código mil veces por segundo
-                    scanning = false;
-                    setTimeout(() => { scanning = true; resultado.innerText = "Listo para siguiente..."; }, 3000);
+                // Buscamos cualquier input de texto disponible
+                const inputs = window.parent.document.getElementsByTagName('input');
+                for (let i = 0; i < inputs.length; i++) {
+                    // Filtramos para encontrar el input correcto (el del DNI)
+                    if (inputs[i].type === 'text' && !inputs[i].disabled) {
+                        inputs[i].value = code.data;
+                        inputs[i].dispatchEvent(new Event('input', { bubbles: true }));
+                        inputs[i].dispatchEvent(new Event('change', { bubbles: true }));
+                        break; 
+                    }
                 }
             } catch(e) { console.log(e); }
+            
+            // Pausa temporal para no leer el mismo código mil veces
+            scanning = false;
+            setTimeout(() => { 
+                scanning = true; 
+                resultado.innerText = "Listo para escanear..."; 
+                statusDiv.style.backgroundColor = "white";
+                resultado.style.color = "#0052cc";
+            }, 3000);
         }
     }
     requestAnimationFrame(tick);
@@ -84,7 +111,7 @@ function tick() {
 </script>
 """
 
-# --- INICIALIZACIÓN DE VARIABLES DE ESTADO ---
+# --- INICIALIZACIÓN DE ESTADO ---
 def init_session_state():
     defaults = {
         'rol': None, 
@@ -98,11 +125,11 @@ def init_session_state():
         'c_temp_dni': '',
         'c_temp_gra': '', 
         'busqueda_counter': 0, 
-        'asistencias_hoy': {}, 
-        'registro_counter': 0, 
-        'camara_activa': False, 
+        'asistencias_hoy': {},
+        'camara_activa': False,
         'ultimo_dni_escaneado': '',
-        'tipo_asistencia': 'Entrada'
+        'tipo_asistencia': 'Entrada',
+        'registro_counter': 0
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -110,74 +137,51 @@ def init_session_state():
 
 init_session_state()
 
-# --- ESTILOS CSS ---
+# --- ESTILOS CSS PRO ---
 st.markdown("""
 <style>
-.main-header {
-    text-align: center;
-    padding: 1rem;
-    background: linear-gradient(90deg, #0052cc 0%, #003d99 100%);
-    color: white;
-    border-radius: 10px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.stButton>button {
-    width: 100%;
-    border-radius: 5px;
-    height: 3em;
-}
-div[data-testid="stMetricValue"] {
-    font-size: 1.5rem;
-}
-.stTabs [data-baseweb="tab-list"] {
-    gap: 10px;
-}
-.stTabs [data-baseweb="tab"] {
-    height: 50px;
-    white-space: pre-wrap;
-    background-color: #f0f2f6;
-    border-radius: 5px 5px 0 0;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-.stTabs [aria-selected="true"] {
-    background-color: #0052cc;
-    color: white;
-}
+.main-header {text-align:center;padding:2rem;background:linear-gradient(135deg,#001e7c 0%,#0052cc 100%);
+color:white;border-radius:10px;margin-bottom:2rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+.success-msg {background:#d4edda;color:#155724;padding:1rem;border-radius:5px;
+border-left:4px solid #28a745;margin:1rem 0;}
+div.stButton > button:first-child {border-radius: 8px; font-weight: bold;}
 </style>
 """, unsafe_allow_html=True)
-# --- CLASE BASE DE DATOS ---
+
+# Intentar cargar librería de código de barras (opcional)
+try:
+    from barcode import Code128
+    from barcode.writer import ImageWriter
+    HAS_BARCODE = True
+except ImportError:
+    HAS_BARCODE = False
+    # --- CLASE BASE DE DATOS ---
 class BaseDatos:
     ARCHIVO = "datos_sistema.json"
     
     @classmethod
     def cargar_datos(cls):
-        """Carga los datos del archivo JSON. Si no existe, crea uno vacío."""
         if os.path.exists(cls.ARCHIVO):
             try:
                 with open(cls.ARCHIVO, "r", encoding="utf-8") as f:
                     return json.load(f)
             except json.JSONDecodeError:
-                # Si el archivo está corrupto, retorna estructura vacía
                 return {"alumnos": [], "asistencias": []}
         return {"alumnos": [], "asistencias": []}
 
     @classmethod
     def guardar_datos(cls, datos):
-        """Guarda la estructura completa de datos en el archivo JSON."""
         with open(cls.ARCHIVO, "w", encoding="utf-8") as f:
             json.dump(datos, f, indent=4, ensure_ascii=False)
 
     @classmethod
     def registrar_estudiante(cls, nombre, dni, grado, apoderado="", dni_apoderado="", celular=""):
-        """Registra un nuevo alumno verificando que el DNI no exista."""
         datos = cls.cargar_datos()
         
-        # Verificar si ya existe el DNI
-        for al in datos["alumnos"]:
+        # Validación de duplicados
+        for al in datos.get("alumnos", []):
             if al["DNI"] == dni:
-                return False # Ya existe
+                return False
         
         nuevo_alumno = {
             "Alumno": nombre.upper(),
@@ -189,22 +193,35 @@ class BaseDatos:
             "FechaRegistro": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
+        if "alumnos" not in datos:
+            datos["alumnos"] = []
+            
         datos["alumnos"].append(nuevo_alumno)
         cls.guardar_datos(datos)
         return True
 
     @classmethod
     def buscar_por_dni(cls, dni):
-        """Busca un alumno por su DNI y devuelve sus datos."""
         datos = cls.cargar_datos()
-        for al in datos["alumnos"]:
-            if str(al["DNI"]).strip() == str(dni).strip():
+        # Búsqueda insensible a espacios
+        dni_limpio = str(dni).strip()
+        for al in datos.get("alumnos", []):
+            if str(al["DNI"]).strip() == dni_limpio:
                 return al
         return None
+    
+    @classmethod
+    def buscar_por_nombre(cls, nombre_parcial):
+        datos = cls.cargar_datos()
+        resultados = []
+        nombre_limpio = nombre_parcial.upper().strip()
+        for al in datos.get("alumnos", []):
+            if nombre_limpio in al["Alumno"]:
+                resultados.append(al)
+        return resultados
 
     @classmethod
     def guardar_asistencia(cls, dni, nombre, tipo, hora):
-        """Registra la asistencia de entrada o salida."""
         datos = cls.cargar_datos()
         fecha_hoy = datetime.now().strftime("%Y-%m-%d")
         
@@ -214,7 +231,7 @@ class BaseDatos:
             "DNI": dni,
             "Alumno": nombre,
             "Tipo": tipo,
-            "Timestamp": time.time() # Útil para ordenar
+            "Timestamp": time.time()
         }
         
         if "asistencias" not in datos:
@@ -225,58 +242,84 @@ class BaseDatos:
 
     @classmethod
     def obtener_asistencias_hoy(cls):
-        """Devuelve una lista con las asistencias registradas HOY."""
         datos = cls.cargar_datos()
         hoy = datetime.now().strftime("%Y-%m-%d")
         if "asistencias" in datos:
-            # Filtramos solo las de hoy y las ordenamos por hora (más reciente primero)
+            # Filtramos solo las de hoy y ordenamos descendente por hora
             asistencias_hoy = [x for x in datos["asistencias"] if x["Fecha"] == hoy]
             return sorted(asistencias_hoy, key=lambda x: x["Hora"], reverse=True)
         return []
 
     @classmethod
     def obtener_estadisticas(cls):
-        """Calcula totales para el panel de administración."""
         datos = cls.cargar_datos()
         total_alumnos = len(datos.get("alumnos", []))
         total_asistencias = len(datos.get("asistencias", []))
         
         hoy = datetime.now().strftime("%Y-%m-%d")
-        asistencias_hoy = len([x for x in datos.get("asistencias", []) if x["Fecha"] == hoy])
+        asistencias_hoy_count = len([x for x in datos.get("asistencias", []) if x["Fecha"] == hoy])
         
+        # Desglose por grado (opcional para gráficos futuros)
+        grados = {}
+        for al in datos.get("alumnos", []):
+            g = al.get("Grado", "Sin Grado")
+            grados[g] = grados.get(g, 0) + 1
+            
         return {
             "total_alumnos": total_alumnos,
             "total_asistencias": total_asistencias,
-            "asistencias_hoy": asistencias_hoy
+            "asistencias_hoy": asistencias_hoy_count,
+            "por_grado": grados
         }
-        # --- CLASE GENERADOR PDF ---
+
+    @classmethod
+    def eliminar_alumno(cls, dni):
+        # Función extra para administración
+        datos = cls.cargar_datos()
+        alumnos_orig = len(datos.get("alumnos", []))
+        datos["alumnos"] = [al for al in datos.get("alumnos", []) if al["DNI"] != dni]
+        
+        if len(datos["alumnos"]) < alumnos_orig:
+            cls.guardar_datos(datos)
+            return True
+        return False
+        # --- CLASE GENERADOR PDF (CONSTANCIAS) ---
 class GeneradorPDF:
     @staticmethod
     def generar_constancia(datos_alumno, config, tipo_doc="matricula"):
-        """Genera un PDF con la constancia solicitada."""
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
         
-        # Marco decorativo
+        # --- MARCO Y ESTILO ---
         c.setStrokeColor(colors.navy)
         c.setLineWidth(3)
         c.rect(30, 30, width-60, height-60)
         
-        # Encabezado Institucional
+        # --- ENCABEZADO ---
+        logo_url = "https://cdn-icons-png.flaticon.com/512/2942/2942813.png" # Placeholder
+        try:
+            # Intentamos dibujar un logo si es accesible
+            pass 
+        except:
+            pass
+            
         c.setFont("Helvetica-Bold", 16)
         c.drawCentredString(width/2, height - 80, "INSTITUCIÓN EDUCATIVA PRIVADA")
-        c.setFont("Helvetica-Bold", 22)
+        c.setFont("Helvetica-Bold", 24)
         c.setFillColor(colors.navy)
         c.drawCentredString(width/2, height - 110, "YACHAY SCHOOL")
         
-        # Título del Documento
+        c.setFont("Helvetica-Oblique", 10)
         c.setFillColor(colors.black)
-        c.setFont("Helvetica-Bold", 18)
+        c.drawCentredString(width/2, height - 130, "\"Educación con valores y excelencia académica\"")
+        
+        # --- TÍTULO ---
+        c.setFont("Helvetica-Bold", 20)
         titulo = "CONSTANCIA DE MATRÍCULA" if tipo_doc == "matricula" else "CONSTANCIA DE ESTUDIOS"
         c.drawCentredString(width/2, height - 180, titulo)
         
-        # Cuerpo del texto
+        # --- CUERPO ---
         styles = getSampleStyleSheet()
         style_body = ParagraphStyle(
             'Body',
@@ -288,21 +331,21 @@ class GeneradorPDF:
         )
         
         fecha_actual = datetime.now().strftime("%d de %B del %Y")
+        anio_actual = config.get('anio', 2026)
         
         texto_contenido = f"""
         <br/><br/>
-        La Dirección de la Institución Educativa Privada <b>"YACHAY SCHOOL"</b>, que suscribe la presente:
+        La Dirección de la Institución Educativa Privada <b>"YACHAY SCHOOL"</b>, hace constar por la presente:
         <br/><br/>
-        <b>HACE CONSTAR:</b>
-        <br/><br/>
-        Que el alumno(a): <b>{datos_alumno['Alumno']}</b>
+        Que el alumno(a):<br/>
+        <b>{datos_alumno['Alumno']}</b>
         <br/><br/>
         Identificado con DNI N°: <b>{datos_alumno['DNI']}</b>
         <br/><br/>
         Se encuentra debidamente matriculado(a) en el grado: <b>{datos_alumno['Grado']}</b> de Educación Primaria,
-        para el Año Académico <b>{config['anio']}</b>.
+        correspondiente al Año Académico <b>{anio_actual}</b>.
         <br/><br/>
-        Se expide la presente a solicitud de la parte interesada para los fines que estime conveniente.
+        Se expide la presente a solicitud de la parte interesada para los fines que estime pertinente.
         <br/><br/><br/>
         <b>Cusco, {fecha_actual}</b>
         """
@@ -311,384 +354,517 @@ class GeneradorPDF:
         p.wrapOn(c, 450, 600)
         p.drawOn(c, 72, height - 550)
         
-        # Firmas
+        # --- FIRMAS ---
         c.setLineWidth(1)
         c.line(100, 150, 250, 150)
         c.setFont("Helvetica", 10)
-        c.drawCentredString(175, 135, config['directora'])
+        c.drawCentredString(175, 135, config.get('directora', 'DIRECCION'))
         c.drawCentredString(175, 120, "DIRECTORA")
         
         c.line(350, 150, 500, 150)
-        c.drawCentredString(425, 135, config['promotor'])
-        c.drawCentredString(425, 120, "PROMOTOR")
+        c.drawCentredString(425, 135, config.get('promotor', 'SECRETARIA'))
+        c.drawCentredString(425, 120, "PROMOTOR/SECRETARÍA")
         
-        # Frase pie de página
+        # --- PIE DE PÁGINA ---
         c.setFont("Helvetica-Oblique", 8)
-        c.drawCentredString(width/2, 50, f'"{config["frase"]}"')
+        c.drawCentredString(width/2, 50, f"\"{config.get('frase', 'Año del Bicentenario')}\"")
         
         c.save()
         buffer.seek(0)
         return buffer
 
-# --- CLASE GENERADOR CARNET ---
+# --- CLASE GENERADOR CARNET (IMAGEN PNG) ---
 class GeneradorCarnet:
     @staticmethod
     def crear_carnet(alumno, config):
-        """Crea una imagen PNG del carnet con código QR."""
-        # Dimensiones estándar (aprox 600x370 px)
-        ancho, alto = 600, 370
+        # Dimensiones tipo tarjeta de crédito (Alta resolución)
+        ancho, alto = 1016, 648  # Aprox CR80 a 300dpi
         
-        # Crear lienzo blanco
         img = Image.new('RGB', (ancho, alto), color='white')
         d = ImageDraw.Draw(img)
         
-        # --- DISEÑO DEL FONDO ---
-        # Cabecera azul institucional
-        d.rectangle([0, 0, ancho, 80], fill="#003366")
-        # Pie de página dorado/amarillo
-        d.rectangle([0, alto-40, ancho, alto], fill="#DAA520")
+        # Colores
+        azul_inst = "#003366"
+        dorado = "#DAA520"
+        gris_claro = "#f0f0f0"
         
-        # --- TEXTOS ESTATICOS ---
+        # --- FONDO ---
+        # Cabecera
+        d.rectangle([0, 0, ancho, 140], fill=azul_inst)
+        # Pie
+        d.rectangle([0, alto-60, ancho, alto], fill=dorado)
+        
+        # --- TIPOGRAFÍA ---
         try:
-            # Intentar cargar fuentes del sistema si es posible (Linux/Windows)
-            font_header = ImageFont.truetype("arialbd.ttf", 32)
-            font_sub = ImageFont.truetype("arial.ttf", 16)
-            font_field = ImageFont.truetype("arialbd.ttf", 18)
-            font_val = ImageFont.truetype("arial.ttf", 18)
+            # Intentar cargar fuentes del sistema si existen
+            font_header = ImageFont.truetype("arialbd.ttf", 55)
+            font_sub = ImageFont.truetype("arial.ttf", 28)
+            font_field = ImageFont.truetype("arialbd.ttf", 32)
+            font_val = ImageFont.truetype("arial.ttf", 32)
         except:
-            # Fallback a fuente por defecto si no hay Arial
             font_header = ImageFont.load_default()
             font_sub = ImageFont.load_default()
             font_field = ImageFont.load_default()
             font_val = ImageFont.load_default()
             
-        # Título Institución
-        d.text((20, 20), "I.E.P. YACHAY SCHOOL", fill="white", font=font_header)
-        d.text((20, 55), "Educación con Futuro", fill="#cccccc", font=font_sub)
+        # Textos Cabecera
+        d.text((40, 30), "I.E.P. YACHAY SCHOOL", fill="white", font=font_header)
+        d.text((40, 95), "Educación, Valores y Cultura", fill=gris_claro, font=font_sub)
+        d.text((ancho-150, 40), str(config.get('anio', 2026)), fill="white", font=font_header)
         
-        # --- DATOS DEL ALUMNO ---
-        # Coordenadas iniciales
-        x_labels = 30
-        x_values = 150
-        y_start = 110
-        line_height = 40
+        # --- FOTO (Simulada) ---
+        d.rectangle([50, 180, 270, 450], outline="gray", width=3)
+        d.text((100, 300), "FOTO", fill="gray", font=font_header)
+        
+        # --- DATOS ALUMNO ---
+        x_lbl = 320
+        x_val = 500
+        y_ini = 200
+        sep = 60
         
         campos = [
-            ("ESTUDIANTE:", alumno['Alumno']),
+            ("ALUMNO:", alumno['Alumno']),
             ("DNI:", alumno['DNI']),
             ("GRADO:", alumno['Grado']),
-            ("VIGENCIA:", f"AÑO {config['anio']}")
+            ("SECCIÓN:", "U"), # Asumiendo sección única por defecto
+            ("CÓDIGO:", f"E-{alumno['DNI']}")
         ]
         
-        for i, (label, valor) in enumerate(campos):
-            y = y_start + (i * line_height)
-            d.text((x_labels, y), label, fill="#003366", font=font_field)
-            # Recortar nombre si es muy largo para que no se salga
-            valor_safe = valor[:28] + "..." if len(valor) > 28 else valor
-            d.text((x_values, y), valor_safe, fill="black", font=font_val)
+        for i, (lbl, val) in enumerate(campos):
+            y = y_ini + (i*sep)
+            d.text((x_lbl, y), lbl, fill=azul_inst, font=font_field)
+            # Recorte de nombre largo
+            if len(val) > 25: val = val[:25] + "..."
+            d.text((x_val, y), val, fill="black", font=font_val)
 
         # --- CÓDIGO QR ---
-        qr = qrcode.QRCode(box_size=4, border=2)
-        qr.add_data(alumno['DNI']) # El QR contiene solo el DNI para lectura rápida
+        # Generar QR
+        qr = qrcode.QRCode(box_size=8, border=2)
+        qr.add_data(alumno['DNI'])
         qr.make(fit=True)
         qr_img = qr.make_image(fill_color="black", back_color="white")
         
-        # Pegar QR a la derecha
-        pos_qr = (430, 100)
+        # Pegar QR
+        pos_qr = (ancho - 250, 250)
         img.paste(qr_img, pos_qr)
         
-        d.text((445, 230), "Escanea Aquí", fill="gray", font=font_sub)
+        d.text((ancho - 230, 460), "Escanea Aquí", fill="gray", font=font_sub)
         
-        # --- PIE DE PÁGINA ---
-        d.text((20, alto-30), f"Promotor: {config['promotor']}", fill="black", font=font_sub)
+        # --- PIE ---
+        d.text((40, alto-45), f"Promotor: {config.get('promotor', 'Dirección General')}", fill="black", font=font_sub)
         
         return img
-        # --- FUNCIONES DE PESTAÑAS ---
+        # --- FUNCIONES DE PESTAÑAS (UI) ---
 
 def tab_asistencias():
-    st.markdown("## 📋 Registro Inteligente de Asistencias")
+    st.markdown("## 📋 Control de Asistencias")
     st.markdown("---")
     
-    # 1. Selector de Modo (Entrada/Salida)
-    col_sel1, col_sel2 = st.columns(2)
-    with col_sel1:
-        if st.button("☀️ MARCAR ENTRADA", use_container_width=True, type="primary" if st.session_state.tipo_asistencia == "Entrada" else "secondary", key="btn_mode_entrada"):
+    # --- 1. SELECCIÓN DE MODO ---
+    col_mode1, col_mode2 = st.columns(2)
+    with col_mode1:
+        if st.button("☀️ MARCAR ENTRADA", use_container_width=True, 
+                     type="primary" if st.session_state.tipo_asistencia == "Entrada" else "secondary",
+                     key="btn_mode_entrada"):
             st.session_state.tipo_asistencia = "Entrada"
             st.rerun()
-    with col_sel2:
-        if st.button("🌙 MARCAR SALIDA", use_container_width=True, type="primary" if st.session_state.tipo_asistencia == "Salida" else "secondary", key="btn_mode_salida"):
+            
+    with col_mode2:
+        if st.button("🌙 MARCAR SALIDA", use_container_width=True,
+                     type="primary" if st.session_state.tipo_asistencia == "Salida" else "secondary",
+                     key="btn_mode_salida"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
-
+            
     st.info(f"Modo Activo: **{st.session_state.tipo_asistencia.upper()}**")
 
-    # 2. Área de Escáner y Validación
-    col_cam, col_form = st.columns([1, 1], gap="medium")
+    # --- 2. ÁREA DE ESCÁNER ---
+    col_cam, col_info = st.columns([1, 1.2])
     
     with col_cam:
-        st.write("#### 📷 Escáner QR")
-        activar_camara = st.checkbox("Encender Cámara", value=True, key="chk_camara")
-        if activar_camara:
-            # Aquí inyectamos el HTML del escáner definido en la PARTE 1
-            components.html(CAMARA_HTML, height=450)
+        st.write("#### 📷 Escáner Web")
+        activar = st.checkbox("Encender Cámara", value=True, key="chk_cam_asist")
+        
+        if activar:
+            # Insertamos el componente JS definido en la Parte 1
+            components.html(CAMARA_HTML, height=480)
         else:
-            st.warning("Cámara apagada. Marca la casilla para activar.")
+            st.warning("Cámara desactivada. Marque la casilla para iniciar.")
 
-    with col_form:
+    with col_info:
         st.write("#### 📝 Validación de Datos")
-        st.markdown("El DNI aparecerá aquí automáticamente al escanear:")
+        st.caption("El DNI aparecerá automáticamente al escanear. También puede escribirlo.")
         
-        # ESTE INPUT ES EL QUE RECIBE EL DATO DEL JAVASCRIPT
-        dni_detectado = st.text_input("DNI detectado:", key="input_dni_asistencia", help="Escanea el carnet o escribe manualmente")
+        # INPUT RECEPTOR DEL JS
+        dni_leido = st.text_input("DNI Detectado:", key="input_dni_asist", 
+                                  help="Campo autocompletado por el escáner")
         
-        if st.button("✅ REGISTRAR ASISTENCIA", type="primary", use_container_width=True, key="btn_confirmar_asist"):
-            if dni_detectado:
-                alumno = BaseDatos.buscar_por_dni(dni_detectado)
+        if st.button("✅ REGISTRAR ASISTENCIA", type="primary", use_container_width=True, key="btn_reg_asist"):
+            if dni_leido:
+                alumno = BaseDatos.buscar_por_dni(dni_leido)
+                
                 if alumno:
                     hora_actual = datetime.now().strftime('%H:%M:%S')
-                    BaseDatos.guardar_asistencia(dni_detectado, alumno['Alumno'], st.session_state.tipo_asistencia, hora_actual)
+                    BaseDatos.guardar_asistencia(dni_leido, alumno['Alumno'], 
+                                                 st.session_state.tipo_asistencia, hora_actual)
                     
-                    st.success(f"✅ ÉXITO: {st.session_state.tipo_asistencia} registrada para {alumno['Alumno']}")
                     st.balloons()
+                    st.success(f"✅ REGISTRO EXITOSO")
+                    st.markdown(f"**Alumno:** {alumno['Alumno']}")
+                    st.markdown(f"**Hora:** {hora_actual}")
+                    st.markdown(f"**Tipo:** {st.session_state.tipo_asistencia}")
                     
-                    # Generación de Mensaje WhatsApp
-                    msg_wa = f"Hola, le informamos que el alumno(a) *{alumno['Alumno']}* ha registrado su *{st.session_state.tipo_asistencia}* a las *{hora_actual}*."
-                    msg_encoded = urllib.parse.quote(msg_wa)
+                    # --- MENSAJE WHATSAPP ---
+                    celular = alumno.get('Celular', '')
+                    mensaje_wa = f"Hola, informamos que el alumno(a) *{alumno['Alumno']}* ha registrado su *{st.session_state.tipo_asistencia}* a las *{hora_actual}*."
+                    link_wa = f"https://wa.me/51{celular}?text={urllib.parse.quote(mensaje_wa)}"
                     
-                    st.markdown(f"""
-                    <div style="background-color:#dcf8c6; padding:10px; border-radius:10px; border:1px solid #25D366; text-align:center;">
-                        <p style="color:#075e54; margin:0;"><b>📲 Notificar al Apoderado:</b></p>
-                        <a href="https://wa.me/51{alumno.get('Celular', '')}?text={msg_encoded}" target="_blank" style="text-decoration:none;">
-                            <button style="background-color:#25D366; color:white; border:none; padding:8px 15px; border-radius:5px; margin-top:5px; cursor:pointer; font-weight:bold;">
-                                Enviar WhatsApp
+                    st.markdown("---")
+                    st.markdown("##### 📲 Notificación:")
+                    if celular:
+                        st.markdown(f"""
+                        <a href="{link_wa}" target="_blank" style="text-decoration:none;">
+                            <button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; width:100%;">
+                                Enviar WhatsApp al Apoderado
                             </button>
                         </a>
-                    </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.warning("El alumno no tiene número de celular registrado.")
+                        
                 else:
-                    st.error("❌ ERROR: El DNI escaneado no pertenece a ningún alumno registrado.")
+                    st.error("❌ DNI no encontrado en la base de datos.")
             else:
-                st.warning("⚠️ Por favor escanee un código o ingrese un DNI.")
+                st.warning("⚠️ Ingrese un DNI válido.")
 
-    # 3. Historial del Día
+    # --- 3. TABLA DE HOY ---
     st.divider()
     st.subheader("📊 Registros de Hoy")
     historial = BaseDatos.obtener_asistencias_hoy()
     
     if historial:
         df = pd.DataFrame(historial)
-        # Seleccionamos columnas bonitas para mostrar
-        # Aseguramos que existan las columnas antes de seleccionar
-        cols_to_show = ['Hora', 'Alumno', 'DNI', 'Tipo']
-        # Filtramos solo las que existen en el DF para evitar errores si está vacío
-        cols_present = [c for c in cols_to_show if c in df.columns]
-        
-        if cols_present:
-            df_show = df[cols_present]
-            st.dataframe(df_show, use_container_width=True, hide_index=True)
-        else:
-            st.dataframe(df, use_container_width=True)
+        # Mostrar columnas relevantes
+        cols_mostrar = [c for c in ['Hora', 'Alumno', 'Tipo', 'DNI'] if c in df.columns]
+        st.dataframe(df[cols_mostrar], use_container_width=True, hide_index=True)
     else:
-        st.caption("No hay registros de asistencia el día de hoy.")
-
-def tab_documentos(config):
-    st.subheader("📄 Generación de Documentos")
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        dni_search = st.text_input("Ingrese DNI del Alumno:", key="doc_dni_search")
-        tipo_doc = st.selectbox("Tipo de Documento:", ["Constancia de Matrícula", "Constancia de Estudios"], key="doc_type_sel")
+        st.info("No hay registros de asistencia el día de hoy.")
+                        def tab_documentos(config):
+    st.markdown("## 📄 Generación de Documentos")
+    
+    col_izq, col_der = st.columns([1, 2])
+    
+    with col_izq:
+        st.markdown("### Configuración")
+        tipo_doc = st.radio(
+            "Seleccione Tipo de Documento:",
+            ["Constancia de Matrícula", "Constancia de Estudios"],
+            index=0
+        )
         
-    if st.button("🔍 Buscar y Generar", key="btn_gen_doc"):
-        if dni_search:
-            alumno = BaseDatos.buscar_por_dni(dni_search)
-            if alumno:
-                st.success(f"Alumno encontrado: {alumno['Alumno']}")
-                
-                # Generar PDF en memoria
-                tipo_clave = "matricula" if "Matrícula" in tipo_doc else "estudios"
-                pdf_buffer = GeneradorPDF.generar_constancia(alumno, config, tipo_clave)
-                
-                # Botón de descarga
-                nombre_archivo = f"Constancia_{alumno['DNI']}.pdf"
+        st.info("ℹ️ Los documentos se generan en formato PDF listos para imprimir.")
+
+    with col_der:
+        st.markdown("### Búsqueda de Alumno")
+        dni_buscar = st.text_input("Ingrese DNI del Alumno:", key="doc_dni_search")
+        nombre_buscar = st.text_input("O buscar por Nombre (parcial):", key="doc_nom_search")
+        
+        if st.button("🔍 BUSCAR ALUMNO", key="btn_doc_search"):
+            st.session_state.busqueda_counter += 1
+            
+        # Lógica de búsqueda
+        alumno_encontrado = None
+        
+        if dni_buscar:
+            alumno_encontrado = BaseDatos.buscar_por_dni(dni_buscar)
+        elif nombre_buscar:
+            resultados = BaseDatos.buscar_por_nombre(nombre_buscar)
+            if len(resultados) == 1:
+                alumno_encontrado = resultados[0]
+            elif len(resultados) > 1:
+                st.warning(f"⚠️ Se encontraron {len(resultados)} coincidencias. Por favor sea más específico o use el DNI.")
+                st.table(pd.DataFrame(resultados)[['Alumno', 'DNI', 'Grado']])
+            else:
+                st.error("No se encontraron coincidencias.")
+
+        # Si se encontró un alumno, mostrar opciones
+        if alumno_encontrado:
+            st.success(f"✅ Alumno Seleccionado: **{alumno_encontrado['Alumno']}**")
+            
+            with st.expander("Ver Datos del Alumno", expanded=False):
+                st.json(alumno_encontrado)
+            
+            # Generación del PDF
+            tipo_clave = "matricula" if "Matrícula" in tipo_doc else "estudios"
+            pdf_buffer = GeneradorPDF.generar_constancia(alumno_encontrado, config, tipo_clave)
+            
+            nombre_archivo = f"Constancia_{alumno_encontrado['DNI']}_{tipo_clave}.pdf"
+            
+            col_d1, col_d2 = st.columns(2)
+            with col_d1:
                 st.download_button(
-                    label="⬇️ DESCARGAR DOCUMENTO PDF",
+                    label="⬇️ DESCARGAR PDF",
                     data=pdf_buffer,
                     file_name=nombre_archivo,
                     mime="application/pdf",
-                    type="primary"
+                    type="primary",
+                    use_container_width=True
                 )
-            else:
-                st.error("❌ No se encontró ningún alumno con ese DNI.")
-        else:
-            st.warning("⚠️ Ingrese un DNI.")
-
-def tab_carnets(config):
-    st.subheader("🪪 Generación de Carnets")
+            with col_d2:
+                if st.button("🔄 Nueva Búsqueda", use_container_width=True):
+                    st.rerun()
+                        def tab_carnets(config):
+    st.markdown("## 🪪 Centro de Carnetización")
+    st.info("Generación de credenciales en alta resolución para impresión térmica o inyección de tinta.")
     
-    tab_indiv, tab_masivo = st.tabs(["Individual", "Masivo (Por Grado)"])
+    tab_ind, tab_lote = st.tabs(["👤 Carnet Individual", "📦 Carnetización Masiva (Lote)"])
     
-    with tab_indiv:
-        dni_carnet = st.text_input("DNI del Alumno:", key="carnet_dni_input")
-        if st.button("Generar Carnet Individual", key="btn_carnet_indiv"):
+    # --- SUB-PESTAÑA: INDIVIDUAL ---
+    with tab_ind:
+        col_c1, col_c2 = st.columns([1, 1.5])
+        
+        with col_c1:
+            dni_carnet = st.text_input("DNI del Alumno:", key="carnet_dni_search")
+            if st.button("Buscar para Carnet", key="btn_carnet_search"):
+                st.session_state.busqueda_counter += 1
+                
+        with col_c2:
             if dni_carnet:
                 alumno = BaseDatos.buscar_por_dni(dni_carnet)
                 if alumno:
-                    img = GeneradorCarnet.crear_carnet(alumno, config)
-                    st.image(img, caption=f"Vista previa: {alumno['Alumno']}", width=400)
+                    st.success(f"Alumno: {alumno['Alumno']}")
                     
-                    # Convertir a bytes para descarga
+                    # Generar Previsualización
+                    img_carnet = GeneradorCarnet.crear_carnet(alumno, config)
+                    
+                    # Mostrar Imagen
+                    st.image(img_carnet, caption="Vista Previa (Anverso)", use_container_width=True)
+                    
+                    # Botón Descarga
                     buf = io.BytesIO()
-                    img.save(buf, format="PNG")
-                    st.download_button("⬇️ Descargar Carnet (PNG)", buf.getvalue(), f"Carnet_{alumno['DNI']}.png", "image/png")
+                    img_carnet.save(buf, format="PNG")
+                    st.download_button(
+                        label="⬇️ DESCARGAR PNG (ALTA CALIDAD)",
+                        data=buf.getvalue(),
+                        file_name=f"Carnet_{alumno['DNI']}.png",
+                        mime="image/png",
+                        type="primary"
+                    )
                 else:
-                    st.error("Alumno no encontrado.")
-    
-    with tab_masivo:
-        st.info("Genera todos los carnets de un salón en un archivo ZIP.")
-        grado_sel = st.selectbox("Seleccione Grado:", ["1RO PRIMARIA", "2DO PRIMARIA", "3RO PRIMARIA", "4TO PRIMARIA", "5TO PRIMARIA", "6TO PRIMARIA"], key="grado_masivo_sel")
+                    st.error("DNI no encontrado.")
+
+    # --- SUB-PESTAÑA: MASIVA ---
+    with tab_lote:
+        st.markdown("#### Generación por Grado")
+        st.write("Esta opción genera un archivo ZIP con todos los carnets de un salón.")
         
-        if st.button("Generar Pack de Carnets", key="btn_carnet_masivo"):
+        grado_sel = st.selectbox(
+            "Seleccione el Grado:",
+            ["1° PRIMARIA", "2° PRIMARIA", "3° PRIMARIA", "4° PRIMARIA", "5° PRIMARIA", "6° PRIMARIA"],
+            key="grado_lote"
+        )
+        
+        if st.button(f"📦 PROCESAR CARNETS DE {grado_sel}", type="primary"):
             datos = BaseDatos.cargar_datos()
-            alumnos_grado = [al for al in datos["alumnos"] if al["Grado"] == grado_sel]
+            alumnos_grado = [al for al in datos.get("alumnos", []) if al["Grado"] == grado_sel]
             
-            if alumnos_grado:
-                zip_buffer = io.BytesIO()
-                with zipfile.ZipFile(zip_buffer, "w") as zf:
-                    for al in alumnos_grado:
-                        img = GeneradorCarnet.crear_carnet(al, config)
-                        img_byte_arr = io.BytesIO()
-                        img.save(img_byte_arr, format='PNG')
-                        zf.writestr(f"Carnet_{al['Alumno']}.png", img_byte_arr.getvalue())
-                
-                st.success(f"Se generaron {len(alumnos_grado)} carnets.")
-                st.download_button("⬇️ Descargar ZIP Carnets", zip_buffer.getvalue(), f"Carnets_{grado_sel}.zip", "application/zip")
+            if not alumnos_grado:
+                st.warning(f"No hay alumnos registrados en {grado_sel}.")
             else:
-                st.warning("No hay alumnos registrados en ese grado.")
-                # --- FUNCIÓN PRINCIPAL (MAIN) ---
-def main():
-    # --- PANTALLA DE LOGIN ---
-    if st.session_state.rol is None:
-        st.markdown("<br>", unsafe_allow_html=True)
-        col_login_izq, col_login_cent, col_login_der = st.columns([1, 2, 1])
-        
-        with col_login_cent:
-            st.markdown("<div class='main-header'><h1>🔐 ACCESO AL SISTEMA</h1></div>", unsafe_allow_html=True)
-            # Logo genérico de educación
-            st.image("https://cdn-icons-png.flaticon.com/512/2942/2942813.png", width=120)
-            
-            usuario = st.text_input("Usuario:", key="login_usr")
-            contrasena = st.text_input("Contraseña:", type="password", key="login_pwd")
-            
-            if st.button("INGRESAR AL SISTEMA", key="btn_login_main"):
-                if usuario == "admin" and contrasena == "admin123":
-                    st.session_state.rol = "admin"
-                    st.rerun()
-                elif usuario == "auxiliar" and contrasena == "123":
-                    st.session_state.rol = "auxiliar"
-                    st.rerun()
-                elif usuario == "directivo" and contrasena == "dir123":
-                    st.session_state.rol = "directivo"
-                    st.rerun()
-                else:
-                    st.error("❌ Credenciales incorrectas. Intente nuevamente.")
-            
-            st.markdown("---")
-            st.caption("© 2026 Sistema Yachay Pro - Versión Final")
-        return
-
-    # --- BARRA LATERAL (SIDEBAR) ---
+                barra = st.progress(0)
+                zip_buffer = io.BytesIO()
+                total = len(alumnos_grado)
+                
+                with zipfile.ZipFile(zip_buffer, "w") as zf:
+                    for i, al in enumerate(alumnos_grado):
+                        # Generar imagen
+                        img = GeneradorCarnet.crear_carnet(al, config)
+                        img_byte = io.BytesIO()
+                        img.save(img_byte, format="PNG")
+                        
+                        # Añadir al ZIP
+                        nombre_file = f"{al['Grado']}_{al['Alumno']}_{al['DNI']}.png"
+                        zf.writestr(nombre_file, img_byte.getvalue())
+                        
+                        # Actualizar barra
+                        barra.progress((i + 1) / total)
+                        time.sleep(0.05) # Pequeña pausa para no saturar
+                
+                st.success(f"✅ Proceso completado. Se generaron {total} carnets.")
+                st.download_button(
+                    label="⬇️ DESCARGAR PACK ZIP",
+                    data=zip_buffer.getvalue(),
+                    file_name=f"Carnets_{grado_sel}.zip",
+                    mime="application/zip",
+                    type="primary"
+                )
+                        # --- SIDEBAR Y CONFIGURACIÓN ---
+def configurar_sidebar():
     with st.sidebar:
-        st.image("https://cdn-icons-png.flaticon.com/512/2942/2942813.png", width=80)
-        st.title(f"Hola, {st.session_state.rol.upper()}")
-        st.divider()
+        st.image("https://cdn-icons-png.flaticon.com/512/2942/2942813.png", width=100)
         
-        # Configuración Global editable desde el sidebar
-        st.subheader("⚙️ Configuración")
-        anio_config = st.number_input("Año Escolar:", value=2026, step=1, key="conf_anio")
-        dir_config = st.text_input("Directora:", value="Prof. Ana María Cusi", key="conf_dir")
-        prom_config = st.text_input("Promotor:", value="Prof. Leandro Cordova", key="conf_prom")
-        frase_config = st.text_input("Frase del Año:", value="Año de la Excelencia", key="conf_frase")
-        
-        config_data = {
-            'anio': anio_config,
-            'directora': dir_config,
-            'promotor': prom_config,
-            'frase': frase_config
-        }
-        
-        st.divider()
-        if st.button("🔴 CERRAR SESIÓN", type="primary", key="btn_logout"):
-            st.session_state.rol = None
-            st.rerun()
+        # Si está logueado, mostrar info
+        if st.session_state.rol:
+            st.title(f"Hola, {st.session_state.rol.upper()}")
+            st.divider()
+            
+            # CONFIGURACIÓN EDITABLE
+            with st.expander("⚙️ Configuración Global", expanded=True):
+                anio = st.number_input("Año Escolar:", value=2026, step=1, key="conf_anio")
+                dir_n = st.text_input("Directora:", value="Prof. Ana María CUSI", key="conf_dir")
+                prom_n = st.text_input("Promotor:", value="Prof. Leandro CORDOVA", key="conf_prom")
+                frase = st.text_input("Lema:", value="Año de la Excelencia", key="conf_frase")
+            
+            st.divider()
+            if st.button("🔴 CERRAR SESIÓN", type="primary", use_container_width=True):
+                st.session_state.rol = None
+                st.rerun()
+                
+            return {
+                'anio': anio,
+                'directora': dir_n,
+                'promotor': prom_n,
+                'frase': frase
+            }
+    return {}
 
-    # --- PANTALLAS SEGÚN ROL ---
+# --- PANTALLA DE LOGIN ---
+def pantalla_login():
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    col_l1, col_l2, col_l3 = st.columns([1, 1.5, 1])
     
-    # 1. ROL AUXILIAR (Asistencia + Registro)
-    if st.session_state.rol == "auxiliar":
-        st.title("Panel de Auxiliar")
-        tab1, tab2 = st.tabs(["📋 TOMAR ASISTENCIA", "➕ REGISTRAR ALUMNO"])
+    with col_l2:
+        st.markdown("<div class='main-header'><h1>🔐 ACCESO AL SISTEMA</h1></div>", unsafe_allow_html=True)
         
-        with tab1:
-            tab_asistencias()
+        st.info("👋 Bienvenido al Sistema Yachay Pro")
+        
+        usuario = st.text_input("Usuario:", placeholder="Ej: admin", key="login_u")
+        contrasena = st.text_input("Contraseña:", type="password", placeholder="••••••", key="login_p")
+        
+        if st.button("INGRESAR", use_container_width=True, type="primary"):
+            # Credenciales Hardcoded (Seguro para demos)
+            if usuario == "admin" and contrasena == "admin123":
+                st.session_state.rol = "admin"
+                st.rerun()
+            elif usuario == "auxiliar" and contrasena == "123456789":
+                st.session_state.rol = "auxiliar"
+                st.rerun()
+            elif usuario == "directivo" and contrasena == "dir123":
+                st.session_state.rol = "directivo"
+                st.rerun()
+            else:
+                st.error("❌ Credenciales incorrectas.")
+        
+        st.markdown("---")
+        st.caption("© 2026 Yachay School - Versión Web Pro")
+                        def tab_registro():
+    st.markdown("## ➕ Registro de Nuevos Estudiantes")
+    st.info("Ingrese los datos completos para generar ficha y carnet.")
+    
+    with st.form("form_registro_nuevo"):
+        c1, c2 = st.columns(2)
+        with c1:
+            nom = st.text_input("Apellidos y Nombres:")
+            dni = st.text_input("DNI Estudiante:")
+            grad = st.selectbox("Grado:", ["1° PRIMARIA", "2° PRIMARIA", "3° PRIMARIA", "4° PRIMARIA", "5° PRIMARIA", "6° PRIMARIA"])
+        with c2:
+            apo = st.text_input("Nombre Apoderado:")
+            dni_apo = st.text_input("DNI Apoderado:")
+            cel = st.text_input("Celular (WhatsApp):", help="Importante para notificaciones")
             
-        with tab2:
-            st.subheader("Nuevo Registro de Estudiante")
-            col_r1, col_r2 = st.columns(2)
-            with col_r1:
-                reg_nombre = st.text_input("Nombre Completo:", key="aux_reg_nom")
-                reg_dni = st.text_input("DNI Estudiante:", key="aux_reg_dni")
-                reg_grado = st.selectbox("Grado:", ["1RO PRIMARIA", "2DO PRIMARIA", "3RO PRIMARIA", "4TO PRIMARIA", "5TO PRIMARIA", "6TO PRIMARIA"], key="aux_reg_grad")
-            with col_r2:
-                reg_apo = st.text_input("Nombre Apoderado:", key="aux_reg_apo")
-                reg_dni_apo = st.text_input("DNI Apoderado:", key="aux_reg_dniapo")
-                reg_cel = st.text_input("Celular Apoderado (51...):", key="aux_reg_cel")
-
-            if st.button("💾 GUARDAR ESTUDIANTE", key="aux_btn_save"):
-                if reg_nombre and reg_dni and reg_grado:
-                    exito = BaseDatos.registrar_estudiante(reg_nombre, reg_dni, reg_grado, reg_apo, reg_dni_apo, reg_cel)
-                    if exito:
-                        st.success(f"✅ Estudiante {reg_nombre} registrado correctamente.")
-                    else:
-                        st.error("⚠️ El DNI ya existe en la base de datos.")
+        btn_save = st.form_submit_button("💾 GUARDAR ESTUDIANTE", type="primary")
+        
+        if btn_save:
+            if nom and dni and grad:
+                exito = BaseDatos.registrar_estudiante(nom, dni, grad, apo, dni_apo, cel)
+                if exito:
+                    st.success("✅ Alumno registrado correctamente en la base de datos.")
+                    # Reiniciar script para limpiar campos
+                    time.sleep(1)
+                    st.rerun()
                 else:
-                    st.error("⚠️ Faltan datos obligatorios (Nombre, DNI, Grado).")
+                    st.error("❌ El DNI ya existe en el sistema.")
+            else:
+                st.warning("⚠️ Complete los campos obligatorios (Nombre, DNI, Grado).")
 
-    # 2. ROL DIRECTIVO (Documentos + Carnets)
-    elif st.session_state.rol == "directivo":
-        st.title("Panel Directivo")
-        tab1, tab2 = st.tabs(["📄 DOCUMENTOS", "🪪 CARNETS"])
-        with tab1:
-            tab_documentos(config_data)
-        with tab2:
-            tab_carnets(config_data)
+def tab_base_datos():
+    st.markdown("## 🗄️ Gestión de Base de Datos")
+    st.warning("Zona de Administración. Los datos sensibles se muestran aquí.")
+    
+    datos = BaseDatos.cargar_datos()
+    
+    tab_a, tab_b = st.tabs(["📚 Alumnos Registrados", "⏱️ Historial de Asistencia"])
+    
+    with tab_a:
+        df_al = pd.DataFrame(datos.get("alumnos", []))
+        if not df_al.empty:
+            st.dataframe(df_al, use_container_width=True)
+            
+            # Botón Descarga CSV
+            csv = df_al.to_csv(index=False).encode('utf-8')
+            st.download_button("⬇️ Descargar Lista Alumnos (CSV)", csv, "alumnos.csv", "text/csv")
+            
+            # Opción Eliminar
+            st.divider()
+            st.write("🗑️ **Eliminar Alumno**")
+            dni_del = st.text_input("DNI a eliminar:", key="del_dni")
+            if st.button("ELIMINAR PERMANENTEMENTE", type="primary"):
+                if BaseDatos.eliminar_alumno(dni_del):
+                    st.success("Alumno eliminado.")
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error("DNI no encontrado.")
+        else:
+            st.info("No hay alumnos registrados.")
+            
+    with tab_b:
+        df_as = pd.DataFrame(datos.get("asistencias", []))
+        if not df_as.empty:
+            st.dataframe(df_as, use_container_width=True)
+            csv_as = df_as.to_csv(index=False).encode('utf-8')
+            st.download_button("⬇️ Descargar Asistencias (CSV)", csv_as, "asistencias.csv", "text/csv")
+        else:
+            st.info("No hay historial de asistencia.")
 
-    # 3. ROL ADMINISTRADOR (Todo + Base de Datos)
-    elif st.session_state.rol == "admin":
-        st.title("Panel Administrador")
-        tab1, tab2, tab3, tab4 = st.tabs(["📋 ASISTENCIA", "📊 BASE DATOS", "📄 DOCUMENTOS", "🪪 CARNETS"])
+# --- FUNCIÓN PRINCIPAL (MAIN) ---
+def main():
+    # 1. Verificar si hay usuario logueado
+    if st.session_state.rol is None:
+        pantalla_login()
+    else:
+        # 2. Cargar Sidebar y Configuración
+        config = configurar_sidebar()
+        rol = st.session_state.rol
         
-        with tab1:
-            tab_asistencias()
+        # 3. Mostrar Interfaz según ROL
+        if rol == "admin":
+            st.markdown("### 🛠️ Panel de Administrador")
+            t1, t2, t3, t4, t5 = st.tabs([
+                "📋 Asistencia", 
+                "➕ Registro", 
+                "📄 Documentos", 
+                "🪪 Carnets", 
+                "📊 Base de Datos"
+            ])
+            with t1: tab_asistencias()
+            with t2: tab_registro()
+            with t3: tab_documentos(config)
+            with t4: tab_carnets(config)
+            with t5: tab_base_datos()
             
-        with tab2:
-            st.subheader("Base de Datos Completa")
-            datos = BaseDatos.cargar_datos()
+        elif rol == "directivo":
+            st.markdown("### 🎓 Panel Directivo")
+            t1, t2 = st.tabs(["📄 Documentos", "🪪 Carnets"])
+            with t1: tab_documentos(config)
+            with t2: tab_carnets(config)
             
-            col_db1, col_db2 = st.columns(2)
-            with col_db1:
-                st.write(f"**Total Alumnos:** {len(datos['alumnos'])}")
-                if datos['alumnos']:
-                    st.dataframe(pd.DataFrame(datos['alumnos']), use_container_width=True)
-            
-            with col_db2:
-                st.write(f"**Total Asistencias:** {len(datos['asistencias'])}")
-                if datos['asistencias']:
-                    st.dataframe(pd.DataFrame(datos['asistencias']), use_container_width=True)
+        elif rol == "auxiliar":
+            st.markdown("### 🔔 Panel de Auxiliar")
+            t1, t2 = st.tabs(["📋 Tomar Asistencia", "➕ Registrar Alumno"])
+            with t1: tab_asistencias()
+            with t2: tab_registro()
 
-        with tab3:
-            tab_documentos(config_data)
-        with tab4:
-            tab_carnets(config_data)
-
+# --- PUNTO DE ENTRADA ---
 if __name__ == "__main__":
     main()
