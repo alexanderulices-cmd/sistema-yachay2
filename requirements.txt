@@ -5,5 +5,7 @@ reportlab
 qrcode[pil]
 pillow
 python-barcode
-opencv-python
+opencv-python-headless
 pyzbar
+python-docx
+numpy
