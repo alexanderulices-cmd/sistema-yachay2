@@ -577,8 +577,18 @@ class BaseDatos:
         """Guarda resultado asociado al usuario docente"""
         datos = {}
         if Path(ARCHIVO_RESULTADOS).exists():
-            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
-                datos = json.load(f)
+            try:
+                with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                    raw = json.load(f)
+                # Si es formato viejo (lista), migrar a dict
+                if isinstance(raw, list):
+                    datos = {"migrado": raw}
+                elif isinstance(raw, dict):
+                    datos = raw
+                else:
+                    datos = {}
+            except Exception:
+                datos = {}
         if usuario_docente not in datos:
             datos[usuario_docente] = []
         datos[usuario_docente].append(resultado)
@@ -589,34 +599,57 @@ class BaseDatos:
     def cargar_resultados_examen(usuario_docente):
         """Carga solo los resultados del docente específico"""
         if Path(ARCHIVO_RESULTADOS).exists():
-            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
-                datos = json.load(f)
-            return datos.get(usuario_docente, [])
+            try:
+                with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                    datos = json.load(f)
+                # Si es formato viejo (lista), retornar la lista completa
+                if isinstance(datos, list):
+                    return datos
+                elif isinstance(datos, dict):
+                    return datos.get(usuario_docente, [])
+            except Exception:
+                pass
         return []
 
     @staticmethod
     def limpiar_resultados_examen(usuario_docente):
         """Limpia solo los resultados del docente"""
         if Path(ARCHIVO_RESULTADOS).exists():
-            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
-                datos = json.load(f)
-            if usuario_docente in datos:
-                datos[usuario_docente] = []
-            with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
-                json.dump(datos, f, indent=2, ensure_ascii=False)
+            try:
+                with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                    datos = json.load(f)
+                if isinstance(datos, list):
+                    # Formato viejo, limpiar todo
+                    datos = {}
+                elif isinstance(datos, dict) and usuario_docente in datos:
+                    datos[usuario_docente] = []
+                with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
+                    json.dump(datos, f, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
 
     @staticmethod
     def cargar_todos_resultados():
         """Carga todos los resultados (para admin)"""
         if Path(ARCHIVO_RESULTADOS).exists():
-            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
-                datos = json.load(f)
-            todos = []
-            for usr, lista in datos.items():
-                for r in lista:
-                    r['_docente'] = usr
-                    todos.append(r)
-            return todos
+            try:
+                with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                    datos = json.load(f)
+                todos = []
+                if isinstance(datos, list):
+                    # Formato viejo
+                    for r in datos:
+                        r['_docente'] = 'migrado'
+                        todos.append(r)
+                elif isinstance(datos, dict):
+                    for usr, lista in datos.items():
+                        if isinstance(lista, list):
+                            for r in lista:
+                                r['_docente'] = usr
+                                todos.append(r)
+                return todos
+            except Exception:
+                pass
         return []
 
 
