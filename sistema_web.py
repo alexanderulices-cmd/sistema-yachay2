@@ -1999,6 +1999,62 @@ def pantalla_login():
 # SIDEBAR — Con links SIAGIE y Google Institucional
 # ================================================================
 
+# ================================================================
+# SISTEMA DE BACKUP Y RESTAURACIÓN
+# ================================================================
+
+ARCHIVOS_BACKUP = [
+    ARCHIVO_MATRICULA,    # matricula.xlsx
+    ARCHIVO_DOCENTES,     # docentes.xlsx
+    ARCHIVO_BD,           # base_datos.xlsx
+    ARCHIVO_ASISTENCIAS,  # asistencias.json
+    ARCHIVO_RESULTADOS,   # resultados_examenes.json
+    ARCHIVO_USUARIOS,     # usuarios.json
+    "escudo_upload.png",
+    "fondo.png",
+]
+
+
+def crear_backup():
+    """Crea un ZIP con TODOS los datos del sistema"""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for archivo in ARCHIVOS_BACKUP:
+            if Path(archivo).exists():
+                zf.write(archivo, archivo)
+        # Agregar un manifiesto con info del backup
+        info = {
+            "fecha": hora_peru().strftime('%d/%m/%Y %H:%M:%S'),
+            "version": "YACHAY PRO v4.0",
+            "archivos": [a for a in ARCHIVOS_BACKUP if Path(a).exists()],
+            "total_alumnos": len(BaseDatos.cargar_matricula()),
+            "total_docentes": len(BaseDatos.cargar_docentes()),
+        }
+        zf.writestr("_backup_info.json", json.dumps(info, indent=2, ensure_ascii=False))
+    buf.seek(0)
+    return buf
+
+
+def restaurar_backup(zip_bytes):
+    """Restaura datos desde un ZIP de backup"""
+    errores = []
+    restaurados = []
+    try:
+        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
+            nombres = zf.namelist()
+            for archivo in nombres:
+                if archivo.startswith("_backup_"):
+                    continue  # Saltar manifiesto
+                try:
+                    zf.extract(archivo, '.')
+                    restaurados.append(archivo)
+                except Exception as e:
+                    errores.append(f"{archivo}: {str(e)}")
+    except Exception as e:
+        errores.append(f"Error ZIP: {str(e)}")
+    return restaurados, errores
+
+
 def configurar_sidebar():
     with st.sidebar:
         st.title("🎓 YACHAY PRO")
@@ -2058,6 +2114,49 @@ def configurar_sidebar():
                 frase = st.text_input("Frase:", frase, key="fi")
             with st.expander("🔐 Gestionar Usuarios"):
                 _gestion_usuarios_admin()
+            with st.expander("💾 BACKUP / RESTAURAR", expanded=False):
+                st.caption("⚠️ **IMPORTANTE:** Streamlit Cloud puede borrar "
+                           "tus datos. Haz backup frecuentemente.")
+                st.markdown("---")
+                st.markdown("**📥 DESCARGAR BACKUP:**")
+                if st.button("💾 CREAR BACKUP AHORA", type="primary",
+                             use_container_width=True, key="btn_backup"):
+                    with st.spinner("📦 Empaquetando datos..."):
+                        backup_zip = crear_backup()
+                    fecha_bk = hora_peru().strftime('%Y%m%d_%H%M')
+                    st.download_button(
+                        f"⬇️ Descargar backup_{fecha_bk}.zip",
+                        backup_zip,
+                        f"backup_yachay_{fecha_bk}.zip",
+                        "application/zip",
+                        use_container_width=True,
+                        key="dl_backup"
+                    )
+                    st.success("✅ Backup listo. ¡Guárdalo en tu PC!")
+                st.markdown("---")
+                st.markdown("**📤 RESTAURAR DESDE BACKUP:**")
+                uploaded_backup = st.file_uploader(
+                    "Subir archivo .zip de backup:",
+                    type=["zip"], key="upload_backup"
+                )
+                if uploaded_backup:
+                    st.warning("⚠️ Esto REEMPLAZARÁ todos los datos actuales "
+                               "con los del backup.")
+                    if st.button("🔄 RESTAURAR DATOS", type="primary",
+                                 use_container_width=True, key="btn_restaurar"):
+                        with st.spinner("🔄 Restaurando..."):
+                            rest, errs = restaurar_backup(
+                                uploaded_backup.getvalue()
+                            )
+                        if rest:
+                            st.success(f"✅ Restaurados {len(rest)} archivos:\n"
+                                       f"{', '.join(rest)}")
+                        if errs:
+                            st.error(f"❌ Errores: {', '.join(errs)}")
+                        if rest:
+                            st.balloons()
+                            time.sleep(1)
+                            st.rerun()
 
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
