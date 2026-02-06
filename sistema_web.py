@@ -2127,7 +2127,7 @@ def tab_carnets(config):
                 st.success(f"✅ {a.get('Nombre', '')}")
             else:
                 st.error("❌ No encontrado")
-        if st.session_state.get('ce'):
+        if st.session_state.get('ce') and isinstance(st.session_state['ce'], dict):
             a = st.session_state['ce']
             es_d = a.get('_tipo', '') == 'docente'
             tt = "DOCENTE" if es_d else "ALUMNO"
