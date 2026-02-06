@@ -820,37 +820,37 @@ class GeneradorCarnet:
         self.draw.text((x_text + 290, y_vigencia), str(self.anio), font=font_data, fill="black")
     
     def _agregar_codigo_barras(self):
-        """Código de barras OPTIMIZADO"""
+        """CORREGIDO: Código de barras abajo centrado SIN chocar"""
         if not HAS_BARCODE:
             return
         try:
             writer = ImageWriter()
             buffer_bar = io.BytesIO()
-            Code128(self.datos['dni'], writer=writer).write(buffer_bar, 
-                                                            options={'write_text': False})
+            Code128(self.datos['dni'], writer=writer).write(buffer_bar, options={'write_text': False})
             buffer_bar.seek(0)
-            img_bar = Image.open(buffer_bar).resize((450, 95), Image.LANCZOS)
-            # Posición centrada abajo
-            self.img.paste(img_bar, (50, self.HEIGHT - 160))
-        except Exception:
+            img_bar = Image.open(buffer_bar).resize((420, 90), Image.LANCZOS)
+            # POSICIÓN CORREGIDA: Centrado abajo, NO choca con pie
+            x_bar = int((self.WIDTH - 420) / 2)
+            y_bar = self.HEIGHT - 165
+            self.img.paste(img_bar, (x_bar, y_bar))
+        except:
             pass
     
     def _agregar_qr(self):
-        """QR OPTIMIZADO con DNI"""
+        """CORREGIDO: QR arriba derecha SIN chocar"""
         try:
             qr = qrcode.QRCode(box_size=10, border=1)
             qr.add_data(self.datos['dni'])
             qr.make(fit=True)
-            
             img_qr_pil = qr.make_image(fill_color="black", back_color="white")
-            img_qr = img_qr_pil.resize((190, 190), Image.LANCZOS)
-            # Posición esquina superior derecha
-            self.img.paste(img_qr, (self.WIDTH - 220, 245))
-            
-            font_small = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 26, bold=True)
-            self.draw.text((self.WIDTH - 125, 445), "ESCANEAR",
-                          font=font_small, fill="black", anchor="mm")
-        except Exception:
+            img_qr = img_qr_pil.resize((180, 180), Image.LANCZOS)
+            # POSICIÓN CORREGIDA: Arriba derecha, BIEN SEPARADO
+            x_qr = self.WIDTH - 210
+            y_qr = 240
+            self.img.paste(img_qr, (x_qr, y_qr))
+            font_small = RecursoManager.obtener_fuente("Roboto-Bold.ttf", 24, bold=True)
+            self.draw.text((x_qr + 90, y_qr + 190), "ESCANEAR", font=font_small, fill="black", anchor="mm")
+        except:
             pass
     
     def generar(self):
@@ -1508,14 +1508,21 @@ def main():
     config = configurar_sidebar()
     
     if st.session_state.rol == "auxiliar":
-        tab1 = st.tabs(["📋 ASISTENCIAS"])[0]
+        tab1, tab2 = st.tabs(["📋 ASISTENCIAS", "📝 CORRECTOR EXÁMENES"])
         with tab1:
             tab_asistencias()
+        with tab2:
+            tab_corrector_examenes()
     
     elif st.session_state.rol in ["directivo", "admin"]:
         # DIRECTIVO Y ADMIN tienen acceso completo
-        tab1, tab2, tab3, tab4 = st.tabs(["📄 DOCUMENTOS", "🪪 CARNETS", 
-                                           "📊 BASE DATOS", "📋 ASISTENCIAS"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+            "📄 DOCUMENTOS", 
+            "🪪 CARNETS", 
+            "📊 BASE DATOS", 
+            "📋 ASISTENCIAS",
+            "📝 CORRECTOR EXÁMENES"
+        ])
         with tab1:
             tab_documentos(config)
         with tab2:
@@ -1524,6 +1531,190 @@ def main():
             tab_base_datos()
         with tab4:
             tab_asistencias()
+        with tab5:
+            tab_corrector_examenes()
 
 if __name__ == "__main__":
     main()
+
+# ========================================
+# CORRECTOR DE EXÁMENES (ESTILO ZIPGRADE)
+# ========================================
+
+def obtener_letra_calificacion(nota):
+    """Convierte nota numérica a letra"""
+    if nota < 0: return "?"
+    elif nota <= 10: return "C"
+    elif nota <= 13: return "B"
+    elif nota <= 17: return "A"
+    else: return "AD"
+
+def generar_hoja_respuestas(num_preguntas):
+    """Genera hoja de respuestas con marcadores de alineación"""
+    width, height = 2480, 3508
+    img = np.ones((height, width, 3), dtype=np.uint8) * 255
+    COLOR_NEGRO = (0, 0, 0)
+    
+    # MARCADORES DE ALINEACIÓN (4 esquinas)
+    tamaño_marcador = 80
+    cv2.rectangle(img, (50, 50), (50+tamaño_marcador, 50+tamaño_marcador), COLOR_NEGRO, -1)
+    cv2.rectangle(img, (width-50-tamaño_marcador, 50), (width-50, 50+tamaño_marcador), COLOR_NEGRO, -1)
+    cv2.rectangle(img, (50, height-50-tamaño_marcador), (50+tamaño_marcador, height-50), COLOR_NEGRO, -1)
+    cv2.rectangle(img, (width-50-tamaño_marcador, height-50-tamaño_marcador), (width-50, height-50), COLOR_NEGRO, -1)
+    
+    # Encabezado
+    cv2.putText(img, "IEP YACHAY - HOJA DE RESPUESTAS", (600, 200), cv2.FONT_HERSHEY_SIMPLEX, 2.5, COLOR_NEGRO, 5)
+    cv2.putText(img, "EDUCAR PARA LA VIDA", (950, 300), cv2.FONT_HERSHEY_SIMPLEX, 1.5, COLOR_NEGRO, 3)
+    cv2.putText(img, "Nombre: ___________________________________________________", (200, 500), cv2.FONT_HERSHEY_SIMPLEX, 1.5, COLOR_NEGRO, 3)
+    
+    # Preguntas
+    start_y, start_x = 900, 300
+    spacing_y, column_spacing = 110, 700
+    preguntas_por_columna = 20
+    
+    for i in range(num_preguntas):
+        columna_actual = i // preguntas_por_columna
+        fila_en_columna = i % preguntas_por_columna
+        x_base = start_x + (columna_actual * column_spacing)
+        y_base = start_y + (fila_en_columna * spacing_y)
+        
+        cv2.putText(img, f"{i+1}.", (x_base - 120, y_base + 25), cv2.FONT_HERSHEY_SIMPLEX, 1.3, COLOR_NEGRO, 3)
+        
+        letras = ['A', 'B', 'C', 'D']
+        for j, letra in enumerate(letras):
+            cx = x_base + (j * 130)
+            cy = y_base - 10
+            cv2.circle(img, (cx, cy), 40, COLOR_NEGRO, 7)
+            cv2.putText(img, letra, (cx - 18, cy + 18), cv2.FONT_HERSHEY_SIMPLEX, 1.2, COLOR_NEGRO, 3)
+    
+    return img
+
+def procesar_examen_escaneado(archivo_img, num_preguntas):
+    """Procesa examen escaneado y devuelve respuestas"""
+    file_bytes = np.asarray(bytearray(archivo_img.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, 1)
+    
+    if img is None:
+        return None
+    
+    gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gris, (5, 5), 0)
+    _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    
+    cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    burbujas = []
+    for c in cnts:
+        (x, y, w, h) = cv2.boundingRect(c)
+        aspect_ratio = w / float(h)
+        if 20 <= w <= 100 and 20 <= h <= 100 and 0.8 <= aspect_ratio <= 1.2:
+            burbujas.append((c, x, y))
+    
+    burbujas = sorted(burbujas, key=lambda b: b[2])
+    
+    respuestas = []
+    preguntas_detectadas = []
+    
+    tolerancia_y = 30
+    fila_actual = []
+    y_anterior = -100
+    
+    for burbuja, x, y in burbujas:
+        if abs(y - y_anterior) <= tolerancia_y:
+            fila_actual.append((burbuja, x, y))
+        else:
+            if fila_actual:
+                preguntas_detectadas.append(fila_actual)
+            fila_actual = [(burbuja, x, y)]
+        y_anterior = y
+    
+    if fila_actual:
+        preguntas_detectadas.append(fila_actual)
+    
+    for pregunta in preguntas_detectadas[:num_preguntas]:
+        opciones = sorted(pregunta, key=lambda b: b[1])
+        intensidades = []
+        for burbuja, x, y in opciones:
+            mask = np.zeros(gris.shape, dtype="uint8")
+            cv2.drawContours(mask, [burbuja], -1, 255, -1)
+            mask = cv2.bitwise_and(thresh, thresh, mask=mask)
+            total = cv2.countNonZero(mask)
+            intensidades.append(total)
+        
+        if intensidades:
+            marcada = intensidades.index(max(intensidades))
+            respuestas.append(['A', 'B', 'C', 'D'][marcada])
+        else:
+            respuestas.append('?')
+    
+    return respuestas
+
+def tab_corrector_examenes():
+    """NUEVO: Tab completo del corrector de exámenes"""
+    st.header("📝 Corrector de Exámenes")
+    
+    tab_gen, tab_corr = st.tabs(["📄 Generar Hoja", "✅ Corregir Examen"])
+    
+    with tab_gen:
+        st.subheader("Generar Hoja de Respuestas")
+        num_preguntas = st.number_input("Número de preguntas:", 1, 50, 20, key="num_preg")
+        
+        if st.button("📄 GENERAR HOJA", type="primary", use_container_width=True):
+            with st.spinner("Generando hoja..."):
+                hoja = generar_hoja_respuestas(num_preguntas)
+                success, encoded = cv2.imencode('.png', hoja)
+                if success:
+                    st.image(encoded.tobytes(), use_container_width=True)
+                    st.download_button("⬇️ DESCARGAR HOJA", encoded.tobytes(), 
+                                     f"Hoja_Respuestas_{num_preguntas}_preguntas.png",
+                                     "image/png", use_container_width=True)
+    
+    with tab_corr:
+        st.subheader("Corregir Examen Escaneado")
+        
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.markdown("**Gabarito (Respuestas Correctas):**")
+            gabarito_text = st.text_area("Ingresa respuestas (ej: ABCDABCD):",
+                                        height=150,
+                                        placeholder="ABCDABCDABCD")
+            gabarito = list(gabarito_text.upper().replace(" ", ""))
+        
+        with col2:
+            archivo_examen = st.file_uploader("📸 Sube la foto del examen:",
+                                             type=['jpg', 'png', 'jpeg'])
+            
+            if archivo_examen and gabarito:
+                if st.button("✅ CORREGIR EXAMEN", type="primary", use_container_width=True):
+                    with st.spinner("Procesando examen..."):
+                        respuestas = procesar_examen_escaneado(archivo_examen, len(gabarito))
+                        
+                        if respuestas:
+                            correctas = sum(1 for i, r in enumerate(respuestas) 
+                                          if i < len(gabarito) and r == gabarito[i])
+                            nota = (correctas / len(gabarito)) * 20
+                            letra = obtener_letra_calificacion(nota)
+                            
+                            col_r1, col_r2, col_r3 = st.columns(3)
+                            with col_r1:
+                                st.metric("✅ Correctas", correctas)
+                            with col_r2:
+                                st.metric("📊 Nota", f"{nota:.1f}")
+                            with col_r3:
+                                st.metric("📝 Letra", letra)
+                            
+                            st.markdown("---")
+                            st.subheader("📋 Detalle de Respuestas")
+                            
+                            df_resultado = pd.DataFrame({
+                                'Pregunta': range(1, len(gabarito)+1),
+                                'Correcta': gabarito[:len(respuestas)],
+                                'Respuesta': respuestas[:len(gabarito)],
+                                'Estado': ['✅' if i < len(respuestas) and respuestas[i] == gabarito[i] 
+                                          else '❌' for i in range(len(gabarito))]
+                            })
+                            
+                            st.dataframe(df_resultado, use_container_width=True, hide_index=True)
+                        else:
+                            st.error("No se pudieron detectar respuestas. Verifica la calidad de la imagen.")
