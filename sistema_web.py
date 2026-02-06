@@ -1,12 +1,15 @@
 # ================================================================
-# SISTEMA YACHAY PRO v3.0 — VERSIÓN DEFINITIVA COMPLETA
+# SISTEMA YACHAY PRO v4.0 — VERSIÓN DEFINITIVA FINAL COMPLETA
 # ================================================================
-# Módulos: Matrícula (Alumnos + Docentes), Documentos PDF,
-#          Carnets (individual/lote PDF 8 por hoja),
+# Módulos: Matrícula (Alumnos + Docentes), Documentos PDF (6 tipos),
+#          Carnets (individual/lote PDF 8 por hoja fotocheck),
 #          Asistencia QR (Alumnos + Docentes),
-#          Sistema de Calificación YACHAY (ZipGrade),
-#          Registro Auxiliar (3 Cursos × 4 Competencias × Desempeños),
-#          Registro Asistencia (sin sáb/dom, sin feriados)
+#          Sistema de Calificación YACHAY (ZipGrade) — RANKING POR DOCENTE,
+#          Registro Auxiliar (3 Cursos × 4 Competencias × 3 Desempeños),
+#          Registro Asistencia (sin sáb/dom, sin feriados + pie feriados),
+#          Gestión de Usuarios dinámicos desde Admin,
+#          Protección: solo Admin puede borrar datos,
+#          Links SIAGIE y Google Institucional
 # ================================================================
 
 import streamlit as st
@@ -28,12 +31,12 @@ import json
 import urllib.parse
 import numpy as np
 import calendar
+import hashlib
 from datetime import datetime, timedelta, timezone, date
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
 st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
-
 
 # ================================================================
 # ZONA HORARIA PERÚ (UTC-5)
@@ -77,20 +80,16 @@ FERIADOS_PERU = {
 
 
 def dias_habiles_mes(anio, mes):
-    """Retorna lista de días hábiles (L-V, sin feriados)"""
     dias = []
     _, ndays = calendar.monthrange(anio, mes)
     for d in range(1, ndays + 1):
         dt = date(anio, mes, d)
-        es_laboral = dt.weekday() < 5
-        es_feriado = (mes, d) in FERIADOS_PERU
-        if es_laboral and not es_feriado:
+        if dt.weekday() < 5 and (mes, d) not in FERIADOS_PERU:
             dias.append(d)
     return dias
 
 
 def feriados_del_mes(mes):
-    """Retorna lista de feriados de un mes específico"""
     resultado = []
     for (m, d), nombre in FERIADOS_PERU.items():
         if m == mes:
@@ -99,26 +98,39 @@ def feriados_del_mes(mes):
 
 
 # ================================================================
-# SISTEMA DE USUARIOS (Nombre + Contraseña — SEGURO)
+# LINKS INSTITUCIONALES
 # ================================================================
 
-USUARIOS = {
+LINK_SIAGIE = "https://sistemas10.minedu.gob.pe/siagie3/"
+LINK_GOOGLE = ("https://accounts.google.com/v3/signin/identifier?"
+               "continue=https%3A%2F%2Fmail.google.com%2Fmail%2F"
+               "&hd=ieyachay.org&osid=1&sacu=1&service=mail"
+               "&flowName=GlifWebSignIn&flowEntry=AddSession"
+               "&dsh=S386112432%3A1698624419248117&theme=glif")
+
+# ================================================================
+# SISTEMA DE USUARIOS — DINÁMICO (archivo JSON)
+# ================================================================
+
+ARCHIVO_USUARIOS = "usuarios.json"
+
+USUARIOS_DEFAULT = {
     "administrador": {
         "password": "306020",
         "rol": "admin",
-        "label": "⚙️ Administrador",
+        "label": "Administrador",
         "docente_info": None
     },
     "directora": {
         "password": "deyanira",
         "rol": "directivo",
-        "label": "📋 Directiva",
+        "label": "Directiva",
         "docente_info": None
     },
     "auxiliar": {
         "password": "123456789",
         "rol": "auxiliar",
-        "label": "👤 Auxiliar",
+        "label": "Auxiliar",
         "docente_info": None
     },
     "prof.inicial3": {
@@ -184,6 +196,19 @@ USUARIOS = {
 }
 
 
+def cargar_usuarios():
+    if Path(ARCHIVO_USUARIOS).exists():
+        with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    guardar_usuarios(USUARIOS_DEFAULT)
+    return USUARIOS_DEFAULT.copy()
+
+
+def guardar_usuarios(usuarios):
+    with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
+        json.dump(usuarios, f, indent=2, ensure_ascii=False)
+
+
 # ================================================================
 # CONSTANTES EDUCATIVAS
 # ================================================================
@@ -207,9 +232,9 @@ NIVELES_GRADOS = {
 SECCIONES = ["Única", "A", "B"]
 
 TODOS_LOS_GRADOS = []
-for nivel_key, grados_list in NIVELES_GRADOS.items():
-    for grado_item in grados_list:
-        TODOS_LOS_GRADOS.append(grado_item)
+for nk, gl in NIVELES_GRADOS.items():
+    for gi in gl:
+        TODOS_LOS_GRADOS.append(gi)
 
 MESES_ESCOLARES = {
     3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
@@ -229,7 +254,6 @@ BIMESTRES = {
     "Bimestre 4": [10, 11, 12]
 }
 
-# Archivos de datos
 ARCHIVO_BD = "base_datos.xlsx"
 ARCHIVO_MATRICULA = "matricula.xlsx"
 ARCHIVO_DOCENTES = "docentes.xlsx"
@@ -254,7 +278,6 @@ def init_session_state():
         'tipo_asistencia': 'Entrada',
         'activar_camara_asist': False,
         'areas_examen': [],
-        'resultados_examen': [],
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -271,42 +294,42 @@ init_session_state()
 st.markdown("""
 <style>
 .main-header {
-    text-align: center;
-    padding: 2rem;
+    text-align: center; padding: 2rem;
     background: linear-gradient(135deg, #001e7c 0%, #0052cc 100%);
-    color: white;
-    border-radius: 15px;
-    margin-bottom: 2rem;
+    color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 .wa-btn {
-    background: #25D366;
-    color: white !important;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    cursor: pointer;
-    width: 100%;
-    text-decoration: none;
-    display: block;
-    text-align: center;
-    margin: 4px 0;
+    background: #25D366; color: white !important; padding: 10px 20px;
+    border: none; border-radius: 8px; font-size: 15px; width: 100%;
+    text-decoration: none; display: block; text-align: center; margin: 4px 0;
 }
 .wa-btn:hover { background: #1da851; }
+.link-btn {
+    background: #4285F4; color: white !important; padding: 8px 16px;
+    border: none; border-radius: 8px; font-size: 14px; width: 100%;
+    text-decoration: none; display: block; text-align: center; margin: 4px 0;
+}
+.link-btn:hover { background: #3367D6; }
+.siagie-btn {
+    background: #E91E63; color: white !important; padding: 8px 16px;
+    border: none; border-radius: 8px; font-size: 14px; width: 100%;
+    text-decoration: none; display: block; text-align: center; margin: 4px 0;
+}
+.siagie-btn:hover { background: #C2185B; }
 .ranking-gold {
     background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #000; padding: 12px 15px; border-radius: 8px;
+    color: #000; padding: 12px; border-radius: 8px;
     font-weight: bold; text-align: center; margin: 5px 0;
 }
 .ranking-silver {
     background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
-    color: #000; padding: 12px 15px; border-radius: 8px;
+    color: #000; padding: 12px; border-radius: 8px;
     font-weight: bold; text-align: center; margin: 5px 0;
 }
 .ranking-bronze {
     background: linear-gradient(135deg, #CD7F32, #B8860B);
-    color: #fff; padding: 12px 15px; border-radius: 8px;
+    color: #fff; padding: 12px; border-radius: 8px;
     font-weight: bold; text-align: center; margin: 5px 0;
 }
 </style>
@@ -345,10 +368,8 @@ class RecursoManager:
     @staticmethod
     def obtener_fuente(nombre, tamanio, bold=False):
         try:
-            if bold:
-                ruta = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-            else:
-                ruta = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+            ruta = ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold
+                    else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
             if Path(ruta).exists():
                 return ImageFont.truetype(ruta, int(tamanio))
             return ImageFont.load_default()
@@ -357,12 +378,19 @@ class RecursoManager:
 
 
 # ================================================================
+# PERMISOS — SOLO ADMIN PUEDE BORRAR
+# ================================================================
+
+def puede_borrar():
+    """Solo el admin puede borrar datos del sistema"""
+    return st.session_state.rol == "admin"
+
+
+# ================================================================
 # BASE DE DATOS — ALUMNOS Y DOCENTES
 # ================================================================
 
 class BaseDatos:
-
-    # ---- MATRÍCULA ALUMNOS ----
 
     @staticmethod
     def cargar_matricula():
@@ -387,45 +415,40 @@ class BaseDatos:
         df = BaseDatos.cargar_matricula()
         if not df.empty and 'DNI' in df.columns and datos['DNI'] in df['DNI'].values:
             idx = df[df['DNI'] == datos['DNI']].index[0]
-            for key, value in datos.items():
-                df.at[idx, key] = value
+            for k, v in datos.items():
+                df.at[idx, k] = v
         else:
             df = pd.concat([df, pd.DataFrame([datos])], ignore_index=True)
         BaseDatos.guardar_matricula(df)
-        return True
 
     @staticmethod
     def buscar_por_dni(dni):
-        """Busca en matrícula alumnos, luego en docentes, luego en BD legacy"""
         dni_str = str(dni).strip()
-        # Buscar en alumnos
         df = BaseDatos.cargar_matricula()
-        if df is not None and not df.empty and 'DNI' in df.columns:
+        if not df.empty and 'DNI' in df.columns:
             df['DNI'] = df['DNI'].astype(str).str.strip()
-            resultado = df[df['DNI'] == dni_str]
-            if not resultado.empty:
-                r = resultado.iloc[0].to_dict()
+            res = df[df['DNI'] == dni_str]
+            if not res.empty:
+                r = res.iloc[0].to_dict()
                 r['_tipo'] = 'alumno'
                 return r
-        # Buscar en docentes
-        df_doc = BaseDatos.cargar_docentes()
-        if not df_doc.empty and 'DNI' in df_doc.columns:
-            df_doc['DNI'] = df_doc['DNI'].astype(str).str.strip()
-            res_doc = df_doc[df_doc['DNI'] == dni_str]
-            if not res_doc.empty:
-                r = res_doc.iloc[0].to_dict()
+        df_d = BaseDatos.cargar_docentes()
+        if not df_d.empty and 'DNI' in df_d.columns:
+            df_d['DNI'] = df_d['DNI'].astype(str).str.strip()
+            res2 = df_d[df_d['DNI'] == dni_str]
+            if not res2.empty:
+                r = res2.iloc[0].to_dict()
                 r['_tipo'] = 'docente'
                 return r
-        # Buscar en BD legacy
         try:
             if Path(ARCHIVO_BD).exists():
                 df2 = pd.read_excel(ARCHIVO_BD, dtype=str, engine='openpyxl')
                 df2.columns = df2.columns.str.strip().str.title()
                 if 'Dni' in df2.columns:
                     df2['Dni'] = df2['Dni'].astype(str).str.strip()
-                    res2 = df2[df2['Dni'] == dni_str]
-                    if not res2.empty:
-                        row = res2.iloc[0].to_dict()
+                    res3 = df2[df2['Dni'] == dni_str]
+                    if not res3.empty:
+                        row = res3.iloc[0].to_dict()
                         return {
                             'Nombre': row.get('Alumno', row.get('Nombre', '')),
                             'DNI': row.get('Dni', ''),
@@ -450,7 +473,6 @@ class BaseDatos:
 
     @staticmethod
     def obtener_estudiantes_grado(grado, seccion=None):
-        """Retorna DF de estudiantes de un grado, orden ALFABÉTICO"""
         df = BaseDatos.cargar_matricula()
         if df.empty:
             return df
@@ -464,8 +486,6 @@ class BaseDatos:
         if 'Nombre' in df.columns:
             df = df.sort_values('Nombre', ascending=True).reset_index(drop=True)
         return df
-
-    # ---- DOCENTES ----
 
     @staticmethod
     def cargar_docentes():
@@ -489,8 +509,8 @@ class BaseDatos:
         df = BaseDatos.cargar_docentes()
         if not df.empty and 'DNI' in df.columns and datos['DNI'] in df['DNI'].values:
             idx = df[df['DNI'] == datos['DNI']].index[0]
-            for key, value in datos.items():
-                df.at[idx, key] = value
+            for k, v in datos.items():
+                df.at[idx, k] = v
         else:
             df = pd.concat([df, pd.DataFrame([datos])], ignore_index=True)
         BaseDatos.guardar_docentes(df)
@@ -501,8 +521,6 @@ class BaseDatos:
         df['DNI'] = df['DNI'].astype(str).str.strip()
         df = df[df['DNI'] != str(dni).strip()]
         BaseDatos.guardar_docentes(df)
-
-    # ---- ASISTENCIA (alumnos + docentes) ----
 
     @staticmethod
     def guardar_asistencia(dni, nombre, tipo, hora, es_docente=False):
@@ -515,9 +533,7 @@ class BaseDatos:
             asistencias[fecha_hoy] = {}
         if dni not in asistencias[fecha_hoy]:
             asistencias[fecha_hoy][dni] = {
-                'nombre': nombre,
-                'entrada': '',
-                'salida': '',
+                'nombre': nombre, 'entrada': '', 'salida': '',
                 'es_docente': es_docente
             }
         asistencias[fecha_hoy][dni][tipo] = hora
@@ -530,8 +546,7 @@ class BaseDatos:
         fecha_hoy = fecha_peru_str()
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            return data.get(fecha_hoy, {})
+                return json.load(f).get(fecha_hoy, {})
         return {}
 
     @staticmethod
@@ -539,48 +554,75 @@ class BaseDatos:
         fecha_hoy = fecha_peru_str()
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                asistencias = json.load(f)
-            if fecha_hoy in asistencias:
-                del asistencias[fecha_hoy]
+                a = json.load(f)
+            if fecha_hoy in a:
+                del a[fecha_hoy]
             with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
-                json.dump(asistencias, f, indent=2, ensure_ascii=False)
-
-    # ---- ESTADÍSTICAS ----
+                json.dump(a, f, indent=2, ensure_ascii=False)
 
     @staticmethod
     def obtener_estadisticas():
         df = BaseDatos.cargar_matricula()
-        df_doc = BaseDatos.cargar_docentes()
-        total_alumnos = len(df) if df is not None and not df.empty else 0
-        total_docentes = len(df_doc) if df_doc is not None and not df_doc.empty else 0
+        df_d = BaseDatos.cargar_docentes()
         return {
-            'total_alumnos': total_alumnos,
-            'total_docentes': total_docentes,
+            'total_alumnos': len(df) if not df.empty else 0,
+            'total_docentes': len(df_d) if not df_d.empty else 0,
             'grados': df['Grado'].nunique() if not df.empty and 'Grado' in df.columns else 0
         }
 
-    # ---- RESULTADOS EXÁMENES ----
+    # ---- RESULTADOS POR DOCENTE (separados por usuario) ----
 
     @staticmethod
-    def guardar_resultados_examen(resultado):
-        datos = []
+    def guardar_resultados_examen(resultado, usuario_docente):
+        """Guarda resultado asociado al usuario docente"""
+        datos = {}
         if Path(ARCHIVO_RESULTADOS).exists():
             with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
                 datos = json.load(f)
-        datos.append(resultado)
+        if usuario_docente not in datos:
+            datos[usuario_docente] = []
+        datos[usuario_docente].append(resultado)
         with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
             json.dump(datos, f, indent=2, ensure_ascii=False)
 
     @staticmethod
-    def cargar_resultados_examen():
+    def cargar_resultados_examen(usuario_docente):
+        """Carga solo los resultados del docente específico"""
         if Path(ARCHIVO_RESULTADOS).exists():
             with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                datos = json.load(f)
+            return datos.get(usuario_docente, [])
+        return []
+
+    @staticmethod
+    def limpiar_resultados_examen(usuario_docente):
+        """Limpia solo los resultados del docente"""
+        if Path(ARCHIVO_RESULTADOS).exists():
+            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+            if usuario_docente in datos:
+                datos[usuario_docente] = []
+            with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
+                json.dump(datos, f, indent=2, ensure_ascii=False)
+
+    @staticmethod
+    def cargar_todos_resultados():
+        """Carga todos los resultados (para admin)"""
+        if Path(ARCHIVO_RESULTADOS).exists():
+            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+            todos = []
+            for usr, lista in datos.items():
+                for r in lista:
+                    r['_docente'] = usr
+                    todos.append(r)
+            return todos
         return []
 
 
 # ================================================================
-# GENERADOR PDF — DOCUMENTOS OFICIALES (6 tipos)
+# GENERADOR PDF — DOCUMENTOS (6 tipos)
+# CORREGIDO: "Se expide a solicitud del padre/madre/apoderado"
 # ================================================================
 
 class GeneradorPDF:
@@ -591,7 +633,7 @@ class GeneradorPDF:
         self.width, self.height = A4
         self.styles = getSampleStyleSheet()
 
-    def _aplicar_fondo(self):
+    def _fondo(self):
         if Path("fondo.png").exists():
             try:
                 self.canvas.drawImage("fondo.png", 0, 0,
@@ -599,24 +641,22 @@ class GeneradorPDF:
             except Exception:
                 pass
 
-    def _marca_agua_escudo(self):
+    def _marca_agua(self):
         if Path("escudo_upload.png").exists():
             try:
                 self.canvas.saveState()
                 self.canvas.setFillAlpha(0.06)
                 self.canvas.drawImage("escudo_upload.png",
                                        self.width / 2 - 120, self.height / 2 - 120,
-                                       width=240, height=240, mask='auto')
+                                       240, 240, mask='auto')
                 self.canvas.restoreState()
             except Exception:
                 pass
 
-    def _dibujar_encabezado(self, titulo):
+    def _encabezado(self, titulo):
         self.canvas.setFont("Helvetica-Oblique", 11)
-        self.canvas.drawCentredString(
-            self.width / 2, self.config['y_frase'],
-            f'"{self.config["frase"]}"'
-        )
+        self.canvas.drawCentredString(self.width / 2, self.config['y_frase'],
+                                       f'"{self.config["frase"]}"')
         hoy = hora_peru()
         self.canvas.setFont("Helvetica", 11)
         self.canvas.drawRightString(
@@ -634,37 +674,41 @@ class GeneradorPDF:
         p.drawOn(self.canvas, x, y - h)
         return y - h - 15
 
-    def _agregar_qr(self, datos, tipo_doc):
-        data_qr = (f"YACHAY|{tipo_doc}|"
-                    f"{datos.get('alumno', datos.get('Nombre', ''))}|"
-                    f"{datos.get('dni', datos.get('DNI', ''))}|"
-                    f"{hora_peru().strftime('%d/%m/%Y')}")
-        qr = qrcode.QRCode(box_size=10, border=1)
-        qr.add_data(data_qr)
-        qr.make(fit=True)
-        img_qr = qr.make_image(fill_color="black", back_color="white")
-        temp = "temp_qr.png"
-        img_qr.save(temp)
-        self.canvas.drawImage(temp, self.config['qr_x'], self.config['qr_y'],
-                               width=70, height=70)
+    def _qr(self, datos, tipo):
+        data = (f"YACHAY|{tipo}|{datos.get('alumno', datos.get('Nombre', ''))}|"
+                f"{datos.get('dni', datos.get('DNI', ''))}|"
+                f"{hora_peru().strftime('%d/%m/%Y')}")
+        q = qrcode.QRCode(box_size=10, border=1)
+        q.add_data(data)
+        q.make(fit=True)
+        img = q.make_image(fill_color="black", back_color="white")
+        tmp = "tmp_qr.png"
+        img.save(tmp)
+        self.canvas.drawImage(tmp, self.config['qr_x'], self.config['qr_y'], 70, 70)
         self.canvas.setFont("Helvetica", 6)
         self.canvas.drawCentredString(self.config['qr_x'] + 35,
-                                       self.config['qr_y'] - 5,
-                                       "VERIFICACIÓN")
+                                       self.config['qr_y'] - 5, "VERIFICACIÓN")
         try:
-            os.remove(temp)
+            os.remove(tmp)
         except Exception:
             pass
 
     def _solicitante(self, datos, y):
+        """CORREGIDO: Se expide a solicitud del padre/madre/apoderado"""
         apoderado = datos.get('apoderado', datos.get('Apoderado', '')).upper()
         dni_apo = datos.get('dni_apo', datos.get('DNI_Apoderado', ''))
-        est = ParagraphStyle('S', parent=self.styles['Normal'],
-                              fontSize=10, leading=14, alignment=TA_JUSTIFY)
-        return self._parrafo(
-            f"Se expide a solicitud del Sr(a). <b>{apoderado}</b> "
-            f"con DNI N° <b>{dni_apo}</b>.", 60, y, self.width - 120, est
-        )
+        alumno = datos.get('alumno', datos.get('Nombre', '')).upper()
+        e = ParagraphStyle('S', parent=self.styles['Normal'],
+                            fontSize=10, leading=14, alignment=TA_JUSTIFY)
+        if apoderado and apoderado.strip():
+            texto = (f"Se expide el presente documento a solicitud del "
+                     f"padre/madre/apoderado(a) <b>{apoderado}</b>, "
+                     f"identificado(a) con DNI N° <b>{dni_apo}</b>, "
+                     f"en representación del/la estudiante <b>{alumno}</b>.")
+        else:
+            texto = (f"Se expide el presente documento a solicitud de parte "
+                     f"interesada, para los fines que estime conveniente.")
+        return self._parrafo(texto, 60, y, self.width - 120, e)
 
     def _firmas(self):
         yf = 110
@@ -680,23 +724,22 @@ class GeneradorPDF:
         self.buffer.seek(0)
         return self.buffer
 
-    # ---- 1. CONSTANCIA DE VACANTE ----
     def generar_constancia_vacante(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
-        self._dibujar_encabezado("CONSTANCIA DE VACANTE")
+        self._fondo()
+        self._marca_agua()
+        self._encabezado("CONSTANCIA DE VACANTE")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
         e = ParagraphStyle('N', parent=self.styles['Normal'],
                             fontSize=11, leading=15, alignment=TA_JUSTIFY)
         el = ParagraphStyle('L', parent=e, leftIndent=25)
+        al = d.get('alumno', d.get('Nombre', '')).upper()
+        dni = d.get('dni', d.get('DNI', ''))
+        gr = d.get('grado', d.get('Grado', '')).upper()
         y = self._parrafo(
             "La Dirección de la I.E.P. ALTERNATIVO YACHAY de Chinchero, "
             "debidamente representada por su Directora, certifica:", mx, y, an, e
         )
-        al = d.get('alumno', d.get('Nombre', '')).upper()
-        dni = d.get('dni', d.get('DNI', ''))
-        gr = d.get('grado', d.get('Grado', '')).upper()
         y = self._parrafo(
             f"Que la I.E. cuenta con <b>VACANTE DISPONIBLE</b> en <b>{gr}</b> "
             f"para el/la estudiante <b>{al}</b>, DNI N° <b>{dni}</b>, "
@@ -715,38 +758,36 @@ class GeneradorPDF:
             y = self._parrafo(r, mx, y, an, el)
         y = self._solicitante(d, y)
         self._firmas()
-        self._agregar_qr(d, "VACANTE")
+        self._qr(d, "VACANTE")
         return self._fin()
 
-    # ---- 2. CONSTANCIA DE NO ADEUDO ----
     def generar_constancia_no_deudor(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
-        self._dibujar_encabezado("CONSTANCIA DE NO ADEUDO")
+        self._fondo()
+        self._marca_agua()
+        self._encabezado("CONSTANCIA DE NO ADEUDO")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
         e = ParagraphStyle('N', parent=self.styles['Normal'],
                             fontSize=11, leading=15, alignment=TA_JUSTIFY)
-        y = self._parrafo(
-            "La Dirección de la I.E.P. ALTERNATIVO YACHAY:", mx, y, an, e
-        )
         al = d.get('alumno', d.get('Nombre', '')).upper()
         dni = d.get('dni', d.get('DNI', ''))
         y = self._parrafo(
+            "La Dirección de la I.E.P. ALTERNATIVO YACHAY:", mx, y, an, e
+        )
+        y = self._parrafo(
             f"Que el/la estudiante <b>{al}</b>, DNI N° <b>{dni}</b>, "
-            f"ha cumplido satisfactoriamente con todas sus obligaciones "
-            f"económicas, no registrando deuda alguna.", mx, y, an, e
+            f"ha cumplido con todas sus obligaciones económicas, "
+            f"no registrando deuda alguna.", mx, y, an, e
         )
         y = self._solicitante(d, y)
         self._firmas()
-        self._agregar_qr(d, "NO ADEUDO")
+        self._qr(d, "NO ADEUDO")
         return self._fin()
 
-    # ---- 3. CONSTANCIA DE ESTUDIOS ----
     def generar_constancia_estudios(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
-        self._dibujar_encabezado("CONSTANCIA DE ESTUDIOS")
+        self._fondo()
+        self._marca_agua()
+        self._encabezado("CONSTANCIA DE ESTUDIOS")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
         e = ParagraphStyle('N', parent=self.styles['Normal'],
@@ -760,19 +801,18 @@ class GeneradorPDF:
         y = self._parrafo(
             f"Que <b>{al}</b>, DNI N° <b>{dni}</b>, se encuentra "
             f"<b>MATRICULADO(A)</b> año <b>{self.config['anio']}</b>, "
-            f"cursando <b>{gr}</b>, conforme consta en los registros "
-            f"oficiales del plantel y el Sistema SIAGIE.", mx, y, an, e
+            f"cursando <b>{gr}</b>, conforme consta en registros oficiales "
+            f"y el Sistema SIAGIE.", mx, y, an, e
         )
         y = self._solicitante(d, y)
         self._firmas()
-        self._agregar_qr(d, "ESTUDIOS")
+        self._qr(d, "ESTUDIOS")
         return self._fin()
 
-    # ---- 4. CONSTANCIA DE CONDUCTA ----
     def generar_constancia_conducta(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
-        self._dibujar_encabezado("CONSTANCIA DE CONDUCTA")
+        self._fondo()
+        self._marca_agua()
+        self._encabezado("CONSTANCIA DE CONDUCTA")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
         e = ParagraphStyle('N', parent=self.styles['Normal'],
@@ -780,8 +820,8 @@ class GeneradorPDF:
         al = d.get('alumno', d.get('Nombre', '')).upper()
         dni = d.get('dni', d.get('DNI', ''))
         y = self._parrafo(
-            f"Que <b>{al}</b>, DNI N° <b>{dni}</b>, obtuvo en "
-            f"<b>CONDUCTA</b>:", mx, y, an, e
+            f"Que <b>{al}</b>, DNI N° <b>{dni}</b>, obtuvo en CONDUCTA:",
+            mx, y, an, e
         )
         y -= 15
         tx = self.width / 2 - 200
@@ -803,14 +843,13 @@ class GeneradorPDF:
         y -= 10
         y = self._solicitante(d, y)
         self._firmas()
-        self._agregar_qr(d, "CONDUCTA")
+        self._qr(d, "CONDUCTA")
         return self._fin()
 
-    # ---- 5. CARTA DE COMPROMISO ----
     def generar_carta_compromiso(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
-        self._dibujar_encabezado("CARTA DE COMPROMISO")
+        self._fondo()
+        self._marca_agua()
+        self._encabezado("CARTA DE COMPROMISO")
         y = self.config['y_titulo'] - 40
         mx, an = 50, self.width - 100
         e = ParagraphStyle('C', parent=self.styles['Normal'],
@@ -821,10 +860,11 @@ class GeneradorPDF:
         al = d.get('alumno', d.get('Nombre', '')).upper()
         gr = d.get('grado', d.get('Grado', '')).upper()
         y = self._parrafo(
-            f"Yo, <b>{apo}</b>, DNI N° <b>{dapo}</b>, apoderado de "
-            f"<b>{al}</b>, del <b>{gr}</b>, me comprometo a:", mx, y, an, e
+            f"Yo, <b>{apo}</b>, DNI N° <b>{dapo}</b>, "
+            f"padre/madre/apoderado(a) de <b>{al}</b>, del <b>{gr}</b>, "
+            f"me comprometo a:", mx, y, an, e
         )
-        compromisos = [
+        for c in [
             "1. Velar por la asistencia puntual de mi hijo(a).",
             "2. Supervisar el cumplimiento de tareas.",
             "3. Asegurar asistencia uniformado(a).",
@@ -839,8 +879,7 @@ class GeneradorPDF:
             "12. Justificar inasistencias en 24 horas.",
             "13. Cumplir pagos de pensiones.",
             "14. Respetar la autonomía pedagógica."
-        ]
-        for c in compromisos:
+        ]:
             y = self._parrafo(c, mx, y, an, ei)
             y += 2
         y = 120
@@ -856,18 +895,15 @@ class GeneradorPDF:
         self.canvas.drawCentredString(420, y - 10, "PROMOTOR")
         return self._fin()
 
-    # ---- 6. RESOLUCIÓN DE TRASLADO ----
     def generar_resolucion_traslado(self, d):
-        self._aplicar_fondo()
-        self._marca_agua_escudo()
+        self._fondo()
+        self._marca_agua()
         self.canvas.setFont("Helvetica-Oblique", 11)
         self.canvas.drawCentredString(self.width / 2, 700,
                                        f'"{self.config["frase"]}"')
         self.canvas.setFont("Helvetica-Bold", 14)
-        self.canvas.drawCentredString(
-            self.width / 2, 670,
-            f"RESOLUCIÓN DIRECTORAL N° {d.get('num_resolucion', '')}"
-        )
+        self.canvas.drawCentredString(self.width / 2, 670,
+                                       f"RESOLUCIÓN DIRECTORAL N° {d.get('num_resolucion', '')}")
         self.canvas.setFont("Helvetica", 11)
         self.canvas.drawCentredString(self.width / 2, 640,
                                        d.get('fecha_resolucion', ''))
@@ -880,53 +916,40 @@ class GeneradorPDF:
         self.canvas.setFont("Helvetica-Bold", 11)
         self.canvas.drawString(mx, y, "SE RESUELVE:")
         y -= 20
-        tabla_data = [
+        t = Table([
             ['ALUMNO', al],
             ['NIVEL', niv],
             ['IE PROCEDENCIA', 'IEP ALTERNATIVO YACHAY'],
             ['IE DESTINO', d.get('ie_destino', '').upper()]
-        ]
-        tabla = Table(tabla_data, colWidths=[200, 280])
-        tabla.setStyle(TableStyle([
+        ], colWidths=[200, 280])
+        t.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
             ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, -1), 9),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
-        tabla.wrapOn(self.canvas, an, 200)
-        tabla.drawOn(self.canvas, mx, y - 80)
+        t.wrapOn(self.canvas, an, 200)
+        t.drawOn(self.canvas, mx, y - 80)
         self._firmas()
-        self._agregar_qr(d, "TRASLADO")
+        self._qr(d, "TRASLADO")
         return self._fin()
 
 
 # ================================================================
-# REGISTRO AUXILIAR PDF — 3 Cursos × 4 Competencias × Desempeños
+# REGISTRO AUXILIAR PDF — 3 Cursos × 4 Competencias × 3 Desempeños
 # ================================================================
 
 def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
                                   estudiantes_df, cursos=None):
-    """
-    Genera registro auxiliar MINEDU:
-    - Hasta 3 cursos por hoja
-    - Cada curso: 4 competencias
-    - Cada competencia: 3 desempeños (D1, D2, D3)
-    - Orden alfabético
-    - Marca de agua escudo
-    """
     if cursos is None:
         cursos = ["Matemática", "Comunicación", "Ciencia y Tec."]
-
-    num_cursos = len(cursos)
-    desempenios_por_comp = 3
-    comps_por_curso = 4
-    total_cols_data = num_cursos * comps_por_curso * desempenios_por_comp
-
+    nc = len(cursos)
+    dp = 3  # desempeños por competencia
+    cp = 4  # competencias por curso
+    total_d = nc * cp * dp
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
-
-    # Marca de agua
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
@@ -936,69 +959,51 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
             c.restoreState()
         except Exception:
             pass
-
-    # Título
     c.setFont("Helvetica-Bold", 11)
     c.drawCentredString(w / 2, h - 22,
                         "I.E.P. ALTERNATIVO YACHAY - REGISTRO AUXILIAR DE EVALUACIÓN")
     c.setFont("Helvetica", 8)
     c.drawCentredString(w / 2, h - 35,
-                        f"Grado: {grado} | Sección: {seccion} | "
-                        f"{bimestre} | Año: {anio}")
+                        f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}")
     c.setFont("Helvetica-Oblique", 7)
     c.drawCentredString(w / 2, h - 47,
                         '"Educar para la Vida — Pioneros en la Educación de Calidad"')
 
-    # === CONSTRUIR ENCABEZADO DE 3 FILAS ===
-    # Fila 0: N° | NOMBRE | CURSO1 (span) | CURSO2 (span) | CURSO3 (span)
-    # Fila 1: | | C1(span) C2(span) C3(span) C4(span) | ... (por curso)
-    # Fila 2: | | D1 D2 D3 | D1 D2 D3 | ... (por competencia)
-
-    cols_per_curso = comps_por_curso * desempenios_por_comp  # 4*3=12
-
-    header_row0 = ["N°", "APELLIDOS Y NOMBRES"]
+    cols_per_c = cp * dp
+    r0 = ["N°", "APELLIDOS Y NOMBRES"]
     for curso in cursos:
-        header_row0.append(curso.upper())
-        header_row0.extend([""] * (cols_per_curso - 1))
+        r0.append(curso.upper())
+        r0.extend([""] * (cols_per_c - 1))
+    r1 = ["", ""]
+    for _ in range(nc):
+        for ci in range(1, cp + 1):
+            r1.append(f"C{ci}")
+            r1.extend([""] * (dp - 1))
+    r2 = ["", ""]
+    for _ in range(nc):
+        for _ in range(cp):
+            for di in range(1, dp + 1):
+                r2.append(f"D{di}")
 
-    header_row1 = ["", ""]
-    for _ in range(num_cursos):
-        for ci in range(1, comps_por_curso + 1):
-            header_row1.append(f"C{ci}")
-            header_row1.extend([""] * (desempenios_por_comp - 1))
-
-    header_row2 = ["", ""]
-    for _ in range(num_cursos):
-        for _ in range(comps_por_curso):
-            for di in range(1, desempenios_por_comp + 1):
-                header_row2.append(f"D{di}")
-
-    # Estudiantes
     if not estudiantes_df.empty:
         est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
     else:
         est = pd.DataFrame()
+    data = [r0, r1, r2]
+    ne = len(est) if not est.empty else 25
+    for idx in range(ne):
+        nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
+        if len(nm) > 28:
+            nm = nm[:28] + "."
+        data.append([str(idx + 1), nm] + [""] * total_d)
 
-    data = [header_row0, header_row1, header_row2]
-    num_est = len(est) if not est.empty else 25
-    for idx in range(num_est):
-        nombre = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
-        if len(nombre) > 28:
-            nombre = nombre[:28] + "."
-        fila = [str(idx + 1), nombre] + [""] * total_cols_data
-        data.append(fila)
-
-    # Anchos
-    available = w - 30
-    w_num = 16
-    w_name = 115
-    w_data = (available - w_num - w_name) / total_cols_data
-    w_data = max(16, min(25, w_data))
-    col_widths = [w_num, w_name] + [w_data] * total_cols_data
-
-    tabla = Table(data, colWidths=col_widths, repeatRows=3)
-
-    style_list = [
+    avail = w - 30
+    wn = 16
+    wname = 115
+    wd = max(16, min(25, (avail - wn - wname) / total_d))
+    cw = [wn, wname] + [wd] * total_d
+    tabla = Table(data, colWidths=cw, repeatRows=3)
+    sl = [
         ('FONTNAME', (0, 0), (-1, 2), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 2), 5),
         ('FONTSIZE', (0, 3), (-1, -1), 5.5),
@@ -1011,78 +1016,59 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
         ('ROWBACKGROUNDS', (0, 3), (-1, -1),
          [colors.white, colors.Color(0.95, 0.95, 1)]),
     ]
-
-    # Spans y colores para cursos (fila 0)
-    colores_cursos = [
+    colores_c = [
         colors.Color(0, 0.2, 0.5),
         colors.Color(0.15, 0.35, 0.15),
         colors.Color(0.4, 0.15, 0.15)
     ]
     for ci, curso in enumerate(cursos):
-        col_start = 2 + ci * cols_per_curso
-        col_end = col_start + cols_per_curso - 1
-        style_list.append(('SPAN', (col_start, 0), (col_end, 0)))
-        bg = colores_cursos[ci % len(colores_cursos)]
-        style_list.append(('BACKGROUND', (col_start, 0), (col_end, 0), bg))
-        style_list.append(('TEXTCOLOR', (col_start, 0), (col_end, 0), colors.white))
-
-        # Spans para competencias (fila 1)
-        for comp_i in range(comps_por_curso):
-            cs = col_start + comp_i * desempenios_por_comp
-            ce = cs + desempenios_por_comp - 1
-            style_list.append(('SPAN', (cs, 1), (ce, 1)))
-            bg2 = colors.Color(bg.red + 0.1, bg.green + 0.1, bg.blue + 0.1)
-            style_list.append(('BACKGROUND', (cs, 1), (ce, 1), bg2))
-            style_list.append(('TEXTCOLOR', (cs, 1), (ce, 1), colors.white))
-            # Desempeños fila 2
-            style_list.append(('BACKGROUND', (cs, 2), (ce, 2), bg2))
-            style_list.append(('TEXTCOLOR', (cs, 2), (ce, 2), colors.white))
-
-    tabla.setStyle(TableStyle(style_list))
-    tw, th_t = tabla.wrap(w - 20, h - 70)
-    tabla.drawOn(c, 10, h - 58 - th_t)
-
-    # Pie
+        cs = 2 + ci * cols_per_c
+        ce = cs + cols_per_c - 1
+        sl.append(('SPAN', (cs, 0), (ce, 0)))
+        bg = colores_c[ci % len(colores_c)]
+        sl.append(('BACKGROUND', (cs, 0), (ce, 0), bg))
+        sl.append(('TEXTCOLOR', (cs, 0), (ce, 0), colors.white))
+        for ki in range(cp):
+            s = cs + ki * dp
+            e = s + dp - 1
+            sl.append(('SPAN', (s, 1), (e, 1)))
+            bg2 = colors.Color(min(bg.red + 0.1, 1),
+                               min(bg.green + 0.1, 1),
+                               min(bg.blue + 0.1, 1))
+            sl.append(('BACKGROUND', (s, 1), (e, 1), bg2))
+            sl.append(('TEXTCOLOR', (s, 1), (e, 1), colors.white))
+            sl.append(('BACKGROUND', (s, 2), (e, 2), bg2))
+            sl.append(('TEXTCOLOR', (s, 2), (e, 2), colors.white))
+    tabla.setStyle(TableStyle(sl))
+    tw, th = tabla.wrap(w - 20, h - 70)
+    tabla.drawOn(c, 10, h - 58 - th)
     c.setFont("Helvetica", 5)
     c.drawString(10, 12,
                  f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) "
-                 f"B(11-13) C(0-10) | {bimestre} | Sistema YACHAY PRO — {anio}")
-
+                 f"B(11-13) C(0-10) | {bimestre} | YACHAY PRO — {anio}")
     c.save()
     buffer.seek(0)
     return buffer
 
 
 # ================================================================
-# REGISTRO ASISTENCIA PDF (sin sáb/dom, sin feriados, muestra cuáles)
+# REGISTRO ASISTENCIA PDF (sin sáb/dom, sin feriados + pie feriados)
 # ================================================================
 
 def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
                                      meses_sel):
-    """
-    Genera registro asistencia:
-    - Solo días hábiles (L-V)
-    - Excluye feriados de Perú
-    - Al pie indica qué feriados se excluyeron
-    """
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
-
     if not estudiantes_df.empty:
         est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
     else:
         est = pd.DataFrame()
-
-    dias_semana = {0: "L", 1: "M", 2: "Mi", 3: "J", 4: "V"}
-
-    for mi, mes_num in enumerate(meses_sel):
+    ds = {0: "L", 1: "M", 2: "Mi", 3: "J", 4: "V"}
+    for mi, mn in enumerate(meses_sel):
         if mi > 0:
             c.showPage()
-
-        mes_nombre = MESES_ESCOLARES.get(mes_num, f"Mes {mes_num}")
-
-        # Marca de agua
+        mnm = MESES_ESCOLARES.get(mn, f"Mes {mn}")
         if Path("escudo_upload.png").exists():
             try:
                 c.saveState()
@@ -1092,38 +1078,31 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
                 c.restoreState()
             except Exception:
                 pass
-
         c.setFont("Helvetica-Bold", 11)
         c.drawCentredString(w / 2, h - 22,
                             "I.E.P. ALTERNATIVO YACHAY - REGISTRO DE ASISTENCIA")
         c.setFont("Helvetica", 8)
         c.drawCentredString(w / 2, h - 35,
                             f"Grado: {grado} | Sección: {seccion} | "
-                            f"Mes: {mes_nombre} | Año: {anio}")
-
-        dias = dias_habiles_mes(int(anio), mes_num)
-        ndias = len(dias)
-
+                            f"Mes: {mnm} | Año: {anio}")
+        dias = dias_habiles_mes(int(anio), mn)
+        nd = len(dias)
         header = ["N°", "APELLIDOS Y NOMBRES"]
         for d in dias:
-            dt = date(int(anio), mes_num, d)
-            header.append(f"{d}\n{dias_semana[dt.weekday()]}")
+            dt = date(int(anio), mn, d)
+            header.append(f"{d}\n{ds[dt.weekday()]}")
         header.extend(["A", "T", "F", "J"])
-
         data = [header]
-        num_est = len(est) if not est.empty else 25
-        for idx in range(num_est):
-            nombre = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
-            if len(nombre) > 32:
-                nombre = nombre[:32] + "."
-            fila = [str(idx + 1), nombre] + [""] * ndias + ["", "", "", ""]
-            data.append(fila)
-
-        dias_width = max(15, min(22, (w - 18 - 140 - 72 - 30) / max(ndias, 1)))
-        col_widths = [18, 140] + [dias_width] * ndias + [18, 18, 18, 18]
-
-        tabla = Table(data, colWidths=col_widths, repeatRows=1)
-        tabla.setStyle(TableStyle([
+        ne = len(est) if not est.empty else 25
+        for idx in range(ne):
+            nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
+            if len(nm) > 32:
+                nm = nm[:32] + "."
+            data.append([str(idx + 1), nm] + [""] * nd + ["", "", "", ""])
+        dw = max(15, min(22, (w - 18 - 140 - 72 - 30) / max(nd, 1)))
+        cw = [18, 140] + [dw] * nd + [18, 18, 18, 18]
+        t = Table(data, colWidths=cw, repeatRows=1)
+        t.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 5),
             ('FONTSIZE', (0, 1), (-1, -1), 6),
@@ -1137,33 +1116,28 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
              [colors.white, colors.Color(0.95, 1, 0.95)]),
             ('BACKGROUND', (-4, 0), (-1, 0), colors.Color(0.6, 0, 0)),
         ]))
-
-        tw, th_t = tabla.wrap(w - 20, h - 60)
-        tabla.drawOn(c, 10, h - 48 - th_t)
-
-        # Pie: Mostrar feriados del mes que se excluyeron
-        feriados_mes = feriados_del_mes(mes_num)
+        tw, th2 = t.wrap(w - 20, h - 60)
+        t.drawOn(c, 10, h - 48 - th2)
+        fer = feriados_del_mes(mn)
         c.setFont("Helvetica", 5)
-        pie_texto = (f"A=Asistió | T=Tardanza | F=Falta | J=Justificada | "
-                     f"Sin sábados, domingos ni feriados")
-        if feriados_mes:
-            pie_texto += f" | FERIADOS EXCLUIDOS: {', '.join(feriados_mes)}"
-        c.drawString(10, 8, pie_texto)
-
+        pie = ("A=Asistió | T=Tardanza | F=Falta | J=Justificada | "
+               "Sin sábados, domingos ni feriados")
+        if fer:
+            pie += f" | FERIADOS EXCLUIDOS: {', '.join(fer)}"
+        c.drawString(10, 8, pie)
     c.save()
     buffer.seek(0)
     return buffer
 
 
 # ================================================================
-# RANKING PDF COMPLETO
+# RANKING PDF — COLUMNAS FIJAS + COLORES POR ÁREA
 # ================================================================
 
 def generar_ranking_pdf(resultados, anio):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
@@ -1173,80 +1147,93 @@ def generar_ranking_pdf(resultados, anio):
             c.restoreState()
         except Exception:
             pass
-
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(w / 2, h - 40, "I.E.P. ALTERNATIVO YACHAY")
     c.setFont("Helvetica", 11)
-    c.drawCentredString(w / 2, h - 58,
-                        '"Pioneros en la Educación de Calidad"')
+    c.drawCentredString(w / 2, h - 58, '"Pioneros en la Educación de Calidad"')
     c.setFont("Helvetica-Bold", 14)
-    c.drawCentredString(w / 2, h - 85,
-                        f"RANKING DE RESULTADOS — {anio}")
+    c.drawCentredString(w / 2, h - 85, f"RANKING DE RESULTADOS — {anio}")
     c.setFont("Helvetica", 9)
     c.drawCentredString(w / 2, h - 100,
                         f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
 
-    ranking = sorted(resultados,
-                     key=lambda r: r.get('promedio_general', 0),
-                     reverse=True)
-
-    all_areas = set()
-    for r in ranking:
+    rk = sorted(resultados,
+                key=lambda r: r.get('promedio_general', 0), reverse=True)
+    all_a = set()
+    for r in rk:
         for a in r.get('areas', []):
-            all_areas.add(a['nombre'])
-    all_areas = sorted(all_areas)
+            all_a.add(a['nombre'])
+    all_a = sorted(all_a)
 
     header = ["#", "APELLIDOS Y NOMBRES", "DNI"]
-    header.extend(all_areas)
+    header.extend(all_a)
     header.append("PROM.")
-
     data = [header]
-    for idx, r in enumerate(ranking):
-        fila = [str(idx + 1), r.get('nombre', ''), r.get('dni', '')]
-        area_notas = {a['nombre']: str(a['nota']) for a in r.get('areas', [])}
-        for area in all_areas:
-            fila.append(area_notas.get(area, '-'))
+    for idx, r in enumerate(rk):
+        nm = r.get('nombre', '')
+        if len(nm) > 30:
+            nm = nm[:30] + "."
+        fila = [str(idx + 1), nm, r.get('dni', '')]
+        an_map = {a['nombre']: str(a['nota']) for a in r.get('areas', [])}
+        for a in all_a:
+            fila.append(an_map.get(a, '-'))
         fila.append(str(r.get('promedio_general', 0)))
         data.append(fila)
 
-    n_areas = len(all_areas)
-    col_widths = [25, 160, 60] + [45] * n_areas + [45]
-
-    tabla = Table(data, colWidths=col_widths, repeatRows=1)
-    st_list = [
+    na = len(all_a)
+    # Anchos fijos: #=20, Nombre=150, DNI=55, Áreas=50 cada una, Prom=45
+    cw = [20, 150, 55] + [50] * na + [45]
+    t = Table(data, colWidths=cw, repeatRows=1)
+    st_l = [
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 7),
-        ('FONTSIZE', (0, 1), (-1, -1), 7.5),
+        ('FONTSIZE', (0, 1), (-1, -1), 7),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('ALIGN', (1, 1), (1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.1, 0.1, 0.4)),
+        ('BACKGROUND', (0, 0), (2, 0), colors.Color(0.1, 0.1, 0.4)),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('BACKGROUND', (-1, 0), (-1, 0), colors.Color(0.3, 0, 0.3)),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1),
          [colors.white, colors.Color(0.95, 0.95, 1)]),
     ]
+    # Colores diferentes por área
+    colores_areas = [
+        colors.Color(0, 0.3, 0.6),       # Azul
+        colors.Color(0.2, 0.5, 0.1),      # Verde
+        colors.Color(0.6, 0.2, 0),         # Naranja
+        colors.Color(0.4, 0, 0.4),         # Morado
+        colors.Color(0, 0.4, 0.4),         # Teal
+        colors.Color(0.5, 0.3, 0),         # Marrón
+        colors.Color(0.3, 0.1, 0.5),       # Índigo
+        colors.Color(0.6, 0, 0.2),         # Rosa oscuro
+    ]
+    for i in range(na):
+        col_idx = 3 + i
+        bg = colores_areas[i % len(colores_areas)]
+        st_l.append(('BACKGROUND', (col_idx, 0), (col_idx, 0), bg))
+    # Top 3
     bg_top = [
         colors.Color(1, 0.84, 0),
         colors.Color(0.75, 0.75, 0.75),
         colors.Color(0.8, 0.5, 0.2),
     ]
-    for i in range(min(3, len(ranking))):
-        st_list.append(('BACKGROUND', (0, i + 1), (-1, i + 1), bg_top[i]))
-    tabla.setStyle(TableStyle(st_list))
-    tw, th_t = tabla.wrap(w - 60, h - 150)
-    tabla.drawOn(c, 30, h - 120 - th_t)
-
+    for i in range(min(3, len(rk))):
+        st_l.append(('BACKGROUND', (0, i + 1), (-1, i + 1), bg_top[i]))
+    t.setStyle(TableStyle(st_l))
+    tw, th2 = t.wrap(w - 40, h - 150)
+    t.drawOn(c, 20, h - 120 - th2)
     c.setFont("Helvetica", 7)
     c.drawCentredString(w / 2, 30,
-                        f"Sistema YACHAY PRO — {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+                        f"YACHAY PRO — {hora_peru().strftime('%d/%m/%Y %H:%M')}")
     c.save()
     buffer.seek(0)
     return buffer
 
 
 # ================================================================
-# GENERADOR DE CARNETS (Alumno + Docente)
+# GENERADOR DE CARNETS
 # ================================================================
 
 class GeneradorCarnet:
@@ -1266,17 +1253,15 @@ class GeneradorCarnet:
     def _escudo_fondo(self):
         if Path("escudo_upload.png").exists():
             try:
-                escudo = Image.open("escudo_upload.png").convert("RGBA")
-                escudo = escudo.resize((280, 280), Image.LANCZOS)
+                esc = Image.open("escudo_upload.png").convert("RGBA")
+                esc = esc.resize((280, 280), Image.LANCZOS)
                 capa = Image.new('RGBA', (self.WIDTH, self.HEIGHT), (255, 255, 255, 0))
-                x = (self.WIDTH - 280) // 2
-                y = (self.HEIGHT - 280) // 2
-                capa.paste(escudo, (x, y))
-                px = list(capa.getdata())
-                px = [(d[0], d[1], d[2], min(d[3], 28)) for d in px]
+                capa.paste(esc, ((self.WIDTH - 280) // 2, (self.HEIGHT - 280) // 2))
+                px = [(d[0], d[1], d[2], min(d[3], 28)) for d in capa.getdata()]
                 capa.putdata(px)
-                base = self.img.convert('RGBA')
-                self.img = Image.alpha_composite(base, capa).convert('RGB')
+                self.img = Image.alpha_composite(
+                    self.img.convert('RGBA'), capa
+                ).convert('RGB')
                 self.draw = ImageDraw.Draw(self.img)
             except Exception:
                 pass
@@ -1290,17 +1275,16 @@ class GeneradorCarnet:
                             fill=self.DORADO)
 
     def _textos(self):
-        fh = RecursoManager.obtener_fuente("", 36, bold=True)
-        fm = RecursoManager.obtener_fuente("", 19, bold=True)
-        fc = RecursoManager.obtener_fuente("", 17, bold=True)
-        fp = RecursoManager.obtener_fuente("", 13, bold=True)
+        fh = RecursoManager.obtener_fuente("", 36, True)
+        fm = RecursoManager.obtener_fuente("", 19, True)
+        fc = RecursoManager.obtener_fuente("", 17, True)
+        fp = RecursoManager.obtener_fuente("", 13, True)
         self.draw.text((self.WIDTH // 2, 65), "I.E. ALTERNATIVO YACHAY",
                        font=fh, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
                        font=fm, fill=self.DORADO, anchor="mm")
-        tipo_txt = "CARNET DOCENTE" if self.es_docente else "CARNET ESCOLAR"
-        self.draw.text((self.WIDTH // 2, 160),
-                       f"{tipo_txt} {self.anio}",
+        tt = "CARNET DOCENTE" if self.es_docente else "CARNET ESCOLAR"
+        self.draw.text((self.WIDTH // 2, 160), f"{tt} {self.anio}",
                        font=fc, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, self.HEIGHT - 35),
                        "PIONEROS EN LA EDUCACIÓN DE CALIDAD",
@@ -1311,60 +1295,58 @@ class GeneradorCarnet:
         if self.foto_bytes:
             try:
                 f = Image.open(self.foto_bytes).convert("RGB")
-                f = f.resize((wf, hf), Image.LANCZOS)
-                self.img.paste(f, (x, y))
+                self.img.paste(f.resize((wf, hf), Image.LANCZOS), (x, y))
             except Exception:
-                self._placeholder(x, y, wf, hf)
+                self._ph(x, y, wf, hf)
         else:
-            self._placeholder(x, y, wf, hf)
+            self._ph(x, y, wf, hf)
         self.draw.rectangle([(x - 3, y - 3), (x + wf + 3, y + hf + 3)],
                             outline=self.DORADO, width=4)
 
-    def _placeholder(self, x, y, w, h):
-        self.draw.rectangle([(x, y), (x + w, y + h)], fill="#eeeeee")
-        font = RecursoManager.obtener_fuente("", 15)
+    def _ph(self, x, y, w, h):
+        self.draw.rectangle([(x, y), (x + w, y + h)], fill="#eee")
         self.draw.text((x + w // 2, y + h // 2), "SIN FOTO",
-                       font=font, fill="#999", anchor="mm")
+                       font=RecursoManager.obtener_fuente("", 15),
+                       fill="#999", anchor="mm")
 
     def _datos(self):
         xt = 290
-        nombre = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
+        nm = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
         dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-        fn = RecursoManager.obtener_fuente("", 19 if len(nombre) > 25 else 22,
-                                           bold=True)
-        fl = RecursoManager.obtener_fuente("", 14, bold=True)
+        fn = RecursoManager.obtener_fuente("", 19 if len(nm) > 25 else 22, True)
+        fl = RecursoManager.obtener_fuente("", 14, True)
         fd = RecursoManager.obtener_fuente("", 14)
         yc = 240
-        if len(nombre) > 28:
-            for linea in textwrap.TextWrapper(width=28).wrap(nombre)[:3]:
-                self.draw.text((xt, yc), linea, font=fn, fill="black")
+        if len(nm) > 28:
+            for l in textwrap.TextWrapper(width=28).wrap(nm)[:3]:
+                self.draw.text((xt, yc), l, font=fn, fill="black")
                 yc += 26
         else:
-            self.draw.text((xt, yc), nombre, font=fn, fill="black")
+            self.draw.text((xt, yc), nm, font=fn, fill="black")
             yc += 30
         yc += 8
         self.draw.text((xt, yc), "DNI:", font=fl, fill="black")
         self.draw.text((xt + 60, yc), dni, font=fd, fill="black")
         yc += 28
         if self.es_docente:
-            cargo = self.datos.get('Cargo', 'DOCENTE').upper()
-            esp = self.datos.get('Especialidad', '').upper()
+            cg = self.datos.get('Cargo', 'DOCENTE').upper()
             self.draw.text((xt, yc), "CARGO:", font=fl, fill="black")
-            self.draw.text((xt + 90, yc), cargo, font=fd, fill="black")
+            self.draw.text((xt + 90, yc), cg, font=fd, fill="black")
             yc += 28
+            esp = self.datos.get('Especialidad', '').upper()
             if esp:
                 self.draw.text((xt, yc), "ESPEC.:", font=fl, fill="black")
                 self.draw.text((xt + 100, yc), esp[:20], font=fd, fill="black")
                 yc += 28
         else:
-            grado = self.datos.get('Grado', self.datos.get('grado', 'N/A')).upper()
-            seccion = self.datos.get('Seccion', self.datos.get('seccion', ''))
+            gr = self.datos.get('Grado', self.datos.get('grado', '')).upper()
+            sc = self.datos.get('Seccion', self.datos.get('seccion', ''))
             self.draw.text((xt, yc), "GRADO:", font=fl, fill="black")
-            self.draw.text((xt + 90, yc), grado, font=fd, fill="black")
+            self.draw.text((xt + 90, yc), gr, font=fd, fill="black")
             yc += 28
-            if seccion:
+            if sc:
                 self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill="black")
-                self.draw.text((xt + 110, yc), str(seccion), font=fd, fill="black")
+                self.draw.text((xt + 110, yc), str(sc), font=fd, fill="black")
                 yc += 28
         self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill="black")
         self.draw.text((xt + 120, yc), str(self.anio), font=fd, fill="black")
@@ -1377,11 +1359,9 @@ class GeneradorCarnet:
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
             iq = iq.resize((140, 140), Image.LANCZOS)
-            xq = self.WIDTH - 180
-            yq = 240
-            self.img.paste(iq, (xq, yq))
-            fs = RecursoManager.obtener_fuente("", 9, bold=True)
-            self.draw.text((xq + 70, yq + 145), "ESCANEAR QR",
+            self.img.paste(iq, (self.WIDTH - 180, 240))
+            fs = RecursoManager.obtener_fuente("", 9, True)
+            self.draw.text((self.WIDTH - 110, 385), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1391,14 +1371,13 @@ class GeneradorCarnet:
             return
         try:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-            writer = ImageWriter()
             buf2 = io.BytesIO()
-            Code128(dni, writer=writer).write(buf2, options={
-                'write_text': False,
-                'module_width': 0.4,
-                'module_height': 8,
-                'quiet_zone': 2
+            Code128(dni, writer=ImageWriter()).write(buf2, options={
+                'write_text': False, 'module_width': 0.4,
+                'module_height': 8, 'quiet_zone': 2
             })
+            buf2.seek(0)
+            ib = Image.open(buf2).crop(Image.open(buf2).getbbox() if False else None)
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
@@ -1406,9 +1385,8 @@ class GeneradorCarnet:
             xb = (self.WIDTH - 280) // 2
             yb = self.HEIGHT - 120
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 10, bold=True)
-            self.draw.text((self.WIDTH // 2, yb + 50),
-                           f"DNI: {dni}",
+            fbc = RecursoManager.obtener_fuente("", 10, True)
+            self.draw.text((self.WIDTH // 2, yb + 50), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1421,88 +1399,65 @@ class GeneradorCarnet:
         self._datos()
         self._qr()
         self._barcode()
-        output = io.BytesIO()
-        self.img.save(output, format='PNG', optimize=True, quality=95)
-        output.seek(0)
-        return output
+        out = io.BytesIO()
+        self.img.save(out, format='PNG', optimize=True, quality=95)
+        out.seek(0)
+        return out
 
 
 # ================================================================
-# CARNETS EN LOTE PDF — 8 POR HOJA (tamaño fotocheck)
+# CARNETS LOTE PDF — 8 POR HOJA (fotocheck)
 # ================================================================
 
 def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
-    """
-    Genera PDF con 8 carnets por página A4 portrait.
-    Layout: 2 columnas × 4 filas con líneas de corte.
-    Tamaño por carnet: ~90mm × 57mm (fotocheck estándar).
-    """
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-
-    # Dimensiones en puntos (1mm = 2.835pt)
-    margen_x = 15 * mm
-    margen_y = 10 * mm
-    card_w = (w - 2 * margen_x - 5 * mm) / 2  # 2 columnas, 5mm gap
-    card_h = (h - 2 * margen_y - 15 * mm) / 4  # 4 filas, gaps
-    gap_x = 5 * mm
-    gap_y = 3.5 * mm
-
-    por_pagina = 8
+    mx = 15 * mm
+    my = 10 * mm
+    cw2 = (w - 2 * mx - 5 * mm) / 2
+    ch2 = (h - 2 * my - 15 * mm) / 4
+    gx = 5 * mm
+    gy = 3.5 * mm
+    pp = 8
     total = len(lista_datos)
-    num_paginas = (total + por_pagina - 1) // por_pagina
-
-    for pag in range(num_paginas):
+    np2 = (total + pp - 1) // pp
+    for pag in range(np2):
         if pag > 0:
             c.showPage()
-
-        inicio = pag * por_pagina
-        fin = min(inicio + por_pagina, total)
-
-        for idx in range(inicio, fin):
-            pos = idx - inicio
+        ini = pag * pp
+        fin = min(ini + pp, total)
+        for idx in range(ini, fin):
+            pos = idx - ini
             col = pos % 2
             fila = pos // 2
-            x = margen_x + col * (card_w + gap_x)
-            y = h - margen_y - (fila + 1) * card_h - fila * gap_y
-
-            # Generar carnet como imagen
-            datos_carnet = lista_datos[idx]
-            gen = GeneradorCarnet(datos_carnet, anio, es_docente=es_docente)
-            img_bytes = gen.generar()
-
-            # Guardar temporalmente
-            tmp = f"tmp_carnet_{idx}.png"
+            x = mx + col * (cw2 + gx)
+            y = h - my - (fila + 1) * ch2 - fila * gy
+            gen = GeneradorCarnet(lista_datos[idx], anio, es_docente=es_docente)
+            ib = gen.generar()
+            tmp = f"tmp_c_{idx}.png"
             with open(tmp, 'wb') as f:
-                f.write(img_bytes.getvalue())
-
+                f.write(ib.getvalue())
             try:
-                c.drawImage(tmp, x, y, width=card_w, height=card_h,
+                c.drawImage(tmp, x, y, width=cw2, height=ch2,
                             preserveAspectRatio=True)
-                # Líneas de corte (punteadas)
                 c.setStrokeColor(colors.grey)
                 c.setDash(3, 3)
                 c.setLineWidth(0.3)
-                c.rect(x, y, card_w, card_h)
+                c.rect(x, y, cw2, ch2)
                 c.setDash()
             except Exception:
                 pass
-
             try:
                 os.remove(tmp)
             except Exception:
                 pass
-
-        # Pie de página
         c.setFont("Helvetica", 6)
         c.setFillColor(colors.grey)
         c.drawCentredString(w / 2, 10,
-                            f"I.E.P. ALTERNATIVO YACHAY — Carnets {anio} — "
-                            f"Página {pag + 1}/{num_paginas} — "
-                            f"Cortar por las líneas punteadas")
+                            f"YACHAY — Carnets {anio} — Pág {pag + 1}/{np2} — "
+                            f"Cortar por líneas punteadas")
         c.setFillColor(colors.black)
-
     c.save()
     buffer.seek(0)
     return buffer
@@ -1512,55 +1467,48 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
 # UTILIDADES
 # ================================================================
 
-def generar_link_whatsapp(telefono, mensaje):
-    tel = str(telefono).strip().replace("+", "").replace(" ", "").replace("-", "")
-    if len(tel) == 9:
-        tel = "51" + tel
-    elif not tel.startswith("51"):
-        tel = "51" + tel
-    return f"https://wa.me/{tel}?text={urllib.parse.quote(mensaje)}"
+def generar_link_whatsapp(tel, msg):
+    t = str(tel).strip().replace("+", "").replace(" ", "").replace("-", "")
+    if len(t) == 9:
+        t = "51" + t
+    elif not t.startswith("51"):
+        t = "51" + t
+    return f"https://wa.me/{t}?text={urllib.parse.quote(msg)}"
 
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
     saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
-    if tipo == "entrada":
-        emoji, txt = "✅", "ENTRADA"
-    else:
-        emoji, txt = "🏁", "SALIDA"
+    em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
     return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
-            f"{emoji} *{txt}* registrada\n👤 {nombre}\n🕒 Hora: {hora}")
+            f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}")
 
 
-def decodificar_qr_imagen(image_bytes):
+def decodificar_qr_imagen(ib):
     if not HAS_PYZBAR:
         return None
     try:
-        img = Image.open(io.BytesIO(image_bytes))
-        codigos = pyzbar_decode(img)
-        if codigos:
-            return codigos[0].data.decode('utf-8')
+        img = Image.open(io.BytesIO(ib))
+        cod = pyzbar_decode(img)
+        if cod:
+            return cod[0].data.decode('utf-8')
     except Exception:
         pass
     if HAS_CV2:
         try:
-            nparr = np.frombuffer(image_bytes, np.uint8)
-            img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-            for method in [cv2.THRESH_BINARY, cv2.THRESH_BINARY_INV]:
-                _, thresh = cv2.threshold(gray, 127, 255, method)
-                codigos = pyzbar_decode(Image.fromarray(thresh))
-                if codigos:
-                    return codigos[0].data.decode('utf-8')
+            np2 = np.frombuffer(ib, np.uint8)
+            ic = cv2.imdecode(np2, cv2.IMREAD_COLOR)
+            gr = cv2.cvtColor(ic, cv2.COLOR_BGR2GRAY)
+            for m in [cv2.THRESH_BINARY, cv2.THRESH_BINARY_INV]:
+                _, th = cv2.threshold(gr, 127, 255, m)
+                cod = pyzbar_decode(Image.fromarray(th))
+                if cod:
+                    return cod[0].data.decode('utf-8')
         except Exception:
             pass
     return None
 
 
-# ================================================================
-# HOJA DE RESPUESTAS (IMAGEN) Y PROCESAMIENTO
-# ================================================================
-
-def generar_hoja_respuestas(num_preguntas, titulo):
+def generar_hoja_respuestas(np_, titulo):
     width, height = 2480, 3508
     img = Image.new('RGB', (width, height), 'white')
     draw = ImageDraw.Draw(img)
@@ -1571,113 +1519,95 @@ def generar_hoja_respuestas(num_preguntas, titulo):
         fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 35)
     except Exception:
         ft = fs = fn = fl = ImageFont.load_default()
-
-    # Marcadores de alineación
     sz = 80
-    for pos in [(50, 50), (width - 130, 50),
-                (50, height - 130), (width - 130, height - 130)]:
-        draw.rectangle([pos, (pos[0] + sz, pos[1] + sz)], fill="black")
-
+    for p in [(50, 50), (width - 130, 50), (50, height - 130), (width - 130, height - 130)]:
+        draw.rectangle([p, (p[0] + sz, p[1] + sz)], fill="black")
     draw.text((width // 2, 200), "I.E.P. ALTERNATIVO YACHAY",
               font=ft, fill="black", anchor="mm")
-    draw.text((width // 2, 280),
-              f"HOJA DE RESPUESTAS — {titulo.upper()}",
+    draw.text((width // 2, 280), f"HOJA DE RESPUESTAS — {titulo.upper()}",
               font=fs, fill="black", anchor="mm")
-    draw.text((width // 2, 350),
-              "SISTEMA DE CALIFICACIÓN YACHAY",
+    draw.text((width // 2, 350), "SISTEMA DE CALIFICACIÓN YACHAY",
               font=fs, fill="gray", anchor="mm")
-    draw.text((200, 480),
-              "Nombre: ________________________________________",
+    draw.text((200, 480), "Nombre: ________________________________________",
               font=fs, fill="black")
-    draw.text((200, 560),
-              "DNI: ________________  Grado: ________________",
+    draw.text((200, 560), "DNI: ________________  Grado: ________________",
               font=fs, fill="black")
-    draw.text((200, 640),
-              f"Fecha: ________________  Preguntas: {num_preguntas}",
+    draw.text((200, 640), f"Fecha: ________________  Preguntas: {np_}",
               font=fs, fill="black")
-    draw.text((200, 740),
-              "Rellene completamente el círculo de la alternativa.",
+    draw.text((200, 740), "Rellene completamente el círculo.",
               font=fl, fill="gray")
-
-    sy, sx = 900, 300
-    sp = 100
-    csp = 700
+    sy, sx, sp, csp = 900, 300, 100, 700
     ppc = min(25, (height - sy - 200) // sp)
-    for i in range(num_preguntas):
+    for i in range(np_):
         col = i // ppc
         fi = i % ppc
         xb = sx + (col * csp)
         yb = sy + (fi * sp)
-        draw.text((xb - 100, yb), f"{i + 1}.",
-                  font=fn, fill="black", anchor="rm")
-        for j, letra in enumerate(['A', 'B', 'C', 'D']):
+        draw.text((xb - 100, yb), f"{i + 1}.", font=fn, fill="black", anchor="rm")
+        for j, lt in enumerate(['A', 'B', 'C', 'D']):
             cx = xb + (j * 130)
             draw.ellipse([(cx - 35, yb - 35), (cx + 35, yb + 35)],
                          outline="black", width=4)
-            draw.text((cx, yb), letra, font=fl, fill="black", anchor="mm")
+            draw.text((cx, yb), lt, font=fl, fill="black", anchor="mm")
+    out = io.BytesIO()
+    img.save(out, format='PNG')
+    out.seek(0)
+    return out
 
-    output = io.BytesIO()
-    img.save(output, format='PNG')
-    output.seek(0)
-    return output
 
-
-def procesar_examen(img_bytes, num_preguntas):
+def procesar_examen(ib, np_):
     if not HAS_CV2:
         return None
     try:
-        nparr = np.frombuffer(img_bytes, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        na = np.frombuffer(ib, np.uint8)
+        img = cv2.imdecode(na, cv2.IMREAD_COLOR)
         if img is None:
             return None
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (5, 5), 0)
-        _, thresh = cv2.threshold(blur, 0, 255,
-                                  cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
-                                        cv2.CHAIN_APPROX_SIMPLE)
-        burbujas = []
-        for ct in contours:
-            x, y, w_c, h_c = cv2.boundingRect(ct)
-            ar = w_c / float(h_c) if h_c > 0 else 0
-            area = cv2.contourArea(ct)
-            if 0.7 <= ar <= 1.3 and 15 <= w_c <= 120 and 15 <= h_c <= 120 and area > 200:
-                burbujas.append((ct, x, y, w_c, h_c))
-        if not burbujas:
+        gr = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        bl = cv2.GaussianBlur(gr, (5, 5), 0)
+        _, th = cv2.threshold(bl, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        cts, _ = cv2.findContours(th, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        bbs = []
+        for ct in cts:
+            x, y, w, h = cv2.boundingRect(ct)
+            ar = w / float(h) if h > 0 else 0
+            a = cv2.contourArea(ct)
+            if 0.7 <= ar <= 1.3 and 15 <= w <= 120 and 15 <= h <= 120 and a > 200:
+                bbs.append((ct, x, y, w, h))
+        if not bbs:
             return None
-        burbujas = sorted(burbujas, key=lambda b: b[2])
+        bbs = sorted(bbs, key=lambda b: b[2])
         filas = []
-        fila_actual = [burbujas[0]]
-        for b in burbujas[1:]:
-            if abs(b[2] - fila_actual[-1][2]) <= 30:
-                fila_actual.append(b)
+        fa = [bbs[0]]
+        for b in bbs[1:]:
+            if abs(b[2] - fa[-1][2]) <= 30:
+                fa.append(b)
             else:
-                if len(fila_actual) >= 3:
-                    filas.append(sorted(fila_actual, key=lambda b: b[1]))
-                fila_actual = [b]
-        if len(fila_actual) >= 3:
-            filas.append(sorted(fila_actual, key=lambda b: b[1]))
-        respuestas = []
-        for fila in filas[:num_preguntas]:
-            opciones = fila[:4]
-            intensidades = []
-            for (ct, x, y, w_c, h_c) in opciones:
-                mask = np.zeros(gray.shape, dtype="uint8")
-                cv2.drawContours(mask, [ct], -1, 255, -1)
-                masked = cv2.bitwise_and(thresh, thresh, mask=mask)
-                intensidades.append(cv2.countNonZero(masked))
-            if intensidades:
-                mi = intensidades.index(max(intensidades))
-                respuestas.append(['A', 'B', 'C', 'D'][min(mi, 3)])
+                if len(fa) >= 3:
+                    filas.append(sorted(fa, key=lambda b: b[1]))
+                fa = [b]
+        if len(fa) >= 3:
+            filas.append(sorted(fa, key=lambda b: b[1]))
+        resp = []
+        for fi in filas[:np_]:
+            ops = fi[:4]
+            ints = []
+            for (ct, x, y, w, h) in ops:
+                mk = np.zeros(gr.shape, dtype="uint8")
+                cv2.drawContours(mk, [ct], -1, 255, -1)
+                md = cv2.bitwise_and(th, th, mask=mk)
+                ints.append(cv2.countNonZero(md))
+            if ints:
+                resp.append(['A', 'B', 'C', 'D'][min(ints.index(max(ints)), 3)])
             else:
-                respuestas.append('?')
-        return respuestas if respuestas else None
+                resp.append('?')
+        return resp if resp else None
     except Exception:
         return None
 
 
 # ================================================================
-# PANTALLA DE LOGIN (Nombre de usuario + Contraseña — SEGURO)
+# PANTALLA DE LOGIN (Usuario + Contraseña — SEGURO)
 # ================================================================
 
 def pantalla_login():
@@ -1685,7 +1615,6 @@ def pantalla_login():
     with col2:
         if Path("escudo_upload.png").exists():
             st.image("escudo_upload.png", width=220, use_container_width=False)
-
         st.markdown("""
         <div class='main-header'>
             <h1 style='color:white;margin:0;font-size:2.2rem;'>🎓 SISTEMA YACHAY PRO</h1>
@@ -1696,35 +1625,32 @@ def pantalla_login():
             <p style='color:#aaa;font-size:0.85rem;'>📍 Chinchero, Cusco — Perú</p>
         </div>
         """, unsafe_allow_html=True)
-
         st.markdown("")
         usuario = st.text_input("👤 Nombre de usuario:", key="login_user",
                                 placeholder="Ingrese su usuario")
         contrasena = st.text_input("🔑 Contraseña:", type="password",
                                     key="login_pwd",
                                     placeholder="Ingrese su contraseña")
-
         if st.button("🔐 INGRESAR AL SISTEMA", use_container_width=True,
                      type="primary"):
+            usuarios = cargar_usuarios()
             usuario_lower = usuario.strip().lower()
-            if usuario_lower in USUARIOS:
-                datos_usuario = USUARIOS[usuario_lower]
-                if contrasena == datos_usuario['password']:
-                    st.session_state.rol = datos_usuario['rol']
-                    st.session_state.docente_info = datos_usuario.get('docente_info')
+            if usuario_lower in usuarios:
+                datos_u = usuarios[usuario_lower]
+                if contrasena == datos_u['password']:
+                    st.session_state.rol = datos_u['rol']
+                    st.session_state.docente_info = datos_u.get('docente_info')
                     st.session_state.usuario_actual = usuario_lower
                     st.rerun()
                 else:
                     st.error("⛔ Contraseña incorrecta")
             else:
                 st.error("⛔ Usuario no encontrado")
-
-        st.caption("💡 Ingrese su nombre de usuario y contraseña asignados "
-                   "por el administrador.")
+        st.caption("💡 Ingrese usuario y contraseña asignados por el administrador.")
 
 
 # ================================================================
-# SIDEBAR
+# SIDEBAR — Con links SIAGIE y Google Institucional
 # ================================================================
 
 def configurar_sidebar():
@@ -1742,8 +1668,21 @@ def configurar_sidebar():
         st.info(f"**{label}**")
         st.caption(f"🕒 {hora_peru().strftime('%H:%M:%S')} | "
                    f"📅 {hora_peru().strftime('%d/%m/%Y')}")
-        st.markdown("---")
 
+        # Links institucionales para directivo y docentes
+        if st.session_state.rol in ["directivo", "docente"]:
+            st.markdown("---")
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown(
+                    f'<a href="{LINK_SIAGIE}" target="_blank" class="siagie-btn">'
+                    f'📚 Ir a SIAGIE</a>', unsafe_allow_html=True)
+            with c2:
+                st.markdown(
+                    f'<a href="{LINK_GOOGLE}" target="_blank" class="link-btn">'
+                    f'📧 Cuenta Google</a>', unsafe_allow_html=True)
+
+        st.markdown("---")
         directora = "Prof. Ana María CUSI INCA"
         promotor = "Prof. Leandro CORDOVA TOCRE"
         frase = "Año de la Esperanza y el Fortalecimiento de la Democracia"
@@ -1766,26 +1705,21 @@ def configurar_sidebar():
                     with open("escudo_upload.png", "wb") as f:
                         f.write(ue.getbuffer())
                     st.success("✅")
-
             with st.expander("👥 Autoridades"):
                 directora = st.text_input("Directora:", directora, key="di")
                 promotor = st.text_input("Promotor:", promotor, key="pi")
-
             with st.expander("🎯 Título del Año"):
                 frase = st.text_input("Frase:", frase, key="fi")
-
-            with st.expander("🔐 Usuarios del Sistema"):
-                st.caption("**Lista de usuarios registrados:**")
-                for usr, datos in USUARIOS.items():
-                    st.caption(f"• **{usr}** → {datos.get('label', datos['rol'])}")
+            with st.expander("🔐 Gestionar Usuarios"):
+                _gestion_usuarios_admin()
 
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
         stats = BaseDatos.obtener_estadisticas()
-        col1, col2 = st.columns(2)
-        with col1:
+        c1, c2 = st.columns(2)
+        with c1:
             st.metric("📚 Alumnos", stats['total_alumnos'])
-        with col2:
+        with c2:
             st.metric("👨‍🏫 Docentes", stats['total_docentes'])
         st.markdown("---")
         if st.button("🔴 CERRAR SESIÓN", use_container_width=True):
@@ -1794,15 +1728,68 @@ def configurar_sidebar():
             st.rerun()
 
     return {
-        'anio': anio,
-        'directora': directora,
-        'promotor': promotor,
-        'frase': frase,
-        'y_frase': 700,
-        'y_titulo': 630,
-        'qr_x': 435,
-        'qr_y': 47
+        'anio': anio, 'directora': directora, 'promotor': promotor,
+        'frase': frase, 'y_frase': 700, 'y_titulo': 630,
+        'qr_x': 435, 'qr_y': 47
     }
+
+
+# ================================================================
+# GESTIÓN DE USUARIOS DESDE ADMIN
+# ================================================================
+
+def _gestion_usuarios_admin():
+    """Admin puede crear/ver usuarios y asignar contraseñas"""
+    usuarios = cargar_usuarios()
+    st.caption(f"**{len(usuarios)} usuarios registrados:**")
+    for usr, datos in usuarios.items():
+        st.caption(f"• **{usr}** → {datos.get('label', datos['rol'])}")
+
+    st.markdown("---")
+    st.markdown("**➕ Crear nuevo usuario docente:**")
+    nu_user = st.text_input("Nombre de usuario:", key="nu_user",
+                             placeholder="ej: prof.arte")
+    nu_pass = st.text_input("Contraseña:", key="nu_pass",
+                             placeholder="contraseña segura")
+    nu_label = st.text_input("Nombre completo:", key="nu_label",
+                              placeholder="ej: Docente de Arte")
+    nu_grado = st.selectbox("Grado asignado:",
+                             ["N/A"] + TODOS_LOS_GRADOS + ["ALL_SECUNDARIA"],
+                             key="nu_grado")
+    nu_nivel = st.selectbox("Nivel:", ["INICIAL", "PRIMARIA", "SECUNDARIA",
+                                        "PREUNIVERSITARIO"], key="nu_nivel")
+    nu_rol = st.selectbox("Rol:", ["docente", "directivo", "auxiliar"],
+                           key="nu_rol")
+
+    if st.button("✅ CREAR USUARIO", type="primary", key="btn_crear_usr"):
+        if nu_user and nu_pass and nu_label:
+            u_key = nu_user.strip().lower()
+            di = None
+            if nu_rol == "docente" and nu_grado != "N/A":
+                di = {"label": nu_label, "grado": nu_grado, "nivel": nu_nivel}
+            usuarios[u_key] = {
+                "password": nu_pass,
+                "rol": nu_rol,
+                "label": nu_label,
+                "docente_info": di
+            }
+            guardar_usuarios(usuarios)
+            st.success(f"✅ Usuario **{u_key}** creado")
+            st.rerun()
+        else:
+            st.error("⚠️ Complete todos los campos")
+
+    st.markdown("---")
+    st.markdown("**🗑️ Eliminar usuario:**")
+    del_usr = st.selectbox("Seleccionar:",
+                            [u for u in usuarios.keys() if u != "administrador"],
+                            key="del_usr")
+    if st.button("🗑️ Eliminar", key="btn_del_usr"):
+        if del_usr and del_usr != "administrador":
+            del usuarios[del_usr]
+            guardar_usuarios(usuarios)
+            st.success(f"✅ {del_usr} eliminado")
+            st.rerun()
 
 
 # ================================================================
@@ -1816,65 +1803,63 @@ def tab_matricula(config):
         "📋 Listas", "⬇️ Registros PDF"
     ])
 
-    # ---- REGISTRAR ALUMNO ----
     with tab_est:
         st.subheader("📝 Matrícula de Estudiante")
         c1, c2 = st.columns(2)
         with c1:
-            nm = st.text_input("Apellidos y Nombres:", key="mn")
-            dn = st.text_input("DNI:", key="md", max_chars=8)
-            nv = st.selectbox("Nivel:", list(NIVELES_GRADOS.keys()), key="mnv")
-            gr = st.selectbox("Grado:", NIVELES_GRADOS[nv], key="mg")
-            sc = st.selectbox("Sección:", SECCIONES, key="ms")
+            mn = st.text_input("Apellidos y Nombres:", key="mn")
+            md = st.text_input("DNI:", key="md", max_chars=8)
+            mnv = st.selectbox("Nivel:", list(NIVELES_GRADOS.keys()), key="mnv")
+            mg = st.selectbox("Grado:", NIVELES_GRADOS[mnv], key="mg")
+            ms = st.selectbox("Sección:", SECCIONES, key="ms")
         with c2:
-            ap = st.text_input("Apoderado:", key="ma")
-            da = st.text_input("DNI Apoderado:", key="mda", max_chars=8)
-            ce = st.text_input("Celular Apoderado:", key="mc", max_chars=9)
-        if st.button("✅ MATRICULAR", type="primary", use_container_width=True, key="bm"):
-            if nm and dn:
+            ma = st.text_input("Apoderado (Padre/Madre):", key="ma")
+            mda = st.text_input("DNI Apoderado:", key="mda", max_chars=8)
+            mc = st.text_input("Celular Apoderado:", key="mc", max_chars=9)
+        if st.button("✅ MATRICULAR", type="primary", use_container_width=True,
+                     key="bm"):
+            if mn and md:
                 BaseDatos.registrar_estudiante({
-                    'Nombre': nm.strip(), 'DNI': dn.strip(), 'Nivel': nv,
-                    'Grado': gr, 'Seccion': sc, 'Apoderado': ap.strip(),
-                    'DNI_Apoderado': da.strip(), 'Celular_Apoderado': ce.strip()
+                    'Nombre': mn.strip(), 'DNI': md.strip(), 'Nivel': mnv,
+                    'Grado': mg, 'Seccion': ms, 'Apoderado': ma.strip(),
+                    'DNI_Apoderado': mda.strip(), 'Celular_Apoderado': mc.strip()
                 })
-                st.success(f"✅ {nm} → {gr} {sc}")
+                st.success(f"✅ {mn} → {mg} {ms}")
                 st.balloons()
             else:
                 st.error("⚠️ Nombre y DNI requeridos")
 
-    # ---- REGISTRAR DOCENTE ----
     with tab_doc:
         st.subheader("👨‍🏫 Registro de Docente / Personal")
         c1, c2 = st.columns(2)
         with c1:
-            nd = st.text_input("Apellidos y Nombres:", key="dn_nom")
-            dd = st.text_input("DNI:", key="dn_dni", max_chars=8)
-            cd = st.selectbox("Cargo:", [
+            dn_n = st.text_input("Apellidos y Nombres:", key="dn_nom")
+            dn_d = st.text_input("DNI:", key="dn_dni", max_chars=8)
+            dn_c = st.selectbox("Cargo:", [
                 "Docente", "Directora", "Auxiliar", "Coordinador",
                 "Secretaria", "Personal de Limpieza", "Otro"
             ], key="dn_cargo")
         with c2:
-            ed = st.text_input("Especialidad:", key="dn_esp",
-                               placeholder="Ej: Educación Primaria")
-            td = st.text_input("Celular:", key="dn_cel", max_chars=9)
-            gd = st.selectbox("Grado Asignado:",
-                              ["N/A"] + TODOS_LOS_GRADOS, key="dn_grado")
+            dn_e = st.text_input("Especialidad:", key="dn_esp",
+                                  placeholder="Ej: Educación Primaria")
+            dn_t = st.text_input("Celular:", key="dn_cel", max_chars=9)
+            dn_g = st.selectbox("Grado Asignado:",
+                                 ["N/A"] + TODOS_LOS_GRADOS, key="dn_grado")
         if st.button("✅ REGISTRAR DOCENTE", type="primary",
                      use_container_width=True, key="bd"):
-            if nd and dd:
+            if dn_n and dn_d:
                 BaseDatos.registrar_docente({
-                    'Nombre': nd.strip(), 'DNI': dd.strip(),
-                    'Cargo': cd, 'Especialidad': ed.strip(),
-                    'Celular': td.strip(), 'Grado_Asignado': gd
+                    'Nombre': dn_n.strip(), 'DNI': dn_d.strip(),
+                    'Cargo': dn_c, 'Especialidad': dn_e.strip(),
+                    'Celular': dn_t.strip(), 'Grado_Asignado': dn_g
                 })
-                st.success(f"✅ {nd} registrado como {cd}")
+                st.success(f"✅ {dn_n} registrado como {dn_c}")
                 st.balloons()
             else:
                 st.error("⚠️ Nombre y DNI requeridos")
 
-    # ---- LISTAS ----
     with tab_lista:
-        st.subheader("📋 Alumnos Matriculados")
+        st.subheader("📚 Alumnos Matriculados")
         df = BaseDatos.cargar_matricula()
         if not df.empty:
             c1, c2, c3 = st.columns(3)
@@ -1886,7 +1871,7 @@ def tab_matricula(config):
                                   else TODOS_LOS_GRADOS)
                 fg = st.selectbox("Grado:", go, key="fg")
             with c3:
-                bq = st.text_input("🔍", key="bq")
+                bq = st.text_input("🔍 Buscar:", key="bq")
             d = df.copy()
             if fn != "Todos" and 'Nivel' in d.columns:
                 d = d[d['Nivel'] == fn]
@@ -1903,14 +1888,16 @@ def tab_matricula(config):
             buf.seek(0)
             st.download_button("⬇️ Excel", buf,
                                f"Matricula_{config['anio']}.xlsx", key="dme")
-            with st.expander("🗑️ Eliminar Alumno"):
-                deld = st.text_input("DNI:", key="dd")
-                if st.button("🗑️", key="bdel"):
-                    if deld:
-                        BaseDatos.eliminar_estudiante(deld)
-                        st.rerun()
+            # Solo admin puede eliminar
+            if puede_borrar():
+                with st.expander("🗑️ Eliminar Alumno"):
+                    deld = st.text_input("DNI a eliminar:", key="dd")
+                    if st.button("🗑️ Eliminar", key="bdel"):
+                        if deld:
+                            BaseDatos.eliminar_estudiante(deld)
+                            st.rerun()
         else:
-            st.info("📝 Sin alumnos.")
+            st.info("📝 Sin alumnos matriculados.")
 
         st.markdown("---")
         st.subheader("👨‍🏫 Docentes Registrados")
@@ -1924,27 +1911,25 @@ def tab_matricula(config):
             buf2.seek(0)
             st.download_button("⬇️ Excel Docentes", buf2,
                                "docentes.xlsx", key="dmedoc")
-            with st.expander("🗑️ Eliminar Docente"):
-                deld2 = st.text_input("DNI:", key="dddoc")
-                if st.button("🗑️", key="bdeldoc"):
-                    if deld2:
-                        BaseDatos.eliminar_docente(deld2)
-                        st.rerun()
+            if puede_borrar():
+                with st.expander("🗑️ Eliminar Docente"):
+                    deld2 = st.text_input("DNI:", key="dddoc")
+                    if st.button("🗑️ Eliminar", key="bdeldoc"):
+                        if deld2:
+                            BaseDatos.eliminar_docente(deld2)
+                            st.rerun()
         else:
             st.info("📝 Sin docentes registrados.")
 
-    # ---- REGISTROS PDF ----
     with tab_pdf:
         _seccion_registros_pdf(config)
 
 
 def _seccion_registros_pdf(config):
-    """Genera PDFs de registro auxiliar y asistencia"""
     df = BaseDatos.cargar_matricula()
     if df.empty:
         st.info("📝 Registra estudiantes primero.")
         return
-
     c1, c2 = st.columns(2)
     with c1:
         np_ = st.selectbox("Nivel:", list(NIVELES_GRADOS.keys()), key="pn")
@@ -1954,7 +1939,6 @@ def _seccion_registros_pdf(config):
     dg = BaseDatos.obtener_estudiantes_grado(gp, sp)
     st.info(f"📊 {len(dg)} estudiantes (orden alfabético)")
 
-    # ---- REGISTRO AUXILIAR ----
     st.markdown("---")
     st.markdown("**📝 Registro Auxiliar (Cursos × Competencias × Desempeños)**")
     bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="bim_sel")
@@ -1966,20 +1950,15 @@ def _seccion_registros_pdf(config):
         curso2 = st.text_input("Curso 2:", "Comunicación", key="c2")
     with c3:
         curso3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="c3")
-
     cursos = [c for c in [curso1, curso2, curso3] if c.strip()]
-    st.caption(f"Se generarán {len(cursos)} cursos × 4 competencias × "
-               f"3 desempeños cada una")
-
+    st.caption(f"{len(cursos)} cursos × 4 competencias × 3 desempeños")
     if st.button("📝 Generar Registro Auxiliar PDF", type="primary",
                  use_container_width=True, key="gra"):
         sl = sp if sp != "Todas" else "Todas"
         pdf = generar_registro_auxiliar_pdf(gp, sl, config['anio'], bim, dg, cursos)
         st.download_button("⬇️ Descargar Registro Auxiliar", pdf,
-                           f"RegAux_{gp}_{bim}.pdf",
-                           "application/pdf", key="dra")
+                           f"RegAux_{gp}_{bim}.pdf", "application/pdf", key="dra")
 
-    # ---- REGISTRO ASISTENCIA ----
     st.markdown("---")
     st.markdown("**📋 Registro Asistencia (sin sáb/dom, sin feriados)**")
     meses_opts = list(MESES_ESCOLARES.items())
@@ -1998,8 +1977,7 @@ def _seccion_registros_pdf(config):
                 gp, sl, config['anio'], dg, meses_nums
             )
             st.download_button("⬇️ Descargar", pdf,
-                               f"RegAsist_{gp}.pdf",
-                               "application/pdf", key="dras")
+                               f"RegAsist_{gp}.pdf", "application/pdf", key="dras")
 
 
 # ================================================================
@@ -2016,8 +1994,8 @@ def tab_documentos(config):
             "CARTA COMPROMISO", "RESOLUCIÓN DE TRASLADO"
         ], key="td")
         st.markdown("---")
-        db = st.text_input("🔍 DNI:", key="db")
-        if st.button("🔎", use_container_width=True, key="bb"):
+        db = st.text_input("🔍 Buscar DNI:", key="db")
+        if st.button("🔎 Buscar", use_container_width=True, key="bb"):
             r = BaseDatos.buscar_por_dni(db)
             if r:
                 st.session_state.alumno = r.get('Nombre', '')
@@ -2025,35 +2003,34 @@ def tab_documentos(config):
                 st.session_state.grado = r.get('Grado', '')
                 st.session_state.apoderado = r.get('Apoderado', '')
                 st.session_state.dni_apo = r.get('DNI_Apoderado', '')
-                st.success("✅")
+                st.success("✅ Datos cargados")
                 st.rerun()
             else:
-                st.error("❌")
+                st.error("❌ No encontrado")
     with c2:
         with st.container(border=True):
-            nm = st.text_input("👤 Nombre:", key="alumno")
-            dn = st.text_input("🆔 DNI:", key="dni")
+            nm = st.text_input("👤 Estudiante:", key="alumno")
+            dn = st.text_input("🆔 DNI Estudiante:", key="dni")
             gr = st.text_input("📚 Grado:", key="grado")
-            ap = st.text_input("👨‍👩‍👧 Apoderado:", key="apoderado")
-            da = st.text_input("🆔 DNI Apo:", key="dni_apo")
+            ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
+            da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
             nc = {}
             if td == "CONSTANCIA DE CONDUCTA":
                 cols = st.columns(5)
                 for i, col in enumerate(cols):
                     with col:
                         nc[f'nota_conducta_{i+1}'] = st.selectbox(
-                            f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}"
-                        )
+                            f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}")
             ex = {}
             if td == "RESOLUCIÓN DE TRASLADO":
-                ex['num_resolucion'] = st.text_input("N° Res:", key="nr")
+                ex['num_resolucion'] = st.text_input("N° Resolución:", key="nr")
                 ex['fecha_resolucion'] = st.text_input("Fecha:", key="fr2")
                 ex['nivel'] = st.selectbox("Nivel:",
                                            ["INICIAL", "PRIMARIA", "SECUNDARIA"],
                                            key="nl")
-                ex['ie_destino'] = st.text_input("IE Dest:", key="ie")
-        if st.button("✨ GENERAR", type="primary", use_container_width=True,
-                     key="gd"):
+                ex['ie_destino'] = st.text_input("IE Destino:", key="ie")
+        if st.button("✨ GENERAR DOCUMENTO", type="primary",
+                     use_container_width=True, key="gd"):
             if nm and dn:
                 d = {'alumno': nm, 'dni': dn, 'grado': gr,
                      'apoderado': ap, 'dni_apo': da, **nc, **ex}
@@ -2067,14 +2044,14 @@ def tab_documentos(config):
                     "RESOLUCIÓN DE TRASLADO": g.generar_resolucion_traslado,
                 }
                 pdf = metodos[td](d)
-                st.success("✅")
-                st.download_button("⬇️ PDF", pdf,
+                st.success("✅ Documento generado")
+                st.download_button("⬇️ Descargar PDF", pdf,
                                    f"{nm}_{td}.pdf", "application/pdf",
                                    use_container_width=True, key="dd2")
 
 
 # ================================================================
-# TAB: CARNETS (Individual, Matrícula, Lote PDF 8 por hoja)
+# TAB: CARNETS (Individual, Matrícula, Lote Alumnos PDF, Lote Docentes PDF)
 # ================================================================
 
 def tab_carnets(config):
@@ -2095,8 +2072,8 @@ def tab_carnets(config):
             cf = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'], key="cf")
             if cf:
                 st.image(cf, width=180)
-        if st.button("🪪 GENERAR", type="primary", use_container_width=True,
-                     key="gc"):
+        if st.button("🪪 GENERAR CARNET", type="primary",
+                     use_container_width=True, key="gc"):
             if cn and cd:
                 fi = io.BytesIO(cf.getvalue()) if cf else None
                 cr = GeneradorCarnet(
@@ -2104,32 +2081,29 @@ def tab_carnets(config):
                     config['anio'], fi
                 ).generar()
                 st.image(cr, use_container_width=True)
-                st.download_button("⬇️", cr,
+                st.download_button("⬇️ Descargar", cr,
                                    f"Carnet_{cn.replace(' ', '_')}.png",
-                                   "image/png", use_container_width=True,
-                                   key="dc")
+                                   "image/png", use_container_width=True, key="dc")
 
     with t2:
         dbs = st.text_input("🔍 DNI:", key="cbd")
-        if st.button("🔎", key="cbb"):
+        if st.button("🔎 Buscar", key="cbb"):
             a = BaseDatos.buscar_por_dni(dbs)
             if a:
                 st.session_state['ce'] = a
                 st.success(f"✅ {a.get('Nombre', '')}")
             else:
-                st.error("❌")
+                st.error("❌ No encontrado")
         if st.session_state.get('ce'):
             a = st.session_state['ce']
-            es_doc = a.get('_tipo', '') == 'docente'
-            tipo_txt = "DOCENTE" if es_doc else "ALUMNO"
-            st.markdown(f"**[{tipo_txt}]** {a.get('Nombre', '')} | "
-                        f"DNI: {a.get('DNI', '')}")
-            fm = st.file_uploader("📸", type=['jpg', 'png', 'jpeg'], key="cfm")
+            es_d = a.get('_tipo', '') == 'docente'
+            tt = "DOCENTE" if es_d else "ALUMNO"
+            st.markdown(f"**[{tt}]** {a.get('Nombre', '')} | DNI: {a.get('DNI', '')}")
+            fm = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'], key="cfm")
             if st.button("🪪 GENERAR", type="primary",
                          use_container_width=True, key="gcm"):
                 fi = io.BytesIO(fm.getvalue()) if fm else None
-                cr = GeneradorCarnet(a, config['anio'], fi,
-                                     es_docente=es_doc).generar()
+                cr = GeneradorCarnet(a, config['anio'], fi, es_docente=es_d).generar()
                 st.image(cr, use_container_width=True)
                 st.download_button("⬇️", cr, "Carnet.png", "image/png",
                                    use_container_width=True, key="dcm")
@@ -2150,16 +2124,14 @@ def tab_carnets(config):
             if st.button("🚀 GENERAR PDF CARNETS", type="primary",
                          use_container_width=True, key="gl"):
                 progreso = st.progress(0)
-                st.info("Generando carnets...")
                 lista = d.to_dict('records')
-                pdf = generar_carnets_lote_pdf(lista, config['anio'],
-                                               es_docente=False)
+                pdf = generar_carnets_lote_pdf(lista, config['anio'], es_docente=False)
                 progreso.progress(100)
                 st.balloons()
                 st.download_button("⬇️ DESCARGAR PDF", pdf,
                                    f"Carnets_Alumnos_{config['anio']}.pdf",
-                                   "application/pdf",
-                                   use_container_width=True, key="dlz")
+                                   "application/pdf", use_container_width=True,
+                                   key="dlz")
         else:
             st.info("📝 Registra estudiantes.")
 
@@ -2176,26 +2148,24 @@ def tab_carnets(config):
             if st.button("🚀 GENERAR PDF CARNETS DOCENTES", type="primary",
                          use_container_width=True, key="gld"):
                 lista = df_doc.to_dict('records')
-                pdf = generar_carnets_lote_pdf(lista, config['anio'],
-                                               es_docente=True)
+                pdf = generar_carnets_lote_pdf(lista, config['anio'], es_docente=True)
                 st.balloons()
                 st.download_button("⬇️ DESCARGAR PDF", pdf,
                                    f"Carnets_Docentes_{config['anio']}.pdf",
-                                   "application/pdf",
-                                   use_container_width=True, key="dlzd")
+                                   "application/pdf", use_container_width=True,
+                                   key="dlzd")
         else:
-            st.info("📝 Registra docentes en la pestaña Matrícula.")
+            st.info("📝 Registra docentes en Matrícula.")
 
 
 # ================================================================
-# TAB: ASISTENCIAS (Alumnos + Docentes, borrar día)
+# TAB: ASISTENCIAS (Alumnos + Docentes)
 # ================================================================
 
 def tab_asistencias():
     st.header("📋 Control de Asistencia")
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
-
     c1, c2 = st.columns(2)
     with c1:
         if st.button("🌅 ENTRADA", use_container_width=True,
@@ -2209,9 +2179,7 @@ def tab_asistencias():
                       else "secondary", key="bs"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
-
-    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — "
-            f"Registra alumnos y docentes")
+    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — Alumnos y Docentes")
     st.markdown("---")
 
     cc, cm = st.columns(2)
@@ -2227,10 +2195,9 @@ def tab_asistencias():
                 if d:
                     _registrar_asistencia_ui(d)
                 else:
-                    st.warning("⚠️ No detectado. Intente de nuevo o use manual.")
+                    st.warning("⚠️ No detectado.")
         else:
             st.info("💡 Activa la cámara para escanear.")
-
     with cm:
         st.markdown("### ✏️ Registro Manual")
         dm = st.text_input("DNI:", key="dm")
@@ -2243,34 +2210,28 @@ def tab_asistencias():
     st.subheader("📊 Registros de Hoy")
     asis = BaseDatos.obtener_asistencias_hoy()
     if asis:
-        # Separar alumnos y docentes
-        alumnos_hoy = []
-        docentes_hoy = []
-        for dni_k, v in asis.items():
-            registro = {
-                'DNI': dni_k,
-                'Nombre': v['nombre'],
-                'Entrada': v.get('entrada', '—'),
-                'Salida': v.get('salida', '—'),
-            }
+        alumnos_h = []
+        docentes_h = []
+        for dk, v in asis.items():
+            reg = {'DNI': dk, 'Nombre': v['nombre'],
+                   'Entrada': v.get('entrada', '—'),
+                   'Salida': v.get('salida', '—')}
             if v.get('es_docente', False):
-                docentes_hoy.append(registro)
+                docentes_h.append(reg)
             else:
-                alumnos_hoy.append(registro)
-
-        if alumnos_hoy:
+                alumnos_h.append(reg)
+        if alumnos_h:
             st.markdown("**📚 Alumnos:**")
-            st.dataframe(pd.DataFrame(alumnos_hoy),
+            st.dataframe(pd.DataFrame(alumnos_h),
                          use_container_width=True, hide_index=True)
-        if docentes_hoy:
+        if docentes_h:
             st.markdown("**👨‍🏫 Docentes:**")
-            st.dataframe(pd.DataFrame(docentes_hoy),
+            st.dataframe(pd.DataFrame(docentes_h),
                          use_container_width=True, hide_index=True)
 
-        # WhatsApp
         st.markdown("### 📱 Enviar por WhatsApp")
-        for dni_k, dat in asis.items():
-            al = BaseDatos.buscar_por_dni(dni_k)
+        for dk, dat in asis.items():
+            al = BaseDatos.buscar_por_dni(dk)
             if al:
                 cel = al.get('Celular_Apoderado', al.get('Celular', ''))
                 if cel and cel.strip():
@@ -2281,30 +2242,29 @@ def tab_asistencias():
                     st.markdown(
                         f'<a href="{link}" target="_blank" class="wa-btn">'
                         f'📱 {dat["nombre"]} → {cel}</a>',
-                        unsafe_allow_html=True
-                    )
-
+                        unsafe_allow_html=True)
         st.markdown("---")
-        if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="secondary",
-                     use_container_width=True, key="borrar_asist"):
-            BaseDatos.borrar_asistencias_hoy()
-            st.success("✅ Asistencias del día eliminadas")
-            st.rerun()
+        # Solo admin puede borrar
+        if puede_borrar():
+            if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="secondary",
+                         use_container_width=True, key="borrar_asist"):
+                BaseDatos.borrar_asistencias_hoy()
+                st.success("✅ Eliminadas")
+                st.rerun()
     else:
         st.info("📝 No hay registros hoy.")
 
 
 def _registrar_asistencia_ui(dni):
-    """Registra asistencia de alumno o docente"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
         tipo = st.session_state.tipo_asistencia.lower()
         nombre = persona.get('Nombre', '')
-        es_doc = persona.get('_tipo', '') == 'docente'
-        tipo_persona = "👨‍🏫 DOCENTE" if es_doc else "📚 ALUMNO"
-        BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_doc)
-        st.success(f"✅ [{tipo_persona}] **{nombre}** — "
+        es_d = persona.get('_tipo', '') == 'docente'
+        tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
+        BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
+        st.success(f"✅ [{tp}] **{nombre}** — "
                    f"{st.session_state.tipo_asistencia}: **{hora}**")
         st.balloons()
         cel = persona.get('Celular_Apoderado', persona.get('Celular', ''))
@@ -2313,48 +2273,49 @@ def _registrar_asistencia_ui(dni):
             link = generar_link_whatsapp(cel, msg)
             st.markdown(
                 f'<a href="{link}" target="_blank" class="wa-btn">'
-                f'📱 WhatsApp → {cel}</a>',
-                unsafe_allow_html=True
-            )
+                f'📱 WhatsApp → {cel}</a>', unsafe_allow_html=True)
     else:
         st.error(f"❌ DNI {dni} no encontrado")
 
 
 # ================================================================
-# TAB: CALIFICACIÓN YACHAY
+# TAB: CALIFICACIÓN YACHAY — RANKING POR DOCENTE
+# Cada docente ve SOLO su ranking. Selección de alumno por lista.
+# Opción "Nueva Evaluación" que limpia todo.
 # ================================================================
 
 def tab_calificacion_yachay(config):
     st.header("📝 Sistema de Calificación YACHAY")
-    tg, tc, tr = st.tabs([
-        "📄 Generar Hoja", "✅ Calificar", "🏆 Ranking"
-    ])
+    usuario_actual = st.session_state.usuario_actual
+    tg, tc, tr = st.tabs(["📄 Generar Hoja", "✅ Calificar", "🏆 Ranking"])
 
     with tg:
         st.subheader("📄 Hoja de Respuestas")
         st.markdown("""
         **¿Cómo funciona?**
-        1. Genera e imprime la hoja de respuestas
+        1. Genera e imprime la hoja
         2. Los alumnos rellenan los círculos
         3. Toma foto o ingresa manualmente
-        4. El sistema califica cada área sobre 20 puntos
+        4. El sistema califica cada área sobre 20
         """)
         c1, c2 = st.columns(2)
         with c1:
-            np_ = st.selectbox("Preguntas:", [10, 20, 30, 40, 50],
+            npg = st.selectbox("Preguntas:", [10, 20, 30, 40, 50],
                                index=1, key="npg")
         with c2:
             th = st.text_input("Título:", "EVALUACIÓN BIMESTRAL", key="th")
-        if st.button("📄 GENERAR", type="primary",
+        if st.button("📄 GENERAR HOJA", type="primary",
                      use_container_width=True, key="gh"):
-            hoja = generar_hoja_respuestas(np_, th)
+            hoja = generar_hoja_respuestas(npg, th)
             st.image(hoja, use_container_width=True)
-            st.download_button("⬇️", hoja,
-                               f"Hoja_{np_}p.png", "image/png",
+            st.download_button("⬇️ Descargar", hoja,
+                               f"Hoja_{npg}p.png", "image/png",
                                use_container_width=True, key="dh")
 
     with tc:
         st.subheader("✅ Calificar Examen")
+
+        # --- 1. ÁREAS ---
         st.markdown("**1️⃣ Áreas** (cada una sobre 20 puntos)")
         if 'areas_examen' not in st.session_state:
             st.session_state.areas_examen = []
@@ -2366,46 +2327,74 @@ def tab_calificacion_yachay(config):
                               index=1, key="nn")
         with cb:
             st.markdown("###")
-            if st.button("➕", key="aa"):
+            if st.button("➕ Agregar", key="aa"):
                 if na:
                     st.session_state.areas_examen.append({
-                        'nombre': na, 'num': nn, 'claves': ''
-                    })
+                        'nombre': na, 'num': nn, 'claves': ''})
                     st.rerun()
 
         tp = 0
         tc_ = []
         ia = []
         for i, a in enumerate(st.session_state.areas_examen):
-            with st.expander(
-                f"📚 {a['nombre']} ({a['num']}p → sobre 20)", expanded=True
-            ):
-                cl = st.text_input(f"Claves:", value=a.get('claves', ''),
+            with st.expander(f"📚 {a['nombre']} ({a['num']}p → sobre 20)",
+                             expanded=True):
+                cl = st.text_input("Claves:", value=a.get('claves', ''),
                                    key=f"cl{i}", max_chars=a['num'])
                 st.session_state.areas_examen[i]['claves'] = cl.upper()
-                ia.append({
-                    'nombre': a['nombre'],
-                    'num': a['num'],
-                    'claves': list(cl.upper())
-                })
+                ia.append({'nombre': a['nombre'], 'num': a['num'],
+                           'claves': list(cl.upper())})
                 tc_.extend(list(cl.upper()))
                 tp += a['num']
                 if len(st.session_state.areas_examen) > 1:
-                    if st.button("🗑️", key=f"d{i}"):
+                    if st.button("🗑️ Quitar", key=f"d{i}"):
                         st.session_state.areas_examen.pop(i)
                         st.rerun()
-
         if ia:
             st.info(f"📊 {tp} preguntas en {len(ia)} áreas")
 
+        # --- 2. SELECCIONAR ALUMNO (por lista o DNI) ---
         st.markdown("---")
-        st.markdown("**2️⃣ Alumno:**")
-        de = st.text_input("DNI:", key="de")
-        if de:
-            ae = BaseDatos.buscar_por_dni(de)
-            if ae:
-                st.success(f"👤 {ae.get('Nombre', '')}")
+        st.markdown("**2️⃣ Seleccionar Alumno:**")
+        metodo_sel = st.radio("Método de selección:",
+                               ["📋 Lista de mi grado", "🔍 Buscar por DNI"],
+                               horizontal=True, key="metodo_sel")
 
+        de = ""
+        nombre_sel = ""
+        if metodo_sel == "📋 Lista de mi grado":
+            # Obtener estudiantes del grado del docente
+            grado_doc = None
+            if st.session_state.docente_info:
+                grado_doc = st.session_state.docente_info.get('grado')
+            if grado_doc:
+                dg = BaseDatos.obtener_estudiantes_grado(grado_doc)
+                if not dg.empty and 'Nombre' in dg.columns:
+                    opciones = []
+                    for _, row in dg.iterrows():
+                        opciones.append(
+                            f"{row.get('Nombre', '')} — DNI: {row.get('DNI', '')}"
+                        )
+                    sel = st.selectbox("Seleccionar estudiante:", opciones,
+                                       key="sel_est")
+                    if sel:
+                        de = sel.split("DNI: ")[-1].strip()
+                        nombre_sel = sel.split(" — ")[0].strip()
+                        st.success(f"👤 {nombre_sel} | DNI: {de}")
+                else:
+                    st.warning("No hay estudiantes en tu grado.")
+            else:
+                st.info("Ingresa el DNI manualmente.")
+                de = st.text_input("DNI:", key="de_manual")
+        else:
+            de = st.text_input("DNI del alumno:", key="de")
+            if de:
+                ae = BaseDatos.buscar_por_dni(de)
+                if ae:
+                    nombre_sel = ae.get('Nombre', '')
+                    st.success(f"👤 {nombre_sel}")
+
+        # --- 3. RESPUESTAS ---
         st.markdown("**3️⃣ Respuestas:**")
         met = st.radio("Método:", ["✏️ Manual", "📸 Cámara"],
                        horizontal=True, key="met")
@@ -2416,7 +2405,7 @@ def tab_calificacion_yachay(config):
                                   key=f"r{i}", max_chars=a['num'])
                 ra.extend(list(r.upper()))
         else:
-            ac = st.checkbox("📷 Activar cámara", key="chce")
+            ac = st.checkbox("📷 Activar", key="chce")
             if ac:
                 fe = st.camera_input("📷", key="ce")
                 if fe:
@@ -2425,19 +2414,18 @@ def tab_calificacion_yachay(config):
                         ra = det
                         st.success(f"✅ {len(det)} detectadas")
                     else:
-                        st.warning("⚠️ No detectadas, use manual")
+                        st.warning("⚠️ Use manual")
 
         st.markdown("---")
         if st.button("📊 CALIFICAR", type="primary",
                      use_container_width=True, key="cal"):
             if tc_ and ra:
                 ad = BaseDatos.buscar_por_dni(de) if de else None
-                nm = ad.get('Nombre', '') if ad else "Sin nombre"
+                nm = nombre_sel if nombre_sel else (
+                    ad.get('Nombre', '') if ad else "Sin nombre")
                 res = {
                     'fecha': hora_peru().strftime('%d/%m/%Y %H:%M'),
-                    'dni': de,
-                    'nombre': nm,
-                    'areas': [],
+                    'dni': de, 'nombre': nm, 'areas': [],
                     'promedio_general': 0
                 }
                 idx = 0
@@ -2457,32 +2445,24 @@ def tab_calificacion_yachay(config):
                     for j in range(n):
                         cj = ck[j] if j < len(ck) else '?'
                         rj = rk[j] if j < len(rk) else '?'
-                        ok_j = (j < len(ck) and j < len(rk) and ck[j] == rk[j])
                         detalle.append({
-                            'p': idx + j + 1,
-                            'c': cj,
-                            'r': rj,
-                            'ok': ok_j
+                            'p': idx + j + 1, 'c': cj, 'r': rj,
+                            'ok': (j < len(ck) and j < len(rk) and ck[j] == rk[j])
                         })
                     res['areas'].append({
-                        'nombre': a['nombre'],
-                        'correctas': ok,
-                        'total': n,
-                        'nota': nota,
-                        'letra': lt,
+                        'nombre': a['nombre'], 'correctas': ok,
+                        'total': n, 'nota': nota, 'letra': lt,
                         'detalle': detalle
                     })
                     sn += nota
                     mw += f"📚 *{a['nombre']}:* {nota}/20 ({lt})\n"
                     idx += n
-
                 pm = round(sn / len(ia), 1) if ia else 0
                 lp = ("AD" if pm >= 18 else "A" if pm >= 14
                       else "B" if pm >= 11 else "C")
                 res['promedio_general'] = pm
                 mw += f"\n📊 *PROMEDIO: {pm}/20 ({lp})*"
-
-                BaseDatos.guardar_resultados_examen(res)
+                BaseDatos.guardar_resultados_examen(res, usuario_actual)
 
                 st.markdown("### 📊 Resultados")
                 cols = st.columns(len(ia) + 1)
@@ -2492,15 +2472,13 @@ def tab_calificacion_yachay(config):
                                   f"{ar['nota']}/20", f"{ar['letra']}")
                 with cols[-1]:
                     st.metric("📊 PROMEDIO", f"{pm}/20", lp)
-
                 for ar in res['areas']:
                     with st.expander(f"📋 {ar['nombre']}"):
                         st.dataframe(pd.DataFrame([
                             {'#': d['p'], 'Clave': d['c'], 'Resp': d['r'],
-                             '': ('✅' if d['ok'] else '❌')}
+                             '': '✅' if d['ok'] else '❌'}
                             for d in ar['detalle']
                         ]), use_container_width=True, hide_index=True)
-
                 if ad:
                     cel = ad.get('Celular_Apoderado', '')
                     if cel and cel.strip():
@@ -2508,15 +2486,27 @@ def tab_calificacion_yachay(config):
                         st.markdown(
                             f'<a href="{link}" target="_blank" class="wa-btn">'
                             f'📱 Enviar → {cel}</a>',
-                            unsafe_allow_html=True
-                        )
+                            unsafe_allow_html=True)
                 st.balloons()
             else:
                 st.error("⚠️ Configure claves y respuestas")
 
+    # --- RANKING (por docente) ---
     with tr:
         st.subheader("🏆 Ranking")
-        rs = BaseDatos.cargar_resultados_examen()
+        st.caption(f"📌 Resultados de: **{usuario_actual}**")
+
+        # Admin ve todos, docentes ven solo los suyos
+        if st.session_state.rol == "admin":
+            ver_todos = st.checkbox("👁️ Ver resultados de TODOS los docentes",
+                                     key="ver_todos")
+            if ver_todos:
+                rs = BaseDatos.cargar_todos_resultados()
+            else:
+                rs = BaseDatos.cargar_resultados_examen(usuario_actual)
+        else:
+            rs = BaseDatos.cargar_resultados_examen(usuario_actual)
+
         if rs:
             df = pd.DataFrame([{
                 'Fecha': r.get('fecha', ''),
@@ -2524,13 +2514,21 @@ def tab_calificacion_yachay(config):
                 'DNI': r.get('dni', ''),
                 'Promedio': r.get('promedio_general', 0),
                 'Áreas': ', '.join([
-                    f"{a['nombre']}:{a['nota']}"
-                    for a in r.get('areas', [])
+                    f"{a['nombre']}:{a['nota']}" for a in r.get('areas', [])
                 ])
             } for r in rs])
             df = df.sort_values('Promedio', ascending=False).reset_index(drop=True)
             df.insert(0, '#', range(1, len(df) + 1))
-            st.dataframe(df, use_container_width=True, hide_index=True)
+
+            # Configurar columnas con ancho apropiado
+            column_config = {
+                '#': st.column_config.NumberColumn(width="small"),
+                'Nombre': st.column_config.TextColumn(width="medium"),
+                'DNI': st.column_config.TextColumn(width="small"),
+                'Promedio': st.column_config.NumberColumn(width="small"),
+            }
+            st.dataframe(df, use_container_width=True, hide_index=True,
+                         column_config=column_config)
 
             if len(df) >= 1:
                 cols = st.columns(min(3, len(df)))
@@ -2543,8 +2541,7 @@ def tab_calificacion_yachay(config):
                             f'<div class="{estilos[i]}">'
                             f'{medallas[i]} {r["Nombre"]}<br>'
                             f'{r["Promedio"]}/20</div>',
-                            unsafe_allow_html=True
-                        )
+                            unsafe_allow_html=True)
 
             st.markdown("---")
             if st.button("📥 GENERAR RANKING PDF", type="primary",
@@ -2555,18 +2552,16 @@ def tab_calificacion_yachay(config):
                                    "application/pdf", key="drpdf")
 
             st.markdown("---")
-            st.markdown("### 📱 Enviar Individual")
+            st.markdown("### 📱 Enviar Individual por WhatsApp")
             for _, row in df.iterrows():
                 al = BaseDatos.buscar_por_dni(row['DNI']) if row['DNI'] else None
                 if al:
                     cel = al.get('Celular_Apoderado', '')
                     if cel and cel.strip():
                         ro = next(
-                            (r for r in rs if r.get('dni') == row['DNI']), None
-                        )
+                            (r for r in rs if r.get('dni') == row['DNI']), None)
                         if ro:
-                            msg = (f"📝 *RANKING YACHAY*\n"
-                                   f"👤 {row['Nombre']}\n"
+                            msg = (f"📝 *RANKING YACHAY*\n👤 {row['Nombre']}\n"
                                    f"🏆 Puesto: {row['#']}°/{len(df)}\n")
                             for a in ro.get('areas', []):
                                 msg += f"📚 {a['nombre']}: {a['nota']}/20\n"
@@ -2576,17 +2571,21 @@ def tab_calificacion_yachay(config):
                                 f'<a href="{link}" target="_blank" class="wa-btn">'
                                 f'📱 #{row["#"]} {row["Nombre"]} — '
                                 f'{row["Promedio"]}/20</a>',
-                                unsafe_allow_html=True
-                            )
+                                unsafe_allow_html=True)
 
             st.markdown("---")
-            if st.button("🗑️ Limpiar Ranking", key="lr"):
-                if Path(ARCHIVO_RESULTADOS).exists():
-                    os.remove(ARCHIVO_RESULTADOS)
-                st.success("✅")
+            st.markdown("### 🔄 Nueva Evaluación")
+            st.warning("⚠️ Esto borrará todos tus resultados actuales "
+                       "para empezar una nueva evaluación desde cero.")
+            if st.button("🔄 NUEVA EVALUACIÓN — Borrar mis resultados",
+                         type="secondary", use_container_width=True,
+                         key="nueva_eval"):
+                BaseDatos.limpiar_resultados_examen(usuario_actual)
+                st.session_state.areas_examen = []
+                st.success("✅ Resultados limpiados. Puedes comenzar nueva evaluación.")
                 st.rerun()
         else:
-            st.info("📝 Corrige exámenes para ver ranking.")
+            st.info("📝 Califica exámenes para ver tu ranking.")
 
 
 # ================================================================
@@ -2597,7 +2596,6 @@ def tab_base_datos():
     st.header("📊 Base de Datos")
     df = BaseDatos.cargar_matricula()
     df_doc = BaseDatos.cargar_docentes()
-
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.metric("📚 Alumnos", len(df) if not df.empty else 0)
@@ -2613,15 +2611,13 @@ def tab_base_datos():
                    if not df.empty and 'Celular_Apoderado' in df.columns else 0)
 
     tab_al, tab_dc = st.tabs(["📚 Alumnos", "👨‍🏫 Docentes"])
-
     with tab_al:
         if not df.empty:
             c1, c2 = st.columns(2)
             with c1:
                 opts = ['Todos'] + (
                     sorted(df['Grado'].dropna().unique().tolist())
-                    if 'Grado' in df.columns else []
-                )
+                    if 'Grado' in df.columns else [])
                 fg = st.selectbox("Filtrar:", opts, key="fbd")
             with c2:
                 bq = st.text_input("🔍", key="bbd")
@@ -2645,7 +2641,6 @@ def tab_base_datos():
                 st.download_button("⬇️ Excel", buf, "alumnos.xlsx", key="dxlsx")
         else:
             st.info("📝 Sin alumnos.")
-
     with tab_dc:
         if not df_doc.empty:
             if 'Nombre' in df_doc.columns:
@@ -2654,14 +2649,14 @@ def tab_base_datos():
             buf2 = io.BytesIO()
             df_doc.to_excel(buf2, index=False, engine='openpyxl')
             buf2.seek(0)
-            st.download_button("⬇️ Excel Docentes", buf2,
+            st.download_button("⬇️ Excel", buf2,
                                "docentes_export.xlsx", key="dxlsxd")
         else:
             st.info("📝 Sin docentes.")
 
 
 # ================================================================
-# VISTA DOCENTE (Registro Auxiliar + Asistencia + Calificación)
+# VISTA DOCENTE — Con links Google e institucionales
 # ================================================================
 
 def vista_docente(config):
@@ -2670,8 +2665,7 @@ def vista_docente(config):
     st.markdown(f"### 👨‍🏫 {info['label']}")
 
     tabs = st.tabs([
-        "📝 Registro Auxiliar",
-        "📋 Registro Asistencia",
+        "📝 Registro Auxiliar", "📋 Registro Asistencia",
         "📝 Calificación YACHAY"
     ])
 
@@ -2688,9 +2682,9 @@ def vista_docente(config):
             dc2 = st.text_input("Curso 2:", "Comunicación", key="dc2")
         with c3:
             dc3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="dc3")
-        cursos_doc = [c for c in [dc1, dc2, dc3] if c.strip()]
+        cursos_d = [c for c in [dc1, dc2, dc3] if c.strip()]
         dg = BaseDatos.obtener_estudiantes_grado(grado, sec)
-        st.info(f"📊 {len(dg)} estudiantes (alfabético)")
+        st.info(f"📊 {len(dg)} estudiantes")
         if not dg.empty:
             st.dataframe(dg[['Nombre', 'DNI', 'Grado', 'Seccion']],
                          use_container_width=True, hide_index=True)
@@ -2700,8 +2694,7 @@ def vista_docente(config):
                 lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
                 sl = sec if sec != "Todas" else "Todas"
                 pdf = generar_registro_auxiliar_pdf(
-                    lg, sl, config['anio'], bim, dg, cursos_doc
-                )
+                    lg, sl, config['anio'], bim, dg, cursos_d)
                 st.download_button("⬇️ PDF", pdf,
                                    f"RegAux_{lg}_{bim}.pdf",
                                    "application/pdf", key="ddra2")
@@ -2714,8 +2707,7 @@ def vista_docente(config):
             "Meses:",
             [f"{v} ({k})" for k, v in meses_opts],
             default=[f"{v} ({k})" for k, v in meses_opts[:1]],
-            key="dmsel"
-        )
+            key="dmsel")
         meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
         dg2 = BaseDatos.obtener_estudiantes_grado(grado, sec2)
         st.info(f"📊 {len(dg2)} estudiantes")
@@ -2725,8 +2717,7 @@ def vista_docente(config):
                 lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
                 sl = sec2 if sec2 != "Todas" else "Todas"
                 pdf = generar_registro_asistencia_pdf(
-                    lg, sl, config['anio'], dg2, meses_nums
-                )
+                    lg, sl, config['anio'], dg2, meses_nums)
                 st.download_button("⬇️ PDF", pdf,
                                    f"RegAsist_{lg}.pdf",
                                    "application/pdf", key="ddas2")
@@ -2754,11 +2745,8 @@ def main():
 
     elif st.session_state.rol in ["directivo", "admin"]:
         tabs = st.tabs([
-            "📝 MATRÍCULA",
-            "📄 DOCUMENTOS",
-            "🪪 CARNETS",
-            "📋 ASISTENCIAS",
-            "📊 BASE DATOS",
+            "📝 MATRÍCULA", "📄 DOCUMENTOS", "🪪 CARNETS",
+            "📋 ASISTENCIAS", "📊 BASE DATOS",
             "📝 CALIFICACIÓN YACHAY"
         ])
         with tabs[0]:
