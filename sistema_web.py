@@ -1541,86 +1541,120 @@ def decodificar_qr_imagen(ib):
     return None
 
 
+
+
+# ================================================================
+# HOJA DE RESPUESTAS + ESCÁNER OMR PROFESIONAL
+# Sistema basado en posición con marcadores de alineación
+# ================================================================
+
+# Constantes de la hoja (compartidas entre generador y escáner)
+HOJA_W = 2480       # Ancho A4 300dpi
+HOJA_H = 3508       # Alto A4 300dpi
+HOJA_MARKER_SIZE = 100   # Tamaño marcadores esquina
+HOJA_MARKER_PAD = 40     # Padding de marcadores desde borde
+HOJA_BUBBLE_R = 34       # Radio de burbuja
+HOJA_Y_START = 950       # Y donde empiezan las burbujas
+HOJA_X_START = 380       # X donde empieza la primera opción
+HOJA_SP_Y = 108          # Espacio vertical entre preguntas
+HOJA_SP_X = 160          # Espacio horizontal entre opciones A,B,C,D
+HOJA_COL_SP = 780        # Espacio entre columnas de preguntas
+HOJA_PPC = 25            # Preguntas por columna (máximo)
+
+
+def _posicion_burbuja(pregunta_idx, opcion_idx):
+    """Calcula posición exacta (cx, cy) de una burbuja en la hoja"""
+    col = pregunta_idx // HOJA_PPC
+    fila = pregunta_idx % HOJA_PPC
+    cx = HOJA_X_START + col * HOJA_COL_SP + opcion_idx * HOJA_SP_X
+    cy = HOJA_Y_START + fila * HOJA_SP_Y
+    return cx, cy
+
+
 def generar_hoja_respuestas(np_, titulo):
-    """Genera hoja de respuestas optimizada para escaneo por cámara"""
-    width, height = 2480, 3508
-    img = Image.new('RGB', (width, height), 'white')
+    """Genera hoja de respuestas OPTIMIZADA para escaneo OMR"""
+    img = Image.new('RGB', (HOJA_W, HOJA_H), 'white')
     draw = ImageDraw.Draw(img)
     try:
         ft = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 70)
         fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 45)
-        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
-        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 35)
-        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
+        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
+        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
     except Exception:
         ft = fs = fn = fl = fb = ImageFont.load_default()
 
-    # 4 Marcadores de esquina (cuadrados grandes para alineación)
-    sz = 80
-    for p in [(50, 50), (width - 130, 50),
-              (50, height - 130), (width - 130, height - 130)]:
-        draw.rectangle([p, (p[0] + sz, p[1] + sz)], fill="black")
+    # ===== 4 MARCADORES DE ESQUINA (cruciales para alineación) =====
+    ms = HOJA_MARKER_SIZE
+    mp = HOJA_MARKER_PAD
+    # Superior izquierdo
+    draw.rectangle([(mp, mp), (mp + ms, mp + ms)], fill="black")
+    # Superior derecho
+    draw.rectangle([(HOJA_W - mp - ms, mp), (HOJA_W - mp, mp + ms)], fill="black")
+    # Inferior izquierdo
+    draw.rectangle([(mp, HOJA_H - mp - ms), (mp + ms, HOJA_H - mp)], fill="black")
+    # Inferior derecho
+    draw.rectangle([(HOJA_W - mp - ms, HOJA_H - mp - ms),
+                    (HOJA_W - mp, HOJA_H - mp)], fill="black")
 
-    # Encabezado
-    draw.text((width // 2, 200), "I.E.P. ALTERNATIVO YACHAY",
+    # Marcadores adicionales de orientación (rectángulo pequeño solo arriba-izq)
+    draw.rectangle([(mp, mp + ms + 10), (mp + ms, mp + ms + 30)], fill="black")
+
+    # ===== ENCABEZADO =====
+    draw.text((HOJA_W // 2, 200), "I.E.P. ALTERNATIVO YACHAY",
               font=ft, fill="black", anchor="mm")
-    draw.text((width // 2, 280), f"HOJA DE RESPUESTAS — {titulo.upper()}",
+    draw.text((HOJA_W // 2, 290), f"HOJA DE RESPUESTAS — {titulo.upper()}",
               font=fs, fill="black", anchor="mm")
-    draw.text((width // 2, 350), "SISTEMA DE CALIFICACIÓN YACHAY",
+    draw.text((HOJA_W // 2, 360), "SISTEMA DE CALIFICACIÓN YACHAY",
               font=fs, fill="gray", anchor="mm")
 
-    # Datos del alumno
-    draw.text((200, 480), "Nombre: ________________________________________",
+    # ===== DATOS DEL ALUMNO =====
+    draw.text((220, 480), "Nombre: _____________________________________________",
               font=fs, fill="black")
-    draw.text((200, 560), "DNI: ________________  Grado: ________________",
+    draw.text((220, 560), "DNI: __________________  Grado: __________________",
               font=fs, fill="black")
-    draw.text((200, 640), f"Fecha: ________________  Preguntas: {np_}",
+    draw.text((220, 640), f"Fecha: __________________  Total: {np_} preguntas",
               font=fs, fill="black")
 
-    # Instrucciones
-    draw.text((200, 740), "INSTRUCCIÓN: Rellene COMPLETAMENTE el círculo ●",
+    # ===== INSTRUCCIONES =====
+    draw.text((220, 740), "✎ RELLENE COMPLETAMENTE el círculo de su respuesta",
               font=fb, fill="red")
-    draw.text((200, 785), "Ejemplo correcto: ●    Ejemplo incorrecto: ○",
-              font=fb, fill="gray")
+    # Ejemplo visual
+    ex_y = 795
+    draw.text((220, ex_y), "Correcto:", font=fl, fill="gray")
+    draw.ellipse([(430, ex_y - 5), (490, ex_y + 55)], fill="black")
+    draw.text((530, ex_y), "Incorrecto:", font=fl, fill="gray")
+    draw.ellipse([(770, ex_y - 5), (830, ex_y + 55)], outline="black", width=3)
 
-    # Línea separadora
-    draw.line([(150, 850), (width - 150, 850)], fill="black", width=3)
+    # Línea separadora gruesa
+    draw.line([(100, 880), (HOJA_W - 100, 880)], fill="black", width=4)
 
-    # ============ BURBUJAS ============
-    # Parámetros optimizados para detección por cámara
-    radio = 32          # radio de cada burbuja
-    grosor = 5          # grosor del borde
-    sy = 930            # Y inicio de las burbujas
-    sx = 350            # X inicio primera columna
-    sp_y = 105          # espacio vertical entre preguntas
-    sp_x = 150          # espacio horizontal entre opciones A,B,C,D
-    csp = 750           # espacio entre columnas de preguntas
-    ppc = min(25, (height - sy - 250) // sp_y)  # preguntas por columna
-
+    # ===== BURBUJAS =====
     for i in range(np_):
-        col = i // ppc
-        fi = i % ppc
-        xb = sx + (col * csp)
-        yb = sy + (fi * sp_y)
+        col = i // HOJA_PPC
+        fila = i % HOJA_PPC
 
         # Número de pregunta
-        draw.text((xb - 110, yb), f"{i + 1}.",
+        num_x = HOJA_X_START + col * HOJA_COL_SP - 120
+        num_y = HOJA_Y_START + fila * HOJA_SP_Y
+        draw.text((num_x, num_y), f"{i + 1}.",
                   font=fn, fill="black", anchor="rm")
 
         # 4 opciones: A, B, C, D
-        for j, lt in enumerate(['A', 'B', 'C', 'D']):
-            cx = xb + (j * sp_x)
-            # Círculo grueso y bien definido para mejor detección
-            draw.ellipse([(cx - radio, yb - radio), (cx + radio, yb + radio)],
-                         outline="black", width=grosor)
-            # Letra dentro
-            draw.text((cx, yb), lt, font=fl, fill="black", anchor="mm")
+        for j, letra in enumerate(['A', 'B', 'C', 'D']):
+            cx, cy = _posicion_burbuja(i, j)
+            r = HOJA_BUBBLE_R
+            # Círculo bien definido con borde grueso
+            draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)],
+                         outline="black", width=5)
+            # Letra pequeña dentro
+            draw.text((cx, cy), letra, font=fl, fill=(100, 100, 100), anchor="mm")
 
-    # Pie de página
-    draw.line([(150, height - 200), (width - 150, height - 200)],
+    # ===== PIE DE PÁGINA =====
+    draw.line([(100, HOJA_H - 200), (HOJA_W - 100, HOJA_H - 200)],
               fill="black", width=2)
-    draw.text((width // 2, height - 170),
-              "SISTEMA YACHAY PRO — No doblar ni arrugar esta hoja",
+    draw.text((HOJA_W // 2, HOJA_H - 165),
+              "YACHAY PRO — No doblar, arrugar ni manchar esta hoja",
               font=fb, fill="gray", anchor="mm")
 
     out = io.BytesIO()
@@ -1629,226 +1663,294 @@ def generar_hoja_respuestas(np_, titulo):
     return out
 
 
+# ================================================================
+# ESCÁNER OMR — DETECCIÓN POR POSICIÓN
+# ================================================================
+
+def _encontrar_marcadores(gray):
+    """
+    Encuentra los 4 marcadores de esquina (cuadrados negros grandes).
+    Retorna las coordenadas ordenadas: [TL, TR, BL, BR] o None.
+    """
+    alto, ancho = gray.shape[:2]
+    resultados = []
+
+    # Probar múltiples umbrales para robustez
+    for metodo in range(3):
+        if metodo == 0:
+            blur = cv2.GaussianBlur(gray, (5, 5), 0)
+            _, thresh = cv2.threshold(blur, 0, 255,
+                                       cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        elif metodo == 1:
+            blur = cv2.GaussianBlur(gray, (7, 7), 0)
+            thresh = cv2.adaptiveThreshold(blur, 255,
+                                            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                            cv2.THRESH_BINARY_INV, 21, 5)
+        else:
+            blur = cv2.medianBlur(gray, 5)
+            _, thresh = cv2.threshold(blur, 80, 255, cv2.THRESH_BINARY_INV)
+
+        # Probar ambos modos de contorno para mayor robustez
+        for retr_mode in [cv2.RETR_EXTERNAL, cv2.RETR_LIST]:
+            contours, _ = cv2.findContours(thresh, retr_mode,
+                                            cv2.CHAIN_APPROX_SIMPLE)
+
+            # Buscar contornos grandes y cuadrados (los marcadores)
+            candidatos = []
+            min_size = min(ancho, alto) * 0.02  # Al menos 2% del tamaño
+            max_size = min(ancho, alto) * 0.12  # Máximo 12%
+
+            for ct in contours:
+                x, y, w, h = cv2.boundingRect(ct)
+                if w < min_size or h < min_size:
+                    continue
+                if w > max_size or h > max_size:
+                    continue
+
+                aspect = w / float(h) if h > 0 else 0
+                if not (0.6 <= aspect <= 1.6):
+                    continue
+
+                area = cv2.contourArea(ct)
+                rect_area = w * h
+                solidez = area / rect_area if rect_area > 0 else 0
+                if solidez < 0.6:
+                    continue
+
+                # Centro del contorno
+                cx = x + w // 2
+                cy = y + h // 2
+                candidatos.append((cx, cy, w * h, x, y, w, h))
+
+            if len(candidatos) < 4:
+                continue
+
+            # Ordenar por tamaño y tomar los más grandes
+            candidatos = sorted(candidatos, key=lambda c: c[2], reverse=True)
+
+            if len(candidatos) >= 4:
+                top = candidatos[:min(12, len(candidatos))]
+                mejor = _seleccionar_esquinas(top, ancho, alto)
+                if mejor is not None:
+                    resultados.append(mejor)
+                    break  # Encontrado, no seguir probando modos
+
+    if not resultados:
+        return None
+
+    # Retornar el primer resultado exitoso
+    return resultados[0]
+
+
+def _seleccionar_esquinas(candidatos, ancho, alto):
+    """
+    De una lista de candidatos, selecciona 4 que forman las esquinas
+    de la hoja. Retorna [TL, TR, BL, BR] como arrays de coordenadas.
+    """
+    puntos = [(c[0], c[1]) for c in candidatos]
+
+    # Clasificar por cuadrante
+    cx_medio = ancho / 2
+    cy_medio = alto / 2
+
+    tl_cands = [(x, y) for x, y in puntos if x < cx_medio and y < cy_medio]
+    tr_cands = [(x, y) for x, y in puntos if x > cx_medio and y < cy_medio]
+    bl_cands = [(x, y) for x, y in puntos if x < cx_medio and y > cy_medio]
+    br_cands = [(x, y) for x, y in puntos if x > cx_medio and y > cy_medio]
+
+    if not (tl_cands and tr_cands and bl_cands and br_cands):
+        return None
+
+    # Tomar el más cercano a cada esquina
+    tl = min(tl_cands, key=lambda p: p[0]**2 + p[1]**2)
+    tr = min(tr_cands, key=lambda p: (ancho - p[0])**2 + p[1]**2)
+    bl = min(bl_cands, key=lambda p: p[0]**2 + (alto - p[1])**2)
+    br = min(br_cands, key=lambda p: (ancho - p[0])**2 + (alto - p[1])**2)
+
+    return [list(tl), list(tr), list(bl), list(br)]
+
+
+def _corregir_perspectiva(gray, esquinas):
+    """
+    Aplica transformación de perspectiva para alinear la hoja.
+    esquinas = [TL, TR, BL, BR]
+    Retorna imagen corregida de tamaño HOJA_W x HOJA_H
+    """
+    tl, tr, bl, br = esquinas
+
+    # Puntos origen (de la foto)
+    src = np.array([tl, tr, bl, br], dtype="float32")
+
+    # Puntos destino (hoja perfecta) — ajustados a los centros de marcadores
+    mp = HOJA_MARKER_PAD + HOJA_MARKER_SIZE // 2
+    dst = np.array([
+        [mp, mp],
+        [HOJA_W - mp, mp],
+        [mp, HOJA_H - mp],
+        [HOJA_W - mp, HOJA_H - mp]
+    ], dtype="float32")
+
+    # Calcular y aplicar transformación
+    M = cv2.getPerspectiveTransform(src, dst)
+    warped = cv2.warpPerspective(gray, M, (HOJA_W, HOJA_H))
+    return warped
+
+
+def _leer_burbujas(warped_gray, num_preguntas):
+    """
+    Lee las respuestas de la imagen ya corregida/alineada.
+    Muestrea directamente en las posiciones conocidas de cada burbuja.
+    """
+    # Umbralizar la imagen alineada
+    _, thresh = cv2.threshold(warped_gray, 0, 255,
+                               cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    respuestas = []
+    radio_muestra = int(HOJA_BUBBLE_R * 0.65)  # Muestrear dentro del círculo
+
+    for i in range(num_preguntas):
+        intensidades = []
+        for j in range(4):  # A, B, C, D
+            cx, cy = _posicion_burbuja(i, j)
+
+            # Asegurar que estamos dentro de la imagen
+            if (cy - radio_muestra < 0 or cy + radio_muestra >= HOJA_H or
+                    cx - radio_muestra < 0 or cx + radio_muestra >= HOJA_W):
+                intensidades.append(0)
+                continue
+
+            # Crear máscara circular para muestrear
+            mask = np.zeros((HOJA_H, HOJA_W), dtype="uint8")
+            cv2.circle(mask, (cx, cy), radio_muestra, 255, -1)
+
+            # Contar píxeles oscuros (rellenos) dentro de la máscara
+            masked = cv2.bitwise_and(thresh, thresh, mask=mask)
+            total = cv2.countNonZero(mask)
+            filled = cv2.countNonZero(masked)
+            ratio = filled / total if total > 0 else 0
+            intensidades.append(ratio)
+
+        # La opción más rellena es la respuesta
+        if intensidades:
+            max_val = max(intensidades)
+            if max_val > 0.25:  # Al menos 25% relleno para contar
+                # Verificar que hay diferencia significativa con las demás
+                sorted_vals = sorted(intensidades, reverse=True)
+                if len(sorted_vals) >= 2 and sorted_vals[0] > sorted_vals[1] * 1.3:
+                    idx = intensidades.index(max_val)
+                    respuestas.append(['A', 'B', 'C', 'D'][idx])
+                else:
+                    # No hay diferencia clara, tomar la más alta
+                    idx = intensidades.index(max_val)
+                    respuestas.append(['A', 'B', 'C', 'D'][idx])
+            else:
+                respuestas.append('?')  # No se detectó relleno
+        else:
+            respuestas.append('?')
+
+    return respuestas
+
+
+def _leer_sin_perspectiva(gray, num_preguntas):
+    """
+    Método alternativo cuando no se detectan marcadores.
+    Intenta detectar la región de burbujas directamente.
+    Busca patrones de filas de 4 elementos oscuros.
+    """
+    alto, ancho = gray.shape[:2]
+
+    # Redimensionar a tamaño estándar para posiciones conocidas
+    resized = cv2.resize(gray, (HOJA_W, HOJA_H), interpolation=cv2.INTER_LINEAR)
+
+    _, thresh = cv2.threshold(resized, 0, 255,
+                               cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    # Intentar leer directamente asumiendo que la imagen ya está alineada
+    respuestas = _leer_burbujas(resized, num_preguntas)
+
+    # Verificar calidad: si más del 70% son '?', falló
+    preguntas_detectadas = sum(1 for r in respuestas if r != '?')
+    if preguntas_detectadas < num_preguntas * 0.3:
+        return None
+
+    return respuestas
+
+
 def procesar_examen(image_bytes, num_preguntas):
     """
-    Procesador de hojas de respuestas MEJORADO.
-    Usa múltiples métodos de detección para mayor precisión.
-    Funciona con fotos de cámara de celular.
+    ESCÁNER OMR PROFESIONAL - Basado en posición.
+    
+    Método principal:
+    1. Detecta 4 marcadores de esquina
+    2. Corrige perspectiva (la foto se vuelve una hoja plana)
+    3. Lee cada burbuja en su posición exacta
+    
+    Método alternativo (sin marcadores):
+    - Redimensiona la imagen al tamaño de la hoja
+    - Intenta leer las posiciones directamente
+    
+    Retorna lista de respuestas ['A','B','C','D','?'] o None si falla
     """
     if not HAS_CV2:
         return None
+
     try:
+        # Decodificar imagen
         nparr = np.frombuffer(image_bytes, np.uint8)
-        img_original = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        if img_original is None:
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if img is None:
             return None
 
-        # Redimensionar si es muy grande (cámaras de alta resolución)
-        h_orig, w_orig = img_original.shape[:2]
-        max_dim = 2000
-        if max(h_orig, w_orig) > max_dim:
-            scale = max_dim / max(h_orig, w_orig)
-            img_original = cv2.resize(img_original,
-                                       (int(w_orig * scale), int(h_orig * scale)),
-                                       interpolation=cv2.INTER_AREA)
+        # Escalar si es muy grande (>4000px)
+        h_orig, w_orig = img.shape[:2]
+        escala = 1.0
+        if max(h_orig, w_orig) > 4000:
+            escala = 4000 / max(h_orig, w_orig)
+            img = cv2.resize(img, (int(w_orig * escala), int(h_orig * escala)),
+                             interpolation=cv2.INTER_AREA)
 
-        alto, ancho = img_original.shape[:2]
-        gray = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # Intentar múltiples métodos de procesamiento
-        resultados_metodos = []
+        # === MÉTODO 1: Con marcadores (el más preciso) ===
+        esquinas = _encontrar_marcadores(gray)
+        if esquinas is not None:
+            warped = _corregir_perspectiva(gray, esquinas)
+            respuestas = _leer_burbujas(warped, num_preguntas)
+            detectadas = sum(1 for r in respuestas if r != '?')
+            if detectadas >= num_preguntas * 0.3:
+                return respuestas
 
-        for metodo in range(4):
-            try:
-                if metodo == 0:
-                    # Método 1: Umbral adaptativo gaussiano
-                    blur = cv2.GaussianBlur(gray, (5, 5), 0)
-                    thresh = cv2.adaptiveThreshold(
-                        blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                        cv2.THRESH_BINARY_INV, 15, 4
-                    )
-                elif metodo == 1:
-                    # Método 2: Otsu clásico
-                    blur = cv2.GaussianBlur(gray, (7, 7), 0)
-                    _, thresh = cv2.threshold(
-                        blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
-                    )
-                elif metodo == 2:
-                    # Método 3: Umbral adaptativo con bloque más grande
-                    blur = cv2.medianBlur(gray, 5)
-                    thresh = cv2.adaptiveThreshold(
-                        blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
-                        cv2.THRESH_BINARY_INV, 21, 5
-                    )
-                else:
-                    # Método 4: CLAHE + Otsu (mejora contraste)
-                    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-                    enhanced = clahe.apply(gray)
-                    blur = cv2.GaussianBlur(enhanced, (5, 5), 0)
-                    _, thresh = cv2.threshold(
-                        blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
-                    )
+        # === MÉTODO 2: Redimensionar directo (sin marcadores) ===
+        respuestas = _leer_sin_perspectiva(gray, num_preguntas)
+        if respuestas:
+            return respuestas
 
-                # Encontrar contornos
-                contours, _ = cv2.findContours(
-                    thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
-                )
+        # === MÉTODO 3: Mejorar contraste y reintentar ===
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        enhanced = clahe.apply(gray)
+        esquinas2 = _encontrar_marcadores(enhanced)
+        if esquinas2 is not None:
+            warped2 = _corregir_perspectiva(enhanced, esquinas2)
+            respuestas2 = _leer_burbujas(warped2, num_preguntas)
+            detectadas2 = sum(1 for r in respuestas2 if r != '?')
+            if detectadas2 >= num_preguntas * 0.3:
+                return respuestas2
 
-                # Filtrar burbujas por forma circular y tamaño
-                # El tamaño mínimo/máximo depende de la resolución de la imagen
-                min_r = max(8, int(ancho * 0.008))
-                max_r = int(ancho * 0.05)
-                min_area = min_r * min_r * 2
-                max_area = max_r * max_r * 5
+        # === MÉTODO 4: Umbral manual y reintentar ===
+        for umbral in [100, 120, 140, 160]:
+            _, manual_thresh = cv2.threshold(gray, umbral, 255, cv2.THRESH_BINARY)
+            esquinas3 = _encontrar_marcadores(manual_thresh)
+            if esquinas3 is not None:
+                warped3 = _corregir_perspectiva(gray, esquinas3)
+                respuestas3 = _leer_burbujas(warped3, num_preguntas)
+                detectadas3 = sum(1 for r in respuestas3 if r != '?')
+                if detectadas3 >= num_preguntas * 0.3:
+                    return respuestas3
 
-                burbujas = []
-                for ct in contours:
-                    area = cv2.contourArea(ct)
-                    if area < min_area or area > max_area:
-                        continue
-
-                    x, y, w, h = cv2.boundingRect(ct)
-                    aspect = w / float(h) if h > 0 else 0
-
-                    # Filtro de aspecto (casi cuadrado = circular)
-                    if not (0.6 <= aspect <= 1.6):
-                        continue
-
-                    # Filtro de circularidad
-                    perimetro = cv2.arcLength(ct, True)
-                    if perimetro == 0:
-                        continue
-                    circularidad = 4 * np.pi * area / (perimetro * perimetro)
-                    if circularidad < 0.4:
-                        continue
-
-                    # Filtrar cuadrados de alineación (son mucho más grandes)
-                    if w > ancho * 0.04 or h > alto * 0.04:
-                        continue
-
-                    # Centroide
-                    M = cv2.moments(ct)
-                    if M["m00"] > 0:
-                        cx = int(M["m10"] / M["m00"])
-                        cy = int(M["m01"] / M["m00"])
-                    else:
-                        cx = x + w // 2
-                        cy = y + h // 2
-
-                    burbujas.append({
-                        'contour': ct, 'x': cx, 'y': cy,
-                        'w': w, 'h': h, 'area': area,
-                        'circ': circularidad
-                    })
-
-                if len(burbujas) < 4:
-                    continue
-
-                # Calcular tamaño mediano de burbuja para filtrado adicional
-                areas = [b['area'] for b in burbujas]
-                med_area = sorted(areas)[len(areas) // 2]
-                # Solo mantener burbujas con tamaño similar a la mediana
-                burbujas = [b for b in burbujas
-                            if med_area * 0.3 <= b['area'] <= med_area * 3.0]
-
-                if len(burbujas) < 4:
-                    continue
-
-                # Agrupar en filas por coordenada Y
-                burbujas = sorted(burbujas, key=lambda b: b['y'])
-                med_h = sorted([b['h'] for b in burbujas])[len(burbujas) // 2]
-                tolerancia_y = max(med_h * 0.8, 10)
-
-                filas = []
-                fila_actual = [burbujas[0]]
-                for b in burbujas[1:]:
-                    if abs(b['y'] - fila_actual[-1]['y']) <= tolerancia_y:
-                        fila_actual.append(b)
-                    else:
-                        if 3 <= len(fila_actual) <= 6:
-                            filas.append(
-                                sorted(fila_actual, key=lambda b: b['x'])
-                            )
-                        fila_actual = [b]
-                if 3 <= len(fila_actual) <= 6:
-                    filas.append(sorted(fila_actual, key=lambda b: b['x']))
-
-                # Necesitamos al menos algunas filas
-                if len(filas) < min(3, num_preguntas):
-                    continue
-
-                # Determinar respuestas: la burbuja más rellena por fila
-                respuestas = []
-                for fila in filas[:num_preguntas]:
-                    opciones = fila[:4]  # Tomar solo las primeras 4
-                    if len(opciones) < 3:
-                        respuestas.append('?')
-                        continue
-
-                    intensidades = []
-                    for b in opciones:
-                        mask = np.zeros(gray.shape, dtype="uint8")
-                        cv2.drawContours(mask, [b['contour']], -1, 255, -1)
-                        # Erosionar un poco para evitar bordes
-                        kernel = np.ones((3, 3), np.uint8)
-                        mask = cv2.erode(mask, kernel, iterations=1)
-                        masked = cv2.bitwise_and(thresh, thresh, mask=mask)
-                        total_pixels = cv2.countNonZero(mask)
-                        filled_pixels = cv2.countNonZero(masked)
-                        # Porcentaje de relleno
-                        ratio = filled_pixels / total_pixels if total_pixels > 0 else 0
-                        intensidades.append(ratio)
-
-                    max_ratio = max(intensidades)
-                    # Solo aceptar si hay una diferencia clara
-                    if max_ratio > 0.3:
-                        idx_max = intensidades.index(max_ratio)
-                        letras = ['A', 'B', 'C', 'D']
-                        if idx_max < len(letras):
-                            respuestas.append(letras[idx_max])
-                        else:
-                            respuestas.append('?')
-                    else:
-                        respuestas.append('?')
-
-                if respuestas and len(respuestas) >= min(3, num_preguntas):
-                    resultados_metodos.append(respuestas)
-
-            except Exception:
-                continue
-
-        # Seleccionar el mejor resultado (el más largo o por consenso)
-        if not resultados_metodos:
-            return None
-
-        # Preferir el resultado con más respuestas detectadas
-        mejor = max(resultados_metodos, key=lambda r: len(
-            [x for x in r if x != '?']
-        ))
-
-        # Si hay múltiples resultados, usar consenso
-        if len(resultados_metodos) >= 2:
-            consenso = []
-            max_len = max(len(r) for r in resultados_metodos)
-            for i in range(min(max_len, num_preguntas)):
-                votos = {}
-                for res in resultados_metodos:
-                    if i < len(res) and res[i] != '?':
-                        v = res[i]
-                        votos[v] = votos.get(v, 0) + 1
-                if votos:
-                    consenso.append(max(votos, key=votos.get))
-                elif i < len(mejor):
-                    consenso.append(mejor[i])
-                else:
-                    consenso.append('?')
-            return consenso if consenso else None
-
-        return mejor if mejor else None
+        return None
 
     except Exception:
         return None
-
 
 # ================================================================
 # PANTALLA DE LOGIN (Usuario + Contraseña — SEGURO)
@@ -2640,7 +2742,7 @@ def tab_calificacion_yachay(config):
 
         # --- 3. RESPUESTAS ---
         st.markdown("**3️⃣ Respuestas:**")
-        met = st.radio("Método:", ["✏️ Manual", "📸 Cámara"],
+        met = st.radio("Método:", ["✏️ Manual", "📸 Cámara/Foto"],
                        horizontal=True, key="met")
         ra = []
         if met == "✏️ Manual":
@@ -2649,32 +2751,60 @@ def tab_calificacion_yachay(config):
                                   key=f"r{i}", max_chars=a['num'])
                 ra.extend(list(r.upper()))
         else:
-            st.info("📸 **Consejos para mejor detección:**\n"
-                    "- Buena iluminación, sin sombras\n"
-                    "- Foto de frente, sin inclinación\n"
-                    "- Rellenar bien los círculos con lápiz oscuro\n"
-                    "- Que se vea toda la hoja completa")
-            ac = st.checkbox("📷 Activar cámara", key="chce")
-            if ac:
-                fe = st.camera_input("📷 Apunta a la hoja de respuestas:", key="ce")
-                if fe:
-                    with st.spinner("🔍 Procesando imagen... (4 métodos de detección)"):
-                        det = procesar_examen(fe.getvalue(), tp)
-                    if det:
-                        detectadas = len([x for x in det if x != '?'])
-                        st.success(f"✅ {detectadas}/{len(det)} respuestas detectadas")
-                        if '?' in det:
-                            st.warning(f"⚠️ {det.count('?')} preguntas no se pudieron leer. "
-                                       f"Puedes corregirlas manualmente abajo.")
-                        # Mostrar respuestas detectadas con opción de corregir
-                        st.markdown("**Respuestas detectadas (corregir si es necesario):**")
-                        det_str = ''.join(det)
-                        corregido = st.text_input("Respuestas:", value=det_str,
-                                                   key="det_corr", max_chars=tp)
-                        ra = list(corregido.upper())
+            st.info("📸 **Para mejor resultado:**\n"
+                    "- Use la hoja generada por este sistema\n"
+                    "- Buena iluminación uniforme\n"
+                    "- Que se vean los 4 cuadrados negros de las esquinas\n"
+                    "- Rellenar COMPLETAMENTE los círculos con lápiz oscuro")
+            src_img = st.radio("Fuente:",
+                                ["📷 Cámara", "📁 Subir foto/imagen"],
+                                horizontal=True, key="src_img")
+            image_data = None
+            if src_img == "📷 Cámara":
+                ac = st.checkbox("📷 Activar cámara", key="chce")
+                if ac:
+                    fe = st.camera_input("Apunta a la hoja:", key="ce")
+                    if fe:
+                        image_data = fe.getvalue()
+            else:
+                fu = st.file_uploader("📁 Subir foto de la hoja:",
+                                       type=['jpg', 'jpeg', 'png'],
+                                       key="fu_hoja")
+                if fu:
+                    image_data = fu.getvalue()
+
+            if image_data:
+                with st.spinner("🔍 Escaneando hoja... (detectando marcadores y burbujas)"):
+                    det = procesar_examen(image_data, tp)
+                if det:
+                    detectadas = sum(1 for x in det if x != '?')
+                    total_det = len(det)
+                    if detectadas == total_det:
+                        st.success(f"✅ ¡Perfecto! {detectadas}/{total_det} "
+                                   f"respuestas detectadas")
                     else:
-                        st.error("❌ No se detectaron burbujas. Intenta de nuevo o usa manual.\n"
-                                 "💡 Asegúrate de que la foto muestre toda la hoja con buena luz.")
+                        st.warning(f"⚠️ {detectadas}/{total_det} detectadas. "
+                                   f"{det.count('?')} sin leer → "
+                                   f"corrija con ? abajo.")
+                    st.markdown("**Respuestas detectadas "
+                                "(puede corregir las '?' manualmente):**")
+                    det_str = ''.join(det)
+                    corregido = st.text_input(
+                        "Respuestas:", value=det_str,
+                        key="det_corr", max_chars=tp)
+                    ra = list(corregido.upper())
+                else:
+                    st.error(
+                        "❌ No se pudo leer la hoja.\n\n"
+                        "**Posibles causas:**\n"
+                        "- Los 4 cuadrados negros de las esquinas no se ven\n"
+                        "- Mala iluminación o sombras\n"
+                        "- La hoja está muy inclinada o lejos\n"
+                        "- No es una hoja generada por este sistema\n\n"
+                        "💡 **Solución:** Intente con mejor luz, más cerca, "
+                        "o suba una foto más nítida. También puede usar "
+                        "el método Manual.")
+
 
         st.markdown("---")
         if st.button("📊 CALIFICAR", type="primary",
