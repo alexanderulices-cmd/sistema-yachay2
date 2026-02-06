@@ -7,5 +7,4 @@ pillow
 python-barcode
 opencv-python-headless
 pyzbar
-python-docx
 numpy
