@@ -1512,14 +1512,8 @@ def main():
         with tab1:
             tab_asistencias()
     
-    elif st.session_state.rol == "directivo":
-        tab1, tab2 = st.tabs(["📄 DOCUMENTOS", "🪪 CARNETS"])
-        with tab1:
-            tab_documentos(config)
-        with tab2:
-            tab_carnets(config)
-    
-    elif st.session_state.rol == "admin":
+    elif st.session_state.rol in ["directivo", "admin"]:
+        # DIRECTIVO Y ADMIN tienen acceso completo
         tab1, tab2, tab3, tab4 = st.tabs(["📄 DOCUMENTOS", "🪪 CARNETS", 
                                            "📊 BASE DATOS", "📋 ASISTENCIAS"])
         with tab1:
