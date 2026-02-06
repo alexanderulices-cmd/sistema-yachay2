@@ -1555,11 +1555,11 @@ HOJA_MARKER_SIZE = 100   # Tamaño marcadores esquina
 HOJA_MARKER_PAD = 40     # Padding de marcadores desde borde
 HOJA_BUBBLE_R = 34       # Radio de burbuja
 HOJA_Y_START = 950       # Y donde empiezan las burbujas
-HOJA_X_START = 380       # X donde empieza la primera opción
+HOJA_X_START = 340       # X donde empieza la primera opción
 HOJA_SP_Y = 108          # Espacio vertical entre preguntas
-HOJA_SP_X = 160          # Espacio horizontal entre opciones A,B,C,D
-HOJA_COL_SP = 780        # Espacio entre columnas de preguntas
-HOJA_PPC = 25            # Preguntas por columna (máximo)
+HOJA_SP_X = 155          # Espacio horizontal entre opciones A,B,C,D
+HOJA_COL_SP = 750        # Espacio entre columnas de preguntas
+HOJA_PPC = 20            # Preguntas por columna (máximo seguro)
 
 
 def _posicion_burbuja(pregunta_idx, opcion_idx):
@@ -2179,25 +2179,39 @@ def tab_matricula(config):
         st.subheader("👨‍🏫 Registro de Docente / Personal")
         c1, c2 = st.columns(2)
         with c1:
-            dn_n = st.text_input("Apellidos y Nombres:", key="dn_nom")
-            dn_d = st.text_input("DNI:", key="dn_dni", max_chars=8)
-            dn_c = st.selectbox("Cargo:", [
+            dn_n = st.text_input("👤 Apellidos y Nombres:", key="dn_nom")
+            dn_d = st.text_input("🆔 DNI:", key="dn_dni", max_chars=8)
+            dn_c = st.selectbox("💼 Cargo:", [
                 "Docente", "Directora", "Auxiliar", "Coordinador",
                 "Secretaria", "Personal de Limpieza", "Otro"
             ], key="dn_cargo")
-        with c2:
-            dn_e = st.text_input("Especialidad:", key="dn_esp",
+            dn_e = st.text_input("📚 Especialidad:", key="dn_esp",
                                   placeholder="Ej: Educación Primaria")
-            dn_t = st.text_input("Celular:", key="dn_cel", max_chars=9)
-            dn_g = st.selectbox("Grado Asignado:",
+        with c2:
+            dn_t = st.text_input("📱 Celular:", key="dn_cel", max_chars=9,
+                                  placeholder="987654321")
+            dn_g = st.selectbox("🎓 Grado Asignado:",
                                  ["N/A"] + TODOS_LOS_GRADOS, key="dn_grado")
+            dn_email = st.text_input("📧 Email institucional:", key="dn_email",
+                                      placeholder="nombre@ieyachay.org")
+            dn_foto = st.file_uploader("📸 Foto del docente:",
+                                        type=['jpg', 'png', 'jpeg'],
+                                        key="dn_foto")
+            if dn_foto:
+                st.image(dn_foto, width=120)
         if st.button("✅ REGISTRAR DOCENTE", type="primary",
                      use_container_width=True, key="bd"):
             if dn_n and dn_d:
+                # Guardar foto si se subió
+                if dn_foto:
+                    foto_path = f"foto_doc_{dn_d.strip()}.png"
+                    with open(foto_path, "wb") as fout:
+                        fout.write(dn_foto.getbuffer())
                 BaseDatos.registrar_docente({
                     'Nombre': dn_n.strip(), 'DNI': dn_d.strip(),
                     'Cargo': dn_c, 'Especialidad': dn_e.strip(),
-                    'Celular': dn_t.strip(), 'Grado_Asignado': dn_g
+                    'Celular': dn_t.strip(), 'Grado_Asignado': dn_g,
+                    'Email': dn_email.strip()
                 })
                 st.success(f"✅ {dn_n} registrado como {dn_c}")
                 st.balloons()
@@ -2512,6 +2526,11 @@ def tab_asistencias():
     st.header("📋 Control de Asistencia")
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
+
+    # Inicializar tracking de WhatsApp enviados
+    if 'wa_enviados' not in st.session_state:
+        st.session_state.wa_enviados = set()
+
     c1, c2 = st.columns(2)
     with c1:
         if st.button("🌅 ENTRADA", use_container_width=True,
@@ -2525,9 +2544,12 @@ def tab_asistencias():
                       else "secondary", key="bs"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
-    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — Alumnos y Docentes")
+    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — "
+            f"Registre todos los alumnos/docentes. "
+            f"Luego envíe WhatsApp desde la lista de abajo.")
     st.markdown("---")
 
+    # ===== ZONA DE REGISTRO RÁPIDO =====
     cc, cm = st.columns(2)
     with cc:
         st.markdown("### 📸 Escanear QR / Código")
@@ -2539,69 +2561,138 @@ def tab_asistencias():
             if foto:
                 d = decodificar_qr_imagen(foto.getvalue())
                 if d:
-                    _registrar_asistencia_ui(d)
+                    _registrar_asistencia_rapida(d)
                 else:
-                    st.warning("⚠️ No detectado.")
+                    st.warning("⚠️ QR no detectado.")
         else:
             st.info("💡 Activa la cámara para escanear.")
     with cm:
         st.markdown("### ✏️ Registro Manual")
-        dm = st.text_input("DNI:", key="dm")
+        dm = st.text_input("DNI:", key="dm",
+                           placeholder="Ingrese DNI del alumno/docente")
         if st.button("✅ REGISTRAR", type="primary",
                      use_container_width=True, key="rm"):
             if dm:
-                _registrar_asistencia_ui(dm.strip())
+                _registrar_asistencia_rapida(dm.strip())
 
+    # ===== LISTA DE ASISTENCIA DE HOY =====
     st.markdown("---")
     st.subheader("📊 Registros de Hoy")
     asis = BaseDatos.obtener_asistencias_hoy()
     if asis:
+        # Separar alumnos y docentes
         alumnos_h = []
         docentes_h = []
         for dk, v in asis.items():
             reg = {'DNI': dk, 'Nombre': v['nombre'],
                    'Entrada': v.get('entrada', '—'),
-                   'Salida': v.get('salida', '—')}
+                   'Salida': v.get('salida', '—'),
+                   'es_docente': v.get('es_docente', False)}
             if v.get('es_docente', False):
                 docentes_h.append(reg)
             else:
                 alumnos_h.append(reg)
+
+        # Métricas rápidas
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.metric("📚 Alumnos", len(alumnos_h))
+        with c2:
+            st.metric("👨‍🏫 Docentes", len(docentes_h))
+        with c3:
+            entradas = sum(1 for v in asis.values() if v.get('entrada'))
+            st.metric("🌅 Entradas", entradas)
+        with c4:
+            salidas = sum(1 for v in asis.values() if v.get('salida'))
+            st.metric("🌙 Salidas", salidas)
+
         if alumnos_h:
-            st.markdown("**📚 Alumnos:**")
-            st.dataframe(pd.DataFrame(alumnos_h),
+            st.markdown("**📚 Alumnos registrados:**")
+            st.dataframe(pd.DataFrame(alumnos_h).drop(columns=['es_docente']),
                          use_container_width=True, hide_index=True)
         if docentes_h:
-            st.markdown("**👨‍🏫 Docentes:**")
-            st.dataframe(pd.DataFrame(docentes_h),
+            st.markdown("**👨‍🏫 Docentes registrados:**")
+            st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
                          use_container_width=True, hide_index=True)
 
-        st.markdown("### 📱 Enviar por WhatsApp")
+        # ===== ZONA WHATSAPP — ENVÍO MASIVO =====
+        st.markdown("---")
+        st.subheader("📱 Enviar Notificaciones WhatsApp")
+        st.caption("Toque cada botón para enviar. Al enviar se marca como ✅")
+
+        tipo_actual = st.session_state.tipo_asistencia.lower()
+        pendientes = 0
+        enviados = 0
+
         for dk, dat in asis.items():
+            # Verificar si ya fue enviado
+            clave_envio = f"{dk}_{tipo_actual}_{fecha_peru_str()}"
+            ya_enviado = clave_envio in st.session_state.wa_enviados
+
+            # Buscar celular
             al = BaseDatos.buscar_por_dni(dk)
-            if al:
-                cel = al.get('Celular_Apoderado', al.get('Celular', ''))
-                if cel and cel.strip():
-                    msg = (f"🏫 YACHAY\n👤 {dat['nombre']}\n"
-                           f"✅ Entrada: {dat.get('entrada', '—')}\n"
-                           f"🏁 Salida: {dat.get('salida', '—')}")
-                    link = generar_link_whatsapp(cel, msg)
+            if not al:
+                continue
+            cel = al.get('Celular_Apoderado', al.get('Celular', ''))
+            if not cel or not cel.strip():
+                continue
+
+            hora_reg = dat.get(tipo_actual, '')
+            if not hora_reg:
+                continue
+
+            nombre = dat['nombre']
+            es_doc = dat.get('es_docente', False)
+            tipo_icon = "👨‍🏫" if es_doc else "📚"
+
+            if ya_enviado:
+                enviados += 1
+                st.markdown(
+                    f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ "
+                    f"*(enviado)*")
+            else:
+                pendientes += 1
+                msg = generar_mensaje_asistencia(nombre, tipo_actual, hora_reg)
+                link = generar_link_whatsapp(cel, msg)
+                col_btn, col_check = st.columns([4, 1])
+                with col_btn:
                     st.markdown(
                         f'<a href="{link}" target="_blank" class="wa-btn">'
-                        f'📱 {dat["nombre"]} → {cel}</a>',
+                        f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
                         unsafe_allow_html=True)
+                with col_check:
+                    if st.button("✅", key=f"wa_{dk}_{tipo_actual}",
+                                 help="Marcar como enviado"):
+                        st.session_state.wa_enviados.add(clave_envio)
+                        st.rerun()
+
+        if pendientes == 0 and enviados > 0:
+            st.success(f"🎉 ¡Todos los WhatsApp enviados! ({enviados} mensajes)")
+        elif pendientes > 0:
+            st.info(f"📱 {pendientes} pendientes | ✅ {enviados} enviados")
+
+        # Botón para resetear marcas de enviado
+        if enviados > 0:
+            if st.button("🔄 Resetear marcas de enviado",
+                         key="reset_wa"):
+                st.session_state.wa_enviados = set()
+                st.rerun()
+
         st.markdown("---")
         # Solo admin puede borrar
         if puede_borrar():
             if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="secondary",
                          use_container_width=True, key="borrar_asist"):
                 BaseDatos.borrar_asistencias_hoy()
+                st.session_state.wa_enviados = set()
                 st.success("✅ Eliminadas")
                 st.rerun()
     else:
-        st.info("📝 No hay registros hoy.")
+        st.info("📝 No hay registros hoy. Escanee QR o ingrese DNI para registrar.")
 
 
-def _registrar_asistencia_ui(dni):
+def _registrar_asistencia_rapida(dni):
+    """Registra asistencia RÁPIDO sin enviar WhatsApp (se envía después)"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
@@ -2612,14 +2703,6 @@ def _registrar_asistencia_ui(dni):
         BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         st.success(f"✅ [{tp}] **{nombre}** — "
                    f"{st.session_state.tipo_asistencia}: **{hora}**")
-        st.balloons()
-        cel = persona.get('Celular_Apoderado', persona.get('Celular', ''))
-        if cel and cel.strip():
-            msg = generar_mensaje_asistencia(nombre, tipo, hora)
-            link = generar_link_whatsapp(cel, msg)
-            st.markdown(
-                f'<a href="{link}" target="_blank" class="wa-btn">'
-                f'📱 WhatsApp → {cel}</a>', unsafe_allow_html=True)
     else:
         st.error(f"❌ DNI {dni} no encontrado")
 
