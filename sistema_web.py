@@ -36,7 +36,27 @@ from datetime import datetime, timedelta, timezone, date
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
+# Google Sheets sync
+try:
+    from google_sync import GoogleSync, get_google_sync
+    GOOGLE_SYNC_DISPONIBLE = True
+except ImportError:
+    GOOGLE_SYNC_DISPONIBLE = False
+
 st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
+
+# ================================================================
+# INICIALIZAR GOOGLE SHEETS
+# ================================================================
+def _gs():
+    """Obtener instancia de Google Sync (o None si no está disponible)"""
+    if not GOOGLE_SYNC_DISPONIBLE:
+        return None
+    try:
+        gs = get_google_sync()
+        return gs if gs.conectado else None
+    except Exception:
+        return None
 
 # ================================================================
 # ZONA HORARIA PERÚ (UTC-5)
@@ -197,6 +217,14 @@ USUARIOS_DEFAULT = {
 
 
 def cargar_usuarios():
+    # Intentar cargar de Google Sheets primero
+    gs = _gs()
+    if gs:
+        usuarios_gs = gs.leer_usuarios()
+        if usuarios_gs:
+            guardar_usuarios_local(usuarios_gs)
+            return usuarios_gs
+    # Fallback a archivo local
     if Path(ARCHIVO_USUARIOS).exists():
         with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -204,9 +232,19 @@ def cargar_usuarios():
     return USUARIOS_DEFAULT.copy()
 
 
+def guardar_usuarios_local(usuarios):
+    """Solo guarda localmente (sin Google Sheets)"""
+    with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
+        json.dump(usuarios, f, indent=2, ensure_ascii=False)
+
+
 def guardar_usuarios(usuarios):
     with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
         json.dump(usuarios, f, indent=2, ensure_ascii=False)
+    # Sincronizar con Google Sheets
+    gs = _gs()
+    if gs:
+        gs.sync_usuarios_completo(usuarios)
 
 
 # ================================================================
@@ -235,6 +273,9 @@ TODOS_LOS_GRADOS = []
 for nk, gl in NIVELES_GRADOS.items():
     for gi in gl:
         TODOS_LOS_GRADOS.append(gi)
+
+NIVELES_LIST = list(NIVELES_GRADOS.keys())
+GRADOS_OPCIONES = TODOS_LOS_GRADOS.copy()
 
 MESES_ESCOLARES = {
     3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
@@ -394,6 +435,21 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
+        # Intentar Google Sheets primero
+        gs = _gs()
+        if gs:
+            try:
+                df_gs = gs.leer_matricula()
+                if not df_gs.empty:
+                    # Mapear columnas de GS a columnas locales
+                    col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
+                               'grado': 'Grado', 'seccion': 'Seccion',
+                               'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
+                               'celular_apoderado': 'Celular_Apoderado'}
+                    df_gs = df_gs.rename(columns=col_map)
+                    return df_gs
+            except Exception:
+                pass
         try:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
@@ -409,6 +465,20 @@ class BaseDatos:
     @staticmethod
     def guardar_matricula(df):
         df.to_excel(ARCHIVO_MATRICULA, index=False, engine='openpyxl')
+        # Sincronizar con Google Sheets
+        gs = _gs()
+        if gs:
+            try:
+                col_map = {'Nombre': 'nombre', 'DNI': 'dni', 'Nivel': 'nivel',
+                           'Grado': 'grado', 'Seccion': 'seccion',
+                           'Apoderado': 'apoderado', 'DNI_Apoderado': 'dni_apoderado',
+                           'Celular_Apoderado': 'celular_apoderado'}
+                df_gs = df.rename(columns=col_map).copy()
+                if 'fecha_matricula' not in df_gs.columns:
+                    df_gs['fecha_matricula'] = fecha_peru_str()
+                gs.sync_matricula_completa(df_gs)
+            except Exception:
+                pass
 
     @staticmethod
     def registrar_estudiante(datos):
@@ -489,6 +559,19 @@ class BaseDatos:
 
     @staticmethod
     def cargar_docentes():
+        # Intentar Google Sheets primero
+        gs = _gs()
+        if gs:
+            try:
+                df_gs = gs.leer_docentes()
+                if not df_gs.empty:
+                    col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'cargo': 'Cargo',
+                               'especialidad': 'Especialidad', 'celular': 'Celular',
+                               'grado_asignado': 'Grado_Asignado'}
+                    df_gs = df_gs.rename(columns=col_map)
+                    return df_gs
+            except Exception:
+                pass
         try:
             if Path(ARCHIVO_DOCENTES).exists():
                 df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
@@ -503,6 +586,18 @@ class BaseDatos:
     @staticmethod
     def guardar_docentes(df):
         df.to_excel(ARCHIVO_DOCENTES, index=False, engine='openpyxl')
+        gs = _gs()
+        if gs:
+            try:
+                col_map = {'Nombre': 'nombre', 'DNI': 'dni', 'Cargo': 'cargo',
+                           'Especialidad': 'especialidad', 'Celular': 'celular',
+                           'Grado_Asignado': 'grado_asignado'}
+                df_gs = df.rename(columns=col_map).copy()
+                if 'fecha_registro' not in df_gs.columns:
+                    df_gs['fecha_registro'] = fecha_peru_str()
+                gs.sync_docentes_completo(df_gs)
+            except Exception:
+                pass
 
     @staticmethod
     def registrar_docente(datos):
@@ -540,6 +635,31 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
+        # Sincronizar con Google Sheets
+        gs = _gs()
+        if gs:
+            try:
+                grado = ''
+                nivel = ''
+                df_m = BaseDatos.cargar_matricula()
+                if not df_m.empty and 'DNI' in df_m.columns:
+                    est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
+                    if not est.empty:
+                        grado = est.iloc[0].get('Grado', '')
+                        nivel = est.iloc[0].get('Nivel', '')
+                reg = asistencias[fecha_hoy][dni]
+                gs.guardar_asistencia({
+                    'fecha': fecha_hoy,
+                    'dni': str(dni),
+                    'nombre': nombre,
+                    'tipo_persona': 'docente' if es_docente else 'alumno',
+                    'hora_entrada': reg.get('entrada', ''),
+                    'hora_salida': reg.get('salida', ''),
+                    'grado': grado,
+                    'nivel': nivel,
+                })
+            except Exception:
+                pass
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -580,7 +700,6 @@ class BaseDatos:
             try:
                 with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
                     raw = json.load(f)
-                # Si es formato viejo (lista), migrar a dict
                 if isinstance(raw, list):
                     datos = {"migrado": raw}
                 elif isinstance(raw, dict):
@@ -594,6 +713,23 @@ class BaseDatos:
         datos[usuario_docente].append(resultado)
         with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
             json.dump(datos, f, indent=2, ensure_ascii=False)
+        # Sincronizar con Google Sheets
+        gs = _gs()
+        if gs:
+            try:
+                import uuid
+                eval_id = str(uuid.uuid4())[:8]
+                titulo = resultado.get('titulo', 'Evaluación')
+                fecha = resultado.get('fecha', fecha_peru_str())
+                grado = resultado.get('grado', '')
+                areas_info = resultado.get('areas', [])
+                alumnos = resultado.get('alumnos', [])
+                gs.guardar_resultados_examen(
+                    eval_id, titulo, fecha, usuario_docente,
+                    grado, areas_info, alumnos
+                )
+            except Exception:
+                pass
 
     @staticmethod
     def cargar_resultados_examen(usuario_docente):
@@ -2071,6 +2207,13 @@ def configurar_sidebar():
         st.caption(f"🕒 {hora_peru().strftime('%H:%M:%S')} | "
                    f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
+        # Estado Google Sheets
+        gs = _gs()
+        if gs:
+            st.success("☁️ Google Sheets: Conectado", icon="✅")
+        else:
+            st.caption("💾 Modo local (sin Google Sheets)")
+
         # Links institucionales para directivo y docentes
         if st.session_state.rol in ["directivo", "docente"]:
             st.markdown("---")
@@ -3299,6 +3442,631 @@ def vista_docente(config):
 
 
 # ================================================================
+# REGISTRO DE INCIDENCIAS
+# ================================================================
+
+TIPOS_INCIDENCIA = [
+    'Conductual (Indisciplina)',
+    'Académica (Plagio, falta de tareas)',
+    'Convivencia (Conflicto entre pares)',
+    'Presunto caso de Violencia Escolar (Bullying)',
+    'Salud / Accidente',
+    'Infraestructura / Daño a propiedad',
+]
+
+DERIVACIONES = [
+    'No requiere derivación',
+    'Psicología',
+    'Dirección',
+    'Tutoría',
+    'Reporte portal SíseVe',
+    'DEMUNA',
+    'Otra',
+]
+
+
+def generar_incidencia_pdf(datos, config):
+    """Genera PDF del registro de incidencia"""
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+
+    # Encabezado
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(w / 2, h - 50, config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY'))
+    c.setFont("Helvetica-Bold", 12)
+    c.drawCentredString(w / 2, h - 70, "REGISTRO DE INCIDENCIAS")
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(w / 2, h - 85, config.get('ubicacion', 'Chinchero, Cusco'))
+
+    c.setStrokeColor(colors.HexColor("#1a56db"))
+    c.setLineWidth(2)
+    c.line(40, h - 95, w - 40, h - 95)
+
+    y = h - 120
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "I. INFORMACIÓN GENERAL")
+    y -= 20
+
+    campos = [
+        ("Código de Incidencia:", datos.get('codigo', '')),
+        ("Fecha y Hora:", f"{datos.get('fecha', '')} — {datos.get('hora', '')}"),
+        ("Lugar:", datos.get('lugar', '')),
+        ("Nivel:", datos.get('nivel', '')),
+        ("Grado y Sección:", f"{datos.get('grado', '')} — {datos.get('seccion', '')}"),
+    ]
+    c.setFont("Helvetica", 10)
+    for label, valor in campos:
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(60, y, label)
+        c.setFont("Helvetica", 10)
+        c.drawString(200, y, str(valor))
+        y -= 18
+
+    y -= 10
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "II. IDENTIFICACIÓN DE INVOLUCRADOS")
+    y -= 20
+    for label_campo in ['Afectado(s)', 'Implicado(s)', 'Reportante']:
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(60, y, f"{label_campo}:")
+        c.setFont("Helvetica", 10)
+        c.drawString(160, y, str(datos.get(label_campo.lower().replace('(s)', '').strip(), '')))
+        y -= 18
+
+    y -= 10
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "III. DESCRIPCIÓN DE LA INCIDENCIA")
+    y -= 20
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(60, y, f"Tipo: {datos.get('tipo', '')}")
+    y -= 20
+
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(60, y, "Relato de los hechos:")
+    y -= 15
+    c.setFont("Helvetica", 9)
+    relato = str(datos.get('relato', ''))
+    for linea in textwrap.wrap(relato, 85):
+        c.drawString(70, y, linea)
+        y -= 13
+        if y < 100:
+            c.showPage()
+            y = h - 50
+
+    y -= 15
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "IV. MEDIDAS Y ACCIONES TOMADAS")
+    y -= 20
+    for label_accion, key in [("Acción Inmediata:", 'accion_inmediata'),
+                               ("Compromisos:", 'compromisos'),
+                               ("Derivación:", 'derivacion')]:
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(60, y, label_accion)
+        y -= 15
+        c.setFont("Helvetica", 9)
+        for linea in textwrap.wrap(str(datos.get(key, '')), 85):
+            c.drawString(70, y, linea)
+            y -= 13
+
+    y -= 30
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "V. FIRMAS DE CONFORMIDAD")
+    y -= 40
+    firmas = ["Responsable del Registro", "Estudiante (si aplica)",
+              "Padre de Familia"]
+    for i, firma in enumerate(firmas):
+        x = 60 + (i * 170)
+        c.line(x, y, x + 140, y)
+        c.setFont("Helvetica", 8)
+        c.drawCentredString(x + 70, y - 12, firma)
+
+    # Pie
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(w / 2, 30, f"Generado por YACHAY PRO — {hora_peru_str()}")
+
+    c.save()
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def tab_incidencias(config):
+    """Tab de Registro de Incidencias"""
+    st.subheader("📝 Registro de Incidencias")
+
+    gs = _gs()
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.markdown("### Nueva Incidencia")
+
+        # Generar código automático
+        if gs:
+            codigo = gs.generar_siguiente_codigo_incidencia()
+        else:
+            codigo = f"INC-{hora_peru().year}-{int(time.time()) % 1000:03d}"
+
+        with st.form("form_incidencia"):
+            st.text_input("Código:", value=codigo, disabled=True, key="inc_cod")
+
+            ci1, ci2 = st.columns(2)
+            with ci1:
+                fecha_inc = st.date_input("Fecha:", value=hora_peru().date(),
+                                           key="inc_fecha")
+                nivel_inc = st.selectbox("Nivel:", NIVELES_LIST, key="inc_nivel")
+            with ci2:
+                hora_inc = st.time_input("Hora:", value=hora_peru().time(),
+                                          key="inc_hora")
+                grado_inc = st.selectbox("Grado:", GRADOS_OPCIONES, key="inc_grado")
+
+            lugar = st.text_input("Lugar:", placeholder="Ej: Aula, patio, alrededores",
+                                  key="inc_lugar")
+            seccion_inc = st.selectbox("Sección:", SECCIONES, key="inc_sec")
+
+            tipo_inc = st.selectbox("Tipo de Incidencia:", TIPOS_INCIDENCIA,
+                                    key="inc_tipo")
+
+            st.markdown("---")
+            st.markdown("**Involucrados:**")
+            afectados = st.text_area("Afectado(s) - Nombres, DNI:",
+                                     key="inc_afect", height=60)
+            implicados = st.text_area("Implicado(s) - Nombres, DNI:",
+                                      key="inc_implic", height=60)
+            reportante = st.text_input("Informante/Reportante:",
+                                       key="inc_report")
+
+            st.markdown("---")
+            relato = st.text_area("📋 Relato de los hechos:",
+                                  placeholder="Descripción objetiva...",
+                                  key="inc_relato", height=120)
+
+            st.markdown("---")
+            accion = st.text_area("Acción Inmediata:", key="inc_accion", height=60)
+            compromisos = st.text_area("Compromisos:", key="inc_comp", height=60)
+            derivacion = st.selectbox("Derivación:", DERIVACIONES, key="inc_deriv")
+
+            submitted = st.form_submit_button("💾 REGISTRAR INCIDENCIA",
+                                               type="primary",
+                                               use_container_width=True)
+            if submitted:
+                datos_inc = {
+                    'codigo': codigo,
+                    'fecha': str(fecha_inc),
+                    'hora': str(hora_inc),
+                    'lugar': lugar,
+                    'nivel': nivel_inc,
+                    'grado': grado_inc,
+                    'seccion': seccion_inc,
+                    'tipo': tipo_inc,
+                    'afectados': afectados,
+                    'implicados': implicados,
+                    'reportante': reportante,
+                    'dni_reportante': '',
+                    'relato': relato,
+                    'accion_inmediata': accion,
+                    'compromisos': compromisos,
+                    'derivacion': derivacion,
+                    'registrado_por': st.session_state.usuario,
+                }
+
+                # Guardar en Google Sheets
+                if gs:
+                    gs.guardar_incidencia(datos_inc)
+                    st.success(f"✅ Incidencia {codigo} registrada y guardada en Google Sheets")
+                else:
+                    st.success(f"✅ Incidencia {codigo} registrada")
+
+                # Generar PDF
+                pdf = generar_incidencia_pdf(datos_inc, config)
+                st.download_button("📥 Descargar PDF de Incidencia", pdf,
+                                   f"Incidencia_{codigo}.pdf",
+                                   "application/pdf", key="dl_inc")
+
+    with col2:
+        st.markdown("### 📋 Historial")
+        if gs:
+            incidencias = gs.leer_incidencias()
+            if incidencias:
+                for inc in reversed(incidencias[-20:]):
+                    with st.expander(
+                        f"📌 {inc.get('codigo', '?')} — {inc.get('fecha', '')}"):
+                        st.write(f"**Tipo:** {inc.get('tipo', '')}")
+                        st.write(f"**Grado:** {inc.get('grado', '')}")
+                        st.write(f"**Afectados:** {inc.get('afectados', '')}")
+                        st.write(f"**Relato:** {inc.get('relato', '')[:200]}...")
+                        # Botón para regenerar PDF
+                        if st.button("📥 PDF", key=f"inc_pdf_{inc.get('codigo', '')}"):
+                            pdf = generar_incidencia_pdf(inc, config)
+                            st.download_button("⬇️", pdf,
+                                               f"Inc_{inc.get('codigo', '')}.pdf",
+                                               "application/pdf",
+                                               key=f"dl_{inc.get('codigo', '')}")
+            else:
+                st.info("Sin incidencias registradas")
+        else:
+            st.warning("⚠️ Conecta Google Sheets para ver historial")
+
+
+# ================================================================
+# REPORTES MENSUALES Y HISTORIAL
+# ================================================================
+
+def generar_reporte_asistencia_mensual_pdf(datos_mes, grado, mes, anio, config):
+    """PDF de reporte mensual de asistencia por grado"""
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=landscape(A4))
+    w, h = landscape(A4)
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(w / 2, h - 40,
+                        config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY'))
+    c.setFont("Helvetica-Bold", 11)
+    nombre_mes = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
+                  'Diciembre']
+    c.drawCentredString(w / 2, h - 58,
+                        f"REPORTE MENSUAL DE ASISTENCIA — {nombre_mes[mes]} {anio}")
+    c.drawCentredString(w / 2, h - 73, f"Grado: {grado}")
+
+    # Calcular días del mes
+    import calendar as cal_mod
+    dias_mes = cal_mod.monthrange(anio, mes)[1]
+
+    y = h - 100
+    c.setFont("Helvetica-Bold", 7)
+
+    # Encabezados
+    x_start = 30
+    c.drawString(x_start, y, "#")
+    c.drawString(x_start + 15, y, "Nombre")
+    c.drawString(x_start + 180, y, "DNI")
+
+    # Días como columnas
+    x_dia = x_start + 225
+    for d in range(1, dias_mes + 1):
+        dia_semana = cal_mod.weekday(anio, mes, d)
+        if dia_semana < 5:  # L-V
+            c.drawCentredString(x_dia, y, str(d))
+            x_dia += 18
+
+    c.drawString(x_dia + 5, y, "Total")
+    c.drawString(x_dia + 35, y, "%")
+
+    y -= 3
+    c.setLineWidth(0.5)
+    c.line(x_start, y, w - 30, y)
+    y -= 12
+
+    c.setFont("Helvetica", 6)
+    num = 0
+    for nombre, info in sorted(datos_mes.items()):
+        num += 1
+        c.drawString(x_start, y, str(num))
+        c.drawString(x_start + 15, y, nombre[:30])
+        c.drawString(x_start + 180, y, str(info.get('dni', '')))
+
+        x_dia = x_start + 225
+        total_asist = 0
+        total_dias_hab = 0
+        for d in range(1, dias_mes + 1):
+            dia_semana = cal_mod.weekday(anio, mes, d)
+            if dia_semana < 5:
+                total_dias_hab += 1
+                fecha_str = f"{anio}-{mes:02d}-{d:02d}"
+                if fecha_str in info.get('fechas', {}):
+                    c.setFillColor(colors.HexColor("#16a34a"))
+                    c.drawCentredString(x_dia, y, "✓")
+                    c.setFillColor(colors.black)
+                    total_asist += 1
+                else:
+                    c.setFillColor(colors.HexColor("#dc2626"))
+                    c.drawCentredString(x_dia, y, "✗")
+                    c.setFillColor(colors.black)
+                x_dia += 18
+
+        pct = (total_asist / total_dias_hab * 100) if total_dias_hab > 0 else 0
+        c.drawString(x_dia + 5, y, str(total_asist))
+        c.drawString(x_dia + 35, y, f"{pct:.0f}%")
+
+        y -= 11
+        if y < 40:
+            c.showPage()
+            y = h - 50
+            c.setFont("Helvetica", 6)
+
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(w / 2, 20,
+                        f"YACHAY PRO — Generado: {hora_peru_str()}")
+    c.save()
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def generar_reporte_examen_zipgrade(resultado, config):
+    """Genera reporte estilo ZipGrade: verde=correcta, rojo=incorrecta, azul=no marcó pero era correcta"""
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+
+    titulo = resultado.get('titulo', 'Evaluación')
+    fecha = resultado.get('fecha', '')
+    areas = resultado.get('areas', [])
+    alumnos = resultado.get('alumnos', [])
+
+    # COLOR DEFINITIONS
+    COLOR_CORRECTO = colors.HexColor("#16a34a")   # Verde
+    COLOR_INCORRECTO = colors.HexColor("#dc2626")  # Rojo
+    COLOR_NO_MARCO = colors.HexColor("#2563eb")    # Azul
+
+    pagina = 0
+    for alumno in alumnos:
+        if pagina > 0:
+            c.showPage()
+        pagina += 1
+
+        # Encabezado
+        c.setFont("Helvetica-Bold", 12)
+        c.drawCentredString(w / 2, h - 40,
+                            config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY'))
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(w / 2, h - 58, f"REPORTE DE EVALUACIÓN — {titulo}")
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(w / 2, h - 73, f"Fecha: {fecha}")
+
+        c.setLineWidth(2)
+        c.setStrokeColor(colors.HexColor("#1a56db"))
+        c.line(40, h - 80, w - 40, h - 80)
+
+        # Datos del alumno
+        y = h - 100
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(50, y, f"Alumno: {alumno.get('nombre', '')}")
+        c.setFont("Helvetica", 10)
+        c.drawString(400, y, f"DNI: {alumno.get('dni', '')}")
+        y -= 18
+        prom = alumno.get('promedio', 0)
+        nota_letra = 'AD' if prom >= 18 else 'A' if prom >= 14 else 'B' if prom >= 11 else 'C'
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(50, y, f"PROMEDIO GENERAL: {prom:.1f}/20 ({nota_letra})")
+        y -= 25
+
+        # Leyenda de colores
+        c.setFont("Helvetica-Bold", 8)
+        c.setFillColor(COLOR_CORRECTO)
+        c.rect(50, y, 12, 10, fill=1, stroke=0)
+        c.setFillColor(colors.black)
+        c.drawString(65, y + 2, "= Correcta")
+
+        c.setFillColor(COLOR_INCORRECTO)
+        c.rect(150, y, 12, 10, fill=1, stroke=0)
+        c.setFillColor(colors.black)
+        c.drawString(165, y + 2, "= Incorrecta")
+
+        c.setFillColor(COLOR_NO_MARCO)
+        c.rect(270, y, 12, 10, fill=1, stroke=0)
+        c.setFillColor(colors.black)
+        c.drawString(285, y + 2, "= No marcó (era correcta)")
+        y -= 25
+
+        # Por cada área
+        notas_alumno = alumno.get('notas', [])
+        for idx_area, nota_area in enumerate(notas_alumno):
+            area_nombre = nota_area.get('area', f'Área {idx_area + 1}')
+            nota_val = nota_area.get('nota', 0)
+            correctas = nota_area.get('correctas', 0)
+            total = nota_area.get('total', 10)
+            respuestas = str(nota_area.get('respuestas', ''))
+            claves = str(nota_area.get('claves', ''))
+
+            c.setFont("Helvetica-Bold", 10)
+            c.setFillColor(colors.HexColor("#1a56db"))
+            c.drawString(50, y, f"📝 {area_nombre} — {nota_val:.1f}/20 ({correctas}/{total})")
+            c.setFillColor(colors.black)
+            y -= 18
+
+            # Tabla de respuestas con colores
+            opciones = ['A', 'B', 'C', 'D']
+            c.setFont("Helvetica-Bold", 8)
+            c.drawString(60, y, "Preg")
+            for oi, op in enumerate(opciones):
+                c.drawCentredString(120 + oi * 40, y, op)
+            c.drawString(290, y, "Correcta")
+            c.drawString(355, y, "Marcó")
+            c.drawString(410, y, "Resultado")
+            y -= 3
+            c.line(55, y, 470, y)
+            y -= 12
+
+            c.setFont("Helvetica", 8)
+            for p in range(total):
+                clave_p = claves[p] if p < len(claves) else '?'
+                resp_p = respuestas[p] if p < len(respuestas) else '?'
+                es_correcta = resp_p == clave_p and resp_p != '?'
+                no_marco = resp_p == '?'
+
+                c.drawString(60, y, f"  {p + 1}")
+
+                # Dibujar burbujas con colores
+                for oi, op in enumerate(opciones):
+                    cx = 120 + oi * 40
+                    if op == clave_p and es_correcta:
+                        c.setFillColor(COLOR_CORRECTO)
+                        c.circle(cx, y + 3, 7, fill=1, stroke=0)
+                        c.setFillColor(colors.white)
+                        c.drawCentredString(cx, y + 0.5, op)
+                    elif op == resp_p and not es_correcta and not no_marco:
+                        c.setFillColor(COLOR_INCORRECTO)
+                        c.circle(cx, y + 3, 7, fill=1, stroke=0)
+                        c.setFillColor(colors.white)
+                        c.drawCentredString(cx, y + 0.5, op)
+                    elif op == clave_p and (not es_correcta):
+                        c.setFillColor(COLOR_NO_MARCO)
+                        c.circle(cx, y + 3, 7, fill=1, stroke=0)
+                        c.setFillColor(colors.white)
+                        c.drawCentredString(cx, y + 0.5, op)
+                    else:
+                        c.setStrokeColor(colors.HexColor("#94a3b8"))
+                        c.setFillColor(colors.white)
+                        c.circle(cx, y + 3, 7, fill=1, stroke=1)
+                        c.setFillColor(colors.HexColor("#94a3b8"))
+                        c.drawCentredString(cx, y + 0.5, op)
+
+                c.setFillColor(colors.black)
+                c.drawString(290, y, clave_p)
+                c.drawString(355, y, resp_p)
+
+                if es_correcta:
+                    c.setFillColor(COLOR_CORRECTO)
+                    c.drawString(410, y, "✓ Correcta")
+                elif no_marco:
+                    c.setFillColor(COLOR_NO_MARCO)
+                    c.drawString(410, y, "— Sin marcar")
+                else:
+                    c.setFillColor(COLOR_INCORRECTO)
+                    c.drawString(410, y, "✗ Incorrecta")
+
+                c.setFillColor(colors.black)
+                y -= 14
+
+                if y < 60:
+                    c.showPage()
+                    y = h - 50
+                    c.setFont("Helvetica", 8)
+
+            y -= 10
+
+    # Pie
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(w / 2, 25, f"YACHAY PRO — Generado: {hora_peru_str()}")
+    c.save()
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def tab_reportes(config):
+    """Tab de reportes y historial"""
+    st.subheader("📊 Reportes e Historial")
+
+    subtab = st.radio("Seleccionar:", [
+        "📋 Asistencia Mensual", "📊 Historial de Notas",
+        "📄 Reporte de Evaluación (ZipGrade)"
+    ], horizontal=True, key="rep_tipo")
+
+    gs = _gs()
+
+    if subtab == "📋 Asistencia Mensual":
+        st.markdown("### 📋 Reporte Mensual de Asistencia por Grado")
+        if gs:
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                grado_rep = st.selectbox("Grado:", GRADOS_OPCIONES, key="rep_gr")
+            with c2:
+                mes_rep = st.selectbox("Mes:", list(range(1, 13)),
+                                        format_func=lambda x: ['', 'Enero', 'Febrero',
+                                        'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+                                        'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
+                                        'Diciembre'][x], key="rep_mes")
+            with c3:
+                anio_rep = st.number_input("Año:", value=hora_peru().year,
+                                            key="rep_anio")
+
+            if st.button("📊 Generar Reporte", type="primary", key="btn_rep_asist"):
+                datos = gs.reporte_asistencia_mensual(grado_rep, mes_rep, int(anio_rep))
+                if datos:
+                    st.success(f"✅ {len(datos)} estudiantes encontrados")
+                    # Mostrar tabla resumen
+                    for nombre, info in sorted(datos.items()):
+                        total = len(info.get('fechas', {}))
+                        st.write(f"**{nombre}** — {total} días asistidos")
+
+                    # PDF
+                    pdf = generar_reporte_asistencia_mensual_pdf(
+                        datos, grado_rep, mes_rep, int(anio_rep), config)
+                    st.download_button("📥 Descargar PDF Reporte Mensual", pdf,
+                                       f"Asistencia_{grado_rep}_{mes_rep}_{anio_rep}.pdf",
+                                       "application/pdf", key="dl_rep_asist")
+                else:
+                    st.warning("No hay datos de asistencia para este período")
+        else:
+            st.warning("⚠️ Conecta Google Sheets para generar reportes mensuales")
+
+    elif subtab == "📊 Historial de Notas":
+        st.markdown("### 📊 Historial de Notas por Estudiante")
+        if gs:
+            modo = st.radio("Consultar:", ["Por Estudiante", "General por Grado"],
+                           horizontal=True, key="hist_modo")
+            if modo == "Por Estudiante":
+                df = BaseDatos.cargar_matricula()
+                if not df.empty:
+                    opciones = df['Nombre'].tolist()
+                    sel = st.selectbox("Seleccionar alumno:", opciones,
+                                       key="hist_alumno")
+                    if sel:
+                        dni_sel = df[df['Nombre'] == sel]['DNI'].iloc[0]
+                        historial = gs.historial_notas_estudiante(str(dni_sel))
+                        if historial:
+                            st.success(f"📊 {len(historial)} evaluaciones encontradas")
+                            for eid, eval_data in historial.items():
+                                with st.expander(
+                                    f"📝 {eval_data['titulo']} — {eval_data['fecha']} "
+                                    f"(Promedio: {eval_data['promedio']})"):
+                                    for area in eval_data['areas']:
+                                        st.write(f"  • **{area['area']}**: "
+                                                f"{area['nota']}/20 "
+                                                f"({area['correctas']}/{area['total']})")
+                        else:
+                            st.info("Sin evaluaciones registradas para este alumno")
+            else:
+                grado_h = st.selectbox("Grado:", GRADOS_OPCIONES, key="hist_grado")
+                resultados = gs.leer_resultados(grado=grado_h)
+                if resultados:
+                    df_res = pd.DataFrame(resultados)
+                    st.dataframe(df_res[['estudiante', 'area', 'nota', 'fecha']],
+                                 use_container_width=True, hide_index=True)
+                else:
+                    st.info("Sin resultados para este grado")
+        else:
+            st.warning("⚠️ Conecta Google Sheets para ver historial")
+
+    elif subtab == "📄 Reporte de Evaluación (ZipGrade)":
+        st.markdown("### 📄 Reporte estilo ZipGrade con Colores")
+        st.markdown("""
+        **Colores del reporte:**
+        - 🟢 **Verde** = Respuesta correcta
+        - 🔴 **Rojo** = Respuesta incorrecta
+        - 🔵 **Azul** = No marcó pero era la correcta
+        """)
+
+        # Cargar evaluaciones disponibles
+        usuario = st.session_state.usuario
+        resultados = BaseDatos.cargar_resultados_examen(usuario)
+        if resultados:
+            opciones_eval = []
+            for i, r in enumerate(resultados):
+                titulo_e = r.get('titulo', f'Evaluación {i + 1}')
+                fecha_e = r.get('fecha', '?')
+                opciones_eval.append(f"{titulo_e} — {fecha_e}")
+
+            sel_eval = st.selectbox("Seleccionar evaluación:",
+                                    opciones_eval, key="zg_eval")
+            idx_eval = opciones_eval.index(sel_eval)
+            eval_sel = resultados[idx_eval]
+
+            st.info(f"📊 {len(eval_sel.get('alumnos', []))} estudiantes")
+
+            if st.button("📥 Generar Reporte ZipGrade PDF", type="primary",
+                         key="btn_zg"):
+                pdf = generar_reporte_examen_zipgrade(eval_sel, config)
+                st.download_button("⬇️ Descargar PDF Completo", pdf,
+                                   f"Reporte_ZipGrade_{sel_eval.split('—')[0].strip()}.pdf",
+                                   "application/pdf", key="dl_zg")
+                st.success("✅ Reporte generado con colores verde/rojo/azul")
+        else:
+            st.info("📊 No hay evaluaciones disponibles. Escanea exámenes primero.")
+
+
+# ================================================================
 # FUNCIÓN PRINCIPAL
 # ================================================================
 
@@ -3319,7 +4087,7 @@ def main():
         tabs = st.tabs([
             "📝 MATRÍCULA", "📄 DOCUMENTOS", "🪪 CARNETS",
             "📋 ASISTENCIAS", "📊 BASE DATOS",
-            "📝 CALIFICACIÓN YACHAY"
+            "📝 CALIFICACIÓN", "📝 INCIDENCIAS", "📊 REPORTES"
         ])
         with tabs[0]:
             tab_matricula(config)
@@ -3333,6 +4101,10 @@ def main():
             tab_base_datos()
         with tabs[5]:
             tab_calificacion_yachay(config)
+        with tabs[6]:
+            tab_incidencias(config)
+        with tabs[7]:
+            tab_reportes(config)
 
 
 if __name__ == "__main__":
