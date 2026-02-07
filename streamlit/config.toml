@@ -1,0 +1,51 @@
+[theme]
+primaryColor = "#1a56db"
+backgroundColor = "#f8fafc"
+secondaryBackgroundColor = "#e2e8f0"
+textColor = "#1e293b"
+font = "sans serif"
+
+[server]
+maxUploadSize = 10
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+```
+
+4. **Commit changes**
+
+---
+
+### PASO 6: CONFIGURAR LOS SECRETOS EN STREAMLIT (🔒 MÁS IMPORTANTE)
+
+1. Ve a **https://share.streamlit.io**
+2. Busca tu app **sistema-yachay2**
+3. Clic en los **3 puntos (⋮)** → **Settings**
+4. Clic en la pestaña **"Secrets"**
+5. Abre el archivo **`SECRETOS_STREAMLIT.toml`** que te di
+6. **Copia TODO** su contenido
+7. **Pega** en el campo de Secrets de Streamlit
+8. Clic en **"Save"**
+
+---
+
+### PASO 7: ESPERAR Y PROBAR
+
+1. Streamlit se reiniciará solo (espera 2-3 minutos)
+2. Entra a **https://sistema-yachay2.streamlit.app** o **app.ieyachay.org**
+3. Usuario: **administrador** / Contraseña: **306020**
+4. Verifica que en el sidebar diga: **☁️ Google Sheets: Conectado** ✅
+5. Matricula un alumno de prueba
+6. Abre tu Google Sheet → ¡los datos estarán ahí!
+
+---
+
+### ✅ RESUMEN — Tu repo debe quedar así:
+```
+sistema-yachay2/
+├── sistema_web.py          ← REEMPLAZADO (4,111 líneas)
+├── google_sync.py          ← NUEVO (554 líneas)
+├── requirements.txt        ← REEMPLAZADO (12 líneas)
+└── .streamlit/
+    └── config.toml         ← NUEVO (tema visual)
