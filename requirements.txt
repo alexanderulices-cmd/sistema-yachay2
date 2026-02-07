@@ -10,3 +10,4 @@ opencv-python-headless==4.9.0.80
 gspread==6.1.4
 google-auth==2.36.0
 google-auth-oauthlib==1.2.1
+openpyxl
