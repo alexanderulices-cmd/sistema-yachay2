@@ -329,52 +329,240 @@ init_session_state()
 
 
 # ================================================================
-# ESTILOS CSS
+# ESTILOS CSS + ANIMACIONES + SONIDO
 # ================================================================
 
 st.markdown("""
 <style>
+/* === ANIMACIÓN DE ENTRADA === */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* === HEADER PRINCIPAL === */
 .main-header {
     text-align: center; padding: 2rem;
-    background: linear-gradient(135deg, #001e7c 0%, #0052cc 100%);
+    background: linear-gradient(135deg, #001e7c 0%, #0052cc 50%, #0066ff 100%);
     color: white; border-radius: 15px; margin-bottom: 2rem;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 25px rgba(0,30,124,0.35);
+    animation: fadeInUp 0.6s ease-out;
 }
-.wa-btn {
-    background: #25D366; color: white !important; padding: 10px 20px;
-    border: none; border-radius: 8px; font-size: 15px; width: 100%;
-    text-decoration: none; display: block; text-align: center; margin: 4px 0;
+
+/* === TABS ANIMADOS === */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
 }
-.wa-btn:hover { background: #1da851; }
-.link-btn {
-    background: #4285F4; color: white !important; padding: 8px 16px;
-    border: none; border-radius: 8px; font-size: 14px; width: 100%;
-    text-decoration: none; display: block; text-align: center; margin: 4px 0;
+.stTabs [data-baseweb="tab"] {
+    border-radius: 10px 10px 0 0;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    font-weight: 600;
 }
-.link-btn:hover { background: #3367D6; }
-.siagie-btn {
-    background: #E91E63; color: white !important; padding: 8px 16px;
-    border: none; border-radius: 8px; font-size: 14px; width: 100%;
-    text-decoration: none; display: block; text-align: center; margin: 4px 0;
+.stTabs [data-baseweb="tab"]:hover {
+    background: rgba(26,86,219,0.1);
+    transform: translateY(-2px);
 }
-.siagie-btn:hover { background: #C2185B; }
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, #1a56db, #0052cc) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(26,86,219,0.3);
+}
+
+/* === BOTONES CON EFECTO === */
+.stButton > button {
+    transition: all 0.3s ease !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+}
+.stButton > button:active {
+    transform: translateY(0) !important;
+}
+
+/* === CARDS DE ESTADÍSTICAS === */
+.stat-card {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 12px; padding: 1.2rem;
+    border-left: 4px solid #1a56db;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    animation: slideIn 0.5s ease-out;
+    transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card h3 { margin: 0; color: #1a56db; font-size: 2rem; }
+.stat-card p { margin: 0; color: #64748b; font-size: 0.9rem; }
+
+/* === ASISTENCIA REGISTRADA === */
+.asist-ok {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border-radius: 10px; padding: 12px 16px;
+    border-left: 4px solid #16a34a;
+    animation: fadeInUp 0.4s ease-out;
+    margin: 4px 0;
+}
+.asist-salida {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 10px; padding: 12px 16px;
+    border-left: 4px solid #f59e0b;
+    animation: fadeInUp 0.4s ease-out;
+    margin: 4px 0;
+}
+
+/* === GOOGLE SHEETS STATUS === */
+.gs-connected {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border-radius: 8px; padding: 8px 12px;
+    text-align: center; font-weight: 600;
+    color: #166534; font-size: 0.85rem;
+    animation: pulse 2s infinite;
+}
+.gs-offline {
+    background: #fef3c7; border-radius: 8px;
+    padding: 8px 12px; text-align: center;
+    color: #92400e; font-size: 0.85rem;
+}
+
+/* === RANKING CON ANIMACIÓN === */
 .ranking-gold {
     background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #000; padding: 12px; border-radius: 8px;
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+    color: #000; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
+    box-shadow: 0 4px 15px rgba(255,215,0,0.4);
 }
 .ranking-silver {
-    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
-    color: #000; padding: 12px; border-radius: 8px;
+    background: linear-gradient(135deg, #C0C0C0, #E8E8E8, #C0C0C0);
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+    color: #000; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
+    box-shadow: 0 4px 12px rgba(192,192,192,0.4);
 }
 .ranking-bronze {
-    background: linear-gradient(135deg, #CD7F32, #B8860B);
-    color: #fff; padding: 12px; border-radius: 8px;
+    background: linear-gradient(135deg, #CD7F32, #E8A849, #CD7F32);
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+    color: #fff; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
+    box-shadow: 0 4px 12px rgba(205,127,50,0.4);
 }
+
+/* === WHATSAPP / LINKS === */
+.wa-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E); color: white !important;
+    padding: 10px 20px; border: none; border-radius: 10px;
+    font-size: 15px; width: 100%; text-decoration: none;
+    display: block; text-align: center; margin: 4px 0;
+    transition: all 0.3s; font-weight: 600;
+}
+.wa-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,211,102,0.4); }
+.link-btn {
+    background: linear-gradient(135deg, #4285F4, #356AC3); color: white !important;
+    padding: 8px 16px; border: none; border-radius: 10px;
+    font-size: 14px; width: 100%; text-decoration: none;
+    display: block; text-align: center; margin: 4px 0;
+    transition: all 0.3s;
+}
+.link-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(66,133,244,0.4); }
+.siagie-btn {
+    background: linear-gradient(135deg, #E91E63, #C2185B); color: white !important;
+    padding: 8px 16px; border: none; border-radius: 10px;
+    font-size: 14px; width: 100%; text-decoration: none;
+    display: block; text-align: center; margin: 4px 0;
+    transition: all 0.3s;
+}
+.siagie-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233,30,99,0.4); }
+
+/* === EXPANDER MEJORADO === */
+.streamlit-expanderHeader {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+/* === SIDEBAR === */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* === SUCCESS/ERROR MEJORADOS === */
+.stSuccess { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
+.stError { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
+.stInfo { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
 </style>
 """, unsafe_allow_html=True)
+
+
+def reproducir_sonido_asistencia():
+    """Genera un beep/sonido cuando se registra asistencia"""
+    st.markdown("""
+    <audio autoplay>
+        <source src="data:audio/wav;base64,UklGRl4FAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YToFAACAgICAgICAgICAkJigoKiouMDI0Njg6PD4+Pj48PDo4NjQyMC4sKignp6WjoaAgICAgICAgICAgJCYoKCorLjAyNDY4Ojw+Pj4+PDw6ODY0MjAuLCooJ6elo6GgICAgICAgICA" type="audio/wav">
+    </audio>
+    """, unsafe_allow_html=True)
+
+
+def reproducir_beep_exitoso():
+    """Sonido de éxito para escaneos y registros"""
+    # Genera un tono de 800Hz corto usando JavaScript AudioContext
+    st.markdown("""
+    <script>
+    (function() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 800;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+
+
+def reproducir_beep_error():
+    """Sonido de error"""
+    st.markdown("""
+    <script>
+    (function() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 300;
+            osc.type = 'square';
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
+    })();
+    </script>
+    """, unsafe_allow_html=True)
 
 
 # ================================================================
@@ -464,7 +652,11 @@ class BaseDatos:
 
     @staticmethod
     def guardar_matricula(df):
-        df.to_excel(ARCHIVO_MATRICULA, index=False, engine='openpyxl')
+        try:
+            df.to_excel(ARCHIVO_MATRICULA, index=False, engine='openpyxl')
+        except Exception:
+            # Fallback: guardar como CSV si openpyxl falla
+            df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -585,7 +777,10 @@ class BaseDatos:
 
     @staticmethod
     def guardar_docentes(df):
-        df.to_excel(ARCHIVO_DOCENTES, index=False, engine='openpyxl')
+        try:
+            df.to_excel(ARCHIVO_DOCENTES, index=False, engine='openpyxl')
+        except Exception:
+            df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
         gs = _gs()
         if gs:
             try:
@@ -1786,12 +1981,43 @@ def generar_hoja_respuestas(np_, titulo):
             # Letra pequeña dentro
             draw.text((cx, cy), letra, font=fl, fill=(100, 100, 100), anchor="mm")
 
-    # ===== PIE DE PÁGINA =====
-    draw.line([(100, HOJA_H - 200), (HOJA_W - 100, HOJA_H - 200)],
+    # ===== PIE DE PÁGINA CON FRASES DE SEGURIDAD =====
+    draw.line([(100, HOJA_H - 250), (HOJA_W - 100, HOJA_H - 250)],
               fill="black", width=2)
-    draw.text((HOJA_W // 2, HOJA_H - 165),
-              "YACHAY PRO — No doblar, arrugar ni manchar esta hoja",
-              font=fb, fill="gray", anchor="mm")
+
+    # Frases de seguridad estilo ZipGrade
+    frases_seguridad = [
+        "DOCUMENTO OFICIAL — CUALQUIER ALTERACIÓN INVALIDA ESTE EXAMEN",
+        "PROHIBIDO REPRODUCIR — USO EXCLUSIVO I.E.P. ALTERNATIVO YACHAY",
+        "SISTEMA YACHAY PRO — LECTURA ÓPTICA AUTOMATIZADA",
+        "No doblar, arrugar, manchar ni realizar marcas fuera de los círculos",
+        "Use SOLO lápiz 2B o bolígrafo negro — Rellene completamente cada círculo",
+    ]
+    y_pie = HOJA_H - 230
+    for frase in frases_seguridad:
+        draw.text((HOJA_W // 2, y_pie), frase,
+                  font=fb, fill="gray", anchor="mm")
+        y_pie += 30
+
+    # Código de seguridad único
+    codigo_seg = hashlib.md5(f"{titulo}{datetime.now().isoformat()}".encode()).hexdigest()[:12].upper()
+    draw.text((HOJA_W // 2, HOJA_H - 60),
+              f"Código de verificación: {codigo_seg} | YACHAY PRO ©{datetime.now().year}",
+              font=fb, fill="lightgray", anchor="mm")
+
+    # Marca de agua diagonal
+    try:
+        marca_font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
+    except Exception:
+        marca_font = fb
+    marca_img = Image.new('RGBA', img.size, (255, 255, 255, 0))
+    marca_draw = ImageDraw.Draw(marca_img)
+    for yy in range(200, HOJA_H - 200, 400):
+        for xx in range(-200, HOJA_W, 600):
+            marca_draw.text((xx, yy), "YACHAY PRO",
+                           font=marca_font, fill=(200, 200, 200, 40))
+    img = Image.alpha_composite(img.convert('RGBA'), marca_img).convert('RGB')
 
     out = io.BytesIO()
     img.save(out, format='PNG', quality=95)
@@ -2210,9 +2436,11 @@ def configurar_sidebar():
         # Estado Google Sheets
         gs = _gs()
         if gs:
-            st.success("☁️ Google Sheets: Conectado", icon="✅")
+            st.markdown('<div class="gs-connected">☁️ Google Sheets: Conectado ✅</div>',
+                       unsafe_allow_html=True)
         else:
-            st.caption("💾 Modo local (sin Google Sheets)")
+            st.markdown('<div class="gs-offline">💾 Modo local (sin Google Sheets)</div>',
+                       unsafe_allow_html=True)
 
         # Links institucionales para directivo y docentes
         if st.session_state.rol in ["directivo", "docente"]:
@@ -2943,10 +3171,14 @@ def _registrar_asistencia_rapida(dni):
         es_d = persona.get('_tipo', '') == 'docente'
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
-        st.success(f"✅ [{tp}] **{nombre}** — "
-                   f"{st.session_state.tipo_asistencia}: **{hora}**")
+        emoji_tipo = "🟢" if tipo == "entrada" else "🟡"
+        st.markdown(f"""<div class="asist-{'ok' if tipo == 'entrada' else 'salida'}">
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {st.session_state.tipo_asistencia}: <strong>{hora}</strong>
+        </div>""", unsafe_allow_html=True)
+        reproducir_beep_exitoso()
     else:
-        st.error(f"❌ DNI {dni} no encontrado")
+        st.error(f"❌ DNI {dni} no encontrado en el sistema")
+        reproducir_beep_error()
 
 
 # ================================================================
