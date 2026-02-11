@@ -3819,41 +3819,44 @@ def tab_incidencias(config):
         else:
             codigo = f"INC-{hora_peru().year}-{int(time.time()) % 1000:03d}"
 
-        with st.form("form_incidencia", clear_on_submit=True):
-            st.info(f"📌 Código: **{codigo}**")
+        with st.form("form_incidencia"):
+            st.text_input("Código:", value=codigo, disabled=True, key="inc_cod")
 
             ci1, ci2 = st.columns(2)
             with ci1:
                 fecha_inc = st.date_input("Fecha:", value=hora_peru().date(),
-                                           key="fld_inc_fecha")
-                nivel_inc = st.selectbox("Nivel:", NIVELES_LIST, key="fld_inc_nivel")
+                                           key="inc_fecha")
+                nivel_inc = st.selectbox("Nivel:", NIVELES_LIST, key="inc_nivel")
             with ci2:
-                hora_inc = st.text_input("Hora:", value=hora_peru().strftime('%H:%M'),
-                                          key="fld_inc_hora")
-                grado_inc = st.selectbox("Grado:", GRADOS_OPCIONES, key="fld_inc_grado")
+                hora_inc = st.time_input("Hora:", value=hora_peru().time(),
+                                          key="inc_hora")
+                grado_inc = st.selectbox("Grado:", GRADOS_OPCIONES, key="inc_grado")
 
             lugar = st.text_input("Lugar:", placeholder="Ej: Aula, patio, alrededores",
-                                  key="fld_inc_lugar")
-            seccion_inc = st.selectbox("Sección:", SECCIONES, key="fld_inc_sec")
+                                  key="inc_lugar")
+            seccion_inc = st.selectbox("Sección:", SECCIONES, key="inc_sec")
 
             tipo_inc = st.selectbox("Tipo de Incidencia:", TIPOS_INCIDENCIA,
-                                    key="fld_inc_tipo")
+                                    key="inc_tipo")
 
+            st.markdown("---")
             st.markdown("**Involucrados:**")
             afectados = st.text_area("Afectado(s) - Nombres, DNI:",
-                                     key="fld_inc_afect")
+                                     key="inc_afect", height=60)
             implicados = st.text_area("Implicado(s) - Nombres, DNI:",
-                                      key="fld_inc_implic")
+                                      key="inc_implic", height=60)
             reportante = st.text_input("Informante/Reportante:",
-                                       key="fld_inc_report")
+                                       key="inc_report")
 
-            relato = st.text_area("Relato de los hechos:",
+            st.markdown("---")
+            relato = st.text_area("📋 Relato de los hechos:",
                                   placeholder="Descripción objetiva...",
-                                  key="fld_inc_relato")
+                                  key="inc_relato", height=120)
 
-            accion = st.text_area("Acción Inmediata:", key="fld_inc_accion")
-            compromisos = st.text_area("Compromisos:", key="fld_inc_comp")
-            derivacion = st.selectbox("Derivación:", DERIVACIONES, key="fld_inc_deriv")
+            st.markdown("---")
+            accion = st.text_area("Acción Inmediata:", key="inc_accion", height=60)
+            compromisos = st.text_area("Compromisos:", key="inc_comp", height=60)
+            derivacion = st.selectbox("Derivación:", DERIVACIONES, key="inc_deriv")
 
             submitted = st.form_submit_button("💾 REGISTRAR INCIDENCIA",
                                                type="primary",
