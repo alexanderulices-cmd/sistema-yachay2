@@ -1917,13 +1917,13 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    mx = 15 * mm
-    my = 10 * mm
-    cw2 = (w - 2 * mx - 5 * mm) / 2
-    ch2 = (h - 2 * my - 15 * mm) / 4
+    mx = 12 * mm
+    my = 8 * mm
+    cw2 = (w - 2 * mx - 5 * mm) / 2      # 2 columnas
+    ch2 = (h - 2 * my - 10 * mm) / 3      # 3 filas (antes 4)
     gx = 5 * mm
-    gy = 3.5 * mm
-    pp = 8
+    gy = 4 * mm
+    pp = 6                                  # 6 por página (antes 8)
     total = len(lista_datos)
     np2 = (total + pp - 1) // pp
     for pag in range(np2):
@@ -2054,11 +2054,11 @@ HOJA_H = 2480       # Alto A4 LANDSCAPE 300dpi
 HOJA_MARKER_SIZE = 100   # Tamaño marcadores esquina
 HOJA_MARKER_PAD = 40     # Padding de marcadores desde borde
 HOJA_BUBBLE_R = 32       # Radio de burbuja
-HOJA_Y_START = 700       # Y donde empiezan las burbujas
-HOJA_X_START = 300       # X donde empieza la primera opción
-HOJA_SP_Y = 82           # Espacio vertical entre preguntas
+HOJA_Y_START = 620       # Y donde empiezan las burbujas
+HOJA_X_START = 280       # X donde empieza la primera opción
+HOJA_SP_Y = 80           # Espacio vertical entre preguntas
 HOJA_SP_X = 140          # Espacio horizontal entre opciones A,B,C,D
-HOJA_COL_SP = 680        # Espacio entre columnas de preguntas
+HOJA_COL_SP = 1000       # Espacio entre columnas (aprovechar ancho)
 HOJA_PPC = 20            # Preguntas por columna
 
 
@@ -2813,15 +2813,22 @@ def _gestion_usuarios_admin():
         datos_edit = usuarios[edit_usr]
         ne_label = st.text_input("Nombre completo:", value=datos_edit.get('label', ''), key="ne_label")
         ne_pass = st.text_input("Contraseña:", value=datos_edit.get('password', ''), key="ne_pass")
-        ne_nivel = st.selectbox("Nivel:", ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
-                                 index=["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"].index(
-                                     datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
-                                 ), key="ne_nivel")
-        grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
-        ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
         ne_rol = st.selectbox("Rol:", ["docente", "directivo", "auxiliar"],
                                index=["docente", "directivo", "auxiliar"].index(datos_edit.get('rol', 'docente')),
                                key="ne_rol")
+        
+        # Solo docentes necesitan grado y nivel
+        ne_nivel = "PRIMARIA"
+        ne_grado = "N/A"
+        if ne_rol == "docente":
+            ne_nivel = st.selectbox("Nivel:", ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
+                                     index=["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"].index(
+                                         datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
+                                     ), key="ne_nivel")
+            grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
+            ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
+        else:
+            st.caption(f"🔓 **{ne_rol.title()}** tiene acceso completo (sin grado específico)")
         
         c1, c2 = st.columns(2)
         with c1:
@@ -2829,10 +2836,13 @@ def _gestion_usuarios_admin():
                 usuarios[edit_usr]['label'] = ne_label
                 usuarios[edit_usr]['password'] = ne_pass
                 usuarios[edit_usr]['rol'] = ne_rol
-                di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel}
-                usuarios[edit_usr]['docente_info'] = di
+                if ne_rol == "docente":
+                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel}
+                    usuarios[edit_usr]['docente_info'] = di
+                else:
+                    usuarios[edit_usr]['docente_info'] = None
                 guardar_usuarios(usuarios)
-                st.success(f"✅ {edit_usr} actualizado correctamente")
+                st.success(f"✅ {edit_usr} actualizado")
                 st.rerun()
         with c2:
             if st.button("🗑️ Eliminar", key="btn_del_usr"):
@@ -2921,28 +2931,34 @@ def tab_matricula(config):
         with c2:
             dn_t = st.text_input("📱 Celular:", key="dn_cel", max_chars=9,
                                   placeholder="987654321")
-            dn_nivel = st.selectbox("🏫 Nivel:", 
-                                     ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
-                                     key="dn_nivel_reg")
-            if dn_nivel in ["INICIAL", "PRIMARIA"]:
-                dn_g = st.selectbox("🎓 Grado Asignado:",
-                                     ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
-                                     key="dn_grado")
-                dn_areas_sel = ""
+            
+            # Solo Docente/Coordinador necesitan nivel y grado
+            dn_areas_sel = ""
+            if dn_c in ["Docente", "Coordinador"]:
+                dn_nivel = st.selectbox("🏫 Nivel:", 
+                                         ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
+                                         key="dn_nivel_reg")
+                if dn_nivel in ["INICIAL", "PRIMARIA"]:
+                    dn_g = st.selectbox("🎓 Grado Asignado:",
+                                         ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
+                                         key="dn_grado")
+                else:
+                    opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
+                    dn_g = st.selectbox("🎓 Grado/Grupo:",
+                                         ["N/A"] + opciones_asig, key="dn_grado")
+                    todas_areas = AREAS_MINEDU.get(dn_nivel, [])
+                    if dn_nivel == "PREUNIVERSITARIO":
+                        todas_areas = list(set(
+                            AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
+                            AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
+                        ))
+                    dn_areas_sel = st.multiselect("📚 Áreas que enseña:", 
+                                                   todas_areas, key="dn_areas_reg")
             else:
-                # Secundaria/PreU: seleccionar grados/grupos donde enseña
-                opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
-                dn_g = st.selectbox("🎓 Grado/Grupo:",
-                                     ["N/A"] + opciones_asig, key="dn_grado")
-                # Áreas que enseña
-                todas_areas = AREAS_MINEDU.get(dn_nivel, [])
-                if dn_nivel == "PREUNIVERSITARIO":
-                    todas_areas = list(set(
-                        AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
-                        AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-                    ))
-                dn_areas_sel = st.multiselect("📚 Áreas que enseña:", 
-                                               todas_areas, key="dn_areas_reg")
+                # Directora, Auxiliar, etc. — acceso completo sin grado
+                dn_nivel = "PRIMARIA"
+                dn_g = "N/A"
+                st.caption(f"🔓 {dn_c}: acceso completo (sin grado específico)")
             dn_email = st.text_input("📧 Email:", key="dn_email",
                                       placeholder="nombre@ieyachay.org")
             dn_foto = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'],
@@ -2985,17 +3001,22 @@ def tab_matricula(config):
                 if crear_cuenta and dn_usuario and dn_password:
                     usuarios = cargar_usuarios()
                     u_key = dn_usuario.strip().lower()
-                    di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel}
+                    rol_auto = "docente" if dn_c == "Docente" else ("auxiliar" if dn_c == "Auxiliar" else "directivo")
+                    
+                    # Solo docentes tienen grado/nivel
+                    if rol_auto == "docente":
+                        di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel}
+                    else:
+                        di = None  # Directivos y auxiliares no necesitan grado
+                    
                     usuarios[u_key] = {
                         "password": dn_password,
-                        "rol": "docente" if dn_c == "Docente" else ("auxiliar" if dn_c == "Auxiliar" else "directivo"),
+                        "rol": rol_auto,
                         "label": dn_n.strip().upper(),
                         "docente_info": di,
-                        "grado": dn_g,
-                        "nivel": dn_nivel,
                     }
                     guardar_usuarios(usuarios)
-                    st.success(f"🔐 Cuenta creada: **{u_key}** / contraseña: **{dn_password}**")
+                    st.success(f"🔐 Cuenta creada: **{u_key}** / contraseña: **{dn_password}** / rol: **{rol_auto}**")
                 
                 if dn_areas_sel:
                     st.info(f"📚 Áreas: {areas_txt}")
