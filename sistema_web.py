@@ -1753,10 +1753,36 @@ class GeneradorCarnet:
                             outline=self.DORADO, width=4)
 
     def _ph(self, x, y, w, h):
-        self.draw.rectangle([(x, y), (x + w, y + h)], fill="#eee")
-        self.draw.text((x + w // 2, y + h // 2), "SIN FOTO",
-                       font=RecursoManager.obtener_fuente("", 15),
-                       fill="#999", anchor="mm")
+        """Avatar por defecto según sexo del estudiante"""
+        sexo = self.datos.get('Sexo', 'Masculino')
+        if sexo == 'Femenino':
+            bg_color = "#fce4ec"
+            icon_color = "#e91e63"
+            text_icon = "👩"
+        else:
+            bg_color = "#e3f2fd"
+            icon_color = "#1565c0"
+            text_icon = "👨"
+        self.draw.rectangle([(x, y), (x + w, y + h)], fill=bg_color)
+        # Silueta simple
+        cx, cy = x + w // 2, y + h // 2
+        # Cabeza
+        head_r = min(w, h) // 6
+        self.draw.ellipse([(cx - head_r, cy - head_r - 30),
+                           (cx + head_r, cy + head_r - 30)],
+                          fill=icon_color)
+        # Cuerpo
+        body_w = min(w, h) // 3
+        self.draw.ellipse([(cx - body_w, cy + head_r - 10),
+                           (cx + body_w, cy + head_r + body_w + 20)],
+                          fill=icon_color)
+        # Texto
+        try:
+            fn = RecursoManager.obtener_fuente("", 11)
+            self.draw.text((cx, y + h - 15), "FOTO PENDIENTE",
+                           font=fn, fill="#666", anchor="mm")
+        except Exception:
+            pass
 
     def _datos(self):
         xt = 290
@@ -2326,7 +2352,7 @@ def _leer_burbujas(warped_gray, num_preguntas):
             intensidades.append(ratio)
 
         if not intensidades:
-            respuestas.append('?')
+            respuestas.append('-')  # Sin datos = en blanco = 0 puntos
             continue
 
         max_val = max(intensidades)
@@ -2334,7 +2360,7 @@ def _leer_burbujas(warped_gray, num_preguntas):
 
         # Condición 1: Relleno mínimo
         if max_val < UMBRAL_RELLENO_MINIMO:
-            respuestas.append('?')  # En blanco o relleno insuficiente
+            respuestas.append('-')  # En blanco = 0 puntos (no marcó nada)
             continue
 
         # Condición 2: Diferencia significativa con la segunda opción
@@ -2342,7 +2368,7 @@ def _leer_burbujas(warped_gray, num_preguntas):
         segunda = sorted_vals[1] if len(sorted_vals) >= 2 else 0
 
         if segunda > 0 and max_val / segunda < RATIO_DIFERENCIA:
-            respuestas.append('?')  # Ambiguo — dos opciones similares
+            respuestas.append('?')  # Ambiguo — corregir manualmente
             continue
 
         # Respuesta clara
@@ -2594,6 +2620,9 @@ def restaurar_backup(zip_bytes):
 
 def configurar_sidebar():
     with st.sidebar:
+        # Escudo
+        if Path("escudo_upload.png").exists():
+            st.image("escudo_upload.png", width=80)
         st.title("🎓 YACHAY PRO")
         roles_nombres = {
             "admin": "⚙️ Administrador",
@@ -2706,12 +2735,22 @@ def configurar_sidebar():
 
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
-        stats = BaseDatos.obtener_estadisticas()
-        c1, c2 = st.columns(2)
-        with c1:
-            st.metric("📚 Alumnos", stats['total_alumnos'])
-        with c2:
-            st.metric("👨‍🏫 Docentes", stats['total_docentes'])
+        
+        # Solo admin y directivo ven estadísticas
+        if st.session_state.rol in ['admin', 'directivo']:
+            stats = BaseDatos.obtener_estadisticas()
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("📚 Alumnos", stats['total_alumnos'])
+            with c2:
+                st.metric("👨‍🏫 Docentes", stats['total_docentes'])
+        
+        # Mensaje de guardado para todos
+        st.markdown("""<div style="background: #dcfce7; border-radius: 8px; 
+                    padding: 8px; text-align: center; font-size: 0.8rem; color: #166534;">
+                    💾 Todo se guarda automáticamente en la nube
+                    </div>""", unsafe_allow_html=True)
+        
         st.markdown("---")
         if st.button("🔴 CERRAR SESIÓN", use_container_width=True):
             for k in list(st.session_state.keys()):
@@ -2771,6 +2810,30 @@ def _gestion_usuarios_admin():
             st.error("⚠️ Complete todos los campos")
 
     st.markdown("---")
+    st.markdown("**✏️ Editar usuario existente:**")
+    edit_usr = st.selectbox("Usuario a editar:",
+                             [u for u in usuarios.keys() if u != "administrador"],
+                             key="edit_usr")
+    if edit_usr:
+        datos_edit = usuarios[edit_usr]
+        ne_label = st.text_input("Nombre:", value=datos_edit.get('label', ''), key="ne_label")
+        ne_pass = st.text_input("Nueva contraseña:", value=datos_edit.get('password', ''), key="ne_pass")
+        ne_grado = st.selectbox("Grado:", 
+                                 ["N/A"] + TODOS_LOS_GRADOS + ["ALL_SECUNDARIA"],
+                                 index=0, key="ne_grado")
+        if st.button("💾 GUARDAR CAMBIOS", type="primary", key="btn_edit_usr"):
+            usuarios[edit_usr]['label'] = ne_label
+            usuarios[edit_usr]['password'] = ne_pass
+            if ne_grado != "N/A" and datos_edit.get('rol') == 'docente':
+                usuarios[edit_usr]['docente_info'] = {
+                    'label': ne_label, 'grado': ne_grado,
+                    'nivel': datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
+                }
+            guardar_usuarios(usuarios)
+            st.success(f"✅ {edit_usr} actualizado")
+            st.rerun()
+
+    st.markdown("---")
     st.markdown("**🗑️ Eliminar usuario:**")
     del_usr = st.selectbox("Seleccionar:",
                             [u for u in usuarios.keys() if u != "administrador"],
@@ -2804,33 +2867,39 @@ def tab_matricula(config):
             mg = st.selectbox("Grado:", NIVELES_GRADOS[mnv], key="mg")
             ms = st.selectbox("Sección:", SECCIONES, key="ms")
         with c2:
+            msexo = st.selectbox("Sexo:", ["Masculino", "Femenino"], key="msexo")
             ma = st.text_input("Apoderado (Padre/Madre):", key="ma")
             mda = st.text_input("DNI Apoderado:", key="mda", max_chars=8)
-            mc = st.text_input("Celular Apoderado:", key="mc", max_chars=9)
+            mc = st.text_input("Celular Apoderado:", key="mc", max_chars=9,
+                               placeholder="987654321")
         if st.button("✅ MATRICULAR", type="primary", use_container_width=True,
                      key="bm"):
             if mn and md:
-                # Limpiar DNI de caracteres extraños
                 md_clean = ''.join(c for c in md.strip() if c.isdigit())
                 if len(md_clean) != 8:
-                    st.error(f"⚠️ El DNI debe tener 8 dígitos. Se encontró: '{md.strip()}' ({len(md_clean)} dígitos)")
+                    st.error(f"⚠️ El DNI debe tener 8 dígitos ({len(md_clean)} encontrados)")
                 else:
-                    BaseDatos.registrar_estudiante({
-                        'Nombre': mn.strip().upper(), 'DNI': md_clean, 'Nivel': mnv,
-                        'Grado': mg, 'Seccion': ms, 'Apoderado': ma.strip(),
-                        'DNI_Apoderado': mda.strip(), 'Celular_Apoderado': mc.strip()
-                    })
+                    with st.spinner("💾 Guardando matrícula..."):
+                        BaseDatos.registrar_estudiante({
+                            'Nombre': mn.strip().upper(), 'DNI': md_clean, 'Nivel': mnv,
+                            'Grado': mg, 'Seccion': ms, 'Sexo': msexo,
+                            'Apoderado': ma.strip(), 'DNI_Apoderado': mda.strip(),
+                            'Celular_Apoderado': mc.strip()
+                        })
+                        time.sleep(2)  # Esperar sincronización con GS
                     # Verificar que se guardó
                     verificar = BaseDatos.buscar_por_dni(md_clean)
                     if verificar:
-                        st.success(f"✅ **MATRICULADO CORRECTAMENTE**")
+                        avatar = "👦" if msexo == "Masculino" else "👧"
+                        st.success(f"✅ **MATRICULADO CORRECTAMENTE** ☁️ Guardado en la nube")
                         st.markdown(f"""
                         <div class="asist-ok">
                             <strong>📋 Confirmación de Matrícula</strong><br>
-                            👤 {mn.strip().upper()}<br>
+                            {avatar} {mn.strip().upper()}<br>
                             🆔 DNI: {md_clean}<br>
                             🎓 {mg} — Sección {ms}<br>
-                            📅 {fecha_peru_str()}
+                            📅 {fecha_peru_str()}<br>
+                            <span style="color:green;font-weight:bold;">☑️ VERIFICADO EN BASE DE DATOS</span>
                         </div>
                         """, unsafe_allow_html=True)
                         reproducir_beep_exitoso()
@@ -3723,13 +3792,74 @@ def tab_calificacion_yachay(config):
                                index=1, key="npg")
         with c2:
             th = st.text_input("Título:", "EVALUACIÓN BIMESTRAL", key="th")
+        
+        num_copias = st.radio("Copias por hoja:", ["1 hoja por página", "2 hojas por página (ahorra papel)"],
+                               horizontal=True, key="copias_hoja")
+        
         if st.button("📄 GENERAR HOJA", type="primary",
                      use_container_width=True, key="gh"):
             hoja = generar_hoja_respuestas(npg, th)
             st.image(hoja, use_container_width=True)
-            st.download_button("⬇️ Descargar", hoja,
+            
+            # Descargar como PNG individual
+            st.download_button("⬇️ PNG (1 hoja)", hoja,
                                f"Hoja_{npg}p.png", "image/png",
                                use_container_width=True, key="dh")
+            
+            # Generar PDF con 2 por página
+            try:
+                from PIL import Image as PILImage
+                img = PILImage.open(io.BytesIO(hoja))
+                img_w, img_h = img.size
+                
+                pdf_buf = io.BytesIO()
+                c_pdf = canvas.Canvas(pdf_buf, pagesize=A4)
+                w_page, h_page = A4
+                
+                # Guardar imagen temporalmente
+                img_path = "/tmp/hoja_temp.png"
+                img.save(img_path)
+                
+                if "2 hojas" in num_copias:
+                    # 2 hojas por página con línea de corte
+                    half_h = h_page / 2
+                    scale = min(w_page / img_w, half_h / img_h) * 0.92
+                    draw_w = img_w * scale
+                    draw_h = img_h * scale
+                    x_offset = (w_page - draw_w) / 2
+                    
+                    # Hoja superior
+                    c_pdf.drawImage(img_path, x_offset, half_h + 5,
+                                    width=draw_w, height=draw_h)
+                    # Línea de corte
+                    c_pdf.setStrokeColor(colors.gray)
+                    c_pdf.setLineWidth(0.5)
+                    c_pdf.setDash(6, 3)
+                    c_pdf.line(20, half_h, w_page - 20, half_h)
+                    c_pdf.setFont("Helvetica", 6)
+                    c_pdf.drawCentredString(w_page/2, half_h - 8, "✂ — — — CORTAR AQUÍ — — — ✂")
+                    c_pdf.setDash()
+                    
+                    # Hoja inferior
+                    c_pdf.drawImage(img_path, x_offset, 5,
+                                    width=draw_w, height=draw_h)
+                else:
+                    # 1 hoja centrada
+                    scale = min(w_page / img_w, h_page / img_h) * 0.95
+                    draw_w = img_w * scale
+                    draw_h = img_h * scale
+                    x_offset = (w_page - draw_w) / 2
+                    y_offset = (h_page - draw_h) / 2
+                    c_pdf.drawImage(img_path, x_offset, y_offset,
+                                    width=draw_w, height=draw_h)
+                
+                c_pdf.save()
+                pdf_buf.seek(0)
+                st.download_button("📥 PDF (para imprimir)", pdf_buf,
+                                   f"Hojas_{npg}p.pdf", "application/pdf",
+                                   use_container_width=True, key="dh_pdf")
+            except Exception as e:
+                st.warning(f"PDF no disponible: {e}")
 
     # ===== TAB: CALIFICAR =====
     with tabs_cal[2]:
@@ -5122,7 +5252,12 @@ AREAS_MINEDU = {
     ]
 }
 
-BIMESTRES_LISTA = ['I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre']
+BIMESTRES_LISTA = [
+    'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
+    'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
+    'Ciclo Verano', 'Ciclo Regular', 'Reforzamiento Pre-U',
+    'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
+]
 
 # ================================================================
 # TAB: REGISTRAR NOTAS (Manual — Para todos los docentes)
@@ -5165,7 +5300,9 @@ def tab_registrar_notas(config):
         areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU['PRIMARIA'])
         area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
     with c2:
-        bim_sel = st.selectbox("📅 Bimestre:", BIMESTRES_LISTA, key="rn_bim")
+        bim_sel = st.selectbox("📅 Período:", BIMESTRES_LISTA, key="rn_bim")
+    titulo_eval_rn = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3",
+                                    key="rn_titulo")
 
     # Cargar estudiantes
     dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
@@ -5415,11 +5552,17 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
         c.setFont("Helvetica", 10)
         c.drawString(55, y, "Sin calificaciones registradas.")
 
-    # === PÁGINA 2: Asistencia + Recomendaciones ===
-    c.showPage()
-    y = h - 50
+    # === Asistencia + Recomendaciones (misma página si cabe) ===
+    # Solo nueva página si queda poco espacio
+    if y < 250:
+        c.showPage()
+        y = h - 50
+    else:
+        y -= 25
+
     c.setFont("Helvetica-Bold", 13)
-    c.drawString(50, y, f"📋 REGISTRO DE ASISTENCIA — {nombre}")
+    c.setFillColor(colors.black)
+    c.drawString(50, y, f"REGISTRO DE ASISTENCIA — {nombre}")
     y -= 22
 
     if asistencia:
@@ -5583,8 +5726,9 @@ def main():
             """, unsafe_allow_html=True)
 
             # Grid de módulos
+            # Grid de módulos
             modulos = [
-                ("📝", "Matrícula", "matricula", "#1a56db"),
+                ("📝", "Matrícula", "matricula", "#2563eb"),
                 ("📋", "Asistencia", "asistencia", "#16a34a"),
                 ("📄", "Documentos", "documentos", "#7c3aed"),
                 ("🪪", "Carnets", "carnets", "#0891b2"),
@@ -5597,7 +5741,7 @@ def main():
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
 
-            # Mostrar en grid de 3 columnas
+            # Mostrar en grid de 3 columnas con colores
             for i in range(0, len(modulos), 3):
                 cols = st.columns(3)
                 for j, col in enumerate(cols):
@@ -5605,11 +5749,22 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            if st.button(
-                                f"{icono}\n\n**{nombre}**",
-                                use_container_width=True,
-                                key=f"dash_{key}"
-                            ):
+                            st.markdown(f"""
+                            <div onclick="window.location.hash='{key}'"
+                                 style="background: linear-gradient(135deg, {color}, {color}dd);
+                                        color: white; border-radius: 16px; padding: 20px;
+                                        text-align: center; cursor: pointer;
+                                        box-shadow: 0 4px 15px {color}40;
+                                        transition: all 0.3s; margin: 6px 0;
+                                        min-height: 100px; display: flex;
+                                        flex-direction: column; justify-content: center;
+                                        align-items: center;">
+                                <span style="font-size: 2.2rem;">{icono}</span>
+                                <strong style="font-size: 1rem; margin-top: 8px;">{nombre}</strong>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            if st.button(f"Abrir {nombre}", key=f"dash_{key}",
+                                        use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
 
