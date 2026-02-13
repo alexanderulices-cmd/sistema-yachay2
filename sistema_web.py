@@ -141,90 +141,6 @@ USUARIOS_DEFAULT = {
         "label": "Administrador",
         "docente_info": None
     },
-    "directora": {
-        "password": "directora2026",
-        "rol": "directivo",
-        "label": "Directora",
-        "docente_info": None
-    },
-    "leandro": {
-        "password": "leandro2026",
-        "rol": "directivo",
-        "label": "Promotor — Leandro",
-        "docente_info": None
-    },
-    "deyanira": {
-        "password": "deyanira",
-        "rol": "directivo",
-        "label": "Deyanira",
-        "docente_info": None
-    },
-    "auxiliar": {
-        "password": "123456789",
-        "rol": "auxiliar",
-        "label": "Auxiliar",
-        "docente_info": None
-    },
-    "prof.inicial3": {
-        "password": "docente3",
-        "rol": "docente",
-        "label": "Docente Inicial 3 años",
-        "docente_info": {"label": "Inicial 3 años", "grado": "Inicial 3 años", "nivel": "INICIAL"}
-    },
-    "prof.inicial4": {
-        "password": "docente4",
-        "rol": "docente",
-        "label": "Docente Inicial 4 años",
-        "docente_info": {"label": "Inicial 4 años", "grado": "Inicial 4 años", "nivel": "INICIAL"}
-    },
-    "prof.inicial5": {
-        "password": "docente5",
-        "rol": "docente",
-        "label": "Docente Inicial 5 años",
-        "docente_info": {"label": "Inicial 5 años", "grado": "Inicial 5 años", "nivel": "INICIAL"}
-    },
-    "prof.primero": {
-        "password": "primero2026",
-        "rol": "docente",
-        "label": "Docente 1° Primaria",
-        "docente_info": {"label": "1° Primaria", "grado": "1° Primaria", "nivel": "PRIMARIA"}
-    },
-    "prof.segundo": {
-        "password": "segundo2026",
-        "rol": "docente",
-        "label": "Docente 2° Primaria",
-        "docente_info": {"label": "2° Primaria", "grado": "2° Primaria", "nivel": "PRIMARIA"}
-    },
-    "prof.tercero": {
-        "password": "tercero2026",
-        "rol": "docente",
-        "label": "Docente 3° Primaria",
-        "docente_info": {"label": "3° Primaria", "grado": "3° Primaria", "nivel": "PRIMARIA"}
-    },
-    "prof.cuarto": {
-        "password": "cuarto2026",
-        "rol": "docente",
-        "label": "Docente 4° Primaria",
-        "docente_info": {"label": "4° Primaria", "grado": "4° Primaria", "nivel": "PRIMARIA"}
-    },
-    "prof.quinto": {
-        "password": "quinto2026",
-        "rol": "docente",
-        "label": "Docente 5° Primaria",
-        "docente_info": {"label": "5° Primaria", "grado": "5° Primaria", "nivel": "PRIMARIA"}
-    },
-    "prof.sexto": {
-        "password": "sexto2026",
-        "rol": "docente",
-        "label": "Docente 6° Primaria",
-        "docente_info": {"label": "6° Primaria", "grado": "6° Primaria", "nivel": "PRIMARIA"}
-    },
-    "coordinador": {
-        "password": "coord2026",
-        "rol": "docente",
-        "label": "Coordinador Secundaria",
-        "docente_info": {"label": "Coordinador Secundaria", "grado": "ALL_SECUNDARIA", "nivel": "SECUNDARIA"}
-    },
 }
 
 
@@ -1944,14 +1860,14 @@ class GeneradorCarnet:
     def _qr(self):
         try:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-            q = qrcode.QRCode(box_size=12, border=1)
+            q = qrcode.QRCode(box_size=14, border=1)
             q.add_data(dni)
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
-            iq = iq.resize((200, 200), Image.LANCZOS)
-            self.img.paste(iq, (self.WIDTH - 235, 210))
-            fs = RecursoManager.obtener_fuente("", 10, True)
-            self.draw.text((self.WIDTH - 135, 418), "ESCANEAR QR",
+            iq = iq.resize((250, 250), Image.LANCZOS)
+            self.img.paste(iq, (self.WIDTH - 285, 215))
+            fs = RecursoManager.obtener_fuente("", 11, True)
+            self.draw.text((self.WIDTH - 160, 470), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1963,18 +1879,18 @@ class GeneradorCarnet:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
             buf2 = io.BytesIO()
             Code128(dni, writer=ImageWriter()).write(buf2, options={
-                'write_text': False, 'module_width': 0.5,
-                'module_height': 10, 'quiet_zone': 2
+                'write_text': False, 'module_width': 0.55,
+                'module_height': 12, 'quiet_zone': 2
             })
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
-            ib = ib.resize((320, 55), Image.LANCZOS)
-            xb = (self.WIDTH - 320) // 2
-            yb = self.HEIGHT - 130
+            ib = ib.resize((350, 60), Image.LANCZOS)
+            xb = (self.WIDTH - 350) // 2
+            yb = self.HEIGHT - 125
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 11, True)
-            self.draw.text((self.WIDTH // 2, yb + 58), f"DNI: {dni}",
+            fbc = RecursoManager.obtener_fuente("", 12, True)
+            self.draw.text((self.WIDTH // 2, yb + 65), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
             pass
@@ -2132,18 +2048,18 @@ def decodificar_qr_imagen(ib):
 # Sistema basado en posición con marcadores de alineación
 # ================================================================
 
-# Constantes de la hoja (compartidas entre generador y escáner)
-HOJA_W = 2480       # Ancho A4 300dpi
-HOJA_H = 3508       # Alto A4 300dpi
+# Constantes de la hoja HORIZONTAL (compartidas entre generador y escáner)
+HOJA_W = 3508       # Ancho A4 LANDSCAPE 300dpi
+HOJA_H = 2480       # Alto A4 LANDSCAPE 300dpi
 HOJA_MARKER_SIZE = 100   # Tamaño marcadores esquina
 HOJA_MARKER_PAD = 40     # Padding de marcadores desde borde
-HOJA_BUBBLE_R = 34       # Radio de burbuja
-HOJA_Y_START = 950       # Y donde empiezan las burbujas
-HOJA_X_START = 340       # X donde empieza la primera opción
-HOJA_SP_Y = 108          # Espacio vertical entre preguntas
-HOJA_SP_X = 155          # Espacio horizontal entre opciones A,B,C,D
-HOJA_COL_SP = 750        # Espacio entre columnas de preguntas
-HOJA_PPC = 20            # Preguntas por columna (máximo seguro)
+HOJA_BUBBLE_R = 32       # Radio de burbuja
+HOJA_Y_START = 700       # Y donde empiezan las burbujas
+HOJA_X_START = 300       # X donde empieza la primera opción
+HOJA_SP_Y = 82           # Espacio vertical entre preguntas
+HOJA_SP_X = 140          # Espacio horizontal entre opciones A,B,C,D
+HOJA_COL_SP = 680        # Espacio entre columnas de preguntas
+HOJA_PPC = 20            # Preguntas por columna
 
 
 def _posicion_burbuja(pregunta_idx, opcion_idx):
@@ -2156,62 +2072,57 @@ def _posicion_burbuja(pregunta_idx, opcion_idx):
 
 
 def generar_hoja_respuestas(np_, titulo):
-    """Genera hoja de respuestas OPTIMIZADA para escaneo OMR"""
+    """Genera hoja de respuestas HORIZONTAL OPTIMIZADA para escaneo OMR"""
     img = Image.new('RGB', (HOJA_W, HOJA_H), 'white')
     draw = ImageDraw.Draw(img)
     try:
-        ft = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 70)
-        fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 45)
-        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
-        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
-        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+        ft = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+        fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
+        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 36)
+        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
+        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
+        fi = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
     except Exception:
-        ft = fs = fn = fl = fb = ImageFont.load_default()
+        ft = fs = fn = fl = fb = fi = ImageFont.load_default()
 
     # ===== 4 MARCADORES DE ESQUINA (cruciales para alineación) =====
     ms = HOJA_MARKER_SIZE
     mp = HOJA_MARKER_PAD
-    # Superior izquierdo
     draw.rectangle([(mp, mp), (mp + ms, mp + ms)], fill="black")
-    # Superior derecho
     draw.rectangle([(HOJA_W - mp - ms, mp), (HOJA_W - mp, mp + ms)], fill="black")
-    # Inferior izquierdo
     draw.rectangle([(mp, HOJA_H - mp - ms), (mp + ms, HOJA_H - mp)], fill="black")
-    # Inferior derecho
     draw.rectangle([(HOJA_W - mp - ms, HOJA_H - mp - ms),
                     (HOJA_W - mp, HOJA_H - mp)], fill="black")
-
-    # Marcadores adicionales de orientación (rectángulo pequeño solo arriba-izq)
+    # Marcador de orientación (solo arriba-izquierda)
     draw.rectangle([(mp, mp + ms + 10), (mp + ms, mp + ms + 30)], fill="black")
 
-    # ===== ENCABEZADO =====
-    draw.text((HOJA_W // 2, 200), "I.E.P. ALTERNATIVO YACHAY",
+    # ===== ENCABEZADO HORIZONTAL =====
+    draw.text((HOJA_W // 2, 180), "I.E.P. ALTERNATIVO YACHAY",
               font=ft, fill="black", anchor="mm")
-    draw.text((HOJA_W // 2, 290), f"HOJA DE RESPUESTAS — {titulo.upper()}",
+    draw.text((HOJA_W // 2, 250), f"HOJA DE RESPUESTAS — {titulo.upper()}",
               font=fs, fill="black", anchor="mm")
-    draw.text((HOJA_W // 2, 360), "SISTEMA DE CALIFICACIÓN YACHAY",
-              font=fs, fill="gray", anchor="mm")
 
-    # ===== DATOS DEL ALUMNO =====
-    draw.text((220, 480), "Nombre: _____________________________________________",
+    # ===== DATOS DEL ALUMNO (2 filas compactas) =====
+    draw.text((200, 330), "Nombre: ________________________________________",
               font=fs, fill="black")
-    draw.text((220, 560), "DNI: __________________  Grado: __________________",
+    draw.text((1800, 330), "DNI: _________________",
               font=fs, fill="black")
-    draw.text((220, 640), f"Fecha: __________________  Total: {np_} preguntas",
+    draw.text((200, 400), f"Grado: _____________  Sección: __________  Fecha: ___/___/___  Total: {np_} preg.",
               font=fs, fill="black")
 
-    # ===== INSTRUCCIONES =====
-    draw.text((220, 740), "✎ RELLENE COMPLETAMENTE el círculo de su respuesta",
+    # ===== INSTRUCCIONES compactas =====
+    draw.text((200, 480), "RELLENE completamente el círculo.",
               font=fb, fill="red")
-    # Ejemplo visual
-    ex_y = 795
-    draw.text((220, ex_y), "Correcto:", font=fl, fill="gray")
-    draw.ellipse([(430, ex_y - 5), (490, ex_y + 55)], fill="black")
-    draw.text((530, ex_y), "Incorrecto:", font=fl, fill="gray")
-    draw.ellipse([(770, ex_y - 5), (830, ex_y + 55)], outline="black", width=3)
+    # Ejemplo
+    draw.text((900, 480), "Correcto:", font=fi, fill="gray")
+    draw.ellipse([(1070, 472), (1120, 522)], fill="black")
+    draw.text((1160, 480), "Incorrecto:", font=fi, fill="gray")
+    draw.ellipse([(1370, 472), (1420, 522)], outline="black", width=3)
+    draw.text((1460, 480), "Lápiz 2B o bolígrafo negro",
+              font=fi, fill="gray")
 
-    # Línea separadora gruesa
-    draw.line([(100, 880), (HOJA_W - 100, 880)], fill="black", width=4)
+    # Línea separadora
+    draw.line([(150, 560), (HOJA_W - 150, 560)], fill="black", width=3)
 
     # ===== BURBUJAS =====
     for i in range(np_):
@@ -2234,51 +2145,39 @@ def generar_hoja_respuestas(np_, titulo):
             # Letra pequeña dentro
             draw.text((cx, cy), letra, font=fl, fill=(100, 100, 100), anchor="mm")
 
-    # ===== PIE DE PÁGINA CON FRASES DE SEGURIDAD =====
-    draw.line([(100, HOJA_H - 250), (HOJA_W - 100, HOJA_H - 250)],
+    # ===== PIE DE PÁGINA COMPACTO =====
+    draw.line([(150, HOJA_H - 200), (HOJA_W - 150, HOJA_H - 200)],
               fill="black", width=2)
 
-    # Frases de seguridad estilo ZipGrade
     frases_seguridad = [
         "DOCUMENTO OFICIAL — CUALQUIER ALTERACIÓN INVALIDA ESTE EXAMEN",
-        "PROHIBIDO REPRODUCIR — USO EXCLUSIVO I.E.P. ALTERNATIVO YACHAY",
-        "SISTEMA YACHAY PRO — LECTURA ÓPTICA AUTOMATIZADA",
-        "No doblar, arrugar, manchar ni realizar marcas fuera de los círculos",
+        "I.E.P. ALTERNATIVO YACHAY — LECTURA ÓPTICA AUTOMATIZADA",
         "Use SOLO lápiz 2B o bolígrafo negro — Rellene completamente cada círculo",
     ]
-    y_pie = HOJA_H - 230
+    y_pie = HOJA_H - 180
     for frase in frases_seguridad:
         draw.text((HOJA_W // 2, y_pie), frase,
-                  font=fb, fill="gray", anchor="mm")
-        y_pie += 30
+                  font=fi, fill="gray", anchor="mm")
+        y_pie += 28
 
-    # Código de seguridad único — visible en negro al costado derecho vertical
+    # Código de seguridad visible
     codigo_seg = hashlib.md5(f"{titulo}{datetime.now().isoformat()}".encode()).hexdigest()[:12].upper()
-    draw.text((HOJA_W // 2, HOJA_H - 60),
+    draw.text((HOJA_W // 2, HOJA_H - 55),
               f"Código: {codigo_seg} | YACHAY PRO {datetime.now().year}",
               font=fb, fill="black", anchor="mm")
-    
-    # Código vertical en margen derecho
-    try:
-        fv = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
-    except Exception:
-        fv = fb
-    codigo_vertical = f"COD: {codigo_seg}"
-    for ci, ch in enumerate(codigo_vertical):
-        draw.text((HOJA_W - 55, 300 + ci * 28), ch, font=fv, fill="gray")
 
-    # Marca de agua diagonal
+    # Marca de agua diagonal sutil
     try:
         marca_font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 50)
     except Exception:
         marca_font = fb
     marca_img = Image.new('RGBA', img.size, (255, 255, 255, 0))
     marca_draw = ImageDraw.Draw(marca_img)
-    for yy in range(200, HOJA_H - 200, 400):
-        for xx in range(-200, HOJA_W, 600):
+    for yy in range(200, HOJA_H - 200, 350):
+        for xx in range(-200, HOJA_W, 550):
             marca_draw.text((xx, yy), "YACHAY PRO",
-                           font=marca_font, fill=(200, 200, 200, 40))
+                           font=marca_font, fill=(200, 200, 200, 35))
     img = Image.alpha_composite(img.convert('RGBA'), marca_img).convert('RGB')
 
     out = io.BytesIO()
@@ -3958,7 +3857,7 @@ def tab_calificacion_yachay(config):
 
     # ===== TAB: HOJA DE RESPUESTAS =====
     with tabs_cal[1]:
-        st.subheader("📄 Hoja de Respuestas")
+        st.subheader("📄 Hoja de Respuestas (Horizontal)")
         c1, c2 = st.columns(2)
         with c1:
             npg = st.selectbox("Preguntas:", [10, 20, 30, 40, 50],
@@ -3974,42 +3873,44 @@ def tab_calificacion_yachay(config):
             # Vista previa
             st.image(hoja_bytes, use_container_width=True)
             
-            # Siempre generar PDF con 2 hojas por página
+            # Generar PDF con 2 hojas horizontales por página A4
             try:
                 from PIL import Image as PILImage
                 img_pil = PILImage.open(io.BytesIO(hoja_bytes))
                 img_w, img_h = img_pil.size
                 
                 pdf_buf = io.BytesIO()
-                page_size = (595.27, 841.89)  # A4 en puntos
-                c_pdf = canvas.Canvas(pdf_buf, pagesize=page_size)
-                w_page, h_page = page_size
+                # A4 portrait hardcoded (595.27 x 841.89 puntos)
+                pw, ph = 595.27, 841.89
+                c_pdf = canvas.Canvas(pdf_buf, pagesize=(pw, ph))
                 
                 img_path = "/tmp/hoja_temp.png"
                 img_pil.save(img_path)
                 
-                # 2 hojas por página con línea de corte
-                half_h = h_page / 2
-                scale = min(w_page / img_w, half_h / img_h) * 0.88
+                # 2 hojas horizontales apiladas en A4 vertical
+                half_h = ph / 2
+                scale = min(pw / img_w, half_h / img_h) * 0.92
                 draw_w = img_w * scale
                 draw_h = img_h * scale
-                x_offset = (w_page - draw_w) / 2
+                x_off = (pw - draw_w) / 2
                 
                 # Hoja superior
-                c_pdf.drawImage(img_path, x_offset, half_h + 8,
+                y_top = half_h + (half_h - draw_h) / 2
+                c_pdf.drawImage(img_path, x_off, y_top,
                                 width=draw_w, height=draw_h)
                 # Línea de corte
                 c_pdf.setStrokeColor(colors.gray)
                 c_pdf.setLineWidth(0.5)
                 c_pdf.setDash(6, 3)
-                c_pdf.line(15, half_h, w_page - 15, half_h)
+                c_pdf.line(10, half_h, pw - 10, half_h)
                 c_pdf.setFont("Helvetica", 6)
-                c_pdf.drawCentredString(w_page/2, half_h - 8,
-                                        "--- CORTAR AQUI ---")
+                c_pdf.drawCentredString(pw/2, half_h - 8,
+                                        "- - - CORTAR AQUI - - -")
                 c_pdf.setDash()
                 
                 # Hoja inferior
-                c_pdf.drawImage(img_path, x_offset, 8,
+                y_bot = (half_h - draw_h) / 2
+                c_pdf.drawImage(img_path, x_off, y_bot,
                                 width=draw_w, height=draw_h)
                 
                 c_pdf.save()
@@ -4019,10 +3920,9 @@ def tab_calificacion_yachay(config):
                                    f"Hojas_Respuesta_{npg}p.pdf",
                                    "application/pdf",
                                    use_container_width=True, key="dh_pdf")
-                st.success("✅ PDF generado con 2 hojas de respuesta por página")
+                st.success("✅ PDF listo — 2 hojas horizontales por página A4")
             except Exception as e:
-                st.error(f"Error generando PDF: {e}")
-                # Fallback: descargar PNG
+                st.error(f"Error PDF: {e}")
                 st.download_button("⬇️ Descargar PNG", hoja_bytes,
                                    f"Hoja_{npg}p.png", "image/png", key="dh_png")
 
