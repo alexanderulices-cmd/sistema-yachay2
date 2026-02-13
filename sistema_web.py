@@ -2048,17 +2048,17 @@ def decodificar_qr_imagen(ib):
 # Sistema basado en posición con marcadores de alineación
 # ================================================================
 
-# Constantes de la hoja HORIZONTAL (compartidas entre generador y escáner)
-HOJA_W = 3508       # Ancho A4 LANDSCAPE 300dpi
-HOJA_H = 2480       # Alto A4 LANDSCAPE 300dpi
+# Constantes de la hoja VERTICAL (compartidas entre generador y escáner)
+HOJA_W = 2480       # Ancho A4 PORTRAIT 300dpi
+HOJA_H = 3508       # Alto A4 PORTRAIT 300dpi
 HOJA_MARKER_SIZE = 100   # Tamaño marcadores esquina
 HOJA_MARKER_PAD = 40     # Padding de marcadores desde borde
-HOJA_BUBBLE_R = 32       # Radio de burbuja
-HOJA_Y_START = 620       # Y donde empiezan las burbujas
-HOJA_X_START = 280       # X donde empieza la primera opción
-HOJA_SP_Y = 80           # Espacio vertical entre preguntas
-HOJA_SP_X = 140          # Espacio horizontal entre opciones A,B,C,D
-HOJA_COL_SP = 1000       # Espacio entre columnas (aprovechar ancho)
+HOJA_BUBBLE_R = 34       # Radio de burbuja
+HOJA_Y_START = 950       # Y donde empiezan las burbujas
+HOJA_X_START = 340       # X donde empieza la primera opción
+HOJA_SP_Y = 108          # Espacio vertical entre preguntas
+HOJA_SP_X = 155          # Espacio horizontal entre opciones A,B,C,D
+HOJA_COL_SP = 750        # Espacio entre columnas de preguntas
 HOJA_PPC = 20            # Preguntas por columna
 
 
@@ -2072,20 +2072,20 @@ def _posicion_burbuja(pregunta_idx, opcion_idx):
 
 
 def generar_hoja_respuestas(np_, titulo):
-    """Genera hoja de respuestas HORIZONTAL OPTIMIZADA para escaneo OMR"""
+    """Genera hoja de respuestas VERTICAL para escaneo OMR"""
     img = Image.new('RGB', (HOJA_W, HOJA_H), 'white')
     draw = ImageDraw.Draw(img)
     try:
-        ft = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
-        fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
-        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 36)
-        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
-        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
+        ft = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 70)
+        fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 45)
+        fn = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
+        fl = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
+        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
         fi = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
     except Exception:
         ft = fs = fn = fl = fb = fi = ImageFont.load_default()
 
-    # ===== 4 MARCADORES DE ESQUINA (cruciales para alineación) =====
+    # ===== 4 MARCADORES DE ESQUINA =====
     ms = HOJA_MARKER_SIZE
     mp = HOJA_MARKER_PAD
     draw.rectangle([(mp, mp), (mp + ms, mp + ms)], fill="black")
@@ -2093,36 +2093,34 @@ def generar_hoja_respuestas(np_, titulo):
     draw.rectangle([(mp, HOJA_H - mp - ms), (mp + ms, HOJA_H - mp)], fill="black")
     draw.rectangle([(HOJA_W - mp - ms, HOJA_H - mp - ms),
                     (HOJA_W - mp, HOJA_H - mp)], fill="black")
-    # Marcador de orientación (solo arriba-izquierda)
     draw.rectangle([(mp, mp + ms + 10), (mp + ms, mp + ms + 30)], fill="black")
 
-    # ===== ENCABEZADO HORIZONTAL =====
-    draw.text((HOJA_W // 2, 180), "I.E.P. ALTERNATIVO YACHAY",
+    # ===== ENCABEZADO =====
+    draw.text((HOJA_W // 2, 200), "I.E.P. ALTERNATIVO YACHAY",
               font=ft, fill="black", anchor="mm")
-    draw.text((HOJA_W // 2, 250), f"HOJA DE RESPUESTAS — {titulo.upper()}",
+    draw.text((HOJA_W // 2, 290), f"HOJA DE RESPUESTAS — {titulo.upper()}",
               font=fs, fill="black", anchor="mm")
 
-    # ===== DATOS DEL ALUMNO (2 filas compactas) =====
-    draw.text((200, 330), "Nombre: ________________________________________",
+    # ===== DATOS DEL ALUMNO =====
+    draw.text((220, 400), "Nombre: _____________________________________________",
               font=fs, fill="black")
-    draw.text((1800, 330), "DNI: _________________",
+    draw.text((220, 480), "DNI: __________________  Grado: __________________",
               font=fs, fill="black")
-    draw.text((200, 400), f"Grado: _____________  Sección: __________  Fecha: ___/___/___  Total: {np_} preg.",
+    draw.text((220, 560), f"Fecha: __________________  Total: {np_} preguntas",
               font=fs, fill="black")
 
-    # ===== INSTRUCCIONES compactas =====
-    draw.text((200, 480), "RELLENE completamente el círculo.",
+    # ===== INSTRUCCIONES =====
+    draw.text((220, 660), "RELLENE COMPLETAMENTE el círculo de su respuesta",
               font=fb, fill="red")
-    # Ejemplo
-    draw.text((900, 480), "Correcto:", font=fi, fill="gray")
-    draw.ellipse([(1070, 472), (1120, 522)], fill="black")
-    draw.text((1160, 480), "Incorrecto:", font=fi, fill="gray")
-    draw.ellipse([(1370, 472), (1420, 522)], outline="black", width=3)
-    draw.text((1460, 480), "Lápiz 2B o bolígrafo negro",
-              font=fi, fill="gray")
+    ex_y = 720
+    draw.text((220, ex_y), "Correcto:", font=fl, fill="gray")
+    draw.ellipse([(430, ex_y - 5), (490, ex_y + 55)], fill="black")
+    draw.text((530, ex_y), "Incorrecto:", font=fl, fill="gray")
+    draw.ellipse([(770, ex_y - 5), (830, ex_y + 55)], outline="black", width=3)
+    draw.text((870, ex_y), "Use lápiz 2B o bolígrafo negro", font=fl, fill="gray")
 
     # Línea separadora
-    draw.line([(150, 560), (HOJA_W - 150, 560)], fill="black", width=3)
+    draw.line([(100, 820), (HOJA_W - 100, 820)], fill="black", width=4)
 
     # ===== BURBUJAS =====
     for i in range(np_):
@@ -2145,8 +2143,8 @@ def generar_hoja_respuestas(np_, titulo):
             # Letra pequeña dentro
             draw.text((cx, cy), letra, font=fl, fill=(100, 100, 100), anchor="mm")
 
-    # ===== PIE DE PÁGINA COMPACTO =====
-    draw.line([(150, HOJA_H - 200), (HOJA_W - 150, HOJA_H - 200)],
+    # ===== PIE DE PÁGINA =====
+    draw.line([(100, HOJA_H - 250), (HOJA_W - 100, HOJA_H - 250)],
               fill="black", width=2)
 
     frases_seguridad = [
@@ -2154,28 +2152,27 @@ def generar_hoja_respuestas(np_, titulo):
         "I.E.P. ALTERNATIVO YACHAY — LECTURA ÓPTICA AUTOMATIZADA",
         "Use SOLO lápiz 2B o bolígrafo negro — Rellene completamente cada círculo",
     ]
-    y_pie = HOJA_H - 180
+    y_pie = HOJA_H - 230
     for frase in frases_seguridad:
         draw.text((HOJA_W // 2, y_pie), frase,
-                  font=fi, fill="gray", anchor="mm")
-        y_pie += 28
+                  font=fb, fill="gray", anchor="mm")
+        y_pie += 30
 
-    # Código de seguridad visible
     codigo_seg = hashlib.md5(f"{titulo}{datetime.now().isoformat()}".encode()).hexdigest()[:12].upper()
-    draw.text((HOJA_W // 2, HOJA_H - 55),
+    draw.text((HOJA_W // 2, HOJA_H - 60),
               f"Código: {codigo_seg} | YACHAY PRO {datetime.now().year}",
               font=fb, fill="black", anchor="mm")
 
-    # Marca de agua diagonal sutil
+    # Marca de agua diagonal
     try:
         marca_font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 50)
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
     except Exception:
         marca_font = fb
     marca_img = Image.new('RGBA', img.size, (255, 255, 255, 0))
     marca_draw = ImageDraw.Draw(marca_img)
-    for yy in range(200, HOJA_H - 200, 350):
-        for xx in range(-200, HOJA_W, 550):
+    for yy in range(200, HOJA_H - 200, 400):
+        for xx in range(-200, HOJA_W, 600):
             marca_draw.text((xx, yy), "YACHAY PRO",
                            font=marca_font, fill=(200, 200, 200, 35))
     img = Image.alpha_composite(img.convert('RGBA'), marca_img).convert('RGB')
@@ -3878,7 +3875,7 @@ def tab_calificacion_yachay(config):
 
     # ===== TAB: HOJA DE RESPUESTAS =====
     with tabs_cal[1]:
-        st.subheader("📄 Hoja de Respuestas (Horizontal)")
+        st.subheader("📄 Hoja de Respuestas")
         c1, c2 = st.columns(2)
         with c1:
             npg = st.selectbox("Preguntas:", [10, 20, 30, 40, 50],
@@ -3894,54 +3891,60 @@ def tab_calificacion_yachay(config):
             # Vista previa
             st.image(hoja_bytes, use_container_width=True)
             
-            # Generar PDF con 2 hojas horizontales por página A4
+            # PDF LANDSCAPE: 2 hojas verticales lado a lado
             try:
                 from PIL import Image as PILImage
                 img_pil = PILImage.open(io.BytesIO(hoja_bytes))
                 img_w, img_h = img_pil.size
                 
                 pdf_buf = io.BytesIO()
-                # A4 portrait hardcoded (595.27 x 841.89 puntos)
-                pw, ph = 595.27, 841.89
+                # A4 Landscape: 841.89 x 595.27 puntos
+                pw, ph = 841.89, 595.27
                 c_pdf = canvas.Canvas(pdf_buf, pagesize=(pw, ph))
                 
                 img_path = "/tmp/hoja_temp.png"
                 img_pil.save(img_path)
                 
-                # 2 hojas horizontales apiladas en A4 vertical
-                half_h = ph / 2
-                scale = min(pw / img_w, half_h / img_h) * 0.92
+                # 2 hojas verticales lado a lado en página horizontal
+                half_w = pw / 2
+                margin = 5
+                # Escalar cada hoja para que quepa en media página
+                scale = min((half_w - margin * 2) / img_w, (ph - margin * 2) / img_h) * 0.95
                 draw_w = img_w * scale
                 draw_h = img_h * scale
-                x_off = (pw - draw_w) / 2
                 
-                # Hoja superior
-                y_top = half_h + (half_h - draw_h) / 2
-                c_pdf.drawImage(img_path, x_off, y_top,
+                # Hoja izquierda
+                x_left = (half_w - draw_w) / 2
+                y_bot = (ph - draw_h) / 2
+                c_pdf.drawImage(img_path, x_left, y_bot,
                                 width=draw_w, height=draw_h)
-                # Línea de corte
+                
+                # Línea de corte vertical al centro
                 c_pdf.setStrokeColor(colors.gray)
                 c_pdf.setLineWidth(0.5)
                 c_pdf.setDash(6, 3)
-                c_pdf.line(10, half_h, pw - 10, half_h)
-                c_pdf.setFont("Helvetica", 6)
-                c_pdf.drawCentredString(pw/2, half_h - 8,
-                                        "- - - CORTAR AQUI - - -")
+                c_pdf.line(half_w, 10, half_w, ph - 10)
+                c_pdf.setFont("Helvetica", 5)
+                c_pdf.saveState()
+                c_pdf.translate(half_w + 4, ph / 2)
+                c_pdf.rotate(90)
+                c_pdf.drawCentredString(0, 0, "- - - CORTAR AQUI - - -")
+                c_pdf.restoreState()
                 c_pdf.setDash()
                 
-                # Hoja inferior
-                y_bot = (half_h - draw_h) / 2
-                c_pdf.drawImage(img_path, x_off, y_bot,
+                # Hoja derecha
+                x_right = half_w + (half_w - draw_w) / 2
+                c_pdf.drawImage(img_path, x_right, y_bot,
                                 width=draw_w, height=draw_h)
                 
                 c_pdf.save()
                 pdf_buf.seek(0)
-                st.download_button("📥 DESCARGAR PDF (2 hojas por página)",
+                st.download_button("📥 DESCARGAR PDF (2 hojas lado a lado)",
                                    pdf_buf.getvalue(),
                                    f"Hojas_Respuesta_{npg}p.pdf",
                                    "application/pdf",
                                    use_container_width=True, key="dh_pdf")
-                st.success("✅ PDF listo — 2 hojas horizontales por página A4")
+                st.success("✅ PDF listo — página horizontal con 2 hojas verticales")
             except Exception as e:
                 st.error(f"Error PDF: {e}")
                 st.download_button("⬇️ Descargar PNG", hoja_bytes,
