@@ -160,12 +160,21 @@ class GoogleSync:
             data = ws.get_all_records()
             usuarios = {}
             for row in data:
-                usuarios[row['username']] = {
-                    'password': row.get('password_hash', ''),
-                    'nombre': row.get('nombre', ''),
-                    'rol': row.get('rol', 'docente'),
-                    'grado': row.get('grado_asignado', ''),
-                    'nivel': row.get('nivel_asignado', ''),
+                uname = str(row.get('username', '')).strip()
+                if not uname:
+                    continue
+                # SIEMPRE convertir password a string (GS puede convertir a número)
+                pwd = str(row.get('password_hash', '')).strip()
+                # Limpiar .0 si GS lo convirtió a float
+                if pwd.endswith('.0'):
+                    pwd = pwd[:-2]
+                usuarios[uname] = {
+                    'password': pwd,
+                    'label': str(row.get('nombre', uname)).strip(),
+                    'nombre': str(row.get('nombre', '')).strip(),
+                    'rol': str(row.get('rol', 'docente')).strip(),
+                    'grado': str(row.get('grado_asignado', '')).strip(),
+                    'nivel': str(row.get('nivel_asignado', '')).strip(),
                 }
             return usuarios
         except Exception:
@@ -481,10 +490,14 @@ class GoogleSync:
             ws.clear()
             ws.append_row(COLUMNAS['usuarios'])
             for username, datos in usuarios_dict.items():
-                row = [username, datos.get('password', ''),
-                       datos.get('nombre', ''), datos.get('rol', 'docente'),
-                       datos.get('grado', ''), datos.get('nivel', '')]
-                ws.append_row(row)
+                di = datos.get('docente_info') or {}
+                grado = di.get('grado', '') if isinstance(di, dict) else ''
+                nivel = di.get('nivel', '') if isinstance(di, dict) else ''
+                nombre = datos.get('label', datos.get('nombre', ''))
+                password = str(datos.get('password', ''))
+                row = [username, password, nombre,
+                       datos.get('rol', 'docente'), grado, nivel]
+                ws.append_row(row, value_input_option='RAW')
             return True
         except Exception:
             return False
