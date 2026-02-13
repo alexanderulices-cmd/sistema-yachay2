@@ -308,14 +308,13 @@ NIVELES_GRADOS = {
 AREAS_CEPRE_UNSAAC = {
     'GRUPO AB': [
         'Aritmética', 'Álgebra', 'Geometría', 'Trigonometría',
-        'Lenguaje', 'Literatura', 'Razonamiento Verbal',
-        'Historia del Perú', 'Historia Universal', 'Geografía',
-        'Economía', 'Filosofía', 'Psicología', 'Educación Cívica',
+        'Física', 'Química', 'Biología',
+        'Competencia Comunicativa',
     ],
     'GRUPO CD': [
-        'Aritmética', 'Álgebra', 'Geometría', 'Trigonometría',
-        'Razonamiento Matemático', 'Física', 'Química', 'Biología',
-        'Anatomía', 'Lenguaje', 'Literatura', 'Razonamiento Verbal',
+        'Aritmética', 'Álgebra', 'Competencia Comunicativa',
+        'Historia', 'Geografía', 'Educación Cívica',
+        'Economía', 'Filosofía y Lógica',
     ],
 }
 
@@ -1845,14 +1844,14 @@ class GeneradorCarnet:
     def _qr(self):
         try:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-            q = qrcode.QRCode(box_size=8, border=1)
+            q = qrcode.QRCode(box_size=12, border=1)
             q.add_data(dni)
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
-            iq = iq.resize((140, 140), Image.LANCZOS)
-            self.img.paste(iq, (self.WIDTH - 180, 240))
-            fs = RecursoManager.obtener_fuente("", 9, True)
-            self.draw.text((self.WIDTH - 110, 385), "ESCANEAR QR",
+            iq = iq.resize((200, 200), Image.LANCZOS)
+            self.img.paste(iq, (self.WIDTH - 235, 210))
+            fs = RecursoManager.obtener_fuente("", 10, True)
+            self.draw.text((self.WIDTH - 135, 418), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1864,20 +1863,18 @@ class GeneradorCarnet:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
             buf2 = io.BytesIO()
             Code128(dni, writer=ImageWriter()).write(buf2, options={
-                'write_text': False, 'module_width': 0.4,
-                'module_height': 8, 'quiet_zone': 2
+                'write_text': False, 'module_width': 0.5,
+                'module_height': 10, 'quiet_zone': 2
             })
-            buf2.seek(0)
-            ib = Image.open(buf2).crop(Image.open(buf2).getbbox() if False else None)
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
-            ib = ib.resize((280, 45), Image.LANCZOS)
-            xb = (self.WIDTH - 280) // 2
-            yb = self.HEIGHT - 120
+            ib = ib.resize((320, 55), Image.LANCZOS)
+            xb = (self.WIDTH - 320) // 2
+            yb = self.HEIGHT - 130
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 10, True)
-            self.draw.text((self.WIDTH // 2, yb + 50), f"DNI: {dni}",
+            fbc = RecursoManager.obtener_fuente("", 11, True)
+            self.draw.text((self.WIDTH // 2, yb + 58), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
             pass
@@ -2977,6 +2974,21 @@ def tab_matricula(config):
                                         key="dn_foto")
             if dn_foto:
                 st.image(dn_foto, width=120)
+            # Opción para crear cuenta de acceso
+            crear_cuenta = st.checkbox("🔐 Crear cuenta de acceso al sistema", value=True, key="crear_cuenta_doc")
+            if crear_cuenta:
+                cc1, cc2 = st.columns(2)
+                with cc1:
+                    dn_usuario = st.text_input("👤 Usuario:", 
+                                                value=dn_n.strip().lower().replace(' ', '.').split('.')[0] if dn_n else '',
+                                                key="dn_usuario_auto",
+                                                placeholder="ej: prof.matematica")
+                with cc2:
+                    dn_password = st.text_input("🔑 Contraseña:", 
+                                                 value=dn_d.strip() if dn_d else '',
+                                                 key="dn_pass_auto",
+                                                 placeholder="DNI por defecto")
+
         if st.button("✅ REGISTRAR DOCENTE", type="primary",
                      use_container_width=True, key="bd"):
             if dn_n and dn_d:
@@ -2993,6 +3005,23 @@ def tab_matricula(config):
                     'Areas': areas_txt
                 })
                 st.success(f"✅ {dn_n} registrado como {dn_c}")
+                
+                # Auto-crear cuenta de usuario
+                if crear_cuenta and dn_usuario and dn_password:
+                    usuarios = cargar_usuarios()
+                    u_key = dn_usuario.strip().lower()
+                    di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel}
+                    usuarios[u_key] = {
+                        "password": dn_password,
+                        "rol": "docente" if dn_c == "Docente" else ("auxiliar" if dn_c == "Auxiliar" else "directivo"),
+                        "label": dn_n.strip().upper(),
+                        "docente_info": di,
+                        "grado": dn_g,
+                        "nivel": dn_nivel,
+                    }
+                    guardar_usuarios(usuarios)
+                    st.success(f"🔐 Cuenta creada: **{u_key}** / contraseña: **{dn_password}**")
+                
                 if dn_areas_sel:
                     st.info(f"📚 Áreas: {areas_txt}")
                 reproducir_beep_exitoso()
@@ -3349,12 +3378,34 @@ def tab_asistencias():
         else:
             st.info("💡 Activa la cámara para escanear.")
     with cm:
-        st.markdown("### ✏️ Registro Manual")
+        st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
+        st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
+        
+        # Auto-registro: cuando cambia el valor se registra
         dm = st.text_input("DNI:", key="dm",
-                           placeholder="Ingrese DNI del alumno/docente")
-        if st.button("✅ REGISTRAR", type="primary",
-                     use_container_width=True, key="rm"):
-            if dm:
+                           placeholder="Escanee código de barras o escriba DNI + Enter")
+        
+        # Auto-registro si hay valor (el lector envía Enter automáticamente)
+        if dm and dm.strip() and len(dm.strip()) >= 8:
+            dni_limpio = ''.join(c for c in dm.strip() if c.isdigit())
+            if len(dni_limpio) == 8:
+                _registrar_asistencia_rapida(dni_limpio)
+                # JavaScript para vibrar en celular y sonar
+                st.markdown("""
+                <script>
+                    if ('vibrate' in navigator) { navigator.vibrate([200, 100, 200]); }
+                    try {
+                        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        var o = ctx.createOscillator();
+                        o.type = 'sine'; o.frequency.value = 800;
+                        o.connect(ctx.destination);
+                        o.start(); setTimeout(function(){ o.stop(); }, 200);
+                    } catch(e) {}
+                </script>
+                """, unsafe_allow_html=True)
+        elif dm and dm.strip():
+            if st.button("✅ REGISTRAR", type="primary",
+                         use_container_width=True, key="rm"):
                 _registrar_asistencia_rapida(dm.strip())
 
     # ===== LISTA DE ASISTENCIA DE HOY =====
@@ -3521,8 +3572,6 @@ def color_semaforo(letra):
 
 def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     """PDF individual del estudiante con semáforo AD/A/B/C y recomendaciones"""
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib import colors
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=A4)
     w, h = A4
@@ -3841,74 +3890,65 @@ def tab_calificacion_yachay(config):
         with c2:
             th = st.text_input("Título:", "EVALUACIÓN BIMESTRAL", key="th")
         
-        num_copias = st.radio("Copias por hoja:", ["1 hoja por página", "2 hojas por página (ahorra papel)"],
-                               horizontal=True, key="copias_hoja")
-        
-        if st.button("📄 GENERAR HOJA", type="primary",
+        if st.button("📄 GENERAR HOJA DE RESPUESTAS PDF", type="primary",
                      use_container_width=True, key="gh"):
             hoja_bio = generar_hoja_respuestas(npg, th)
             hoja_bytes = hoja_bio.getvalue()
+            
+            # Vista previa
             st.image(hoja_bytes, use_container_width=True)
             
-            # Descargar como PNG individual
-            st.download_button("⬇️ PNG (1 hoja)", hoja_bytes,
-                               f"Hoja_{npg}p.png", "image/png",
-                               use_container_width=True, key="dh")
-            
-            # Generar PDF con 2 por página
+            # Siempre generar PDF con 2 hojas por página
             try:
                 from PIL import Image as PILImage
-                img = PILImage.open(io.BytesIO(hoja_bytes))
-                img_w, img_h = img.size
+                img_pil = PILImage.open(io.BytesIO(hoja_bytes))
+                img_w, img_h = img_pil.size
                 
                 pdf_buf = io.BytesIO()
-                c_pdf = canvas.Canvas(pdf_buf, pagesize=A4)
-                w_page, h_page = A4
+                page_size = (595.27, 841.89)  # A4 en puntos
+                c_pdf = canvas.Canvas(pdf_buf, pagesize=page_size)
+                w_page, h_page = page_size
                 
-                # Guardar imagen temporalmente
                 img_path = "/tmp/hoja_temp.png"
-                img.save(img_path)
+                img_pil.save(img_path)
                 
-                if "2 hojas" in num_copias:
-                    half_h = h_page / 2
-                    scale = min(w_page / img_w, half_h / img_h) * 0.90
-                    draw_w = img_w * scale
-                    draw_h = img_h * scale
-                    x_offset = (w_page - draw_w) / 2
-                    
-                    # Hoja superior
-                    c_pdf.drawImage(img_path, x_offset, half_h + 8,
-                                    width=draw_w, height=draw_h)
-                    # Línea de corte
-                    c_pdf.setStrokeColor(colors.gray)
-                    c_pdf.setLineWidth(0.5)
-                    c_pdf.setDash(6, 3)
-                    c_pdf.line(20, half_h, w_page - 20, half_h)
-                    c_pdf.setFont("Helvetica", 6)
-                    c_pdf.drawCentredString(w_page/2, half_h - 8,
-                                            "--- CORTAR AQUI ---")
-                    c_pdf.setDash()
-                    
-                    # Hoja inferior
-                    c_pdf.drawImage(img_path, x_offset, 8,
-                                    width=draw_w, height=draw_h)
-                else:
-                    scale = min(w_page / img_w, h_page / img_h) * 0.95
-                    draw_w = img_w * scale
-                    draw_h = img_h * scale
-                    x_offset = (w_page - draw_w) / 2
-                    y_offset = (h_page - draw_h) / 2
-                    c_pdf.drawImage(img_path, x_offset, y_offset,
-                                    width=draw_w, height=draw_h)
+                # 2 hojas por página con línea de corte
+                half_h = h_page / 2
+                scale = min(w_page / img_w, half_h / img_h) * 0.88
+                draw_w = img_w * scale
+                draw_h = img_h * scale
+                x_offset = (w_page - draw_w) / 2
+                
+                # Hoja superior
+                c_pdf.drawImage(img_path, x_offset, half_h + 8,
+                                width=draw_w, height=draw_h)
+                # Línea de corte
+                c_pdf.setStrokeColor(colors.gray)
+                c_pdf.setLineWidth(0.5)
+                c_pdf.setDash(6, 3)
+                c_pdf.line(15, half_h, w_page - 15, half_h)
+                c_pdf.setFont("Helvetica", 6)
+                c_pdf.drawCentredString(w_page/2, half_h - 8,
+                                        "--- CORTAR AQUI ---")
+                c_pdf.setDash()
+                
+                # Hoja inferior
+                c_pdf.drawImage(img_path, x_offset, 8,
+                                width=draw_w, height=draw_h)
                 
                 c_pdf.save()
                 pdf_buf.seek(0)
-                st.download_button("📥 PDF (para imprimir)",
+                st.download_button("📥 DESCARGAR PDF (2 hojas por página)",
                                    pdf_buf.getvalue(),
-                                   f"Hojas_{npg}p.pdf", "application/pdf",
+                                   f"Hojas_Respuesta_{npg}p.pdf",
+                                   "application/pdf",
                                    use_container_width=True, key="dh_pdf")
+                st.success("✅ PDF generado con 2 hojas de respuesta por página")
             except Exception as e:
-                st.warning(f"PDF no disponible: {e}")
+                st.error(f"Error generando PDF: {e}")
+                # Fallback: descargar PNG
+                st.download_button("⬇️ Descargar PNG", hoja_bytes,
+                                   f"Hoja_{npg}p.png", "image/png", key="dh_png")
 
     # ===== TAB: CALIFICAR =====
     with tabs_cal[2]:
@@ -4266,7 +4306,6 @@ def tab_calificacion_yachay(config):
                 if st.button("📥 REPORTES INDIVIDUALES PDF", type="primary",
                              use_container_width=True, key="reps_ind"):
                     # Generar un PDF multi-página con todos los estudiantes
-                    from reportlab.lib.pagesizes import A4
                     buf_all = io.BytesIO()
                     c_all = canvas.Canvas(buf_all, pagesize=A4)
                     w, h_page = A4
@@ -4456,12 +4495,29 @@ def tab_base_datos():
 
 def vista_docente(config):
     info = st.session_state.docente_info
+    usuario = st.session_state.get('usuario_actual', '')
+    
+    # Si no hay info, intentar reconstruir desde usuarios
     if not info or not isinstance(info, dict):
-        st.warning("⚠️ Información del docente no disponible. Usando configuración por defecto.")
-        info = {'grado': '', 'label': 'Docente', 'nivel': ''}
+        usuarios = cargar_usuarios()
+        user_data = usuarios.get(usuario, {})
+        info = user_data.get('docente_info')
+        if not info:
+            # Intentar reconstruir desde datos del usuario
+            info = {
+                'grado': user_data.get('grado', ''),
+                'label': user_data.get('label', usuario.replace('.', ' ').title()),
+                'nivel': user_data.get('nivel', ''),
+            }
+        st.session_state.docente_info = info
+    
     grado = str(info.get('grado', ''))
-    label = str(info.get('label', 'Docente'))
-    st.markdown(f"### 👨‍🏫 {label}")
+    label = str(info.get('label', usuario.replace('.', ' ').title()))
+    if grado:
+        st.markdown(f"### 👨‍🏫 {label} — {grado}")
+    else:
+        st.markdown(f"### 👨‍🏫 {label}")
+        st.info("💡 Pida al administrador que asigne su grado en 'Gestionar Usuarios'.")
 
     tabs = st.tabs([
         "📋 Asistencia", "📝 Registrar Notas", "📝 Registro Auxiliar",
@@ -5378,8 +5434,11 @@ def tab_registrar_notas(config):
         elif nivel == 'CEPRE_CD':
             areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO CD']
         elif nivel == 'SECUNDARIA':
-            # Secundaria: áreas MINEDU + opción CEPRE
-            areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['--- CEPRE UNSAAC ---'] + AREAS_MINEDU['PREUNIVERSITARIO']
+            # Secundaria: áreas MINEDU + todas las áreas CEPRE UNSAAC
+            areas_cepre_all = sorted(set(
+                AREAS_CEPRE_UNSAAC['GRUPO AB'] + AREAS_CEPRE_UNSAAC['GRUPO CD']
+            ))
+            areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['──── CEPRE UNSAAC ────'] + areas_cepre_all
         else:
             areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU.get('PRIMARIA', []))
         area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
