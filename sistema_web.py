@@ -142,9 +142,21 @@ USUARIOS_DEFAULT = {
         "docente_info": None
     },
     "directora": {
+        "password": "directora2026",
+        "rol": "directivo",
+        "label": "Directora",
+        "docente_info": None
+    },
+    "leandro": {
+        "password": "leandro2026",
+        "rol": "directivo",
+        "label": "Promotor — Leandro",
+        "docente_info": None
+    },
+    "deyanira": {
         "password": "deyanira",
         "rol": "directivo",
-        "label": "Directiva",
+        "label": "Deyanira",
         "docente_info": None
     },
     "auxiliar": {
@@ -222,12 +234,39 @@ def cargar_usuarios():
     if gs:
         usuarios_gs = gs.leer_usuarios()
         if usuarios_gs:
+            # Reconstruir docente_info para cada usuario
+            for uname, datos in usuarios_gs.items():
+                if 'docente_info' not in datos and datos.get('grado'):
+                    datos['docente_info'] = {
+                        'label': datos.get('grado', ''),
+                        'grado': datos.get('grado', ''),
+                        'nivel': datos.get('nivel', ''),
+                    }
+            # Fusionar con defaults (para no perder docente_info)
+            defaults = USUARIOS_DEFAULT.copy()
+            for uname, datos in defaults.items():
+                if uname not in usuarios_gs:
+                    usuarios_gs[uname] = datos
+                else:
+                    # Preservar docente_info del default si GS no tiene
+                    if not usuarios_gs[uname].get('docente_info'):
+                        usuarios_gs[uname]['docente_info'] = datos.get('docente_info')
+                    if not usuarios_gs[uname].get('label'):
+                        usuarios_gs[uname]['label'] = datos.get('label', '')
             guardar_usuarios_local(usuarios_gs)
             return usuarios_gs
     # Fallback a archivo local
     if Path(ARCHIVO_USUARIOS).exists():
         with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            usuarios_local = json.load(f)
+        # Fusionar con defaults
+        for uname, datos in USUARIOS_DEFAULT.items():
+            if uname not in usuarios_local:
+                usuarios_local[uname] = datos
+            else:
+                if not usuarios_local[uname].get('docente_info'):
+                    usuarios_local[uname]['docente_info'] = datos.get('docente_info')
+        return usuarios_local
     guardar_usuarios(USUARIOS_DEFAULT)
     return USUARIOS_DEFAULT.copy()
 
@@ -629,12 +668,14 @@ class BaseDatos:
             try:
                 df_gs = gs.leer_matricula()
                 if not df_gs.empty:
-                    # Mapear columnas de GS a columnas locales
                     col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
                                'grado': 'Grado', 'seccion': 'Seccion',
                                'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
                                'celular_apoderado': 'Celular_Apoderado'}
                     df_gs = df_gs.rename(columns=col_map)
+                    # Asegurar que todos los valores sean string
+                    for col in df_gs.columns:
+                        df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
                     return df_gs
             except Exception:
                 pass
@@ -761,6 +802,8 @@ class BaseDatos:
                                'especialidad': 'Especialidad', 'celular': 'Celular',
                                'grado_asignado': 'Grado_Asignado'}
                     df_gs = df_gs.rename(columns=col_map)
+                    for col in df_gs.columns:
+                        df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
                     return df_gs
             except Exception:
                 pass
@@ -1837,14 +1880,43 @@ def generar_link_whatsapp(tel, msg):
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
+    # wa.me funciona tanto en móvil como en WhatsApp Web
     return f"https://wa.me/{t}?text={urllib.parse.quote(msg)}"
+
+
+FRASES_MOTIVACIONALES = [
+    "🌟 La puntualidad es la cortesía de los reyes y la obligación de los caballeros.",
+    "📚 Educar es sembrar semillas de futuro. ¡Gracias por confiar en YACHAY!",
+    "🎯 El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+    "💪 Cada día de clases es una oportunidad para crecer y aprender.",
+    "🌈 La educación es el arma más poderosa para cambiar el mundo. — Nelson Mandela",
+    "⭐ Un niño puntual hoy será un adulto responsable mañana.",
+    "📖 Leer es soñar con los ojos abiertos. ¡Motivemos la lectura!",
+    "🏆 El talento gana juegos, pero el trabajo en equipo gana campeonatos.",
+    "🌱 Cada estudiante es una semilla; con amor y educación, florecerá.",
+    "🔑 La disciplina es el puente entre las metas y los logros.",
+    "💡 No hay atajos para ningún lugar que valga la pena ir.",
+    "🎓 La mejor inversión es la educación de nuestros hijos.",
+    "🌻 Con esfuerzo y dedicación, todo es posible. ¡Vamos YACHAY!",
+    "📝 El hábito de estudiar hoy construye el profesional del mañana.",
+    "🤝 Familia y escuela juntos: la fórmula del éxito educativo.",
+    "⏰ La puntualidad es un valor que se enseña desde casa.",
+    "🎒 Cada día es una nueva página en el libro de la vida.",
+    "🏫 YACHAY significa aprender. ¡Aprendamos juntos!",
+    "✨ El futuro pertenece a quienes creen en la belleza de sus sueños.",
+    "🌟 Educar para la Vida — Pioneros en la Educación de Calidad.",
+]
+
+import random as _random
 
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
     saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
     em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
+    frase = _random.choice(FRASES_MOTIVACIONALES)
     return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
-            f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}")
+            f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
+            f"{frase}")
 
 
 def decodificar_qr_imagen(ib):
@@ -3103,8 +3175,8 @@ def tab_asistencias():
             al = BaseDatos.buscar_por_dni(dk)
             if not al:
                 continue
-            cel = al.get('Celular_Apoderado', al.get('Celular', ''))
-            if not cel or not cel.strip():
+            cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
+            if not cel or cel == 'None' or cel == 'nan':
                 continue
 
             hora_reg = dat.get(tipo_actual, '')
@@ -3428,7 +3500,7 @@ def tab_calificacion_yachay(config):
                         ]), use_container_width=True, hide_index=True)
                 if ad:
                     cel = ad.get('Celular_Apoderado', '')
-                    if cel and cel.strip():
+                    if cel and str(cel).strip():
                         link = generar_link_whatsapp(cel, mw)
                         st.markdown(
                             f'<a href="{link}" target="_blank" class="wa-btn">'
@@ -3504,7 +3576,7 @@ def tab_calificacion_yachay(config):
                 al = BaseDatos.buscar_por_dni(row['DNI']) if row['DNI'] else None
                 if al:
                     cel = al.get('Celular_Apoderado', '')
-                    if cel and cel.strip():
+                    if cel and str(cel).strip():
                         ro = next(
                             (r for r in rs if r.get('dni') == row['DNI']), None)
                         if ro:
@@ -3608,8 +3680,12 @@ def tab_base_datos():
 
 def vista_docente(config):
     info = st.session_state.docente_info
-    grado = info['grado']
-    st.markdown(f"### 👨‍🏫 {info['label']}")
+    if not info or not isinstance(info, dict):
+        st.warning("⚠️ Información del docente no disponible. Usando configuración por defecto.")
+        info = {'grado': '', 'label': 'Docente', 'nivel': ''}
+    grado = str(info.get('grado', ''))
+    label = str(info.get('label', 'Docente'))
+    st.markdown(f"### 👨‍🏫 {label}")
 
     tabs = st.tabs([
         "📝 Registro Auxiliar", "📋 Registro Asistencia",
@@ -3819,44 +3895,41 @@ def tab_incidencias(config):
         else:
             codigo = f"INC-{hora_peru().year}-{int(time.time()) % 1000:03d}"
 
-        with st.form("form_incidencia"):
-            st.text_input("Código:", value=codigo, disabled=True, key="inc_cod")
+        with st.form("form_incidencia", clear_on_submit=True):
+            st.info(f"📌 Código: **{codigo}**")
 
             ci1, ci2 = st.columns(2)
             with ci1:
                 fecha_inc = st.date_input("Fecha:", value=hora_peru().date(),
-                                           key="inc_fecha")
-                nivel_inc = st.selectbox("Nivel:", NIVELES_LIST, key="inc_nivel")
+                                           key="fld_inc_fecha")
+                nivel_inc = st.selectbox("Nivel:", NIVELES_LIST, key="fld_inc_nivel")
             with ci2:
-                hora_inc = st.time_input("Hora:", value=hora_peru().time(),
-                                          key="inc_hora")
-                grado_inc = st.selectbox("Grado:", GRADOS_OPCIONES, key="inc_grado")
+                hora_inc = st.text_input("Hora:", value=hora_peru().strftime('%H:%M'),
+                                          key="fld_inc_hora")
+                grado_inc = st.selectbox("Grado:", GRADOS_OPCIONES, key="fld_inc_grado")
 
             lugar = st.text_input("Lugar:", placeholder="Ej: Aula, patio, alrededores",
-                                  key="inc_lugar")
-            seccion_inc = st.selectbox("Sección:", SECCIONES, key="inc_sec")
+                                  key="fld_inc_lugar")
+            seccion_inc = st.selectbox("Sección:", SECCIONES, key="fld_inc_sec")
 
             tipo_inc = st.selectbox("Tipo de Incidencia:", TIPOS_INCIDENCIA,
-                                    key="inc_tipo")
+                                    key="fld_inc_tipo")
 
-            st.markdown("---")
             st.markdown("**Involucrados:**")
             afectados = st.text_area("Afectado(s) - Nombres, DNI:",
-                                     key="inc_afect", height=60)
+                                     key="fld_inc_afect")
             implicados = st.text_area("Implicado(s) - Nombres, DNI:",
-                                      key="inc_implic", height=60)
+                                      key="fld_inc_implic")
             reportante = st.text_input("Informante/Reportante:",
-                                       key="inc_report")
+                                       key="fld_inc_report")
 
-            st.markdown("---")
-            relato = st.text_area("📋 Relato de los hechos:",
+            relato = st.text_area("Relato de los hechos:",
                                   placeholder="Descripción objetiva...",
-                                  key="inc_relato", height=120)
+                                  key="fld_inc_relato")
 
-            st.markdown("---")
-            accion = st.text_area("Acción Inmediata:", key="inc_accion", height=60)
-            compromisos = st.text_area("Compromisos:", key="inc_comp", height=60)
-            derivacion = st.selectbox("Derivación:", DERIVACIONES, key="inc_deriv")
+            accion = st.text_area("Acción Inmediata:", key="fld_inc_accion")
+            compromisos = st.text_area("Compromisos:", key="fld_inc_comp")
+            derivacion = st.selectbox("Derivación:", DERIVACIONES, key="fld_inc_deriv")
 
             submitted = st.form_submit_button("💾 REGISTRAR INCIDENCIA",
                                                type="primary",
@@ -3879,7 +3952,7 @@ def tab_incidencias(config):
                     'accion_inmediata': accion,
                     'compromisos': compromisos,
                     'derivacion': derivacion,
-                    'registrado_por': st.session_state.usuario,
+                    'registrado_por': st.session_state.get('usuario_actual', ''),
                 }
 
                 # Guardar en Google Sheets
@@ -4271,7 +4344,7 @@ def tab_reportes(config):
         """)
 
         # Cargar evaluaciones disponibles
-        usuario = st.session_state.usuario
+        usuario = st.session_state.get('usuario_actual', '')
         resultados = BaseDatos.cargar_resultados_examen(usuario)
         if resultados:
             opciones_eval = []
@@ -4308,6 +4381,19 @@ def main():
         st.stop()
 
     config = configurar_sidebar()
+
+    # Saludo personalizado
+    usuario = st.session_state.get('usuario_actual', '')
+    usuarios = cargar_usuarios()
+    nombre_usuario = usuarios.get(usuario, {}).get('label', usuario.capitalize())
+    hora_actual = hora_peru().hour
+    if hora_actual < 12:
+        saludo = "Buenos días"
+    elif hora_actual < 18:
+        saludo = "Buenas tardes"
+    else:
+        saludo = "Buenas noches"
+    st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
 
     if st.session_state.rol == "auxiliar":
         tab_asistencias()
