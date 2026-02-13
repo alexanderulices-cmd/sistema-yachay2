@@ -298,9 +298,25 @@ NIVELES_GRADOS = {
         "4° Secundaria", "5° Secundaria"
     ],
     "PREUNIVERSITARIO": [
-        "Ciclo Regular", "Ciclo Intensivo",
-        "Ciclo Verano", "Reforzamiento Primaria"
+        "GRUPO AB — CEPRE UNSAAC", "GRUPO CD — CEPRE UNSAAC",
+        "Ciclo Verano", "Ciclo Regular", "Ciclo Intensivo",
+        "Reforzamiento Primaria"
     ]
+}
+
+# Áreas CEPRE UNSAAC por grupo
+AREAS_CEPRE_UNSAAC = {
+    'GRUPO AB': [
+        'Aritmética', 'Álgebra', 'Geometría', 'Trigonometría',
+        'Lenguaje', 'Literatura', 'Razonamiento Verbal',
+        'Historia del Perú', 'Historia Universal', 'Geografía',
+        'Economía', 'Filosofía', 'Psicología', 'Educación Cívica',
+    ],
+    'GRUPO CD': [
+        'Aritmética', 'Álgebra', 'Geometría', 'Trigonometría',
+        'Razonamiento Matemático', 'Física', 'Química', 'Biología',
+        'Anatomía', 'Lenguaje', 'Literatura', 'Razonamiento Verbal',
+    ],
 }
 
 SECCIONES = ["Única", "A", "B"]
@@ -2139,11 +2155,20 @@ def generar_hoja_respuestas(np_, titulo):
                   font=fb, fill="gray", anchor="mm")
         y_pie += 30
 
-    # Código de seguridad único
+    # Código de seguridad único — visible en negro al costado derecho vertical
     codigo_seg = hashlib.md5(f"{titulo}{datetime.now().isoformat()}".encode()).hexdigest()[:12].upper()
     draw.text((HOJA_W // 2, HOJA_H - 60),
-              f"Código de verificación: {codigo_seg} | YACHAY PRO ©{datetime.now().year}",
-              font=fb, fill="lightgray", anchor="mm")
+              f"Código: {codigo_seg} | YACHAY PRO {datetime.now().year}",
+              font=fb, fill="black", anchor="mm")
+    
+    # Código vertical en margen derecho
+    try:
+        fv = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+    except Exception:
+        fv = fb
+    codigo_vertical = f"COD: {codigo_seg}"
+    for ci, ch in enumerate(codigo_vertical):
+        draw.text((HOJA_W - 55, 300 + ci * 28), ch, font=fv, fill="gray")
 
     # Marca de agua diagonal
     try:
@@ -2924,30 +2949,53 @@ def tab_matricula(config):
         with c2:
             dn_t = st.text_input("📱 Celular:", key="dn_cel", max_chars=9,
                                   placeholder="987654321")
-            dn_g = st.selectbox("🎓 Grado Asignado:",
-                                 ["N/A"] + TODOS_LOS_GRADOS, key="dn_grado")
-            dn_email = st.text_input("📧 Email institucional:", key="dn_email",
+            dn_nivel = st.selectbox("🏫 Nivel:", 
+                                     ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
+                                     key="dn_nivel_reg")
+            if dn_nivel in ["INICIAL", "PRIMARIA"]:
+                dn_g = st.selectbox("🎓 Grado Asignado:",
+                                     ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
+                                     key="dn_grado")
+                dn_areas_sel = ""
+            else:
+                # Secundaria/PreU: seleccionar grados/grupos donde enseña
+                opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
+                dn_g = st.selectbox("🎓 Grado/Grupo:",
+                                     ["N/A"] + opciones_asig, key="dn_grado")
+                # Áreas que enseña
+                todas_areas = AREAS_MINEDU.get(dn_nivel, [])
+                if dn_nivel == "PREUNIVERSITARIO":
+                    todas_areas = list(set(
+                        AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
+                        AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
+                    ))
+                dn_areas_sel = st.multiselect("📚 Áreas que enseña:", 
+                                               todas_areas, key="dn_areas_reg")
+            dn_email = st.text_input("📧 Email:", key="dn_email",
                                       placeholder="nombre@ieyachay.org")
-            dn_foto = st.file_uploader("📸 Foto del docente:",
-                                        type=['jpg', 'png', 'jpeg'],
+            dn_foto = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'],
                                         key="dn_foto")
             if dn_foto:
                 st.image(dn_foto, width=120)
         if st.button("✅ REGISTRAR DOCENTE", type="primary",
                      use_container_width=True, key="bd"):
             if dn_n and dn_d:
-                # Guardar foto si se subió
                 if dn_foto:
                     foto_path = f"foto_doc_{dn_d.strip()}.png"
                     with open(foto_path, "wb") as fout:
                         fout.write(dn_foto.getbuffer())
+                areas_txt = ', '.join(dn_areas_sel) if dn_areas_sel else dn_e.strip()
                 BaseDatos.registrar_docente({
-                    'Nombre': dn_n.strip(), 'DNI': dn_d.strip(),
-                    'Cargo': dn_c, 'Especialidad': dn_e.strip(),
+                    'Nombre': dn_n.strip().upper(), 'DNI': dn_d.strip(),
+                    'Cargo': dn_c, 'Especialidad': areas_txt,
                     'Celular': dn_t.strip(), 'Grado_Asignado': dn_g,
-                    'Email': dn_email.strip()
+                    'Email': dn_email.strip(), 'Nivel': dn_nivel,
+                    'Areas': areas_txt
                 })
                 st.success(f"✅ {dn_n} registrado como {dn_c}")
+                if dn_areas_sel:
+                    st.info(f"📚 Áreas: {areas_txt}")
+                reproducir_beep_exitoso()
                 st.balloons()
             else:
                 st.error("⚠️ Nombre y DNI requeridos")
@@ -3798,18 +3846,19 @@ def tab_calificacion_yachay(config):
         
         if st.button("📄 GENERAR HOJA", type="primary",
                      use_container_width=True, key="gh"):
-            hoja = generar_hoja_respuestas(npg, th)
-            st.image(hoja, use_container_width=True)
+            hoja_bio = generar_hoja_respuestas(npg, th)
+            hoja_bytes = hoja_bio.getvalue()
+            st.image(hoja_bytes, use_container_width=True)
             
             # Descargar como PNG individual
-            st.download_button("⬇️ PNG (1 hoja)", hoja,
+            st.download_button("⬇️ PNG (1 hoja)", hoja_bytes,
                                f"Hoja_{npg}p.png", "image/png",
                                use_container_width=True, key="dh")
             
             # Generar PDF con 2 por página
             try:
                 from PIL import Image as PILImage
-                img = PILImage.open(io.BytesIO(hoja))
+                img = PILImage.open(io.BytesIO(hoja_bytes))
                 img_w, img_h = img.size
                 
                 pdf_buf = io.BytesIO()
@@ -3821,15 +3870,14 @@ def tab_calificacion_yachay(config):
                 img.save(img_path)
                 
                 if "2 hojas" in num_copias:
-                    # 2 hojas por página con línea de corte
                     half_h = h_page / 2
-                    scale = min(w_page / img_w, half_h / img_h) * 0.92
+                    scale = min(w_page / img_w, half_h / img_h) * 0.90
                     draw_w = img_w * scale
                     draw_h = img_h * scale
                     x_offset = (w_page - draw_w) / 2
                     
                     # Hoja superior
-                    c_pdf.drawImage(img_path, x_offset, half_h + 5,
+                    c_pdf.drawImage(img_path, x_offset, half_h + 8,
                                     width=draw_w, height=draw_h)
                     # Línea de corte
                     c_pdf.setStrokeColor(colors.gray)
@@ -3837,14 +3885,14 @@ def tab_calificacion_yachay(config):
                     c_pdf.setDash(6, 3)
                     c_pdf.line(20, half_h, w_page - 20, half_h)
                     c_pdf.setFont("Helvetica", 6)
-                    c_pdf.drawCentredString(w_page/2, half_h - 8, "✂ — — — CORTAR AQUÍ — — — ✂")
+                    c_pdf.drawCentredString(w_page/2, half_h - 8,
+                                            "--- CORTAR AQUI ---")
                     c_pdf.setDash()
                     
                     # Hoja inferior
-                    c_pdf.drawImage(img_path, x_offset, 5,
+                    c_pdf.drawImage(img_path, x_offset, 8,
                                     width=draw_w, height=draw_h)
                 else:
-                    # 1 hoja centrada
                     scale = min(w_page / img_w, h_page / img_h) * 0.95
                     draw_w = img_w * scale
                     draw_h = img_h * scale
@@ -3855,7 +3903,8 @@ def tab_calificacion_yachay(config):
                 
                 c_pdf.save()
                 pdf_buf.seek(0)
-                st.download_button("📥 PDF (para imprimir)", pdf_buf,
+                st.download_button("📥 PDF (para imprimir)",
+                                   pdf_buf.getvalue(),
                                    f"Hojas_{npg}p.pdf", "application/pdf",
                                    use_container_width=True, key="dh_pdf")
             except Exception as e:
@@ -4427,18 +4476,34 @@ def vista_docente(config):
 
     with tabs[2]:
         st.subheader("📝 Registro Auxiliar de Evaluación")
-        st.caption("Cursos × 4 Competencias × 3 Desempeños")
+        tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
+                            horizontal=True, key="tipo_reg_aux")
         sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
         bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="dbim")
-        st.markdown("**Cursos:**")
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            dc1 = st.text_input("Curso 1:", "Matemática", key="dc1")
-        with c2:
-            dc2 = st.text_input("Curso 2:", "Comunicación", key="dc2")
-        with c3:
-            dc3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="dc3")
-        cursos_d = [c for c in [dc1, dc2, dc3] if c.strip()]
+        
+        if tipo_reg == "📄 En blanco":
+            st.markdown("**Cursos:**")
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                dc1 = st.text_input("Curso 1:", "Matemática", key="dc1")
+            with c2:
+                dc2 = st.text_input("Curso 2:", "Comunicación", key="dc2")
+            with c3:
+                dc3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="dc3")
+            cursos_d = [c for c in [dc1, dc2, dc3] if c.strip()]
+        else:
+            # Determinar nivel para mostrar áreas correctas
+            grado_str = str(grado)
+            if 'GRUPO AB' in grado_str:
+                cursos_d = AREAS_CEPRE_UNSAAC['GRUPO AB'][:3]
+            elif 'GRUPO CD' in grado_str:
+                cursos_d = AREAS_CEPRE_UNSAAC['GRUPO CD'][:3]
+            elif any(x in grado_str for x in ['Sec']):
+                cursos_d = AREAS_MINEDU['SECUNDARIA'][:3]
+            else:
+                cursos_d = AREAS_MINEDU.get('PRIMARIA', ['Matemática', 'Comunicación', 'Ciencia y Tec.'])[:3]
+            st.info(f"📚 Áreas: {', '.join(cursos_d)}")
+        
         dg = BaseDatos.obtener_estudiantes_grado(grado, sec)
         st.info(f"📊 {len(dg)} estudiantes")
         if not dg.empty:
@@ -5252,12 +5317,16 @@ AREAS_MINEDU = {
     ]
 }
 
-BIMESTRES_LISTA = [
-    'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
+PERIODOS_EVALUACION = [
     'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
-    'Ciclo Verano', 'Ciclo Regular', 'Reforzamiento Pre-U',
+    'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
+    'Quincenal 1', 'Quincenal 2',
+    'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
+    'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
+    'Reforzamiento Pre-U',
 ]
+BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 
 # ================================================================
 # TAB: REGISTRAR NOTAS (Manual — Para todos los docentes)
@@ -5287,20 +5356,35 @@ def tab_registrar_notas(config):
         st.warning("No se detectó grado asignado.")
         return
 
-    # Determinar nivel
+    # Determinar nivel y áreas correspondientes
     nivel = 'PRIMARIA'
-    if 'Inicial' in str(grado_sel):
+    grado_str = str(grado_sel)
+    if 'Inicial' in grado_str:
         nivel = 'INICIAL'
-    elif any(x in str(grado_sel) for x in ['1° Sec', '2° Sec', '3° Sec', '4° Sec', '5° Sec']):
+    elif any(x in grado_str for x in ['1° Sec', '2° Sec', '3° Sec', '4° Sec', '5° Sec']):
         nivel = 'SECUNDARIA'
+    elif 'GRUPO AB' in grado_str:
+        nivel = 'CEPRE_AB'
+    elif 'GRUPO CD' in grado_str:
+        nivel = 'CEPRE_CD'
+    elif any(x in grado_str for x in ['Ciclo', 'Reforzamiento']):
+        nivel = 'PREUNIVERSITARIO'
 
-    # Seleccionar área y bimestre
+    # Seleccionar área y período
     c1, c2 = st.columns(2)
     with c1:
-        areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU['PRIMARIA'])
+        if nivel == 'CEPRE_AB':
+            areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO AB']
+        elif nivel == 'CEPRE_CD':
+            areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO CD']
+        elif nivel == 'SECUNDARIA':
+            # Secundaria: áreas MINEDU + opción CEPRE
+            areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['--- CEPRE UNSAAC ---'] + AREAS_MINEDU['PREUNIVERSITARIO']
+        else:
+            areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU.get('PRIMARIA', []))
         area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
     with c2:
-        bim_sel = st.selectbox("📅 Período:", BIMESTRES_LISTA, key="rn_bim")
+        bim_sel = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_bim")
     titulo_eval_rn = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3",
                                     key="rn_titulo")
 
