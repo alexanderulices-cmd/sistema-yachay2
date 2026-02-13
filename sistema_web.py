@@ -358,6 +358,10 @@ def init_session_state():
         'tipo_asistencia': 'Entrada',
         'activar_camara_asist': False,
         'areas_examen': [],
+        'modulo_activo': None,
+        'cola_asistencia': [],
+        'wa_enviados': set(),
+        'evaluaciones_guardadas': {},
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -2233,54 +2237,78 @@ def _corregir_perspectiva(gray, esquinas):
 def _leer_burbujas(warped_gray, num_preguntas):
     """
     Lee las respuestas de la imagen ya corregida/alineada.
-    Muestrea directamente en las posiciones conocidas de cada burbuja.
+    MEJORADO: Lógica estricta anti-falsos positivos.
+    - Pre-procesamiento con GaussianBlur + OTSU
+    - Erosión para eliminar ruido/sombras
+    - Umbral de relleno mínimo 45%
+    - Comparación relativa: la más marcada debe ser >1.4x la segunda
+    - Si no cumple condiciones → '?' (indeterminado)
     """
-    # Umbralizar la imagen alineada
-    _, thresh = cv2.threshold(warped_gray, 0, 255,
+    # Pre-procesamiento robusto
+    blur = cv2.GaussianBlur(warped_gray, (5, 5), 0)
+    _, thresh = cv2.threshold(blur, 0, 255,
                                cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
+    # Erosión para eliminar ruido, trazos débiles y sombras
+    kernel = np.ones((2, 2), np.uint8)
+    thresh = cv2.erode(thresh, kernel, iterations=1)
+
     respuestas = []
-    radio_muestra = int(HOJA_BUBBLE_R * 0.65)  # Muestrear dentro del círculo
+    radio_muestra = int(HOJA_BUBBLE_R * 0.60)
+    UMBRAL_RELLENO_MINIMO = 0.45   # Mínimo 45% del círculo relleno
+    RATIO_DIFERENCIA = 1.4          # La más marcada debe ser 1.4x la segunda
 
     for i in range(num_preguntas):
         intensidades = []
         for j in range(4):  # A, B, C, D
             cx, cy = _posicion_burbuja(i, j)
 
-            # Asegurar que estamos dentro de la imagen
+            # Verificar límites
             if (cy - radio_muestra < 0 or cy + radio_muestra >= HOJA_H or
                     cx - radio_muestra < 0 or cx + radio_muestra >= HOJA_W):
-                intensidades.append(0)
+                intensidades.append(0.0)
                 continue
 
-            # Crear máscara circular para muestrear
-            mask = np.zeros((HOJA_H, HOJA_W), dtype="uint8")
-            cv2.circle(mask, (cx, cy), radio_muestra, 255, -1)
+            # Crear máscara circular localizada (más eficiente)
+            y1 = max(0, cy - radio_muestra - 5)
+            y2 = min(HOJA_H, cy + radio_muestra + 5)
+            x1 = max(0, cx - radio_muestra - 5)
+            x2 = min(HOJA_W, cx + radio_muestra + 5)
 
-            # Contar píxeles oscuros (rellenos) dentro de la máscara
-            masked = cv2.bitwise_and(thresh, thresh, mask=mask)
-            total = cv2.countNonZero(mask)
+            roi = thresh[y1:y2, x1:x2]
+            mask_local = np.zeros_like(roi, dtype="uint8")
+            cv2.circle(mask_local,
+                       (cx - x1, cy - y1),
+                       radio_muestra, 255, -1)
+
+            masked = cv2.bitwise_and(roi, roi, mask=mask_local)
+            total = cv2.countNonZero(mask_local)
             filled = cv2.countNonZero(masked)
-            ratio = filled / total if total > 0 else 0
+            ratio = filled / total if total > 0 else 0.0
             intensidades.append(ratio)
 
-        # La opción más rellena es la respuesta
-        if intensidades:
-            max_val = max(intensidades)
-            if max_val > 0.25:  # Al menos 25% relleno para contar
-                # Verificar que hay diferencia significativa con las demás
-                sorted_vals = sorted(intensidades, reverse=True)
-                if len(sorted_vals) >= 2 and sorted_vals[0] > sorted_vals[1] * 1.3:
-                    idx = intensidades.index(max_val)
-                    respuestas.append(['A', 'B', 'C', 'D'][idx])
-                else:
-                    # No hay diferencia clara, tomar la más alta
-                    idx = intensidades.index(max_val)
-                    respuestas.append(['A', 'B', 'C', 'D'][idx])
-            else:
-                respuestas.append('?')  # No se detectó relleno
-        else:
+        if not intensidades:
             respuestas.append('?')
+            continue
+
+        max_val = max(intensidades)
+        max_idx = intensidades.index(max_val)
+
+        # Condición 1: Relleno mínimo
+        if max_val < UMBRAL_RELLENO_MINIMO:
+            respuestas.append('?')  # En blanco o relleno insuficiente
+            continue
+
+        # Condición 2: Diferencia significativa con la segunda opción
+        sorted_vals = sorted(intensidades, reverse=True)
+        segunda = sorted_vals[1] if len(sorted_vals) >= 2 else 0
+
+        if segunda > 0 and max_val / segunda < RATIO_DIFERENCIA:
+            respuestas.append('?')  # Ambiguo — dos opciones similares
+            continue
+
+        # Respuesta clara
+        respuestas.append(['A', 'B', 'C', 'D'][max_idx])
 
     return respuestas
 
@@ -2427,6 +2455,43 @@ def pantalla_login():
             else:
                 st.error("⛔ Usuario no encontrado")
         st.caption("💡 Ingrese usuario y contraseña asignados por el administrador.")
+
+        # Libro de reclamaciones
+        st.markdown("---")
+        with st.expander("📕 Libro de Reclamaciones Virtual"):
+            st.markdown("*Según normativa MINEDU*")
+            with st.form("form_reclamo_login", clear_on_submit=True):
+                r_nombre = st.text_input("Nombre completo:", key="rl_nombre")
+                r_dni = st.text_input("DNI:", key="rl_dni")
+                r_cel = st.text_input("Celular:", key="rl_cel")
+                r_tipo = st.selectbox("Tipo:", ["Queja", "Reclamo", "Sugerencia"], key="rl_tipo")
+                r_detalle = st.text_area("Detalle:", key="rl_detalle")
+                if st.form_submit_button("📩 ENVIAR", type="primary",
+                                          use_container_width=True):
+                    if r_nombre and r_dni and r_detalle:
+                        gs = _gs()
+                        if gs:
+                            try:
+                                ws = gs._get_hoja('config')
+                                if ws:
+                                    codigo_rec = f"REC-{hora_peru().year}-{int(time.time()) % 10000:04d}"
+                                    ws.append_row([
+                                        f"reclamo_{codigo_rec}",
+                                        json.dumps({
+                                            'codigo': codigo_rec, 'nombre': r_nombre,
+                                            'dni': r_dni, 'celular': r_cel,
+                                            'tipo': r_tipo, 'detalle': r_detalle,
+                                            'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
+                                            'estado': 'Pendiente'
+                                        }, ensure_ascii=False)
+                                    ])
+                                    st.success(f"✅ Reclamo registrado. Código: **{codigo_rec}**")
+                            except Exception:
+                                st.error("Error al enviar. Intente más tarde.")
+                        else:
+                            st.warning("Sistema en modo local.")
+                    else:
+                        st.error("Complete todos los campos.")
 
 
 # ================================================================
@@ -2707,15 +2772,35 @@ def tab_matricula(config):
         if st.button("✅ MATRICULAR", type="primary", use_container_width=True,
                      key="bm"):
             if mn and md:
-                BaseDatos.registrar_estudiante({
-                    'Nombre': mn.strip(), 'DNI': md.strip(), 'Nivel': mnv,
-                    'Grado': mg, 'Seccion': ms, 'Apoderado': ma.strip(),
-                    'DNI_Apoderado': mda.strip(), 'Celular_Apoderado': mc.strip()
-                })
-                st.success(f"✅ {mn} → {mg} {ms}")
-                st.balloons()
+                # Limpiar DNI de caracteres extraños
+                md_clean = ''.join(c for c in md.strip() if c.isdigit())
+                if len(md_clean) != 8:
+                    st.error(f"⚠️ El DNI debe tener 8 dígitos. Se encontró: '{md.strip()}' ({len(md_clean)} dígitos)")
+                else:
+                    BaseDatos.registrar_estudiante({
+                        'Nombre': mn.strip().upper(), 'DNI': md_clean, 'Nivel': mnv,
+                        'Grado': mg, 'Seccion': ms, 'Apoderado': ma.strip(),
+                        'DNI_Apoderado': mda.strip(), 'Celular_Apoderado': mc.strip()
+                    })
+                    # Verificar que se guardó
+                    verificar = BaseDatos.buscar_por_dni(md_clean)
+                    if verificar:
+                        st.success(f"✅ **MATRICULADO CORRECTAMENTE**")
+                        st.markdown(f"""
+                        <div class="asist-ok">
+                            <strong>📋 Confirmación de Matrícula</strong><br>
+                            👤 {mn.strip().upper()}<br>
+                            🆔 DNI: {md_clean}<br>
+                            🎓 {mg} — Sección {ms}<br>
+                            📅 {fecha_peru_str()}
+                        </div>
+                        """, unsafe_allow_html=True)
+                        reproducir_beep_exitoso()
+                        st.balloons()
+                    else:
+                        st.warning("⚠️ Se intentó guardar pero no se pudo verificar. Revise en la lista.")
             else:
-                st.error("⚠️ Nombre y DNI requeridos")
+                st.error("⚠️ Nombre y DNI son obligatorios")
 
     with tab_doc:
         st.subheader("👨‍🏫 Registro de Docente / Personal")
@@ -3256,23 +3341,344 @@ def _registrar_asistencia_rapida(dni):
 # ================================================================
 # TAB: CALIFICACIÓN YACHAY — RANKING POR DOCENTE
 # Cada docente ve SOLO su ranking. Selección de alumno por lista.
-# Opción "Nueva Evaluación" que limpia todo.
+# Grid estilo ZipGrade + Guardar Evaluaciones + Reportes individuales
 # ================================================================
+
+ESCALA_MINEDU = {
+    'AD': {'min': 18, 'max': 20, 'nombre': 'Logro Destacado', 'color': '#16a34a',
+           'desc': 'El estudiante evidencia un nivel superior a lo esperado. Maneja solventemente las situaciones propuestas.'},
+    'A': {'min': 14, 'max': 17, 'nombre': 'Logro Previsto', 'color': '#2563eb',
+          'desc': 'El estudiante evidencia el logro de los aprendizajes previstos en el tiempo programado.'},
+    'B': {'min': 11, 'max': 13, 'nombre': 'En Proceso', 'color': '#f59e0b',
+          'desc': 'El estudiante está en camino de lograr los aprendizajes previstos. Requiere acompañamiento durante un tiempo razonable.'},
+    'C': {'min': 0, 'max': 10, 'nombre': 'En Inicio', 'color': '#dc2626',
+          'desc': 'El estudiante está empezando a desarrollar los aprendizajes previstos. Necesita mayor tiempo de acompañamiento e intervención del docente.'},
+}
+
+def nota_a_letra(nota):
+    if nota >= 18: return 'AD'
+    elif nota >= 14: return 'A'
+    elif nota >= 11: return 'B'
+    else: return 'C'
+
+def color_semaforo(letra):
+    return ESCALA_MINEDU.get(letra, {}).get('color', '#888')
+
+def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
+    """PDF individual del estudiante con semáforo AD/A/B/C y recomendaciones"""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+    
+    # Encabezado
+    c.setFont("Helvetica-Bold", 16)
+    c.drawCentredString(w/2, h-50, "INFORME ACADÉMICO INDIVIDUAL")
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(w/2, h-68, f"I.E.P. ALTERNATIVO YACHAY — {config.get('anio', 2026)}")
+    
+    c.setFont("Helvetica-Bold", 12)
+    y = h - 100
+    c.drawString(50, y, f"Estudiante: {nombre}")
+    c.drawString(350, y, f"DNI: {dni}")
+    y -= 20
+    c.drawString(50, y, f"Grado: {grado}")
+    c.drawString(350, y, f"Fecha: {fecha_peru_str()}")
+    y -= 15
+    c.setStrokeColor(colors.HexColor("#1a56db"))
+    c.setLineWidth(2)
+    c.line(50, y, w-50, y)
+    y -= 25
+    
+    if not resultados_hist:
+        c.setFont("Helvetica", 12)
+        c.drawString(50, y, "Sin evaluaciones registradas.")
+        c.save()
+        buf.seek(0)
+        return buf
+    
+    # Tabla de evaluaciones
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "HISTORIAL DE EVALUACIONES")
+    y -= 20
+    
+    # Headers
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(colors.HexColor("#1a56db"))
+    c.rect(50, y-2, w-100, 16, fill=True)
+    c.setFillColor(colors.white)
+    cols_x = [55, 140, 250, 340, 400, 460, 520]
+    headers = ["Fecha", "Evaluación", "Área", "Nota", "Literal", "Estado", ""]
+    for i, hd in enumerate(headers[:6]):
+        c.drawString(cols_x[i], y+2, hd)
+    y -= 18
+    
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica", 7)
+    promedios_areas = {}
+    total_general = []
+    
+    for r in resultados_hist:
+        for area in r.get('areas', []):
+            nota = area.get('nota', 0)
+            letra = nota_a_letra(nota)
+            col = color_semaforo(letra)
+            nombre_area = area.get('nombre', '')
+            
+            # Acumular para estadísticas
+            if nombre_area not in promedios_areas:
+                promedios_areas[nombre_area] = []
+            promedios_areas[nombre_area].append(nota)
+            total_general.append(nota)
+            
+            c.drawString(cols_x[0], y, str(r.get('fecha', ''))[:10])
+            c.drawString(cols_x[1], y, str(r.get('titulo', 'Evaluación'))[:18])
+            c.drawString(cols_x[2], y, nombre_area[:15])
+            c.drawString(cols_x[3], y, f"{nota}/20")
+            c.drawString(cols_x[4], y, letra)
+            
+            # Semáforo de color
+            c.setFillColor(colors.HexColor(col))
+            c.circle(cols_x[5]+15, y+3, 5, fill=True)
+            c.setFillColor(colors.black)
+            
+            y -= 14
+            if y < 120:
+                c.showPage()
+                y = h - 60
+                c.setFont("Helvetica", 7)
+    
+    # Resumen estadístico
+    y -= 15
+    if y < 200:
+        c.showPage()
+        y = h - 60
+    
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "RESUMEN POR ÁREAS")
+    y -= 20
+    
+    for area_nombre, notas in promedios_areas.items():
+        prom = round(sum(notas) / len(notas), 1)
+        letra = nota_a_letra(prom)
+        col = color_semaforo(letra)
+        
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(55, y, f"{area_nombre}:")
+        c.drawString(200, y, f"Promedio: {prom}/20")
+        c.drawString(310, y, f"({letra} — {ESCALA_MINEDU[letra]['nombre']})")
+        
+        # Barra visual
+        c.setFillColor(colors.HexColor("#e2e8f0"))
+        c.rect(420, y-2, 120, 12, fill=True)
+        c.setFillColor(colors.HexColor(col))
+        c.rect(420, y-2, (prom/20)*120, 12, fill=True)
+        c.setFillColor(colors.black)
+        y -= 18
+    
+    # Promedio General
+    if total_general:
+        prom_gen = round(sum(total_general) / len(total_general), 1)
+        letra_gen = nota_a_letra(prom_gen)
+        y -= 10
+        c.setFont("Helvetica-Bold", 13)
+        c.drawString(55, y, f"PROMEDIO GENERAL: {prom_gen}/20 ({letra_gen})")
+        
+        # Semáforo grande
+        col_gen = color_semaforo(letra_gen)
+        c.setFillColor(colors.HexColor(col_gen))
+        c.circle(430, y+5, 12, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(430, y+1, letra_gen)
+        c.setFillColor(colors.black)
+    
+    # Recomendaciones pedagógicas
+    y -= 35
+    if y < 180:
+        c.showPage()
+        y = h - 60
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "RECOMENDACIONES PEDAGÓGICAS Y PSICOLÓGICAS")
+    y -= 18
+    c.setFont("Helvetica", 8)
+    
+    if total_general:
+        letra_gen = nota_a_letra(prom_gen)
+        desc = ESCALA_MINEDU[letra_gen]['desc']
+        c.drawString(55, y, f"• Nivel actual: {desc}")
+        y -= 14
+        
+        if letra_gen == 'AD':
+            recs = [
+                "Excelente desempeño. Mantener el ritmo y motivar con retos académicos mayores.",
+                "Se recomienda participación en concursos académicos y olimpiadas.",
+                "Fomentar el liderazgo y tutoría entre pares.",
+            ]
+        elif letra_gen == 'A':
+            recs = [
+                "Buen rendimiento. Reforzar áreas con menor puntaje para alcanzar el nivel destacado.",
+                "Establecer metas semanales de estudio con apoyo familiar.",
+                "Incentivar hábitos de lectura diaria de 30 minutos.",
+            ]
+        elif letra_gen == 'B':
+            recs = [
+                "En proceso de logro. Requiere acompañamiento adicional del docente y familia.",
+                "Se sugiere sesiones de refuerzo en las áreas con menor calificación.",
+                "Establecer un horario de estudio fijo en casa con supervisión.",
+                "Diálogo constante entre padres y docentes sobre avances.",
+            ]
+        else:
+            recs = [
+                "Necesita apoyo inmediato. Coordinar con el docente un plan de recuperación.",
+                "Se recomienda evaluación psicopedagógica para identificar dificultades.",
+                "Sesiones de refuerzo diarias con material adaptado a su ritmo.",
+                "Reunión urgente con padres para establecer compromisos.",
+                "Considerar apoyo emocional si hay factores externos que afectan el aprendizaje.",
+            ]
+        for rec in recs:
+            c.drawString(55, y, f"• {rec}")
+            y -= 12
+    
+    # Escala de calificación
+    y -= 20
+    c.setFont("Helvetica-Bold", 9)
+    c.drawString(50, y, "ESCALA DE CALIFICACIÓN MINEDU:")
+    y -= 14
+    c.setFont("Helvetica", 7)
+    for sigla, info in ESCALA_MINEDU.items():
+        c.setFillColor(colors.HexColor(info['color']))
+        c.circle(60, y+3, 4, fill=True)
+        c.setFillColor(colors.black)
+        c.drawString(70, y, f"{sigla} ({info['min']}-{info['max']}): {info['nombre']}")
+        y -= 12
+    
+    # Pie
+    c.setFont("Helvetica-Oblique", 7)
+    c.drawCentredString(w/2, 30, f"YACHAY PRO — Sistema de Gestión Educativa © {hora_peru().year}")
+    
+    c.save()
+    buf.seek(0)
+    return buf
+
 
 def tab_calificacion_yachay(config):
     st.header("📝 Sistema de Calificación YACHAY")
     usuario_actual = st.session_state.usuario_actual
-    tg, tc, tr = st.tabs(["📄 Generar Hoja", "✅ Calificar", "🏆 Ranking"])
 
-    with tg:
+    tabs_cal = st.tabs([
+        "🔑 Crear Claves", "📄 Hoja de Respuestas",
+        "✅ Calificar", "🏆 Ranking", "📊 Historial"
+    ])
+
+    titulo_eval = "Evaluación"  # Default
+
+    # ===== TAB: CREAR CLAVES (Grid estilo ZipGrade) =====
+    with tabs_cal[0]:
+        st.subheader("🔑 Crear Claves de Evaluación")
+        st.markdown("Marque la alternativa correcta para cada pregunta:")
+
+        ec1, ec2 = st.columns(2)
+        with ec1:
+            titulo_eval = st.text_input("📝 Nombre de la evaluación:",
+                                         "Evaluación Bimestral", key="tit_eval")
+        with ec2:
+            num_areas = st.number_input("Número de áreas:", 1, 6, 1, key="num_areas_grid")
+
+        areas_grid = []
+        total_preguntas = 0
+        for a_idx in range(int(num_areas)):
+            st.markdown(f"---")
+            ac1, ac2 = st.columns([2, 1])
+            with ac1:
+                area_nom = st.text_input(f"Área {a_idx+1}:", key=f"area_nom_{a_idx}",
+                                          value=["Matemática", "Comunicación",
+                                                 "Ciencia y Tec.", "Personal Social",
+                                                 "Arte y Cultura", "Ed. Física"][a_idx]
+                                          if a_idx < 6 else f"Área {a_idx+1}")
+            with ac2:
+                area_num = st.selectbox(f"Preguntas:",
+                                         [5, 10, 15, 20, 25],
+                                         index=1, key=f"area_num_{a_idx}")
+
+            # Grid de alternativas
+            claves_area = []
+            cols_header = st.columns([1, 1, 1, 1, 1])
+            with cols_header[0]:
+                st.markdown("**#**")
+            for opt_idx, opt in enumerate(['A', 'B', 'C', 'D']):
+                with cols_header[opt_idx + 1]:
+                    st.markdown(f"**{opt}**")
+
+            for p in range(int(area_num)):
+                p_global = total_preguntas + p + 1
+                resp = st.radio(
+                    f"P{p_global}",
+                    ['A', 'B', 'C', 'D'],
+                    horizontal=True,
+                    key=f"grid_{a_idx}_{p}",
+                    label_visibility="collapsed" if p > 0 else "visible"
+                )
+                claves_area.append(resp)
+
+            areas_grid.append({
+                'nombre': area_nom,
+                'num': int(area_num),
+                'claves': claves_area
+            })
+            total_preguntas += int(area_num)
+
+        st.markdown("---")
+        st.info(f"📊 Total: **{total_preguntas} preguntas** en **{len(areas_grid)} áreas**")
+
+        # Resumen visual de claves
+        if areas_grid:
+            resumen = ""
+            for ag in areas_grid:
+                resumen += f"**{ag['nombre']}:** {''.join(ag['claves'])}\n\n"
+            st.markdown(resumen)
+
+        # Guardar evaluación
+        if st.button("💾 GUARDAR EVALUACIÓN", type="primary",
+                     use_container_width=True, key="guardar_eval"):
+            if titulo_eval:
+                eval_data = {
+                    'titulo': titulo_eval,
+                    'fecha': fecha_peru_str(),
+                    'hora': hora_peru_str(),
+                    'usuario': usuario_actual,
+                    'areas': areas_grid,
+                    'total_preguntas': total_preguntas
+                }
+                # Guardar en session_state
+                if 'evaluaciones_guardadas' not in st.session_state:
+                    st.session_state.evaluaciones_guardadas = {}
+                eval_key = f"{titulo_eval}_{fecha_peru_str()}"
+                st.session_state.evaluaciones_guardadas[eval_key] = eval_data
+
+                # Guardar en Google Sheets
+                gs = _gs()
+                if gs:
+                    try:
+                        ws = gs._get_hoja('config')
+                        if ws:
+                            ws.append_row([
+                                f"eval_{eval_key}",
+                                json.dumps(eval_data, ensure_ascii=False, default=str)
+                            ])
+                    except Exception:
+                        pass
+
+                st.success(f"✅ Evaluación **'{titulo_eval}'** guardada exitosamente")
+                st.markdown(f"**Claves:** {total_preguntas} preguntas en {len(areas_grid)} áreas")
+                reproducir_beep_exitoso()
+            else:
+                st.error("⚠️ Ingrese un nombre para la evaluación")
+
+    # ===== TAB: HOJA DE RESPUESTAS =====
+    with tabs_cal[1]:
         st.subheader("📄 Hoja de Respuestas")
-        st.markdown("""
-        **¿Cómo funciona?**
-        1. Genera e imprime la hoja
-        2. Los alumnos rellenan los círculos
-        3. Toma foto o ingresa manualmente
-        4. El sistema califica cada área sobre 20
-        """)
         c1, c2 = st.columns(2)
         with c1:
             npg = st.selectbox("Preguntas:", [10, 20, 30, 40, 50],
@@ -3287,106 +3693,184 @@ def tab_calificacion_yachay(config):
                                f"Hoja_{npg}p.png", "image/png",
                                use_container_width=True, key="dh")
 
-    with tc:
+    # ===== TAB: CALIFICAR =====
+    with tabs_cal[2]:
         st.subheader("✅ Calificar Examen")
 
-        # --- 1. ÁREAS ---
-        st.markdown("**1️⃣ Áreas** (cada una sobre 20 puntos)")
-        if 'areas_examen' not in st.session_state:
-            st.session_state.areas_examen = []
-        ca, cn_, cb = st.columns([2, 1, 1])
-        with ca:
-            na = st.text_input("Área:", key="na")
-        with cn_:
-            nn = st.selectbox("Preguntas:", [5, 10, 15, 20, 25, 30],
-                              index=1, key="nn")
-        with cb:
-            st.markdown("###")
-            if st.button("➕ Agregar", key="aa"):
-                if na:
-                    st.session_state.areas_examen.append({
-                        'nombre': na, 'num': nn, 'claves': ''})
-                    st.rerun()
+        # Cargar evaluación guardada o crear nueva
+        modo_cal = st.radio("Modo:", [
+            "📂 Evaluación Guardada",
+            "✏️ Claves Manuales",
+            "⚡ Evaluación Rápida (solo nombres)"
+        ], key="modo_cal")
 
-        tp = 0
-        tc_ = []
         ia = []
-        for i, a in enumerate(st.session_state.areas_examen):
-            with st.expander(f"📚 {a['nombre']} ({a['num']}p → sobre 20)",
-                             expanded=True):
-                cl = st.text_input("Claves:", value=a.get('claves', ''),
-                                   key=f"cl{i}", max_chars=a['num'])
-                st.session_state.areas_examen[i]['claves'] = cl.upper()
-                ia.append({'nombre': a['nombre'], 'num': a['num'],
-                           'claves': list(cl.upper())})
-                tc_.extend(list(cl.upper()))
-                tp += a['num']
-                if len(st.session_state.areas_examen) > 1:
-                    if st.button("🗑️ Quitar", key=f"d{i}"):
-                        st.session_state.areas_examen.pop(i)
+        tc_ = []
+        tp = 0
+
+        if modo_cal == "📂 Evaluación Guardada":
+            # Cargar de Google Sheets
+            evals_disp = {}
+            gs = _gs()
+            if gs:
+                try:
+                    ws = gs._get_hoja('config')
+                    if ws:
+                        data = ws.get_all_records()
+                        for d in data:
+                            clave = str(d.get('clave', ''))
+                            if clave.startswith('eval_'):
+                                try:
+                                    evals_disp[clave[5:]] = json.loads(d.get('valor', '{}'))
+                                except Exception:
+                                    pass
+                except Exception:
+                    pass
+
+            # Agregar de session_state
+            for k, v in st.session_state.get('evaluaciones_guardadas', {}).items():
+                if k not in evals_disp:
+                    evals_disp[k] = v
+
+            if evals_disp:
+                sel_eval = st.selectbox("Seleccionar evaluación:",
+                                         list(evals_disp.keys()), key="sel_eval_cal")
+                if sel_eval:
+                    ev = evals_disp[sel_eval]
+                    st.success(f"📝 **{ev.get('titulo', sel_eval)}** — "
+                              f"{ev.get('total_preguntas', 0)} preguntas")
+                    for a in ev.get('areas', []):
+                        claves_list = a.get('claves', [])
+                        ia.append({
+                            'nombre': a['nombre'],
+                            'num': a['num'],
+                            'claves': claves_list
+                        })
+                        tc_.extend(claves_list)
+                        tp += a['num']
+            else:
+                st.warning("No hay evaluaciones guardadas. Cree una en la pestaña 🔑 Crear Claves.")
+
+        elif modo_cal == "✏️ Claves Manuales":
+            if 'areas_examen' not in st.session_state:
+                st.session_state.areas_examen = []
+            ca, cn_, cb = st.columns([2, 1, 1])
+            with ca:
+                na = st.text_input("Área:", key="na")
+            with cn_:
+                nn = st.selectbox("Preguntas:", [5, 10, 15, 20, 25, 30],
+                                  index=1, key="nn")
+            with cb:
+                st.markdown("###")
+                if st.button("➕ Agregar", key="aa"):
+                    if na:
+                        st.session_state.areas_examen.append({
+                            'nombre': na, 'num': nn, 'claves': ''})
                         st.rerun()
+
+            for i, a in enumerate(st.session_state.areas_examen):
+                with st.expander(f"📚 {a['nombre']} ({a['num']}p)", expanded=True):
+                    cl = st.text_input("Claves (ej: ABCDABCDAB):",
+                                       value=a.get('claves', ''),
+                                       key=f"cl{i}", max_chars=a['num'])
+                    st.session_state.areas_examen[i]['claves'] = cl.upper()
+                    ia.append({'nombre': a['nombre'], 'num': a['num'],
+                               'claves': list(cl.upper())})
+                    tc_.extend(list(cl.upper()))
+                    tp += a['num']
+                    if len(st.session_state.areas_examen) > 1:
+                        if st.button("🗑️ Quitar", key=f"d{i}"):
+                            st.session_state.areas_examen.pop(i)
+                            st.rerun()
+
+        else:  # Evaluación Rápida
+            st.info("⚡ En este modo solo ingresa nombre del estudiante (sin DNI)")
+
+            ca, cn_, cb = st.columns([2, 1, 1])
+            with ca:
+                na = st.text_input("Área:", key="na_r")
+            with cn_:
+                nn = st.selectbox("Preguntas:", [5, 10, 15, 20, 25, 30],
+                                  index=1, key="nn_r")
+            with cb:
+                st.markdown("###")
+                if st.button("➕ Agregar", key="aa_r"):
+                    if na:
+                        st.session_state.areas_examen.append({
+                            'nombre': na, 'num': nn, 'claves': ''})
+                        st.rerun()
+
+            for i, a in enumerate(st.session_state.get('areas_examen', [])):
+                with st.expander(f"📚 {a['nombre']} ({a['num']}p)", expanded=True):
+                    cl = st.text_input("Claves:", value=a.get('claves', ''),
+                                       key=f"clr{i}", max_chars=a['num'])
+                    st.session_state.areas_examen[i]['claves'] = cl.upper()
+                    ia.append({'nombre': a['nombre'], 'num': a['num'],
+                               'claves': list(cl.upper())})
+                    tc_.extend(list(cl.upper()))
+                    tp += a['num']
+
         if ia:
             st.info(f"📊 {tp} preguntas en {len(ia)} áreas")
 
-        # --- 2. SELECCIONAR ALUMNO (por lista o DNI) ---
+        # Seleccionar alumno
         st.markdown("---")
-        st.markdown("**2️⃣ Seleccionar Alumno:**")
-        metodo_sel = st.radio("Método de selección:",
-                               ["📋 Lista de mi grado", "🔍 Buscar por DNI"],
-                               horizontal=True, key="metodo_sel")
+        st.markdown("**👤 Seleccionar Alumno:**")
 
         de = ""
         nombre_sel = ""
-        if metodo_sel == "📋 Lista de mi grado":
-            # Obtener estudiantes del grado del docente
-            grado_doc = None
-            if st.session_state.docente_info:
-                grado_doc = st.session_state.docente_info.get('grado')
-            if grado_doc:
-                dg = BaseDatos.obtener_estudiantes_grado(grado_doc)
-                if not dg.empty and 'Nombre' in dg.columns:
-                    opciones = []
-                    for _, row in dg.iterrows():
-                        opciones.append(
-                            f"{row.get('Nombre', '')} — DNI: {row.get('DNI', '')}"
-                        )
-                    sel = st.selectbox("Seleccionar estudiante:", opciones,
-                                       key="sel_est")
-                    if sel:
-                        de = sel.split("DNI: ")[-1].strip()
-                        nombre_sel = sel.split(" — ")[0].strip()
-                        st.success(f"👤 {nombre_sel} | DNI: {de}")
-                else:
-                    st.warning("No hay estudiantes en tu grado.")
-            else:
-                st.info("Ingresa el DNI manualmente.")
-                de = st.text_input("DNI:", key="de_manual")
-        else:
-            de = st.text_input("DNI del alumno:", key="de")
-            if de:
-                ae = BaseDatos.buscar_por_dni(de)
-                if ae:
-                    nombre_sel = ae.get('Nombre', '')
-                    st.success(f"👤 {nombre_sel}")
 
-        # --- 3. RESPUESTAS ---
-        st.markdown("**3️⃣ Respuestas:**")
+        if modo_cal == "⚡ Evaluación Rápida (solo nombres)":
+            nombre_sel = st.text_input("Nombre completo del estudiante:",
+                                        key="nombre_rapido",
+                                        placeholder="Ej: JUAN PEREZ QUISPE")
+            de = ""
+        else:
+            metodo_sel = st.radio("Método:",
+                                   ["📋 Lista de mi grado", "🔍 Buscar por DNI"],
+                                   horizontal=True, key="metodo_sel")
+            if metodo_sel == "📋 Lista de mi grado":
+                grado_doc = None
+                if st.session_state.docente_info:
+                    grado_doc = st.session_state.docente_info.get('grado')
+                if not grado_doc and st.session_state.rol in ['admin', 'directivo']:
+                    grado_doc = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_cal_sel")
+                if grado_doc:
+                    dg = BaseDatos.obtener_estudiantes_grado(grado_doc)
+                    if not dg.empty and 'Nombre' in dg.columns:
+                        opciones = [f"{row.get('Nombre', '')} — DNI: {row.get('DNI', '')}"
+                                    for _, row in dg.iterrows()]
+                        sel = st.selectbox("Estudiante:", opciones, key="sel_est")
+                        if sel:
+                            de = sel.split("DNI: ")[-1].strip()
+                            nombre_sel = sel.split(" — ")[0].strip()
+                    else:
+                        st.warning("No hay estudiantes en este grado.")
+                else:
+                    de = st.text_input("DNI:", key="de_manual")
+            else:
+                de = st.text_input("DNI del alumno:", key="de")
+                if de:
+                    ae = BaseDatos.buscar_por_dni(de)
+                    if ae:
+                        nombre_sel = str(ae.get('Nombre', ''))
+                        st.success(f"👤 {nombre_sel}")
+
+        # Respuestas
+        st.markdown("**📝 Respuestas:**")
         met = st.radio("Método:", ["✏️ Manual", "📸 Cámara/Foto"],
                        horizontal=True, key="met")
         ra = []
         if met == "✏️ Manual":
             for i, a in enumerate(ia):
                 r = st.text_input(f"{a['nombre']} ({a['num']}):",
-                                  key=f"r{i}", max_chars=a['num'])
+                                  key=f"r{i}", max_chars=a['num'],
+                                  placeholder="Ej: ABCDABCDAB")
                 ra.extend(list(r.upper()))
         else:
-            st.info("📸 **Para mejor resultado:**\n"
-                    "- Use la hoja generada por este sistema\n"
-                    "- Buena iluminación uniforme\n"
-                    "- Que se vean los 4 cuadrados negros de las esquinas\n"
-                    "- Rellenar COMPLETAMENTE los círculos con lápiz oscuro")
+            st.info("📸 Use la hoja generada por el sistema. Buena luz, que se vean los 4 cuadrados negros.")
             src_img = st.radio("Fuente:",
-                                ["📷 Cámara", "📁 Subir foto/imagen"],
+                                ["📷 Cámara", "📁 Subir foto"],
                                 horizontal=True, key="src_img")
             image_data = None
             if src_img == "📷 Cámara":
@@ -3396,56 +3880,40 @@ def tab_calificacion_yachay(config):
                     if fe:
                         image_data = fe.getvalue()
             else:
-                fu = st.file_uploader("📁 Subir foto de la hoja:",
-                                       type=['jpg', 'jpeg', 'png'],
-                                       key="fu_hoja")
+                fu = st.file_uploader("📁 Subir foto:", type=['jpg', 'jpeg', 'png'], key="fu_hoja")
                 if fu:
                     image_data = fu.getvalue()
 
             if image_data:
-                with st.spinner("🔍 Escaneando hoja... (detectando marcadores y burbujas)"):
+                with st.spinner("🔍 Escaneando..."):
                     det = procesar_examen(image_data, tp)
                 if det:
                     detectadas = sum(1 for x in det if x != '?')
-                    total_det = len(det)
-                    if detectadas == total_det:
-                        st.success(f"✅ ¡Perfecto! {detectadas}/{total_det} "
-                                   f"respuestas detectadas")
+                    if detectadas == len(det):
+                        st.success(f"✅ {detectadas}/{len(det)} respuestas detectadas")
                     else:
-                        st.warning(f"⚠️ {detectadas}/{total_det} detectadas. "
-                                   f"{det.count('?')} sin leer → "
-                                   f"corrija con ? abajo.")
-                    st.markdown("**Respuestas detectadas "
-                                "(puede corregir las '?' manualmente):**")
+                        st.warning(f"⚠️ {detectadas}/{len(det)} detectadas. Corrija las '?' abajo.")
                     det_str = ''.join(det)
-                    corregido = st.text_input(
-                        "Respuestas:", value=det_str,
-                        key="det_corr", max_chars=tp)
+                    corregido = st.text_input("Respuestas detectadas:", value=det_str,
+                                              key="det_corr", max_chars=tp)
                     ra = list(corregido.upper())
                 else:
-                    st.error(
-                        "❌ No se pudo leer la hoja.\n\n"
-                        "**Posibles causas:**\n"
-                        "- Los 4 cuadrados negros de las esquinas no se ven\n"
-                        "- Mala iluminación o sombras\n"
-                        "- La hoja está muy inclinada o lejos\n"
-                        "- No es una hoja generada por este sistema\n\n"
-                        "💡 **Solución:** Intente con mejor luz, más cerca, "
-                        "o suba una foto más nítida. También puede usar "
-                        "el método Manual.")
+                    st.error("❌ No se pudo leer. Intente con mejor luz o use modo Manual.")
 
-
+        # CALIFICAR
         st.markdown("---")
         if st.button("📊 CALIFICAR", type="primary",
                      use_container_width=True, key="cal"):
             if tc_ and ra:
                 ad = BaseDatos.buscar_por_dni(de) if de else None
                 nm = nombre_sel if nombre_sel else (
-                    ad.get('Nombre', '') if ad else "Sin nombre")
+                    str(ad.get('Nombre', '')) if ad else "Sin nombre")
+                grado_est = str(ad.get('Grado', '')) if ad else ""
                 res = {
                     'fecha': hora_peru().strftime('%d/%m/%Y %H:%M'),
-                    'dni': de, 'nombre': nm, 'areas': [],
-                    'promedio_general': 0
+                    'titulo': titulo_eval if modo_cal == "📂 Evaluación Guardada" else "Evaluación",
+                    'dni': de, 'nombre': nm, 'grado': grado_est,
+                    'areas': [], 'promedio_general': 0
                 }
                 idx = 0
                 sn = 0
@@ -3458,8 +3926,7 @@ def tab_calificacion_yachay(config):
                     ok = sum(1 for j in range(min(len(ck), len(rk)))
                              if ck[j] == rk[j])
                     nota = round((ok / n) * 20, 1) if n else 0
-                    lt = ("AD" if nota >= 18 else "A" if nota >= 14
-                          else "B" if nota >= 11 else "C")
+                    lt = nota_a_letra(nota)
                     detalle = []
                     for j in range(n):
                         cj = ck[j] if j < len(ck) else '?'
@@ -3476,21 +3943,24 @@ def tab_calificacion_yachay(config):
                     sn += nota
                     mw += f"📚 *{a['nombre']}:* {nota}/20 ({lt})\n"
                     idx += n
+
                 pm = round(sn / len(ia), 1) if ia else 0
-                lp = ("AD" if pm >= 18 else "A" if pm >= 14
-                      else "B" if pm >= 11 else "C")
+                lp = nota_a_letra(pm)
                 res['promedio_general'] = pm
                 mw += f"\n📊 *PROMEDIO: {pm}/20 ({lp})*"
                 BaseDatos.guardar_resultados_examen(res, usuario_actual)
 
+                # Confirmación visual
                 st.markdown("### 📊 Resultados")
                 cols = st.columns(len(ia) + 1)
                 for i, ar in enumerate(res['areas']):
                     with cols[i]:
-                        st.metric(f"📚 {ar['nombre']}",
-                                  f"{ar['nota']}/20", f"{ar['letra']}")
+                        st.metric(f"📚 {ar['nombre']}", f"{ar['nota']}/20",
+                                  f"{ar['letra']}")
                 with cols[-1]:
                     st.metric("📊 PROMEDIO", f"{pm}/20", lp)
+
+                # Detalle por área
                 for ar in res['areas']:
                     with st.expander(f"📋 {ar['nombre']}"):
                         st.dataframe(pd.DataFrame([
@@ -3498,31 +3968,42 @@ def tab_calificacion_yachay(config):
                              '': '✅' if d['ok'] else '❌'}
                             for d in ar['detalle']
                         ]), use_container_width=True, hide_index=True)
+
+                # WhatsApp
                 if ad:
-                    cel = ad.get('Celular_Apoderado', '')
-                    if cel and str(cel).strip():
+                    cel = str(ad.get('Celular_Apoderado', '')).strip()
+                    if cel and cel not in ('', 'None', 'nan'):
                         link = generar_link_whatsapp(cel, mw)
                         st.markdown(
                             f'<a href="{link}" target="_blank" class="wa-btn">'
-                            f'📱 Enviar → {cel}</a>',
+                            f'📱 Enviar resultado → {cel}</a>',
                             unsafe_allow_html=True)
+
+                # Reporte PDF individual
+                if st.button("📥 Descargar Reporte PDF del Estudiante", key="dl_rep_est"):
+                    pdf = generar_reporte_estudiante_pdf(
+                        nm, de, grado_est, [res], config)
+                    st.download_button("⬇️ PDF", pdf,
+                                       f"Reporte_{nm.replace(' ', '_')}.pdf",
+                                       "application/pdf", key="dl_rep_est2")
+
+                st.success("✅ Resultado guardado correctamente en la base de datos")
+                reproducir_beep_exitoso()
                 st.balloons()
             else:
                 st.error("⚠️ Configure claves y respuestas")
 
-    # --- RANKING (por docente) ---
-    with tr:
-        st.subheader("🏆 Ranking")
-        st.caption(f"📌 Resultados de: **{usuario_actual}**")
+    # ===== TAB: RANKING =====
+    with tabs_cal[3]:
+        st.subheader("🏆 Ranking de Evaluación")
 
-        # Admin ve todos, docentes ven solo los suyos
-        if st.session_state.rol == "admin":
-            ver_todos = st.checkbox("👁️ Ver resultados de TODOS los docentes",
-                                     key="ver_todos")
-            if ver_todos:
-                rs = BaseDatos.cargar_todos_resultados()
-            else:
-                rs = BaseDatos.cargar_resultados_examen(usuario_actual)
+        if st.session_state.rol in ["admin", "directivo"]:
+            grado_rank = st.selectbox("Ver grado:", ["TODOS"] + GRADOS_OPCIONES,
+                                       key="grado_rank")
+            rs = BaseDatos.cargar_todos_resultados()
+            if grado_rank != "TODOS":
+                rs = [r for r in rs if str(r.get('grado', '')) == grado_rank or
+                      str(BaseDatos.buscar_por_dni(r.get('dni', '')) or {}).get('Grado', '') == grado_rank]
         else:
             rs = BaseDatos.cargar_resultados_examen(usuario_actual)
 
@@ -3530,25 +4011,18 @@ def tab_calificacion_yachay(config):
             df = pd.DataFrame([{
                 'Fecha': r.get('fecha', ''),
                 'Nombre': r.get('nombre', ''),
-                'DNI': r.get('dni', ''),
+                'DNI': str(r.get('dni', '')),
                 'Promedio': r.get('promedio_general', 0),
-                'Áreas': ', '.join([
-                    f"{a['nombre']}:{a['nota']}" for a in r.get('areas', [])
-                ])
+                'Literal': nota_a_letra(r.get('promedio_general', 0)),
+                'Áreas': ', '.join([f"{a['nombre']}:{a['nota']}"
+                                    for a in r.get('areas', [])])
             } for r in rs])
             df = df.sort_values('Promedio', ascending=False).reset_index(drop=True)
             df.insert(0, '#', range(1, len(df) + 1))
 
-            # Configurar columnas con ancho apropiado
-            column_config = {
-                '#': st.column_config.NumberColumn(width="small"),
-                'Nombre': st.column_config.TextColumn(width="medium"),
-                'DNI': st.column_config.TextColumn(width="small"),
-                'Promedio': st.column_config.NumberColumn(width="small"),
-            }
-            st.dataframe(df, use_container_width=True, hide_index=True,
-                         column_config=column_config)
+            st.dataframe(df, use_container_width=True, hide_index=True)
 
+            # Podio
             if len(df) >= 1:
                 cols = st.columns(min(3, len(df)))
                 medallas = ["🥇", "🥈", "🥉"]
@@ -3559,52 +4033,137 @@ def tab_calificacion_yachay(config):
                         st.markdown(
                             f'<div class="{estilos[i]}">'
                             f'{medallas[i]} {r["Nombre"]}<br>'
-                            f'{r["Promedio"]}/20</div>',
+                            f'{r["Promedio"]}/20 ({r["Literal"]})</div>',
                             unsafe_allow_html=True)
 
             st.markdown("---")
-            if st.button("📥 GENERAR RANKING PDF", type="primary",
-                         use_container_width=True, key="grpdf"):
-                pdf = generar_ranking_pdf(rs, config['anio'])
-                st.download_button("⬇️ PDF", pdf,
-                                   f"Ranking_{config['anio']}.pdf",
-                                   "application/pdf", key="drpdf")
+            bc1, bc2 = st.columns(2)
+            with bc1:
+                if st.button("📥 RANKING PDF", type="primary",
+                             use_container_width=True, key="grpdf"):
+                    pdf = generar_ranking_pdf(rs, config['anio'])
+                    st.download_button("⬇️ PDF", pdf,
+                                       f"Ranking_{config['anio']}.pdf",
+                                       "application/pdf", key="drpdf")
+            with bc2:
+                if st.button("📥 REPORTES INDIVIDUALES PDF", type="primary",
+                             use_container_width=True, key="reps_ind"):
+                    # Generar un PDF multi-página con todos los estudiantes
+                    from reportlab.lib.pagesizes import A4
+                    buf_all = io.BytesIO()
+                    c_all = canvas.Canvas(buf_all, pagesize=A4)
+                    w, h_page = A4
+                    for r_item in rs:
+                        nm = r_item.get('nombre', '')
+                        dn = str(r_item.get('dni', ''))
+                        gr = str(r_item.get('grado', ''))
+                        
+                        c_all.setFont("Helvetica-Bold", 14)
+                        c_all.drawCentredString(w/2, h_page-40, f"REPORTE: {nm}")
+                        c_all.setFont("Helvetica", 10)
+                        y = h_page - 70
+                        c_all.drawString(50, y, f"DNI: {dn} | Grado: {gr} | Fecha: {r_item.get('fecha', '')}")
+                        y -= 25
+                        
+                        for area in r_item.get('areas', []):
+                            nota = area.get('nota', 0)
+                            letra = nota_a_letra(nota)
+                            c_all.drawString(60, y, f"• {area['nombre']}: {nota}/20 ({letra})")
+                            y -= 16
+                        
+                        pm = r_item.get('promedio_general', 0)
+                        lp = nota_a_letra(pm)
+                        y -= 10
+                        c_all.setFont("Helvetica-Bold", 12)
+                        c_all.drawString(60, y, f"PROMEDIO: {pm}/20 ({lp})")
+                        c_all.showPage()
+                    
+                    c_all.save()
+                    buf_all.seek(0)
+                    st.download_button("⬇️ Reportes PDF", buf_all,
+                                       "Reportes_Individuales.pdf",
+                                       "application/pdf", key="dl_reps_all")
 
+            # WhatsApp individual
             st.markdown("---")
-            st.markdown("### 📱 Enviar Individual por WhatsApp")
+            st.markdown("### 📱 Enviar por WhatsApp")
             for _, row in df.iterrows():
                 al = BaseDatos.buscar_por_dni(row['DNI']) if row['DNI'] else None
                 if al:
-                    cel = al.get('Celular_Apoderado', '')
-                    if cel and str(cel).strip():
-                        ro = next(
-                            (r for r in rs if r.get('dni') == row['DNI']), None)
+                    cel = str(al.get('Celular_Apoderado', '')).strip()
+                    if cel and cel not in ('', 'None', 'nan'):
+                        ro = next((r for r in rs if str(r.get('dni')) == str(row['DNI'])), None)
                         if ro:
-                            msg = (f"📝 *RANKING YACHAY*\n👤 {row['Nombre']}\n"
-                                   f"🏆 Puesto: {row['#']}°/{len(df)}\n")
+                            msg = f"📝 *RANKING YACHAY*\n👤 {row['Nombre']}\n🏆 #{row['#']}°/{len(df)}\n"
                             for a in ro.get('areas', []):
                                 msg += f"📚 {a['nombre']}: {a['nota']}/20\n"
-                            msg += f"\n📊 *PROMEDIO: {row['Promedio']}/20*"
+                            msg += f"\n📊 *PROMEDIO: {row['Promedio']}/20 ({row['Literal']})*"
                             link = generar_link_whatsapp(cel, msg)
                             st.markdown(
                                 f'<a href="{link}" target="_blank" class="wa-btn">'
-                                f'📱 #{row["#"]} {row["Nombre"]} — '
-                                f'{row["Promedio"]}/20</a>',
+                                f'📱 #{row["#"]} {row["Nombre"]} — {row["Promedio"]}/20</a>',
                                 unsafe_allow_html=True)
 
             st.markdown("---")
-            st.markdown("### 🔄 Nueva Evaluación")
-            st.warning("⚠️ Esto borrará todos tus resultados actuales "
-                       "para empezar una nueva evaluación desde cero.")
-            if st.button("🔄 NUEVA EVALUACIÓN — Borrar mis resultados",
-                         type="secondary", use_container_width=True,
-                         key="nueva_eval"):
+            if st.button("🔄 NUEVA EVALUACIÓN", type="secondary",
+                         use_container_width=True, key="nueva_eval"):
                 BaseDatos.limpiar_resultados_examen(usuario_actual)
                 st.session_state.areas_examen = []
-                st.success("✅ Resultados limpiados. Puedes comenzar nueva evaluación.")
+                st.success("✅ Resultados limpiados. Nueva evaluación lista.")
                 st.rerun()
         else:
             st.info("📝 Califica exámenes para ver tu ranking.")
+
+    # ===== TAB: HISTORIAL =====
+    with tabs_cal[4]:
+        st.subheader("📊 Historial de Evaluaciones")
+
+        if st.session_state.rol in ["admin", "directivo"]:
+            grado_hist = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_hist")
+            dg = BaseDatos.obtener_estudiantes_grado(grado_hist)
+            if not dg.empty:
+                est_sel = st.selectbox("Estudiante:",
+                                        [f"{r['Nombre']} — {r['DNI']}"
+                                         for _, r in dg.iterrows()],
+                                        key="est_hist")
+                if est_sel:
+                    dni_hist = est_sel.split(" — ")[-1].strip()
+                    nombre_hist = est_sel.split(" — ")[0].strip()
+            else:
+                st.warning("No hay estudiantes en este grado.")
+                dni_hist = ""
+                nombre_hist = ""
+        else:
+            dni_hist = st.text_input("DNI del estudiante:", key="dni_hist")
+            al_h = BaseDatos.buscar_por_dni(dni_hist) if dni_hist else None
+            nombre_hist = str(al_h.get('Nombre', '')) if al_h else ""
+
+        if dni_hist or nombre_hist:
+            # Buscar todos los resultados
+            all_res = BaseDatos.cargar_todos_resultados()
+            hist = [r for r in all_res if str(r.get('dni', '')) == str(dni_hist)
+                    or (not dni_hist and r.get('nombre', '') == nombre_hist)]
+
+            if hist:
+                st.success(f"📋 {len(hist)} evaluaciones encontradas para **{nombre_hist}**")
+
+                for h in hist:
+                    with st.expander(f"📝 {h.get('titulo', 'Evaluación')} — {h.get('fecha', '')}"):
+                        for a in h.get('areas', []):
+                            st.write(f"**{a['nombre']}:** {a['nota']}/20 ({nota_a_letra(a['nota'])})")
+                        st.write(f"**Promedio:** {h.get('promedio_general', 0)}/20")
+
+                # Descargar reporte completo
+                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf"):
+                    al_h = BaseDatos.buscar_por_dni(dni_hist)
+                    grado_h = str(al_h.get('Grado', '')) if al_h else ""
+                    pdf = generar_reporte_estudiante_pdf(
+                        nombre_hist, dni_hist, grado_h, hist, config)
+                    st.download_button("⬇️ PDF", pdf,
+                                       f"Historial_{nombre_hist.replace(' ', '_')}.pdf",
+                                       "application/pdf", key="dl_hist_pdf2")
+            else:
+                st.info("No hay evaluaciones registradas para este estudiante.")
 
 
 # ================================================================
@@ -3688,11 +4247,14 @@ def vista_docente(config):
     st.markdown(f"### 👨‍🏫 {label}")
 
     tabs = st.tabs([
-        "📝 Registro Auxiliar", "📋 Registro Asistencia",
-        "📝 Calificación YACHAY"
+        "📋 Asistencia", "📝 Registro Auxiliar",
+        "📋 Registro PDF", "📝 Calificación YACHAY"
     ])
 
     with tabs[0]:
+        tab_asistencias()
+
+    with tabs[1]:
         st.subheader("📝 Registro Auxiliar de Evaluación")
         st.caption("Cursos × 4 Competencias × 3 Desempeños")
         sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
@@ -3722,8 +4284,8 @@ def vista_docente(config):
                                    f"RegAux_{lg}_{bim}.pdf",
                                    "application/pdf", key="ddra2")
 
-    with tabs[1]:
-        st.subheader("📋 Registro de Asistencia")
+    with tabs[2]:
+        st.subheader("📋 Registro de Asistencia PDF")
         sec2 = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds2")
         meses_opts = list(MESES_ESCOLARES.items())
         meses_sel = st.multiselect(
@@ -3745,7 +4307,7 @@ def vista_docente(config):
                                    f"RegAsist_{lg}.pdf",
                                    "application/pdf", key="ddas2")
 
-    with tabs[2]:
+    with tabs[3]:
         tab_calificacion_yachay(config)
 
 
@@ -4388,41 +4950,216 @@ def main():
     nombre_usuario = usuarios.get(usuario, {}).get('label', usuario.capitalize())
     hora_actual = hora_peru().hour
     if hora_actual < 12:
-        saludo = "Buenos días"
+        saludo = "☀️ Buenos días"
     elif hora_actual < 18:
-        saludo = "Buenas tardes"
+        saludo = "🌤️ Buenas tardes"
     else:
-        saludo = "Buenas noches"
-    st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
+        saludo = "🌙 Buenas noches"
 
+    # ========================================
+    # AUXILIAR — Solo asistencia + incidencias
+    # ========================================
     if st.session_state.rol == "auxiliar":
-        tab_asistencias()
+        st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
+        st.markdown("*¿Qué vamos a hacer hoy?*")
+        ca1, ca2 = st.columns(2)
+        with ca1:
+            if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist"):
+                st.session_state.modulo_activo = "asistencia"
+        with ca2:
+            if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc"):
+                st.session_state.modulo_activo = "incidencias"
 
+        mod = st.session_state.get('modulo_activo', 'asistencia')
+        st.markdown("---")
+        if mod == "asistencia":
+            tab_asistencias()
+        elif mod == "incidencias":
+            tab_incidencias(config)
+
+    # ========================================
+    # DOCENTE — Su grado solamente
+    # ========================================
     elif st.session_state.rol == "docente":
+        st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
+        st.markdown("*¿Qué vamos a hacer hoy?*")
         vista_docente(config)
 
+    # ========================================
+    # ADMIN / DIRECTIVO — Dashboard con íconos
+    # ========================================
     elif st.session_state.rol in ["directivo", "admin"]:
-        tabs = st.tabs([
-            "📝 MATRÍCULA", "📄 DOCUMENTOS", "🪪 CARNETS",
-            "📋 ASISTENCIAS", "📊 BASE DATOS",
-            "📝 CALIFICACIÓN", "📝 INCIDENCIAS", "📊 REPORTES"
-        ])
-        with tabs[0]:
-            tab_matricula(config)
-        with tabs[1]:
-            tab_documentos(config)
-        with tabs[2]:
-            tab_carnets(config)
-        with tabs[3]:
-            tab_asistencias()
-        with tabs[4]:
-            tab_base_datos()
-        with tabs[5]:
-            tab_calificacion_yachay(config)
-        with tabs[6]:
-            tab_incidencias(config)
-        with tabs[7]:
-            tab_reportes(config)
+        # Si no hay módulo seleccionado, mostrar dashboard
+        if 'modulo_activo' not in st.session_state:
+            st.session_state.modulo_activo = None
+
+        if st.session_state.modulo_activo is None:
+            # === DASHBOARD PRINCIPAL ===
+            st.markdown(f"""
+            <div class='main-header'>
+                <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
+                <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Grid de módulos
+            modulos = [
+                ("📝", "Matrícula", "matricula", "#1a56db"),
+                ("📋", "Asistencia", "asistencia", "#16a34a"),
+                ("📄", "Documentos", "documentos", "#7c3aed"),
+                ("🪪", "Carnets", "carnets", "#0891b2"),
+                ("📊", "Calificación", "calificacion", "#dc2626"),
+                ("📈", "Reportes", "reportes", "#ea580c"),
+                ("📝", "Incidencias", "incidencias", "#be185d"),
+                ("💾", "Base Datos", "base_datos", "#4f46e5"),
+            ]
+            if st.session_state.rol == "admin":
+                modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
+
+            # Mostrar en grid de 3 columnas
+            for i in range(0, len(modulos), 3):
+                cols = st.columns(3)
+                for j, col in enumerate(cols):
+                    idx = i + j
+                    if idx < len(modulos):
+                        icono, nombre, key, color = modulos[idx]
+                        with col:
+                            if st.button(
+                                f"{icono}\n\n**{nombre}**",
+                                use_container_width=True,
+                                key=f"dash_{key}"
+                            ):
+                                st.session_state.modulo_activo = key
+                                st.rerun()
+
+            # Estadísticas rápidas
+            st.markdown("---")
+            stats = BaseDatos.obtener_estadisticas()
+            s1, s2, s3 = st.columns(3)
+            with s1:
+                st.markdown(f"""<div class="stat-card">
+                    <h3>📚 {stats['total_alumnos']}</h3>
+                    <p>Alumnos Matriculados</p>
+                </div>""", unsafe_allow_html=True)
+            with s2:
+                st.markdown(f"""<div class="stat-card">
+                    <h3>👨‍🏫 {stats['total_docentes']}</h3>
+                    <p>Docentes Registrados</p>
+                </div>""", unsafe_allow_html=True)
+            with s3:
+                asis_hoy = BaseDatos.obtener_asistencias_hoy()
+                st.markdown(f"""<div class="stat-card">
+                    <h3>📋 {len(asis_hoy)}</h3>
+                    <p>Asistencias Hoy</p>
+                </div>""", unsafe_allow_html=True)
+
+        else:
+            # === MÓDULO SELECCIONADO ===
+            if st.button("⬅️ Volver al Menú Principal", key="btn_volver"):
+                st.session_state.modulo_activo = None
+                st.rerun()
+
+            st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
+
+            mod = st.session_state.modulo_activo
+            if mod == "matricula":
+                tab_matricula(config)
+            elif mod == "asistencia":
+                tab_asistencias()
+            elif mod == "documentos":
+                tab_documentos(config)
+            elif mod == "carnets":
+                tab_carnets(config)
+            elif mod == "calificacion":
+                tab_calificacion_yachay(config)
+            elif mod == "reportes":
+                tab_reportes(config)
+            elif mod == "incidencias":
+                tab_incidencias(config)
+            elif mod == "base_datos":
+                tab_base_datos()
+            elif mod == "reclamaciones":
+                tab_libro_reclamaciones(config)
+
+
+# ================================================================
+# LIBRO DE RECLAMACIONES VIRTUAL
+# ================================================================
+
+def tab_libro_reclamaciones(config):
+    """Libro de Reclamaciones Virtual según normativa MINEDU"""
+    st.subheader("📕 Libro de Reclamaciones Virtual")
+    st.markdown("*Según normativa del Ministerio de Educación*")
+
+    gs = _gs()
+
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        with st.form("form_reclamo", clear_on_submit=True):
+            st.markdown("### 📋 Registrar Reclamo")
+            r_nombre = st.text_input("Nombre completo del reclamante:", key="r_nombre")
+            r_dni = st.text_input("DNI:", key="r_dni")
+            r_celular = st.text_input("Celular:", key="r_cel")
+            r_tipo = st.selectbox("Tipo:", [
+                "Queja", "Reclamo", "Sugerencia", "Denuncia"
+            ], key="r_tipo")
+            r_detalle = st.text_area("Detalle del reclamo:", key="r_detalle")
+            r_submit = st.form_submit_button("📩 ENVIAR RECLAMO",
+                                              type="primary",
+                                              use_container_width=True)
+            if r_submit:
+                if r_nombre and r_dni and r_detalle:
+                    codigo_rec = f"REC-{hora_peru().year}-{int(time.time()) % 10000:04d}"
+                    if gs:
+                        try:
+                            ws = gs._get_hoja('config')
+                            if ws:
+                                ws.append_row([
+                                    f"reclamo_{codigo_rec}",
+                                    json.dumps({
+                                        'codigo': codigo_rec,
+                                        'nombre': r_nombre,
+                                        'dni': r_dni,
+                                        'celular': r_celular,
+                                        'tipo': r_tipo,
+                                        'detalle': r_detalle,
+                                        'fecha': fecha_peru_str(),
+                                        'hora': hora_peru_str(),
+                                        'estado': 'Pendiente',
+                                    }, ensure_ascii=False)
+                                ])
+                        except Exception:
+                            pass
+                    st.success(f"✅ Reclamo registrado exitosamente. Código: **{codigo_rec}**")
+                    st.info("📌 Su reclamo será revisado por la dirección en un plazo de 72 horas.")
+                else:
+                    st.error("⚠️ Complete todos los campos obligatorios")
+
+    with col2:
+        st.markdown("### 📋 Reclamos Recibidos")
+        if gs:
+            try:
+                ws = gs._get_hoja('config')
+                if ws:
+                    data = ws.get_all_records()
+                    reclamos = [json.loads(d['valor']) for d in data
+                               if str(d.get('clave', '')).startswith('reclamo_')]
+                    if reclamos:
+                        for rec in reversed(reclamos[-15:]):
+                            estado = rec.get('estado', 'Pendiente')
+                            emoji = "🟡" if estado == "Pendiente" else "🟢"
+                            with st.expander(
+                                f"{emoji} {rec.get('codigo', '')} — {rec.get('nombre', '')}"):
+                                st.write(f"**Tipo:** {rec.get('tipo', '')}")
+                                st.write(f"**Fecha:** {rec.get('fecha', '')}")
+                                st.write(f"**Detalle:** {rec.get('detalle', '')}")
+                                st.write(f"**Estado:** {estado}")
+                    else:
+                        st.info("📭 Sin reclamos registrados")
+            except Exception:
+                st.info("📭 Sin reclamos aún")
+        else:
+            st.warning("⚠️ Conecta Google Sheets")
 
 
 if __name__ == "__main__":
