@@ -544,6 +544,26 @@ class GoogleSync:
                     if str(i.get('codigo', '')).startswith(f'INC-{anio}')])
         return f"INC-{anio}-{count + 1:03d}"
 
+    def historial_asistencia_estudiante(self, dni):
+        """Retorna historial de asistencia de un estudiante específico"""
+        try:
+            ws = self._get_hoja('asistencia')
+            if not ws:
+                return {}
+            data = ws.get_all_records()
+            historial = {}
+            for row in data:
+                if str(row.get('dni', '')) == str(dni):
+                    fecha = str(row.get('fecha', ''))
+                    if fecha not in historial:
+                        historial[fecha] = {}
+                    tipo = str(row.get('tipo', ''))
+                    hora = str(row.get('hora', ''))
+                    historial[fecha][tipo] = hora
+            return historial
+        except Exception:
+            return {}
+
 
 # ================================================================
 # INICIALIZACIÓN GLOBAL
