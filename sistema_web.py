@@ -2710,6 +2710,8 @@ ARCHIVOS_BACKUP = [
     ARCHIVO_USUARIOS,     # usuarios.json
     "escudo_upload.png",
     "fondo.png",
+    "materiales_docente.json",   # Aula Virtual
+    "examenes_semanales.json",   # Exámenes Semanales
 ]
 
 
@@ -3059,7 +3061,7 @@ def tab_matricula(config):
                 else:
                     opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
                     dn_g = st.selectbox("🎓 Grado/Grupo:",
-                                         ["N/A"] + opciones_asig, key="dn_grado")
+                                         ["N/A"] + opciones_asig, key="dn_grado_sec")
                     todas_areas = AREAS_MINEDU.get(dn_nivel, [])
                     if dn_nivel == "PREUNIVERSITARIO":
                         todas_areas = list(set(
@@ -3774,6 +3776,8 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     y -= 20
     
     for area_nombre, notas in promedios_areas.items():
+        if not notas:
+            continue
         prom = round(sum(notas) / len(notas), 1)
         letra = nota_a_letra(prom)
         col = color_semaforo(letra)
