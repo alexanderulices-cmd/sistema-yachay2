@@ -4651,7 +4651,7 @@ def vista_docente(config):
     es_secundaria = 'SECUNDARIA' in nivel_doc or 'PREUNIVERSITARIO' in nivel_doc or 'GRUPO' in grado
     
     if es_secundaria:
-        # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia (el auxiliar se encarga)
+        # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
             "📋 Registro PDF", "📝 Calificación YACHAY",
@@ -4670,27 +4670,23 @@ def vista_docente(config):
         with tabs[5]:
             tab_examenes_semanales(config)
     else:
-        # INICIAL/PRIMARIA: Con asistencia de su grado
+        # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
-            "📋 Asistencia", "📝 Registrar Notas", "📝 Registro Auxiliar",
+            "📝 Registrar Notas", "📝 Registro Auxiliar",
             "📋 Registro PDF", "📝 Calificación YACHAY",
             "📚 Aula Virtual", "📝 Exámenes"
         ])
         with tabs[0]:
-            if grado:
-                st.info(f"📋 Asistencia de **{grado}**")
-            tab_asistencias()
-        with tabs[1]:
             tab_registrar_notas(config)
-        with tabs[2]:
+        with tabs[1]:
             _tab_registro_auxiliar_docente(grado, config)
-        with tabs[3]:
+        with tabs[2]:
             _tab_registro_pdf_docente(grado, config)
-        with tabs[4]:
+        with tabs[3]:
             tab_calificacion_yachay(config)
-        with tabs[5]:
+        with tabs[4]:
             tab_material_docente(config)
-        with tabs[6]:
+        with tabs[5]:
             tab_examenes_semanales(config)
 
 
@@ -5569,8 +5565,16 @@ def tab_registrar_notas(config):
     if st.session_state.rol in ['admin', 'directivo']:
         grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
     elif grado_doc:
-        grado_sel = grado_doc
-        st.info(f"🎓 **{grado_sel}**")
+        # Secundaria/Preu: pueden elegir cualquier grado de su nivel
+        es_sec = nivel_doc and ('SECUNDARIA' in str(nivel_doc).upper() or 'PREUNIVERSITARIO' in str(nivel_doc).upper())
+        if es_sec or 'GRUPO' in str(grado_doc) or 'Sec' in str(grado_doc):
+            grados_sec = [g for g in GRADOS_OPCIONES if 'Sec' in g or 'GRUPO' in g or 'Ciclo' in g or 'Reforzamiento' in g]
+            if not grados_sec:
+                grados_sec = [grado_doc]
+            grado_sel = st.selectbox("🎓 Grado:", grados_sec, key="rn_grado_doc")
+        else:
+            grado_sel = grado_doc
+            st.info(f"🎓 **{grado_sel}**")
     else:
         st.warning("No se detectó grado asignado.")
         return
@@ -5974,14 +5978,30 @@ ARCHIVO_EXAMENES_SEM = "examenes_semanales.json"
 
 AREAS_POR_NIVEL = {
     "INICIAL": ["Comunicación", "Matemática", "Personal Social",
-                "Ciencia y Tecnología", "Psicomotriz"],
+                "Ciencia y Tecnología", "Psicomotriz",
+                "Castellano como segunda lengua", "Tutoría"],
     "PRIMARIA": ["Comunicación", "Matemática", "Personal Social",
                  "Ciencia y Tecnología", "Educación Religiosa",
-                 "Arte y Cultura", "Educación Física", "Inglés", "Tutoría"],
-    "SECUNDARIA": ["Comunicación", "Matemática", "CTA", "HGE",
-                    "DPCC", "Educación Religiosa", "Arte y Cultura",
-                    "Educación Física", "Inglés", "EPT", "Tutoría"],
+                 "Arte y Cultura", "Educación Física", "Inglés",
+                 "Castellano como segunda lengua", "Tutoría"],
+    "SECUNDARIA": ["Comunicación", "Matemática", "Ciencia y Tecnología",
+                    "Ciencias Sociales", "Desarrollo Personal, Ciudadanía y Cívica",
+                    "Educación para el Trabajo", "Educación Religiosa",
+                    "Arte y Cultura", "Educación Física", "Inglés",
+                    "Castellano como segunda lengua", "Tutoría"],
+    "PREUNIVERSITARIO": ["Razonamiento Matemático", "Aritmética", "Álgebra",
+                          "Geometría", "Trigonometría", "Lenguaje", "Literatura",
+                          "Razonamiento Verbal", "Historia del Perú",
+                          "Historia Universal", "Geografía", "Economía",
+                          "Filosofía y Lógica", "Psicología", "Educación Cívica",
+                          "Biología", "Química", "Física", "Anatomía"],
 }
+
+TIPOS_EVALUACION = [
+    "Evaluación Semanal", "Evaluación Mensual", "Evaluación Bimestral",
+    "Examen Parcial", "Examen Final", "Examen de Recuperación",
+    "Examen de Nivelación", "Práctica Calificada", "Control de Lectura",
+]
 
 
 def _semana_escolar_actual():
@@ -6030,10 +6050,34 @@ def _base64_a_bytes(b64_str):
 def _areas_del_docente():
     info = st.session_state.get('docente_info', {}) or {}
     nivel = str(info.get('nivel', 'PRIMARIA')).upper()
+    grado = str(info.get('grado', ''))
+    # Secundaria/Preu: incluir áreas MINEDU + CEPRE
+    if 'SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel or 'GRUPO' in grado or 'Sec' in grado:
+        areas_sec = AREAS_POR_NIVEL.get("SECUNDARIA", [])
+        areas_preu = AREAS_POR_NIVEL.get("PREUNIVERSITARIO", [])
+        # Combinar sin duplicados, manteniendo orden
+        todas = list(areas_sec)
+        for a in areas_preu:
+            if a not in todas:
+                todas.append(a)
+        return todas
     for key in AREAS_POR_NIVEL:
         if key in nivel:
             return AREAS_POR_NIVEL[key]
-    return AREAS_POR_NIVEL["PRIMARIA"]
+    return AREAS_POR_NIVEL.get("PRIMARIA", ["Comunicación", "Matemática"])
+
+
+def _grados_del_docente():
+    """Retorna la lista de grados disponibles para el docente."""
+    info = st.session_state.get('docente_info', {}) or {}
+    nivel = str(info.get('nivel', 'PRIMARIA')).upper()
+    grado = str(info.get('grado', ''))
+    es_sec = 'SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel or 'GRUPO' in grado or 'Sec' in grado
+    if es_sec:
+        return [g for g in GRADOS_OPCIONES if 'Sec' in g or 'GRUPO' in g or 'Ciclo' in g or 'Reforzamiento' in g]
+    elif grado:
+        return [grado]
+    return GRADOS_OPCIONES
 
 
 # ---- Almacenamiento Materiales ----
@@ -6459,22 +6503,21 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
 
             c_pdf.setFont("Helvetica", 10)
             opciones_orden = ['a', 'b', 'c', 'd']
-            col_x = [75, 75 + (w - 150) / 2]
-            for i, letra in enumerate(opciones_orden):
+            for letra in opciones_orden:
                 txt = opciones.get(letra, '')
                 if not txt:
                     continue
-                col = i % 2
-                if i > 0 and i % 2 == 0:
-                    y_pos -= 16
-                x = col_x[col]
-                c_pdf.circle(x, y_pos + 3, 5, stroke=1, fill=0)
+                if y_pos < 60:
+                    c_pdf.showPage()
+                    y_pos = h - 50
+                c_pdf.circle(75, y_pos + 3, 5, stroke=1, fill=0)
                 c_pdf.setFont("Helvetica-Bold", 9)
-                c_pdf.drawString(x + 8, y_pos, f"{letra.upper()})")
+                c_pdf.drawString(83, y_pos, f"{letra.upper()})")
                 c_pdf.setFont("Helvetica", 9)
-                txt_disp = txt[:50] + ('...' if len(txt) > 50 else '')
-                c_pdf.drawString(x + 25, y_pos, txt_disp)
-            y_pos -= 25
+                txt_disp = txt[:70] + ('...' if len(txt) > 70 else '')
+                c_pdf.drawString(100, y_pos, txt_disp)
+                y_pos -= 16
+            y_pos -= 12
             num_pregunta_global += 1
 
     # CLAVE DE RESPUESTAS — Página nueva
@@ -6532,7 +6575,13 @@ def tab_material_docente(config):
     if rol in ['admin', 'directivo']:
         _vista_directivo_material(config, semana_actual)
     else:
-        _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actual)
+        # Sec/Preu: seleccionar grado
+        grados_disp = _grados_del_docente()
+        if len(grados_disp) > 1:
+            grado_sel = st.selectbox("🎓 Seleccionar Grado:", grados_disp, key="mat_grado_sel")
+        else:
+            grado_sel = grados_disp[0] if grados_disp else grado_doc
+        _vista_docente_material(config, usuario, nombre_doc, grado_sel, semana_actual)
 
 
 def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actual):
@@ -6619,11 +6668,17 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                     st.balloons()
                     try:
                         pdf_bytes = _generar_pdf_material(material, config)
-                        st.download_button("📥 Descargar Ficha en PDF", pdf_bytes,
-                                           f"ficha_{area}_{semana}.pdf", "application/pdf",
-                                           use_container_width=True, key="dl_material_pdf")
+                        st.session_state['_ultimo_pdf_material'] = pdf_bytes
+                        st.session_state['_ultimo_pdf_material_nombre'] = f"ficha_{area}_{semana}.pdf"
                     except Exception as e:
                         st.warning(f"⚠️ PDF generado con observaciones: {str(e)[:100]}")
+
+        # Botón de descarga FUERA del form
+        if '_ultimo_pdf_material' in st.session_state and st.session_state['_ultimo_pdf_material']:
+            st.download_button("📥 Descargar Ficha en PDF",
+                               st.session_state['_ultimo_pdf_material'],
+                               st.session_state.get('_ultimo_pdf_material_nombre', 'ficha.pdf'),
+                               "application/pdf", use_container_width=True, key="dl_material_pdf")
 
     with tab2:
         st.markdown("### 📋 Mi Material Subido")
@@ -6720,7 +6775,7 @@ def _vista_directivo_material(config, semana_actual):
 # ================================================================
 
 def tab_examenes_semanales(config):
-    st.subheader("📝 Exámenes Semanales")
+    st.subheader("📝 Banco de Exámenes")
     rol = st.session_state.get('rol', 'docente')
     usuario = st.session_state.get('usuario_actual', '')
     info = st.session_state.get('docente_info', {}) or {}
@@ -6731,143 +6786,115 @@ def tab_examenes_semanales(config):
     if rol in ['admin', 'directivo']:
         _vista_directivo_examenes(config, semana_actual)
     else:
-        _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actual)
+        # Sec/Preu: seleccionar grado
+        grados_disp = _grados_del_docente()
+        if len(grados_disp) > 1:
+            grado_sel = st.selectbox("🎓 Seleccionar Grado:", grados_disp, key="ex_grado_sel")
+        else:
+            grado_sel = grados_disp[0] if grados_disp else grado_doc
+        _vista_docente_examenes(config, usuario, nombre_doc, grado_sel, semana_actual)
 
 
 def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actual):
-    tab1, tab2 = st.tabs(["📤 Agregar Preguntas", "📋 Mis Preguntas"])
+    tab1, tab2, tab3 = st.tabs(["📤 Cargar Preguntas", "📋 Mis Preguntas", "📥 Descargar Examen"])
     with tab1:
-        st.markdown("### ✏️ Cargar Preguntas para Examen Semanal")
+        st.markdown("### ✏️ Cargar Preguntas para Evaluación")
         st.markdown("""
         <div style="background: #fef3c7; border-radius: 10px; padding: 12px; 
                     border-left: 4px solid #f59e0b; margin-bottom: 15px;">
             <strong>⚠️ ATENCIÓN:</strong> Las preguntas enviadas <b>NO se pueden borrar</b>.
-            Revise bien cada pregunta antes de enviar. El director compilará el examen final cada semana.
+            Revise bien cada pregunta antes de enviar. El director compilará el examen final.
         </div>""", unsafe_allow_html=True)
 
         areas = _areas_del_docente()
         lun, vie = _rango_semana(semana_actual)
-        st.info(f"📅 Semana {semana_actual}: {lun.strftime('%d/%m')} al {vie.strftime('%d/%m/%Y')}")
-        examenes = _cargar_examenes_sem()
-        mis_preg = [e for e in examenes if e.get('docente') == usuario and e.get('semana') == semana_actual]
-        if mis_preg:
-            st.success(f"✅ Ya tienes **{len(mis_preg)}** pregunta(s) cargada(s) esta semana")
+        st.info(f"📅 Semana {semana_actual}: {lun.strftime('%d/%m')} al {vie.strftime('%d/%m/%Y')} | Grado: **{grado_doc}**")
+
+        # Configuración general
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            sem_input = st.number_input("📅 Semana:", 1, 40, semana_actual, key="ex_semana")
+        with c2:
+            area = st.selectbox("📚 Área:", areas, key="ex_area")
+        with c3:
+            tipo_eval = st.selectbox("📋 Tipo de evaluación:", TIPOS_EVALUACION, key="ex_tipo_eval")
+
+        # Cuántas preguntas
+        num_preguntas = st.number_input("🔢 ¿Cuántas preguntas desea cargar?",
+                                        min_value=1, max_value=30, value=5, key="ex_num_preg")
         st.markdown("---")
 
-        modo = st.radio("Modo de carga:", ["📝 Pregunta por pregunta", "📄 Carga múltiple (texto)"],
-                        horizontal=True, key="modo_examen")
+        # Mostrar preguntas cargadas previamente
+        examenes = _cargar_examenes_sem()
+        mis_preg = [e for e in examenes if e.get('docente') == usuario
+                    and e.get('semana') == sem_input and e.get('area') == area]
+        if mis_preg:
+            st.success(f"✅ Ya tienes **{len(mis_preg)}** pregunta(s) de {area} en Semana {sem_input}")
 
-        if modo == "📝 Pregunta por pregunta":
-            with st.form("form_pregunta", clear_on_submit=True):
+        # Formulario de N preguntas
+        with st.form("form_preguntas_multiple", clear_on_submit=True):
+            preguntas_data = []
+            for i in range(1, num_preguntas + 1):
+                st.markdown(f"#### Pregunta {i}")
+                texto = st.text_area(f"Enunciado pregunta {i}:",
+                                     placeholder=f"Escriba aquí la pregunta {i}...",
+                                     key=f"ex_texto_{i}", height=80)
+                img_p = st.file_uploader(f"🖼️ Imagen pregunta {i} (opcional):",
+                                          type=["png", "jpg", "jpeg"], key=f"ex_img_{i}")
                 c1, c2 = st.columns(2)
                 with c1:
-                    sem_input = st.number_input("Semana:", 1, 40, semana_actual, key="ex_semana")
+                    op_a = st.text_input(f"A) Preg {i}:", key=f"ex_a_{i}", placeholder="Opción A")
+                    op_c = st.text_input(f"C) Preg {i}:", key=f"ex_c_{i}", placeholder="Opción C")
                 with c2:
-                    area = st.selectbox("Área:", areas, key="ex_area")
-                st.markdown("**📝 Pregunta:**")
-                texto = st.text_area("Enunciado:", placeholder="Ej: ¿Cuál es el resultado de 3/4 + 1/2?",
-                                     key="ex_texto", height=100)
-                img_preg = st.file_uploader("🖼️ Imagen de la pregunta (opcional):",
-                                            type=["png", "jpg", "jpeg"], key="ex_img",
-                                            help="Para ecuaciones, gráficos, figuras...")
-                st.markdown("**🔤 Alternativas:**")
-                c1, c2 = st.columns(2)
-                with c1:
-                    op_a = st.text_input("A)", key="ex_a", placeholder="Primera opción")
-                    op_c = st.text_input("C)", key="ex_c", placeholder="Tercera opción")
-                with c2:
-                    op_b = st.text_input("B)", key="ex_b", placeholder="Segunda opción")
-                    op_d = st.text_input("D)", key="ex_d", placeholder="Cuarta opción")
-                respuesta = st.selectbox("✅ Respuesta correcta:", ["a", "b", "c", "d"], key="ex_resp")
-                enviado = st.form_submit_button("📤 ENVIAR PREGUNTA", type="primary", use_container_width=True)
-                if enviado:
+                    op_b = st.text_input(f"B) Preg {i}:", key=f"ex_b_{i}", placeholder="Opción B")
+                    op_d = st.text_input(f"D) Preg {i}:", key=f"ex_d_{i}", placeholder="Opción D")
+                resp = st.selectbox(f"✅ Respuesta correcta preg {i}:",
+                                    ["a", "b", "c", "d"], key=f"ex_resp_{i}")
+                preguntas_data.append({
+                    'texto': texto, 'img': img_p,
+                    'a': op_a, 'b': op_b, 'c': op_c, 'd': op_d,
+                    'resp': resp
+                })
+                if i < num_preguntas:
+                    st.markdown("---")
+
+            enviado = st.form_submit_button(f"📤 GUARDAR {num_preguntas} PREGUNTA(S)",
+                                            type="primary", use_container_width=True)
+            if enviado:
+                guardadas = 0
+                errores = 0
+                for idx, pd_item in enumerate(preguntas_data, 1):
+                    texto = pd_item['texto']
                     if not texto or not texto.strip():
-                        st.error("⚠️ Debe escribir el enunciado de la pregunta")
-                    elif not (op_a and op_b):
-                        st.error("⚠️ Debe tener al menos 2 alternativas (A y B)")
-                    else:
-                        pregunta = {
-                            'docente': usuario, 'docente_nombre': nombre_doc,
-                            'grado': grado_doc, 'semana': sem_input, 'area': area,
-                            'texto': texto.strip(),
-                            'opciones': {'a': op_a.strip(), 'b': op_b.strip(),
-                                        'c': op_c.strip() if op_c else '',
-                                        'd': op_d.strip() if op_d else ''},
-                            'respuesta_correcta': respuesta, 'imagen_b64': '',
-                        }
-                        if img_preg:
-                            comp = _comprimir_imagen_aula(img_preg.getvalue(), max_size=400, quality=65)
-                            pregunta['imagen_b64'] = _img_a_base64(comp)
-                        with st.spinner("Guardando pregunta..."):
-                            pid = _guardar_pregunta_examen(pregunta)
-                        st.success(f"✅ Pregunta guardada (ID: {pid})")
-                        st.toast("📝 Pregunta agregada al banco de exámenes")
-
-        else:
-            # Carga múltiple
-            st.markdown("""
-            <div style="background: #f0fdf4; border-radius: 8px; padding: 10px; font-size: 0.85rem; margin-bottom: 10px;">
-                <strong>📋 Formato:</strong> Escriba cada pregunta así, separadas por <b>---</b><br><br>
-                <code>¿Cuál es la capital del Perú?<br>a) Cusco<br>b) Lima<br>c) Arequipa<br>d) Trujillo<br>RESPUESTA: b<br>---</code>
-            </div>""", unsafe_allow_html=True)
-
-            with st.form("form_multiple", clear_on_submit=True):
-                c1, c2 = st.columns(2)
-                with c1:
-                    sem = st.number_input("Semana:", 1, 40, semana_actual, key="exm_sem")
-                with c2:
-                    area = st.selectbox("Área:", areas, key="exm_area")
-                texto_completo = st.text_area("📝 Pegue todas las preguntas:", height=400, key="exm_texto",
-                                              placeholder="Pegue aquí las preguntas separadas por ---")
-                enviado = st.form_submit_button("📤 PROCESAR Y GUARDAR TODAS", type="primary", use_container_width=True)
-                if enviado and texto_completo:
-                    preguntas_raw = texto_completo.strip().split('---')
-                    guardadas = 0
-                    errores = 0
-                    for bloque in preguntas_raw:
-                        bloque = bloque.strip()
-                        if not bloque:
-                            continue
-                        try:
-                            lineas = [l.strip() for l in bloque.split('\n') if l.strip()]
-                            if len(lineas) < 3:
-                                errores += 1
-                                continue
-                            texto_preg = lineas[0]
-                            opciones = {}
-                            respuesta_m = 'a'
-                            for linea in lineas[1:]:
-                                ll = linea.lower().strip()
-                                if ll.startswith('a)') or ll.startswith('a.'):
-                                    opciones['a'] = linea[2:].strip()
-                                elif ll.startswith('b)') or ll.startswith('b.'):
-                                    opciones['b'] = linea[2:].strip()
-                                elif ll.startswith('c)') or ll.startswith('c.'):
-                                    opciones['c'] = linea[2:].strip()
-                                elif ll.startswith('d)') or ll.startswith('d.'):
-                                    opciones['d'] = linea[2:].strip()
-                                elif 'respuesta' in ll:
-                                    for letra in ['a', 'b', 'c', 'd']:
-                                        if letra in ll.split(':')[-1]:
-                                            respuesta_m = letra
-                                            break
-                            if texto_preg and len(opciones) >= 2:
-                                pregunta = {
-                                    'docente': usuario, 'docente_nombre': nombre_doc,
-                                    'grado': grado_doc, 'semana': sem, 'area': area,
-                                    'texto': texto_preg, 'opciones': opciones,
-                                    'respuesta_correcta': respuesta_m, 'imagen_b64': '',
-                                }
-                                _guardar_pregunta_examen(pregunta)
-                                guardadas += 1
-                            else:
-                                errores += 1
-                        except Exception:
-                            errores += 1
-                    if guardadas > 0:
-                        st.success(f"✅ {guardadas} pregunta(s) guardadas correctamente")
-                    if errores > 0:
-                        st.warning(f"⚠️ {errores} pregunta(s) no se pudieron procesar (formato incorrecto)")
+                        continue  # Saltar vacías
+                    if not (pd_item['a'] and pd_item['b']):
+                        errores += 1
+                        st.warning(f"⚠️ Pregunta {idx}: necesita al menos opciones A y B")
+                        continue
+                    pregunta = {
+                        'docente': usuario, 'docente_nombre': nombre_doc,
+                        'grado': grado_doc, 'semana': sem_input, 'area': area,
+                        'tipo_evaluacion': tipo_eval,
+                        'texto': texto.strip(),
+                        'opciones': {
+                            'a': pd_item['a'].strip(),
+                            'b': pd_item['b'].strip(),
+                            'c': pd_item['c'].strip() if pd_item['c'] else '',
+                            'd': pd_item['d'].strip() if pd_item['d'] else '',
+                        },
+                        'respuesta_correcta': pd_item['resp'],
+                        'imagen_b64': '',
+                    }
+                    if pd_item['img']:
+                        comp = _comprimir_imagen_aula(pd_item['img'].getvalue(), max_size=400, quality=65)
+                        pregunta['imagen_b64'] = _img_a_base64(comp)
+                    _guardar_pregunta_examen(pregunta)
+                    guardadas += 1
+                if guardadas > 0:
+                    st.success(f"✅ {guardadas} pregunta(s) guardadas correctamente")
+                    st.balloons()
+                if errores > 0:
+                    st.warning(f"⚠️ {errores} pregunta(s) con errores (no guardadas)")
 
     with tab2:
         st.markdown("### 📋 Mis Preguntas Cargadas")
@@ -6875,26 +6902,70 @@ def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actua
         mis_preguntas = [e for e in examenes if e.get('docente') == usuario]
         if not mis_preguntas:
             st.info("📭 Aún no has cargado preguntas.")
-            return
-        por_semana = {}
-        for p in mis_preguntas:
-            s = p.get('semana', 0)
-            if s not in por_semana:
-                por_semana[s] = []
-            por_semana[s].append(p)
-        for sem in sorted(por_semana.keys(), reverse=True):
-            with st.expander(f"📅 Semana {sem} — {len(por_semana[sem])} pregunta(s)",
-                             expanded=(sem == semana_actual)):
-                por_area = {}
-                for p in por_semana[sem]:
-                    a = p.get('area', 'Sin área')
-                    if a not in por_area:
-                        por_area[a] = []
-                    por_area[a].append(p)
-                for area_n, pregs_area in por_area.items():
-                    st.markdown(f"**📚 {area_n}** — {len(pregs_area)} pregunta(s)")
-                    for i, p in enumerate(pregs_area, 1):
-                        st.caption(f"  {i}. {p.get('texto', '')[:80]}... [Resp: {p.get('respuesta_correcta', '?').upper()}]")
+        else:
+            por_semana = {}
+            for p in mis_preguntas:
+                s = p.get('semana', 0)
+                if s not in por_semana:
+                    por_semana[s] = []
+                por_semana[s].append(p)
+            for sem in sorted(por_semana.keys(), reverse=True):
+                with st.expander(f"📅 Semana {sem} — {len(por_semana[sem])} pregunta(s)",
+                                 expanded=(sem == semana_actual)):
+                    por_area = {}
+                    for p in por_semana[sem]:
+                        a = p.get('area', 'Sin área')
+                        if a not in por_area:
+                            por_area[a] = []
+                        por_area[a].append(p)
+                    for area_n, pregs_area in por_area.items():
+                        st.markdown(f"**📚 {area_n}** — {len(pregs_area)} pregunta(s)")
+                        for i, p in enumerate(pregs_area, 1):
+                            tipo_e = p.get('tipo_evaluacion', 'Semanal')
+                            st.caption(f"  {i}. {p.get('texto', '')[:80]}... [Resp: {p.get('respuesta_correcta', '?').upper()}] ({tipo_e})")
+
+    with tab3:
+        st.markdown("### 📥 Descargar Mi Examen")
+        st.caption("Genera un PDF con tus preguntas cargadas para imprimir.")
+        examenes = _cargar_examenes_sem()
+        mis_preguntas = [e for e in examenes if e.get('docente') == usuario]
+        if not mis_preguntas:
+            st.info("📭 Sin preguntas para generar examen.")
+        else:
+            semanas_disp = sorted(set(p.get('semana', 0) for p in mis_preguntas), reverse=True)
+            c1, c2 = st.columns(2)
+            with c1:
+                sem_dl = st.selectbox("Semana:", semanas_disp, key="ex_dl_sem")
+            with c2:
+                areas_disp = sorted(set(p.get('area', '') for p in mis_preguntas if p.get('semana') == sem_dl))
+                area_dl = st.selectbox("Área:", ["TODAS"] + areas_disp, key="ex_dl_area")
+
+            preg_filtradas = [p for p in mis_preguntas if p.get('semana') == sem_dl]
+            if area_dl != "TODAS":
+                preg_filtradas = [p for p in preg_filtradas if p.get('area') == area_dl]
+
+            st.info(f"📝 {len(preg_filtradas)} preguntas disponibles")
+
+            if st.button("🖨️ GENERAR MI EXAMEN PDF", type="primary",
+                         use_container_width=True, key="btn_gen_mi_examen"):
+                if preg_filtradas:
+                    areas_agrupadas = {}
+                    for p in preg_filtradas:
+                        a = p.get('area', 'General')
+                        if a not in areas_agrupadas:
+                            areas_agrupadas[a] = []
+                        areas_agrupadas[a].append(p)
+                    titulo = f"{preg_filtradas[0].get('tipo_evaluacion', 'Evaluación')} — Semana {sem_dl}"
+                    try:
+                        pdf_bytes = _generar_pdf_examen_semanal(areas_agrupadas, config, grado_doc, sem_dl, titulo)
+                        st.download_button("📥 DESCARGAR EXAMEN PDF", pdf_bytes,
+                                           f"mi_examen_S{sem_dl}.pdf",
+                                           "application/pdf", use_container_width=True,
+                                           key="dl_mi_examen")
+                    except Exception as e:
+                        st.error(f"Error: {str(e)[:100]}")
+                else:
+                    st.warning("Sin preguntas para generar")
 
 
 def _vista_directivo_examenes(config, semana_actual):
