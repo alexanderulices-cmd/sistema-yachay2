@@ -3059,17 +3059,22 @@ def tab_matricula(config):
                                          ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
                                          key="dn_grado")
                 else:
-                    opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
-                    dn_g = st.selectbox("🎓 Grado/Grupo:",
-                                         ["N/A"] + opciones_asig, key="dn_grado_sec")
-                    todas_areas = AREAS_MINEDU.get(dn_nivel, [])
-                    if dn_nivel == "PREUNIVERSITARIO":
-                        todas_areas = list(set(
-                            AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
-                            AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-                        ))
-                    dn_areas_sel = st.multiselect("📚 Áreas que enseña:", 
-                                                   todas_areas, key="dn_areas_reg")
+                    # SECUNDARIA y PREUNIVERSITARIO: acceso a TODOS los grados de ambos niveles
+                    dn_g = "ALL_SEC_PREU"
+                    grados_sec = NIVELES_GRADOS.get('SECUNDARIA', [])
+                    grados_preu = NIVELES_GRADOS.get('PREUNIVERSITARIO', [])
+                    st.success(f"✅ Acceso automático a TODOS los grados de Secundaria ({len(grados_sec)}) y Pre-U ({len(grados_preu)})")
+                    st.caption("Grados: " + ", ".join(grados_sec + grados_preu))
+                    # Todas las áreas SEC + PREU combinadas
+                    todas_areas = list(AREAS_MINEDU.get('SECUNDARIA', []))
+                    for a in AREAS_CEPRE_UNSAAC.get('GRUPO AB', []):
+                        if a not in todas_areas:
+                            todas_areas.append(a)
+                    for a in AREAS_CEPRE_UNSAAC.get('GRUPO CD', []):
+                        if a not in todas_areas:
+                            todas_areas.append(a)
+                    st.info(f"📚 {len(todas_areas)} áreas disponibles (Secundaria + CEPRE UNSAAC)")
+                    dn_areas_sel = todas_areas  # Todas seleccionadas por defecto
             else:
                 # Directora, Auxiliar, etc. — acceso completo sin grado
                 dn_nivel = "PRIMARIA"
@@ -4640,7 +4645,9 @@ def vista_docente(config):
     
     grado = str(info.get('grado', ''))
     label = str(info.get('label', usuario.replace('.', ' ').title()))
-    if grado:
+    if grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
+        st.markdown(f"### 👨‍🏫 {label} — Secundaria / Pre-Universitario")
+    elif grado:
         st.markdown(f"### 👨‍🏫 {label} — {grado}")
     else:
         st.markdown(f"### 👨‍🏫 {label}")
@@ -4648,7 +4655,13 @@ def vista_docente(config):
 
     # Determinar nivel del docente
     nivel_doc = str(info.get('nivel', ''))
-    es_secundaria = 'SECUNDARIA' in nivel_doc or 'PREUNIVERSITARIO' in nivel_doc or 'GRUPO' in grado
+    es_secundaria = ('SECUNDARIA' in nivel_doc or 'PREUNIVERSITARIO' in nivel_doc
+                     or 'GRUPO' in grado or 'Sec' in grado
+                     or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+    
+    # Para sec/preu: mostrar grado como info general
+    if es_secundaria and grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
+        st.caption("🔓 Acceso a todos los grados de Secundaria y Pre-Universitario")
     
     if es_secundaria:
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
@@ -4693,35 +4706,49 @@ def vista_docente(config):
 def _tab_registro_auxiliar_docente(grado, config):
     """Tab de registro auxiliar para docentes"""
     st.subheader("📝 Registro Auxiliar de Evaluación")
+    
+    # Sec/Preu: seleccionar grado
+    info = st.session_state.get('docente_info', {}) or {}
+    nivel_d = str(info.get('nivel', '')).upper()
+    es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
+              or str(grado) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
+              or 'GRUPO' in str(grado) or 'Sec' in str(grado))
+    
+    if es_sec:
+        grados_disp = _grados_del_docente()
+        grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="reg_aux_grado")
+    else:
+        grado_sel = grado
+    
     tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
                         horizontal=True, key="tipo_reg_aux")
     sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
     bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="dbim")
     
+    # Determinar áreas según nivel del grado seleccionado
+    grado_str = str(grado_sel)
+    if any(x in grado_str for x in ['GRUPO', 'Ciclo', 'Reforzamiento']):
+        todas_areas = list(set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])))
+    elif any(x in grado_str for x in ['Sec']):
+        todas_areas = list(AREAS_MINEDU.get('SECUNDARIA', []))
+        for a in set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])):
+            if a not in todas_areas:
+                todas_areas.append(a)
+    elif 'Inicial' in grado_str:
+        todas_areas = AREAS_MINEDU.get('INICIAL', ['Comunicación', 'Matemática'])
+    else:
+        todas_areas = AREAS_MINEDU.get('PRIMARIA', ['Comunicación', 'Matemática'])
+    
     if tipo_reg == "📄 En blanco":
         st.markdown("**Cursos:**")
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            dc1 = st.text_input("Curso 1:", "Matemática", key="dc1")
-        with c2:
-            dc2 = st.text_input("Curso 2:", "Comunicación", key="dc2")
-        with c3:
-            dc3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="dc3")
-        cursos_d = [c for c in [dc1, dc2, dc3] if c.strip()]
+        cursos_d = st.multiselect("Seleccione cursos:", todas_areas,
+                                   default=todas_areas[:3], key="dc_cursos")
     else:
-        grado_str = str(grado)
-        if 'GRUPO AB' in grado_str:
-            cursos_d = AREAS_CEPRE_UNSAAC['GRUPO AB'][:3]
-        elif 'GRUPO CD' in grado_str:
-            cursos_d = AREAS_CEPRE_UNSAAC['GRUPO CD'][:3]
-        elif any(x in grado_str for x in ['Sec']):
-            cursos_d = AREAS_MINEDU['SECUNDARIA'][:3]
-        else:
-            cursos_d = AREAS_MINEDU.get('PRIMARIA', ['Matemática', 'Comunicación', 'Ciencia y Tec.'])[:3]
+        cursos_d = todas_areas[:3]
         st.info(f"📚 Áreas: {', '.join(cursos_d)}")
         
-    dg = BaseDatos.obtener_estudiantes_grado(grado, sec)
-    st.info(f"📊 {len(dg)} estudiantes")
+    dg = BaseDatos.obtener_estudiantes_grado(grado_sel, sec)
+    st.info(f"📊 {len(dg)} estudiantes — {grado_sel}")
     if not dg.empty:
         st.dataframe(dg[['Nombre', 'DNI', 'Grado', 'Seccion']],
                      use_container_width=True, hide_index=True)
@@ -4740,6 +4767,19 @@ def _tab_registro_auxiliar_docente(grado, config):
 def _tab_registro_pdf_docente(grado, config):
     """Tab de registro PDF para docentes"""
     st.subheader("📋 Registro de Asistencia PDF")
+    
+    # Sec/Preu: seleccionar grado
+    info = st.session_state.get('docente_info', {}) or {}
+    nivel_d = str(info.get('nivel', '')).upper()
+    es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
+              or str(grado) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
+              or 'GRUPO' in str(grado) or 'Sec' in str(grado))
+    if es_sec:
+        grados_disp = _grados_del_docente()
+        grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="reg_pdf_grado")
+    else:
+        grado_sel = grado
+    
     sec2 = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds2")
     meses_opts = list(MESES_ESCOLARES.items())
     meses_sel = st.multiselect(
@@ -4748,12 +4788,12 @@ def _tab_registro_pdf_docente(grado, config):
         default=[f"{v} ({k})" for k, v in meses_opts[:1]],
         key="dmsel")
     meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
-    dg2 = BaseDatos.obtener_estudiantes_grado(grado, sec2)
-    st.info(f"📊 {len(dg2)} estudiantes")
+    dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
+    st.info(f"📊 {len(dg2)} estudiantes — {grado_sel}")
     if st.button("📥 Descargar Registro Asistencia PDF", type="primary",
                  use_container_width=True, key="ddas"):
         if not dg2.empty and meses_nums:
-            lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
+            lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
             sl = sec2 if sec2 != "Todas" else "Todas"
             pdf = generar_registro_asistencia_pdf(
                 lg, sl, config['anio'], dg2, meses_nums)
@@ -5566,12 +5606,14 @@ def tab_registrar_notas(config):
         grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
     elif grado_doc:
         # Secundaria/Preu: pueden elegir cualquier grado de su nivel
-        es_sec = nivel_doc and ('SECUNDARIA' in str(nivel_doc).upper() or 'PREUNIVERSITARIO' in str(nivel_doc).upper())
-        if es_sec or 'GRUPO' in str(grado_doc) or 'Sec' in str(grado_doc):
-            grados_sec = [g for g in GRADOS_OPCIONES if 'Sec' in g or 'GRUPO' in g or 'Ciclo' in g or 'Reforzamiento' in g]
-            if not grados_sec:
-                grados_sec = [grado_doc]
-            grado_sel = st.selectbox("🎓 Grado:", grados_sec, key="rn_grado_doc")
+        es_sec = (nivel_doc and ('SECUNDARIA' in str(nivel_doc).upper() or 'PREUNIVERSITARIO' in str(nivel_doc).upper()))
+        es_sec = es_sec or str(grado_doc) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
+        es_sec = es_sec or 'GRUPO' in str(grado_doc) or 'Sec' in str(grado_doc)
+        if es_sec:
+            grados_sec_preu = _grados_del_docente()
+            if not grados_sec_preu:
+                grados_sec_preu = [grado_doc]
+            grado_sel = st.selectbox("🎓 Grado:", grados_sec_preu, key="rn_grado_doc")
         else:
             grado_sel = grado_doc
             st.info(f"🎓 **{grado_sel}**")
@@ -6051,8 +6093,11 @@ def _areas_del_docente():
     info = st.session_state.get('docente_info', {}) or {}
     nivel = str(info.get('nivel', 'PRIMARIA')).upper()
     grado = str(info.get('grado', ''))
-    # Secundaria/Preu: incluir áreas MINEDU + CEPRE
-    if 'SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel or 'GRUPO' in grado or 'Sec' in grado:
+    # Secundaria/Preu: incluir todas las áreas de ambos niveles
+    es_sec = ('SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel
+              or 'GRUPO' in grado or 'Sec' in grado
+              or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+    if es_sec:
         areas_sec = AREAS_POR_NIVEL.get("SECUNDARIA", [])
         areas_preu = AREAS_POR_NIVEL.get("PREUNIVERSITARIO", [])
         # Combinar sin duplicados, manteniendo orden
@@ -6072,10 +6117,14 @@ def _grados_del_docente():
     info = st.session_state.get('docente_info', {}) or {}
     nivel = str(info.get('nivel', 'PRIMARIA')).upper()
     grado = str(info.get('grado', ''))
-    es_sec = 'SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel or 'GRUPO' in grado or 'Sec' in grado
+    es_sec = ('SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel
+              or 'GRUPO' in grado or 'Sec' in grado
+              or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     if es_sec:
-        return [g for g in GRADOS_OPCIONES if 'Sec' in g or 'GRUPO' in g or 'Ciclo' in g or 'Reforzamiento' in g]
-    elif grado:
+        grados_sec = NIVELES_GRADOS.get('SECUNDARIA', [])
+        grados_preu = NIVELES_GRADOS.get('PREUNIVERSITARIO', [])
+        return grados_sec + grados_preu
+    elif grado and grado != 'N/A':
         return [grado]
     return GRADOS_OPCIONES
 
