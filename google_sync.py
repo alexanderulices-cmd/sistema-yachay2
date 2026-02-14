@@ -566,7 +566,7 @@ class GoogleSync:
     def historial_asistencia_estudiante(self, dni):
         """Retorna historial de asistencia de un estudiante específico"""
         try:
-            ws = self._get_hoja('asistencia')
+            ws = self._get_hoja('asistencias')
             if not ws:
                 return {}
             data = ws.get_all_records()
