@@ -4376,8 +4376,14 @@ def tab_calificacion_yachay(config):
                                        key="grado_rank")
             rs = BaseDatos.cargar_todos_resultados()
             if grado_rank != "TODOS":
+                # Pre-cargar matrícula para filtrar eficientemente
+                df_mat = BaseDatos.cargar_matricula()
+                grados_por_dni = {}
+                if not df_mat.empty and 'DNI' in df_mat.columns and 'Grado' in df_mat.columns:
+                    for _, row_m in df_mat.iterrows():
+                        grados_por_dni[str(row_m.get('DNI', '')).strip()] = str(row_m.get('Grado', ''))
                 rs = [r for r in rs if str(r.get('grado', '')) == grado_rank or
-                      str(BaseDatos.buscar_por_dni(r.get('dni', '')) or {}).get('Grado', '') == grado_rank]
+                      grados_por_dni.get(str(r.get('dni', '')).strip(), '') == grado_rank]
         else:
             rs = BaseDatos.cargar_resultados_examen(usuario_actual)
 
