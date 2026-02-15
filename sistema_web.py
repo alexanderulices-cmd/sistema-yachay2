@@ -8360,7 +8360,7 @@ def tab_gestion_notas_directivo(config):
         st.info("Sin datos suficientes para gestionar.")
 
 
-
+def main():
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
