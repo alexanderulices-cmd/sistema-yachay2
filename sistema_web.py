@@ -45,6 +45,14 @@ except ImportError:
 
 import base64  # Para Aula Virtual
 
+# python-docx para leer archivos Word
+try:
+    from docx import Document as DocxDocument
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
+
 st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
 
 # ================================================================
@@ -6734,8 +6742,141 @@ def tab_material_docente(config):
         _vista_docente_material(config, usuario, nombre_doc, grado_sel, semana_actual)
 
 
+# ---- Funciones para leer Word y convertir a PDF oficial ----
+
+def _leer_docx(file_bytes):
+    """Lee un archivo .docx y extrae contenido como lista de bloques."""
+    if not HAS_DOCX:
+        return []
+    doc = DocxDocument(io.BytesIO(file_bytes))
+    bloques = []
+    for para in doc.paragraphs:
+        texto = para.text.strip()
+        if not texto:
+            bloques.append({'tipo': 'vacio'})
+            continue
+        # Detectar estilo
+        style_name = (para.style.name or '').lower()
+        is_bold = para.runs and all(r.bold for r in para.runs if r.text.strip())
+        is_heading = 'heading' in style_name or 'título' in style_name
+        font_size = None
+        if para.runs:
+            for r in para.runs:
+                if r.font.size:
+                    font_size = r.font.size.pt
+                    break
+        if is_heading or ('heading 1' in style_name):
+            bloques.append({'tipo': 'titulo', 'contenido': texto})
+        elif 'heading 2' in style_name or (is_bold and font_size and font_size >= 13):
+            bloques.append({'tipo': 'subtitulo', 'contenido': texto})
+        elif is_bold:
+            bloques.append({'tipo': 'negrita', 'contenido': texto})
+        else:
+            bloques.append({'tipo': 'texto', 'contenido': texto})
+    # Extraer imágenes
+    for rel in doc.part.rels.values():
+        if "image" in rel.reltype:
+            try:
+                img_data = rel.target_part.blob
+                img_b64 = base64.b64encode(img_data).decode('utf-8')
+                bloques.append({'tipo': 'imagen', 'imagen_b64': img_b64})
+            except Exception:
+                pass
+    return bloques
+
+
+def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, semana, titulo, tipo_doc="FICHA"):
+    """Genera PDF con formato oficial del colegio desde contenido de Word."""
+    buffer = io.BytesIO()
+    c_pdf = canvas.Canvas(buffer, pagesize=A4)
+    w, h = A4
+
+    # ENCABEZADO OFICIAL
+    _pdf_encabezado_material(c_pdf, w, h, config, semana, area, titulo, grado, nombre_doc)
+    y_pos = h - 230
+
+    # Tipo de documento
+    c_pdf.setFont("Helvetica-Bold", 10)
+    c_pdf.setFillColor(colors.HexColor("#6b7280"))
+    c_pdf.drawRightString(w - 60, h - 230, f"{tipo_doc} — Docente: {nombre_doc}")
+    c_pdf.setFillColor(colors.black)
+    y_pos -= 15
+
+    for bloque in bloques_docx:
+        tipo = bloque.get('tipo', '')
+        contenido = bloque.get('contenido', '')
+
+        if y_pos < 90:
+            c_pdf.showPage()
+            _pdf_pie_material(c_pdf, w, grado, area, semana)
+            y_pos = h - 60
+
+        if tipo == 'vacio':
+            y_pos -= 8
+        elif tipo == 'titulo':
+            c_pdf.setFont("Helvetica-Bold", 14)
+            c_pdf.setFillColor(colors.HexColor("#1a56db"))
+            c_pdf.drawString(60, y_pos, contenido[:70])
+            c_pdf.setFillColor(colors.black)
+            y_pos -= 22
+        elif tipo == 'subtitulo':
+            c_pdf.setFont("Helvetica-Bold", 11)
+            c_pdf.setFillColor(colors.HexColor("#1e40af"))
+            c_pdf.drawString(60, y_pos, contenido[:80])
+            c_pdf.setFillColor(colors.black)
+            y_pos -= 18
+        elif tipo == 'negrita':
+            c_pdf.setFont("Helvetica-Bold", 10)
+            for linea in textwrap.wrap(contenido, width=85):
+                if y_pos < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
+                c_pdf.drawString(65, y_pos, linea)
+                y_pos -= 14
+        elif tipo == 'texto':
+            c_pdf.setFont("Helvetica", 10)
+            for linea in textwrap.wrap(contenido, width=85):
+                if y_pos < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
+                c_pdf.drawString(65, y_pos, linea)
+                y_pos -= 14
+        elif tipo == 'imagen' and bloque.get('imagen_b64'):
+            try:
+                img_bytes = base64.b64decode(bloque['imagen_b64'])
+                img = Image.open(io.BytesIO(img_bytes))
+                if img.mode == 'RGBA':
+                    img = img.convert('RGB')
+                img_w, img_h = img.size
+                max_w = w - 140
+                max_h = 250
+                ratio = min(max_w / img_w, max_h / img_h, 1.0)
+                dw, dh = img_w * ratio, img_h * ratio
+                if y_pos - dh < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
+                tmp = f"tmp_docx_{int(time.time())}.jpg"
+                img.save(tmp, 'JPEG', quality=80)
+                c_pdf.drawImage(tmp, (w - dw) / 2, y_pos - dh, dw, dh)
+                y_pos -= dh + 15
+                try:
+                    os.remove(tmp)
+                except Exception:
+                    pass
+            except Exception:
+                pass
+
+    _pdf_pie_material(c_pdf, w, grado, area, semana)
+    c_pdf.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
 def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actual):
-    tab1, tab2 = st.tabs(["📤 Subir Material", "📋 Mi Material Subido"])
+    tab1, tab2, tab3 = st.tabs(["📤 Crear Ficha", "📄 Subir Word", "📋 Mi Material"])
     with tab1:
         st.markdown("### 📝 Crear Ficha de Trabajo")
         st.markdown("""
@@ -6838,6 +6979,89 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                                "application/pdf", use_container_width=True, key="dl_material_pdf")
 
     with tab2:
+        st.markdown("### 📄 Subir Archivo Word (.docx)")
+        if not HAS_DOCX:
+            st.error("⚠️ La librería python-docx no está instalada. Agregue `python-docx` a requirements.txt")
+        else:
+            st.markdown("""
+            <div style="background: #f0fdf4; border-radius: 10px; padding: 12px; 
+                        border-left: 4px solid #16a34a; margin-bottom: 15px;">
+                <strong>📄 Suba un Word simple</strong> (sin encabezado ni pie de página).<br>
+                El sistema le agregará el <b>formato oficial del colegio</b> con logo, datos y pie de página.
+                <br>Se reconocen: <b>títulos, subtítulos, negritas</b> e imágenes.
+            </div>""", unsafe_allow_html=True)
+
+            areas = _areas_del_docente()
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                w_semana = st.number_input("📅 Semana:", 1, 40, semana_actual, key="w_mat_sem")
+            with c2:
+                w_area = st.selectbox("📚 Área:", areas, key="w_mat_area")
+            with c3:
+                w_titulo = st.text_input("📝 Título:", placeholder="Ej: Fracciones", key="w_mat_titulo")
+
+            w_file = st.file_uploader("📎 Subir archivo Word (.docx):",
+                                       type=["docx"], key="w_mat_file",
+                                       help="Solo archivos .docx (Word 2007+)")
+            if w_file and w_titulo:
+                with st.spinner("📖 Leyendo documento Word..."):
+                    bloques = _leer_docx(w_file.getvalue())
+                if bloques:
+                    # Vista previa
+                    with st.expander("👁️ Vista previa del contenido", expanded=True):
+                        for b in bloques:
+                            if b['tipo'] == 'titulo':
+                                st.markdown(f"## {b['contenido']}")
+                            elif b['tipo'] == 'subtitulo':
+                                st.markdown(f"### {b['contenido']}")
+                            elif b['tipo'] == 'negrita':
+                                st.markdown(f"**{b['contenido']}**")
+                            elif b['tipo'] == 'texto':
+                                st.write(b['contenido'])
+                            elif b['tipo'] == 'imagen':
+                                try:
+                                    img_bytes = base64.b64decode(b['imagen_b64'])
+                                    st.image(img_bytes, width=400)
+                                except Exception:
+                                    st.caption("[Imagen]")
+                    st.info(f"📊 {len([b for b in bloques if b['tipo'] != 'vacio'])} bloques de contenido detectados")
+
+                    if st.button("📤 CONVERTIR A PDF OFICIAL", type="primary",
+                                 use_container_width=True, key="btn_word_pdf"):
+                        with st.spinner("🖨️ Generando PDF con formato oficial..."):
+                            pdf_bytes = _generar_pdf_desde_docx(
+                                bloques, config, nombre_doc, grado_doc,
+                                w_area, w_semana, w_titulo, "FICHA DE TRABAJO"
+                            )
+                        st.success("✅ PDF generado con formato oficial del colegio")
+                        st.download_button("📥 DESCARGAR PDF OFICIAL",
+                                           pdf_bytes,
+                                           f"ficha_{w_area}_S{w_semana}.pdf",
+                                           "application/pdf",
+                                           use_container_width=True,
+                                           key="dl_word_pdf")
+                        # También guardar como material
+                        bloques_mat = []
+                        for b in bloques:
+                            if b['tipo'] in ('titulo', 'subtitulo', 'negrita'):
+                                bloques_mat.append({'tipo': 'texto', 'contenido': b['contenido'],
+                                                    'subtitulo': b['contenido'] if b['tipo'] in ('titulo', 'subtitulo') else ''})
+                            elif b['tipo'] == 'texto':
+                                bloques_mat.append({'tipo': 'texto', 'contenido': b['contenido'], 'subtitulo': ''})
+                            elif b['tipo'] == 'imagen':
+                                bloques_mat.append({'tipo': 'imagen', 'imagen_b64': b.get('imagen_b64', ''), 'subtitulo': ''})
+                        material = {
+                            'docente': usuario, 'docente_nombre': nombre_doc,
+                            'grado': grado_doc, 'semana': w_semana, 'area': w_area,
+                            'titulo': w_titulo.strip(), 'bloques': bloques_mat,
+                            'anio': config.get('anio', hora_peru().year),
+                            'origen': 'word'
+                        }
+                        _guardar_material(material)
+                else:
+                    st.warning("⚠️ No se pudo extraer contenido del archivo Word.")
+
+    with tab3:
         st.markdown("### 📋 Mi Material Subido")
         materiales = _cargar_materiales()
         mis_materiales = [m for m in materiales if m.get('docente') == usuario]
@@ -6953,7 +7177,7 @@ def tab_examenes_semanales(config):
 
 
 def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actual):
-    tab1, tab2, tab3 = st.tabs(["📤 Cargar Preguntas", "📋 Mis Preguntas", "📥 Descargar Examen"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📤 Cargar Preguntas", "📄 Subir Word", "📋 Mis Preguntas", "📥 Descargar Examen"])
     with tab1:
         st.markdown("### ✏️ Cargar Preguntas para Evaluación")
         st.markdown("""
@@ -7054,6 +7278,68 @@ def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actua
                     st.warning(f"⚠️ {errores} pregunta(s) con errores (no guardadas)")
 
     with tab2:
+        st.markdown("### 📄 Subir Examen desde Word (.docx)")
+        if not HAS_DOCX:
+            st.error("⚠️ La librería python-docx no está instalada.")
+        else:
+            st.markdown("""
+            <div style="background: #fef3c7; border-radius: 10px; padding: 12px; 
+                        border-left: 4px solid #f59e0b; margin-bottom: 15px;">
+                <strong>📄 Suba su examen en Word</strong> (sin encabezado ni pie).<br>
+                El sistema le agrega el <b>formato oficial</b> con logo, datos del colegio,
+                nombre del docente y pie de página.
+            </div>""", unsafe_allow_html=True)
+
+            areas_ex = _areas_del_docente()
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                we_sem = st.number_input("📅 Semana:", 1, 40, semana_actual, key="we_sem")
+            with c2:
+                we_area = st.selectbox("📚 Área:", areas_ex, key="we_area")
+            with c3:
+                we_tipo = st.selectbox("📋 Tipo:", TIPOS_EVALUACION, key="we_tipo")
+            we_titulo = st.text_input("📝 Título del examen:", placeholder="Ej: Evaluación Semanal 3",
+                                       key="we_titulo")
+            we_file = st.file_uploader("📎 Subir examen Word (.docx):",
+                                        type=["docx"], key="we_file")
+            if we_file and we_titulo:
+                with st.spinner("📖 Leyendo examen..."):
+                    bloques = _leer_docx(we_file.getvalue())
+                if bloques:
+                    with st.expander("👁️ Vista previa", expanded=True):
+                        for b in bloques:
+                            if b['tipo'] == 'titulo':
+                                st.markdown(f"## {b['contenido']}")
+                            elif b['tipo'] == 'subtitulo':
+                                st.markdown(f"### {b['contenido']}")
+                            elif b['tipo'] == 'negrita':
+                                st.markdown(f"**{b['contenido']}**")
+                            elif b['tipo'] == 'texto':
+                                st.write(b['contenido'])
+                            elif b['tipo'] == 'imagen':
+                                try:
+                                    st.image(base64.b64decode(b['imagen_b64']), width=400)
+                                except Exception:
+                                    pass
+                    if st.button("📤 CONVERTIR A PDF OFICIAL", type="primary",
+                                 use_container_width=True, key="btn_word_ex"):
+                        titulo_full = f"{we_tipo} — {we_titulo}"
+                        with st.spinner("🖨️ Generando PDF oficial..."):
+                            pdf_bytes = _generar_pdf_desde_docx(
+                                bloques, config, nombre_doc, grado_doc,
+                                we_area, we_sem, titulo_full, "EXAMEN"
+                            )
+                        st.success("✅ Examen con formato oficial generado")
+                        st.download_button("📥 DESCARGAR EXAMEN PDF",
+                                           pdf_bytes,
+                                           f"examen_{we_area}_S{we_sem}.pdf",
+                                           "application/pdf",
+                                           use_container_width=True,
+                                           key="dl_word_ex")
+                else:
+                    st.warning("⚠️ No se pudo leer el archivo Word.")
+
+    with tab3:
         st.markdown("### 📋 Mis Preguntas Cargadas")
         examenes = _cargar_examenes_sem()
         mis_preguntas = [e for e in examenes if e.get('docente') == usuario]
@@ -7081,7 +7367,7 @@ def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actua
                             tipo_e = p.get('tipo_evaluacion', 'Semanal')
                             st.caption(f"  {i}. {p.get('texto', '')[:80]}... [Resp: {p.get('respuesta_correcta', '?').upper()}] ({tipo_e})")
 
-    with tab3:
+    with tab4:
         st.markdown("### 📥 Descargar Mi Examen")
         st.caption("Genera un PDF con tus preguntas cargadas para imprimir.")
         examenes = _cargar_examenes_sem()
