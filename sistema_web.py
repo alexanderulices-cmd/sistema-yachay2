@@ -2626,6 +2626,33 @@ def pantalla_login():
         padding-top: 1rem;
         border-top: 1px solid #e2e8f0;
     }
+    @keyframes shimmer {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+        0%, 100% { filter: drop-shadow(0 0 8px rgba(26,86,219,0.4)); }
+        50% { filter: drop-shadow(0 0 25px rgba(26,86,219,0.8)); }
+    }
+    .escudo-login img {
+        animation: pulseGlow 3s ease-in-out infinite;
+        border-radius: 50%;
+    }
+    [data-testid="stTextInput"] input {
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 1rem !important;
+        border: 2px solid #e2e8f0 !important;
+        transition: border-color 0.3s !important;
+    }
+    [data-testid="stTextInput"] input:focus {
+        border-color: #1a56db !important;
+        box-shadow: 0 0 0 3px rgba(26,86,219,0.15) !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -2634,7 +2661,9 @@ def pantalla_login():
         if Path("escudo_upload.png").exists():
             c_img = st.columns([1, 1, 1])
             with c_img[1]:
+                st.markdown('<div class="escudo-login">', unsafe_allow_html=True)
                 st.image("escudo_upload.png", width=180)
+                st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown("""
         <div class='login-header'>
@@ -2745,6 +2774,7 @@ ARCHIVOS_BACKUP = [
     "fondo.png",
     "materiales_docente.json",   # Aula Virtual
     "examenes_semanales.json",   # Exámenes Semanales
+    "notas.json",                # Notas registradas
 ]
 
 
@@ -4743,8 +4773,8 @@ def vista_docente(config):
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📝 Calificación YACHAY",
-            "📚 Aula Virtual", "📝 Exámenes"
+            "📋 Registro PDF", "📚 Aula Virtual",
+            "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
             tab_registrar_notas(config)
@@ -4753,17 +4783,17 @@ def vista_docente(config):
         with tabs[2]:
             _tab_registro_pdf_docente(grado, config)
         with tabs[3]:
-            tab_calificacion_yachay(config)
-        with tabs[4]:
             tab_material_docente(config)
-        with tabs[5]:
+        with tabs[4]:
             tab_examenes_semanales(config)
+        with tabs[5]:
+            tab_calificacion_yachay(config)
     else:
         # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📝 Calificación YACHAY",
-            "📚 Aula Virtual", "📝 Exámenes"
+            "📋 Registro PDF", "📚 Aula Virtual",
+            "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
             tab_registrar_notas(config)
@@ -4772,11 +4802,11 @@ def vista_docente(config):
         with tabs[2]:
             _tab_registro_pdf_docente(grado, config)
         with tabs[3]:
-            tab_calificacion_yachay(config)
-        with tabs[4]:
             tab_material_docente(config)
-        with tabs[5]:
+        with tabs[4]:
             tab_examenes_semanales(config)
+        with tabs[5]:
+            tab_calificacion_yachay(config)
 
 
 def _tab_registro_auxiliar_docente(grado, config):
@@ -4820,8 +4850,33 @@ def _tab_registro_auxiliar_docente(grado, config):
         cursos_d = st.multiselect("Seleccione cursos:", todas_areas,
                                    default=todas_areas[:3], key="dc_cursos")
     else:
-        cursos_d = todas_areas[:3]
-        st.info(f"📚 Áreas: {', '.join(cursos_d)}")
+        # Mostrar cursos con notas registradas
+        notas = {}
+        if Path('notas.json').exists():
+            with open('notas.json', 'r', encoding='utf-8') as f:
+                notas = json.load(f)
+        cursos_con_notas = {}
+        for k, v in notas.items():
+            if isinstance(v, dict) and v.get('grado') == grado_sel:
+                area_n = v.get('area', '')
+                if area_n not in cursos_con_notas:
+                    cursos_con_notas[area_n] = 0
+                cursos_con_notas[area_n] += 1
+        # Mostrar info de notas registradas
+        if cursos_con_notas:
+            st.success(f"📊 Cursos con notas: {len(cursos_con_notas)}")
+            for cn, cnt in sorted(cursos_con_notas.items()):
+                st.caption(f"  📚 **{cn}** — {cnt} registro(s)")
+        else:
+            st.info("📭 No hay notas registradas aún para este grado")
+        # Permitir seleccionar cursos también en este modo
+        opciones_areas = list(cursos_con_notas.keys()) if cursos_con_notas else todas_areas
+        for a in todas_areas:
+            if a not in opciones_areas:
+                opciones_areas.append(a)
+        cursos_d = st.multiselect("📚 Seleccione cursos:", opciones_areas,
+                                   default=list(cursos_con_notas.keys())[:3] if cursos_con_notas else opciones_areas[:3],
+                                   key="dc_cursos_notas")
         
     dg = BaseDatos.obtener_estudiantes_grado(grado_sel, sec)
     st.info(f"📊 {len(dg)} estudiantes — {grado_sel}")
@@ -5787,6 +5842,15 @@ def tab_registrar_notas(config):
     if st.button("💾 GUARDAR NOTAS", type="primary",
                  use_container_width=True, key="btn_guardar_notas"):
         guardadas = 0
+        # Cargar notas locales
+        notas_local = {}
+        if Path('notas.json').exists():
+            try:
+                with open('notas.json', 'r', encoding='utf-8') as f:
+                    notas_local = json.load(f)
+            except Exception:
+                notas_local = {}
+
         for dni, data in notas_input.items():
             if data['nota'] > 0:
                 registro = {
@@ -5801,18 +5865,27 @@ def tab_registrar_notas(config):
                     'docente': usuario,
                     'tipo': 'manual'
                 }
+                key = f"nota_{dni}_{area_sel}_{bim_sel}"
+                # Guardar local
+                notas_local[key] = registro
+                guardadas += 1
+                # Guardar en GS también
                 if gs:
                     try:
                         ws = gs._get_hoja('config')
                         if ws:
-                            key = f"nota_{dni}_{area_sel}_{bim_sel}"
                             ws.append_row([key, json.dumps(registro, ensure_ascii=False, default=str)])
-                            guardadas += 1
                     except Exception:
                         pass
 
+        # Persistir local
         if guardadas > 0:
-            st.success(f"✅ **{guardadas} notas guardadas** correctamente en la nube")
+            try:
+                with open('notas.json', 'w', encoding='utf-8') as f:
+                    json.dump(notas_local, f, ensure_ascii=False, indent=2, default=str)
+            except Exception:
+                pass
+            st.success(f"✅ **{guardadas} notas guardadas** correctamente")
             reproducir_beep_exitoso()
             st.balloons()
         else:
@@ -5820,30 +5893,252 @@ def tab_registrar_notas(config):
 
     # Historial de notas guardadas
     st.markdown("---")
+    notas_hist = []
+    # Cargar de local primero
+    if Path('notas.json').exists():
+        try:
+            with open('notas.json', 'r', encoding='utf-8') as f:
+                notas_local = json.load(f)
+                for k, n in notas_local.items():
+                    if isinstance(n, dict) and n.get('grado') == grado_sel:
+                        notas_hist.append(n)
+        except Exception:
+            pass
+    # Si no hay local, intentar GS
+    if not notas_hist and gs:
+        try:
+            ws = gs._get_hoja('config')
+            if ws:
+                data = ws.get_all_records()
+                for d in data:
+                    clave = str(d.get('clave', ''))
+                    if clave.startswith('nota_'):
+                        try:
+                            n = json.loads(d.get('valor', '{}'))
+                            if n.get('grado') == grado_sel:
+                                notas_hist.append(n)
+                        except Exception:
+                            pass
+        except Exception:
+            pass
+
     with st.expander("📊 Ver notas guardadas"):
-        if gs:
+        notas_area = [n for n in notas_hist if n.get('area') == area_sel]
+        if notas_area:
+            df_n = pd.DataFrame(notas_area)
+            cols_show = [c for c in ['nombre', 'nota', 'literal', 'bimestre', 'fecha'] if c in df_n.columns]
+            st.dataframe(df_n[cols_show], use_container_width=True, hide_index=True)
+        else:
+            st.info("Sin notas guardadas para este grado/área")
+
+    # ===== RANKING Y REPORTES =====
+    st.markdown("---")
+    st.subheader("🏆 Ranking y Reportes")
+
+    if notas_hist:
+        # Agrupar por estudiante y área
+        from collections import defaultdict
+        ranking_data = defaultdict(lambda: {'nombre': '', 'areas': {}})
+        for n in notas_hist:
+            dni_r = n.get('dni', '')
+            ranking_data[dni_r]['nombre'] = n.get('nombre', '')
+            area_r = n.get('area', '')
+            nota_r = n.get('nota', 0)
             try:
-                ws = gs._get_hoja('config')
-                if ws:
-                    data = ws.get_all_records()
-                    notas_hist = []
-                    for d in data:
-                        clave = str(d.get('clave', ''))
-                        if clave.startswith('nota_'):
-                            try:
-                                n = json.loads(d.get('valor', '{}'))
-                                if n.get('grado') == grado_sel and n.get('area') == area_sel:
-                                    notas_hist.append(n)
-                            except Exception:
-                                pass
-                    if notas_hist:
-                        df_n = pd.DataFrame(notas_hist)
-                        st.dataframe(df_n[['nombre', 'nota', 'literal', 'bimestre', 'fecha']],
-                                     use_container_width=True, hide_index=True)
-                    else:
-                        st.info("Sin notas guardadas para este grado/área")
-            except Exception:
-                st.info("Sin datos")
+                nota_r = int(nota_r)
+            except (ValueError, TypeError):
+                nota_r = 0
+            # Guardar la última nota por área
+            ranking_data[dni_r]['areas'][area_r] = nota_r
+
+        # Construir tabla ranking
+        areas_unicas = sorted(set(a for d in ranking_data.values() for a in d['areas']))
+        ranking_filas = []
+        for dni_r, data_r in ranking_data.items():
+            fila = {'DNI': dni_r, 'Nombre': data_r['nombre']}
+            total = 0
+            count = 0
+            for a in areas_unicas:
+                nota_a = data_r['areas'].get(a, 0)
+                fila[a] = nota_a
+                total += nota_a
+                count += 1
+            fila['Promedio'] = round(total / max(count, 1), 1)
+            ranking_filas.append(fila)
+
+        ranking_filas.sort(key=lambda x: x['Promedio'], reverse=True)
+        for i, f in enumerate(ranking_filas):
+            f['Puesto'] = i + 1
+            if i == 0:
+                f['Medalla'] = '🥇'
+            elif i == 1:
+                f['Medalla'] = '🥈'
+            elif i == 2:
+                f['Medalla'] = '🥉'
+            else:
+                f['Medalla'] = f'#{i+1}'
+
+        df_rank = pd.DataFrame(ranking_filas)
+        cols_order = ['Puesto', 'Medalla', 'Nombre'] + areas_unicas + ['Promedio']
+        cols_exist = [c for c in cols_order if c in df_rank.columns]
+        df_rank = df_rank[cols_exist]
+
+        st.dataframe(df_rank, use_container_width=True, hide_index=True, height=400)
+        st.caption(f"📊 {len(ranking_filas)} estudiantes — {len(areas_unicas)} área(s) evaluada(s)")
+
+        # Descargar Ranking PDF
+        c_rnk1, c_rnk2 = st.columns(2)
+        with c_rnk1:
+            if st.button("📥 DESCARGAR RANKING PDF", type="primary",
+                         use_container_width=True, key="btn_ranking_pdf"):
+                pdf_rank = _generar_ranking_pdf(ranking_filas, areas_unicas, grado_sel,
+                                                 bim_sel, config)
+                st.download_button("⬇️ Descargar PDF", pdf_rank,
+                                   f"Ranking_{grado_sel}_{bim_sel}.pdf",
+                                   "application/pdf", key="dl_ranking_pdf")
+        with c_rnk2:
+            if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_notas"):
+                st.session_state['_mostrar_wa_notas'] = True
+
+        # WhatsApp individual
+        if st.session_state.get('_mostrar_wa_notas'):
+            st.markdown("### 📱 Enviar Notas por WhatsApp")
+            for fila in ranking_filas:
+                nombre_wa = fila['Nombre']
+                # Buscar celular del apoderado
+                alumno = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
+                cel = alumno.get('Celular_Apoderado', '') if alumno else ''
+                if cel:
+                    msg = f"🏫 *I.E.P. YACHAY — CHINCHERO*\n"
+                    msg += f"📋 *REPORTE DE NOTAS*\n"
+                    msg += f"👤 Alumno: {nombre_wa}\n"
+                    msg += f"🎓 Grado: {grado_sel}\n"
+                    msg += f"📅 Período: {bim_sel}\n"
+                    msg += f"{'─' * 25}\n"
+                    for a in areas_unicas:
+                        nota_w = fila.get(a, 0)
+                        lit_w = nota_a_letra(nota_w) if nota_w > 0 else '-'
+                        msg += f"📚 {a}: *{nota_w}* ({lit_w})\n"
+                    msg += f"{'─' * 25}\n"
+                    msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n"
+                    msg += f"🏅 *PUESTO: {fila['Medalla']}*"
+                    cel_clean = cel.replace(' ', '').replace('+', '')
+                    if not cel_clean.startswith('51'):
+                        cel_clean = '51' + cel_clean
+                    url_wa = f"https://wa.me/{cel_clean}?text={urllib.parse.quote(msg)}"
+                    st.markdown(f"📱 **{nombre_wa}** → [{cel}]({url_wa})")
+                else:
+                    st.caption(f"⚠️ {nombre_wa} — Sin celular registrado")
+    else:
+        st.info("📭 Registre notas primero para ver el ranking")
+
+
+def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
+    """Genera PDF del ranking con colores y medallas"""
+    buffer = io.BytesIO()
+    c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
+    w, h = landscape(A4)
+
+    # Encabezado
+    c_pdf.setFillColor(colors.HexColor("#001e7c"))
+    c_pdf.rect(0, h - 15, w, 15, fill=1, stroke=0)
+    if Path("escudo_upload.png").exists():
+        try:
+            c_pdf.drawImage("escudo_upload.png", 30, h - 80, 45, 45, mask='auto')
+        except Exception:
+            pass
+    c_pdf.setFillColor(colors.HexColor("#001e7c"))
+    c_pdf.setFont("Helvetica-Bold", 14)
+    c_pdf.drawCentredString(w / 2, h - 40, "🏆 RANKING DE ESTUDIANTES")
+    c_pdf.setFont("Helvetica", 10)
+    c_pdf.drawCentredString(w / 2, h - 55, f"I.E.P. YACHAY — {grado} — {periodo}")
+    c_pdf.drawRightString(w - 30, h - 55, hora_peru().strftime('%d/%m/%Y'))
+
+    # Tabla
+    col_headers = ['#', 'Estudiante'] + [a[:12] for a in areas] + ['Promedio']
+    y = h - 85
+    col_widths = [30, 180] + [55] * len(areas) + [60]
+    x_start = 25
+
+    # Header row
+    c_pdf.setFillColor(colors.HexColor("#1e3a8a"))
+    total_w = sum(col_widths)
+    c_pdf.rect(x_start, y - 3, total_w, 18, fill=1, stroke=0)
+    c_pdf.setFillColor(colors.white)
+    c_pdf.setFont("Helvetica-Bold", 7)
+    x = x_start
+    for i, hdr in enumerate(col_headers):
+        c_pdf.drawString(x + 3, y + 2, hdr)
+        x += col_widths[i]
+    y -= 18
+
+    # Data rows
+    for idx, fila in enumerate(ranking_filas):
+        if y < 40:
+            c_pdf.showPage()
+            y = h - 30
+
+        # Color de fondo
+        if idx == 0:
+            c_pdf.setFillColor(colors.HexColor("#fef3c7"))  # Gold
+        elif idx == 1:
+            c_pdf.setFillColor(colors.HexColor("#e5e7eb"))  # Silver
+        elif idx == 2:
+            c_pdf.setFillColor(colors.HexColor("#fed7aa"))  # Bronze
+        elif idx % 2 == 0:
+            c_pdf.setFillColor(colors.HexColor("#f9fafb"))
+        else:
+            c_pdf.setFillColor(colors.white)
+        c_pdf.rect(x_start, y - 3, total_w, 16, fill=1, stroke=0)
+
+        c_pdf.setFillColor(colors.black)
+        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 8)
+        x = x_start
+        # Puesto
+        medalla = fila.get('Medalla', str(idx + 1))
+        c_pdf.drawString(x + 3, y + 1, medalla)
+        x += col_widths[0]
+        # Nombre
+        c_pdf.drawString(x + 3, y + 1, str(fila['Nombre'])[:30])
+        x += col_widths[1]
+        # Notas por área
+        for a in areas:
+            nota_v = fila.get(a, 0)
+            lit_v = nota_a_letra(nota_v) if nota_v > 0 else '-'
+            col_n = color_semaforo(lit_v)
+            c_pdf.setFillColor(colors.HexColor(col_n))
+            c_pdf.drawString(x + 3, y + 1, f"{nota_v} ({lit_v})" if nota_v > 0 else "-")
+            c_pdf.setFillColor(colors.black)
+            x += col_widths[len(col_widths) - len(areas) - 1]
+        # Promedio
+        c_pdf.setFont("Helvetica-Bold", 9)
+        prom_c = "#16a34a" if fila['Promedio'] >= 14 else "#dc2626" if fila['Promedio'] < 11 else "#f59e0b"
+        c_pdf.setFillColor(colors.HexColor(prom_c))
+        c_pdf.drawString(x + 3, y + 1, str(fila['Promedio']))
+        c_pdf.setFillColor(colors.black)
+        y -= 16
+
+    # Pie
+    y -= 20
+    c_pdf.setFont("Helvetica", 7)
+    c_pdf.setFillColor(colors.HexColor("#6b7280"))
+    c_pdf.drawString(30, 20, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
+    c_pdf.drawString(30, 10, "NOTA: Este es un documento referencial. El consolidado oficial lo registra el/la docente.")
+    c_pdf.drawRightString(w - 30, 20, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+
+    # Marca de agua
+    if Path("escudo_upload.png").exists():
+        try:
+            c_pdf.saveState()
+            c_pdf.setFillAlpha(0.04)
+            c_pdf.drawImage("escudo_upload.png", w / 2 - 80, h / 2 - 80, 160, 160, mask='auto')
+            c_pdf.restoreState()
+        except Exception:
+            pass
+
+    c_pdf.save()
+    buffer.seek(0)
+    return buffer.getvalue()
 
 
 # ================================================================
@@ -6359,15 +6654,39 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
             pass
 
 
-def _pdf_pie_material(c, w, grado, area, semana):
+def _pdf_pie_material(c, w, grado, area, semana, pagina=None):
+    # Marca de agua (escudo) en cada página
+    if Path("escudo_upload.png").exists():
+        try:
+            c.saveState()
+            c.setFillAlpha(0.04)
+            c.drawImage("escudo_upload.png", w / 2 - 100, A4[1] / 2 - 100, 200, 200, mask='auto')
+            c.restoreState()
+        except Exception:
+            pass
     c.setStrokeColor(colors.HexColor("#1a56db"))
     c.setLineWidth(0.5)
-    c.line(40, 40, w - 40, 40)
+    c.line(30, 35, w - 30, 35)
     c.setFont("Helvetica", 7)
     c.setFillColor(colors.HexColor("#6b7280"))
-    c.drawString(40, 28, f"I.E.P. YACHAY — {grado} — {area} — Semana {semana}")
-    c.drawRightString(w - 40, 28, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    c.drawString(30, 23, f"I.E.P. YACHAY — {grado} — {area} — Semana {semana}")
+    if pagina:
+        c.drawCentredString(w / 2, 23, f"— {pagina} —")
+    c.drawRightString(w - 30, 23, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
     c.setFillColor(colors.black)
+
+
+def _pdf_encabezado_cont(c, w, h, grado, area, docente, semana):
+    """Encabezado compacto para páginas de continuación"""
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.rect(0, h - 12, w, 12, fill=1, stroke=0)
+    c.setFillColor(colors.HexColor("#374151"))
+    c.setFont("Helvetica-Bold", 7)
+    c.drawString(30, h - 25, f"I.E.P. YACHAY — {grado} — {area}")
+    c.drawRightString(w - 30, h - 25, f"Docente: {docente} — Semana {semana}")
+    c.setStrokeColor(colors.HexColor("#d1d5db"))
+    c.setLineWidth(0.5)
+    c.line(30, h - 30, w - 30, h - 30)
 
 
 def _generar_pdf_material(material, config):
@@ -6380,6 +6699,16 @@ def _generar_pdf_material(material, config):
     grado = material.get('grado', '')
     docente = material.get('docente_nombre', '')
     bloques = material.get('bloques', [])
+    pagina = [1]  # mutable counter
+    LM = 35  # margen izquierdo estrecho
+    RM = w - 35  # margen derecho estrecho
+
+    def nueva_pagina():
+        _pdf_pie_material(c_pdf, w, grado, area, semana, pagina[0])
+        c_pdf.showPage()
+        pagina[0] += 1
+        _pdf_encabezado_cont(c_pdf, w, h, grado, area, docente, semana)
+        return h - 45
 
     _pdf_encabezado_material(c_pdf, w, h, config, semana, area, titulo, grado, docente)
     y_pos = h - 230
@@ -6390,15 +6719,13 @@ def _generar_pdf_material(material, config):
         contenido = bloque.get('contenido', '')
         subtitulo = bloque.get('subtitulo', '')
 
-        if y_pos < 120:
-            c_pdf.showPage()
-            _pdf_pie_material(c_pdf, w, grado, area, semana)
-            y_pos = h - 60
+        if y_pos < 100:
+            y_pos = nueva_pagina()
 
         if subtitulo:
             c_pdf.setFont("Helvetica-Bold", 11)
             c_pdf.setFillColor(colors.HexColor("#1a56db"))
-            c_pdf.drawString(60, y_pos, f"  {num_actividad}. {subtitulo}")
+            c_pdf.drawString(LM + 5, y_pos, f"  {num_actividad}. {subtitulo}")
             c_pdf.setFillColor(colors.black)
             y_pos -= 20
             num_actividad += 1
@@ -6408,121 +6735,105 @@ def _generar_pdf_material(material, config):
             for linea_r in lineas_raw:
                 linea_r = linea_r.strip()
                 if not linea_r:
-                    y_pos -= 8
+                    y_pos -= 6
                     continue
-                if y_pos < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
-                # ## Subtítulo grande
+                if y_pos < 70:
+                    y_pos = nueva_pagina()
                 if linea_r.startswith('## '):
                     c_pdf.setFont("Helvetica-Bold", 12)
                     c_pdf.setFillColor(colors.HexColor("#1a56db"))
-                    c_pdf.drawString(60, y_pos, linea_r[3:].strip())
+                    c_pdf.drawString(LM, y_pos, linea_r[3:].strip())
                     c_pdf.setFillColor(colors.black)
                     y_pos -= 20
-                # ### Sub-subtítulo
                 elif linea_r.startswith('### '):
                     c_pdf.setFont("Helvetica-Bold", 10)
-                    c_pdf.drawString(65, y_pos, linea_r[4:].strip())
+                    c_pdf.drawString(LM + 5, y_pos, linea_r[4:].strip())
                     y_pos -= 16
-                # **Negrita** en toda la línea
                 elif linea_r.startswith('**') and linea_r.endswith('**'):
                     c_pdf.setFont("Helvetica-Bold", 10)
-                    for sub_l in textwrap.wrap(linea_r.strip('*').strip(), width=85):
-                        if y_pos < 80:
-                            c_pdf.showPage()
-                            _pdf_pie_material(c_pdf, w, grado, area, semana)
-                            y_pos = h - 60
-                        c_pdf.drawString(70, y_pos, sub_l)
-                        y_pos -= 14
+                    for sub_l in textwrap.wrap(linea_r.strip('*').strip(), width=90):
+                        if y_pos < 70:
+                            y_pos = nueva_pagina()
+                        c_pdf.drawString(LM + 5, y_pos, sub_l)
+                        y_pos -= 13
                 else:
-                    # Texto normal (puede tener **negrita** inline)
                     c_pdf.setFont("Helvetica", 10)
-                    for sub_l in textwrap.wrap(linea_r, width=85):
-                        if y_pos < 80:
-                            c_pdf.showPage()
-                            _pdf_pie_material(c_pdf, w, grado, area, semana)
-                            y_pos = h - 60
-                        c_pdf.drawString(70, y_pos, sub_l.replace('**', ''))
-                        y_pos -= 14
-            y_pos -= 8
+                    for sub_l in textwrap.wrap(linea_r, width=90):
+                        if y_pos < 70:
+                            y_pos = nueva_pagina()
+                        c_pdf.drawString(LM + 5, y_pos, sub_l.replace('**', ''))
+                        y_pos -= 13
+            y_pos -= 6
 
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
             try:
                 img_bytes = _base64_a_bytes(bloque['imagen_b64'])
                 img = Image.open(io.BytesIO(img_bytes))
                 img_w, img_h = img.size
-                max_w = w - 140
+                max_w = w - 80
                 max_h = 280
                 ratio = min(max_w / img_w, max_h / img_h, 1.0)
                 disp_w = img_w * ratio
                 disp_h = img_h * ratio
-                if y_pos - disp_h < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
+                if y_pos - disp_h < 70:
+                    y_pos = nueva_pagina()
                 tmp = f"tmp_mat_{int(time.time())}.jpg"
                 if img.mode == 'RGBA':
                     img = img.convert('RGB')
                 img.save(tmp, 'JPEG', quality=85)
                 c_pdf.drawImage(tmp, (w - disp_w) / 2, y_pos - disp_h, disp_w, disp_h)
-                y_pos -= disp_h + 15
+                y_pos -= disp_h + 12
                 try:
                     os.remove(tmp)
                 except Exception:
                     pass
             except Exception:
                 c_pdf.setFont("Helvetica-Oblique", 9)
-                c_pdf.drawString(70, y_pos, "[Imagen no disponible]")
+                c_pdf.drawString(LM + 5, y_pos, "[Imagen no disponible]")
                 y_pos -= 15
 
         elif tipo == 'instruccion' and contenido:
             c_pdf.setStrokeColor(colors.HexColor("#2563eb"))
             c_pdf.setFillColor(colors.HexColor("#eff6ff"))
-            box_h = max(30, len(textwrap.wrap(contenido, width=80)) * 14 + 16)
-            if y_pos - box_h < 80:
-                c_pdf.showPage()
-                _pdf_pie_material(c_pdf, w, grado, area, semana)
-                y_pos = h - 60
-            c_pdf.roundRect(55, y_pos - box_h, w - 110, box_h, 5, fill=1)
+            box_h = max(30, len(textwrap.wrap(contenido, width=85)) * 13 + 16)
+            if y_pos - box_h < 70:
+                y_pos = nueva_pagina()
+            c_pdf.roundRect(LM, y_pos - box_h, w - LM * 2, box_h, 5, fill=1)
             c_pdf.setFillColor(colors.HexColor("#1e40af"))
             c_pdf.setFont("Helvetica-Bold", 9)
-            c_pdf.drawString(65, y_pos - 14, "INSTRUCCIONES:")
+            c_pdf.drawString(LM + 10, y_pos - 14, "INSTRUCCIONES:")
             c_pdf.setFont("Helvetica", 9)
             c_pdf.setFillColor(colors.black)
-            lineas = textwrap.wrap(contenido, width=80)
+            lineas = textwrap.wrap(contenido, width=85)
             ty = y_pos - 28
             for linea in lineas:
-                c_pdf.drawString(65, ty, linea)
+                c_pdf.drawString(LM + 10, ty, linea)
                 ty -= 13
-            y_pos -= box_h + 12
+            y_pos -= box_h + 10
 
         elif tipo == 'ejercicio' and contenido:
             c_pdf.setFont("Helvetica", 10)
             lineas = contenido.split('\n')
             for linea in lineas:
-                if y_pos < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
+                if y_pos < 70:
+                    y_pos = nueva_pagina()
                 linea = linea.strip()
                 if linea:
-                    c_pdf.drawString(70, y_pos, linea)
-                    y_pos -= 14
+                    c_pdf.drawString(LM + 5, y_pos, linea)
+                    y_pos -= 13
                     if bloque.get('espacio_resolver', True):
                         for _ in range(2):
-                            if y_pos < 80:
+                            if y_pos < 70:
                                 break
                             c_pdf.setStrokeColor(colors.HexColor("#d1d5db"))
                             c_pdf.setDash(3, 3)
-                            c_pdf.line(70, y_pos, w - 70, y_pos)
+                            c_pdf.line(LM + 5, y_pos, RM, y_pos)
                             c_pdf.setDash()
                             c_pdf.setStrokeColor(colors.black)
-                            y_pos -= 18
-                        y_pos -= 5
+                            y_pos -= 16
+                        y_pos -= 4
 
-    _pdf_pie_material(c_pdf, w, grado, area, semana)
+    _pdf_pie_material(c_pdf, w, grado, area, semana, pagina[0])
     c_pdf.save()
     buffer.seek(0)
     return buffer.getvalue()
@@ -7536,7 +7847,11 @@ def main():
     # Saludo personalizado
     usuario = st.session_state.get('usuario_actual', '')
     usuarios = cargar_usuarios()
-    nombre_usuario = usuarios.get(usuario, {}).get('label', usuario.capitalize())
+    # Priorizar nombre completo de docente_info, luego label, luego usuario
+    _di = st.session_state.get('docente_info') or {}
+    nombre_usuario = (_di.get('label') or _di.get('nombre') or
+                      usuarios.get(usuario, {}).get('label', '') or
+                      usuario.replace('.', ' ').title())
     hora_actual = hora_peru().hour
     if hora_actual < 12:
         saludo = "☀️ Buenos días"
