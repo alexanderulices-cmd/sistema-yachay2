@@ -1876,14 +1876,14 @@ class GeneradorCarnet:
     def _qr(self):
         try:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-            q = qrcode.QRCode(box_size=14, border=1)
+            q = qrcode.QRCode(box_size=16, border=1)
             q.add_data(dni)
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
-            iq = iq.resize((250, 250), Image.LANCZOS)
-            self.img.paste(iq, (self.WIDTH - 285, 215))
-            fs = RecursoManager.obtener_fuente("", 11, True)
-            self.draw.text((self.WIDTH - 160, 470), "ESCANEAR QR",
+            iq = iq.resize((310, 310), Image.LANCZOS)
+            self.img.paste(iq, (self.WIDTH - 345, 195))
+            fs = RecursoManager.obtener_fuente("", 13, True)
+            self.draw.text((self.WIDTH - 190, 510), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1895,18 +1895,18 @@ class GeneradorCarnet:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
             buf2 = io.BytesIO()
             Code128(dni, writer=ImageWriter()).write(buf2, options={
-                'write_text': False, 'module_width': 0.55,
-                'module_height': 12, 'quiet_zone': 2
+                'write_text': False, 'module_width': 0.70,
+                'module_height': 16, 'quiet_zone': 2
             })
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
-            ib = ib.resize((350, 60), Image.LANCZOS)
-            xb = (self.WIDTH - 350) // 2
-            yb = self.HEIGHT - 125
+            ib = ib.resize((420, 80), Image.LANCZOS)
+            xb = (self.WIDTH - 420) // 2
+            yb = self.HEIGHT - 140
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 12, True)
-            self.draw.text((self.WIDTH // 2, yb + 65), f"DNI: {dni}",
+            fbc = RecursoManager.obtener_fuente("", 14, True)
+            self.draw.text((self.WIDTH // 2, yb + 85), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
             pass
@@ -4595,7 +4595,7 @@ def tab_base_datos():
             if 'Nombre' in d.columns:
                 d = d.sort_values('Nombre')
             st.dataframe(d, use_container_width=True, hide_index=True, height=500)
-            c1, c2 = st.columns(2)
+            c1, c2, c3 = st.columns(3)
             with c1:
                 st.download_button("⬇️ CSV",
                                    d.to_csv(index=False).encode('utf-8'),
@@ -4605,6 +4605,24 @@ def tab_base_datos():
                 d.to_excel(buf, index=False, engine='openpyxl')
                 buf.seek(0)
                 st.download_button("⬇️ Excel", buf, "alumnos.xlsx", key="dxlsx")
+            with c3:
+                st.markdown("")
+            # Eliminar alumno
+            with st.expander("🗑️ Eliminar Alumno", expanded=False):
+                del_dni_a = st.text_input("DNI del alumno a eliminar:", key="del_dni_alum",
+                                          max_chars=8, placeholder="12345678")
+                if st.button("❌ ELIMINAR ALUMNO", type="primary", key="btn_del_alum"):
+                    if del_dni_a and len(del_dni_a.strip()) == 8:
+                        alumno = BaseDatos.buscar_por_dni(del_dni_a.strip())
+                        if alumno:
+                            BaseDatos.eliminar_estudiante(del_dni_a.strip())
+                            st.success(f"✅ Alumno con DNI {del_dni_a} eliminado")
+                            time.sleep(1)
+                            st.rerun()
+                        else:
+                            st.error("⚠️ No se encontró alumno con ese DNI")
+                    else:
+                        st.error("⚠️ Ingrese un DNI válido de 8 dígitos")
         else:
             st.info("📝 Sin alumnos.")
     with tab_dc:
@@ -4617,6 +4635,18 @@ def tab_base_datos():
             buf2.seek(0)
             st.download_button("⬇️ Excel", buf2,
                                "docentes_export.xlsx", key="dxlsxd")
+            # Eliminar docente
+            with st.expander("🗑️ Eliminar Docente", expanded=False):
+                del_dni_d = st.text_input("DNI del docente a eliminar:", key="del_dni_doc",
+                                          max_chars=8, placeholder="12345678")
+                if st.button("❌ ELIMINAR DOCENTE", type="primary", key="btn_del_doc"):
+                    if del_dni_d and len(del_dni_d.strip()) == 8:
+                        BaseDatos.eliminar_docente(del_dni_d.strip())
+                        st.success(f"✅ Docente con DNI {del_dni_d} eliminado")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error("⚠️ Ingrese un DNI válido de 8 dígitos")
         else:
             st.info("📝 Sin docentes.")
 
@@ -6328,15 +6358,48 @@ def _generar_pdf_material(material, config):
             num_actividad += 1
 
         if tipo == 'texto' and contenido:
-            c_pdf.setFont("Helvetica", 10)
-            lineas = textwrap.wrap(contenido, width=85)
-            for linea in lineas:
+            lineas_raw = contenido.split('\n')
+            for linea_r in lineas_raw:
+                linea_r = linea_r.strip()
+                if not linea_r:
+                    y_pos -= 8
+                    continue
                 if y_pos < 80:
                     c_pdf.showPage()
                     _pdf_pie_material(c_pdf, w, grado, area, semana)
                     y_pos = h - 60
-                c_pdf.drawString(70, y_pos, linea)
-                y_pos -= 14
+                # ## Subtítulo grande
+                if linea_r.startswith('## '):
+                    c_pdf.setFont("Helvetica-Bold", 12)
+                    c_pdf.setFillColor(colors.HexColor("#1a56db"))
+                    c_pdf.drawString(60, y_pos, linea_r[3:].strip())
+                    c_pdf.setFillColor(colors.black)
+                    y_pos -= 20
+                # ### Sub-subtítulo
+                elif linea_r.startswith('### '):
+                    c_pdf.setFont("Helvetica-Bold", 10)
+                    c_pdf.drawString(65, y_pos, linea_r[4:].strip())
+                    y_pos -= 16
+                # **Negrita** en toda la línea
+                elif linea_r.startswith('**') and linea_r.endswith('**'):
+                    c_pdf.setFont("Helvetica-Bold", 10)
+                    for sub_l in textwrap.wrap(linea_r.strip('*').strip(), width=85):
+                        if y_pos < 80:
+                            c_pdf.showPage()
+                            _pdf_pie_material(c_pdf, w, grado, area, semana)
+                            y_pos = h - 60
+                        c_pdf.drawString(70, y_pos, sub_l)
+                        y_pos -= 14
+                else:
+                    # Texto normal (puede tener **negrita** inline)
+                    c_pdf.setFont("Helvetica", 10)
+                    for sub_l in textwrap.wrap(linea_r, width=85):
+                        if y_pos < 80:
+                            c_pdf.showPage()
+                            _pdf_pie_material(c_pdf, w, grado, area, semana)
+                            y_pos = h - 60
+                        c_pdf.drawString(70, y_pos, sub_l.replace('**', ''))
+                        y_pos -= 14
             y_pos -= 8
 
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
@@ -6656,7 +6719,14 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                                    placeholder="Ej: Operaciones con fracciones", key="mat_titulo")
             st.markdown("---")
             st.markdown("### 📄 Contenido de la Ficha")
-            st.caption("Agregue los bloques de contenido en orden. Se generará un PDF profesional con el logo del colegio.")
+            st.markdown("""
+            <div style="background: #f0fdf4; border-radius: 8px; padding: 10px; font-size: 0.82rem; margin-bottom: 10px;">
+                <strong>📝 Formato disponible:</strong><br>
+                • <code>**texto**</code> → <b>negrita</b><br>
+                • <code>## Subtítulo</code> → subtítulo grande azul<br>
+                • <code>### Sub-subtítulo</code> → subtítulo mediano<br>
+                • Línea normal → texto regular
+            </div>""", unsafe_allow_html=True)
 
             instrucciones = st.text_area("📌 Instrucciones generales:",
                                          placeholder="Ej: Lee atentamente cada ejercicio...",
