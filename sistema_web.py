@@ -751,6 +751,17 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
+        # Después de escribir, forzar lectura local para evitar datos viejos de GS
+        forzar_local = st.session_state.get('_forzar_local', False)
+        if forzar_local:
+            st.session_state['_forzar_local'] = False
+            try:
+                if Path(ARCHIVO_MATRICULA).exists():
+                    df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+                    df.columns = df.columns.str.strip()
+                    return df
+            except Exception:
+                pass
         # Intentar Google Sheets primero
         gs = _gs()
         if gs:
@@ -762,7 +773,6 @@ class BaseDatos:
                                'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
                                'celular_apoderado': 'Celular_Apoderado'}
                     df_gs = df_gs.rename(columns=col_map)
-                    # Asegurar que todos los valores sean string
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
                     return df_gs
@@ -787,6 +797,8 @@ class BaseDatos:
         except Exception:
             # Fallback: guardar como CSV si openpyxl falla
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
+        # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
+        st.session_state['_forzar_local'] = True
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -881,6 +893,17 @@ class BaseDatos:
 
     @staticmethod
     def cargar_docentes():
+        # Después de escribir, forzar lectura local
+        forzar_local = st.session_state.get('_forzar_local_doc', False)
+        if forzar_local:
+            st.session_state['_forzar_local_doc'] = False
+            try:
+                if Path(ARCHIVO_DOCENTES).exists():
+                    df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
+                    df.columns = df.columns.str.strip()
+                    return df
+            except Exception:
+                pass
         # Intentar Google Sheets primero
         gs = _gs()
         if gs:
@@ -913,6 +936,8 @@ class BaseDatos:
             df.to_excel(ARCHIVO_DOCENTES, index=False, engine='openpyxl')
         except Exception:
             df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
+        # Forzar lectura local en el próximo cargar
+        st.session_state['_forzar_local_doc'] = True
         gs = _gs()
         if gs:
             try:
