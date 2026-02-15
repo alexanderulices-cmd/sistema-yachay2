@@ -3352,10 +3352,19 @@ def tab_carnets(config):
     with t1:
         c1, c2 = st.columns(2)
         with c1:
+            c_tipo = st.radio("Tipo de carnet:", ["🎓 Alumno", "👨‍🏫 Docente"],
+                              horizontal=True, key="c_tipo")
+            es_doc_ind = "Docente" in c_tipo
             cn = st.text_input("👤 Nombre:", key="cn")
             cd = st.text_input("🆔 DNI:", key="cd")
-            cg = st.selectbox("📚 Grado:", TODOS_LOS_GRADOS, key="cg")
-            cs = st.selectbox("📂 Sección:", SECCIONES, key="cs")
+            if es_doc_ind:
+                c_cargo = st.selectbox("💼 Cargo:", ["Docente", "Directora", "Coordinador",
+                                                      "Auxiliar", "Administrativo"], key="c_cargo")
+                c_esp = st.text_input("📚 Especialidad:", key="c_esp",
+                                      placeholder="Ej: Matemática")
+            else:
+                cg = st.selectbox("📚 Grado:", TODOS_LOS_GRADOS, key="cg")
+                cs = st.selectbox("📂 Sección:", SECCIONES, key="cs")
         with c2:
             cf = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'], key="cf")
             if cf:
@@ -3364,9 +3373,13 @@ def tab_carnets(config):
                      use_container_width=True, key="gc"):
             if cn and cd:
                 fi = io.BytesIO(cf.getvalue()) if cf else None
+                if es_doc_ind:
+                    datos_c = {'Nombre': cn, 'DNI': cd, 'Cargo': c_cargo,
+                               'Especialidad': c_esp, 'Grado': ''}
+                else:
+                    datos_c = {'Nombre': cn, 'DNI': cd, 'Grado': cg, 'Seccion': cs}
                 cr = GeneradorCarnet(
-                    {'Nombre': cn, 'DNI': cd, 'Grado': cg, 'Seccion': cs},
-                    config['anio'], fi
+                    datos_c, config['anio'], fi, es_docente=es_doc_ind
                 ).generar()
                 st.image(cr, use_container_width=True)
                 st.download_button("⬇️ Descargar", cr,
