@@ -332,315 +332,206 @@ init_session_state()
 
 st.markdown("""
 <style>
-/* === ANIMACIÓN DE ENTRADA === */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
+/* ====== PALETA VIBRANTE YACHAY ====== */
+:root {
+    --primary:   #1a56db;
+    --secondary: #7c3aed;
+    --success:   #059669;
+    --warning:   #d97706;
+    --danger:    #dc2626;
+    --cyan:      #0891b2;
+    --pink:      #db2777;
+    --orange:    #ea580c;
 }
 
-/* === HEADER PRINCIPAL === */
+/* ====== ANIMACIONES ====== */
+@keyframes fadeInUp   { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInLeft { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+@keyframes pulse      { 0%,100% { transform:scale(1); } 50% { transform:scale(1.06); } }
+@keyframes shimmer    { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+@keyframes gradientBG { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+@keyframes glow       { 0%,100% { box-shadow:0 0 5px rgba(26,86,219,0.3); } 50% { box-shadow:0 0 20px rgba(26,86,219,0.6); } }
+@keyframes bounceIn   { 0% { opacity:0; transform:scale(0.3); } 60% { transform:scale(1.05); } 100% { opacity:1; transform:scale(1); } }
+@keyframes slideIn    { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+
+/* ====== HEADER ANIMADO CON GRADIENTE VIVO ====== */
 .main-header {
-    text-align: center; padding: 2rem;
-    background: linear-gradient(135deg, #001e7c 0%, #0052cc 50%, #0066ff 100%);
-    color: white; border-radius: 15px; margin-bottom: 2rem;
-    box-shadow: 0 8px 25px rgba(0,30,124,0.35);
-    animation: fadeInUp 0.6s ease-out;
+    text-align: center; padding: 2.2rem;
+    background: linear-gradient(270deg, #001e7c, #0052cc, #7c3aed, #db2777, #0052cc, #001e7c);
+    background-size: 400% 400%;
+    animation: gradientBG 8s ease infinite;
+    color: white; border-radius: 18px; margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0,30,124,0.4);
 }
 
-/* === TABS ANIMADOS === */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-}
+/* ====== TABS ====== */
+.stTabs [data-baseweb="tab-list"] { gap: 6px; }
 .stTabs [data-baseweb="tab"] {
-    border-radius: 10px 10px 0 0;
-    padding: 10px 20px;
-    transition: all 0.3s ease;
-    font-weight: 600;
+    border-radius: 10px 10px 0 0; padding: 10px 18px;
+    transition: all 0.3s ease; font-weight: 600;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
 }
 .stTabs [data-baseweb="tab"]:hover {
-    background: rgba(26,86,219,0.1);
+    background: linear-gradient(135deg, #dbeafe, #ede9fe) !important;
     transform: translateY(-2px);
 }
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #1a56db, #0052cc) !important;
+    background: linear-gradient(135deg, #1a56db, #7c3aed) !important;
     color: white !important;
-    box-shadow: 0 4px 12px rgba(26,86,219,0.3);
+    box-shadow: 0 4px 15px rgba(26,86,219,0.4) !important;
+    border-radius: 10px 10px 0 0 !important;
 }
 
-/* === BOTONES CON EFECTO === */
+/* ====== BOTONES ====== */
 .stButton > button {
     transition: all 0.3s ease !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
+    border-radius: 10px !important; font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
 }
-.stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+.stButton > button:hover { transform: translateY(-3px) !important; box-shadow: 0 8px 25px rgba(0,0,0,0.18) !important; }
+.stButton > button:active { transform: translateY(0) !important; }
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #1a56db, #7c3aed) !important;
+    border: none !important; color: white !important;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.35) !important;
 }
-.stButton > button:active {
-    transform: translateY(0) !important;
+.stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #1e40af, #6d28d9) !important;
+    box-shadow: 0 8px 30px rgba(124,58,237,0.5) !important;
+    transform: translateY(-3px) !important;
 }
-
-/* === CARDS DE ESTADÍSTICAS === */
-.stat-card {
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    border-radius: 12px; padding: 1.2rem;
-    border-left: 4px solid #1a56db;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    animation: slideIn 0.5s ease-out;
-    transition: transform 0.2s;
-}
-.stat-card:hover { transform: translateY(-3px); }
-.stat-card h3 { margin: 0; color: #1a56db; font-size: 2rem; }
-.stat-card p { margin: 0; color: #64748b; font-size: 0.9rem; }
-
-/* === ASISTENCIA REGISTRADA === */
-.asist-ok {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-    border-radius: 10px; padding: 12px 16px;
-    border-left: 4px solid #16a34a;
-    animation: fadeInUp 0.4s ease-out;
-    margin: 4px 0;
-}
-.asist-salida {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    border-radius: 10px; padding: 12px 16px;
-    border-left: 4px solid #f59e0b;
-    animation: fadeInUp 0.4s ease-out;
-    margin: 4px 0;
-}
-
-/* === GOOGLE SHEETS STATUS === */
-.gs-connected {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-    border-radius: 8px; padding: 8px 12px;
-    text-align: center; font-weight: 600;
-    color: #166534; font-size: 0.85rem;
-    animation: pulse 2s infinite;
-}
-.gs-offline {
-    background: #fef3c7; border-radius: 8px;
-    padding: 8px 12px; text-align: center;
-    color: #92400e; font-size: 0.85rem;
-}
-
-/* === RANKING CON ANIMACIÓN === */
-.ranking-gold {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
-    color: #000; padding: 14px; border-radius: 10px;
-    font-weight: bold; text-align: center; margin: 5px 0;
-    box-shadow: 0 4px 15px rgba(255,215,0,0.4);
-}
-.ranking-silver {
-    background: linear-gradient(135deg, #C0C0C0, #E8E8E8, #C0C0C0);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
-    color: #000; padding: 14px; border-radius: 10px;
-    font-weight: bold; text-align: center; margin: 5px 0;
-    box-shadow: 0 4px 12px rgba(192,192,192,0.4);
-}
-.ranking-bronze {
-    background: linear-gradient(135deg, #CD7F32, #E8A849, #CD7F32);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
-    color: #fff; padding: 14px; border-radius: 10px;
-    font-weight: bold; text-align: center; margin: 5px 0;
-    box-shadow: 0 4px 12px rgba(205,127,50,0.4);
-}
-
-/* === WHATSAPP / LINKS === */
-.wa-btn {
-    background: linear-gradient(135deg, #25D366, #128C7E); color: white !important;
-    padding: 10px 20px; border: none; border-radius: 10px;
-    font-size: 15px; width: 100%; text-decoration: none;
-    display: block; text-align: center; margin: 4px 0;
-    transition: all 0.3s; font-weight: 600;
-}
-.wa-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,211,102,0.4); }
-.link-btn {
-    background: linear-gradient(135deg, #4285F4, #356AC3); color: white !important;
-    padding: 8px 16px; border: none; border-radius: 10px;
-    font-size: 14px; width: 100%; text-decoration: none;
-    display: block; text-align: center; margin: 4px 0;
-    transition: all 0.3s;
-}
-.link-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(66,133,244,0.4); }
-.siagie-btn {
-    background: linear-gradient(135deg, #E91E63, #C2185B); color: white !important;
-    padding: 8px 16px; border: none; border-radius: 10px;
-    font-size: 14px; width: 100%; text-decoration: none;
-    display: block; text-align: center; margin: 4px 0;
-    transition: all 0.3s;
-}
-.siagie-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233,30,99,0.4); }
-
-/* === EXPANDER MEJORADO === */
-.streamlit-expanderHeader {
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-}
-
-/* === SIDEBAR === */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-}
-
-/* === SUCCESS/ERROR MEJORADOS === */
-.stSuccess { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
-.stError { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
-.stInfo { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
-
-/* === DASHBOARD GRID === */
 .stButton > button[kind="secondary"] {
-    min-height: 100px !important;
-    font-size: 1.1rem !important;
-    border-radius: 16px !important;
-    border: 2px solid #e2e8f0 !important;
+    min-height: 100px !important; font-size: 1.05rem !important;
+    border-radius: 16px !important; border: 2px solid #e2e8f0 !important;
     background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
 }
 .stButton > button[kind="secondary"]:hover {
     transform: translateY(-4px) scale(1.02) !important;
-    box-shadow: 0 8px 25px rgba(26,86,219,0.15) !important;
-    border-color: #1a56db !important;
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+    box-shadow: 0 8px 25px rgba(124,58,237,0.2) !important;
+    border-color: #7c3aed !important;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%) !important;
 }
 
-/* === NÚMERO ANIMADO === */
-@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.stMetric { animation: countUp 0.5s ease-out; }
-
-/* === INPUTS MEJORADOS === */
-.stTextInput > div > div > input { border-radius: 10px !important; transition: all 0.3s; }
-.stTextInput > div > div > input:focus { box-shadow: 0 0 0 3px rgba(26,86,219,0.2) !important; border-color: #1a56db !important; }
-.stSelectbox > div > div { border-radius: 10px !important; }
-
-/* === DATAFRAME === */
-.stDataFrame { border-radius: 12px !important; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-
-/* === SEMÁFORO COLORES === */
-.semaforo-ad { color: #16a34a; font-weight: bold; }
-.semaforo-a { color: #2563eb; font-weight: bold; }
-.semaforo-b { color: #f59e0b; font-weight: bold; }
-.semaforo-c { color: #dc2626; font-weight: bold; }
-
-/* === LOADING SPINNER === */
-.stSpinner > div { border-color: #1a56db transparent transparent transparent !important; }
-
-/* === DASHBOARD MÓDULOS GRID === */
-@keyframes cardFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-@keyframes glow {
-    0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    50% { box-shadow: 0 8px 30px rgba(26,86,219,0.25); }
-}
-@keyframes borderPulse {
-    0%, 100% { border-color: transparent; }
-    50% { border-color: #1a56db; }
-}
-
-/* === SIDEBAR MEJORADO === */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
-}
-section[data-testid="stSidebar"] .stMarkdown h1 {
-    background: linear-gradient(135deg, #1a56db, #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 1.5rem !important;
-}
-
-/* === EXPANDERS ANIMADOS === */
-.streamlit-expanderHeader {
-    border-radius: 10px !important;
-    transition: all 0.3s ease !important;
-    font-weight: 600 !important;
-}
-.streamlit-expanderHeader:hover {
-    background: rgba(26,86,219,0.08) !important;
-}
-
-/* === TABS CON GRADIENTE === */
-.stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #1a56db, #2563eb) !important;
-    color: white !important;
-    border-radius: 10px 10px 0 0 !important;
-    box-shadow: 0 4px 15px rgba(26,86,219,0.3) !important;
-    transition: all 0.3s ease !important;
-}
-
-/* === ALERTAS BONITAS === */
-.stAlert { border-radius: 12px !important; animation: fadeInUp 0.4s ease-out; }
-
-/* === ÉXITO CON BRILLO === */
-.stSuccess {
-    animation: fadeInUp 0.4s ease-out;
-    border-radius: 12px !important;
-}
-
-/* === BOTÓN PRIMARIO PREMIUM === */
-.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #1a56db 0%, #2563eb 50%, #3b82f6 100%) !important;
-    border: none !important;
-    box-shadow: 0 4px 15px rgba(26,86,219,0.3) !important;
-    letter-spacing: 0.5px !important;
-}
-.stButton > button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #1e40af 0%, #1a56db 50%, #2563eb 100%) !important;
-    box-shadow: 0 8px 25px rgba(26,86,219,0.4) !important;
-    transform: translateY(-3px) !important;
-}
-
-/* === DOWNLOAD BUTTON === */
+/* ====== DOWNLOAD BUTTON ====== */
 .stDownloadButton > button {
-    background: linear-gradient(135deg, #059669, #10b981) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 10px !important;
+    background: linear-gradient(135deg, #059669, #0891b2) !important;
+    color: white !important; border: none !important;
+    border-radius: 10px !important; font-weight: 700 !important;
     transition: all 0.3s ease !important;
 }
 .stDownloadButton > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(5,150,105,0.3) !important;
+    box-shadow: 0 6px 20px rgba(5,150,105,0.4) !important;
 }
 
-/* === RADIO BUTTONS === */
-.stRadio > div { gap: 8px; }
-.stRadio [role="radiogroup"] > label {
+/* ====== STAT CARDS ====== */
+.stat-card {
+    background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+    border-radius: 14px; padding: 1.3rem;
+    border-left: 5px solid #1a56db;
+    box-shadow: 0 4px 15px rgba(26,86,219,0.12);
+    animation: fadeInLeft 0.5s ease-out; transition: transform 0.25s;
+}
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(26,86,219,0.2); }
+.stat-card h3 { margin:0; font-size:2rem; background:linear-gradient(135deg,#1a56db,#7c3aed); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.stat-card p  { margin:0; color:#64748b; font-size:0.9rem; font-weight:600; }
+
+/* ====== RANKING ANIMADO ====== */
+.ranking-gold   { background:linear-gradient(135deg,#FFD700,#FFA500,#FFD700); background-size:200% auto; animation:shimmer 3s linear infinite; color:#000; padding:15px; border-radius:12px; font-weight:bold; text-align:center; margin:5px 0; box-shadow:0 4px 18px rgba(255,215,0,0.5); }
+.ranking-silver { background:linear-gradient(135deg,#C0C0C0,#E8E8E8,#C0C0C0); background-size:200% auto; animation:shimmer 3s linear infinite; color:#000; padding:15px; border-radius:12px; font-weight:bold; text-align:center; margin:5px 0; box-shadow:0 4px 14px rgba(192,192,192,0.5); }
+.ranking-bronze { background:linear-gradient(135deg,#CD7F32,#E8A849,#CD7F32); background-size:200% auto; animation:shimmer 3s linear infinite; color:#fff; padding:15px; border-radius:12px; font-weight:bold; text-align:center; margin:5px 0; box-shadow:0 4px 14px rgba(205,127,50,0.5); }
+
+/* ====== ASISTENCIA ====== */
+.asist-ok     { background:linear-gradient(135deg,#dcfce7,#bbf7d0); border-radius:10px; padding:12px 16px; border-left:5px solid #16a34a; animation:fadeInUp 0.4s ease-out; margin:4px 0; }
+.asist-salida { background:linear-gradient(135deg,#fef3c7,#fde68a); border-radius:10px; padding:12px 16px; border-left:5px solid #f59e0b; animation:fadeInUp 0.4s ease-out; margin:4px 0; }
+
+/* ====== GOOGLE SHEETS STATUS ====== */
+.gs-connected { background:linear-gradient(135deg,#dcfce7,#bbf7d0); border-radius:8px; padding:8px 12px; text-align:center; font-weight:700; color:#166534; font-size:0.85rem; animation:pulse 2s infinite; }
+.gs-offline   { background:#fef3c7; border-radius:8px; padding:8px 12px; text-align:center; color:#92400e; font-size:0.85rem; }
+
+/* ====== SIDEBAR ====== */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #eff6ff 0%, #f5f3ff 50%, #fdf2f8 100%) !important;
+    border-right: 2px solid #dbeafe !important;
+}
+section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] h2 {
+    background: linear-gradient(135deg, #1a56db, #7c3aed, #db2777);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* ====== INPUTS ====== */
+.stTextInput > div > div > input { border-radius: 10px !important; transition: all 0.3s !important; }
+.stTextInput > div > div > input:focus { box-shadow: 0 0 0 3px rgba(124,58,237,0.2) !important; border-color: #7c3aed !important; }
+.stSelectbox > div > div { border-radius: 10px !important; }
+.stSelectbox > div > div:hover { border-color: #7c3aed !important; box-shadow: 0 0 0 2px rgba(124,58,237,0.15) !important; }
+.stTextArea > div > div > textarea { border-radius: 10px !important; }
+.stTextArea > div > div > textarea:focus { box-shadow: 0 0 0 3px rgba(124,58,237,0.2) !important; border-color: #7c3aed !important; }
+
+/* ====== MÉTRICAS ====== */
+[data-testid="metric-container"] {
+    background: linear-gradient(135deg, #f8faff, #f5f3ff) !important;
+    border: 1px solid #ddd6fe !important; border-radius: 12px !important;
+    padding: 12px !important; transition: transform 0.2s !important;
+}
+[data-testid="metric-container"]:hover { transform: translateY(-2px) !important; }
+[data-testid="stMetricLabel"] { color: #7c3aed !important; font-weight: 700 !important; }
+[data-testid="stMetricValue"] { color: #1a56db !important; }
+
+/* ====== DATAFRAME ====== */
+.stDataFrame { border-radius: 12px !important; overflow:hidden; box-shadow:0 3px 12px rgba(26,86,219,0.1); }
+
+/* ====== ALERTAS ====== */
+.stSuccess { animation:fadeInUp 0.4s; border-radius:12px !important; border-left:5px solid #059669 !important; }
+.stError   { animation:fadeInUp 0.4s; border-radius:12px !important; border-left:5px solid #dc2626 !important; }
+.stInfo    { animation:fadeInUp 0.4s; border-radius:12px !important; border-left:5px solid #0891b2 !important; }
+.stWarning { animation:fadeInUp 0.4s; border-radius:12px !important; border-left:5px solid #d97706 !important; }
+.stAlert   { border-radius: 12px !important; animation: fadeInUp 0.4s ease-out; }
+
+/* ====== EXPANDERS ====== */
+.streamlit-expanderHeader {
+    border-radius: 10px !important; font-weight: 700 !important;
+    transition: all 0.3s !important;
+    background: linear-gradient(135deg, #f8fafc, #eff6ff) !important;
+}
+.streamlit-expanderHeader:hover { background: linear-gradient(135deg, #dbeafe, #ede9fe) !important; }
+
+/* ====== SEMÁFORO ====== */
+.semaforo-ad { color:#059669; font-weight:800; font-size:1.05rem; }
+.semaforo-a  { color:#1a56db; font-weight:800; font-size:1.05rem; }
+.semaforo-b  { color:#d97706; font-weight:800; font-size:1.05rem; }
+.semaforo-c  { color:#dc2626; font-weight:800; font-size:1.05rem; }
+
+/* ====== LINKS INSTITUCIONALES ====== */
+.wa-btn     { background:linear-gradient(135deg,#25D366,#128C7E); color:white !important; padding:10px 20px; border:none; border-radius:10px; font-size:15px; width:100%; text-decoration:none; display:block; text-align:center; margin:4px 0; transition:all 0.3s; font-weight:700; }
+.wa-btn:hover { transform:translateY(-2px); box-shadow:0 5px 18px rgba(37,211,102,0.45); }
+.link-btn   { background:linear-gradient(135deg,#4285F4,#356AC3); color:white !important; padding:8px 16px; border:none; border-radius:10px; font-size:14px; width:100%; text-decoration:none; display:block; text-align:center; margin:4px 0; transition:all 0.3s; }
+.link-btn:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(66,133,244,0.4); }
+.siagie-btn { background:linear-gradient(135deg,#E91E63,#C2185B); color:white !important; padding:8px 16px; border:none; border-radius:10px; font-size:14px; width:100%; text-decoration:none; display:block; text-align:center; margin:4px 0; transition:all 0.3s; }
+.siagie-btn:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(233,30,99,0.4); }
+
+/* ====== PROGRESS BAR ====== */
+.stProgress > div > div > div > div {
+    background: linear-gradient(135deg, #1a56db, #7c3aed, #db2777) !important;
     border-radius: 10px !important;
-    transition: all 0.2s ease !important;
-    padding: 8px 16px !important;
 }
 
-/* === NOTIFICACIONES FLOTANTES === */
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-.stToast { animation: slideInRight 0.4s ease-out !important; }
+/* ====== SPINNER ====== */
+.stSpinner > div { border-color:#7c3aed transparent transparent transparent !important; }
 
-/* === SELECTBOX HOVER === */
-.stSelectbox > div > div:hover {
-    border-color: #1a56db !important;
-    box-shadow: 0 0 0 2px rgba(26,86,219,0.1) !important;
+/* ====== RADIO ====== */
+.stRadio > div { gap: 10px; }
+.stRadio [role="radiogroup"] > label { border-radius:10px !important; transition:all 0.2s !important; padding:8px 16px !important; }
+.stRadio [role="radiogroup"] > label:hover { background:linear-gradient(135deg,#eff6ff,#f5f3ff) !important; }
+
+/* ====== REPORTE CARD ====== */
+.reporte-card {
+    background: linear-gradient(135deg, #fff, #f8faff);
+    border: 1px solid #dbeafe; border-radius: 14px; padding: 16px; margin: 8px 0;
+    box-shadow: 0 3px 12px rgba(26,86,219,0.08); transition: all 0.3s; animation: fadeInUp 0.4s ease-out;
 }
+.reporte-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(26,86,219,0.15); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -3332,73 +3223,381 @@ def _seccion_registros_pdf(config):
 
 
 # ================================================================
+# GENERADOR PDF DOS COLUMNAS (Examen + Ficha de respuestas)
+# ================================================================
+
+def generar_pdf_dos_columnas(config, grado, titulo_examen,
+                              preguntas_lista, nombre_alumno="", dni_alumno=""):
+    """
+    PDF A4 apaisado con DOS columnas:
+      Izquierda: enunciado del examen (preguntas A-B-C-D)
+      Derecha:   ficha de burbujas para marcar respuestas
+    preguntas_lista → list de dict con: 'texto', 'a', 'b', 'c', 'd', 'area'
+    """
+    buf = io.BytesIO()
+    pagesize = landscape(A4)
+    w, h = pagesize
+    c = canvas.Canvas(buf, pagesize=pagesize)
+
+    COL_W       = w / 2 - 35
+    COL_L_X     = 25
+    COL_R_X     = w / 2 + 10
+    MARGEN_TOP  = h - 30
+    MARGEN_BOT  = 25
+    nombre_ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    anio        = config.get('anio', '2025')
+
+    def _encabezado():
+        c.setFillColor(colors.HexColor("#1a56db"))
+        c.rect(0, h - 28, w, 28, fill=1, stroke=0)
+        for ruta_logo in ["escudo_upload.png", "fondo.png"]:
+            if Path(ruta_logo).exists():
+                try:
+                    c.drawImage(ruta_logo, 5, h - 26, 22, 22, mask='auto')
+                    break
+                except Exception:
+                    pass
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(w / 2, h - 10, nombre_ie.upper())
+        c.setFont("Helvetica", 7)
+        c.drawCentredString(w / 2, h - 20, f"{titulo_examen.upper()} | {grado} | {anio}")
+        # Línea divisoria central
+        c.setStrokeColor(colors.HexColor("#1a56db"))
+        c.setLineWidth(1.5)
+        c.line(w / 2, h - 30, w / 2, MARGEN_BOT)
+        # Títulos de columna
+        c.setFillColor(colors.HexColor("#1a56db"))
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(COL_L_X, h - 40, "EXAMEN")
+        c.drawString(COL_R_X, h - 40, "FICHA DE RESPUESTAS")
+        # Datos alumno (col. derecha)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(COL_R_X, h - 52, "Nombre:")
+        c.line(COL_R_X + 42, h - 51, COL_R_X + COL_W, h - 51)
+        c.drawString(COL_R_X, h - 64, "DNI:")
+        c.line(COL_R_X + 25, h - 63, COL_R_X + 80, h - 63)
+        c.drawString(COL_R_X + 85, h - 64, "Grado:")
+        c.line(COL_R_X + 113, h - 63, COL_R_X + COL_W, h - 63)
+        if nombre_alumno:
+            c.setFont("Helvetica", 7)
+            c.drawString(COL_R_X + 43, h - 50, nombre_alumno[:40])
+        if dni_alumno:
+            c.drawString(COL_R_X + 26, h - 62, dni_alumno)
+        return h - 72
+
+    def _burbuja(num, y):
+        x0 = COL_R_X
+        c.setFont("Helvetica-Bold", 7)
+        c.setFillColor(colors.black)
+        c.drawRightString(x0 + 18, y, f"{num}.")
+        for idx, op in enumerate(['A', 'B', 'C', 'D']):
+            cx = x0 + 28 + idx * 22
+            c.setFillColor(colors.white)
+            c.setStrokeColor(colors.HexColor("#334155"))
+            c.setLineWidth(0.8)
+            c.circle(cx, y + 3, 7, fill=1, stroke=1)
+            c.setFillColor(colors.HexColor("#334155"))
+            c.setFont("Helvetica-Bold", 6)
+            c.drawCentredString(cx, y + 0.5, op)
+
+    def _pregunta(num, preg, y):
+        x0 = COL_L_X
+        c.setFillColor(colors.HexColor("#1e3a8a"))
+        c.setFont("Helvetica-Bold", 7)
+        area_tag = f"[{preg.get('area','')[:12]}] " if preg.get('area') else ""
+        c.drawString(x0, y, f"{num}. {area_tag}")
+        texto = preg.get('texto', '').strip()
+        palabras = texto.split()
+        lineas, linea_actual = [], ""
+        for pal in palabras:
+            prueba = linea_actual + " " + pal if linea_actual else pal
+            if len(prueba) > 80:
+                lineas.append(linea_actual)
+                linea_actual = pal
+            else:
+                linea_actual = prueba
+        if linea_actual:
+            lineas.append(linea_actual)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 7)
+        y_tmp = y
+        c.drawString(x0 + 10, y_tmp, lineas[0] if lineas else "")
+        for lin in lineas[1:]:
+            y_tmp -= 9
+            c.drawString(x0 + 10, y_tmp, lin)
+        y = y_tmp - 9
+        c.setFont("Helvetica", 6.5)
+        for letra, texto_op in [('A', preg.get('a','')), ('B', preg.get('b','')),
+                                  ('C', preg.get('c','')), ('D', preg.get('d',''))]:
+            if texto_op:
+                c.setFillColor(colors.HexColor("#6b21a8"))
+                c.drawString(x0 + 8, y, f"{letra})")
+                c.setFillColor(colors.black)
+                c.drawString(x0 + 18, y, str(texto_op)[:75])
+                y -= 9
+        return y - 5
+
+    y = _encabezado()
+    y_ficha = y
+    for idx, preg in enumerate(preguntas_lista):
+        num = idx + 1
+        if y < MARGEN_BOT + 50:
+            c.showPage()
+            y = _encabezado()
+            y_ficha = y
+        y_nueva = _pregunta(num, preg, y)
+        _burbuja(num, y_ficha)
+        avance = y - y_nueva
+        y = y_nueva
+        y_ficha -= max(avance, 14)
+
+    c.setFillColor(colors.HexColor("#64748b"))
+    c.setFont("Helvetica-Oblique", 6)
+    c.drawCentredString(w / 2, 12, f"YACHAY PRO v4.0 — {titulo_examen} — Generado automáticamente")
+    c.save()
+    buf.seek(0)
+    return buf.getvalue()
+
+
+# ================================================================
+# SUBIR PDF EXISTENTE + AGREGAR ENCABEZADO INSTITUCIONAL
+# ================================================================
+
+def agregar_encabezado_pdf_existente(pdf_bytes_entrada, config,
+                                      titulo_encabezado="", alto_banda_mm=18):
+    """
+    Agrega banda institucional en la parte superior de cada página de un PDF.
+    Retorna: (bytes_pdf_modificado, mensaje_error_o_None)
+    Requiere PyMuPDF (añadir 'PyMuPDF==1.24.5' en requirements.txt).
+    """
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        return pdf_bytes_entrada, "⚠️ PyMuPDF no disponible. Agrega 'PyMuPDF==1.24.5' a requirements.txt"
+
+    nombre_ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    anio      = config.get('anio', '2025')
+    directora = config.get('directora', '')
+
+    try:
+        doc = fitz.open(stream=pdf_bytes_entrada, filetype="pdf")
+        alto_pts = alto_banda_mm * 2.835
+
+        for num_pag, pagina in enumerate(doc):
+            rect = pagina.rect
+            w_pag = rect.width
+
+            # Insertar espacio en la parte superior desplazando el mediabox
+            pagina.set_mediabox(fitz.Rect(0, -alto_pts, w_pag, rect.height))
+
+            # Banda de color
+            rect_banda = fitz.Rect(0, 0, w_pag, alto_pts)
+            pagina.draw_rect(rect_banda,
+                             color=(0.102, 0.337, 0.859),
+                             fill=(0.102, 0.337, 0.859))
+
+            # Nombre IE centrado
+            pagina.insert_htmlbox(
+                fitz.Rect(10, 2, w_pag - 10, alto_pts * 0.55),
+                f'<p style="text-align:center;font-size:10pt;color:white;'
+                f'font-family:Helvetica;font-weight:bold;margin:0;">'
+                f'{nombre_ie.upper()}</p>',
+            )
+            subtitulo = titulo_encabezado if titulo_encabezado else f"Dir: {directora} | {anio}"
+            pagina.insert_htmlbox(
+                fitz.Rect(10, alto_pts * 0.55, w_pag - 10, alto_pts - 2),
+                f'<p style="text-align:center;font-size:7pt;color:#ccddff;'
+                f'font-family:Helvetica;margin:0;">{subtitulo}</p>',
+            )
+            # Número de página
+            pagina.insert_htmlbox(
+                fitz.Rect(w_pag - 45, 2, w_pag - 2, alto_pts - 2),
+                f'<p style="text-align:right;font-size:7pt;color:#aabbee;'
+                f'font-family:Helvetica;margin:0;">Pág. {num_pag + 1}</p>',
+            )
+
+        salida = io.BytesIO()
+        doc.save(salida)
+        doc.close()
+        salida.seek(0)
+        return salida.getvalue(), None
+    except Exception as e:
+        return pdf_bytes_entrada, f"Error al procesar PDF: {str(e)[:120]}"
+
+
+def _ui_subir_pdf_con_encabezado(config):
+    """Widget para subir PDF y agregarle encabezado institucional."""
+    st.markdown("### 📎 Subir PDF y agregar encabezado institucional")
+    st.info("Sube cualquier PDF (examen, circular, acta) y se le añadirá "
+            "la banda con el nombre de la IE en todas las páginas.")
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        pdf_subido = st.file_uploader("📂 Selecciona tu PDF:", type=["pdf"],
+                                       key="pdf_uploader_encabezado")
+    with col2:
+        titulo_extra = st.text_input("Subtítulo (opcional):",
+                                     placeholder="Ej: Evaluación Bimestral 2025",
+                                     key="titulo_enc_pdf")
+        alto_banda   = st.slider("Alto de banda (mm):", 14, 30, 18, key="alto_banda_mm")
+    if pdf_subido:
+        st.success(f"✅ **{pdf_subido.name}** — {len(pdf_subido.getvalue())//1024} KB")
+        if st.button("✨ AGREGAR ENCABEZADO", type="primary",
+                     use_container_width=True, key="btn_agregar_enc"):
+            with st.spinner("Procesando PDF..."):
+                resultado, error = agregar_encabezado_pdf_existente(
+                    pdf_subido.getvalue(), config,
+                    titulo_encabezado=titulo_extra,
+                    alto_banda_mm=alto_banda
+                )
+            if error:
+                st.error(error)
+            else:
+                nombre_salida = pdf_subido.name.replace(".pdf", "_YACHAY.pdf")
+                st.download_button("📥 DESCARGAR PDF CON ENCABEZADO",
+                                   resultado, nombre_salida, "application/pdf",
+                                   use_container_width=True, key="dl_pdf_enc")
+                st.success("✅ ¡Encabezado agregado en todas las páginas!")
+
+
+# ================================================================
 # TAB: DOCUMENTOS
 # ================================================================
 
 def tab_documentos(config):
     st.header("📄 Documentos")
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        td = st.selectbox("📑 Tipo:", [
-            "CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR",
-            "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA",
-            "CARTA COMPROMISO", "RESOLUCIÓN DE TRASLADO"
-        ], key="td")
-        st.markdown("---")
-        db = st.text_input("🔍 Buscar DNI:", key="db")
-        if st.button("🔎 Buscar", use_container_width=True, key="bb"):
-            r = BaseDatos.buscar_por_dni(db)
-            if r:
-                st.session_state.alumno = r.get('Nombre', '')
-                st.session_state.dni = r.get('DNI', '')
-                st.session_state.grado = r.get('Grado', '')
-                st.session_state.apoderado = r.get('Apoderado', '')
-                st.session_state.dni_apo = r.get('DNI_Apoderado', '')
-                st.success("✅ Datos cargados")
-                st.rerun()
+    tab_doc1, tab_doc2, tab_doc3 = st.tabs([
+        "📋 Constancias / Resoluciones",
+        "📑 Examen + Ficha (2 columnas)",
+        "📎 Subir PDF + Encabezado",
+    ])
+
+    # ── TAB 1: documentos originales ──
+    with tab_doc1:
+        c1, c2 = st.columns([1, 2])
+        with c1:
+            td = st.selectbox("📑 Tipo:", [
+                "CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR",
+                "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA",
+                "CARTA COMPROMISO", "RESOLUCIÓN DE TRASLADO"
+            ], key="td")
+            st.markdown("---")
+            db = st.text_input("🔍 Buscar DNI:", key="db")
+            if st.button("🔎 Buscar", use_container_width=True, key="bb"):
+                r = BaseDatos.buscar_por_dni(db)
+                if r:
+                    st.session_state.alumno = r.get('Nombre', '')
+                    st.session_state.dni = r.get('DNI', '')
+                    st.session_state.grado = r.get('Grado', '')
+                    st.session_state.apoderado = r.get('Apoderado', '')
+                    st.session_state.dni_apo = r.get('DNI_Apoderado', '')
+                    st.success("✅ Datos cargados")
+                    st.rerun()
+                else:
+                    st.error("❌ No encontrado")
+        with c2:
+            with st.container(border=True):
+                nm = st.text_input("👤 Estudiante:", key="alumno")
+                dn = st.text_input("🆔 DNI Estudiante:", key="dni")
+                gr = st.text_input("📚 Grado:", key="grado")
+                ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
+                da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
+                nc = {}
+                if td == "CONSTANCIA DE CONDUCTA":
+                    cols = st.columns(5)
+                    for i, col in enumerate(cols):
+                        with col:
+                            nc[f'nota_conducta_{i+1}'] = st.selectbox(
+                                f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}")
+                ex = {}
+                if td == "RESOLUCIÓN DE TRASLADO":
+                    ex['num_resolucion'] = st.text_input("N° Resolución:", key="nr")
+                    ex['fecha_resolucion'] = st.text_input("Fecha:", key="fr2")
+                    ex['nivel'] = st.selectbox("Nivel:",
+                                               ["INICIAL", "PRIMARIA", "SECUNDARIA"],
+                                               key="nl")
+                    ex['ie_destino'] = st.text_input("IE Destino:", key="ie")
+            if st.button("✨ GENERAR DOCUMENTO", type="primary",
+                         use_container_width=True, key="gd"):
+                if nm and dn:
+                    d = {'alumno': nm, 'dni': dn, 'grado': gr,
+                         'apoderado': ap, 'dni_apo': da, **nc, **ex}
+                    g = GeneradorPDF(config)
+                    metodos = {
+                        "CONSTANCIA DE VACANTE": g.generar_constancia_vacante,
+                        "CONSTANCIA DE NO DEUDOR": g.generar_constancia_no_deudor,
+                        "CONSTANCIA DE ESTUDIOS": g.generar_constancia_estudios,
+                        "CONSTANCIA DE CONDUCTA": g.generar_constancia_conducta,
+                        "CARTA COMPROMISO": g.generar_carta_compromiso,
+                        "RESOLUCIÓN DE TRASLADO": g.generar_resolucion_traslado,
+                    }
+                    pdf = metodos[td](d)
+                    st.success("✅ Documento generado")
+                    st.download_button("⬇️ Descargar PDF", pdf,
+                                       f"{nm}_{td}.pdf", "application/pdf",
+                                       use_container_width=True, key="dd2")
+
+    # ── TAB 2: PDF dos columnas ──
+    with tab_doc2:
+        st.markdown("### 📑 Generar Examen con Ficha de Respuestas")
+        st.info("Genera un PDF A4 apaisado: lado izquierdo el enunciado, "
+                "lado derecho las burbujas para marcar.")
+        dc1, dc2 = st.columns(2)
+        with dc1:
+            titulo_ex_2col = st.text_input("Título del examen:",
+                                            value="EVALUACIÓN SEMANAL",
+                                            key="t2col_titulo")
+            grado_ex_2col  = st.selectbox("Grado:", TODOS_LOS_GRADOS, key="t2col_grado")
+            nombre_al_2col = st.text_input("Nombre del alumno (opcional):", key="t2col_nombre")
+            dni_al_2col    = st.text_input("DNI alumno (opcional):", key="t2col_dni")
+        with dc2:
+            st.markdown("**Ingresa las preguntas (una por línea):**")
+            st.caption("Formato por pregunta — separa cada campo con | :\n"
+                       "`Area|Texto de la pregunta|Alternativa A|Alternativa B|Alternativa C|Alternativa D`")
+            preguntas_raw = st.text_area(
+                "Preguntas:",
+                height=220,
+                placeholder="Matemática|¿Cuánto es 2+2?|3|4|5|6\nComunicación|¿Qué es un sustantivo?|Verbo|Nombre|Adjetivo|Adverbio",
+                key="t2col_preguntas"
+            )
+
+        if st.button("🖨️ GENERAR PDF DOS COLUMNAS", type="primary",
+                     use_container_width=True, key="btn_2col"):
+            if not preguntas_raw.strip():
+                st.error("⚠️ Ingresa al menos una pregunta.")
             else:
-                st.error("❌ No encontrado")
-    with c2:
-        with st.container(border=True):
-            nm = st.text_input("👤 Estudiante:", key="alumno")
-            dn = st.text_input("🆔 DNI Estudiante:", key="dni")
-            gr = st.text_input("📚 Grado:", key="grado")
-            ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
-            da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
-            nc = {}
-            if td == "CONSTANCIA DE CONDUCTA":
-                cols = st.columns(5)
-                for i, col in enumerate(cols):
-                    with col:
-                        nc[f'nota_conducta_{i+1}'] = st.selectbox(
-                            f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}")
-            ex = {}
-            if td == "RESOLUCIÓN DE TRASLADO":
-                ex['num_resolucion'] = st.text_input("N° Resolución:", key="nr")
-                ex['fecha_resolucion'] = st.text_input("Fecha:", key="fr2")
-                ex['nivel'] = st.selectbox("Nivel:",
-                                           ["INICIAL", "PRIMARIA", "SECUNDARIA"],
-                                           key="nl")
-                ex['ie_destino'] = st.text_input("IE Destino:", key="ie")
-        if st.button("✨ GENERAR DOCUMENTO", type="primary",
-                     use_container_width=True, key="gd"):
-            if nm and dn:
-                d = {'alumno': nm, 'dni': dn, 'grado': gr,
-                     'apoderado': ap, 'dni_apo': da, **nc, **ex}
-                g = GeneradorPDF(config)
-                metodos = {
-                    "CONSTANCIA DE VACANTE": g.generar_constancia_vacante,
-                    "CONSTANCIA DE NO DEUDOR": g.generar_constancia_no_deudor,
-                    "CONSTANCIA DE ESTUDIOS": g.generar_constancia_estudios,
-                    "CONSTANCIA DE CONDUCTA": g.generar_constancia_conducta,
-                    "CARTA COMPROMISO": g.generar_carta_compromiso,
-                    "RESOLUCIÓN DE TRASLADO": g.generar_resolucion_traslado,
-                }
-                pdf = metodos[td](d)
-                st.success("✅ Documento generado")
-                st.download_button("⬇️ Descargar PDF", pdf,
-                                   f"{nm}_{td}.pdf", "application/pdf",
-                                   use_container_width=True, key="dd2")
+                preguntas_lista = []
+                for linea in preguntas_raw.strip().splitlines():
+                    partes = [p.strip() for p in linea.split("|")]
+                    if len(partes) >= 2:
+                        preguntas_lista.append({
+                            'area':  partes[0] if len(partes) > 5 else '',
+                            'texto': partes[1] if len(partes) > 5 else partes[0],
+                            'a':     partes[2] if len(partes) > 2 else '',
+                            'b':     partes[3] if len(partes) > 3 else '',
+                            'c':     partes[4] if len(partes) > 4 else '',
+                            'd':     partes[5] if len(partes) > 5 else '',
+                        })
+                if not preguntas_lista:
+                    st.error("⚠️ No se pudo leer ninguna pregunta. Verifica el formato.")
+                else:
+                    with st.spinner("Generando PDF..."):
+                        pdf_2col = generar_pdf_dos_columnas(
+                            config, grado_ex_2col, titulo_ex_2col,
+                            preguntas_lista, nombre_al_2col, dni_al_2col
+                        )
+                    nombre_pdf = f"examen_2col_{grado_ex_2col.replace(' ','_')}.pdf"
+                    st.download_button("📥 DESCARGAR EXAMEN + FICHA",
+                                       pdf_2col, nombre_pdf, "application/pdf",
+                                       use_container_width=True, key="dl_2col")
+                    st.success(f"✅ PDF generado con {len(preguntas_lista)} preguntas.")
+
+    # ── TAB 3: Subir PDF + encabezado ──
+    with tab_doc3:
+        _ui_subir_pdf_con_encabezado(config)
+
+
 
 
 # ================================================================
@@ -7837,7 +8036,331 @@ def _vista_directivo_examenes(config, semana_actual):
 # FIN MÓDULOS AULA VIRTUAL + EXÁMENES SEMANALES
 # ================================================================
 
-def main():
+
+# ================================================================
+# REPORTES EJECUTIVOS — VISTA DIRECTIVO
+# ================================================================
+
+def tab_reportes_directivo(config):
+    """Módulo para Admin/Directivo: resumen semanal, mensual, por grado, exportación."""
+    st.markdown("## 📈 Reportes Ejecutivos — Vista Directivo")
+    gs = _gs()
+    tab_sem, tab_mes, tab_grado, tab_export = st.tabs([
+        "📅 Semanal", "📆 Mensual", "🎓 Por Grado", "📥 Exportar"
+    ])
+
+    # ── SEMANAL ──
+    with tab_sem:
+        st.markdown("### 📅 Resumen Semanal de Notas y Asistencia")
+        col_s1, col_s2, col_s3 = st.columns(3)
+        with col_s1:
+            semana_sel = st.number_input("Semana:", 1, 52,
+                                          int(hora_peru().strftime("%V")),
+                                          key="dir_rep_sem")
+        with col_s2:
+            anio_sel = st.number_input("Año:", 2024, 2030,
+                                        hora_peru().year, key="dir_rep_anio")
+        with col_s3:
+            grado_fil = st.selectbox("Grado:", ["Todos"] + TODOS_LOS_GRADOS,
+                                     key="dir_rep_grado_sem")
+
+        if st.button("🔄 Cargar Datos Semanales", key="btn_cargar_sem"):
+            with st.spinner("Cargando..."):
+                resultados = []
+                if gs and hasattr(gs, 'leer_resultados'):
+                    resultados = gs.leer_resultados()
+
+                from datetime import date as dt_date, timedelta as dt_td
+                try:
+                    inicio_sem = dt_date.fromisocalendar(int(anio_sel), int(semana_sel), 1)
+                    fin_sem    = inicio_sem + dt_td(days=6)
+                except Exception:
+                    inicio_sem = fin_sem = None
+
+                res_filtrados = []
+                for r in resultados:
+                    try:
+                        f_str = str(r.get('fecha', ''))[:10]
+                        if f_str and inicio_sem:
+                            f_dt = dt_date.fromisoformat(f_str)
+                            if inicio_sem <= f_dt <= fin_sem:
+                                if grado_fil == "Todos" or r.get('grado', '') == grado_fil:
+                                    res_filtrados.append(r)
+                    except Exception:
+                        pass
+
+                if not res_filtrados:
+                    st.info(f"📭 Sin datos para la semana {semana_sel}.")
+                else:
+                    col_nota = 'promedio' if 'promedio' in res_filtrados[0] else 'nota'
+                    promedios = [float(r.get(col_nota, 0)) for r in res_filtrados]
+                    prom_gral = sum(promedios) / len(promedios) if promedios else 0
+
+                    k1, k2, k3, k4 = st.columns(4)
+                    k1.metric("📝 Evaluaciones",
+                              len(set(r.get('eval_titulo', r.get('eval_id', '')) for r in res_filtrados)))
+                    k2.metric("👥 Estudiantes",
+                              len(set(r.get('estudiante', r.get('nombre', '')) for r in res_filtrados)))
+                    k3.metric("📊 Promedio general", f"{prom_gral:.1f}")
+                    k4.metric("🏆 Nota máxima", f"{max(promedios):.1f}" if promedios else "—")
+
+                    por_area = {}
+                    for r in res_filtrados:
+                        area = r.get('area', 'General')
+                        nota = float(r.get(col_nota, 0))
+                        por_area.setdefault(area, []).append(nota)
+
+                    if por_area:
+                        df_areas = pd.DataFrame({
+                            'Área': list(por_area.keys()),
+                            'Promedio': [sum(v)/len(v) for v in por_area.values()],
+                            'N° Registros': [len(v) for v in por_area.values()]
+                        }).sort_values('Promedio', ascending=False)
+                        st.markdown("#### 📊 Promedio por Área")
+                        st.bar_chart(df_areas.set_index('Área')['Promedio'])
+                        st.dataframe(df_areas, use_container_width=True, hide_index=True)
+
+    # ── MENSUAL ──
+    with tab_mes:
+        st.markdown("### 📆 Resumen Mensual de Asistencia")
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            mes_sel = st.selectbox("Mes:", list(MESES_ESCOLARES.values()), key="dir_rep_mes")
+            mes_num = [k for k, v in MESES_ESCOLARES.items() if v == mes_sel][0]
+        with col_m2:
+            anio_m = st.number_input("Año:", 2024, 2030,
+                                      hora_peru().year, key="dir_rep_anio_m")
+
+        if st.button("🔄 Cargar Datos Mensuales", key="btn_cargar_mes"):
+            with st.spinner("Cargando asistencias..."):
+                asist_mes = []
+                if gs:
+                    asist_mes = gs.leer_asistencias(mes=mes_num, anio=int(anio_m))
+
+                if asist_mes:
+                    df_asist = pd.DataFrame(asist_mes)
+                    ka1, ka2, ka3 = st.columns(3)
+                    ka1.metric("📋 Registros", len(df_asist))
+                    ka2.metric("👥 Personas distintas",
+                               df_asist['nombre'].nunique() if 'nombre' in df_asist.columns else 0)
+                    ka3.metric("📅 Días con datos",
+                               df_asist['fecha'].nunique() if 'fecha' in df_asist.columns else 0)
+
+                    if 'fecha' in df_asist.columns:
+                        por_dia = df_asist.groupby('fecha').size().reset_index(name='Asistencias')
+                        por_dia = por_dia.sort_values('fecha')
+                        st.markdown("#### 📈 Asistencia por día")
+                        st.line_chart(por_dia.set_index('fecha')['Asistencias'])
+
+                    if 'grado' in df_asist.columns:
+                        por_grado = df_asist.groupby('grado').size().reset_index(name='N° Registros')
+                        st.markdown("#### 🎓 Por Grado")
+                        st.bar_chart(por_grado.set_index('grado')['N° Registros'])
+                else:
+                    st.info(f"📭 Sin datos de asistencia para {mes_sel} {anio_m}.")
+
+    # ── POR GRADO ──
+    with tab_grado:
+        st.markdown("### 🎓 Análisis de Progreso por Grado")
+        grado_ana = st.selectbox("Selecciona grado:", TODOS_LOS_GRADOS, key="dir_grado_ana")
+        df_alumnos = BaseDatos.obtener_estudiantes_grado(grado_ana)
+
+        if len(df_alumnos) == 0:
+            st.info(f"📭 No hay alumnos matriculados en {grado_ana}.")
+        else:
+            st.metric("👥 Alumnos en el grado", len(df_alumnos))
+            resultados_grado = []
+            if gs and hasattr(gs, 'leer_resultados'):
+                todos_res = gs.leer_resultados()
+                resultados_grado = [r for r in todos_res if r.get('grado') == grado_ana]
+
+            if resultados_grado:
+                df_res = pd.DataFrame(resultados_grado)
+                col_nota = 'promedio' if 'promedio' in df_res.columns else 'nota'
+                col_nombre = 'estudiante' if 'estudiante' in df_res.columns else 'nombre'
+
+                if col_nombre in df_res.columns and col_nota in df_res.columns:
+                    df_res[col_nota] = pd.to_numeric(df_res[col_nota], errors='coerce').fillna(0)
+                    ranking = (df_res.groupby(col_nombre)[col_nota]
+                                     .mean().reset_index()
+                                     .rename(columns={col_nombre: 'Alumno', col_nota: 'Promedio'})
+                                     .sort_values('Promedio', ascending=False))
+
+                    st.markdown("#### 🏆 Top 3")
+                    for i, row in enumerate(ranking.head(3).itertuples()):
+                        if i == 0:
+                            st.markdown(f"<div class='ranking-gold'>🥇 {row.Alumno} — {row.Promedio:.1f}</div>",
+                                        unsafe_allow_html=True)
+                        elif i == 1:
+                            st.markdown(f"<div class='ranking-silver'>🥈 {row.Alumno} — {row.Promedio:.1f}</div>",
+                                        unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"<div class='ranking-bronze'>🥉 {row.Alumno} — {row.Promedio:.1f}</div>",
+                                        unsafe_allow_html=True)
+
+                    st.markdown("#### 📊 Ranking completo")
+                    st.bar_chart(ranking.set_index('Alumno')['Promedio'])
+                    st.dataframe(ranking, use_container_width=True, hide_index=True)
+
+                    # Progreso mensual
+                    if 'fecha' in df_res.columns:
+                        df_res['mes'] = pd.to_datetime(df_res['fecha'], errors='coerce').dt.month
+                        prog_mes = (df_res.groupby('mes')[col_nota].mean()
+                                         .reset_index())
+                        prog_mes['Mes'] = prog_mes['mes'].map(MESES_ESCOLARES)
+                        prog_mes = prog_mes.dropna(subset=['Mes'])
+                        if not prog_mes.empty:
+                            st.markdown("#### 📈 Progreso mensual")
+                            st.line_chart(prog_mes.set_index('Mes')[col_nota])
+            else:
+                st.info(f"Sin resultados registrados aún para {grado_ana}.")
+
+    # ── EXPORTAR ──
+    with tab_export:
+        st.markdown("### 📥 Exportar Reporte a Excel")
+        grado_exp = st.selectbox("Grado:", ["Todos"] + TODOS_LOS_GRADOS, key="dir_grado_exp")
+        mes_exp   = st.selectbox("Mes:", list(MESES_ESCOLARES.values()), key="dir_mes_exp")
+        mes_exp_n = [k for k, v in MESES_ESCOLARES.items() if v == mes_exp][0]
+
+        if st.button("📊 GENERAR EXCEL", type="primary",
+                     use_container_width=True, key="btn_exp_excel"):
+            with st.spinner("Generando..."):
+                try:
+                    output = io.BytesIO()
+                    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                        df_mat = BaseDatos.cargar_matricula()
+                        if grado_exp != "Todos" and 'Grado' in df_mat.columns:
+                            df_mat = df_mat[df_mat['Grado'] == grado_exp]
+                        df_mat.to_excel(writer, sheet_name='Matricula', index=False)
+
+                        if gs:
+                            asist = gs.leer_asistencias(mes=mes_exp_n, anio=hora_peru().year)
+                            if asist:
+                                pd.DataFrame(asist).to_excel(writer, sheet_name='Asistencia', index=False)
+                            if hasattr(gs, 'leer_resultados'):
+                                res = gs.leer_resultados()
+                                if res:
+                                    pd.DataFrame(res).to_excel(writer, sheet_name='Resultados', index=False)
+                    output.seek(0)
+                    nombre_f = f"reporte_{grado_exp.replace(' ','_')}_{mes_exp}.xlsx"
+                    st.download_button("📥 DESCARGAR EXCEL", output.getvalue(), nombre_f,
+                                       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                       use_container_width=True, key="dl_excel_rep")
+                    st.success("✅ Reporte generado.")
+                except Exception as e:
+                    st.error(f"Error: {str(e)[:120]}")
+
+
+# ================================================================
+# GESTIÓN DE NOTAS — VISTA DIRECTIVO
+# ================================================================
+
+def tab_gestion_notas_directivo(config):
+    """Permite al Admin ver, filtrar y eliminar evaluaciones antes del reporte final."""
+    st.markdown("## 🗂️ Gestión de Notas — Vista Directivo")
+    st.info("ℹ️ Usa esta pantalla ANTES de generar el reporte oficial. "
+            "Solo el Administrador puede eliminar evaluaciones.")
+
+    gs = _gs()
+    with st.spinner("Cargando evaluaciones..."):
+        resultados = []
+        if gs and hasattr(gs, 'leer_resultados'):
+            resultados = gs.leer_resultados()
+
+    if not resultados:
+        st.warning("📭 No hay evaluaciones registradas aún.")
+        return
+
+    df_res = pd.DataFrame(resultados)
+    col_nota = 'promedio' if 'promedio' in df_res.columns else 'nota'
+    if col_nota in df_res.columns:
+        df_res[col_nota] = pd.to_numeric(df_res[col_nota], errors='coerce').fillna(0)
+
+    # Filtros
+    st.markdown("### 🔍 Filtros")
+    fc1, fc2, fc3 = st.columns(3)
+    with fc1:
+        grados_d = ["Todos"] + sorted(df_res['grado'].dropna().unique().tolist()) if 'grado' in df_res.columns else ["Todos"]
+        filtro_grado = st.selectbox("Grado:", grados_d, key="gn_grado")
+    with fc2:
+        docs_d = ["Todos"] + sorted(df_res['docente'].dropna().unique().tolist()) if 'docente' in df_res.columns else ["Todos"]
+        filtro_doc = st.selectbox("Docente:", docs_d, key="gn_doc")
+    with fc3:
+        if 'fecha' in df_res.columns:
+            fechas_d = ["Todas"] + sorted(df_res['fecha'].dropna().unique().tolist(), reverse=True)
+            filtro_fecha = st.selectbox("Fecha:", fechas_d, key="gn_fecha")
+        else:
+            filtro_fecha = "Todas"
+
+    df_fil = df_res.copy()
+    if filtro_grado != "Todos" and 'grado' in df_fil.columns:
+        df_fil = df_fil[df_fil['grado'] == filtro_grado]
+    if filtro_doc != "Todos" and 'docente' in df_fil.columns:
+        df_fil = df_fil[df_fil['docente'] == filtro_doc]
+    if filtro_fecha != "Todas" and 'fecha' in df_fil.columns:
+        df_fil = df_fil[df_fil['fecha'] == filtro_fecha]
+
+    st.markdown(f"### 📋 Registros encontrados: **{len(df_fil)}**")
+    st.dataframe(df_fil, use_container_width=True, hide_index=True)
+
+    # Eliminar evaluación
+    st.markdown("---")
+    st.markdown("### 🗑️ Eliminar evaluación")
+
+    if not puede_borrar():
+        st.error("🔒 Solo el Administrador puede eliminar evaluaciones.")
+        return
+
+    col_titulo = 'eval_titulo' if 'eval_titulo' in df_fil.columns else ('eval_id' if 'eval_id' in df_fil.columns else None)
+    if col_titulo and not df_fil.empty:
+        evals_unicas = df_fil[col_titulo].dropna().unique().tolist()
+        if evals_unicas:
+            eval_borrar = st.selectbox("Evaluación a eliminar:", evals_unicas, key="gn_eval_borrar")
+            df_sel = df_fil[df_fil[col_titulo] == eval_borrar]
+
+            cn1, cn2 = st.columns(2)
+            with cn1:
+                st.markdown(f"**Registros que se eliminarán:** {len(df_sel)}")
+                col_nombre = 'estudiante' if 'estudiante' in df_sel.columns else 'nombre'
+                if col_nombre in df_sel.columns:
+                    for n in df_sel[col_nombre].dropna().unique()[:8]:
+                        st.write(f"• {n}")
+            with cn2:
+                if col_nota in df_sel.columns:
+                    st.metric("Promedio de la evaluación", f"{df_sel[col_nota].mean():.1f}")
+                    st.metric("Nota más alta", f"{df_sel[col_nota].max():.1f}")
+                    st.metric("Nota más baja",  f"{df_sel[col_nota].min():.1f}")
+
+            confirmar = st.text_input("Escribe **CONFIRMAR** para eliminar:", key="gn_confirmar")
+            if st.button("🗑️ ELIMINAR EVALUACIÓN", type="primary",
+                         use_container_width=True, key="btn_del_eval"):
+                if confirmar.strip().upper() == "CONFIRMAR":
+                    if gs:
+                        try:
+                            ws = gs._get_hoja('resultados')
+                            if ws:
+                                todos = ws.get_all_records()
+                                filas_borrar = [
+                                    i + 2 for i, f in enumerate(todos)
+                                    if str(f.get(col_titulo, '')) == eval_borrar
+                                ]
+                                for fila_num in sorted(filas_borrar, reverse=True):
+                                    ws.delete_rows(fila_num)
+                                st.success(f"✅ Eliminados {len(filas_borrar)} registros de '{eval_borrar}'.")
+                                st.rerun()
+                        except Exception as e:
+                            st.error(f"Error: {str(e)[:120]}")
+                    else:
+                        st.warning("⚠️ Google Sheets no conectado.")
+                else:
+                    st.error("❌ Debes escribir exactamente CONFIRMAR.")
+        else:
+            st.info("Sin evaluaciones con los filtros actuales.")
+    else:
+        st.info("Sin datos suficientes para gestionar.")
+
+
+
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
@@ -7907,19 +8430,19 @@ def main():
             """, unsafe_allow_html=True)
 
             # Grid de módulos
-            # Grid de módulos
             modulos = [
-                ("📝", "Matrícula", "matricula", "#2563eb"),
-                ("📋", "Asistencia", "asistencia", "#16a34a"),
-                ("📄", "Documentos", "documentos", "#7c3aed"),
-                ("🪪", "Carnets", "carnets", "#0891b2"),
-                ("📊", "Calificación", "calificacion", "#dc2626"),
-                ("📝", "Registrar Notas", "reg_notas", "#059669"),
-                ("📈", "Reportes", "reportes", "#ea580c"),
-                ("📝", "Incidencias", "incidencias", "#be185d"),
-                ("💾", "Base Datos", "base_datos", "#4f46e5"),
-                ("📚", "Aula Virtual", "aula_virtual", "#7c3aed"),
-                ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
+                ("📝", "Matrícula",       "matricula",    "#2563eb"),
+                ("📋", "Asistencia",      "asistencia",   "#16a34a"),
+                ("📄", "Documentos",      "documentos",   "#7c3aed"),
+                ("🪪", "Carnets",         "carnets",      "#0891b2"),
+                ("📊", "Calificación",    "calificacion", "#dc2626"),
+                ("📝", "Registrar Notas", "reg_notas",    "#059669"),
+                ("📈", "Reportes Dir.",   "reportes_dir", "#1d4ed8"),
+                ("🗂️", "Gestión Notas",  "gestion_notas","#7e22ce"),
+                ("📝", "Incidencias",     "incidencias",  "#be185d"),
+                ("💾", "Base Datos",      "base_datos",   "#4f46e5"),
+                ("📚", "Aula Virtual",    "aula_virtual", "#7c3aed"),
+                ("📝", "Exámenes Sem.",   "examenes_sem", "#b91c1c"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -7995,6 +8518,10 @@ def main():
                 tab_registrar_notas(config)
             elif mod == "reportes":
                 tab_reportes(config)
+            elif mod == "reportes_dir":
+                tab_reportes_directivo(config)
+            elif mod == "gestion_notas":
+                tab_gestion_notas_directivo(config)
             elif mod == "incidencias":
                 tab_incidencias(config)
             elif mod == "base_datos":
