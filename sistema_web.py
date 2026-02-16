@@ -9324,12 +9324,13 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            # Crear ID único para este botón
+                            # Crear ID único para manejo de clicks
                             btn_id = f"btn_{key}_{i}_{j}"
                             
-                            # Botón HTML con color
+                            # Cuadrado HTML con color y funcionalidad JavaScript
                             st.markdown(f"""
-                            <div id="{btn_id}" style="background: linear-gradient(135deg, {color} 0%, {color}dd 100%);
+                            <div id="{btn_id}" 
+                                 style="background: linear-gradient(135deg, {color} 0%, {color}dd 100%);
                                         color: white;
                                         border-radius: 16px;
                                         padding: 35px 20px;
@@ -9342,35 +9343,40 @@ def main():
                                         box-shadow: 0 8px 25px {color}50;
                                         transition: all 0.3s ease;
                                         cursor: pointer;
-                                        margin: 8px 0;
-                                        border: none;"
+                                        margin: 8px 0;"
                                  onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 12px 35px {color}70';"
                                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px {color}50';">
                                 <div style="font-size: 2.5rem; margin-bottom: 12px;">{icono}</div>
                                 <div style="font-size: 1.1rem; font-weight: 600; 
                                             text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{nombre}</div>
                             </div>
+                            
+                            <script>
+                            document.getElementById('{btn_id}').addEventListener('click', function() {{
+                                // Simular click en botón oculto de Streamlit
+                                const btn = document.querySelector('button[data-testid*="dash_{key}"]');
+                                if (btn) btn.click();
+                            }});
+                            </script>
                             """, unsafe_allow_html=True)
                             
-                            # Botón Streamlit funcional pero invisible
-                            if st.button(f"‎", key=f"dash_{key}", use_container_width=True):
+                            # Botón Streamlit totalmente oculto (solo para funcionalidad)
+                            if st.button("‎", key=f"dash_{key}", label_visibility="collapsed"):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
                             
-                            # Hacer botón invisible y posicionarlo sobre el HTML
+                            # CSS para ocultar completamente el botón de Streamlit
                             st.markdown(f"""
                             <style>
-                            button[data-testid*="dash_{key}"] {{
-                                position: relative !important;
-                                margin-top: -160px !important;
-                                height: 160px !important;
-                                background: transparent !important;
-                                border: none !important;
-                                color: transparent !important;
-                                z-index: 100 !important;
-                            }}
-                            button[data-testid*="dash_{key}"]:hover {{
-                                background: transparent !important;
+                            button[data-testid*="dash_{key}"],
+                            div:has(> button[data-testid*="dash_{key}"]) {{
+                                display: none !important;
+                                height: 0 !important;
+                                padding: 0 !important;
+                                margin: 0 !important;
+                                opacity: 0 !important;
+                                position: absolute !important;
+                                z-index: -1 !important;
                             }}
                             </style>
                             """, unsafe_allow_html=True)
