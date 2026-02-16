@@ -945,7 +945,8 @@ class BaseDatos:
                 df = df[df['Nivel'] == "PREUNIVERSITARIO"]
         elif 'Grado' in df.columns:
             df = df[df['Grado'] == grado]
-        if seccion and seccion not in ["Todas", "Única"] and 'Seccion' in df.columns:
+        # Filtrar por sección — "Todas" o None = sin filtro
+        if seccion and seccion != "Todas" and 'Seccion' in df.columns:
             df = df[df['Seccion'] == seccion]
         if 'Nombre' in df.columns:
             df = df.sort_values('Nombre', ascending=True).reset_index(drop=True)
@@ -3243,13 +3244,24 @@ def _gestion_usuarios_admin():
         # Solo docentes necesitan grado y nivel
         ne_nivel = "PRIMARIA"
         ne_grado = "N/A"
+        ne_sec = "Todas"
         if ne_rol == "docente":
             ne_nivel = st.selectbox("Nivel:", ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
                                      index=["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"].index(
                                          datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
                                      ), key="ne_nivel")
-            grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
-            ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
+            if ne_nivel in ["INICIAL", "PRIMARIA"]:
+                grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, [])
+                ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
+                sec_actual = datos_edit.get('docente_info', {}).get('seccion', 'Única') if datos_edit.get('docente_info') else 'Única'
+                sec_idx = SECCIONES.index(sec_actual) if sec_actual in SECCIONES else 0
+                ne_sec = st.selectbox("Sección asignada:", SECCIONES, index=sec_idx, key="ne_sec")
+            else:
+                # Sec/PreU: acceso completo
+                grados_opts = ["ALL_SECUNDARIA" if ne_nivel == "SECUNDARIA" else "ALL_PREUNIVERSITARIO"]
+                ne_grado = grados_opts[0]
+                ne_sec = "Todas"
+                st.caption(f"🎓 Acceso completo a {ne_nivel}")
         else:
             st.caption(f"🔓 **{ne_rol.title()}** tiene acceso completo (sin grado específico)")
         
@@ -3260,7 +3272,7 @@ def _gestion_usuarios_admin():
                 usuarios[edit_usr]['password'] = ne_pass
                 usuarios[edit_usr]['rol'] = ne_rol
                 if ne_rol == "docente":
-                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel}
+                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel, "seccion": ne_sec}
                     usuarios[edit_usr]['docente_info'] = di
                 else:
                     usuarios[edit_usr]['docente_info'] = None
@@ -3361,16 +3373,18 @@ def tab_matricula(config):
                                          ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
                                          key="dn_nivel_reg")
                 
-                # INICIAL y PRIMARIA: necesitan grado específico
+                # INICIAL y PRIMARIA: necesitan grado específico y sección
                 if dn_nivel in ["INICIAL", "PRIMARIA"]:
                     dn_g = st.selectbox("🎓 Grado Asignado:",
                                          ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
                                          key="dn_grado")
-                    st.caption("📌 Este docente verá solo este grado en el sistema")
+                    dn_sec = st.selectbox("📂 Sección Asignada:", SECCIONES, key="dn_sec")
+                    st.caption("📌 Este docente verá solo este grado y sección en el sistema")
                 
                 # SECUNDARIA y PREUNIVERSITARIO: sin grado (acceso completo)
                 else:
                     dn_g = "ALL_SECUNDARIA" if dn_nivel == "SECUNDARIA" else "ALL_PREUNIVERSITARIO"
+                    dn_sec = "Todas"
                     st.info(f"""
                     🎓 **Acceso completo a {dn_nivel}**
                     
@@ -3384,6 +3398,7 @@ def tab_matricula(config):
                 # Directora, Auxiliar, etc. — acceso completo sin grado
                 dn_nivel = "PRIMARIA"
                 dn_g = "N/A"
+                dn_sec = "Todas"
                 st.caption(f"🔓 {dn_c}: acceso completo (sin grado específico)")
             
             dn_email = st.text_input("📧 Email:", key="dn_email",
@@ -3429,9 +3444,9 @@ def tab_matricula(config):
                     u_key = dn_usuario.strip().lower()
                     rol_auto = "docente" if dn_c == "Docente" else ("auxiliar" if dn_c == "Auxiliar" else "directivo")
                     
-                    # Solo docentes tienen grado/nivel
+                    # Solo docentes tienen grado/nivel/seccion
                     if rol_auto == "docente":
-                        di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel}
+                        di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel, "seccion": dn_sec}
                     else:
                         di = None  # Directivos y auxiliares no necesitan grado
                     
@@ -3444,8 +3459,6 @@ def tab_matricula(config):
                     guardar_usuarios(usuarios)
                     st.success(f"🔐 Cuenta creada: **{u_key}** / contraseña: **{dn_password}** / rol: **{rol_auto}**")
                 
-                if dn_areas_sel:
-                    st.info(f"📚 Áreas: {areas_txt}")
                 reproducir_beep_exitoso()
                 st.balloons()
             else:
@@ -5202,7 +5215,27 @@ def vista_docente(config):
 def _tab_registro_auxiliar_docente(grado, config):
     """Tab de registro auxiliar para docentes"""
     st.subheader("📝 Registro Auxiliar de Evaluación")
-    sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
+
+    # Determinar sección del docente
+    info = st.session_state.get('docente_info') or {}
+    nivel_doc_aux = str(info.get('nivel', ''))
+    seccion_doc_aux = info.get('seccion', None)
+
+    # Para INICIAL/PRIMARIA: sección fija del docente; admin puede elegir
+    grado_str = str(grado)
+    es_ini_pri = any(x in grado_str for x in ['Inicial', 'Primaria', 'ALL_'])
+    if not es_ini_pri:
+        # Secundaria/PreU: siempre "Todas"
+        es_ini_pri = False
+
+    if st.session_state.get('rol') in ['admin', 'directivo']:
+        sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
+    elif seccion_doc_aux and seccion_doc_aux != "Todas" and any(x in grado_str for x in ['Inicial', 'Primaria']):
+        sec = seccion_doc_aux
+        st.info(f"📂 Sección asignada: **{sec}**")
+    else:
+        sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
+
     bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="dbim")
 
     # Determinar áreas según el grado del docente
@@ -6062,30 +6095,46 @@ def tab_registrar_notas(config):
     usuario = st.session_state.get('usuario_actual', '')
     gs = _gs()
 
-    # Determinar grado del docente
+    # Determinar grado y sección del docente
     grado_doc = None
     nivel_doc = None
+    seccion_doc = None
     if st.session_state.docente_info:
         grado_doc = st.session_state.docente_info.get('grado', '')
         nivel_doc = st.session_state.docente_info.get('nivel', '')
+        seccion_doc = st.session_state.docente_info.get('seccion', None)
 
-    # Admin/directivo puede elegir grado
-    # Secundaria/PreU puede elegir cualquier grado de su nivel
+    # Admin/directivo puede elegir grado Y sección
     if st.session_state.rol in ['admin', 'directivo']:
-        grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
+        col_grado, col_sec = st.columns([3, 1])
+        with col_grado:
+            grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
+        with col_sec:
+            grado_sel_str = str(grado_sel)
+            if any(x in grado_sel_str for x in ['Inicial', 'Primaria']):
+                seccion_sel = st.selectbox("📂 Sección:", ["Todas"] + SECCIONES, key="rn_sec_admin")
+            else:
+                seccion_sel = "Todas"
+                st.caption("Sin sección")
     elif nivel_doc in ['SECUNDARIA', 'PREUNIVERSITARIO', 'CEPRE_AB', 'CEPRE_CD']:
         # Secundaria y PreU ven TODOS los grados de su nivel
         if nivel_doc == 'SECUNDARIA':
             grados_nivel = NIVELES_GRADOS.get('SECUNDARIA', [])
         elif nivel_doc == 'PREUNIVERSITARIO':
-            # Incluye GRUPO AB, GRUPO CD, Ciclos y Reforzamiento
             grados_nivel = NIVELES_GRADOS.get('PREUNIVERSITARIO', [])
-        else:  # CEPRE
+        else:
             grados_nivel = [g for g in GRADOS_OPCIONES if 'GRUPO' in str(g)]
         grado_sel = st.selectbox("🎓 Grado:", grados_nivel, key="rn_grado")
+        seccion_sel = "Todas"
     elif grado_doc:
         grado_sel = grado_doc
-        st.info(f"🎓 **{grado_sel}**")
+        # INICIAL y PRIMARIA: docente tiene sección fija
+        if nivel_doc in ['INICIAL', 'PRIMARIA'] and seccion_doc and seccion_doc != "Todas":
+            seccion_sel = seccion_doc
+            st.info(f"🎓 **{grado_sel}** — Sección **{seccion_sel}**")
+        else:
+            seccion_sel = "Todas"
+            st.info(f"🎓 **{grado_sel}**")
     else:
         st.warning("No se detectó grado asignado.")
         return
@@ -6159,13 +6208,15 @@ def tab_registrar_notas(config):
     bim_sel = bimestre_sel
     tipo_completo = f"{tipo_eval_sel}" + (f" — {titulo_eval_rn}" if titulo_eval_rn else "")
 
-    # Cargar estudiantes UNA VEZ antes del form
-    dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
+    # Cargar estudiantes filtrados por grado Y sección
+    dg = BaseDatos.obtener_estudiantes_grado(grado_sel, seccion_sel)
     if dg.empty:
-        st.warning("No hay estudiantes matriculados en este grado.")
+        sec_msg = f" — Sección {seccion_sel}" if seccion_sel and seccion_sel != "Todas" else ""
+        st.warning(f"No hay estudiantes matriculados en {grado_sel}{sec_msg}.")
         return
 
-    st.markdown(f"### 📋 {len(dg)} estudiantes — {len(areas_sel)} área(s) — **{bimestre_sel}** › {tipo_eval_sel}")
+    sec_label = f" — Sección **{seccion_sel}**" if seccion_sel and seccion_sel != "Todas" else ""
+    st.markdown(f"### 📋 {len(dg)} estudiantes — {len(areas_sel)} área(s) — **{bimestre_sel}** › {tipo_eval_sel}{sec_label}")
 
     # Tabla de ingreso de notas con FORM para evitar reruns
     st.markdown("""
