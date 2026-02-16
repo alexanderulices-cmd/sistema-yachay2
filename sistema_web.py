@@ -3221,9 +3221,11 @@ def _gestion_usuarios_admin():
     
     if cuentas_viejas:
         st.warning(f"⚠️ Se detectaron {len(cuentas_viejas)} cuentas obsoletas")
-        with st.expander(f"👀 Ver cuentas obsoletas ({len(cuentas_viejas)})"):
-            for cv in cuentas_viejas:
-                st.caption(f"🗑️ {cv} → {usuarios[cv].get('label', 'Sin nombre')}")
+        
+        # Mostrar lista sin expander (para evitar anidamiento)
+        st.markdown("**👀 Cuentas obsoletas detectadas:**")
+        for cv in cuentas_viejas:
+            st.caption(f"🗑️ {cv} → {usuarios[cv].get('label', 'Sin nombre')}")
         
         if st.button("🗑️ ELIMINAR TODAS LAS CUENTAS OBSOLETAS", 
                    type="secondary", key="btn_del_obsoletas"):
