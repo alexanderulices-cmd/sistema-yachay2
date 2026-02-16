@@ -156,12 +156,6 @@ USUARIOS_DEFAULT = {
 
 def cargar_usuarios():
     """Carga usuarios combinando Google Sheets + local + defaults"""
-    import time as _tu
-    # Caché 60 seg — usuarios cambian muy poco
-    if ('_usr_cache' in st.session_state and '_usr_cache_ts' in st.session_state
-            and (_tu.time() - st.session_state['_usr_cache_ts']) < 60):
-        return st.session_state['_usr_cache']
-
     gs = _gs()
     usuarios_final = {}
     
@@ -211,9 +205,6 @@ def cargar_usuarios():
             pass
     
     guardar_usuarios_local(usuarios_final)
-    # Guardar en caché
-    st.session_state['_usr_cache'] = usuarios_final
-    st.session_state['_usr_cache_ts'] = _tu.time()
     return usuarios_final
 
 
@@ -226,9 +217,6 @@ def guardar_usuarios_local(usuarios):
 def guardar_usuarios(usuarios):
     with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
         json.dump(usuarios, f, indent=2, ensure_ascii=False)
-    # Invalidar caché
-    st.session_state.pop('_usr_cache', None)
-    st.session_state.pop('_usr_cache_ts', None)
     # Sincronizar con Google Sheets
     gs = _gs()
     if gs:
@@ -771,22 +759,6 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
-        # ── CACHÉ EN MEMORIA: evitar llamar GS en cada re-render de Streamlit ──
-        import time as _time_cache
-        cache_key   = '_mat_cache'
-        cache_ts    = '_mat_cache_ts'
-        TTL_SEGUNDOS = 45   # refrescar desde GS cada 45 seg como máximo
-
-        now = _time_cache.time()
-        cache_valido = (
-            cache_key in st.session_state and
-            cache_ts in st.session_state and
-            (now - st.session_state[cache_ts]) < TTL_SEGUNDOS and
-            not st.session_state.get('_forzar_local', False)  # forzar post-guardado
-        )
-        if cache_valido:
-            return st.session_state[cache_key].copy()
-
         # Después de escribir, forzar lectura local para evitar datos viejos de GS
         forzar_local = st.session_state.get('_forzar_local', False)
         if forzar_local:
@@ -795,8 +767,6 @@ class BaseDatos:
                 if Path(ARCHIVO_MATRICULA).exists():
                     df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                     df.columns = df.columns.str.strip()
-                    st.session_state[cache_key] = df
-                    st.session_state[cache_ts] = now
                     return df
             except Exception:
                 pass
@@ -813,8 +783,6 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
-                    st.session_state[cache_key] = df_gs
-                    st.session_state[cache_ts] = now
                     return df_gs
             except Exception:
                 pass
@@ -822,8 +790,6 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
-                st.session_state[cache_key] = df
-                st.session_state[cache_ts] = now
                 return df
         except Exception:
             pass
@@ -839,10 +805,8 @@ class BaseDatos:
         except Exception:
             # Fallback: guardar como CSV si openpyxl falla
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
-        # Invalidar caché para que la próxima carga sea fresca
+        # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
         st.session_state['_forzar_local'] = True
-        st.session_state.pop('_mat_cache', None)    # forzar re-carga
-        st.session_state.pop('_mat_cache_ts', None)
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -2067,39 +2031,38 @@ def generar_link_whatsapp(tel, msg):
 
 
 FRASES_MOTIVACIONALES = [
-    "La puntualidad es la cortesia de los reyes y la obligacion de los caballeros.",
-    "Educar es sembrar semillas de futuro. Gracias por confiar en YACHAY!",
-    "El exito es la suma de pequenos esfuerzos repetidos dia tras dia.",
-    "Cada dia de clases es una oportunidad para crecer y aprender.",
-    "La educacion es el arma mas poderosa para cambiar el mundo. - Nelson Mandela",
-    "Un nino puntual hoy sera un adulto responsable manana.",
-    "La disciplina es el puente entre las metas y los logros.",
-    "La mejor inversion es la educacion de nuestros hijos.",
-    "Con esfuerzo y dedicacion, todo es posible. Vamos YACHAY!",
-    "El habito de estudiar hoy construye el profesional del manana.",
-    "Familia y escuela juntos: la formula del exito educativo.",
-    "La puntualidad es un valor que se ensena desde casa.",
-    "YACHAY significa aprender. Aprendamos juntos!",
-    "El futuro pertenece a quienes creen en la belleza de sus suenos.",
-    "Educar para la Vida - Pioneros en la Educacion de Calidad.",
+    "🌟 La puntualidad es la cortesía de los reyes y la obligación de los caballeros.",
+    "📚 Educar es sembrar semillas de futuro. ¡Gracias por confiar en YACHAY!",
+    "🎯 El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+    "💪 Cada día de clases es una oportunidad para crecer y aprender.",
+    "🌈 La educación es el arma más poderosa para cambiar el mundo. — Nelson Mandela",
+    "⭐ Un niño puntual hoy será un adulto responsable mañana.",
+    "📖 Leer es soñar con los ojos abiertos. ¡Motivemos la lectura!",
+    "🏆 El talento gana juegos, pero el trabajo en equipo gana campeonatos.",
+    "🌱 Cada estudiante es una semilla; con amor y educación, florecerá.",
+    "🔑 La disciplina es el puente entre las metas y los logros.",
+    "💡 No hay atajos para ningún lugar que valga la pena ir.",
+    "🎓 La mejor inversión es la educación de nuestros hijos.",
+    "🌻 Con esfuerzo y dedicación, todo es posible. ¡Vamos YACHAY!",
+    "📝 El hábito de estudiar hoy construye el profesional del mañana.",
+    "🤝 Familia y escuela juntos: la fórmula del éxito educativo.",
+    "⏰ La puntualidad es un valor que se enseña desde casa.",
+    "🎒 Cada día es una nueva página en el libro de la vida.",
+    "🏫 YACHAY significa aprender. ¡Aprendamos juntos!",
+    "✨ El futuro pertenece a quienes creen en la belleza de sus sueños.",
+    "🌟 Educar para la Vida — Pioneros en la Educación de Calidad.",
 ]
 
 import random as _random
 
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
-    h = int(hora.split(':')[0])
-    saludo = "Buenos dias" if h < 12 else ("Buenas tardes" if h < 19 else "Buenas noches")
-    em = "ENTRADA" if tipo == "entrada" else "SALIDA"
-    icono = "✅" if tipo == "entrada" else "⏰"
+    saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
+    em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
     frase = _random.choice(FRASES_MOTIVACIONALES)
-    nombre_ie = "I.E.P. YACHAY - CHINCHERO"
-    return (f"{saludo}!\n\n"
-            f"🏫 *{nombre_ie}* informa:\n"
-            f"{icono} *{em} registrada*\n"
-            f"👤 *{nombre}*\n"
-            f"🕒 Hora: {hora}\n\n"
-            f"_{frase}_")
+    return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
+            f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
+            f"{frase}")
 
 
 def decodificar_qr_imagen(ib):
@@ -3593,75 +3556,20 @@ def tab_asistencias():
     # ===== ZONA DE REGISTRO RÁPIDO =====
     cc, cm = st.columns(2)
     with cc:
-        st.markdown("### 📸 Escanear QR")
-
-        # ── Resultado del último escaneo ──
-        if st.session_state.get('_qr_ultimo_nombre'):
-            color_bg = "#16a34a" if st.session_state.get('_qr_ultimo_tipo') == "entrada" else "#d97706"
-            st.markdown(f"""
-            <div style="background:{color_bg};border-radius:14px;padding:16px;
-                        text-align:center;margin-bottom:10px;">
-              <div style="font-size:3rem;line-height:1;">✅</div>
-              <div style="color:white;font-size:1.3rem;font-weight:900;">
-                {st.session_state['_qr_ultimo_nombre']}
-              </div>
-              <div style="color:rgba(255,255,255,0.9);font-size:0.85rem;">
-                {str(st.session_state.get('_qr_ultimo_tipo','')).upper()} — {st.session_state.get('_qr_ultima_hora','')}
-              </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # ── Cámara: Tomar Foto (funciona iPhone + Android) ──
-        st.caption("📱 Toma la foto del QR para registrar asistencia")
-        foto = st.camera_input("📷 Apunta al QR y toma la foto:", key="ca_qr")
-
-        if foto:
-            d = decodificar_qr_imagen(foto.getvalue())
-            if d:
-                dni_qr = str(d).strip()
-                if '|' in dni_qr:
-                    partes = dni_qr.split('|')
-                    dni_qr = partes[2] if len(partes) > 2 else partes[-1]
-                dni_qr = ''.join(c for c in dni_qr if c.isdigit())
-
-                persona = BaseDatos.buscar_por_dni(dni_qr)
-                if persona:
-                    hora_r   = hora_peru_str()
-                    tipo_r   = st.session_state.tipo_asistencia.lower()
-                    nombre_r = persona.get('Nombre', '')
-                    es_d     = persona.get('_tipo', '') == 'docente'
-                    BaseDatos.guardar_asistencia(dni_qr, nombre_r, tipo_r, hora_r, es_docente=es_d)
-
-                    # Guardar resultado en session para mostrar en próximo render
-                    st.session_state['_qr_ultimo_nombre'] = nombre_r.split()[0].upper() + ' ' + ' '.join(nombre_r.split()[1:]) if nombre_r else nombre_r
-                    st.session_state['_qr_ultimo_tipo']   = tipo_r
-                    st.session_state['_qr_ultima_hora']   = hora_r
-
-                    # Beep + vibración
-                    st.markdown("""
-                    <script>
-                    (function(){
-                      try {
-                        var ctx=new(window.AudioContext||window.webkitAudioContext)();
-                        var o=ctx.createOscillator(),g=ctx.createGain();
-                        o.type='sine';o.frequency.setValueAtTime(880,ctx.currentTime);
-                        g.gain.setValueAtTime(0.5,ctx.currentTime);
-                        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
-                        o.connect(g);g.connect(ctx.destination);
-                        o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);
-                      }catch(e){}
-                      try{if(navigator.vibrate)navigator.vibrate([200,80,200]);}catch(e){}
-                    })();
-                    </script>
-                    """, unsafe_allow_html=True)
-                    reproducir_beep_exitoso()
-                    st.success(f"✅ **{nombre_r}** — {tipo_r.upper()} registrada a las {hora_r}")
-                    st.info("💡 Toca 'Clear Photo' (o el ícono ✕) para escanear el siguiente QR")
+        st.markdown("### 📸 Escanear QR / Código")
+        act = st.checkbox("📷 Activar cámara", key="chkc",
+                          value=st.session_state.get('activar_camara_asist', False))
+        st.session_state.activar_camara_asist = act
+        if act:
+            foto = st.camera_input("Apunta al QR:", key="ca")
+            if foto:
+                d = decodificar_qr_imagen(foto.getvalue())
+                if d:
+                    _registrar_asistencia_rapida(d)
                 else:
-                    st.error(f"❌ DNI {dni_qr} no encontrado en el sistema")
-                    reproducir_beep_error()
-            else:
-                st.warning("⚠️ No se detectó QR en la foto. Intenta con mejor iluminación o más cerca.")
+                    st.warning("⚠️ QR no detectado.")
+        else:
+            st.info("💡 Activa la cámara para escanear.")
     with cm:
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
@@ -4843,10 +4751,12 @@ def vista_docente(config):
     
     grado = str(info.get('grado', ''))
     label = str(info.get('label', usuario.replace('.', ' ').title()))
-    # El saludo ya se muestra en main() — aquí solo mostramos acceso si es secundaria
     if grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
-        st.caption("🔓 Acceso a todos los grados de Secundaria y Pre-Universitario")
-    elif not grado:
+        st.markdown(f"### 👨‍🏫 {label} — Secundaria / Pre-Universitario")
+    elif grado:
+        st.markdown(f"### 👨‍🏫 {label} — {grado}")
+    else:
+        st.markdown(f"### 👨‍🏫 {label}")
         st.info("💡 Pida al administrador que asigne su grado en 'Gestionar Usuarios'.")
 
     # Determinar nivel del docente
@@ -4855,12 +4765,15 @@ def vista_docente(config):
                      or 'GRUPO' in grado or 'Sec' in grado
                      or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     
-    # Para sec/preu: mostrar acceso
+    # Para sec/preu: mostrar grado como info general
+    if es_secundaria and grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
+        st.caption("🔓 Acceso a todos los grados de Secundaria y Pre-Universitario")
+    
     if es_secundaria:
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📚 Material Semanal",
+            "📋 Registro PDF", "📚 Aula Virtual",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -4879,7 +4792,7 @@ def vista_docente(config):
         # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📚 Material Semanal",
+            "📋 Registro PDF", "📚 Aula Virtual",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -5929,17 +5842,14 @@ def tab_registrar_notas(config):
     if st.button("💾 GUARDAR NOTAS", type="primary",
                  use_container_width=True, key="btn_guardar_notas"):
         guardadas = 0
-        # ── CARGAR notas existentes (local + GS + session_state) ──
+        # Cargar notas locales
         notas_local = {}
-        # 1. Session state (in-memory, más rápido)
-        notas_local.update(st.session_state.get('_notas_cache', {}))
-        # 2. Archivo local
         if Path('notas.json').exists():
             try:
                 with open('notas.json', 'r', encoding='utf-8') as f:
-                    notas_local.update(json.load(f))
+                    notas_local = json.load(f)
             except Exception:
-                pass
+                notas_local = {}
 
         for dni, data in notas_input.items():
             if data['nota'] > 0:
@@ -5956,34 +5866,25 @@ def tab_registrar_notas(config):
                     'tipo': 'manual'
                 }
                 key = f"nota_{dni}_{area_sel}_{bim_sel}"
+                # Guardar local
                 notas_local[key] = registro
                 guardadas += 1
-                # Guardar en GS (hoja 'notas')
+                # Guardar en GS también
                 if gs:
                     try:
-                        ws = gs._get_hoja('notas')
+                        ws = gs._get_hoja('config')
                         if ws:
-                            ws.append_row([
-                                key,
-                                fecha_peru_str(),
-                                grado_sel, area_sel, bim_sel,
-                                dni, data['nombre'],
-                                str(data['nota']),
-                                nota_a_letra(data['nota']),
-                                usuario
-                            ])
+                            ws.append_row([key, json.dumps(registro, ensure_ascii=False, default=str)])
                     except Exception:
                         pass
 
-        # Persistir local + session_state
+        # Persistir local
         if guardadas > 0:
             try:
                 with open('notas.json', 'w', encoding='utf-8') as f:
                     json.dump(notas_local, f, ensure_ascii=False, indent=2, default=str)
             except Exception:
                 pass
-            # Guardar en session_state como respaldo en memoria
-            st.session_state['_notas_cache'] = notas_local
             st.success(f"✅ **{guardadas} notas guardadas** correctamente")
             reproducir_beep_exitoso()
             st.balloons()
@@ -5993,49 +5894,28 @@ def tab_registrar_notas(config):
     # Historial de notas guardadas
     st.markdown("---")
     notas_hist = []
-    
-    # ── FUENTE 1: session_state (in-memory cache, sobrevive reloads) ──
-    cache_notas = st.session_state.get('_notas_cache', {})
-    for k, n in cache_notas.items():
-        if isinstance(n, dict) and n.get('grado') == grado_sel:
-            notas_hist.append(n)
-
-    # ── FUENTE 2: archivo local ──
+    # Cargar de local primero
     if Path('notas.json').exists():
         try:
             with open('notas.json', 'r', encoding='utf-8') as f:
-                notas_local_h = json.load(f)
-                for k, n in notas_local_h.items():
+                notas_local = json.load(f)
+                for k, n in notas_local.items():
                     if isinstance(n, dict) and n.get('grado') == grado_sel:
-                        # Agregar solo si no está duplicado
-                        if not any(x.get('dni') == n.get('dni') and
-                                   x.get('area') == n.get('area') and
-                                   x.get('bimestre') == n.get('bimestre') for x in notas_hist):
-                            notas_hist.append(n)
-                # Actualizar session_state
-                if not cache_notas:
-                    st.session_state['_notas_cache'] = notas_local_h
+                        notas_hist.append(n)
         except Exception:
             pass
-
-    # ── FUENTE 3: Google Sheets hoja 'notas' (respaldo nube) ──
+    # Si no hay local, intentar GS
     if not notas_hist and gs:
         try:
-            ws = gs._get_hoja('notas')
+            ws = gs._get_hoja('config')
             if ws:
-                rows = ws.get_all_values()
-                # Columnas: key, fecha, grado, area, bimestre, dni, nombre, nota, literal, docente
-                for row in rows[1:]:  # skip header
-                    if len(row) >= 9:
+                data = ws.get_all_records()
+                for d in data:
+                    clave = str(d.get('clave', ''))
+                    if clave.startswith('nota_'):
                         try:
-                            if row[2] == grado_sel:  # grado column
-                                n = {
-                                    'fecha': row[1], 'grado': row[2], 'area': row[3],
-                                    'bimestre': row[4], 'dni': row[5], 'nombre': row[6],
-                                    'nota': int(row[7]) if row[7].isdigit() else 0,
-                                    'literal': row[8],
-                                    'docente': row[9] if len(row) > 9 else ''
-                                }
+                            n = json.loads(d.get('valor', '{}'))
+                            if n.get('grado') == grado_sel:
                                 notas_hist.append(n)
                         except Exception:
                             pass
@@ -7151,7 +7031,7 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
 # ================================================================
 
 def tab_material_docente(config):
-    st.subheader("📚 Material Semanal — Fichas y Recursos")
+    st.subheader("📚 Aula Virtual — Material de Trabajo")
     rol = st.session_state.get('rol', 'docente')
     usuario = st.session_state.get('usuario_actual', '')
     info = st.session_state.get('docente_info', {}) or {}
@@ -7176,62 +7056,19 @@ def tab_material_docente(config):
 # ---- Funciones para leer Word y convertir a PDF oficial ----
 
 def _leer_docx(file_bytes):
-    """Lee un archivo .docx y extrae contenido como lista de bloques.
-    Detecta automáticamente preguntas de examen (texto negrita + alternativas normales)."""
+    """Lee un archivo .docx y extrae contenido como lista de bloques."""
     if not HAS_DOCX:
         return []
-    import re as _re
     doc = DocxDocument(io.BytesIO(file_bytes))
     bloques = []
-
     for para in doc.paragraphs:
         texto = para.text.strip()
         if not texto:
             bloques.append({'tipo': 'vacio'})
             continue
-
+        # Detectar estilo
         style_name = (para.style.name or '').lower()
-
-        # --- Detectar si hay runs mezclados (negrita + normal) ---
-        runs = [r for r in para.runs if r.text.strip()]
-        if runs:
-            bold_runs   = [r for r in runs if r.bold]
-            normal_runs = [r for r in runs if not r.bold]
-
-            # Patrón examen: hay texto en negrita (la pregunta)
-            # y texto normal que contiene alternativas a) b) c) d)
-            texto_negrita = ''.join(r.text for r in bold_runs).strip()
-            texto_normal  = ''.join(r.text for r in normal_runs).strip()
-            tiene_alternativas = bool(_re.search(r'[a-dA-D]\)', texto_normal))
-
-            if texto_negrita and tiene_alternativas:
-                # Separar alternativas
-                partes = _re.split(r'\s+(?=[a-dA-D]\))', texto_normal.strip())
-                alts = [p.strip() for p in partes if p.strip() and _re.match(r'[a-dA-D]\)', p.strip())]
-                if not alts:
-                    alts = [texto_normal]
-                bloques.append({
-                    'tipo': 'pregunta_exam',
-                    'pregunta': texto_negrita,
-                    'alternativas': alts
-                })
-                continue
-
-            # Si todo es negrita y tiene alternativas en el mismo texto
-            is_bold_all = bool(bold_runs) and len(normal_runs) == 0
-            if is_bold_all and _re.search(r'[a-dA-D]\)', texto):
-                partes = _re.split(r'\s+(?=[a-dA-D]\))', texto)
-                pregunta_txt = partes[0].strip() if partes else texto
-                alts = [p.strip() for p in partes[1:] if p.strip()]
-                bloques.append({
-                    'tipo': 'pregunta_exam',
-                    'pregunta': pregunta_txt,
-                    'alternativas': alts if alts else [texto]
-                })
-                continue
-
-        # --- Clasificación normal ---
-        is_bold = runs and all(r.bold for r in runs)
+        is_bold = para.runs and all(r.bold for r in para.runs if r.text.strip())
         is_heading = 'heading' in style_name or 'título' in style_name
         font_size = None
         if para.runs:
@@ -7239,27 +7076,14 @@ def _leer_docx(file_bytes):
                 if r.font.size:
                     font_size = r.font.size.pt
                     break
-
-        if is_heading or 'heading 1' in style_name:
+        if is_heading or ('heading 1' in style_name):
             bloques.append({'tipo': 'titulo', 'contenido': texto})
         elif 'heading 2' in style_name or (is_bold and font_size and font_size >= 13):
             bloques.append({'tipo': 'subtitulo', 'contenido': texto})
         elif is_bold:
             bloques.append({'tipo': 'negrita', 'contenido': texto})
         else:
-            # Verificar si el texto mismo tiene patrón de pregunta + alternativas
-            import re as _re2
-            if _re2.search(r'[a-dA-D]\)', texto):
-                partes = _re2.split(r'\s+(?=[a-dA-D]\))', texto)
-                if len(partes) >= 2:
-                    bloques.append({
-                        'tipo': 'pregunta_exam',
-                        'pregunta': partes[0].strip(),
-                        'alternativas': [p.strip() for p in partes[1:] if p.strip()]
-                    })
-                    continue
             bloques.append({'tipo': 'texto', 'contenido': texto})
-
     # Extraer imágenes
     for rel in doc.part.rels.values():
         if "image" in rel.reltype:
@@ -7273,164 +7097,63 @@ def _leer_docx(file_bytes):
 
 
 def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, semana, titulo, tipo_doc="FICHA"):
-    """Genera PDF con formato oficial en DOS COLUMNAS.
-    - Preguntas de examen: negrita + alternativas en líneas separadas.
-    - Texto negro, justificado, línea divisoria gruesa entre columnas.
-    """
+    """Genera PDF con formato oficial del colegio desde contenido de Word."""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
 
-    # ── ENCABEZADO OFICIAL ──
+    # ENCABEZADO OFICIAL
     _pdf_encabezado_material(c_pdf, w, h, config, semana, area, titulo, grado, nombre_doc)
+    y_pos = h - 230
 
-    # ── LAYOUT DOS COLUMNAS ──
-    MARGEN_L   = 28
-    COL_GAP    = 16
-    COL_W      = (w - MARGEN_L * 2 - COL_GAP) / 2
-    COL1_X     = MARGEN_L
-    COL2_X     = MARGEN_L + COL_W + COL_GAP
-    DIVX       = MARGEN_L + COL_W + COL_GAP / 2
-    Y_INICIO   = h - 235
-    MARGEN_BOT = 55
-    CHARS_COL  = 44   # ancho en caracteres por columna
-
-    col_num = 1
-    x_col   = COL1_X
-    y_pos   = Y_INICIO
-
-    def _draw_divider(y_top):
-        c_pdf.setStrokeColor(colors.HexColor("#334155"))
-        c_pdf.setLineWidth(2)
-        c_pdf.line(DIVX, y_top, DIVX, MARGEN_BOT)
-        c_pdf.setLineWidth(1)
-
-    def _nueva_pagina():
-        nonlocal y_pos, x_col, col_num
-        _pdf_pie_material(c_pdf, w, grado, area, semana)
-        c_pdf.showPage()
-        _pdf_encabezado_material(c_pdf, w, h, config, semana, area, titulo, grado, nombre_doc)
-        y_pos   = Y_INICIO
-        x_col   = COL1_X
-        col_num = 1
-        _draw_divider(Y_INICIO)
-
-    def _salto_col():
-        nonlocal y_pos, x_col, col_num
-        if col_num == 1:
-            col_num = 2
-            x_col   = COL2_X
-            y_pos   = Y_INICIO
-        else:
-            _nueva_pagina()
-
-    def _check(espacio=18):
-        if y_pos - espacio < MARGEN_BOT:
-            _salto_col()
-
-    # Línea divisoria inicial
-    _draw_divider(Y_INICIO)
-
-    def _draw_texto_justificado(texto, font, size, x, ancho_pts, leading=13):
-        """Dibuja texto word-wrapped; usa fill para simular justificado."""
-        nonlocal y_pos
-        c_pdf.setFont(font, size)
-        palabras = texto.split()
-        linea_actual = []
-        for pal in palabras:
-            linea_prueba = ' '.join(linea_actual + [pal])
-            if c_pdf.stringWidth(linea_prueba, font, size) <= ancho_pts:
-                linea_actual.append(pal)
-            else:
-                if linea_actual:
-                    _check(leading + 2)
-                    c_pdf.drawString(x, y_pos, ' '.join(linea_actual))
-                    y_pos -= leading
-                linea_actual = [pal]
-        if linea_actual:
-            _check(leading + 2)
-            c_pdf.drawString(x, y_pos, ' '.join(linea_actual))
-            y_pos -= leading
+    # Tipo de documento
+    c_pdf.setFont("Helvetica-Bold", 10)
+    c_pdf.setFillColor(colors.HexColor("#6b7280"))
+    c_pdf.drawRightString(w - 60, h - 230, f"{tipo_doc} — Docente: {nombre_doc}")
+    c_pdf.setFillColor(colors.black)
+    y_pos -= 15
 
     for bloque in bloques_docx:
         tipo = bloque.get('tipo', '')
+        contenido = bloque.get('contenido', '')
+
+        if y_pos < 90:
+            c_pdf.showPage()
+            _pdf_pie_material(c_pdf, w, grado, area, semana)
+            y_pos = h - 60
 
         if tipo == 'vacio':
-            y_pos -= 5
-            continue
-
-        elif tipo == 'pregunta_exam':
-            # ── PREGUNTA DE EXAMEN ──
-            pregunta    = bloque.get('pregunta', '')
-            alternativas = bloque.get('alternativas', [])
-
-            # Calcular espacio necesario: líneas de pregunta + alternativas
-            # (estimado rápido)
-            nlineas_preg = max(1, len(pregunta) // CHARS_COL + 1)
-            espacio_est  = nlineas_preg * 13 + len(alternativas) * 13 + 10
-            _check(espacio_est)
-
-            # Número + pregunta en NEGRITA NEGRO
-            c_pdf.setFillColor(colors.black)
-            _draw_texto_justificado(pregunta, "Helvetica-Bold", 8.5, x_col, COL_W - 4, leading=13)
-            y_pos -= 2
-
-            # Alternativas en normal, en líneas separadas
-            c_pdf.setFont("Helvetica", 8.5)
-            c_pdf.setFillColor(colors.black)
-            for alt in alternativas:
-                _check(14)
-                # Círculo de burbuja pequeño
-                c_pdf.setStrokeColor(colors.HexColor("#475569"))
-                c_pdf.setLineWidth(0.7)
-                c_pdf.circle(x_col + 5, y_pos + 3, 4, stroke=1, fill=0)
-                c_pdf.setStrokeColor(colors.black)
-                # Texto de alternativa
-                c_pdf.setFont("Helvetica", 8.5)
-                c_pdf.setFillColor(colors.black)
-                alt_texto = alt.strip()
-                for linea in textwrap.wrap(alt_texto, width=CHARS_COL):
-                    _check(13)
-                    c_pdf.drawString(x_col + 13, y_pos, linea)
-                    y_pos -= 13
-            y_pos -= 8  # Espacio entre preguntas
-
+            y_pos -= 8
         elif tipo == 'titulo':
-            _check(20)
-            c_pdf.setFont("Helvetica-Bold", 11)
+            c_pdf.setFont("Helvetica-Bold", 14)
             c_pdf.setFillColor(colors.HexColor("#1a56db"))
-            for linea in textwrap.wrap(bloque.get('contenido', ''), width=CHARS_COL):
-                _check(14)
-                c_pdf.drawString(x_col, y_pos, linea)
-                y_pos -= 14
+            c_pdf.drawString(60, y_pos, contenido[:70])
             c_pdf.setFillColor(colors.black)
-            # Subrayado
-            c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
-            c_pdf.setLineWidth(0.8)
-            c_pdf.line(x_col, y_pos + 2, x_col + COL_W, y_pos + 2)
-            c_pdf.setLineWidth(1)
-            y_pos -= 5
-
+            y_pos -= 22
         elif tipo == 'subtitulo':
-            _check(16)
-            c_pdf.setFont("Helvetica-Bold", 9.5)
+            c_pdf.setFont("Helvetica-Bold", 11)
             c_pdf.setFillColor(colors.HexColor("#1e40af"))
-            for linea in textwrap.wrap(bloque.get('contenido', ''), width=CHARS_COL + 4):
-                _check(13)
-                c_pdf.drawString(x_col + 2, y_pos, linea)
-                y_pos -= 13
+            c_pdf.drawString(60, y_pos, contenido[:80])
             c_pdf.setFillColor(colors.black)
-
+            y_pos -= 18
         elif tipo == 'negrita':
-            _check(13)
-            c_pdf.setFillColor(colors.black)
-            _draw_texto_justificado(bloque.get('contenido', ''), "Helvetica-Bold", 8.5, x_col + 2, COL_W - 6, leading=13)
-
+            c_pdf.setFont("Helvetica-Bold", 10)
+            for linea in textwrap.wrap(contenido, width=85):
+                if y_pos < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
+                c_pdf.drawString(65, y_pos, linea)
+                y_pos -= 14
         elif tipo == 'texto':
-            _check(13)
-            c_pdf.setFillColor(colors.black)
-            _draw_texto_justificado(bloque.get('contenido', ''), "Helvetica", 8.5, x_col + 2, COL_W - 6, leading=13)
-
+            c_pdf.setFont("Helvetica", 10)
+            for linea in textwrap.wrap(contenido, width=85):
+                if y_pos < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
+                c_pdf.drawString(65, y_pos, linea)
+                y_pos -= 14
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
             try:
                 img_bytes = base64.b64decode(bloque['imagen_b64'])
@@ -7438,15 +7161,18 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
                 if img.mode == 'RGBA':
                     img = img.convert('RGB')
                 img_w, img_h = img.size
-                max_w = COL_W - 4
-                max_h = 180
+                max_w = w - 140
+                max_h = 250
                 ratio = min(max_w / img_w, max_h / img_h, 1.0)
                 dw, dh = img_w * ratio, img_h * ratio
-                _check(dh + 10)
+                if y_pos - dh < 80:
+                    c_pdf.showPage()
+                    _pdf_pie_material(c_pdf, w, grado, area, semana)
+                    y_pos = h - 60
                 tmp = f"tmp_docx_{int(time.time())}.jpg"
                 img.save(tmp, 'JPEG', quality=80)
-                c_pdf.drawImage(tmp, x_col + (COL_W - dw) / 2, y_pos - dh, dw, dh)
-                y_pos -= dh + 10
+                c_pdf.drawImage(tmp, (w - dw) / 2, y_pos - dh, dw, dh)
+                y_pos -= dh + 15
                 try:
                     os.remove(tmp)
                 except Exception:
@@ -7588,23 +7314,14 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
             w_file = st.file_uploader("📎 Subir archivo Word (.docx):",
                                        type=["docx"], key="w_mat_file",
                                        help="Solo archivos .docx (Word 2007+)")
-            if w_file:
-                if not w_titulo:
-                    w_titulo = w_file.name.replace(".docx","").replace("_"," ").strip()
+            if w_file and w_titulo:
                 with st.spinner("📖 Leyendo documento Word..."):
                     bloques = _leer_docx(w_file.getvalue())
                 if bloques:
                     # Vista previa
-                    n_pregs_m = sum(1 for b in bloques if b['tipo'] == 'pregunta_exam')
-                    if n_pregs_m > 0:
-                        st.success(f"✅ {n_pregs_m} pregunta(s) de examen detectadas")
                     with st.expander("👁️ Vista previa del contenido", expanded=True):
                         for b in bloques:
-                            if b['tipo'] == 'pregunta_exam':
-                                st.markdown(f"**{b['pregunta']}**")
-                                for alt in b.get('alternativas', []):
-                                    st.markdown(f"&nbsp;&nbsp;&nbsp;○ {alt}")
-                            elif b['tipo'] == 'titulo':
+                            if b['tipo'] == 'titulo':
                                 st.markdown(f"## {b['contenido']}")
                             elif b['tipo'] == 'subtitulo':
                                 st.markdown(f"### {b['contenido']}")
@@ -7618,7 +7335,7 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                                     st.image(img_bytes, width=400)
                                 except Exception:
                                     st.caption("[Imagen]")
-                    st.info(f"📊 {len([b for b in bloques if b['tipo'] != 'vacio'])} bloques detectados")
+                    st.info(f"📊 {len([b for b in bloques if b['tipo'] != 'vacio'])} bloques de contenido detectados")
 
                     if st.button("📤 CONVERTIR A PDF OFICIAL", type="primary",
                                  use_container_width=True, key="btn_word_pdf"):
@@ -7896,23 +7613,13 @@ def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actua
                                        key="we_titulo")
             we_file = st.file_uploader("📎 Subir examen Word (.docx):",
                                         type=["docx"], key="we_file")
-            if we_file:
-                if not we_titulo:
-                    we_titulo = we_file.name.replace(".docx","").replace("_"," ").strip()
+            if we_file and we_titulo:
                 with st.spinner("📖 Leyendo examen..."):
                     bloques = _leer_docx(we_file.getvalue())
                 if bloques:
-                    # Contar preguntas detectadas
-                    n_pregs = sum(1 for b in bloques if b['tipo'] == 'pregunta_exam')
-                    if n_pregs > 0:
-                        st.success(f"✅ {n_pregs} pregunta(s) detectadas automáticamente")
                     with st.expander("👁️ Vista previa", expanded=True):
-                        for i, b in enumerate(bloques):
-                            if b['tipo'] == 'pregunta_exam':
-                                st.markdown(f"**{b['pregunta']}**")
-                                for alt in b.get('alternativas', []):
-                                    st.markdown(f"&nbsp;&nbsp;&nbsp;○ {alt}")
-                            elif b['tipo'] == 'titulo':
+                        for b in bloques:
+                            if b['tipo'] == 'titulo':
                                 st.markdown(f"## {b['contenido']}")
                             elif b['tipo'] == 'subtitulo':
                                 st.markdown(f"### {b['contenido']}")
@@ -8211,7 +7918,7 @@ def main():
                 ("📈", "Reportes", "reportes", "#ea580c"),
                 ("📝", "Incidencias", "incidencias", "#be185d"),
                 ("💾", "Base Datos", "base_datos", "#4f46e5"),
-                ("📚", "Material Semanal", "aula_virtual", "#7c3aed"),
+                ("📚", "Aula Virtual", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
             ]
             if st.session_state.rol == "admin":
