@@ -25,8 +25,6 @@ HOJAS = {
     'config': 'Config',
     'fotos': 'Fotos',
     'historial_eval': 'HistorialEval',
-    'materiales': 'Materiales',
-    'examenes': 'Examenes',
 }
 
 COLUMNAS = {
@@ -52,10 +50,6 @@ COLUMNAS = {
     'historial_eval': ['eval_id', 'fecha', 'docente', 'titulo', 'grado',
                         'areas_json', 'total_alumnos', 'promedio_general'],
     'config': ['clave', 'valor'],
-    'materiales': ['id', 'docente', 'grado', 'semana', 'area',
-                    'fecha_creacion', 'data_json'],
-    'examenes': ['id', 'docente', 'grado', 'semana', 'area',
-                  'fecha_creacion', 'data_json'],
 }
 
 
@@ -566,7 +560,7 @@ class GoogleSync:
     def historial_asistencia_estudiante(self, dni):
         """Retorna historial de asistencia de un estudiante específico"""
         try:
-            ws = self._get_hoja('asistencias')
+            ws = self._get_hoja('asistencia')
             if not ws:
                 return {}
             data = ws.get_all_records()
