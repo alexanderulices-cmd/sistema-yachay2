@@ -9324,35 +9324,53 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            # Usar botón de Streamlit con estilo inline
-                            btn_texto = f"{icono}\n\n{nombre}"
-                            if st.button(btn_texto, key=f"dash_{key}", use_container_width=True):
+                            # Crear ID único para este botón
+                            btn_id = f"btn_{key}_{i}_{j}"
+                            
+                            # Botón HTML con color
+                            st.markdown(f"""
+                            <div id="{btn_id}" style="background: linear-gradient(135deg, {color} 0%, {color}dd 100%);
+                                        color: white;
+                                        border-radius: 16px;
+                                        padding: 35px 20px;
+                                        text-align: center;
+                                        min-height: 140px;
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: center;
+                                        align-items: center;
+                                        box-shadow: 0 8px 25px {color}50;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                        margin: 8px 0;
+                                        border: none;"
+                                 onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 12px 35px {color}70';"
+                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px {color}50';">
+                                <div style="font-size: 2.5rem; margin-bottom: 12px;">{icono}</div>
+                                <div style="font-size: 1.1rem; font-weight: 600; 
+                                            text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{nombre}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Botón Streamlit funcional pero invisible
+                            if st.button(f"‎", key=f"dash_{key}", use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
                             
-                            # Aplicar estilo al último botón creado
+                            # Hacer botón invisible y posicionarlo sobre el HTML
                             st.markdown(f"""
                             <style>
-                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button {{
-                                background: linear-gradient(135deg, {color}, {color}dd) !important;
-                                color: white !important;
+                            button[data-testid*="dash_{key}"] {{
+                                position: relative !important;
+                                margin-top: -160px !important;
+                                height: 160px !important;
+                                background: transparent !important;
                                 border: none !important;
-                                border-radius: 16px !important;
-                                padding: 30px 20px !important;
-                                min-height: 130px !important;
-                                box-shadow: 0 8px 25px {color}60 !important;
-                                transition: all 0.3s ease !important;
-                                font-size: 1rem !important;
-                                font-weight: 600 !important;
-                                white-space: pre-line !important;
+                                color: transparent !important;
+                                z-index: 100 !important;
                             }}
-                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button:hover {{
-                                transform: translateY(-6px) scale(1.02) !important;
-                                box-shadow: 0 12px 35px {color}80 !important;
-                            }}
-                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button p {{
-                                font-size: 2rem !important;
-                                margin: 0 !important;
+                            button[data-testid*="dash_{key}"]:hover {{
+                                background: transparent !important;
                             }}
                             </style>
                             """, unsafe_allow_html=True)
