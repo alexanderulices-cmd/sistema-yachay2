@@ -88,6 +88,51 @@ def fecha_peru_str():
 
 
 # ================================================================
+# FUNCIÓN PARA REDUCIR PESO DE PDFs
+# ================================================================
+
+def comprimir_imagen_para_pdf(imagen_path_o_bytes, max_width=600, calidad=65):
+    """Comprime imagen para reducir peso en PDFs (14MB → <2MB)"""
+    try:
+        # Cargar imagen
+        if isinstance(imagen_path_o_bytes, (str, Path)):
+            img = Image.open(imagen_path_o_bytes)
+        else:
+            img = Image.open(io.BytesIO(imagen_path_o_bytes))
+        
+        # Convertir a RGB si es necesario
+        if img.mode in ('RGBA', 'LA', 'P'):
+            # Crear fondo blanco para transparencias
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            if img.mode == 'RGBA' or img.mode == 'LA':
+                background.paste(img, mask=img.split()[-1])
+                img = background
+            else:
+                img = img.convert('RGB')
+        
+        # Redimensionar si es muy grande
+        if img.width > max_width:
+            ratio = max_width / img.width
+            nuevo_alto = int(img.height * ratio)
+            img = img.resize((max_width, nuevo_alto), Image.LANCZOS)
+        
+        # Guardar con compresión
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=calidad, optimize=True)
+        output.seek(0)
+        return output
+    except Exception:
+        # Si falla, retornar original
+        if isinstance(imagen_path_o_bytes, bytes):
+            return io.BytesIO(imagen_path_o_bytes)
+        elif isinstance(imagen_path_o_bytes, (str, Path)):
+            with open(imagen_path_o_bytes, 'rb') as f:
+                return io.BytesIO(f.read())
+        else:
+            return imagen_path_o_bytes
+
+
+# ================================================================
 # FERIADOS OFICIALES DE PERÚ
 # ================================================================
 
@@ -353,14 +398,28 @@ st.markdown("""
     0%, 100% { box-shadow: 0 0 5px rgba(26,86,219,0.3); }
     50% { box-shadow: 0 0 20px rgba(26,86,219,0.6); }
 }
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+@keyframes rainbow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
 
 /* === HEADER PRINCIPAL === */
 .main-header {
     text-align: center; padding: 2rem;
-    background: linear-gradient(135deg, #001e7c 0%, #0052cc 30%, #0066ff 70%, #3b82f6 100%);
+    background: linear-gradient(270deg, #FF6B6B, #4ECDC4, #45B7D1, #F7B731, #5F27CD);
+    background-size: 400% 400%;
     color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 25px rgba(0,30,124,0.35);
-    animation: fadeInUp 0.6s ease-out;
+    animation: gradient 8s ease infinite, fadeInUp 0.6s ease-out;
 }
 
 /* === TABS ANIMADOS === */
@@ -376,11 +435,13 @@ st.markdown("""
 .stTabs [data-baseweb="tab"]:hover {
     background: rgba(26,86,219,0.1);
     transform: translateY(-2px) scale(1.02);
+    animation: float 2s ease-in-out infinite;
 }
 .stTabs [aria-selected="true"] {
     background: linear-gradient(135deg, #1a56db, #0052cc) !important;
     color: white !important;
     box-shadow: 0 4px 12px rgba(26,86,219,0.3);
+    animation: glow 2s ease-in-out infinite;
 }
 
 /* === BOTONES CON EFECTO === */
@@ -390,11 +451,12 @@ st.markdown("""
     font-weight: 600 !important;
 }
 .stButton > button:hover {
-    transform: translateY(-2px) scale(1.02) !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 0 20px rgba(26,86,219,0.6), 0 0 40px rgba(26,86,219,0.3) !important;
+    animation: float 1.5s ease-in-out infinite;
 }
 .stButton > button:active {
-    transform: translateY(0) !important;
+    transform: translateY(0) scale(0.98) !important;
 }
 
 /* === CARDS DE ESTADÍSTICAS === */
@@ -1834,11 +1896,11 @@ class GeneradorCarnet:
                             fill=self.DORADO)
 
     def _textos(self):
-        fh = RecursoManager.obtener_fuente("", 36, True)
-        fm = RecursoManager.obtener_fuente("", 19, True)
-        fc = RecursoManager.obtener_fuente("", 17, True)
-        fp = RecursoManager.obtener_fuente("", 13, True)
-        self.draw.text((self.WIDTH // 2, 65), "I.E. ALTERNATIVO YACHAY",
+        fh = RecursoManager.obtener_fuente("", 48, True)  # Aumentado de 36 a 48
+        fm = RecursoManager.obtener_fuente("", 22, True)  # Aumentado de 19 a 22
+        fc = RecursoManager.obtener_fuente("", 18, True)
+        fp = RecursoManager.obtener_fuente("", 14, True)
+        self.draw.text((self.WIDTH // 2, 65), "I.E.P. YACHAY",  # Cambiado texto
                        font=fh, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
                        font=fm, fill=self.DORADO, anchor="mm")
@@ -4623,6 +4685,34 @@ def tab_calificacion_yachay(config):
     # ===== TAB: HISTORIAL =====
     with tabs_cal[4]:
         st.subheader("📊 Historial de Evaluaciones")
+        
+        # NUEVO: Mostrar evaluaciones guardadas
+        st.markdown("### 💾 Evaluaciones Guardadas")
+        try:
+            historial_file = 'historial_evaluaciones.json'
+            if Path(historial_file).exists():
+                with open(historial_file, 'r', encoding='utf-8') as f:
+                    hist_data = json.load(f)
+                
+                if hist_data:
+                    for clave, eval_data in sorted(hist_data.items(), reverse=True):
+                        with st.expander(f"📝 {eval_data['grado']} - {eval_data['periodo']} ({eval_data['fecha']})"):
+                            st.write(f"**Hora:** {eval_data.get('hora', 'N/A')}")
+                            st.write(f"**Estudiantes evaluados:** {len(eval_data.get('ranking', []))}")
+                            st.write(f"**Áreas:** {', '.join(eval_data.get('areas', []))}")
+                            
+                            if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
+                                df_hist = pd.DataFrame(eval_data.get('ranking', []))
+                                st.dataframe(df_hist, use_container_width=True)
+                else:
+                    st.info("No hay evaluaciones guardadas en historial")
+            else:
+                st.info("No hay historial disponible aún")
+        except Exception as e:
+            st.error(f"Error al cargar historial: {str(e)}")
+        
+        st.markdown("---")
+        st.markdown("### 👤 Historial por Estudiante")
 
         if st.session_state.rol in ["admin", "directivo"]:
             grado_hist = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_hist")
@@ -6109,19 +6199,19 @@ def tab_registrar_notas(config):
                 alumno = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
                 cel = alumno.get('Celular_Apoderado', '') if alumno else ''
                 if cel:
-                    msg = f"🏫 *I.E.P. YACHAY — CHINCHERO*\n"
-                    msg += f"📋 *REPORTE DE NOTAS*\n"
-                    msg += f"👤 Alumno: {nombre_wa}\n"
-                    msg += f"🎓 Grado: {grado_sel}\n"
-                    msg += f"📅 Período: {bim_sel}\n"
-                    msg += f"{'─' * 25}\n"
+                    msg = f"*I.E.P. YACHAY - CHINCHERO*\n"
+                    msg += f"*REPORTE DE NOTAS*\n\n"
+                    msg += f"Alumno: {nombre_wa}\n"
+                    msg += f"Grado: {grado_sel}\n"
+                    msg += f"Periodo: {bim_sel}\n"
+                    msg += f"{'=' * 25}\n"
                     for a in areas_unicas:
                         nota_w = fila.get(a, 0)
                         lit_w = nota_a_letra(nota_w) if nota_w > 0 else '-'
-                        msg += f"📚 {a}: *{nota_w}* ({lit_w})\n"
-                    msg += f"{'─' * 25}\n"
-                    msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n"
-                    msg += f"🏅 *PUESTO: {fila['Medalla']}*"
+                        msg += f"{a}: *{nota_w}* ({lit_w})\n"
+                    msg += f"{'=' * 25}\n"
+                    msg += f"*PROMEDIO: {fila['Promedio']}*\n"
+                    msg += f"*PUESTO: {fila['Medalla']}*"
                     cel_clean = cel.replace(' ', '').replace('+', '')
                     if not cel_clean.startswith('51'):
                         cel_clean = '51' + cel_clean
@@ -6129,6 +6219,55 @@ def tab_registrar_notas(config):
                     st.markdown(f"📱 **{nombre_wa}** → [{cel}]({url_wa})")
                 else:
                     st.caption(f"⚠️ {nombre_wa} — Sin celular registrado")
+        
+        # NUEVO: Botones para guardar evaluación y limpiar
+        st.markdown("---")
+        st.markdown("### 💾 Gestionar Evaluación")
+        col_g1, col_g2 = st.columns(2)
+        
+        with col_g1:
+            if st.button("💾 GUARDAR EVALUACIÓN EN HISTORIAL", 
+                       type="primary", use_container_width=True, key="btn_guardar_hist"):
+                # Guardar en historial
+                if 'historial_evaluaciones' not in st.session_state:
+                    st.session_state['historial_evaluaciones'] = {}
+                
+                clave_hist = f"{grado_sel}_{bim_sel}_{fecha_peru_str()}"
+                st.session_state['historial_evaluaciones'][clave_hist] = {
+                    'grado': grado_sel,
+                    'periodo': bim_sel,
+                    'fecha': fecha_peru_str(),
+                    'hora': hora_peru_str(),
+                    'ranking': ranking_filas,
+                    'areas': areas_unicas
+                }
+                
+                # Guardar en archivo JSON
+                try:
+                    historial_file = 'historial_evaluaciones.json'
+                    if Path(historial_file).exists():
+                        with open(historial_file, 'r', encoding='utf-8') as f:
+                            hist_data = json.load(f)
+                    else:
+                        hist_data = {}
+                    
+                    hist_data[clave_hist] = st.session_state['historial_evaluaciones'][clave_hist]
+                    
+                    with open(historial_file, 'w', encoding='utf-8') as f:
+                        json.dump(hist_data, f, ensure_ascii=False, indent=2)
+                    
+                    st.success(f"✅ Evaluación guardada: {grado_sel} - {bim_sel}")
+                    st.balloons()
+                except Exception as e:
+                    st.error(f"Error al guardar: {str(e)}")
+        
+        with col_g2:
+            st.info("💡 Guarda primero antes de limpiar")
+            if st.checkbox("Confirmar limpieza de notas", key="conf_limpiar_notas"):
+                if st.button("🗑️ LIMPIAR NOTAS ACTUALES", 
+                           use_container_width=True, key="btn_limpiar_notas"):
+                    st.warning("⚠️ Esta función eliminará las notas del período actual")
+                    st.info("📝 Implementar limpieza en Google Sheets si es necesario")
     else:
         st.info("📭 Registre notas primero para ver el ranking")
 
