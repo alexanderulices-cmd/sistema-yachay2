@@ -3614,10 +3614,25 @@ def tab_carnets(config):
             es_d = a.get('_tipo', '') == 'docente'
             tt = "DOCENTE" if es_d else "ALUMNO"
             st.markdown(f"**[{tt}]** {a.get('Nombre', '')} | DNI: {a.get('DNI', '')}")
-            fm = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'], key="cfm")
+
+            # Auto-cargar foto guardada si existe
+            foto_auto_path = f"foto_doc_{a.get('DNI', '').strip()}.png"
+            foto_auto_bytes = None
+            if os.path.exists(foto_auto_path):
+                with open(foto_auto_path, "rb") as fimg:
+                    foto_auto_bytes = fimg.read()
+                st.success("📸 Foto registrada cargada automáticamente")
+                st.image(foto_auto_bytes, width=100)
+            
+            fm = st.file_uploader("📸 Nueva foto (opcional):", type=['jpg', 'png', 'jpeg'], key="cfm")
             if st.button("🪪 GENERAR", type="primary",
                          use_container_width=True, key="gcm"):
-                fi = io.BytesIO(fm.getvalue()) if fm else None
+                if fm:
+                    fi = io.BytesIO(fm.getvalue())
+                elif foto_auto_bytes:
+                    fi = io.BytesIO(foto_auto_bytes)
+                else:
+                    fi = None
                 cr = GeneradorCarnet(a, config['anio'], fi, es_docente=es_d).generar()
                 st.image(cr, use_container_width=True)
                 st.download_button("⬇️", cr, "Carnet.png", "image/png",
@@ -5995,38 +6010,51 @@ def tab_registrar_notas(config):
     elif any(x in grado_str for x in ['Ciclo', 'Reforzamiento']):
         nivel = 'PREUNIVERSITARIO'
 
-    # Seleccionar área y período FUERA del form (para evitar reruns)
-    c1, c2, c3 = st.columns(3)
+    # ── Selector de Bimestre y tipo de evaluación ──────────────────────────
+    TIPOS_EVALUACION_BIMESTRE = [
+        'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
+        'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
+        'Quincenal 1', 'Quincenal 2',
+        'Práctica Calificada', 'Examen Parcial', 'Examen Final',
+        'Actividad', 'Tarea', 'Exposición', 'Trabajo',
+    ]
+    BIMESTRES_OPCIONES = ['I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre']
+
+    c1, c2, c3, c4 = st.columns([2, 1, 1, 1])
     with c1:
         if nivel == 'CEPRE_AB':
             areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO AB']
         elif nivel == 'CEPRE_CD':
             areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO CD']
         elif nivel == 'SECUNDARIA':
-            # Secundaria: áreas MINEDU + todas las áreas CEPRE UNSAAC
             areas_cepre_all = sorted(set(
                 AREAS_CEPRE_UNSAAC['GRUPO AB'] + AREAS_CEPRE_UNSAAC['GRUPO CD']
             ))
             areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['──── CEPRE UNSAAC ────'] + areas_cepre_all
         else:
             areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU.get('PRIMARIA', []))
-        
-        # Opción de registrar múltiples áreas
+
         multi_areas = st.checkbox("📚 Registrar múltiples áreas", key="rn_multi")
-        
         if multi_areas:
             areas_sel = st.multiselect("📚 Seleccionar áreas:", areas_nivel, key="rn_areas_multi")
         else:
             area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
             areas_sel = [area_sel]
-    
+
     with c2:
-        bim_sel = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_bim")
-    
+        bimestre_sel = st.selectbox("📅 Bimestre:", BIMESTRES_OPCIONES, key="rn_bimestre")
+
     with c3:
-        titulo_eval_rn = st.text_input("📝 Título (opcional):", 
-                                        placeholder="Ej: Evaluación Semanal 3",
+        tipo_eval_sel = st.selectbox("📋 Evaluación:", TIPOS_EVALUACION_BIMESTRE, key="rn_tipo_eval")
+
+    with c4:
+        titulo_eval_rn = st.text_input("📝 Título (opcional):",
+                                        placeholder="Ej: Recuperación",
                                         key="rn_titulo")
+
+    # El período completo = Bimestre + tipo de evaluación
+    bim_sel = bimestre_sel
+    tipo_completo = f"{tipo_eval_sel}" + (f" — {titulo_eval_rn}" if titulo_eval_rn else "")
 
     # Cargar estudiantes UNA VEZ antes del form
     dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
@@ -6034,7 +6062,7 @@ def tab_registrar_notas(config):
         st.warning("No hay estudiantes matriculados en este grado.")
         return
 
-    st.markdown(f"### 📋 {len(dg)} estudiantes — {len(areas_sel)} área(s) — {bim_sel}")
+    st.markdown(f"### 📋 {len(dg)} estudiantes — {len(areas_sel)} área(s) — **{bimestre_sel}** › {tipo_eval_sel}")
 
     # Tabla de ingreso de notas con FORM para evitar reruns
     st.markdown("""
@@ -6072,14 +6100,14 @@ def tab_registrar_notas(config):
             for idx, row in dg.iterrows():
                 nombre = str(row.get('Nombre', ''))
                 dni = str(row.get('DNI', ''))
-                cel_apod = str(row.get('Celular Apoderado', ''))
+                cel_apod = str(row.get('Celular_Apoderado', row.get('Celular Apoderado', '')))
                 
                 nc1, nc2, nc3, nc4, nc5 = st.columns([3, 1, 1, 1, 1])
                 with nc1:
                     st.write(f"👤 {nombre}")
                 with nc2:
                     nota = st.number_input("Nota", 0, 20, 0,
-                                            key=f"rn_{dni}_{area_actual}_{bim_sel}",
+                                            key=f"rn_{dni}_{area_actual}_{bimestre_sel}_{tipo_eval_sel}",
                                             label_visibility="collapsed")
                     
                     # Almacenar por área
@@ -6120,20 +6148,21 @@ def tab_registrar_notas(config):
                     'fecha': fecha_peru_str(),
                     'grado': grado_sel,
                     'area': data['area'],
-                    'bimestre': bim_sel,
+                    'bimestre': bimestre_sel,
+                    'tipo_eval': tipo_eval_sel,
                     'dni': data['dni'],
                     'nombre': data['nombre'],
                     'nota': data['nota'],
                     'literal': nota_a_letra(data['nota']),
                     'docente': usuario,
                     'tipo': 'manual',
-                    'titulo': titulo_eval_rn if titulo_eval_rn else f"Registro {bim_sel}"
+                    'titulo': tipo_completo
                 }
                 if gs:
                     try:
                         ws = gs._get_hoja('config')
                         if ws:
-                            key_gs = f"nota_{data['dni']}_{data['area']}_{bim_sel}"
+                            key_gs = f"nota_{data['dni']}_{data['area']}_{bimestre_sel}_{tipo_eval_sel}"
                             ws.append_row([key_gs, json.dumps(registro, ensure_ascii=False, default=str)])
                             guardadas += 1
                     except Exception:
@@ -6144,7 +6173,9 @@ def tab_registrar_notas(config):
             st.session_state.notas_guardadas = {
                 'grado': grado_sel,
                 'areas': areas_sel,
-                'bimestre': bim_sel,
+                'bimestre': bimestre_sel,
+                'tipo_eval': tipo_eval_sel,
+                'tipo_completo': tipo_completo,
                 'notas_input': notas_input.copy(),
                 'dg': dg.copy()
             }
@@ -6156,7 +6187,7 @@ def tab_registrar_notas(config):
     # Mostrar botones WhatsApp si hay notas guardadas (PERMANENTE)
     if 'notas_guardadas' in st.session_state:
         datos_guardados = st.session_state.notas_guardadas
-        if datos_guardados['grado'] == grado_sel and datos_guardados['bimestre'] == bim_sel:
+        if datos_guardados['grado'] == grado_sel and datos_guardados['bimestre'] == bimestre_sel:
             st.markdown("---")
             st.markdown("""
             <div style='background: linear-gradient(135deg, #dcfce7, #bbf7d0);
@@ -6176,7 +6207,7 @@ def tab_registrar_notas(config):
             for idx, row in dg_saved.iterrows():
                 nombre = str(row.get('Nombre', ''))
                 dni = str(row.get('DNI', ''))
-                cel_apod = str(row.get('Celular Apoderado', ''))
+                cel_apod = str(row.get('Celular_Apoderado', row.get('Celular Apoderado', '')))
                 
                 # Buscar las notas de este estudiante
                 notas_alumno = []
@@ -6203,7 +6234,8 @@ def tab_registrar_notas(config):
 
 Estimado Padre de Familia de *{nombre}*:
 
-📊 *Período:* {bim_sel}
+📅 *Bimestre:* {datos_guardados['bimestre']}
+📋 *Evaluación:* {datos_guardados.get('tipo_completo', datos_guardados.get('tipo_eval', ''))}
 📚 *Calificaciones:*
 
 """
@@ -6288,8 +6320,21 @@ Estimado Padre de Familia de *{nombre}*:
                                 pass
                     if notas_hist:
                         df_n = pd.DataFrame(notas_hist)
-                        st.dataframe(df_n[['nombre', 'area', 'nota', 'literal', 'bimestre', 'fecha']],
-                                     use_container_width=True, hide_index=True)
+                        # Mostrar tabla completa con tipo_eval
+                        cols_show = [c for c in ['nombre', 'area', 'bimestre', 'tipo_eval', 'nota', 'literal', 'fecha'] if c in df_n.columns]
+                        st.dataframe(df_n[cols_show], use_container_width=True, hide_index=True)
+
+                        # === PROMEDIOS POR BIMESTRE Y ÁREA ===
+                        st.markdown("#### 📈 Promedios por Bimestre y Área")
+                        bimestres_en_datos = sorted(df_n['bimestre'].dropna().unique()) if 'bimestre' in df_n.columns else []
+                        for bim in bimestres_en_datos:
+                            st.markdown(f"**{bim}**")
+                            df_bim = df_n[df_n['bimestre'] == bim]
+                            if 'area' in df_bim.columns and 'nota' in df_bim.columns:
+                                prom_bim = df_bim.groupby('area')['nota'].mean().round(1).reset_index()
+                                prom_bim.columns = ['Área', 'Promedio']
+                                prom_bim['Literal'] = prom_bim['Promedio'].apply(nota_a_letra)
+                                st.dataframe(prom_bim, use_container_width=True, hide_index=True)
                     else:
                         st.info("Sin notas guardadas para este grado")
             except Exception:
@@ -6379,7 +6424,7 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
                 y = h - 60
                 c.setFont("Helvetica", 7)
 
-        # Resumen por áreas
+        # Resumen por áreas agrupado por bimestre
         y -= 15
         if y < 200:
             c.showPage()
@@ -6387,30 +6432,55 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
 
         c.setFont("Helvetica-Bold", 11)
         c.setFillColor(colors.black)
-        c.drawString(50, y, "📈 PROMEDIOS POR ÁREA")
+        c.drawString(50, y, "📈 PROMEDIOS POR ÁREA Y BIMESTRE")
         y -= 20
 
+        # Agrupar notas por bimestre
+        from collections import defaultdict
+        promedios_bim = defaultdict(lambda: defaultdict(list))
+        for n in notas:
+            area = str(n.get('area', ''))
+            bim_n = str(n.get('bimestre', 'Sin Bimestre'))
+            nota_val = float(n.get('nota', 0))
+            promedios_bim[bim_n][area].append(nota_val)
+
         total_all = []
-        for area, notas_area in promedios.items():
-            prom = round(sum(notas_area)/len(notas_area), 1)
-            total_all.append(prom)
-            lit = nota_a_letra(prom)
-            col = color_semaforo(lit)
+        bimestres_orden = ['I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre']
+        bimestres_presentes = [b for b in bimestres_orden if b in promedios_bim]
+        # Añadir cualquier bimestre no estándar
+        for b in promedios_bim:
+            if b not in bimestres_presentes:
+                bimestres_presentes.append(b)
 
-            c.setFont("Helvetica-Bold", 8)
-            c.drawString(55, y, f"{area}:")
-            c.drawString(220, y, f"{prom}/20 ({lit})")
+        for bim_nombre in bimestres_presentes:
+            c.setFont("Helvetica-Bold", 9)
+            c.setFillColor(colors.HexColor("#1a56db"))
+            c.drawString(55, y, f"▶ {bim_nombre}")
+            y -= 15
 
-            # Barra de progreso
-            c.setFillColor(colors.HexColor("#e2e8f0"))
-            c.rect(320, y-2, 150, 12, fill=True)
-            c.setFillColor(colors.HexColor(col))
-            c.rect(320, y-2, max(1, (prom/20)*150), 12, fill=True)
-            c.setFillColor(colors.black)
-            y -= 16
-            if y < 100:
-                c.showPage()
-                y = h - 60
+            for area, notas_area in promedios_bim[bim_nombre].items():
+                prom = round(sum(notas_area)/len(notas_area), 1)
+                total_all.append(prom)
+                lit = nota_a_letra(prom)
+                col = color_semaforo(lit)
+
+                c.setFillColor(colors.black)
+                c.setFont("Helvetica-Bold", 8)
+                c.drawString(70, y, f"{area}:")
+                c.drawString(220, y, f"{prom}/20 ({lit})")
+
+                # Barra de progreso
+                c.setFillColor(colors.HexColor("#e2e8f0"))
+                c.rect(320, y-2, 150, 12, fill=True)
+                c.setFillColor(colors.HexColor(col))
+                c.rect(320, y-2, max(1, (prom/20)*150), 12, fill=True)
+                c.setFillColor(colors.black)
+                y -= 16
+                if y < 100:
+                    c.showPage()
+                    y = h - 60
+
+            y -= 5
 
         # Promedio general
         if total_all:
