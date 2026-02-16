@@ -601,6 +601,8 @@ section[data-testid="stSidebar"] {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
 /* === DASHBOARD MÓDULOS GRID === */
 @keyframes cardFloat {
     0%, 100% { transform: translateY(0); }
