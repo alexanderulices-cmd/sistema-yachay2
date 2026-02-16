@@ -156,6 +156,12 @@ USUARIOS_DEFAULT = {
 
 def cargar_usuarios():
     """Carga usuarios combinando Google Sheets + local + defaults"""
+    import time as _tu
+    # Caché 60 seg — usuarios cambian muy poco
+    if ('_usr_cache' in st.session_state and '_usr_cache_ts' in st.session_state
+            and (_tu.time() - st.session_state['_usr_cache_ts']) < 60):
+        return st.session_state['_usr_cache']
+
     gs = _gs()
     usuarios_final = {}
     
@@ -205,6 +211,9 @@ def cargar_usuarios():
             pass
     
     guardar_usuarios_local(usuarios_final)
+    # Guardar en caché
+    st.session_state['_usr_cache'] = usuarios_final
+    st.session_state['_usr_cache_ts'] = _tu.time()
     return usuarios_final
 
 
@@ -217,6 +226,9 @@ def guardar_usuarios_local(usuarios):
 def guardar_usuarios(usuarios):
     with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
         json.dump(usuarios, f, indent=2, ensure_ascii=False)
+    # Invalidar caché
+    st.session_state.pop('_usr_cache', None)
+    st.session_state.pop('_usr_cache_ts', None)
     # Sincronizar con Google Sheets
     gs = _gs()
     if gs:
@@ -759,6 +771,22 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
+        # ── CACHÉ EN MEMORIA: evitar llamar GS en cada re-render de Streamlit ──
+        import time as _time_cache
+        cache_key   = '_mat_cache'
+        cache_ts    = '_mat_cache_ts'
+        TTL_SEGUNDOS = 45   # refrescar desde GS cada 45 seg como máximo
+
+        now = _time_cache.time()
+        cache_valido = (
+            cache_key in st.session_state and
+            cache_ts in st.session_state and
+            (now - st.session_state[cache_ts]) < TTL_SEGUNDOS and
+            not st.session_state.get('_forzar_local', False)  # forzar post-guardado
+        )
+        if cache_valido:
+            return st.session_state[cache_key].copy()
+
         # Después de escribir, forzar lectura local para evitar datos viejos de GS
         forzar_local = st.session_state.get('_forzar_local', False)
         if forzar_local:
@@ -767,6 +795,8 @@ class BaseDatos:
                 if Path(ARCHIVO_MATRICULA).exists():
                     df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                     df.columns = df.columns.str.strip()
+                    st.session_state[cache_key] = df
+                    st.session_state[cache_ts] = now
                     return df
             except Exception:
                 pass
@@ -783,6 +813,8 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    st.session_state[cache_key] = df_gs
+                    st.session_state[cache_ts] = now
                     return df_gs
             except Exception:
                 pass
@@ -790,6 +822,8 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                st.session_state[cache_key] = df
+                st.session_state[cache_ts] = now
                 return df
         except Exception:
             pass
@@ -805,8 +839,10 @@ class BaseDatos:
         except Exception:
             # Fallback: guardar como CSV si openpyxl falla
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
-        # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
+        # Invalidar caché para que la próxima carga sea fresca
         st.session_state['_forzar_local'] = True
+        st.session_state.pop('_mat_cache', None)    # forzar re-carga
+        st.session_state.pop('_mat_cache_ts', None)
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -3557,75 +3593,75 @@ def tab_asistencias():
     # ===== ZONA DE REGISTRO RÁPIDO =====
     cc, cm = st.columns(2)
     with cc:
-        st.markdown("### 📸 Cámara QR")
-        st.caption("📱 Apunta el QR al centro de la cámara")
+        st.markdown("### 📸 Escanear QR")
 
-        # Inicializar contador para limpiar cámara tras escaneo
-        if 'qr_scan_count' not in st.session_state:
-            st.session_state.qr_scan_count = 0
+        # ── Resultado del último escaneo ──
+        if st.session_state.get('_qr_ultimo_nombre'):
+            color_bg = "#16a34a" if st.session_state.get('_qr_ultimo_tipo') == "entrada" else "#d97706"
+            st.markdown(f"""
+            <div style="background:{color_bg};border-radius:14px;padding:16px;
+                        text-align:center;margin-bottom:10px;">
+              <div style="font-size:3rem;line-height:1;">✅</div>
+              <div style="color:white;font-size:1.3rem;font-weight:900;">
+                {st.session_state['_qr_ultimo_nombre']}
+              </div>
+              <div style="color:rgba(255,255,255,0.9);font-size:0.85rem;">
+                {str(st.session_state.get('_qr_ultimo_tipo','')).upper()} — {st.session_state.get('_qr_ultima_hora','')}
+              </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        foto = st.camera_input("", label_visibility="collapsed",
-                               key=f"ca_{st.session_state.qr_scan_count}")
+        # ── Cámara: Tomar Foto (funciona iPhone + Android) ──
+        st.caption("📱 Toma la foto del QR para registrar asistencia")
+        foto = st.camera_input("📷 Apunta al QR y toma la foto:", key="ca_qr")
 
         if foto:
             d = decodificar_qr_imagen(foto.getvalue())
             if d:
-                # Extraer DNI si formato YACHAY|...|DNI
                 dni_qr = str(d).strip()
                 if '|' in dni_qr:
                     partes = dni_qr.split('|')
                     dni_qr = partes[2] if len(partes) > 2 else partes[-1]
+                dni_qr = ''.join(c for c in dni_qr if c.isdigit())
 
                 persona = BaseDatos.buscar_por_dni(dni_qr)
                 if persona:
-                    hora_r = hora_peru_str()
-                    tipo_r = st.session_state.tipo_asistencia.lower()
+                    hora_r   = hora_peru_str()
+                    tipo_r   = st.session_state.tipo_asistencia.lower()
                     nombre_r = persona.get('Nombre', '')
-                    es_d = persona.get('_tipo', '') == 'docente'
+                    es_d     = persona.get('_tipo', '') == 'docente'
                     BaseDatos.guardar_asistencia(dni_qr, nombre_r, tipo_r, hora_r, es_docente=es_d)
 
-                    color_bg = "#16a34a" if tipo_r == "entrada" else "#d97706"
-                    st.markdown(f"""
-                    <div style="background:{color_bg};border-radius:16px;padding:20px;
-                                text-align:center;box-shadow:0 8px 25px rgba(0,0,0,0.2);">
-                      <div style="font-size:4rem;line-height:1;">✅</div>
-                      <div style="color:white;font-size:1.5rem;font-weight:900;margin-top:8px;">
-                        {nombre_r.split()[0].upper()}
-                      </div>
-                      <div style="color:rgba(255,255,255,0.9);font-size:0.95rem;margin-top:4px;">
-                        {tipo_r.upper()} — {hora_r}
-                      </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Guardar resultado en session para mostrar en próximo render
+                    st.session_state['_qr_ultimo_nombre'] = nombre_r.split()[0].upper() + ' ' + ' '.join(nombre_r.split()[1:]) if nombre_r else nombre_r
+                    st.session_state['_qr_ultimo_tipo']   = tipo_r
+                    st.session_state['_qr_ultima_hora']   = hora_r
 
-                    # Audio beep compatible iPhone + Android
+                    # Beep + vibración
                     st.markdown("""
                     <script>
                     (function(){
                       try {
-                        var ctx = new (window.AudioContext||window.webkitAudioContext)();
-                        var o1=ctx.createOscillator(), g=ctx.createGain();
-                        o1.type='sine'; o1.frequency.setValueAtTime(880,ctx.currentTime);
-                        g.gain.setValueAtTime(0.4,ctx.currentTime);
-                        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
-                        o1.connect(g); g.connect(ctx.destination);
-                        o1.start(ctx.currentTime); o1.stop(ctx.currentTime+0.3);
-                      } catch(e){}
-                      try { if(navigator.vibrate) navigator.vibrate([150,80,150]); } catch(e){}
+                        var ctx=new(window.AudioContext||window.webkitAudioContext)();
+                        var o=ctx.createOscillator(),g=ctx.createGain();
+                        o.type='sine';o.frequency.setValueAtTime(880,ctx.currentTime);
+                        g.gain.setValueAtTime(0.5,ctx.currentTime);
+                        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
+                        o.connect(g);g.connect(ctx.destination);
+                        o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);
+                      }catch(e){}
+                      try{if(navigator.vibrate)navigator.vibrate([200,80,200]);}catch(e){}
                     })();
                     </script>
                     """, unsafe_allow_html=True)
-
-                    # Limpiar cámara para siguiente escaneo
-                    st.session_state.qr_scan_count += 1
-                    import time as _t; _t.sleep(1.5)
-                    st.rerun()
+                    reproducir_beep_exitoso()
+                    st.success(f"✅ **{nombre_r}** — {tipo_r.upper()} registrada a las {hora_r}")
+                    st.info("💡 Toca 'Clear Photo' (o el ícono ✕) para escanear el siguiente QR")
                 else:
-                    st.error(f"❌ DNI no encontrado: {dni_qr}")
-                    st.session_state.qr_scan_count += 1
+                    st.error(f"❌ DNI {dni_qr} no encontrado en el sistema")
+                    reproducir_beep_error()
             else:
-                st.warning("⚠️ QR no detectado — intenta de nuevo")
-                st.session_state.qr_scan_count += 1
+                st.warning("⚠️ No se detectó QR en la foto. Intenta con mejor iluminación o más cerca.")
     with cm:
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
