@@ -9316,23 +9316,7 @@ def main():
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
 
-            # Mostrar en grid de 3 columnas con colores
-            # CSS global para los botones del dashboard
-            st.markdown("""
-            <style>
-            /* Ocultar todos los botones dashboard por defecto */
-            button[data-testid*="dash_"] {
-                min-height: 140px !important;
-                border-radius: 16px !important;
-                border: none !important;
-                font-size: 1rem !important;
-                font-weight: 600 !important;
-                padding: 30px 20px !important;
-                transition: all 0.3s ease !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
+            # Grid de módulos - SOLUCIÓN SIMPLE Y VISIBLE
             for i in range(0, len(modulos), 3):
                 cols = st.columns(3)
                 for j, col in enumerate(cols):
@@ -9340,25 +9324,25 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            # Botón simple de Streamlit
-                            if st.button(f"{icono}\n\n{nombre}", key=f"dash_{key}", use_container_width=True):
+                            # Cuadrado HTML de color sólido - MUY VISIBLE
+                            st.markdown(f"""
+                            <div style='background: {color}; 
+                                        color: white; 
+                                        padding: 40px 20px; 
+                                        border-radius: 12px; 
+                                        text-align: center;
+                                        margin-bottom: 10px;
+                                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+                                <div style='font-size: 3rem; margin-bottom: 15px;'>{icono}</div>
+                                <div style='font-size: 1.3rem; font-weight: bold;'>{nombre}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Botón visible debajo para hacer click
+                            if st.button(f"▶ Abrir {nombre}", key=f"dash_{key}", 
+                                        type="primary", use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
-                            
-                            # CSS específico para ESTE botón con SU color
-                            st.markdown(f"""
-                            <style>
-                            button[data-testid*="dash_{key}"] {{
-                                background: linear-gradient(135deg, {color}, {color}dd) !important;
-                                color: white !important;
-                                box-shadow: 0 8px 25px {color}50 !important;
-                            }}
-                            button[data-testid*="dash_{key}"]:hover {{
-                                transform: translateY(-6px) !important;
-                                box-shadow: 0 12px 35px {color}70 !important;
-                            }}
-                            </style>
-                            """, unsafe_allow_html=True)
 
             # Estadísticas rápidas
             st.markdown("---")
