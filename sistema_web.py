@@ -340,13 +340,30 @@ st.markdown("""
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* === HEADER PRINCIPAL === */
+/* === ANIMACIONES DE GRADIENTES QUE CAMBIAN === */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@keyframes colorWave {
+    0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+    50% { background-position: 100% 50%; filter: hue-rotate(20deg); }
+    100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+@keyframes borderGlow {
+    0%, 100% { border-color: #1a56db; box-shadow: 0 0 10px rgba(26, 86, 219, 0.3); }
+    50% { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+}
+
+/* === HEADER PRINCIPAL CON GRADIENTE ANIMADO === */
 .main-header {
     text-align: center; padding: 2rem;
-    background: linear-gradient(135deg, #001e7c 0%, #0052cc 50%, #0066ff 100%);
+    background: linear-gradient(270deg, #001e7c, #0052cc, #0066ff, #3b82f6);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
     color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 25px rgba(0,30,124,0.35);
-    animation: fadeInUp 0.6s ease-out;
 }
 
 /* === TABS ANIMADOS === */
@@ -364,61 +381,75 @@ st.markdown("""
     transform: translateY(-2px);
 }
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #1a56db, #0052cc) !important;
+    background: linear-gradient(135deg, #1a56db, #0052cc, #3b82f6) !important;
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease infinite;
     color: white !important;
     box-shadow: 0 4px 12px rgba(26,86,219,0.3);
 }
 
-/* === BOTONES CON EFECTO === */
+/* === BOTONES CON EFECTO Y GRADIENTE ANIMADO === */
 .stButton > button {
     transition: all 0.3s ease !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
 }
 .stButton > button:hover {
-    transform: translateY(-2px) !important;
+    transform: translateY(-2px) scale(1.02) !important;
     box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
 }
 .stButton > button:active {
     transform: translateY(0) !important;
 }
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #1a56db, #3b82f6, #60a5fa) !important;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
 
-/* === CARDS DE ESTADÍSTICAS === */
+/* === CARDS DE ESTADÍSTICAS CON ANIMACIÓN === */
 .stat-card {
     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
     border-radius: 12px; padding: 1.2rem;
     border-left: 4px solid #1a56db;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     animation: slideIn 0.5s ease-out;
-    transition: transform 0.2s;
+    transition: all 0.3s;
 }
-.stat-card:hover { transform: translateY(-3px); }
+.stat-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 25px rgba(26, 86, 219, 0.2);
+    animation: borderGlow 2s ease-in-out infinite;
+}
 .stat-card h3 { margin: 0; color: #1a56db; font-size: 2rem; }
 .stat-card p { margin: 0; color: #64748b; font-size: 0.9rem; }
 
 /* === ASISTENCIA REGISTRADA === */
 .asist-ok {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0, #86efac);
+    background-size: 200% 200%;
+    animation: colorWave 4s ease infinite;
     border-radius: 10px; padding: 12px 16px;
     border-left: 4px solid #16a34a;
-    animation: fadeInUp 0.4s ease-out;
     margin: 4px 0;
 }
 .asist-salida {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    background: linear-gradient(135deg, #fef3c7, #fde68a, #fcd34d);
+    background-size: 200% 200%;
+    animation: colorWave 4s ease infinite;
     border-radius: 10px; padding: 12px 16px;
     border-left: 4px solid #f59e0b;
-    animation: fadeInUp 0.4s ease-out;
     margin: 4px 0;
 }
 
-/* === GOOGLE SHEETS STATUS === */
+/* === GOOGLE SHEETS STATUS CON PULSO === */
 .gs-connected {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0, #86efac);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
     border-radius: 8px; padding: 8px 12px;
     text-align: center; font-weight: 600;
     color: #166534; font-size: 0.85rem;
-    animation: pulse 2s infinite;
 }
 .gs-offline {
     background: #fef3c7; border-radius: 8px;
@@ -426,35 +457,38 @@ st.markdown("""
     color: #92400e; font-size: 0.85rem;
 }
 
-/* === RANKING CON ANIMACIÓN === */
+/* === RANKING CON ANIMACIÓN MEJORADA === */
 .ranking-gold {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
+    background: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00, #FFD700);
+    background-size: 300% 300%;
+    animation: gradientShift 3s ease infinite;
     color: #000; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
     box-shadow: 0 4px 15px rgba(255,215,0,0.4);
 }
 .ranking-silver {
-    background: linear-gradient(135deg, #C0C0C0, #E8E8E8, #C0C0C0);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
+    background: linear-gradient(135deg, #C0C0C0, #E8E8E8, #D3D3D3, #C0C0C0);
+    background-size: 300% 300%;
+    animation: gradientShift 3s ease infinite;
     color: #000; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
     box-shadow: 0 4px 12px rgba(192,192,192,0.4);
 }
 .ranking-bronze {
-    background: linear-gradient(135deg, #CD7F32, #E8A849, #CD7F32);
-    background-size: 200% auto;
-    animation: shimmer 3s linear infinite;
+    background: linear-gradient(135deg, #CD7F32, #E8A849, #B8860B, #CD7F32);
+    background-size: 300% 300%;
+    animation: gradientShift 3s ease infinite;
     color: #fff; padding: 14px; border-radius: 10px;
     font-weight: bold; text-align: center; margin: 5px 0;
     box-shadow: 0 4px 12px rgba(205,127,50,0.4);
 }
 
-/* === WHATSAPP / LINKS === */
+/* === WHATSAPP / LINKS CON GRADIENTES === */
 .wa-btn {
-    background: linear-gradient(135deg, #25D366, #128C7E); color: white !important;
+    background: linear-gradient(135deg, #25D366, #128C7E, #075E54) !important;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    color: white !important;
     padding: 10px 20px; border: none; border-radius: 10px;
     font-size: 15px; width: 100%; text-decoration: none;
     display: block; text-align: center; margin: 4px 0;
@@ -462,7 +496,10 @@ st.markdown("""
 }
 .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,211,102,0.4); }
 .link-btn {
-    background: linear-gradient(135deg, #4285F4, #356AC3); color: white !important;
+    background: linear-gradient(135deg, #4285F4, #356AC3, #1a56db);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    color: white !important;
     padding: 8px 16px; border: none; border-radius: 10px;
     font-size: 14px; width: 100%; text-decoration: none;
     display: block; text-align: center; margin: 4px 0;
@@ -470,7 +507,10 @@ st.markdown("""
 }
 .link-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(66,133,244,0.4); }
 .siagie-btn {
-    background: linear-gradient(135deg, #E91E63, #C2185B); color: white !important;
+    background: linear-gradient(135deg, #E91E63, #C2185B, #AD1457);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    color: white !important;
     padding: 8px 16px; border: none; border-radius: 10px;
     font-size: 14px; width: 100%; text-decoration: none;
     display: block; text-align: center; margin: 4px 0;
@@ -482,9 +522,13 @@ st.markdown("""
 .streamlit-expanderHeader {
     font-weight: 600 !important;
     border-radius: 8px !important;
+    transition: all 0.3s;
+}
+.streamlit-expanderHeader:hover {
+    background: rgba(26, 86, 219, 0.05) !important;
 }
 
-/* === SIDEBAR === */
+/* === SIDEBAR CON GRADIENTE === */
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
 }
@@ -494,7 +538,7 @@ section[data-testid="stSidebar"] {
 .stError { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
 .stInfo { animation: fadeInUp 0.4s ease-out; border-radius: 10px !important; }
 
-/* === DASHBOARD GRID === */
+/* === DASHBOARD GRID CON ANIMACIÓN === */
 .stButton > button[kind="secondary"] {
     min-height: 100px !important;
     font-size: 1.1rem !important;
@@ -509,6 +553,7 @@ section[data-testid="stSidebar"] {
     box-shadow: 0 8px 25px rgba(26,86,219,0.15) !important;
     border-color: #1a56db !important;
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+    animation: borderGlow 1.5s ease-in-out infinite;
 }
 
 /* === NÚMERO ANIMADO === */
@@ -516,12 +561,28 @@ section[data-testid="stSidebar"] {
 .stMetric { animation: countUp 0.5s ease-out; }
 
 /* === INPUTS MEJORADOS === */
-.stTextInput > div > div > input { border-radius: 10px !important; transition: all 0.3s; }
-.stTextInput > div > div > input:focus { box-shadow: 0 0 0 3px rgba(26,86,219,0.2) !important; border-color: #1a56db !important; }
+.stTextInput > div > div > input { 
+    border-radius: 10px !important; 
+    transition: all 0.3s;
+    border: 2px solid transparent !important;
+}
+.stTextInput > div > div > input:focus { 
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.2) !important; 
+    border-color: #1a56db !important;
+    transform: scale(1.01);
+}
 .stSelectbox > div > div { border-radius: 10px !important; }
 
 /* === DATAFRAME === */
-.stDataFrame { border-radius: 12px !important; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.stDataFrame { 
+    border-radius: 12px !important; 
+    overflow: hidden; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+.stDataFrame:hover {
+    box-shadow: 0 4px 20px rgba(26, 86, 219, 0.15);
+}
 
 /* === SEMÁFORO COLORES === */
 .semaforo-ad { color: #16a34a; font-weight: bold; }
@@ -531,6 +592,14 @@ section[data-testid="stSidebar"] {
 
 /* === LOADING SPINNER === */
 .stSpinner > div { border-color: #1a56db transparent transparent transparent !important; }
+
+/* === OPTIMIZACIÓN DE RENDIMIENTO === */
+* { will-change: auto; }
+.stButton > button, .stTabs [data-baseweb="tab"] {
+    will-change: transform, box-shadow;
+}
+</style>
+""", unsafe_allow_html=True)
 
 /* === DASHBOARD MÓDULOS GRID === */
 @keyframes cardFloat {
@@ -3206,33 +3275,37 @@ def tab_matricula(config):
             dn_t = st.text_input("📱 Celular:", key="dn_cel", max_chars=9,
                                   placeholder="987654321")
             
-            # Solo Docente/Coordinador necesitan nivel y grado
-            dn_areas_sel = ""
+            # Solo Docente/Coordinador necesitan nivel
             if dn_c in ["Docente", "Coordinador"]:
                 dn_nivel = st.selectbox("🏫 Nivel:", 
                                          ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
                                          key="dn_nivel_reg")
+                
+                # INICIAL y PRIMARIA: necesitan grado específico
                 if dn_nivel in ["INICIAL", "PRIMARIA"]:
                     dn_g = st.selectbox("🎓 Grado Asignado:",
                                          ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
                                          key="dn_grado")
+                    st.caption("📌 Este docente verá solo este grado en el sistema")
+                
+                # SECUNDARIA y PREUNIVERSITARIO: sin grado (acceso completo)
                 else:
-                    opciones_asig = NIVELES_GRADOS.get(dn_nivel, []) + ["ALL_SECUNDARIA"]
-                    dn_g = st.selectbox("🎓 Grado/Grupo:",
-                                         ["N/A"] + opciones_asig, key="dn_grado")
-                    todas_areas = AREAS_MINEDU.get(dn_nivel, [])
-                    if dn_nivel == "PREUNIVERSITARIO":
-                        todas_areas = list(set(
-                            AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
-                            AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-                        ))
-                    dn_areas_sel = st.multiselect("📚 Áreas que enseña:", 
-                                                   todas_areas, key="dn_areas_reg")
+                    dn_g = "ALL_SECUNDARIA" if dn_nivel == "SECUNDARIA" else "ALL_PREUNIVERSITARIO"
+                    st.info(f"""
+                    🎓 **Acceso completo a {dn_nivel}**
+                    
+                    ✅ Este docente tendrá acceso a TODOS los grados de {dn_nivel.lower()}
+                    ✅ Podrá registrar notas en TODAS las áreas
+                    ✅ No requiere especificar grado ni áreas
+                    
+                    _Los docentes de secundaria/preu enseñan múltiples áreas en diferentes grados_
+                    """)
             else:
                 # Directora, Auxiliar, etc. — acceso completo sin grado
                 dn_nivel = "PRIMARIA"
                 dn_g = "N/A"
                 st.caption(f"🔓 {dn_c}: acceso completo (sin grado específico)")
+            
             dn_email = st.text_input("📧 Email:", key="dn_email",
                                       placeholder="nombre@ieyachay.org")
             dn_foto = st.file_uploader("📸 Foto:", type=['jpg', 'png', 'jpeg'],
@@ -3261,13 +3334,12 @@ def tab_matricula(config):
                     foto_path = f"foto_doc_{dn_d.strip()}.png"
                     with open(foto_path, "wb") as fout:
                         fout.write(dn_foto.getbuffer())
-                areas_txt = ', '.join(dn_areas_sel) if dn_areas_sel else dn_e.strip()
                 BaseDatos.registrar_docente({
                     'Nombre': dn_n.strip().upper(), 'DNI': dn_d.strip(),
-                    'Cargo': dn_c, 'Especialidad': areas_txt,
+                    'Cargo': dn_c, 'Especialidad': dn_e.strip(),
                     'Celular': dn_t.strip(), 'Grado_Asignado': dn_g,
                     'Email': dn_email.strip(), 'Nivel': dn_nivel,
-                    'Areas': areas_txt
+                    'Areas': dn_e.strip()  # Se usa especialidad como áreas
                 })
                 st.success(f"✅ {dn_n} registrado como {dn_c}")
                 
@@ -6066,32 +6138,58 @@ def tab_registrar_notas(config):
                         pass
 
         if guardadas > 0:
+            # Guardar datos en session_state para mostrar WhatsApp permanentemente
+            st.session_state.notas_guardadas = {
+                'grado': grado_sel,
+                'areas': areas_sel,
+                'bimestre': bim_sel,
+                'notas_input': notas_input.copy(),
+                'dg': dg.copy()
+            }
             st.success(f"✅ **{guardadas} notas guardadas** correctamente en la nube")
             st.balloons()
-            
-            # Mostrar botones WhatsApp después de guardar
+        else:
+            st.warning("⚠️ Ingrese al menos una nota mayor a 0")
+    
+    # Mostrar botones WhatsApp si hay notas guardadas (PERMANENTE)
+    if 'notas_guardadas' in st.session_state:
+        datos_guardados = st.session_state.notas_guardadas
+        if datos_guardados['grado'] == grado_sel and datos_guardados['bimestre'] == bim_sel:
             st.markdown("---")
-            st.subheader("📱 Enviar Calificaciones por WhatsApp")
+            st.markdown("""
+            <div style='background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                        padding: 15px; border-radius: 12px; border-left: 4px solid #16a34a;
+                        margin: 10px 0;'>
+                <h3 style='color: #166534; margin: 0;'>📱 Enviar Calificaciones por WhatsApp</h3>
+                <p style='color: #15803d; margin: 5px 0 0 0; font-size: 0.9rem;'>
+                    Click en el botón verde para enviar las calificaciones a cada apoderado
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            for idx, row in dg.iterrows():
+            notas_input_saved = datos_guardados['notas_input']
+            dg_saved = datos_guardados['dg']
+            areas_saved = datos_guardados['areas']
+            
+            for idx, row in dg_saved.iterrows():
                 nombre = str(row.get('Nombre', ''))
                 dni = str(row.get('DNI', ''))
                 cel_apod = str(row.get('Celular Apoderado', ''))
                 
                 # Buscar las notas de este estudiante
                 notas_alumno = []
-                for area in areas_sel:
+                for area in areas_saved:
                     if area == '──── CEPRE UNSAAC ────':
                         continue
                     key = f"{dni}_{area}"
-                    if key in notas_input and notas_input[key]['nota'] > 0:
+                    if key in notas_input_saved and notas_input_saved[key]['nota'] > 0:
                         notas_alumno.append({
                             'area': area,
-                            'nota': notas_input[key]['nota'],
-                            'literal': nota_a_letra(notas_input[key]['nota'])
+                            'nota': notas_input_saved[key]['nota'],
+                            'literal': nota_a_letra(notas_input_saved[key]['nota'])
                         })
                 
-                if notas_alumno and cel_apod:
+                if notas_alumno and cel_apod and cel_apod != 'nan':
                     wc1, wc2 = st.columns([4, 1])
                     with wc1:
                         st.write(f"👤 **{nombre}**")
@@ -6114,12 +6212,13 @@ Estimado Padre de Familia de *{nombre}*:
                         
                         link_wa = generar_link_whatsapp(cel_apod, msg_wa)
                         st.markdown(f'<a href="{link_wa}" target="_blank" '
-                                   f'style="display:inline-block;background:#25D366;color:white;'
-                                   f'padding:8px 16px;border-radius:8px;text-decoration:none;'
-                                   f'font-weight:bold;">📱 WhatsApp</a>', 
+                                   f'style="display:inline-block;background:linear-gradient(135deg, #25D366, #128C7E);'
+                                   f'color:white;padding:10px 20px;border-radius:10px;text-decoration:none;'
+                                   f'font-weight:bold;box-shadow: 0 4px 15px rgba(37,211,102,0.3);'
+                                   f'transition: transform 0.2s;" '
+                                   f'onmouseover="this.style.transform=\'translateY(-3px)\'" '
+                                   f'onmouseout="this.style.transform=\'translateY(0)\'">📱 WhatsApp</a>', 
                                    unsafe_allow_html=True)
-        else:
-            st.warning("⚠️ Ingrese al menos una nota mayor a 0")
 
     # Descargar ranking PDF si se registraron múltiples áreas
     if len(areas_sel) > 1 and not dg.empty:
