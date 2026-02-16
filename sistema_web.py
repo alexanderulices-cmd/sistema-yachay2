@@ -1726,6 +1726,168 @@ def generar_ranking_pdf(resultados, anio):
     return buffer
 
 
+def generar_ranking_notas_pdf(ranking_data, areas, grado, periodo, anio):
+    """Genera ranking PDF para notas manuales con colores por área"""
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    w, h = A4
+    
+    # Escudo de fondo
+    if Path("escudo_upload.png").exists():
+        try:
+            c.saveState()
+            c.setFillAlpha(0.06)
+            c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
+                        200, 200, mask='auto')
+            c.restoreState()
+        except Exception:
+            pass
+    
+    # Encabezado
+    c.setFont("Helvetica-Bold", 16)
+    c.drawCentredString(w / 2, h - 40, "I.E.P. ALTERNATIVO YACHAY")
+    c.setFont("Helvetica", 11)
+    c.drawCentredString(w / 2, h - 58, '"Pioneros en la Educación de Calidad"')
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(w / 2, h - 85, f"RANKING DE CALIFICACIONES — {anio}")
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(w / 2, h - 100, f"{grado} — {periodo}")
+    c.setFont("Helvetica", 8)
+    c.drawCentredString(w / 2, h - 115,
+                        f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    
+    # Filtrar separadores
+    areas_reales = [a for a in areas if '────' not in a]
+    
+    # Preparar datos de tabla
+    header = ["#", "APELLIDOS Y NOMBRES", "DNI"]
+    header.extend([a[:15] for a in areas_reales])  # Truncar nombres largos
+    header.append("PROM.")
+    data = [header]
+    
+    for idx, alumno in enumerate(ranking_data):
+        nm = alumno['nombre']
+        if len(nm) > 30:
+            nm = nm[:28] + ".."
+        fila = [str(idx + 1), nm, alumno['dni']]
+        for area in areas_reales:
+            nota_val = alumno['notas'].get(area, '-')
+            if nota_val != '-':
+                fila.append(f"{nota_val}")
+            else:
+                fila.append('-')
+        fila.append(f"{alumno['promedio']}")
+        data.append(fila)
+    
+    # Calcular anchos
+    na = len(areas_reales)
+    ancho_area = max(35, min(50, (w - 40 - 20 - 150 - 55 - 45) // na))
+    cw = [20, 150, 55] + [ancho_area] * na + [45]
+    
+    t = Table(data, colWidths=cw, repeatRows=1)
+    
+    # Estilos de tabla
+    st_l = [
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 7),
+        ('FONTSIZE', (0, 1), (-1, -1), 7),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BACKGROUND', (0, 0), (2, 0), colors.Color(0.1, 0.1, 0.4)),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('BACKGROUND', (-1, 0), (-1, 0), colors.Color(0.3, 0, 0.3)),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1),
+         [colors.white, colors.Color(0.95, 0.95, 1)]),
+    ]
+    
+    # Colores diferentes por área
+    colores_areas = [
+        colors.Color(0, 0.3, 0.6),       # Azul
+        colors.Color(0.2, 0.5, 0.1),      # Verde
+        colors.Color(0.6, 0.2, 0),         # Naranja
+        colors.Color(0.4, 0, 0.4),         # Morado
+        colors.Color(0, 0.4, 0.4),         # Teal
+        colors.Color(0.5, 0.3, 0),         # Marrón
+        colors.Color(0.3, 0.1, 0.5),       # Índigo
+        colors.Color(0.6, 0, 0.2),         # Rosa oscuro
+        colors.Color(0.2, 0.2, 0.5),       # Azul oscuro
+        colors.Color(0.4, 0.5, 0),         # Verde oliva
+    ]
+    
+    for i in range(na):
+        col_idx = 3 + i
+        bg = colores_areas[i % len(colores_areas)]
+        st_l.append(('BACKGROUND', (col_idx, 0), (col_idx, 0), bg))
+    
+    # Top 3 con colores oro, plata, bronce
+    bg_top = [
+        colors.Color(1, 0.84, 0),          # Oro
+        colors.Color(0.75, 0.75, 0.75),    # Plata
+        colors.Color(0.8, 0.5, 0.2),       # Bronce
+    ]
+    for i in range(min(3, len(ranking_data))):
+        st_l.append(('BACKGROUND', (0, i + 1), (-1, i + 1), bg_top[i]))
+    
+    # Aplicar colores a notas según desempeño
+    for i, alumno in enumerate(ranking_data):
+        row_idx = i + 1
+        for j, area in enumerate(areas_reales):
+            col_idx = 3 + j
+            nota = alumno['notas'].get(area)
+            if nota and nota != '-':
+                # Colores según nota
+                if nota >= 18:
+                    color_nota = colors.Color(0, 0.5, 0)  # Verde oscuro
+                elif nota >= 14:
+                    color_nota = colors.Color(0, 0.3, 0.6)  # Azul
+                elif nota >= 11:
+                    color_nota = colors.Color(0.8, 0.6, 0)  # Amarillo oscuro
+                else:
+                    color_nota = colors.Color(0.7, 0, 0)  # Rojo
+                st_l.append(('TEXTCOLOR', (col_idx, row_idx), (col_idx, row_idx), color_nota))
+                st_l.append(('FONTNAME', (col_idx, row_idx), (col_idx, row_idx), 'Helvetica-Bold'))
+    
+    t.setStyle(TableStyle(st_l))
+    tw, th2 = t.wrap(w - 40, h - 150)
+    t.drawOn(c, 20, h - 130 - th2)
+    
+    # Leyenda de colores
+    c.setFont("Helvetica", 7)
+    legend_y = 50
+    c.drawString(40, legend_y, "Colores de notas:")
+    c.setFillColor(colors.Color(0, 0.5, 0))
+    c.rect(130, legend_y - 3, 10, 10, fill=1)
+    c.setFillColor(colors.black)
+    c.drawString(145, legend_y, "18-20: Excelente")
+    
+    c.setFillColor(colors.Color(0, 0.3, 0.6))
+    c.rect(220, legend_y - 3, 10, 10, fill=1)
+    c.setFillColor(colors.black)
+    c.drawString(235, legend_y, "14-17: Logrado")
+    
+    c.setFillColor(colors.Color(0.8, 0.6, 0))
+    c.rect(310, legend_y - 3, 10, 10, fill=1)
+    c.setFillColor(colors.black)
+    c.drawString(325, legend_y, "11-13: Proceso")
+    
+    c.setFillColor(colors.Color(0.7, 0, 0))
+    c.rect(400, legend_y - 3, 10, 10, fill=1)
+    c.setFillColor(colors.black)
+    c.drawString(415, legend_y, "0-10: Inicio")
+    
+    # Pie de página
+    c.setFont("Helvetica", 7)
+    c.setFillColor(colors.black)
+    c.drawCentredString(w / 2, 30,
+                        f"YACHAY PRO — {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
 # ================================================================
 # GENERADOR DE CARNETS
 # ================================================================
@@ -1874,14 +2036,14 @@ class GeneradorCarnet:
     def _qr(self):
         try:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-            q = qrcode.QRCode(box_size=14, border=1)
+            q = qrcode.QRCode(box_size=18, border=1)  # Aumentado de 14 a 18
             q.add_data(dni)
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
-            iq = iq.resize((250, 250), Image.LANCZOS)
-            self.img.paste(iq, (self.WIDTH - 285, 215))
-            fs = RecursoManager.obtener_fuente("", 11, True)
-            self.draw.text((self.WIDTH - 160, 470), "ESCANEAR QR",
+            iq = iq.resize((320, 320), Image.LANCZOS)  # Aumentado de 250 a 320
+            self.img.paste(iq, (self.WIDTH - 350, 200))  # Ajustado posición
+            fs = RecursoManager.obtener_fuente("", 12, True)
+            self.draw.text((self.WIDTH - 190, 525), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -1893,18 +2055,18 @@ class GeneradorCarnet:
             dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
             buf2 = io.BytesIO()
             Code128(dni, writer=ImageWriter()).write(buf2, options={
-                'write_text': False, 'module_width': 0.55,
-                'module_height': 12, 'quiet_zone': 2
+                'write_text': False, 'module_width': 0.75,  # Aumentado de 0.55 a 0.75
+                'module_height': 16, 'quiet_zone': 2  # Aumentado de 12 a 16
             })
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
-            ib = ib.resize((350, 60), Image.LANCZOS)
-            xb = (self.WIDTH - 350) // 2
-            yb = self.HEIGHT - 125
+            ib = ib.resize((450, 80), Image.LANCZOS)  # Aumentado de 350x60 a 450x80
+            xb = (self.WIDTH - 450) // 2
+            yb = self.HEIGHT - 130
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 12, True)
-            self.draw.text((self.WIDTH // 2, yb + 65), f"DNI: {dni}",
+            fbc = RecursoManager.obtener_fuente("", 13, True)
+            self.draw.text((self.WIDTH // 2, yb + 85), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
             pass
@@ -4545,21 +4707,66 @@ def tab_base_datos():
     st.header("📊 Base de Datos")
     df = BaseDatos.cargar_matricula()
     df_doc = BaseDatos.cargar_docentes()
+    
+    # === ESTADÍSTICAS CON EFECTOS ===
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.metric("📚 Alumnos", len(df) if not df.empty else 0)
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #3b82f6, #2563eb);
+                    padding: 20px; border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+                    text-align: center; color: white;
+                    transition: transform 0.3s;'
+             onmouseover='this.style.transform="translateY(-5px)"'
+             onmouseout='this.style.transform="translateY(0)"'>
+            <h1 style='margin:0; font-size: 2.5rem;'>{}</h1>
+            <p style='margin:5px 0 0 0; opacity: 0.9;'>📚 Alumnos</p>
+        </div>
+        """.format(len(df) if not df.empty else 0), unsafe_allow_html=True)
     with c2:
-        st.metric("👨‍🏫 Docentes", len(df_doc) if not df_doc.empty else 0)
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #10b981, #059669);
+                    padding: 20px; border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+                    text-align: center; color: white;'
+             onmouseover='this.style.transform="translateY(-5px)"'
+             onmouseout='this.style.transform="translateY(0)"'>
+            <h1 style='margin:0; font-size: 2.5rem;'>{}</h1>
+            <p style='margin:5px 0 0 0; opacity: 0.9;'>👨‍🏫 Docentes</p>
+        </div>
+        """.format(len(df_doc) if not df_doc.empty else 0), unsafe_allow_html=True)
     with c3:
-        st.metric("🎓 Grados",
-                   df['Grado'].nunique() if not df.empty and 'Grado' in df.columns
-                   else 0)
+        grados_count = df['Grado'].nunique() if not df.empty and 'Grado' in df.columns else 0
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #f59e0b, #d97706);
+                    padding: 20px; border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+                    text-align: center; color: white;'
+             onmouseover='this.style.transform="translateY(-5px)"'
+             onmouseout='this.style.transform="translateY(0)"'>
+            <h1 style='margin:0; font-size: 2.5rem;'>{}</h1>
+            <p style='margin:5px 0 0 0; opacity: 0.9;'>🎓 Grados</p>
+        </div>
+        """.format(grados_count), unsafe_allow_html=True)
     with c4:
-        st.metric("📱 Con Celular",
-                   df['Celular_Apoderado'].notna().sum()
-                   if not df.empty and 'Celular_Apoderado' in df.columns else 0)
+        cel_count = df['Celular_Apoderado'].notna().sum() if not df.empty and 'Celular_Apoderado' in df.columns else 0
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                    padding: 20px; border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+                    text-align: center; color: white;'
+             onmouseover='this.style.transform="translateY(-5px)"'
+             onmouseout='this.style.transform="translateY(0)"'>
+            <h1 style='margin:0; font-size: 2.5rem;'>{}</h1>
+            <p style='margin:5px 0 0 0; opacity: 0.9;'>📱 Con Celular</p>
+        </div>
+        """.format(cel_count), unsafe_allow_html=True)
 
-    tab_al, tab_dc = st.tabs(["📚 Alumnos", "👨‍🏫 Docentes"])
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    tab_al, tab_dc, tab_eliminar = st.tabs(["📚 Alumnos", "👨‍🏫 Docentes", "🗑️ Eliminar Registros"])
+    
+    # === TAB ALUMNOS ===
     with tab_al:
         if not df.empty:
             c1, c2 = st.columns(2)
@@ -4567,9 +4774,9 @@ def tab_base_datos():
                 opts = ['Todos'] + (
                     sorted(df['Grado'].dropna().unique().tolist())
                     if 'Grado' in df.columns else [])
-                fg = st.selectbox("Filtrar:", opts, key="fbd")
+                fg = st.selectbox("🎓 Filtrar por Grado:", opts, key="fbd")
             with c2:
-                bq = st.text_input("🔍", key="bbd")
+                bq = st.text_input("🔍 Buscar:", placeholder="Nombre, DNI, etc...", key="bbd")
             d = df.copy()
             if fg != 'Todos' and 'Grado' in d.columns:
                 d = d[d['Grado'] == fg]
@@ -4577,19 +4784,28 @@ def tab_base_datos():
                 d = d[d.apply(lambda r: bq.lower() in str(r).lower(), axis=1)]
             if 'Nombre' in d.columns:
                 d = d.sort_values('Nombre')
+            
+            st.markdown(f"**📋 Mostrando {len(d)} de {len(df)} alumnos**")
             st.dataframe(d, use_container_width=True, hide_index=True, height=500)
+            
             c1, c2 = st.columns(2)
             with c1:
-                st.download_button("⬇️ CSV",
+                st.download_button("⬇️ Descargar CSV",
                                    d.to_csv(index=False).encode('utf-8'),
-                                   "alumnos.csv", "text/csv", key="dcsv")
+                                   "alumnos.csv", "text/csv", 
+                                   key="dcsv",
+                                   use_container_width=True)
             with c2:
                 buf = io.BytesIO()
                 d.to_excel(buf, index=False, engine='openpyxl')
                 buf.seek(0)
-                st.download_button("⬇️ Excel", buf, "alumnos.xlsx", key="dxlsx")
+                st.download_button("⬇️ Descargar Excel", buf, "alumnos.xlsx", 
+                                   key="dxlsx",
+                                   use_container_width=True)
         else:
-            st.info("📝 Sin alumnos.")
+            st.info("📝 No hay alumnos registrados en el sistema.")
+    
+    # === TAB DOCENTES ===
     with tab_dc:
         if not df_doc.empty:
             if 'Nombre' in df_doc.columns:
@@ -4598,10 +4814,138 @@ def tab_base_datos():
             buf2 = io.BytesIO()
             df_doc.to_excel(buf2, index=False, engine='openpyxl')
             buf2.seek(0)
-            st.download_button("⬇️ Excel", buf2,
-                               "docentes_export.xlsx", key="dxlsxd")
+            st.download_button("⬇️ Descargar Excel Docentes", buf2,
+                               "docentes_export.xlsx", 
+                               key="dxlsxd",
+                               use_container_width=True)
         else:
-            st.info("📝 Sin docentes.")
+            st.info("📝 No hay docentes registrados en el sistema.")
+    
+    # === TAB ELIMINAR ===
+    with tab_eliminar:
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #fee2e2, #fecaca);
+                    padding: 20px; border-radius: 15px; border-left: 5px solid #dc2626;
+                    margin-bottom: 20px;'>
+            <h3 style='color: #991b1b; margin: 0;'>⚠️ ZONA PELIGROSA</h3>
+            <p style='color: #7f1d1d; margin: 5px 0 0 0;'>
+                Esta acción es PERMANENTE y NO se puede deshacer. Use con precaución.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        tipo_eliminar = st.radio(
+            "¿Qué desea eliminar?",
+            ["👨‍🎓 Alumno", "👨‍🏫 Docente"],
+            horizontal=True,
+            key="tipo_elim"
+        )
+        
+        dni_eliminar = st.text_input(
+            "📝 Ingrese el DNI a eliminar:",
+            placeholder="Ej: 12345678",
+            key="dni_elim",
+            max_chars=8
+        )
+        
+        if dni_eliminar:
+            dni_eliminar = dni_eliminar.strip()
+            
+            if tipo_eliminar == "👨‍🎓 Alumno":
+                # Buscar alumno
+                if not df.empty and 'DNI' in df.columns:
+                    alumno = df[df['DNI'].astype(str) == dni_eliminar]
+                    if not alumno.empty:
+                        st.markdown("""
+                        <div style='background: #fef3c7; padding: 15px; border-radius: 10px;
+                                    border-left: 4px solid #f59e0b; margin: 15px 0;'>
+                        """, unsafe_allow_html=True)
+                        st.markdown("### 📋 Registro Encontrado:")
+                        st.write(f"**Nombre:** {alumno.iloc[0]['Nombre']}")
+                        st.write(f"**DNI:** {alumno.iloc[0]['DNI']}")
+                        if 'Grado' in alumno.columns:
+                            st.write(f"**Grado:** {alumno.iloc[0]['Grado']}")
+                        if 'Seccion' in alumno.columns:
+                            st.write(f"**Sección:** {alumno.iloc[0]['Seccion']}")
+                        st.markdown("</div>", unsafe_allow_html=True)
+                        
+                        confirmar = st.checkbox(
+                            "✅ Confirmo que deseo eliminar este registro PERMANENTEMENTE",
+                            key="confirm_elim_al"
+                        )
+                        
+                        if confirmar:
+                            if st.button("🗑️ ELIMINAR ALUMNO", type="primary", key="btn_elim_al",
+                                       use_container_width=True):
+                                # Eliminar de DataFrame
+                                df_nuevo = df[df['DNI'].astype(str) != dni_eliminar]
+                                BaseDatos.guardar_matricula(df_nuevo)
+                                
+                                # Eliminar de Google Sheets si está disponible
+                                gs = _gs()
+                                if gs:
+                                    try:
+                                        ws = gs._get_hoja('matricula')
+                                        if ws:
+                                            # Sincronizar DataFrame completo
+                                            gs.sync_matricula_completa(df_nuevo)
+                                    except Exception as e:
+                                        st.warning(f"No se pudo sincronizar con Google Sheets: {e}")
+                                
+                                st.success(f"✅ Alumno {alumno.iloc[0]['Nombre']} eliminado exitosamente")
+                                st.balloons()
+                                time.sleep(2)
+                                st.rerun()
+                    else:
+                        st.error("❌ No se encontró ningún alumno con ese DNI")
+                else:
+                    st.warning("⚠️ No hay alumnos registrados")
+            
+            else:  # Docente
+                if not df_doc.empty and 'DNI' in df_doc.columns:
+                    docente = df_doc[df_doc['DNI'].astype(str) == dni_eliminar]
+                    if not docente.empty:
+                        st.markdown("""
+                        <div style='background: #fef3c7; padding: 15px; border-radius: 10px;
+                                    border-left: 4px solid #f59e0b; margin: 15px 0;'>
+                        """, unsafe_allow_html=True)
+                        st.markdown("### 📋 Registro Encontrado:")
+                        st.write(f"**Nombre:** {docente.iloc[0]['Nombre']}")
+                        st.write(f"**DNI:** {docente.iloc[0]['DNI']}")
+                        if 'Cargo' in docente.columns:
+                            st.write(f"**Cargo:** {docente.iloc[0]['Cargo']}")
+                        if 'Especialidad' in docente.columns:
+                            st.write(f"**Especialidad:** {docente.iloc[0]['Especialidad']}")
+                        st.markdown("</div>", unsafe_allow_html=True)
+                        
+                        confirmar = st.checkbox(
+                            "✅ Confirmo que deseo eliminar este registro PERMANENTEMENTE",
+                            key="confirm_elim_doc"
+                        )
+                        
+                        if confirmar:
+                            if st.button("🗑️ ELIMINAR DOCENTE", type="primary", key="btn_elim_doc",
+                                       use_container_width=True):
+                                # Eliminar de DataFrame
+                                df_doc_nuevo = df_doc[df_doc['DNI'].astype(str) != dni_eliminar]
+                                BaseDatos.guardar_docentes(df_doc_nuevo)
+                                
+                                # Eliminar de Google Sheets
+                                gs = _gs()
+                                if gs:
+                                    try:
+                                        gs.sync_docentes_completo(df_doc_nuevo)
+                                    except Exception as e:
+                                        st.warning(f"No se pudo sincronizar con Google Sheets: {e}")
+                                
+                                st.success(f"✅ Docente {docente.iloc[0]['Nombre']} eliminado exitosamente")
+                                st.balloons()
+                                time.sleep(2)
+                                st.rerun()
+                    else:
+                        st.error("❌ No se encontró ningún docente con ese DNI")
+                else:
+                    st.warning("⚠️ No hay docentes registrados")
 
 
 # ================================================================
@@ -5544,8 +5888,18 @@ def tab_registrar_notas(config):
         nivel_doc = st.session_state.docente_info.get('nivel', '')
 
     # Admin/directivo puede elegir grado
+    # Secundaria/PreU puede elegir cualquier grado de su nivel
     if st.session_state.rol in ['admin', 'directivo']:
         grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
+    elif nivel_doc in ['SECUNDARIA', 'PREUNIVERSITARIO', 'CEPRE_AB', 'CEPRE_CD']:
+        # Secundaria y PreU ven TODOS los grados de su nivel
+        if nivel_doc == 'SECUNDARIA':
+            grados_nivel = [g for g in GRADOS_OPCIONES if 'Sec' in str(g)]
+        elif nivel_doc == 'PREUNIVERSITARIO':
+            grados_nivel = [g for g in GRADOS_OPCIONES if any(x in str(g) for x in ['Ciclo', 'Reforzamiento'])]
+        else:  # CEPRE
+            grados_nivel = [g for g in GRADOS_OPCIONES if 'GRUPO' in str(g)]
+        grado_sel = st.selectbox("🎓 Grado:", grados_nivel, key="rn_grado")
     elif grado_doc:
         grado_sel = grado_doc
         st.info(f"🎓 **{grado_sel}**")
@@ -5567,8 +5921,8 @@ def tab_registrar_notas(config):
     elif any(x in grado_str for x in ['Ciclo', 'Reforzamiento']):
         nivel = 'PREUNIVERSITARIO'
 
-    # Seleccionar área y período
-    c1, c2 = st.columns(2)
+    # Seleccionar área y período FUERA del form (para evitar reruns)
+    c1, c2, c3 = st.columns(3)
     with c1:
         if nivel == 'CEPRE_AB':
             areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO AB']
@@ -5582,22 +5936,33 @@ def tab_registrar_notas(config):
             areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['──── CEPRE UNSAAC ────'] + areas_cepre_all
         else:
             areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU.get('PRIMARIA', []))
-        area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
+        
+        # Opción de registrar múltiples áreas
+        multi_areas = st.checkbox("📚 Registrar múltiples áreas", key="rn_multi")
+        
+        if multi_areas:
+            areas_sel = st.multiselect("📚 Seleccionar áreas:", areas_nivel, key="rn_areas_multi")
+        else:
+            area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
+            areas_sel = [area_sel]
+    
     with c2:
         bim_sel = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_bim")
-    titulo_eval_rn = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3",
-                                    key="rn_titulo")
+    
+    with c3:
+        titulo_eval_rn = st.text_input("📝 Título (opcional):", 
+                                        placeholder="Ej: Evaluación Semanal 3",
+                                        key="rn_titulo")
 
-    # Cargar estudiantes
+    # Cargar estudiantes UNA VEZ antes del form
     dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
     if dg.empty:
         st.warning("No hay estudiantes matriculados en este grado.")
         return
 
-    st.markdown(f"### 📋 {len(dg)} estudiantes — {area_sel} — {bim_sel}")
+    st.markdown(f"### 📋 {len(dg)} estudiantes — {len(areas_sel)} área(s) — {bim_sel}")
 
-    # Tabla de ingreso de notas
-    notas_input = {}
+    # Tabla de ingreso de notas con FORM para evitar reruns
     st.markdown("""
     <style>
     .nota-ad { background: #dcfce7 !important; }
@@ -5607,72 +5972,200 @@ def tab_registrar_notas(config):
     </style>
     """, unsafe_allow_html=True)
 
-    # Header
-    hc1, hc2, hc3, hc4 = st.columns([3, 1, 1, 1])
-    with hc1:
-        st.markdown("**Estudiante**")
-    with hc2:
-        st.markdown("**Nota (0-20)**")
-    with hc3:
-        st.markdown("**Literal**")
-    with hc4:
-        st.markdown("**Estado**")
+    # ==== USAR FORM PARA EVITAR RERUNS ====
+    with st.form("form_notas_registro", clear_on_submit=False):
+        notas_input = {}
+        
+        for area_actual in areas_sel:
+            if area_actual == '──── CEPRE UNSAAC ────':
+                continue
+                
+            st.markdown(f"#### 📚 {area_actual}")
+            
+            # Header
+            hc1, hc2, hc3, hc4, hc5 = st.columns([3, 1, 1, 1, 1])
+            with hc1:
+                st.markdown("**Estudiante**")
+            with hc2:
+                st.markdown("**Nota (0-20)**")
+            with hc3:
+                st.markdown("**Literal**")
+            with hc4:
+                st.markdown("**Estado**")
+            with hc5:
+                st.markdown("**WhatsApp**")
 
-    for idx, row in dg.iterrows():
-        nombre = str(row.get('Nombre', ''))
-        dni = str(row.get('DNI', ''))
-        nc1, nc2, nc3, nc4 = st.columns([3, 1, 1, 1])
-        with nc1:
-            st.write(f"👤 {nombre}")
-        with nc2:
-            nota = st.number_input("Nota", 0, 20, 0,
-                                    key=f"rn_{dni}_{area_sel}_{bim_sel}",
-                                    label_visibility="collapsed")
-            notas_input[dni] = {'nombre': nombre, 'nota': nota}
-        with nc3:
-            lit = nota_a_letra(nota)
-            color = color_semaforo(lit)
-            st.markdown(f"<span style='color:{color};font-weight:bold;font-size:1.2em;'>{lit}</span>",
-                       unsafe_allow_html=True)
-        with nc4:
-            desc = ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:12]
-            st.caption(desc)
+            for idx, row in dg.iterrows():
+                nombre = str(row.get('Nombre', ''))
+                dni = str(row.get('DNI', ''))
+                cel_apod = str(row.get('Celular Apoderado', ''))
+                
+                nc1, nc2, nc3, nc4, nc5 = st.columns([3, 1, 1, 1, 1])
+                with nc1:
+                    st.write(f"👤 {nombre}")
+                with nc2:
+                    nota = st.number_input("Nota", 0, 20, 0,
+                                            key=f"rn_{dni}_{area_actual}_{bim_sel}",
+                                            label_visibility="collapsed")
+                    
+                    # Almacenar por área
+                    key_alumno = f"{dni}_{area_actual}"
+                    notas_input[key_alumno] = {
+                        'nombre': nombre, 
+                        'nota': nota,
+                        'dni': dni,
+                        'area': area_actual,
+                        'celular': cel_apod
+                    }
+                
+                with nc3:
+                    lit = nota_a_letra(nota)
+                    color = color_semaforo(lit)
+                    st.markdown(f"<span style='color:{color};font-weight:bold;font-size:1.2em;'>{lit}</span>",
+                               unsafe_allow_html=True)
+                with nc4:
+                    desc = ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:12]
+                    st.caption(desc)
+                with nc5:
+                    # Botón WhatsApp - solo se activa después de guardar
+                    st.caption("💬")
 
-    # Guardar
-    st.markdown("---")
-    if st.button("💾 GUARDAR NOTAS", type="primary",
-                 use_container_width=True, key="btn_guardar_notas"):
+            st.markdown("---")
+
+        # Guardar DENTRO del form
+        submitted = st.form_submit_button("💾 GUARDAR TODAS LAS NOTAS", 
+                                          type="primary",
+                                          use_container_width=True)
+    
+    # Procesamiento FUERA del form (después del submit)
+    if submitted:
         guardadas = 0
-        for dni, data in notas_input.items():
+        for key_alumno, data in notas_input.items():
             if data['nota'] > 0:
                 registro = {
                     'fecha': fecha_peru_str(),
                     'grado': grado_sel,
-                    'area': area_sel,
+                    'area': data['area'],
                     'bimestre': bim_sel,
-                    'dni': dni,
+                    'dni': data['dni'],
                     'nombre': data['nombre'],
                     'nota': data['nota'],
                     'literal': nota_a_letra(data['nota']),
                     'docente': usuario,
-                    'tipo': 'manual'
+                    'tipo': 'manual',
+                    'titulo': titulo_eval_rn if titulo_eval_rn else f"Registro {bim_sel}"
                 }
                 if gs:
                     try:
                         ws = gs._get_hoja('config')
                         if ws:
-                            key = f"nota_{dni}_{area_sel}_{bim_sel}"
-                            ws.append_row([key, json.dumps(registro, ensure_ascii=False, default=str)])
+                            key_gs = f"nota_{data['dni']}_{data['area']}_{bim_sel}"
+                            ws.append_row([key_gs, json.dumps(registro, ensure_ascii=False, default=str)])
                             guardadas += 1
                     except Exception:
                         pass
 
         if guardadas > 0:
             st.success(f"✅ **{guardadas} notas guardadas** correctamente en la nube")
-            reproducir_beep_exitoso()
             st.balloons()
+            
+            # Mostrar botones WhatsApp después de guardar
+            st.markdown("---")
+            st.subheader("📱 Enviar Calificaciones por WhatsApp")
+            
+            for idx, row in dg.iterrows():
+                nombre = str(row.get('Nombre', ''))
+                dni = str(row.get('DNI', ''))
+                cel_apod = str(row.get('Celular Apoderado', ''))
+                
+                # Buscar las notas de este estudiante
+                notas_alumno = []
+                for area in areas_sel:
+                    if area == '──── CEPRE UNSAAC ────':
+                        continue
+                    key = f"{dni}_{area}"
+                    if key in notas_input and notas_input[key]['nota'] > 0:
+                        notas_alumno.append({
+                            'area': area,
+                            'nota': notas_input[key]['nota'],
+                            'literal': nota_a_letra(notas_input[key]['nota'])
+                        })
+                
+                if notas_alumno and cel_apod:
+                    wc1, wc2 = st.columns([4, 1])
+                    with wc1:
+                        st.write(f"👤 **{nombre}**")
+                        notas_text = ", ".join([f"{n['area']}: {n['nota']} ({n['literal']})" for n in notas_alumno])
+                        st.caption(notas_text)
+                    with wc2:
+                        # Mensaje WhatsApp
+                        msg_wa = f"""🎓 *CALIFICACIONES - {config['institucion']}*
+
+Estimado Padre de Familia de *{nombre}*:
+
+📊 *Período:* {bim_sel}
+📚 *Calificaciones:*
+
+"""
+                        for nota in notas_alumno:
+                            msg_wa += f"• {nota['area']}: *{nota['nota']}/20* ({nota['literal']})\n"
+                        
+                        msg_wa += f"\n_Registrado por: {usuario}_"
+                        
+                        link_wa = generar_link_whatsapp(cel_apod, msg_wa)
+                        st.markdown(f'<a href="{link_wa}" target="_blank" '
+                                   f'style="display:inline-block;background:#25D366;color:white;'
+                                   f'padding:8px 16px;border-radius:8px;text-decoration:none;'
+                                   f'font-weight:bold;">📱 WhatsApp</a>', 
+                                   unsafe_allow_html=True)
         else:
             st.warning("⚠️ Ingrese al menos una nota mayor a 0")
+
+    # Descargar ranking PDF si se registraron múltiples áreas
+    if len(areas_sel) > 1 and not dg.empty:
+        st.markdown("---")
+        if st.button("📊 GENERAR RANKING PDF (Todas las áreas)", type="secondary"):
+            # Recopilar todas las notas guardadas
+            ranking_data = []
+            for idx, row in dg.iterrows():
+                nombre = str(row.get('Nombre', ''))
+                dni = str(row.get('DNI', ''))
+                notas_areas = {}
+                total_sum = 0
+                count = 0
+                
+                for area in areas_sel:
+                    if area == '──── CEPRE UNSAAC ────':
+                        continue
+                    key = f"{dni}_{area}"
+                    if key in notas_input and notas_input[key]['nota'] > 0:
+                        nota_val = notas_input[key]['nota']
+                        notas_areas[area] = nota_val
+                        total_sum += nota_val
+                        count += 1
+                
+                if count > 0:
+                    promedio = round(total_sum / count, 2)
+                    ranking_data.append({
+                        'nombre': nombre,
+                        'dni': dni,
+                        'notas': notas_areas,
+                        'promedio': promedio
+                    })
+            
+            # Ordenar por promedio
+            ranking_data.sort(key=lambda x: x['promedio'], reverse=True)
+            
+            if ranking_data:
+                pdf_ranking = generar_ranking_notas_pdf(ranking_data, areas_sel, grado_sel, bim_sel, config['anio'])
+                st.download_button(
+                    "⬇️ Descargar Ranking PDF",
+                    pdf_ranking,
+                    f"Ranking_{grado_sel}_{bim_sel}.pdf",
+                    "application/pdf"
+                )
+            else:
+                st.warning("No hay notas para generar ranking")
 
     # Historial de notas guardadas
     st.markdown("---")
@@ -5688,16 +6181,20 @@ def tab_registrar_notas(config):
                         if clave.startswith('nota_'):
                             try:
                                 n = json.loads(d.get('valor', '{}'))
-                                if n.get('grado') == grado_sel and n.get('area') == area_sel:
+                                if n.get('grado') == grado_sel:
                                     notas_hist.append(n)
                             except Exception:
                                 pass
                     if notas_hist:
                         df_n = pd.DataFrame(notas_hist)
-                        st.dataframe(df_n[['nombre', 'nota', 'literal', 'bimestre', 'fecha']],
+                        st.dataframe(df_n[['nombre', 'area', 'nota', 'literal', 'bimestre', 'fecha']],
                                      use_container_width=True, hide_index=True)
                     else:
-                        st.info("Sin notas guardadas para este grado/área")
+                        st.info("Sin notas guardadas para este grado")
+            except Exception:
+                st.info("No se pueden cargar notas guardadas")
+        else:
+            st.warning("Google Sheets no conectado")
             except Exception:
                 st.info("Sin datos")
 
