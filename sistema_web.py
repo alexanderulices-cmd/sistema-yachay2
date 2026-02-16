@@ -9361,7 +9361,7 @@ def main():
                             """, unsafe_allow_html=True)
                             
                             # Botón Streamlit totalmente oculto (solo para funcionalidad)
-                            if st.button("‎", key=f"dash_{key}", label_visibility="collapsed"):
+                            if st.button("‎", key=f"dash_{key}"):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
                             
