@@ -69,10 +69,10 @@ st.markdown("""
         background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
     }
     
-    /* Botones con efecto hover */
-    .stButton>button {
+    /* Botones generales con efecto hover (excepto dashboard) */
+    .stButton>button:not([data-testid*="dash_"]) {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
-        color: white;
+        color: white !important;
         border-radius: 10px;
         border: none;
         padding: 12px 24px;
@@ -81,9 +81,14 @@ st.markdown("""
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
-    .stButton>button:hover {
+    .stButton>button:not([data-testid*="dash_"]):hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    
+    /* Botones del dashboard - permitir personalización */
+    button[data-testid*="dash_"] {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
     }
     
     /* Métricas con colores */
@@ -9319,48 +9324,38 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            # Cuadrado visual con ícono y texto
-                            st.markdown(f"""
-                            <div style="background: linear-gradient(135deg, {color}, {color}dd);
-                                        color: white; border-radius: 16px; padding: 20px;
-                                        text-align: center; cursor: pointer;
-                                        box-shadow: 0 4px 15px {color}40;
-                                        transition: all 0.3s; margin: 6px 0;
-                                        min-height: 120px; display: flex;
-                                        flex-direction: column; justify-content: center;
-                                        align-items: center;
-                                        margin-bottom: -50px; position: relative; z-index: 1;">
-                                <span style="font-size: 2.5rem;">{icono}</span>
-                                <strong style="font-size: 1.1rem; margin-top: 10px; 
-                                               text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{nombre}</strong>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            # Botón invisible pero funcional (solo para el click)
-                            st.markdown("""
-                            <style>
-                            div[data-testid*="stButton"] button[kind="secondary"] {
-                                background: transparent !important;
-                                border: 2px solid transparent !important;
-                                color: transparent !important;
-                                height: 60px;
-                                margin-top: -10px;
-                                position: relative;
-                                z-index: 2;
-                            }
-                            div[data-testid*="stButton"] button[kind="secondary"]:hover {
-                                background: rgba(255,255,255,0.1) !important;
-                                border: 2px solid rgba(255,255,255,0.3) !important;
-                                transform: scale(1.02);
-                            }
-                            </style>
-                            """, unsafe_allow_html=True)
-                            
-                            if st.button(".", key=f"dash_{key}", 
-                                        type="secondary",
-                                        use_container_width=True):
+                            # Usar botón de Streamlit con estilo inline
+                            btn_texto = f"{icono}\n\n{nombre}"
+                            if st.button(btn_texto, key=f"dash_{key}", use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
+                            
+                            # Aplicar estilo al último botón creado
+                            st.markdown(f"""
+                            <style>
+                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button {{
+                                background: linear-gradient(135deg, {color}, {color}dd) !important;
+                                color: white !important;
+                                border: none !important;
+                                border-radius: 16px !important;
+                                padding: 30px 20px !important;
+                                min-height: 130px !important;
+                                box-shadow: 0 8px 25px {color}60 !important;
+                                transition: all 0.3s ease !important;
+                                font-size: 1rem !important;
+                                font-weight: 600 !important;
+                                white-space: pre-line !important;
+                            }}
+                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button:hover {{
+                                transform: translateY(-6px) scale(1.02) !important;
+                                box-shadow: 0 12px 35px {color}80 !important;
+                            }}
+                            div[data-testid="column"]:has(button[data-testid*="{key}"]) button p {{
+                                font-size: 2rem !important;
+                                margin: 0 !important;
+                            }}
+                            </style>
+                            """, unsafe_allow_html=True)
 
             # Estadísticas rápidas
             st.markdown("---")
