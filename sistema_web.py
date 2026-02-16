@@ -9317,6 +9317,22 @@ def main():
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
 
             # Mostrar en grid de 3 columnas con colores
+            # CSS global para los botones del dashboard
+            st.markdown("""
+            <style>
+            /* Ocultar todos los botones dashboard por defecto */
+            button[data-testid*="dash_"] {
+                min-height: 140px !important;
+                border-radius: 16px !important;
+                border: none !important;
+                font-size: 1rem !important;
+                font-weight: 600 !important;
+                padding: 30px 20px !important;
+                transition: all 0.3s ease !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
             for i in range(0, len(modulos), 3):
                 cols = st.columns(3)
                 for j, col in enumerate(cols):
@@ -9324,59 +9340,22 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
-                            # Crear ID único para manejo de clicks
-                            btn_id = f"btn_{key}_{i}_{j}"
-                            
-                            # Cuadrado HTML con color y funcionalidad JavaScript
-                            st.markdown(f"""
-                            <div id="{btn_id}" 
-                                 style="background: linear-gradient(135deg, {color} 0%, {color}dd 100%);
-                                        color: white;
-                                        border-radius: 16px;
-                                        padding: 35px 20px;
-                                        text-align: center;
-                                        min-height: 140px;
-                                        display: flex;
-                                        flex-direction: column;
-                                        justify-content: center;
-                                        align-items: center;
-                                        box-shadow: 0 8px 25px {color}50;
-                                        transition: all 0.3s ease;
-                                        cursor: pointer;
-                                        margin: 8px 0;"
-                                 onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 12px 35px {color}70';"
-                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px {color}50';">
-                                <div style="font-size: 2.5rem; margin-bottom: 12px;">{icono}</div>
-                                <div style="font-size: 1.1rem; font-weight: 600; 
-                                            text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{nombre}</div>
-                            </div>
-                            
-                            <script>
-                            document.getElementById('{btn_id}').addEventListener('click', function() {{
-                                // Simular click en botón oculto de Streamlit
-                                const btn = document.querySelector('button[data-testid*="dash_{key}"]');
-                                if (btn) btn.click();
-                            }});
-                            </script>
-                            """, unsafe_allow_html=True)
-                            
-                            # Botón Streamlit totalmente oculto (solo para funcionalidad)
-                            if st.button("‎", key=f"dash_{key}"):
+                            # Botón simple de Streamlit
+                            if st.button(f"{icono}\n\n{nombre}", key=f"dash_{key}", use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
                             
-                            # CSS para ocultar completamente el botón de Streamlit
+                            # CSS específico para ESTE botón con SU color
                             st.markdown(f"""
                             <style>
-                            button[data-testid*="dash_{key}"],
-                            div:has(> button[data-testid*="dash_{key}"]) {{
-                                display: none !important;
-                                height: 0 !important;
-                                padding: 0 !important;
-                                margin: 0 !important;
-                                opacity: 0 !important;
-                                position: absolute !important;
-                                z-index: -1 !important;
+                            button[data-testid*="dash_{key}"] {{
+                                background: linear-gradient(135deg, {color}, {color}dd) !important;
+                                color: white !important;
+                                box-shadow: 0 8px 25px {color}50 !important;
+                            }}
+                            button[data-testid*="dash_{key}"]:hover {{
+                                transform: translateY(-6px) !important;
+                                box-shadow: 0 12px 35px {color}70 !important;
                             }}
                             </style>
                             """, unsafe_allow_html=True)
