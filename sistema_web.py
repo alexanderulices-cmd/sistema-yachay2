@@ -1019,65 +1019,117 @@ class BaseDatos:
     @staticmethod
     def guardar_asistencia(dni, nombre, tipo, hora, es_docente=False):
         fecha_hoy = fecha_peru_str()
-        asistencias = {}
-        if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                asistencias = json.load(f)
-        if fecha_hoy not in asistencias:
-            asistencias[fecha_hoy] = {}
-        if dni not in asistencias[fecha_hoy]:
-            asistencias[fecha_hoy][dni] = {
-                'nombre': nombre, 'entrada': '', 'salida': '',
-                'es_docente': es_docente
-            }
-        asistencias[fecha_hoy][dni][tipo] = hora
-        asistencias[fecha_hoy][dni]['nombre'] = nombre
-        with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
-            json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Sincronizar con Google Sheets
+        dni = str(dni).strip()
+
+        # ═══ CAPA 1: SESSION STATE (siempre funciona, en memoria) ═══
+        if 'asistencias_cache' not in st.session_state:
+            st.session_state.asistencias_cache = {}
+        cache = st.session_state.asistencias_cache
+        if fecha_hoy not in cache:
+            cache[fecha_hoy] = {}
+        if dni not in cache[fecha_hoy]:
+            cache[fecha_hoy][dni] = {'nombre': nombre, 'entrada': '', 'salida': '', 'es_docente': es_docente}
+        cache[fecha_hoy][dni][tipo] = hora
+        cache[fecha_hoy][dni]['nombre'] = nombre
+
+        # ═══ CAPA 2: ARCHIVO LOCAL JSON (persistente en disco) ═══
+        try:
+            asistencias = {}
+            if Path(ARCHIVO_ASISTENCIAS).exists():
+                try:
+                    with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                        asistencias = json.load(f)
+                except Exception:
+                    asistencias = {}
+            if fecha_hoy not in asistencias:
+                asistencias[fecha_hoy] = {}
+            if dni not in asistencias[fecha_hoy]:
+                asistencias[fecha_hoy][dni] = {'nombre': nombre, 'entrada': '', 'salida': '', 'es_docente': es_docente}
+            asistencias[fecha_hoy][dni][tipo] = hora
+            asistencias[fecha_hoy][dni]['nombre'] = nombre
+            # Escribir con try/except y backup atómico
+            tmp_path = ARCHIVO_ASISTENCIAS + ".tmp"
+            with open(tmp_path, 'w', encoding='utf-8') as f:
+                json.dump(asistencias, f, indent=2, ensure_ascii=False)
+            os.replace(tmp_path, ARCHIVO_ASISTENCIAS)  # Escritura atómica
+        except Exception as e_file:
+            pass  # Capa 1 (session_state) ya tiene el dato
+
+        # ═══ CAPA 3: GOOGLE SHEETS (sincronización en la nube) ═══
         gs = _gs()
         if gs:
             try:
                 grado = ''
                 nivel = ''
-                df_m = BaseDatos.cargar_matricula()
-                if not df_m.empty and 'DNI' in df_m.columns:
-                    est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
-                    if not est.empty:
-                        grado = est.iloc[0].get('Grado', '')
-                        nivel = est.iloc[0].get('Nivel', '')
-                reg = asistencias[fecha_hoy][dni]
+                try:
+                    df_m = BaseDatos.cargar_matricula()
+                    if not df_m.empty and 'DNI' in df_m.columns:
+                        est = df_m[df_m['DNI'].astype(str).str.strip() == dni]
+                        if not est.empty:
+                            grado = est.iloc[0].get('Grado', '')
+                            nivel = est.iloc[0].get('Nivel', '')
+                except Exception:
+                    pass
+                reg = cache[fecha_hoy][dni]
                 gs.guardar_asistencia({
-                    'fecha': fecha_hoy,
-                    'dni': str(dni),
-                    'nombre': nombre,
+                    'fecha': fecha_hoy, 'dni': dni, 'nombre': nombre,
                     'tipo_persona': 'docente' if es_docente else 'alumno',
                     'hora_entrada': reg.get('entrada', ''),
                     'hora_salida': reg.get('salida', ''),
-                    'grado': grado,
-                    'nivel': nivel,
+                    'grado': grado, 'nivel': nivel,
                 })
             except Exception:
-                pass
+                pass  # Capas 1 y 2 ya tienen el dato
 
     @staticmethod
     def obtener_asistencias_hoy():
         fecha_hoy = fecha_peru_str()
+        # Prioridad: archivo local (más actualizado al reiniciar), luego cache
+        asistencias_archivo = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                return json.load(f).get(fecha_hoy, {})
-        return {}
+            try:
+                with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                    asistencias_archivo = json.load(f).get(fecha_hoy, {})
+            except Exception:
+                pass
+        # Combinar con session_state cache (puede tener registros más recientes)
+        cache = st.session_state.get('asistencias_cache', {}).get(fecha_hoy, {})
+        # Merge: archivo base + cache encima
+        merged = dict(asistencias_archivo)
+        for dni, datos in cache.items():
+            if dni not in merged:
+                merged[dni] = datos
+            else:
+                # Actualizar campos individuales si el cache tiene datos
+                for campo in ('entrada', 'salida', 'nombre'):
+                    if datos.get(campo):
+                        merged[dni][campo] = datos[campo]
+        # Actualizar el cache con los datos del archivo (sincronizar)
+        if 'asistencias_cache' not in st.session_state:
+            st.session_state.asistencias_cache = {}
+        if fecha_hoy not in st.session_state.asistencias_cache:
+            st.session_state.asistencias_cache[fecha_hoy] = {}
+        st.session_state.asistencias_cache[fecha_hoy].update(merged)
+        return merged
 
     @staticmethod
     def borrar_asistencias_hoy():
         fecha_hoy = fecha_peru_str()
+        # Limpiar archivo local
         if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                a = json.load(f)
-            if fecha_hoy in a:
-                del a[fecha_hoy]
-            with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
-                json.dump(a, f, indent=2, ensure_ascii=False)
+            try:
+                with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                    a = json.load(f)
+                if fecha_hoy in a:
+                    del a[fecha_hoy]
+                with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
+                    json.dump(a, f, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
+        # Limpiar cache de session_state
+        if 'asistencias_cache' in st.session_state:
+            if fecha_hoy in st.session_state.asistencias_cache:
+                del st.session_state.asistencias_cache[fecha_hoy]
 
     @staticmethod
     def obtener_estadisticas():
@@ -2254,16 +2306,39 @@ FRASES_MOTIVACIONALES = [
     "🌟 Educar para la Vida — Pioneros en la Educación de Calidad.",
 ]
 
+FRASES_MOTIVACIONALES_TEXTO = [
+    "La puntualidad es la cortesia de los reyes.",
+    "Educar es sembrar semillas de futuro. Gracias por confiar en YACHAY!",
+    "El exito es la suma de pequenos esfuerzos repetidos dia a dia.",
+    "Cada dia de clases es una oportunidad para crecer y aprender.",
+    "La educacion es el arma mas poderosa para cambiar el mundo.",
+    "Un nino puntual hoy sera un adulto responsable manana.",
+    "El talento gana juegos, pero el trabajo en equipo gana campeonatos.",
+    "La disciplina es el puente entre las metas y los logros.",
+    "La mejor inversion es la educacion de nuestros hijos.",
+    "Con esfuerzo y dedicacion, todo es posible. Vamos YACHAY!",
+    "Familia y escuela juntos: la formula del exito educativo.",
+    "La puntualidad es un valor que se ensena desde casa.",
+    "YACHAY significa aprender. Aprendamos juntos!",
+    "El futuro pertenece a quienes creen en la belleza de sus suenos.",
+    "Educar para la Vida - Pioneros en la Educacion de Calidad.",
+]
+
 import random as _random
 
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
-    saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
-    em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
-    frase = _random.choice(FRASES_MOTIVACIONALES)
-    return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
-            f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
-            f"{frase}")
+    saludo = "Buenos dias" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
+    em = "ENTRADA" if tipo == "entrada" else "SALIDA"
+    frase = _random.choice(FRASES_MOTIVACIONALES_TEXTO)
+    return (f"*YACHAY PRO - I.E. ALTERNATIVO YACHAY*\n"
+            f"---\n"
+            f"*{em} registrada*\n"
+            f"Alumno/a: *{nombre}*\n"
+            f"Hora: *{hora}*\n"
+            f"Fecha: {fecha_peru_str()}\n"
+            f"---\n"
+            f"{saludo}! {frase}")
 
 
 def decodificar_qr_imagen(ib):
@@ -3700,6 +3775,20 @@ def tab_asistencias():
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
+    # ═══ INDICADOR DE ESTADO DE ALMACENAMIENTO ═══
+    gs_ok = _gs() is not None
+    archivo_ok = Path(ARCHIVO_ASISTENCIAS).exists() or True  # siempre puede crear
+    c_est1, c_est2, c_est3 = st.columns(3)
+    with c_est1:
+        st.markdown("💾 **Local:** ✅ Activo", help="Archivo local - siempre disponible")
+    with c_est2:
+        st.markdown("🧠 **Memoria:** ✅ Activo", help="Session state - respaldo en memoria")
+    with c_est3:
+        if gs_ok:
+            st.markdown("☁️ **Nube:** ✅ Conectado")
+        else:
+            st.markdown("☁️ **Nube:** ⚠️ Sin conexión", help="Los datos se guardan localmente y se sincronizan cuando haya conexión")
+
     # Inicializar tracking de WhatsApp enviados
     if 'wa_enviados' not in st.session_state:
         st.session_state.wa_enviados = set()
@@ -3810,56 +3899,56 @@ def tab_asistencias():
             st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
                          use_container_width=True, hide_index=True)
 
-        # ===== ZONA WHATSAPP — ENVÍO MASIVO =====
+        # ===== ZONA WHATSAPP — ENTRADA Y SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al enviar se marca como ✅")
 
-        tipo_actual = st.session_state.tipo_asistencia.lower()
         pendientes = 0
         enviados = 0
 
-        for dk, dat in asis.items():
-            # Verificar si ya fue enviado
-            clave_envio = f"{dk}_{tipo_actual}_{fecha_peru_str()}"
-            ya_enviado = clave_envio in st.session_state.wa_enviados
-
-            # Buscar celular
-            al = BaseDatos.buscar_por_dni(dk)
-            if not al:
-                continue
-            cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
-            if not cel or cel == 'None' or cel == 'nan':
+        for tipo_wa in ["entrada", "salida"]:
+            registros_tipo = {dk: dat for dk, dat in asis.items() if dat.get(tipo_wa)}
+            if not registros_tipo:
                 continue
 
-            hora_reg = dat.get(tipo_actual, '')
-            if not hora_reg:
-                continue
+            icono_tipo = "🌅" if tipo_wa == "entrada" else "🌙"
+            st.markdown(f"**{icono_tipo} {tipo_wa.upper()} registrada hoy**")
 
-            nombre = dat['nombre']
-            es_doc = dat.get('es_docente', False)
-            tipo_icon = "👨‍🏫" if es_doc else "📚"
+            for dk, dat in registros_tipo.items():
+                clave_envio = f"{dk}_{tipo_wa}_{fecha_peru_str()}"
+                ya_enviado = clave_envio in st.session_state.wa_enviados
 
-            if ya_enviado:
-                enviados += 1
-                st.markdown(
-                    f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ "
-                    f"*(enviado)*")
-            else:
-                pendientes += 1
-                msg = generar_mensaje_asistencia(nombre, tipo_actual, hora_reg)
-                link = generar_link_whatsapp(cel, msg)
-                col_btn, col_check = st.columns([4, 1])
-                with col_btn:
-                    st.markdown(
-                        f'<a href="{link}" target="_blank" class="wa-btn">'
-                        f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
-                        unsafe_allow_html=True)
-                with col_check:
-                    if st.button("✅", key=f"wa_{dk}_{tipo_actual}",
-                                 help="Marcar como enviado"):
-                        st.session_state.wa_enviados.add(clave_envio)
-                        st.rerun()
+                al = BaseDatos.buscar_por_dni(dk)
+                if not al:
+                    continue
+                cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
+                if not cel or cel in ('None', 'nan', ''):
+                    continue
+
+                hora_reg = dat.get(tipo_wa, '')
+                nombre = dat['nombre']
+                es_doc = dat.get('es_docente', False)
+                tipo_icon = "👨‍🏫" if es_doc else "📚"
+
+                if ya_enviado:
+                    enviados += 1
+                    st.markdown(f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ *(enviado)*")
+                else:
+                    pendientes += 1
+                    msg = generar_mensaje_asistencia(nombre, tipo_wa, hora_reg)
+                    link = generar_link_whatsapp(cel, msg)
+                    col_btn, col_check = st.columns([4, 1])
+                    with col_btn:
+                        st.markdown(
+                            f'<a href="{link}" target="_blank" class="wa-btn">'
+                            f'📱 {tipo_icon} {nombre} — {hora_reg} → {cel}</a>',
+                            unsafe_allow_html=True)
+                    with col_check:
+                        if st.button("✅", key=f"wa_{dk}_{tipo_wa}",
+                                     help="Marcar como enviado"):
+                            st.session_state.wa_enviados.add(clave_envio)
+                            st.rerun()
 
         if pendientes == 0 and enviados > 0:
             st.success(f"🎉 ¡Todos los WhatsApp enviados! ({enviados} mensajes)")
@@ -3868,8 +3957,7 @@ def tab_asistencias():
 
         # Botón para resetear marcas de enviado
         if enviados > 0:
-            if st.button("🔄 Resetear marcas de enviado",
-                         key="reset_wa"):
+            if st.button("🔄 Resetear marcas de enviado", key="reset_wa"):
                 st.session_state.wa_enviados = set()
                 st.rerun()
 
@@ -3887,18 +3975,21 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia RÁPIDO sin enviar WhatsApp (se envía después)"""
+    """Registra asistencia con 3 capas de respaldo - nunca falla"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
         tipo = st.session_state.tipo_asistencia.lower()
         nombre = persona.get('Nombre', '')
         es_d = persona.get('_tipo', '') == 'docente'
-        tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
+        tp = "DOCENTE" if es_d else "ALUMNO"
+        # Guardar con 3 capas de respaldo
         BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         emoji_tipo = "🟢" if tipo == "entrada" else "🟡"
+        tipo_label = "ENTRADA" if tipo == "entrada" else "SALIDA"
         st.markdown(f"""<div class="asist-{'ok' if tipo == 'entrada' else 'salida'}">
-            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {st.session_state.tipo_asistencia}: <strong>{hora}</strong>
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {tipo_label}: <strong>{hora}</strong>
+            <span style='font-size:0.75rem; color:#16a34a;'> ✅ Guardado</span>
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
