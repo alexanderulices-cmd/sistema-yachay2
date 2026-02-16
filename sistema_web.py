@@ -6195,8 +6195,6 @@ Estimado Padre de Familia de *{nombre}*:
                 st.info("No se pueden cargar notas guardadas")
         else:
             st.warning("Google Sheets no conectado")
-            except Exception:
-                st.info("Sin datos")
 
 
 # ================================================================
