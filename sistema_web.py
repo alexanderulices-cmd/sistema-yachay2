@@ -9319,21 +9319,45 @@ def main():
                     if idx < len(modulos):
                         icono, nombre, key, color = modulos[idx]
                         with col:
+                            # Cuadrado visual con ícono y texto
                             st.markdown(f"""
-                            <div onclick="window.location.hash='{key}'"
-                                 style="background: linear-gradient(135deg, {color}, {color}dd);
+                            <div style="background: linear-gradient(135deg, {color}, {color}dd);
                                         color: white; border-radius: 16px; padding: 20px;
                                         text-align: center; cursor: pointer;
                                         box-shadow: 0 4px 15px {color}40;
                                         transition: all 0.3s; margin: 6px 0;
-                                        min-height: 100px; display: flex;
+                                        min-height: 120px; display: flex;
                                         flex-direction: column; justify-content: center;
-                                        align-items: center;">
-                                <span style="font-size: 2.2rem;">{icono}</span>
-                                <strong style="font-size: 1rem; margin-top: 8px;">{nombre}</strong>
+                                        align-items: center;
+                                        margin-bottom: -50px; position: relative; z-index: 1;">
+                                <span style="font-size: 2.5rem;">{icono}</span>
+                                <strong style="font-size: 1.1rem; margin-top: 10px; 
+                                               text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{nombre}</strong>
                             </div>
                             """, unsafe_allow_html=True)
-                            if st.button(f"Abrir {nombre}", key=f"dash_{key}",
+                            
+                            # Botón invisible pero funcional (solo para el click)
+                            st.markdown("""
+                            <style>
+                            div[data-testid*="stButton"] button[kind="secondary"] {
+                                background: transparent !important;
+                                border: 2px solid transparent !important;
+                                color: transparent !important;
+                                height: 60px;
+                                margin-top: -10px;
+                                position: relative;
+                                z-index: 2;
+                            }
+                            div[data-testid*="stButton"] button[kind="secondary"]:hover {
+                                background: rgba(255,255,255,0.1) !important;
+                                border: 2px solid rgba(255,255,255,0.3) !important;
+                                transform: scale(1.02);
+                            }
+                            </style>
+                            """, unsafe_allow_html=True)
+                            
+                            if st.button(".", key=f"dash_{key}", 
+                                        type="secondary",
                                         use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
@@ -9361,10 +9385,14 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            if st.button("⬅️ Volver al Menú Principal", key="btn_volver"):
-                st.session_state.modulo_activo = None
-                st.rerun()
-
+            # Botón de regresar más visible
+            col_back, col_space = st.columns([1, 4])
+            with col_back:
+                if st.button("⬅️ REGRESAR", key="btn_volver", type="secondary", use_container_width=True):
+                    st.session_state.modulo_activo = None
+                    st.rerun()
+            
+            st.markdown("---")
             st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
 
             mod = st.session_state.modulo_activo
