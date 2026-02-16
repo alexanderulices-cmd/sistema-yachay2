@@ -349,11 +349,15 @@ st.markdown("""
     from { opacity: 0; transform: translateX(-30px); }
     to { opacity: 1; transform: translateX(0); }
 }
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(26,86,219,0.3); }
+    50% { box-shadow: 0 0 20px rgba(26,86,219,0.6); }
+}
 
 /* === HEADER PRINCIPAL === */
 .main-header {
     text-align: center; padding: 2rem;
-    background: linear-gradient(135deg, #001e7c 0%, #0052cc 50%, #0066ff 100%);
+    background: linear-gradient(135deg, #001e7c 0%, #0052cc 30%, #0066ff 70%, #3b82f6 100%);
     color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 25px rgba(0,30,124,0.35);
     animation: fadeInUp 0.6s ease-out;
@@ -371,7 +375,7 @@ st.markdown("""
 }
 .stTabs [data-baseweb="tab"]:hover {
     background: rgba(26,86,219,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
 }
 .stTabs [aria-selected="true"] {
     background: linear-gradient(135deg, #1a56db, #0052cc) !important;
@@ -386,7 +390,7 @@ st.markdown("""
     font-weight: 600 !important;
 }
 .stButton > button:hover {
-    transform: translateY(-2px) !important;
+    transform: translateY(-2px) scale(1.02) !important;
     box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
 }
 .stButton > button:active {
@@ -400,9 +404,12 @@ st.markdown("""
     border-left: 4px solid #1a56db;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     animation: slideIn 0.5s ease-out;
-    transition: transform 0.2s;
+    transition: all 0.3s;
 }
-.stat-card:hover { transform: translateY(-3px); }
+.stat-card:hover { 
+    transform: translateY(-3px) scale(1.02); 
+    box-shadow: 0 8px 25px rgba(26,86,219,0.15);
+}
 .stat-card h3 { margin: 0; color: #1a56db; font-size: 2rem; }
 .stat-card p { margin: 0; color: #64748b; font-size: 0.9rem; }
 
@@ -470,7 +477,7 @@ st.markdown("""
     display: block; text-align: center; margin: 4px 0;
     transition: all 0.3s; font-weight: 600;
 }
-.wa-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,211,102,0.4); }
+.wa-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 15px rgba(37,211,102,0.4); }
 .link-btn {
     background: linear-gradient(135deg, #4285F4, #356AC3); color: white !important;
     padding: 8px 16px; border: none; border-radius: 10px;
@@ -478,7 +485,7 @@ st.markdown("""
     display: block; text-align: center; margin: 4px 0;
     transition: all 0.3s;
 }
-.link-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(66,133,244,0.4); }
+.link-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 12px rgba(66,133,244,0.4); }
 .siagie-btn {
     background: linear-gradient(135deg, #E91E63, #C2185B); color: white !important;
     padding: 8px 16px; border: none; border-radius: 10px;
@@ -486,7 +493,7 @@ st.markdown("""
     display: block; text-align: center; margin: 4px 0;
     transition: all 0.3s;
 }
-.siagie-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233,30,99,0.4); }
+.siagie-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 12px rgba(233,30,99,0.4); }
 
 /* === EXPANDER MEJORADO === */
 .streamlit-expanderHeader {
@@ -1147,6 +1154,29 @@ class BaseDatos:
             except Exception:
                 pass
         return []
+
+    @staticmethod
+    def corregir_secciones_vacias():
+        """Asigna sección 'A' a estudiantes sin sección (excepto Sec/PreU)"""
+        df = BaseDatos.cargar_matricula()
+        if df.empty or 'Seccion' not in df.columns:
+            return 0
+        
+        df['Seccion'] = df['Seccion'].fillna('').astype(str).str.strip()
+        sin_seccion = df['Seccion'].isin(['', 'nan', 'None', 'N/A'])
+        
+        if 'Nivel' in df.columns:
+            es_sec_preu = df['Nivel'].isin(['SECUNDARIA', 'PREUNIVERSITARIO'])
+            to_fix = sin_seccion & ~es_sec_preu
+        else:
+            to_fix = sin_seccion
+        
+        cantidad = to_fix.sum()
+        if cantidad > 0:
+            df.loc[to_fix, 'Seccion'] = 'A'
+            BaseDatos.guardar_matricula(df)
+            return cantidad
+        return 0
 
 
 # ================================================================
@@ -2932,6 +2962,18 @@ def configurar_sidebar():
                             st.balloons()
                             time.sleep(1)
                             st.rerun()
+            
+            with st.expander("🔧 Herramientas"):
+                st.markdown("### 📝 Corregir Secciones")
+                st.caption("Asigna sección 'A' a estudiantes sin sección (excepto Sec/PreU)")
+                if st.button("🔄 Corregir Secciones", type="primary", 
+                           use_container_width=True, key="btn_corr_sec"):
+                    cantidad = BaseDatos.corregir_secciones_vacias()
+                    if cantidad > 0:
+                        st.success(f"✅ Se asignó sección 'A' a {cantidad} estudiante(s)")
+                        st.balloons()
+                    else:
+                        st.info("✅ Todos los estudiantes ya tienen sección")
 
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
@@ -5509,129 +5551,63 @@ def tab_reportes(config):
                 dni_ri = sel.split(" — ")[-1].strip()
                 nombre_ri = sel.split(" — ")[0].strip()
                 
-                # ====== NUEVA SECCIÓN: EDITAR NOTAS (Solo Director/Admin/Promotor) ======
+                # EDITAR NOTAS (Solo Director/Admin/Promotor)
                 if st.session_state.rol in ['admin', 'directivo']:
                     st.markdown("---")
-                    st.markdown("### ✏️ Editar Notas del Estudiante")
-                    st.caption("🔐 Solo visible para Director, Administrador y Promotor")
-                    
-                    # Cargar notas actuales
-                    notas_actuales = []
-                    gs = _gs()
-                    if gs:
-                        try:
-                            ws = gs._get_hoja('config')
-                            if ws:
-                                data = ws.get_all_records()
-                                for d in data:
-                                    clave = str(d.get('clave', ''))
-                                    if clave.startswith(f'nota_{dni_ri}'):
-                                        try:
-                                            nota_data = json.loads(d.get('valor', '{}'))
-                                            nota_data['_clave'] = clave  # Guardar clave para edición
-                                            notas_actuales.append(nota_data)
-                                        except Exception:
-                                            pass
-                        except Exception:
-                            pass
-                    
-                    # También de resultados de examen
-                    all_res = BaseDatos.cargar_todos_resultados()
-                    for r in all_res:
-                        if str(r.get('dni', '')) == str(dni_ri):
-                            for idx, area in enumerate(r.get('areas', [])):
-                                notas_actuales.append({
-                                    'area': area['nombre'],
-                                    'nota': area['nota'],
-                                    'bimestre': r.get('titulo', 'Evaluación'),
-                                    'fecha': r.get('fecha', ''),
-                                    'tipo': 'examen',
-                                    '_idx_resultado': len(notas_actuales)
-                                })
-                    
-                    if notas_actuales:
-                        st.markdown(f"**Notas registradas de {nombre_ri}:**")
+                    with st.expander("✏️ Editar Notas del Estudiante", expanded=False):
+                        st.caption("🔐 Solo Director, Administrador y Promotor")
                         
-                        # Mostrar notas en tabla editable
-                        for idx, nota in enumerate(notas_actuales):
-                            with st.expander(f"📝 {nota.get('area', 'Sin área')} — {nota.get('bimestre', 'Sin bimestre')} — Nota: {nota.get('nota', 0)}/20"):
-                                col1, col2, col3 = st.columns([2, 1, 1])
-                                
+                        notas_edit = []
+                        if gs:
+                            try:
+                                ws = gs._get_hoja('config')
+                                if ws:
+                                    data = ws.get_all_records()
+                                    for d in data:
+                                        clave = str(d.get('clave', ''))
+                                        if clave.startswith(f'nota_{dni_ri}'):
+                                            try:
+                                                nota_data = json.loads(d.get('valor', '{}'))
+                                                nota_data['_clave'] = clave
+                                                notas_edit.append(nota_data)
+                                            except Exception:
+                                                pass
+                            except Exception:
+                                pass
+                        
+                        if notas_edit:
+                            for idx, nota in enumerate(notas_edit):
+                                col1, col2, col3 = st.columns([3, 1, 1])
                                 with col1:
-                                    st.markdown(f"**Área:** {nota.get('area', 'N/A')}")
-                                    st.markdown(f"**Bimestre:** {nota.get('bimestre', 'N/A')}")
-                                    st.markdown(f"**Fecha:** {nota.get('fecha', 'N/A')}")
-                                    if nota.get('tipo') == 'examen':
-                                        st.info("📋 Nota de examen")
-                                
+                                    st.text(f"{nota.get('area', 'N/A')} - {nota.get('bimestre', 'N/A')}")
                                 with col2:
-                                    nueva_nota = st.number_input(
-                                        "Nueva nota:",
-                                        min_value=0.0,
-                                        max_value=20.0,
-                                        value=float(nota.get('nota', 0)),
-                                        step=0.5,
-                                        key=f"nota_edit_{idx}_{dni_ri}"
-                                    )
-                                    st.caption(f"Literal: **{nota_a_letra(nueva_nota)}**")
-                                
+                                    nueva = st.number_input("Nota:", 0.0, 20.0, 
+                                                          float(nota.get('nota', 0)), 0.5,
+                                                          key=f"ne_{idx}_{dni_ri}")
                                 with col3:
-                                    if st.button("💾 Guardar", key=f"btn_save_{idx}_{dni_ri}", type="primary"):
-                                        # Actualizar nota
+                                    if st.button("💾", key=f"sv_{idx}_{dni_ri}"):
                                         if gs and '_clave' in nota:
                                             try:
-                                                nota['nota'] = nueva_nota
-                                                nota['literal'] = nota_a_letra(nueva_nota)
-                                                nota['fecha_edicion'] = fecha_peru_str()
-                                                nota['editado_por'] = st.session_state.get('usuario_actual', 'admin')
-                                                
-                                                # Guardar en Google Sheets
+                                                nota['nota'] = nueva
+                                                nota['literal'] = nota_a_letra(nueva)
                                                 ws = gs._get_hoja('config')
                                                 if ws:
-                                                    # Buscar y actualizar la fila
                                                     all_data = ws.get_all_records()
                                                     for row_idx, row in enumerate(all_data, start=2):
                                                         if str(row.get('clave', '')) == nota['_clave']:
-                                                            # Actualizar valor
                                                             nota_copy = nota.copy()
                                                             nota_copy.pop('_clave', None)
-                                                            ws.update_cell(row_idx, 2, json.dumps(nota_copy, ensure_ascii=False))
+                                                            ws.update_cell(row_idx, 2, 
+                                                                         json.dumps(nota_copy, ensure_ascii=False))
                                                             break
-                                                
-                                                st.success(f"✅ Nota actualizada: {nueva_nota}/20 ({nota_a_letra(nueva_nota)})")
-                                                st.balloons()
+                                                st.success(f"✅ Actualizado: {nueva}/20")
                                                 time.sleep(1)
                                                 st.rerun()
                                             except Exception as e:
-                                                st.error(f"❌ Error al guardar: {str(e)}")
-                                        else:
-                                            st.warning("⚠️ Esta nota no se puede editar (es de examen)")
-                                    
-                                    if st.button("🗑️ Borrar", key=f"btn_del_{idx}_{dni_ri}"):
-                                        if gs and '_clave' in nota:
-                                            if st.checkbox(f"¿Confirmar borrado?", key=f"conf_del_{idx}_{dni_ri}"):
-                                                try:
-                                                    # Borrar de Google Sheets
-                                                    ws = gs._get_hoja('config')
-                                                    if ws:
-                                                        all_data = ws.get_all_records()
-                                                        for row_idx, row in enumerate(all_data, start=2):
-                                                            if str(row.get('clave', '')) == nota['_clave']:
-                                                                ws.delete_rows(row_idx)
-                                                                break
-                                                    
-                                                    st.success("✅ Nota eliminada")
-                                                    time.sleep(1)
-                                                    st.rerun()
-                                                except Exception as e:
-                                                    st.error(f"❌ Error al borrar: {str(e)}")
-                                        else:
-                                            st.warning("⚠️ Esta nota no se puede borrar")
-                    else:
-                        st.info("📝 No hay notas registradas para este estudiante")
-                    
+                                                st.error(f"Error: {str(e)[:50]}")
+                        else:
+                            st.info("Sin notas para editar")
                     st.markdown("---")
-                # ====== FIN NUEVA SECCIÓN ======
         else:
             dni_ri = None
             nombre_ri = None
