@@ -2938,11 +2938,14 @@ def pantalla_login():
             if usuario_lower in usuarios:
                 datos_u = usuarios[usuario_lower]
                 pwd_guardado = str(datos_u.get('password', '')).strip()
-                # Limpiar .0 si GS lo convirtió
+                pwd_ingresado = str(contrasena).strip()
+                
+                # Limpiar .0 si GS lo convirtió (ej: "12345678.0" -> "12345678")
                 if pwd_guardado.endswith('.0'):
                     pwd_guardado = pwd_guardado[:-2]
                 
-                if str(contrasena).strip() == pwd_guardado:
+                # Comparar passwords (ambos como strings)
+                if pwd_ingresado == pwd_guardado:
                     rol = datos_u.get('rol', 'docente')
                     # Directivos/Promotor/Coordinador → acceso como directivo
                     if rol in ['directivo', 'promotor', 'coordinador']:
@@ -2954,9 +2957,9 @@ def pantalla_login():
                     st.toast(f"✅ Bienvenido, {datos_u.get('label', usuario_lower)}")
                     st.rerun()
                 else:
-                    st.error("⛔ Contraseña incorrecta")
+                    st.error(f"⛔ Contraseña incorrecta. Verifique mayúsculas/minúsculas y espacios.")
             else:
-                st.error("⛔ Usuario no encontrado")
+                st.error("⛔ Usuario no encontrado. Verifique el nombre de usuario.")
         
         st.markdown("""
         <div class='login-footer'>
@@ -3217,12 +3220,36 @@ def _gestion_usuarios_admin():
     """Admin puede editar/eliminar usuarios. Crear cuentas = Registrar Docente en Matrícula."""
     usuarios = cargar_usuarios()
     st.caption(f"**{len(usuarios)} cuentas de acceso:**")
+    
+    # NUEVO: Verificar inconsistencias con base de datos de docentes
+    df_doc = BaseDatos.cargar_docentes()
+    usuarios_sin_registro = []
+    
     for usr, datos in usuarios.items():
         rol_emoji = {"admin": "⚙️", "directivo": "📋", "auxiliar": "👤", "docente": "👨‍🏫"}.get(datos.get('rol', ''), '•')
         grado_txt = ""
         if datos.get('docente_info') and datos['docente_info'].get('grado'):
             grado_txt = f" — {datos['docente_info']['grado']}"
-        st.caption(f"{rol_emoji} **{usr}** → {datos.get('label', datos['rol'])}{grado_txt}")
+        
+        # Verificar si el docente está en la base de datos
+        warning = ""
+        if datos.get('rol') == 'docente':
+            nombre_usuario = datos.get('label', datos.get('nombre', ''))
+            # Buscar en la base de datos de docentes
+            if not df_doc.empty and 'Nombre' in df_doc.columns:
+                existe = df_doc[df_doc['Nombre'].str.upper() == nombre_usuario.upper()]
+                if existe.empty:
+                    warning = " ⚠️ (no está en registro de docentes)"
+                    usuarios_sin_registro.append((usr, nombre_usuario))
+        
+        st.caption(f"{rol_emoji} **{usr}** → {datos.get('label', datos['rol'])}{grado_txt}{warning}")
+    
+    if usuarios_sin_registro:
+        st.warning(f"""
+        ⚠️ **ATENCIÓN:** Hay {len(usuarios_sin_registro)} usuario(s) docente(s) que tienen cuenta de acceso 
+        pero NO están registrados en la base de datos de docentes. Edite cada uno y guarde 
+        para sincronizarlos automáticamente, o regístrelos desde **Matrícula > Registrar Docente**.
+        """)
 
     st.info("💡 Para crear nuevas cuentas: vaya a **Matrícula > Registrar Docente**")
 
@@ -3268,8 +3295,9 @@ def _gestion_usuarios_admin():
         c1, c2 = st.columns(2)
         with c1:
             if st.button("💾 GUARDAR", type="primary", key="btn_edit_usr"):
+                # Actualizar usuario
                 usuarios[edit_usr]['label'] = ne_label
-                usuarios[edit_usr]['password'] = ne_pass
+                usuarios[edit_usr]['password'] = str(ne_pass).strip()  # Siempre como string
                 usuarios[edit_usr]['rol'] = ne_rol
                 if ne_rol == "docente":
                     di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel, "seccion": ne_sec}
@@ -3277,7 +3305,38 @@ def _gestion_usuarios_admin():
                 else:
                     usuarios[edit_usr]['docente_info'] = None
                 guardar_usuarios(usuarios)
-                st.success(f"✅ {edit_usr} actualizado")
+                
+                # NUEVO: También actualizar/crear en la base de datos de docentes si es docente
+                if ne_rol == "docente":
+                    # Buscar si ya existe en la BD de docentes (por DNI si el password es un DNI válido)
+                    df_doc = BaseDatos.cargar_docentes()
+                    dni_buscar = ne_pass if ne_pass.isdigit() and len(ne_pass) == 8 else None
+                    
+                    datos_docente = {
+                        'Nombre': ne_label,
+                        'Cargo': 'Docente',
+                        'Grado_Asignado': ne_grado,
+                        'Nivel': ne_nivel,
+                        'Especialidad': ne_nivel,  # Usar nivel como especialidad por defecto
+                    }
+                    
+                    # Si tenemos DNI válido, agregarlo
+                    if dni_buscar:
+                        datos_docente['DNI'] = dni_buscar
+                        # Si existe, actualizar; si no, crear nuevo
+                        BaseDatos.registrar_docente(datos_docente)
+                    else:
+                        # Sin DNI válido, buscar por nombre para actualizar
+                        if not df_doc.empty and 'Nombre' in df_doc.columns:
+                            existe = df_doc[df_doc['Nombre'].str.upper() == ne_label.upper()]
+                            if not existe.empty:
+                                # Actualizar el existente
+                                dni_existente = existe.iloc[0].get('DNI', '')
+                                if dni_existente:
+                                    datos_docente['DNI'] = dni_existente
+                                    BaseDatos.registrar_docente(datos_docente)
+                
+                st.success(f"✅ {edit_usr} actualizado (usuario y base de datos sincronizados)")
                 st.rerun()
         with c2:
             if st.button("🗑️ Eliminar", key="btn_del_usr"):
@@ -3451,10 +3510,13 @@ def tab_matricula(config):
                         di = None  # Directivos y auxiliares no necesitan grado
                     
                     usuarios[u_key] = {
-                        "password": dn_password,
+                        "password": str(dn_password).strip(),  # CORREGIDO: Siempre como string
                         "rol": rol_auto,
                         "label": dn_n.strip().upper(),
                         "docente_info": di,
+                        "grado": dn_g if rol_auto == "docente" else "",  # Agregar grado al nivel raíz
+                        "nivel": dn_nivel if rol_auto == "docente" else "",  # Agregar nivel al nivel raíz
+                        "nombre": dn_n.strip().upper(),  # Agregar nombre para facilitar sincronización
                     }
                     guardar_usuarios(usuarios)
                     st.success(f"🔐 Cuenta creada: **{u_key}** / contraseña: **{dn_password}** / rol: **{rol_auto}**")
@@ -4967,10 +5029,13 @@ def tab_base_datos():
         if not df.empty:
             c1, c2 = st.columns(2)
             with c1:
-                opts = ['Todos'] + (
-                    sorted(df['Grado'].dropna().unique().tolist())
-                    if 'Grado' in df.columns else [])
-                fg = st.selectbox("🎓 Filtrar por Grado:", opts, key="fbd")
+                # Obtener todos los grados únicos que existen en la base de datos
+                grados_en_bd = []
+                if 'Grado' in df.columns:
+                    grados_en_bd = sorted(df['Grado'].dropna().unique().tolist())
+                # Combinar con todos los grados posibles para no perder ninguno
+                todos_grados_mostrar = ['Todos'] + grados_en_bd
+                fg = st.selectbox("🎓 Filtrar por Grado:", todos_grados_mostrar, key="fbd")
             with c2:
                 bq = st.text_input("🔍 Buscar:", placeholder="Nombre, DNI, etc...", key="bbd")
             d = df.copy()
