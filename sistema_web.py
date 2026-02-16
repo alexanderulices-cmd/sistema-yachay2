@@ -88,51 +88,6 @@ def fecha_peru_str():
 
 
 # ================================================================
-# FUNCIÓN PARA REDUCIR PESO DE PDFs
-# ================================================================
-
-def comprimir_imagen_para_pdf(imagen_path_o_bytes, max_width=600, calidad=65):
-    """Comprime imagen para reducir peso en PDFs (14MB → <2MB)"""
-    try:
-        # Cargar imagen
-        if isinstance(imagen_path_o_bytes, (str, Path)):
-            img = Image.open(imagen_path_o_bytes)
-        else:
-            img = Image.open(io.BytesIO(imagen_path_o_bytes))
-        
-        # Convertir a RGB si es necesario
-        if img.mode in ('RGBA', 'LA', 'P'):
-            # Crear fondo blanco para transparencias
-            background = Image.new('RGB', img.size, (255, 255, 255))
-            if img.mode == 'RGBA' or img.mode == 'LA':
-                background.paste(img, mask=img.split()[-1])
-                img = background
-            else:
-                img = img.convert('RGB')
-        
-        # Redimensionar si es muy grande
-        if img.width > max_width:
-            ratio = max_width / img.width
-            nuevo_alto = int(img.height * ratio)
-            img = img.resize((max_width, nuevo_alto), Image.LANCZOS)
-        
-        # Guardar con compresión
-        output = io.BytesIO()
-        img.save(output, format='JPEG', quality=calidad, optimize=True)
-        output.seek(0)
-        return output
-    except Exception:
-        # Si falla, retornar original
-        if isinstance(imagen_path_o_bytes, bytes):
-            return io.BytesIO(imagen_path_o_bytes)
-        elif isinstance(imagen_path_o_bytes, (str, Path)):
-            with open(imagen_path_o_bytes, 'rb') as f:
-                return io.BytesIO(f.read())
-        else:
-            return imagen_path_o_bytes
-
-
-# ================================================================
 # FERIADOS OFICIALES DE PERÚ
 # ================================================================
 
@@ -398,28 +353,14 @@ st.markdown("""
     0%, 100% { box-shadow: 0 0 5px rgba(26,86,219,0.3); }
     50% { box-shadow: 0 0 20px rgba(26,86,219,0.6); }
 }
-@keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-}
-@keyframes rainbow {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
-}
 
 /* === HEADER PRINCIPAL === */
 .main-header {
     text-align: center; padding: 2rem;
-    background: linear-gradient(270deg, #FF6B6B, #4ECDC4, #45B7D1, #F7B731, #5F27CD);
-    background-size: 400% 400%;
+    background: linear-gradient(135deg, #001e7c 0%, #0052cc 30%, #0066ff 70%, #3b82f6 100%);
     color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 25px rgba(0,30,124,0.35);
-    animation: gradient 8s ease infinite, fadeInUp 0.6s ease-out;
+    animation: fadeInUp 0.6s ease-out;
 }
 
 /* === TABS ANIMADOS === */
@@ -435,13 +376,11 @@ st.markdown("""
 .stTabs [data-baseweb="tab"]:hover {
     background: rgba(26,86,219,0.1);
     transform: translateY(-2px) scale(1.02);
-    animation: float 2s ease-in-out infinite;
 }
 .stTabs [aria-selected="true"] {
     background: linear-gradient(135deg, #1a56db, #0052cc) !important;
     color: white !important;
     box-shadow: 0 4px 12px rgba(26,86,219,0.3);
-    animation: glow 2s ease-in-out infinite;
 }
 
 /* === BOTONES CON EFECTO === */
@@ -451,12 +390,11 @@ st.markdown("""
     font-weight: 600 !important;
 }
 .stButton > button:hover {
-    transform: translateY(-2px) scale(1.03) !important;
-    box-shadow: 0 0 20px rgba(26,86,219,0.6), 0 0 40px rgba(26,86,219,0.3) !important;
-    animation: float 1.5s ease-in-out infinite;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
 }
 .stButton > button:active {
-    transform: translateY(0) scale(0.98) !important;
+    transform: translateY(0) !important;
 }
 
 /* === CARDS DE ESTADÍSTICAS === */
@@ -1896,11 +1834,11 @@ class GeneradorCarnet:
                             fill=self.DORADO)
 
     def _textos(self):
-        fh = RecursoManager.obtener_fuente("", 48, True)  # Aumentado de 36 a 48
-        fm = RecursoManager.obtener_fuente("", 22, True)  # Aumentado de 19 a 22
-        fc = RecursoManager.obtener_fuente("", 18, True)
-        fp = RecursoManager.obtener_fuente("", 14, True)
-        self.draw.text((self.WIDTH // 2, 65), "I.E.P. YACHAY",  # Cambiado texto
+        fh = RecursoManager.obtener_fuente("", 36, True)
+        fm = RecursoManager.obtener_fuente("", 19, True)
+        fc = RecursoManager.obtener_fuente("", 17, True)
+        fp = RecursoManager.obtener_fuente("", 13, True)
+        self.draw.text((self.WIDTH // 2, 65), "I.E. ALTERNATIVO YACHAY",
                        font=fh, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
                        font=fm, fill=self.DORADO, anchor="mm")
@@ -3075,29 +3013,6 @@ def configurar_sidebar():
 def _gestion_usuarios_admin():
     """Admin puede editar/eliminar usuarios. Crear cuentas = Registrar Docente en Matrícula."""
     usuarios = cargar_usuarios()
-    
-    # NUEVO: Detectar y borrar cuentas obsoletas
-    cuentas_viejas = [u for u in usuarios.keys() 
-                      if (u.startswith('profe') or u.startswith('prof.')) 
-                      and u not in ['profesional', 'profesor']]
-    
-    if cuentas_viejas:
-        st.warning(f"⚠️ Se detectaron {len(cuentas_viejas)} cuentas obsoletas")
-        with st.expander(f"👀 Ver cuentas obsoletas ({len(cuentas_viejas)})"):
-            for cv in cuentas_viejas:
-                st.caption(f"🗑️ {cv} → {usuarios[cv].get('label', 'Sin nombre')}")
-        
-        if st.button("🗑️ ELIMINAR TODAS LAS CUENTAS OBSOLETAS", 
-                   type="secondary", key="btn_del_obsoletas"):
-            for cv in cuentas_viejas:
-                del usuarios[cv]
-            guardar_usuarios(usuarios)
-            st.success(f"✅ {len(cuentas_viejas)} cuentas obsoletas eliminadas")
-            st.balloons()
-            time.sleep(1)
-            st.rerun()
-        st.markdown("---")
-    
     st.caption(f"**{len(usuarios)} cuentas de acceso:**")
     for usr, datos in usuarios.items():
         rol_emoji = {"admin": "⚙️", "directivo": "📋", "auxiliar": "👤", "docente": "👨‍🏫"}.get(datos.get('rol', ''), '•')
@@ -3850,25 +3765,8 @@ def _registrar_asistencia_rapida(dni):
     if persona:
         hora = hora_peru_str()
         tipo = st.session_state.tipo_asistencia.lower()
-        
-        # CORREGIDO: Asegurar nombre correcto para docentes
+        nombre = persona.get('Nombre', '')
         es_d = persona.get('_tipo', '') == 'docente'
-        if es_d:
-            # Para docentes, usar el nombre del registro de docentes
-            df_doc = BaseDatos.cargar_docentes()
-            if not df_doc.empty and 'DNI' in df_doc.columns:
-                df_doc['DNI'] = df_doc['DNI'].astype(str).str.strip()
-                doc_encontrado = df_doc[df_doc['DNI'] == str(dni).strip()]
-                if not doc_encontrado.empty:
-                    nombre = doc_encontrado.iloc[0]['Nombre']
-                else:
-                    nombre = persona.get('Nombre', '')
-            else:
-                nombre = persona.get('Nombre', '')
-        else:
-            # Para alumnos, usar nombre normal
-            nombre = persona.get('Nombre', '')
-        
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         emoji_tipo = "🟢" if tipo == "entrada" else "🟡"
@@ -4725,34 +4623,6 @@ def tab_calificacion_yachay(config):
     # ===== TAB: HISTORIAL =====
     with tabs_cal[4]:
         st.subheader("📊 Historial de Evaluaciones")
-        
-        # NUEVO: Mostrar evaluaciones guardadas
-        st.markdown("### 💾 Evaluaciones Guardadas")
-        try:
-            historial_file = 'historial_evaluaciones.json'
-            if Path(historial_file).exists():
-                with open(historial_file, 'r', encoding='utf-8') as f:
-                    hist_data = json.load(f)
-                
-                if hist_data:
-                    for clave, eval_data in sorted(hist_data.items(), reverse=True):
-                        with st.expander(f"📝 {eval_data['grado']} - {eval_data['periodo']} ({eval_data['fecha']})"):
-                            st.write(f"**Hora:** {eval_data.get('hora', 'N/A')}")
-                            st.write(f"**Estudiantes evaluados:** {len(eval_data.get('ranking', []))}")
-                            st.write(f"**Áreas:** {', '.join(eval_data.get('areas', []))}")
-                            
-                            if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
-                                df_hist = pd.DataFrame(eval_data.get('ranking', []))
-                                st.dataframe(df_hist, use_container_width=True)
-                else:
-                    st.info("No hay evaluaciones guardadas en historial")
-            else:
-                st.info("No hay historial disponible aún")
-        except Exception as e:
-            st.error(f"Error al cargar historial: {str(e)}")
-        
-        st.markdown("---")
-        st.markdown("### 👤 Historial por Estudiante")
 
         if st.session_state.rol in ["admin", "directivo"]:
             grado_hist = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_hist")
@@ -4945,7 +4815,7 @@ def vista_docente(config):
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📄 Registrar Ficha",
+            "📋 Registro PDF", "📚 Aula Virtual",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -4964,7 +4834,7 @@ def vista_docente(config):
         # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📄 Registrar Ficha",
+            "📋 Registro PDF", "📚 Aula Virtual",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -6239,19 +6109,19 @@ def tab_registrar_notas(config):
                 alumno = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
                 cel = alumno.get('Celular_Apoderado', '') if alumno else ''
                 if cel:
-                    msg = f"*I.E.P. YACHAY - CHINCHERO*\n"
-                    msg += f"*REPORTE DE NOTAS*\n\n"
-                    msg += f"Alumno: {nombre_wa}\n"
-                    msg += f"Grado: {grado_sel}\n"
-                    msg += f"Periodo: {bim_sel}\n"
-                    msg += f"{'=' * 25}\n"
+                    msg = f"🏫 *I.E.P. YACHAY — CHINCHERO*\n"
+                    msg += f"📋 *REPORTE DE NOTAS*\n"
+                    msg += f"👤 Alumno: {nombre_wa}\n"
+                    msg += f"🎓 Grado: {grado_sel}\n"
+                    msg += f"📅 Período: {bim_sel}\n"
+                    msg += f"{'─' * 25}\n"
                     for a in areas_unicas:
                         nota_w = fila.get(a, 0)
                         lit_w = nota_a_letra(nota_w) if nota_w > 0 else '-'
-                        msg += f"{a}: *{nota_w}* ({lit_w})\n"
-                    msg += f"{'=' * 25}\n"
-                    msg += f"*PROMEDIO: {fila['Promedio']}*\n"
-                    msg += f"*PUESTO: {fila['Medalla']}*"
+                        msg += f"📚 {a}: *{nota_w}* ({lit_w})\n"
+                    msg += f"{'─' * 25}\n"
+                    msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n"
+                    msg += f"🏅 *PUESTO: {fila['Medalla']}*"
                     cel_clean = cel.replace(' ', '').replace('+', '')
                     if not cel_clean.startswith('51'):
                         cel_clean = '51' + cel_clean
@@ -6259,55 +6129,6 @@ def tab_registrar_notas(config):
                     st.markdown(f"📱 **{nombre_wa}** → [{cel}]({url_wa})")
                 else:
                     st.caption(f"⚠️ {nombre_wa} — Sin celular registrado")
-        
-        # NUEVO: Botones para guardar evaluación y limpiar
-        st.markdown("---")
-        st.markdown("### 💾 Gestionar Evaluación")
-        col_g1, col_g2 = st.columns(2)
-        
-        with col_g1:
-            if st.button("💾 GUARDAR EVALUACIÓN EN HISTORIAL", 
-                       type="primary", use_container_width=True, key="btn_guardar_hist"):
-                # Guardar en historial
-                if 'historial_evaluaciones' not in st.session_state:
-                    st.session_state['historial_evaluaciones'] = {}
-                
-                clave_hist = f"{grado_sel}_{bim_sel}_{fecha_peru_str()}"
-                st.session_state['historial_evaluaciones'][clave_hist] = {
-                    'grado': grado_sel,
-                    'periodo': bim_sel,
-                    'fecha': fecha_peru_str(),
-                    'hora': hora_peru_str(),
-                    'ranking': ranking_filas,
-                    'areas': areas_unicas
-                }
-                
-                # Guardar en archivo JSON
-                try:
-                    historial_file = 'historial_evaluaciones.json'
-                    if Path(historial_file).exists():
-                        with open(historial_file, 'r', encoding='utf-8') as f:
-                            hist_data = json.load(f)
-                    else:
-                        hist_data = {}
-                    
-                    hist_data[clave_hist] = st.session_state['historial_evaluaciones'][clave_hist]
-                    
-                    with open(historial_file, 'w', encoding='utf-8') as f:
-                        json.dump(hist_data, f, ensure_ascii=False, indent=2)
-                    
-                    st.success(f"✅ Evaluación guardada: {grado_sel} - {bim_sel}")
-                    st.balloons()
-                except Exception as e:
-                    st.error(f"Error al guardar: {str(e)}")
-        
-        with col_g2:
-            st.info("💡 Guarda primero antes de limpiar")
-            if st.checkbox("Confirmar limpieza de notas", key="conf_limpiar_notas"):
-                if st.button("🗑️ LIMPIAR NOTAS ACTUALES", 
-                           use_container_width=True, key="btn_limpiar_notas"):
-                    st.warning("⚠️ Esta función eliminará las notas del período actual")
-                    st.info("📝 Implementar limpieza en Google Sheets si es necesario")
     else:
         st.info("📭 Registre notas primero para ver el ranking")
 
@@ -7310,199 +7131,26 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
 # ================================================================
 
 def tab_material_docente(config):
-    """REGISTRAR FICHA - Versión simplificada con solo 2 tabs"""
-    st.subheader("📄 Registrar Ficha")
-    st.info("💡 Suba sus fichas de trabajo en formato Word. Se les agregará formato profesional automáticamente.")
-    
+    st.subheader("📚 Aula Virtual — Material de Trabajo")
+    rol = st.session_state.get('rol', 'docente')
     usuario = st.session_state.get('usuario_actual', '')
-    
-    # Crear directorio de fichas si no existe
-    fichas_dir = Path("fichas")
-    fichas_dir.mkdir(exist_ok=True)
-    
-    tab1, tab2 = st.tabs(["📤 Cargar Ficha", "📥 Mis Fichas"])
-    
-    # ===== TAB 1: CARGAR FICHA =====
-    with tab1:
-        st.markdown("### 📤 Cargar Ficha en Word")
-        st.caption("Suba su ficha en formato .docx. Se procesará con:")
-        st.caption("✅ Encabezado con logo de la institución")
-        st.caption("✅ Numeración de páginas")
-        st.caption("✅ Formato en 2 columnas")
-        st.caption("✅ Texto justificado")
-        st.caption("✅ Respeta negritas, numeración y guiones del original")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            titulo_ficha = st.text_input("📝 Título de la ficha:", 
-                                        placeholder="Ej: Ficha de Matemática - Semana 5")
-        with col2:
-            grado_ficha = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="grado_ficha")
-        
-        archivo_ficha = st.file_uploader("📎 Subir ficha (.docx):", 
-                                        type=['docx'], 
-                                        key="upload_ficha_word")
-        
-        if archivo_ficha and titulo_ficha and grado_ficha:
-            if st.button("💾 PROCESAR Y GUARDAR FICHA", 
-                       type="primary", 
-                       use_container_width=True,
-                       key="btn_procesar_ficha"):
-                try:
-                    if not HAS_DOCX:
-                        st.error("⚠️ Módulo python-docx no disponible. Instale con: pip install python-docx")
-                        st.stop()
-                    
-                    with st.spinner("📄 Procesando documento..."):
-                        # Leer documento original
-                        doc_original = DocxDocument(io.BytesIO(archivo_ficha.getvalue()))
-                        
-                        # Crear nuevo documento con formato profesional
-                        doc_nuevo = DocxDocument()
-                        
-                        # Configurar sección para 2 columnas
-                        from docx.shared import Inches, Pt
-                        from docx.enum.section import WD_SECTION
-                        
-                        section = doc_nuevo.sections[0]
-                        section.page_height = Inches(11)
-                        section.page_width = Inches(8.5)
-                        section.left_margin = Inches(0.75)
-                        section.right_margin = Inches(0.75)
-                        section.top_margin = Inches(1)
-                        section.bottom_margin = Inches(0.75)
-                        
-                        # Encabezado con logo
-                        header = section.header
-                        header_para = header.paragraphs[0] if header.paragraphs else header.add_paragraph()
-                        header_para.text = "I.E.P. YACHAY - CHINCHERO"
-                        header_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                        header_run = header_para.runs[0]
-                        header_run.font.size = Pt(10)
-                        header_run.font.bold = True
-                        
-                        # Título principal
-                        titulo_para = doc_nuevo.add_paragraph()
-                        titulo_run = titulo_para.add_run(titulo_ficha)
-                        titulo_run.bold = True
-                        titulo_run.font.size = Pt(14)
-                        titulo_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                        
-                        # Subtítulo con grado
-                        sub_para = doc_nuevo.add_paragraph()
-                        sub_run = sub_para.add_run(f"Grado: {grado_ficha}")
-                        sub_run.font.size = Pt(11)
-                        sub_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                        
-                        doc_nuevo.add_paragraph()  # Espacio
-                        
-                        # Copiar contenido del original preservando formato
-                        for para in doc_original.paragraphs:
-                            if not para.text.strip():
-                                doc_nuevo.add_paragraph()
-                                continue
-                            
-                            nuevo_para = doc_nuevo.add_paragraph()
-                            
-                            # Copiar cada run preservando formato
-                            for run in para.runs:
-                                nuevo_run = nuevo_para.add_run(run.text)
-                                nuevo_run.bold = run.bold
-                                nuevo_run.italic = run.italic
-                                nuevo_run.underline = run.underline
-                                if run.font.size:
-                                    nuevo_run.font.size = run.font.size
-                            
-                            # Texto justificado
-                            nuevo_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                            
-                            # Preservar estilo de lista si existe
-                            if para.style.name.startswith('List'):
-                                nuevo_para.style = para.style
-                        
-                        # Guardar archivo procesado
-                        output = io.BytesIO()
-                        doc_nuevo.save(output)
-                        output.seek(0)
-                        
-                        # Guardar en carpeta de fichas
-                        fecha_actual = fecha_peru_str()
-                        nombre_archivo = f"ficha_{usuario}_{grado_ficha}_{fecha_actual}_{titulo_ficha[:30]}.docx"
-                        nombre_archivo = nombre_archivo.replace(' ', '_').replace('/', '_').replace(':', '_')
-                        
-                        ruta_archivo = fichas_dir / nombre_archivo
-                        with open(ruta_archivo, 'wb') as f:
-                            f.write(output.getvalue())
-                        
-                        st.success(f"✅ Ficha procesada y guardada exitosamente")
-                        st.balloons()
-                        
-                        # Botón de descarga
-                        output.seek(0)
-                        st.download_button(
-                            "📥 Descargar Ficha Formateada",
-                            output.getvalue(),
-                            nombre_archivo,
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                            use_container_width=True,
-                            key="dl_ficha_procesada"
-                        )
-                        
-                except Exception as e:
-                    st.error(f"❌ Error al procesar ficha: {str(e)}")
-                    st.caption("Verifique que el archivo sea un .docx válido")
-    
-    # ===== TAB 2: MIS FICHAS =====
-    with tab2:
-        st.markdown("### 📥 Mis Fichas Guardadas")
-        
-        # Buscar fichas del usuario
-        patron = f"ficha_{usuario}_*.docx"
-        fichas_usuario = list(fichas_dir.glob(patron))
-        
-        if fichas_usuario:
-            st.success(f"📚 {len(fichas_usuario)} ficha(s) guardada(s)")
-            
-            # Ordenar por fecha (más recientes primero)
-            fichas_usuario.sort(key=lambda x: x.stat().st_mtime, reverse=True)
-            
-            for ficha in fichas_usuario:
-                # Extraer información del nombre del archivo
-                partes = ficha.stem.split('_')
-                grado = partes[2] if len(partes) > 2 else 'N/A'
-                fecha = partes[3] if len(partes) > 3 else 'N/A'
-                titulo = '_'.join(partes[4:]) if len(partes) > 4 else ficha.stem
-                titulo = titulo.replace('_', ' ')[:50]
-                
-                # Mostrar cada ficha
-                with st.expander(f"📄 {titulo} - {grado} ({fecha})"):
-                    col_a, col_b = st.columns([3, 1])
-                    
-                    with col_a:
-                        st.caption(f"**Archivo:** {ficha.name}")
-                        st.caption(f"**Tamaño:** {ficha.stat().st_size / 1024:.1f} KB")
-                    
-                    with col_b:
-                        with open(ficha, 'rb') as f:
-                            st.download_button(
-                                "⬇️ Descargar",
-                                f.read(),
-                                ficha.name,
-                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                key=f"dl_{ficha.name}",
-                                use_container_width=True
-                            )
-                    
-                    # Botón para eliminar (solo docente o admin)
-                    if st.session_state.rol in ['admin', 'docente']:
-                        if st.button(f"🗑️ Eliminar", key=f"del_{ficha.name}"):
-                            ficha.unlink()
-                            st.success("✅ Ficha eliminada")
-                            time.sleep(0.5)
-                            st.rerun()
+    info = st.session_state.get('docente_info', {}) or {}
+    grado_doc = str(info.get('grado', ''))
+    nombre_doc = str(info.get('label', usuario.replace('.', ' ').title()))
+    semana_actual = _semana_escolar_actual()
+    lunes, viernes = _rango_semana(semana_actual)
+    st.info(f"📅 **Semana actual: {semana_actual}** ({lunes.strftime('%d/%m')} al {viernes.strftime('%d/%m/%Y')})")
+
+    if rol in ['admin', 'directivo']:
+        _vista_directivo_material(config, semana_actual)
+    else:
+        # Sec/Preu: seleccionar grado
+        grados_disp = _grados_del_docente()
+        if len(grados_disp) > 1:
+            grado_sel = st.selectbox("🎓 Seleccionar Grado:", grados_disp, key="mat_grado_sel")
         else:
-            st.info("📭 No has guardado fichas aún")
-            st.caption("💡 Ve a la pestaña 'Cargar Ficha' para subir tu primera ficha")
+            grado_sel = grados_disp[0] if grados_disp else grado_doc
+        _vista_docente_material(config, usuario, nombre_doc, grado_sel, semana_actual)
 
 
 # ---- Funciones para leer Word y convertir a PDF oficial ----
@@ -7919,393 +7567,24 @@ def _vista_directivo_material(config, semana_actual):
 # ================================================================
 
 def tab_examenes_semanales(config):
-    """GENERAR EXÁMENES - Versión simplificada con solo 2 tabs"""
-    st.subheader("📝 Generar Exámenes")
-    st.info("💡 Cree exámenes pregunta por pregunta. Se generarán en PDF con formato profesional de 2 columnas.")
-    
+    st.subheader("📝 Banco de Exámenes")
+    rol = st.session_state.get('rol', 'docente')
     usuario = st.session_state.get('usuario_actual', '')
     info = st.session_state.get('docente_info', {}) or {}
     grado_doc = str(info.get('grado', ''))
-    
-    # Crear directorio de exámenes si no existe
-    examenes_dir = Path("examenes")
-    examenes_dir.mkdir(exist_ok=True)
-    
-    tab1, tab2 = st.tabs(["✏️ Crear Examen", "📥 Mis Exámenes"])
-    
-    # ===== TAB 1: CREAR EXAMEN =====
-    with tab1:
-        st.markdown("### ✏️ Crear Examen Pregunta por Pregunta")
-        
-        # Configuración del examen
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            titulo_examen = st.text_input("📝 Título del examen:", 
-                                         placeholder="Ej: Evaluación de Matemática - Semana 5",
-                                         key="titulo_exam")
-        with col2:
-            grado_examen = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="grado_exam")
-        with col3:
-            num_preguntas = st.number_input("🔢 Número de preguntas:", 
-                                           min_value=1, max_value=50, value=10,
-                                           key="num_preg")
-        
-        area_examen = st.text_input("📚 Área/Curso:", 
-                                    placeholder="Ej: Matemática, Comunicación, etc.",
-                                    key="area_exam")
-        
-        st.markdown("---")
-        st.markdown("### 📝 Preguntas del Examen")
-        st.caption("Las preguntas aparecerán en **negrita** en el PDF. Las alternativas con burbujas **○A ○B ○C ○D**")
-        
-        # Formulario para todas las preguntas
-        with st.form("form_examen_completo"):
-            preguntas = []
-            
-            for i in range(1, int(num_preguntas) + 1):
-                st.markdown(f"#### 📌 Pregunta {i}")
-                
-                col_texto, col_img = st.columns([3, 1])
-                with col_texto:
-                    texto_pregunta = st.text_area(
-                        f"Enunciado de la pregunta {i}:",
-                        height=100,
-                        key=f"texto_p_{i}",
-                        placeholder="Escriba el enunciado de la pregunta..."
-                    )
-                
-                with col_img:
-                    st.caption("Imagen (opcional)")
-                    imagen_pregunta = st.file_uploader(
-                        f"🖼️",
-                        type=['png', 'jpg', 'jpeg'],
-                        key=f"img_p_{i}",
-                        label_visibility="collapsed"
-                    )
-                
-                # Alternativas en 2 columnas
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    alt_a = st.text_input(f"A)", key=f"alt_a_{i}", placeholder="Primera alternativa")
-                    alt_c = st.text_input(f"C)", key=f"alt_c_{i}", placeholder="Tercera alternativa")
-                with col_b:
-                    alt_b = st.text_input(f"B)", key=f"alt_b_{i}", placeholder="Segunda alternativa")
-                    alt_d = st.text_input(f"D)", key=f"alt_d_{i}", placeholder="Cuarta alternativa")
-                
-                # Respuesta correcta
-                correcta = st.radio(
-                    f"✅ Respuesta correcta de la pregunta {i}:",
-                    ['A', 'B', 'C', 'D'],
-                    horizontal=True,
-                    key=f"correcta_{i}"
-                )
-                
-                # Guardar datos de la pregunta
-                preguntas.append({
-                    'numero': i,
-                    'texto': texto_pregunta,
-                    'imagen': imagen_pregunta,
-                    'alternativas': {
-                        'A': alt_a,
-                        'B': alt_b,
-                        'C': alt_c,
-                        'D': alt_d
-                    },
-                    'correcta': correcta
-                })
-                
-                if i < num_preguntas:
-                    st.markdown("---")
-            
-            # Botón para generar PDF
-            submitted = st.form_submit_button(
-                "📥 GENERAR PDF DEL EXAMEN",
-                type="primary",
-                use_container_width=True
-            )
-            
-            if submitted:
-                if not titulo_examen or not area_examen or not grado_examen:
-                    st.error("⚠️ Por favor complete: Título, Grado y Área del examen")
-                else:
-                    # Verificar que todas las preguntas tengan texto
-                    preguntas_vacias = [p['numero'] for p in preguntas if not p['texto'].strip()]
-                    if preguntas_vacias:
-                        st.warning(f"⚠️ Las siguientes preguntas están vacías: {', '.join(map(str, preguntas_vacias))}")
-                    else:
-                        try:
-                            with st.spinner("📄 Generando PDF del examen..."):
-                                # Generar PDF del examen
-                                pdf_bytes = _generar_pdf_examen_2columnas(
-                                    titulo_examen,
-                                    area_examen,
-                                    grado_examen,
-                                    preguntas,
-                                    config
-                                )
-                                
-                                # Guardar en carpeta de exámenes
-                                fecha_actual = fecha_peru_str()
-                                nombre_archivo = f"examen_{usuario}_{grado_examen}_{fecha_actual}_{titulo_examen[:30]}.pdf"
-                                nombre_archivo = nombre_archivo.replace(' ', '_').replace('/', '_').replace(':', '_')
-                                
-                                ruta_archivo = examenes_dir / nombre_archivo
-                                with open(ruta_archivo, 'wb') as f:
-                                    f.write(pdf_bytes)
-                                
-                                st.success("✅ ¡Examen generado exitosamente!")
-                                st.balloons()
-                                
-                                # Botón de descarga
-                                st.download_button(
-                                    "📥 DESCARGAR EXAMEN PDF",
-                                    pdf_bytes,
-                                    nombre_archivo,
-                                    "application/pdf",
-                                    use_container_width=True,
-                                    key="dl_examen_generado"
-                                )
-                                
-                                # Mostrar resumen
-                                with st.expander("📊 Resumen del Examen"):
-                                    st.write(f"**Título:** {titulo_examen}")
-                                    st.write(f"**Grado:** {grado_examen}")
-                                    st.write(f"**Área:** {area_examen}")
-                                    st.write(f"**Preguntas:** {len(preguntas)}")
-                                    st.write(f"**Archivo:** {nombre_archivo}")
-                                
-                        except Exception as e:
-                            st.error(f"❌ Error al generar PDF: {str(e)}")
-                            st.caption("Verifique que todos los datos estén completos")
-    
-    # ===== TAB 2: MIS EXÁMENES =====
-    with tab2:
-        st.markdown("### 📥 Mis Exámenes Guardados")
-        
-        # Buscar exámenes del usuario
-        patron = f"examen_{usuario}_*.pdf"
-        examenes_usuario = list(examenes_dir.glob(patron))
-        
-        if examenes_usuario:
-            st.success(f"📚 {len(examenes_usuario)} examen(es) guardado(s)")
-            
-            # Ordenar por fecha (más recientes primero)
-            examenes_usuario.sort(key=lambda x: x.stat().st_mtime, reverse=True)
-            
-            for examen in examenes_usuario:
-                # Extraer información del nombre del archivo
-                partes = examen.stem.split('_')
-                grado = partes[2] if len(partes) > 2 else 'N/A'
-                fecha = partes[3] if len(partes) > 3 else 'N/A'
-                titulo = '_'.join(partes[4:]) if len(partes) > 4 else examen.stem
-                titulo = titulo.replace('_', ' ')[:50]
-                
-                # Mostrar cada examen
-                with st.expander(f"📝 {titulo} - {grado} ({fecha})"):
-                    col_a, col_b = st.columns([3, 1])
-                    
-                    with col_a:
-                        st.caption(f"**Archivo:** {examen.name}")
-                        st.caption(f"**Tamaño:** {examen.stat().st_size / 1024:.1f} KB")
-                    
-                    with col_b:
-                        with open(examen, 'rb') as f:
-                            st.download_button(
-                                "⬇️ Descargar",
-                                f.read(),
-                                examen.name,
-                                "application/pdf",
-                                key=f"dl_exam_{examen.name}",
-                                use_container_width=True
-                            )
-                    
-                    # Botón para eliminar
-                    if st.session_state.rol in ['admin', 'docente']:
-                        if st.button(f"🗑️ Eliminar", key=f"del_exam_{examen.name}"):
-                            examen.unlink()
-                            st.success("✅ Examen eliminado")
-                            time.sleep(0.5)
-                            st.rerun()
+    nombre_doc = str(info.get('label', usuario.replace('.', ' ').title()))
+    semana_actual = _semana_escolar_actual()
+
+    if rol in ['admin', 'directivo']:
+        _vista_directivo_examenes(config, semana_actual)
+    else:
+        # Sec/Preu: seleccionar grado
+        grados_disp = _grados_del_docente()
+        if len(grados_disp) > 1:
+            grado_sel = st.selectbox("🎓 Seleccionar Grado:", grados_disp, key="ex_grado_sel")
         else:
-            st.info("📭 No has creado exámenes aún")
-            st.caption("💡 Ve a la pestaña 'Crear Examen' para generar tu primer examen")
-
-
-def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
-    """Genera PDF de examen en 2 columnas con formato profesional"""
-    buffer = io.BytesIO()
-    c_pdf = canvas.Canvas(buffer, pagesize=A4)
-    w, h = A4
-    
-    # Comprimir fondo si existe
-    if Path("fondo.png").exists():
-        try:
-            fondo_comp = comprimir_imagen_para_pdf("fondo.png", max_width=400, calidad=50)
-            c_pdf.drawImage(fondo_comp, 0, 0, w, h, preserveAspectRatio=True, mask='auto')
-        except:
-            pass
-    
-    # Encabezado
-    c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.rect(0, h - 15, w, 15, fill=1, stroke=0)
-    
-    # Logo
-    if Path("escudo_upload.png").exists():
-        try:
-            logo_comp = comprimir_imagen_para_pdf("escudo_upload.png", max_width=100, calidad=70)
-            c_pdf.drawImage(logo_comp, 30, h - 80, 45, 45, mask='auto')
-        except:
-            pass
-    
-    # Título del encabezado
-    c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.setFont("Helvetica-Bold", 16)
-    c_pdf.drawCentredString(w / 2, h - 45, "I.E.P. YACHAY - CHINCHERO")
-    
-    c_pdf.setFont("Helvetica-Bold", 14)
-    c_pdf.drawCentredString(w / 2, h - 65, titulo)
-    
-    c_pdf.setFont("Helvetica", 11)
-    c_pdf.drawCentredString(w / 2, h - 82, f"Área: {area} | Grado: {grado} | Fecha: {fecha_peru_str()}")
-    
-    # Línea separadora
-    c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
-    c_pdf.setLineWidth(2)
-    c_pdf.line(40, h - 90, w - 40, h - 90)
-    
-    # Instrucciones
-    c_pdf.setFont("Helvetica-Oblique", 9)
-    c_pdf.setFillColor(colors.black)
-    c_pdf.drawString(40, h - 105, "Instrucciones: Marque la alternativa correcta para cada pregunta.")
-    
-    # Configuración de 2 columnas
-    col_width = (w - 80) / 2  # Ancho de cada columna
-    col_gap = 20  # Espacio entre columnas
-    y_start = h - 125
-    y = y_start
-    x_col1 = 40
-    x_col2 = 40 + col_width + col_gap
-    columna_actual = 1
-    x = x_col1
-    
-    # Margen inferior
-    y_min = 60
-    
-    for pregunta in preguntas:
-        # Verificar si necesitamos nueva página
-        if y < y_min + 100:  # Espacio mínimo para una pregunta
-            c_pdf.showPage()
-            # Repetir encabezado simple en nueva página
-            c_pdf.setFillColor(colors.HexColor("#001e7c"))
-            c_pdf.setFont("Helvetica-Bold", 10)
-            c_pdf.drawCentredString(w / 2, h - 25, f"{titulo} - Pág. {c_pdf.getPageNumber()}")
-            c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
-            c_pdf.line(40, h - 30, w - 40, h - 30)
-            y = h - 45
-            columna_actual = 1
-            x = x_col1
-        
-        # Número de pregunta en negrita
-        c_pdf.setFont("Helvetica-Bold", 11)
-        c_pdf.setFillColor(colors.HexColor("#1e3a8a"))
-        c_pdf.drawString(x, y, f"{pregunta['numero']}.")
-        
-        # Texto de la pregunta en negrita
-        c_pdf.setFont("Helvetica-Bold", 10)
-        c_pdf.setFillColor(colors.black)
-        
-        # Dividir texto en líneas si es muy largo
-        texto = pregunta['texto']
-        max_width = col_width - 25
-        
-        # Usar Paragraph para texto justificado
-        from reportlab.platypus import Paragraph
-        from reportlab.lib.styles import ParagraphStyle
-        
-        style = ParagraphStyle(
-            'pregunta',
-            fontName='Helvetica-Bold',
-            fontSize=10,
-            leading=12,
-            alignment=TA_JUSTIFY,
-            leftIndent=15
-        )
-        
-        p = Paragraph(texto, style)
-        w_p, h_p = p.wrap(max_width, 200)
-        p.drawOn(c_pdf, x, y - h_p)
-        y -= (h_p + 5)
-        
-        # Imagen si existe
-        if pregunta['imagen']:
-            try:
-                img_bytes = pregunta['imagen'].getvalue()
-                img_comp = comprimir_imagen_para_pdf(img_bytes, max_width=200, calidad=60)
-                img_pil = Image.open(img_comp)
-                
-                # Calcular tamaño para ajustar a la columna
-                img_w, img_h = img_pil.size
-                max_img_width = col_width - 30
-                max_img_height = 100
-                
-                ratio = min(max_img_width / img_w, max_img_height / img_h)
-                new_w = img_w * ratio
-                new_h = img_h * ratio
-                
-                c_pdf.drawImage(img_comp, x + 10, y - new_h, new_w, new_h, mask='auto')
-                y -= (new_h + 5)
-            except:
-                pass
-        
-        # Alternativas con burbujas
-        c_pdf.setFont("Helvetica", 9)
-        alternativas = pregunta['alternativas']
-        correcta = pregunta['correcta']
-        
-        for letra in ['A', 'B', 'C', 'D']:
-            texto_alt = alternativas.get(letra, '')
-            if texto_alt:
-                # Dibujar burbuja
-                c_pdf.circle(x + 5, y - 3, 4, stroke=1, fill=0)
-                
-                # Marcar con punto si es la correcta (para clave de respuestas)
-                # if letra == correcta:
-                #     c_pdf.circle(x + 5, y - 3, 2, stroke=0, fill=1)
-                
-                # Texto de la alternativa
-                style_alt = ParagraphStyle(
-                    'alternativa',
-                    fontName='Helvetica',
-                    fontSize=9,
-                    leading=11,
-                    alignment=TA_JUSTIFY,
-                    leftIndent=15
-                )
-                
-                p_alt = Paragraph(f"{letra}) {texto_alt}", style_alt)
-                w_alt, h_alt = p_alt.wrap(max_width - 20, 100)
-                p_alt.drawOn(c_pdf, x, y - h_alt)
-                y -= (h_alt + 2)
-        
-        # Espacio entre preguntas
-        y -= 10
-        
-        # Cambiar de columna si es necesario
-        if y < y_min and columna_actual == 1:
-            columna_actual = 2
-            x = x_col2
-            y = y_start
-    
-    # Pie de página
-    c_pdf.setFont("Helvetica", 8)
-    c_pdf.setFillColor(colors.grey)
-    c_pdf.drawCentredString(w / 2, 30, f"I.E.P. YACHAY - {config.get('anio', 2026)}")
-    c_pdf.drawString(40, 20, f"Generado: {hora_peru_str()}")
-    c_pdf.drawRightString(w - 40, 20, f"Página {c_pdf.getPageNumber()}")
-    
-    c_pdf.save()
-    buffer.seek(0)
-    return buffer.getvalue()
+            grado_sel = grados_disp[0] if grados_disp else grado_doc
+        _vista_docente_examenes(config, usuario, nombre_doc, grado_sel, semana_actual)
 
 
 def _vista_docente_examenes(config, usuario, nombre_doc, grado_doc, semana_actual):
@@ -8682,19 +7961,16 @@ def main():
         saludo = "🌙 Buenas noches"
 
     # ========================================
-    # AUXILIAR — Asistencia + Reportes + Incidencias
+    # AUXILIAR — Solo asistencia + incidencias
     # ========================================
     if st.session_state.rol == "auxiliar":
         st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
         st.markdown("*¿Qué vamos a hacer hoy?*")
-        ca1, ca2, ca3 = st.columns(3)
+        ca1, ca2 = st.columns(2)
         with ca1:
             if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist"):
                 st.session_state.modulo_activo = "asistencia"
         with ca2:
-            if st.button("📈\n\n**Reportes**", use_container_width=True, key="aux_rep"):
-                st.session_state.modulo_activo = "reportes"
-        with ca3:
             if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc"):
                 st.session_state.modulo_activo = "incidencias"
 
@@ -8702,8 +7978,6 @@ def main():
         st.markdown("---")
         if mod == "asistencia":
             tab_asistencias()
-        elif mod == "reportes":
-            tab_reportes(config)
         elif mod == "incidencias":
             tab_incidencias(config)
 
@@ -8744,7 +8018,7 @@ def main():
                 ("📈", "Reportes", "reportes", "#ea580c"),
                 ("📝", "Incidencias", "incidencias", "#be185d"),
                 ("💾", "Base Datos", "base_datos", "#4f46e5"),
-                ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
+                ("📚", "Aula Virtual", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
             ]
             if st.session_state.rol == "admin":
