@@ -3301,10 +3301,10 @@ def configurar_sidebar():
         div[data-testid="stSidebar"] .stButton button,
         div[data-testid="stSidebar"] button {
             background: #dc2626 !important;
-            color: white !important;
-            -webkit-text-fill-color: white !important;
+            color: black !important;
+            -webkit-text-fill-color: black !important;
             font-size: 1.1rem !important;
-            font-weight: bold !important;
+            font-weight: 900 !important;
             border: none !important;
             border-radius: 8px !important;
             box-shadow: none !important;
@@ -3315,8 +3315,8 @@ def configurar_sidebar():
         div[data-testid="stSidebar"] .stButton button:hover,
         div[data-testid="stSidebar"] button:hover {
             background: #dc2626 !important;
-            color: white !important;
-            -webkit-text-fill-color: white !important;
+            color: black !important;
+            -webkit-text-fill-color: black !important;
             transform: none !important;
             opacity: 1 !important;
         }
@@ -9497,9 +9497,9 @@ def main():
             div[data-testid="column"]:first-child button,
             div[data-testid="column"]:first-child .stButton button {
                 background: #2563eb !important;
-                color: white !important;
-                -webkit-text-fill-color: white !important;
-                font-weight: bold !important;
+                color: black !important;
+                -webkit-text-fill-color: black !important;
+                font-weight: 900 !important;
                 font-size: 1rem !important;
                 border: none !important;
                 border-radius: 8px !important;
@@ -9511,8 +9511,8 @@ def main():
             div[data-testid="column"]:first-child button:hover,
             div[data-testid="column"]:first-child .stButton button:hover {
                 background: #2563eb !important;
-                color: white !important;
-                -webkit-text-fill-color: white !important;
+                color: black !important;
+                -webkit-text-fill-color: black !important;
                 transform: none !important;
                 opacity: 1 !important;
             }
