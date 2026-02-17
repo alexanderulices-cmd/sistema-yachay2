@@ -81,6 +81,7 @@ st.markdown("""
     input[type="submit"] {
         background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         border: 2px solid #1e3a8a !important;
         border-radius: 8px !important;
         padding: 10px 20px !important;
@@ -96,6 +97,8 @@ st.markdown("""
     [role="button"]:hover {
         transform: translateY(-2px) scale(1.03) !important;
         box-shadow: 0 6px 16px rgba(30, 64, 175, 0.5) !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
     }
     
     /* Forzar en contenedores de Streamlit */
@@ -105,6 +108,7 @@ st.markdown("""
     div[class*="stButton"] button {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         border: 2px solid #1e40af !important;
         font-weight: 600 !important;
         opacity: 1 !important;
@@ -3300,17 +3304,33 @@ def configurar_sidebar():
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        div[data-testid="stSidebar"] button[data-testid*="btn_logout"],
-        div[data-testid="stSidebar"] .stButton:last-of-type button {
+        /* Selector ultra específico para CERRAR SESIÓN */
+        div[data-testid="stSidebar"] button[key="btn_logout_sidebar"],
+        div[data-testid="stSidebar"] button:has-text("CERRAR"),
+        button[data-testid="btn_logout_sidebar"],
+        div[data-testid="stSidebar"] div[data-testid="stButton"] button,
+        div[data-testid="stSidebar"] .stButton button,
+        div[data-testid="stSidebar"] button {
             background: #dc2626 !important;
+            background-color: #dc2626 !important;
             color: white !important;
             font-size: 1.1rem !important;
-            font-weight: bold !important;
+            font-weight: 900 !important;
             padding: 16px !important;
-            border: none !important;
+            border: 3px solid #991b1b !important;
             border-radius: 8px !important;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6) !important;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.8) !important;
             animation: pulse-red 2s infinite !important;
+            opacity: 1 !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+            -webkit-text-fill-color: white !important;
+        }
+        div[data-testid="stSidebar"] .stButton button:hover,
+        div[data-testid="stSidebar"] button:hover {
+            background: #b91c1c !important;
+            background-color: #b91c1c !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
             opacity: 1 !important;
         }
         </style>
@@ -9491,17 +9511,31 @@ def main():
                 0%, 100% { transform: scale(1); }
                 50% { transform: scale(1.05); }
             }
+            /* Selector ultra específico para REGRESAR */
+            button[data-testid="btn_volver"],
             div[data-testid="column"]:first-child button,
-            div[data-testid="column"]:first-child .stButton button {
+            div[data-testid="column"]:first-child .stButton button,
+            div[data-testid="column"]:first-child div[data-testid="stButton"] button {
                 background: #2563eb !important;
+                background-color: #2563eb !important;
                 color: white !important;
-                font-weight: bold !important;
+                -webkit-text-fill-color: white !important;
+                font-weight: 900 !important;
                 font-size: 1rem !important;
                 padding: 14px !important;
-                border: none !important;
+                border: 3px solid #1d4ed8 !important;
                 border-radius: 8px !important;
-                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6) !important;
+                box-shadow: 0 4px 15px rgba(37, 99, 235, 0.8) !important;
                 animation: pulse-blue 2s infinite !important;
+                opacity: 1 !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+            }
+            div[data-testid="column"]:first-child button:hover,
+            div[data-testid="column"]:first-child .stButton button:hover {
+                background: #1d4ed8 !important;
+                background-color: #1d4ed8 !important;
+                color: white !important;
+                -webkit-text-fill-color: white !important;
                 opacity: 1 !important;
             }
             </style>
