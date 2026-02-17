@@ -6429,7 +6429,7 @@ def tab_registrar_notas(config):
 
         # Número de áreas — aplica a TODOS los niveles
         st.markdown("---")
-        num_areas = st.radio("📚 Número de áreas a evaluar:", [1, 2, 3], horizontal=True, key="rn_cfg_nareas")
+        num_areas = st.radio("📚 Número de áreas a evaluar:", [1, 2, 3, 4, 5, 6], horizontal=True, key="rn_cfg_nareas")
 
         # Determinar áreas disponibles según el grado seleccionado
         grado_str_cfg = str(grado_cfg)
@@ -6513,6 +6513,22 @@ def tab_registrar_notas(config):
 
     col_nueva, _ = st.columns([1, 4])
     with col_nueva:
+        # Botón NUEVA EVALUACIÓN con color cyan intenso
+        st.markdown("""
+        <style>
+        button[key="btn_nueva_eval"] {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+            color: white !important;
+            font-weight: bold !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(6, 182, 212, 0.4) !important;
+        }
+        button[key="btn_nueva_eval"]:hover {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+            box-shadow: 0 6px 10px rgba(6, 182, 212, 0.6) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval"):
             st.session_state.eval_sesion = None
             st.session_state.notas_sesion = {}
@@ -6541,115 +6557,127 @@ def tab_registrar_notas(config):
         st.session_state.notas_sesion = {}
 
     # Encabezado tabla — dinámico según número de áreas
+    # Layout: [Estudiante, NSP] + [(C/N, Nota/20) × num_areas] + [Promedio, Lit]
     if num_areas == 1:
-        hcols = st.columns([3, 1, 1, 1, 1])
-        headers = ["Estudiante", f"Correctas/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
-    elif num_areas == 2:
-        hcols = st.columns([2.5, 1, 1, 1, 1, 1, 1])
-        headers = ["Estudiante",
-                   f"C/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:8]}/20",
-                   f"C/{areas[1]['num_preguntas']}", f"{areas[1]['nombre'][:8]}/20",
-                   "Promedio", "Lit."]
-    else:  # 3 áreas
-        hcols = st.columns([2, 1, 1, 1, 1, 1, 1, 1, 1])
-        headers = ["Estudiante",
-                   f"C/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:6]}/20",
-                   f"C/{areas[1]['num_preguntas']}", f"{areas[1]['nombre'][:6]}/20",
-                   f"C/{areas[2]['num_preguntas']}", f"{areas[2]['nombre'][:6]}/20",
-                   "Prom.", ""]
+        hcols = st.columns([3, 0.7, 1, 1, 1, 1])
+        headers = ["Estudiante", "NSP", f"C/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
+    else:
+        # Para 2-6 áreas: mostrar nombre corto + nota por cada área
+        col_widths = [2.5, 0.7]  # Estudiante + NSP
+        headers_list = ["Estudiante", "NSP"]
+        for i in range(num_areas):
+            col_widths.extend([0.8, 1])  # Correctas + Nota por área
+            headers_list.extend([f"C/{areas[i]['num_preguntas']}", f"{areas[i]['nombre'][:7]}/20"])
+        col_widths.extend([1, 0.8])  # Promedio + Lit
+        headers_list.extend(["Prom.", "Lit."])
+        hcols = st.columns(col_widths)
+        headers = headers_list
+
     for hc, hdr in zip(hcols, headers):
         with hc:
             st.markdown(f"**{hdr}**")
 
     notas_actuales = {}
 
+
     for idx, row in dg.iterrows():
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
         sesion_id = ev['id']
 
-        # Columnas dinámicas: nombre + (correctas + nota/20) × N áreas + promedio + lit
-        # Para N=1: [nombre, C/N, nota, lit, estado]
-        # Para N≥2: [nombre, C/N1, nota1, C/N2, nota2, ..., Promedio, Lit]
-        notas_por_area = []
-        correctas_por_area = []
-        for i, area in enumerate(areas):
-            ci = st.session_state.notas_sesion.get(dni, {}).get(f'c{i}', 0)
-            nc_cols_count = 2 + num_areas * 2 + (1 if num_areas > 1 else 2)
-            correctas_i = st.session_state.notas_sesion.get(dni, {}).get(f'c{i}', 0)
-            notas_por_area.append(None)  # placeholder
-            correctas_por_area.append(correctas_i)
-
+        # ── Crear columnas dinámicas ─────────────────────────────────────────
         if num_areas == 1:
-            nc = st.columns([3, 1, 1, 1, 1])
-            with nc[0]:
-                st.write(f"👤 {nombre}")
-            with nc[1]:
-                c0 = st.number_input("", 0, areas[0]['num_preguntas'],
-                                     correctas_por_area[0],
-                                     key=f"c0_{sesion_id}_{dni}",
-                                     label_visibility="collapsed")
-            nota_0 = round(c0 / max(areas[0]['num_preguntas'], 1) * 20, 1)
-            lit_0 = nota_a_letra(nota_0)
-            with nc[2]:
-                st.markdown(f"<b>{nota_0}</b>", unsafe_allow_html=True)
-            with nc[3]:
-                st.markdown(f"<span style='color:{color_semaforo(lit_0)};font-weight:bold;'>{lit_0}</span>", unsafe_allow_html=True)
-            with nc[4]:
-                st.caption(ESCALA_MINEDU.get(lit_0, {}).get('nombre', '')[:10])
+            col_widths = [3, 0.7, 1, 1, 1, 1]
+        else:
+            col_widths = [2.5, 0.7]  # Nombre + NSP
+            for _ in range(num_areas):
+                col_widths.extend([0.8, 1])  # Correctas + Nota por área
+            col_widths.extend([1, 0.8])  # Promedio + Lit
+
+        nc = st.columns(col_widths)
+
+        # Columna 0: Nombre
+        with nc[0]:
+            st.write(f"👤 {nombre}")
+
+        # Columna 1: NSP checkbox
+        with nc[1]:
+            nsp = st.checkbox("", key=f"nsp_{sesion_id}_{dni}",
+                             value=st.session_state.notas_sesion.get(dni, {}).get('nsp', False),
+                             label_visibility="collapsed")
+
+        if nsp:
+            # Si NSP está marcado, no pedir inputs de notas
             notas_actuales[dni] = {
                 'nombre': nombre,
-                'areas': {areas[0]['nombre']: nota_0},
-                'promedio': nota_0,
-                **{f'c{0}': c0}
+                'nsp': True,
+                'areas': {},
+                'promedio': 0
             }
-
-        elif num_areas == 2:
-            nc = st.columns([2.5, 1, 1, 1, 1, 1, 1])
-            with nc[0]: st.write(f"👤 {nombre}")
-            with nc[1]:
-                c0 = st.number_input("", 0, areas[0]['num_preguntas'], correctas_por_area[0],
-                                     key=f"c0_{sesion_id}_{dni}", label_visibility="collapsed")
-            nota_0 = round(c0 / max(areas[0]['num_preguntas'], 1) * 20, 1)
-            with nc[2]: st.markdown(f"<b>{nota_0}</b>", unsafe_allow_html=True)
-            with nc[3]:
-                c1 = st.number_input("", 0, areas[1]['num_preguntas'], correctas_por_area[1],
-                                     key=f"c1_{sesion_id}_{dni}", label_visibility="collapsed")
-            nota_1 = round(c1 / max(areas[1]['num_preguntas'], 1) * 20, 1)
-            with nc[4]: st.markdown(f"<b>{nota_1}</b>", unsafe_allow_html=True)
-            promedio = round((nota_0 + nota_1) / 2, 1)
-            lit_p = nota_a_letra(promedio)
-            with nc[5]: st.markdown(f"<span style='color:{color_semaforo(lit_p)};font-weight:bold;'>{promedio}</span>", unsafe_allow_html=True)
-            with nc[6]: st.markdown(f"<span style='color:{color_semaforo(lit_p)};font-weight:bold;'>{lit_p}</span>", unsafe_allow_html=True)
-            notas_actuales[dni] = {
-                'nombre': nombre,
-                'areas': {areas[0]['nombre']: nota_0, areas[1]['nombre']: nota_1},
-                'promedio': promedio, 'c0': c0, 'c1': c1
-            }
-
-        else:  # 3 áreas
-            nc = st.columns([2, 1, 1, 1, 1, 1, 1, 1, 1])
-            with nc[0]: st.write(f"👤 {nombre}")
+            # Mostrar "NSP" en el resto de columnas
+            for i in range(2, len(nc)):
+                with nc[i]:
+                    st.caption("—")
+        else:
+            # Ingresar correctas y calcular notas por cada área
             correctas_vals = []
             notas_vals = []
-            for i in range(3):
-                with nc[1 + i*2]:
-                    ci = st.number_input("", 0, areas[i]['num_preguntas'], correctas_por_area[i],
-                                        key=f"c{i}_{sesion_id}_{dni}", label_visibility="collapsed")
+            col_idx = 2  # Empieza después de Nombre y NSP
+
+            for i, area in enumerate(areas):
+                # Correctas
+                with nc[col_idx]:
+                    ci = st.number_input("", 0, area['num_preguntas'],
+                                        st.session_state.notas_sesion.get(dni, {}).get(f'c{i}', 0),
+                                        key=f"c{i}_{sesion_id}_{dni}",
+                                        label_visibility="collapsed")
                     correctas_vals.append(ci)
-                nota_i = round(ci / max(areas[i]['num_preguntas'], 1) * 20, 1)
+                col_idx += 1
+
+                # Nota sobre 20
+                nota_i = round(ci / max(area['num_preguntas'], 1) * 20, 1)
                 notas_vals.append(nota_i)
-                with nc[2 + i*2]:
-                    st.markdown(f"<b>{nota_i}</b>", unsafe_allow_html=True)
-            promedio = round(sum(notas_vals) / 3, 1)
-            lit_p = nota_a_letra(promedio)
-            with nc[8]:
-                st.markdown(f"<span style='color:{color_semaforo(lit_p)};font-weight:bold;'>{promedio}({lit_p})</span>", unsafe_allow_html=True)
+                with nc[col_idx]:
+                    # Línea divisoria vertical antes de cada nota (excepto la primera)
+                    if i > 0:
+                        st.markdown(
+                            f"<div style='border-left:2px solid #e0e0e0; height:30px; "
+                            f"display:inline-block; margin-right:8px;'></div>"
+                            f"<b>{nota_i}</b>",
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown(f"<b>{nota_i}</b>", unsafe_allow_html=True)
+                col_idx += 1
+
+            # Promedio y literal (solo si hay más de 1 área)
+            if num_areas == 1:
+                promedio = notas_vals[0]
+                lit = nota_a_letra(promedio)
+                with nc[col_idx]:
+                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
+                               unsafe_allow_html=True)
+                col_idx += 1
+                with nc[col_idx]:
+                    st.caption(ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:10])
+            else:
+                promedio = round(sum(notas_vals) / num_areas, 1) if notas_vals else 0
+                lit = nota_a_letra(promedio)
+                with nc[col_idx]:
+                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{promedio}</span>",
+                               unsafe_allow_html=True)
+                col_idx += 1
+                with nc[col_idx]:
+                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
+                               unsafe_allow_html=True)
+
+            # Guardar en diccionario
             notas_actuales[dni] = {
                 'nombre': nombre,
-                'areas': {areas[i]['nombre']: notas_vals[i] for i in range(3)},
+                'nsp': False,
+                'areas': {areas[i]['nombre']: notas_vals[i] for i in range(num_areas)},
                 'promedio': promedio,
-                **{f'c{i}': correctas_vals[i] for i in range(3)}
+                **{f'c{i}': correctas_vals[i] for i in range(num_areas)}
             }
 
     # Actualizar sesión con lo ingresado
@@ -6662,6 +6690,9 @@ def tab_registrar_notas(config):
     areas_nombres = [a['nombre'] for a in areas]
     ranking_filas = []
     for dni_r, data_r in notas_actuales.items():
+        # Excluir NSP del ranking
+        if data_r.get('nsp', False):
+            continue
         if data_r['promedio'] > 0:
             fila = {'DNI': dni_r, 'Nombre': data_r['nombre']}
             for a_name in areas_nombres:
@@ -6691,6 +6722,22 @@ def tab_registrar_notas(config):
     if ranking_filas:
         col_g1, col_g2 = st.columns(2)
         with col_g1:
+            # Botón GUARDAR con color verde intenso
+            st.markdown("""
+            <style>
+            div.stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+                color: white !important;
+                font-weight: bold !important;
+                border: none !important;
+                box-shadow: 0 4px 6px rgba(16, 185, 129, 0.4) !important;
+            }
+            div.stButton > button[kind="primary"]:hover {
+                background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+                box-shadow: 0 6px 10px rgba(16, 185, 129, 0.6) !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
             if st.button("💾 GUARDAR EN HISTORIAL", type="primary",
                          use_container_width=True, key="btn_guardar_historial"):
                 hist = _cargar_historial_evaluaciones()
@@ -6724,14 +6771,44 @@ def tab_registrar_notas(config):
                     st.error("❌ Error al guardar. Intenta de nuevo.")
 
         with col_g2:
-            # PDF descarga
+            # Botón DESCARGAR PDF con color naranja intenso
+            st.markdown("""
+            <style>
+            div[data-testid="column"]:nth-of-type(2) div.stButton > button {
+                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+                color: white !important;
+                font-weight: bold !important;
+                border: none !important;
+                box-shadow: 0 4px 6px rgba(249, 115, 22, 0.4) !important;
+            }
+            div[data-testid="column"]:nth-of-type(2) div.stButton > button:hover {
+                background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+                box-shadow: 0 6px 10px rgba(249, 115, 22, 0.6) !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
             if st.button("📥 DESCARGAR RANKING PDF", use_container_width=True, key="btn_pdf_eval"):
                 pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
                 st.download_button("⬇️ Descargar PDF", pdf_r,
                                    f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
-        # WhatsApp
+        # Botón WhatsApp con color verde WhatsApp
+        st.markdown("""
+        <style>
+        button[key="btn_wa_eval"] {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+            color: white !important;
+            font-weight: bold !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(37, 211, 102, 0.4) !important;
+        }
+        button[key="btn_wa_eval"]:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%) !important;
+            box-shadow: 0 6px 10px rgba(37, 211, 102, 0.6) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
             st.session_state['_mostrar_wa_eval'] = True
         if st.session_state.get('_mostrar_wa_eval'):
