@@ -69,27 +69,120 @@ st.markdown("""
         background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
     }
     
-    /* Botones generales con efecto hover (excepto dashboard) */
-    .stButton>button:not([data-testid*="dash_"]) {
-        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+    /* ============================================================
+       BOTONES - ULTRA AGRESIVOS - TODOS VISIBLES 
+       Sin excepciones - Sin transparencias
+       ============================================================ */
+    
+    /* CAPTURAR ABSOLUTAMENTE TODO - Selector universal */
+    button,
+    [role="button"],
+    input[type="button"],
+    input[type="submit"] {
+        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
         color: white !important;
-        border-radius: 10px;
-        border: none;
-        padding: 12px 24px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border: 2px solid #1e3a8a !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        font-weight: bold !important;
+        font-size: 0.95rem !important;
+        box-shadow: 0 4px 10px rgba(30, 64, 175, 0.4) !important;
+        opacity: 1 !important;
+        transition: all 0.2s ease !important;
     }
     
-    .stButton>button:not([data-testid*="dash_"]):hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    /* Hover universal */
+    button:hover,
+    [role="button"]:hover {
+        transform: translateY(-2px) scale(1.03) !important;
+        box-shadow: 0 6px 16px rgba(30, 64, 175, 0.5) !important;
     }
     
-    /* Botones del dashboard - permitir personalización */
+    /* Forzar en contenedores de Streamlit */
+    .stButton button,
+    div[data-testid="stButton"] button,
+    div[data-testid="column"] button,
+    div[class*="stButton"] button {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: white !important;
+        border: 2px solid #1e40af !important;
+        font-weight: 600 !important;
+        opacity: 1 !important;
+    }
+    
+    /* Tabs - Forzar colores */
+    button[data-baseweb="tab"],
+    [role="tab"] {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+        color: white !important;
+        border: 2px solid #4338ca !important;
+        font-weight: 600 !important;
+        padding: 10px 20px !important;
+        opacity: 1 !important;
+    }
+    
+    button[data-baseweb="tab"][aria-selected="true"],
+    [role="tab"][aria-selected="true"] {
+        background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%) !important;
+        border: 3px solid #312e81 !important;
+        box-shadow: 0 4px 12px rgba(67, 56, 202, 0.6) !important;
+    }
+    
+    /* Eliminar CUALQUIER opacidad o transparencia */
+    button[kind],
+    button[class],
+    button[data-testid] {
+        opacity: 1 !important;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: white !important;
+        border: 2px solid #1e40af !important;
+    }
+    
+    /* Secondary buttons - Verde intenso */
+    button[kind="secondary"],
+    button.secondary,
+    button[data-baseweb*="secondary"] {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        border: 2px solid #065f46 !important;
+        color: white !important;
+    }
+    
+    /* Botones de pestañas específicos */
+    div[role="tablist"] button {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+        color: white !important;
+        border: 2px solid #4338ca !important;
+        font-weight: 600 !important;
+        min-height: 40px !important;
+        opacity: 1 !important;
+    }
+    
+    /* Botones del sidebar */
+    div[data-testid="stSidebar"] button {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: white !important;
+        border: 2px solid #1e40af !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+    
+    /* Botones del dashboard - mantener personalizados */
     button[data-testid*="dash_"] {
         font-family: 'Segoe UI', Tahoma, sans-serif;
+        /* Sus colores ya están definidos individualmente */
     }
+    
+    /* FORZAR eliminar fondos transparentes o grises */
+    button[style*="background: transparent"],
+    button[style*="background: rgba"],
+    button[class*="secondary"] {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        border: 2px solid #065f46 !important;
+        color: white !important;
+        opacity: 1 !important;
+    }
+    
+    
     
     /* Métricas con colores */
     [data-testid="stMetricValue"] {
