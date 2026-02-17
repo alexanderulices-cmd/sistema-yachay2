@@ -3295,32 +3295,35 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - color rojo sólido, sin efectos
+        # Botón CERRAR SESIÓN - JS fuerza el estilo directamente al elemento
         st.markdown("""
-        <style>
-        div[data-testid="stSidebar"] .stButton button,
-        div[data-testid="stSidebar"] button {
-            background: #dc2626 !important;
-            color: black !important;
-            -webkit-text-fill-color: black !important;
-            font-size: 1.1rem !important;
-            font-weight: 900 !important;
-            border: none !important;
-            border-radius: 8px !important;
-            box-shadow: none !important;
-            animation: none !important;
-            transform: none !important;
-            opacity: 1 !important;
-        }
-        div[data-testid="stSidebar"] .stButton button:hover,
-        div[data-testid="stSidebar"] button:hover {
-            background: #dc2626 !important;
-            color: black !important;
-            -webkit-text-fill-color: black !important;
-            transform: none !important;
-            opacity: 1 !important;
-        }
-        </style>
+        <script>
+        (function aplicarEstiloCerrarSesion() {
+            function buscarYEstilizar() {
+                var btns = window.parent.document.querySelectorAll('section[data-testid="stSidebar"] button');
+                btns.forEach(function(btn) {
+                    if (btn.innerText.includes('CERRAR') || btn.innerText.includes('SESIÓN')) {
+                        btn.style.setProperty('background', '#dc2626', 'important');
+                        btn.style.setProperty('background-color', '#dc2626', 'important');
+                        btn.style.setProperty('color', '#000000', 'important');
+                        btn.style.setProperty('font-weight', '900', 'important');
+                        btn.style.setProperty('font-size', '1.1rem', 'important');
+                        btn.style.setProperty('border', 'none', 'important');
+                        btn.style.setProperty('opacity', '1', 'important');
+                        // Aplicar también al span interno
+                        var spans = btn.querySelectorAll('span, p');
+                        spans.forEach(function(s) {
+                            s.style.setProperty('color', '#000000', 'important');
+                            s.style.setProperty('font-weight', '900', 'important');
+                        });
+                    }
+                });
+            }
+            setTimeout(buscarYEstilizar, 300);
+            setTimeout(buscarYEstilizar, 800);
+            setTimeout(buscarYEstilizar, 1500);
+        })();
+        </script>
         """, unsafe_allow_html=True)
         
         if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
@@ -9491,32 +9494,34 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - color azul sólido, sin efectos
+            # Botón REGRESAR - JS fuerza el estilo directamente al elemento
             st.markdown("""
-            <style>
-            div[data-testid="column"]:first-child button,
-            div[data-testid="column"]:first-child .stButton button {
-                background: #2563eb !important;
-                color: black !important;
-                -webkit-text-fill-color: black !important;
-                font-weight: 900 !important;
-                font-size: 1rem !important;
-                border: none !important;
-                border-radius: 8px !important;
-                box-shadow: none !important;
-                animation: none !important;
-                transform: none !important;
-                opacity: 1 !important;
-            }
-            div[data-testid="column"]:first-child button:hover,
-            div[data-testid="column"]:first-child .stButton button:hover {
-                background: #2563eb !important;
-                color: black !important;
-                -webkit-text-fill-color: black !important;
-                transform: none !important;
-                opacity: 1 !important;
-            }
-            </style>
+            <script>
+            (function aplicarEstiloRegresar() {
+                function buscarYEstilizar() {
+                    var btns = window.parent.document.querySelectorAll('button');
+                    btns.forEach(function(btn) {
+                        if (btn.innerText.includes('REGRESAR')) {
+                            btn.style.setProperty('background', '#2563eb', 'important');
+                            btn.style.setProperty('background-color', '#2563eb', 'important');
+                            btn.style.setProperty('color', '#000000', 'important');
+                            btn.style.setProperty('font-weight', '900', 'important');
+                            btn.style.setProperty('font-size', '1rem', 'important');
+                            btn.style.setProperty('border', 'none', 'important');
+                            btn.style.setProperty('opacity', '1', 'important');
+                            var spans = btn.querySelectorAll('span, p');
+                            spans.forEach(function(s) {
+                                s.style.setProperty('color', '#000000', 'important');
+                                s.style.setProperty('font-weight', '900', 'important');
+                            });
+                        }
+                    });
+                }
+                setTimeout(buscarYEstilizar, 300);
+                setTimeout(buscarYEstilizar, 800);
+                setTimeout(buscarYEstilizar, 1500);
+            })();
+            </script>
             """, unsafe_allow_html=True)
             
             col_back, col_space = st.columns([1, 4])
