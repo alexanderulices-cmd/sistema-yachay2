@@ -44,6 +44,7 @@ except ImportError:
     GOOGLE_SYNC_DISPONIBLE = False
 
 import base64  # Para Aula Virtual
+import streamlit.components.v1 as components  # Para inyección JS directa
 
 # python-docx para leer archivos Word
 try:
@@ -3295,36 +3296,28 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - JS fuerza el estilo directamente al elemento
-        st.markdown("""
+        # Botón CERRAR SESIÓN - JS real via components para forzar estilo
+        components.html("""
         <script>
-        (function aplicarEstiloCerrarSesion() {
-            function buscarYEstilizar() {
-                var btns = window.parent.document.querySelectorAll('section[data-testid="stSidebar"] button');
-                btns.forEach(function(btn) {
-                    if (btn.innerText.includes('CERRAR') || btn.innerText.includes('SESIÓN')) {
-                        btn.style.setProperty('background', '#dc2626', 'important');
-                        btn.style.setProperty('background-color', '#dc2626', 'important');
-                        btn.style.setProperty('color', '#000000', 'important');
-                        btn.style.setProperty('font-weight', '900', 'important');
-                        btn.style.setProperty('font-size', '1.1rem', 'important');
-                        btn.style.setProperty('border', 'none', 'important');
-                        btn.style.setProperty('opacity', '1', 'important');
-                        // Aplicar también al span interno
-                        var spans = btn.querySelectorAll('span, p');
-                        spans.forEach(function(s) {
-                            s.style.setProperty('color', '#000000', 'important');
-                            s.style.setProperty('font-weight', '900', 'important');
-                        });
+        function estilizarCerrarSesion() {
+            var btns = window.parent.document.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                var txt = btns[i].innerText || btns[i].textContent;
+                if (txt.indexOf('CERRAR') !== -1 || txt.indexOf('SESIÓN') !== -1) {
+                    btns[i].style.cssText = 'background:#dc2626 !important; background-color:#dc2626 !important; color:#000000 !important; font-weight:900 !important; font-size:1.1rem !important; border:none !important; border-radius:8px !important; padding:16px !important; opacity:1 !important; cursor:pointer !important;';
+                    var hijos = btns[i].querySelectorAll('*');
+                    for (var j = 0; j < hijos.length; j++) {
+                        hijos[j].style.cssText = 'color:#000000 !important; font-weight:900 !important;';
                     }
-                });
+                }
             }
-            setTimeout(buscarYEstilizar, 300);
-            setTimeout(buscarYEstilizar, 800);
-            setTimeout(buscarYEstilizar, 1500);
-        })();
+        }
+        setTimeout(estilizarCerrarSesion, 200);
+        setTimeout(estilizarCerrarSesion, 600);
+        setTimeout(estilizarCerrarSesion, 1200);
+        setTimeout(estilizarCerrarSesion, 2500);
         </script>
-        """, unsafe_allow_html=True)
+        """, height=0)
         
         if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
@@ -9494,35 +9487,28 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - JS fuerza el estilo directamente al elemento
-            st.markdown("""
+            # Botón REGRESAR - JS real via components para forzar estilo
+            components.html("""
             <script>
-            (function aplicarEstiloRegresar() {
-                function buscarYEstilizar() {
-                    var btns = window.parent.document.querySelectorAll('button');
-                    btns.forEach(function(btn) {
-                        if (btn.innerText.includes('REGRESAR')) {
-                            btn.style.setProperty('background', '#2563eb', 'important');
-                            btn.style.setProperty('background-color', '#2563eb', 'important');
-                            btn.style.setProperty('color', '#000000', 'important');
-                            btn.style.setProperty('font-weight', '900', 'important');
-                            btn.style.setProperty('font-size', '1rem', 'important');
-                            btn.style.setProperty('border', 'none', 'important');
-                            btn.style.setProperty('opacity', '1', 'important');
-                            var spans = btn.querySelectorAll('span, p');
-                            spans.forEach(function(s) {
-                                s.style.setProperty('color', '#000000', 'important');
-                                s.style.setProperty('font-weight', '900', 'important');
-                            });
+            function estilizarRegresar() {
+                var btns = window.parent.document.querySelectorAll('button');
+                for (var i = 0; i < btns.length; i++) {
+                    var txt = btns[i].innerText || btns[i].textContent;
+                    if (txt.indexOf('REGRESAR') !== -1) {
+                        btns[i].style.cssText = 'background:#2563eb !important; background-color:#2563eb !important; color:#000000 !important; font-weight:900 !important; font-size:1rem !important; border:none !important; border-radius:8px !important; padding:14px !important; opacity:1 !important; cursor:pointer !important;';
+                        var hijos = btns[i].querySelectorAll('*');
+                        for (var j = 0; j < hijos.length; j++) {
+                            hijos[j].style.cssText = 'color:#000000 !important; font-weight:900 !important;';
                         }
-                    });
+                    }
                 }
-                setTimeout(buscarYEstilizar, 300);
-                setTimeout(buscarYEstilizar, 800);
-                setTimeout(buscarYEstilizar, 1500);
-            })();
+            }
+            setTimeout(estilizarRegresar, 200);
+            setTimeout(estilizarRegresar, 600);
+            setTimeout(estilizarRegresar, 1200);
+            setTimeout(estilizarRegresar, 2500);
             </script>
-            """, unsafe_allow_html=True)
+            """, height=0)
             
             col_back, col_space = st.columns([1, 4])
             
