@@ -6498,6 +6498,7 @@ def tab_registrar_notas(config):
     # ─── FASE 2: Ingresar notas ───────────────────────────────────────────────
     ev = st.session_state.eval_sesion
     areas = ev['areas']  # lista de {nombre, num_preguntas}
+    num_areas = len(areas)  # IMPORTANTE: definir aquí para evitar UnboundLocalError
     grado_sel = ev['grado']
     bim_sel = ev['periodo']
     titulo_ev = ev.get('titulo', '')
