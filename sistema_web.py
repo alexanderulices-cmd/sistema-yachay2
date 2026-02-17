@@ -3199,7 +3199,30 @@ def configurar_sidebar():
                     </div>""", unsafe_allow_html=True)
         
         st.markdown("---")
-        if st.button("🔴 CERRAR SESIÓN", use_container_width=True):
+        
+        # Botón CERRAR SESIÓN - MUY VISIBLE para señora mayor
+        st.markdown("""
+        <style>
+        /* Botón cerrar sesión sidebar - SUPER VISIBLE */
+        div[data-testid="stSidebar"] button[kind="secondary"]:has(p:contains("CERRAR SESIÓN")) {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+            color: white !important;
+            font-size: 1.2rem !important;
+            font-weight: bold !important;
+            padding: 18px 20px !important;
+            border: 3px solid #7f1d1d !important;
+            border-radius: 12px !important;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5) !important;
+            margin: 10px 0 !important;
+        }
+        div[data-testid="stSidebar"] button[kind="secondary"]:has(p:contains("CERRAR SESIÓN")):hover {
+            transform: scale(1.08) !important;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.7) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, type="secondary", key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
             st.rerun()
@@ -9291,35 +9314,12 @@ def main():
 
         if st.session_state.modulo_activo is None:
             # === DASHBOARD PRINCIPAL ===
-            # Botón cerrar sesión arriba a la derecha
-            col_titulo, col_logout_dash = st.columns([4, 1])
-            
-            with col_titulo:
-                st.markdown(f"""
-                <div class='main-header'>
-                    <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
-                    <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with col_logout_dash:
-                st.markdown("""
-                <style>
-                button[key="btn_logout_dashboard"] {
-                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-                    color: white !important;
-                    font-weight: bold !important;
-                    border: none !important;
-                    margin-top: 10px !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-                
-                if st.button("🚪 CERRAR SESIÓN", key="btn_logout_dashboard", use_container_width=True):
-                    st.session_state.rol = None
-                    st.session_state.usuario_actual = None
-                    st.session_state.modulo_activo = None
-                    st.rerun()
+            st.markdown(f"""
+            <div class='main-header'>
+                <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
+                <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
+            </div>
+            """, unsafe_allow_html=True)
 
             # Grid de módulos
             # Grid de módulos
@@ -9390,44 +9390,27 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botones de navegación con colores llamativos
-            col_back, col_logout, col_space = st.columns([1, 1, 3])
+            # Botón REGRESAR con color morado llamativo
+            col_back, col_space = st.columns([1, 4])
             
             with col_back:
-                # Botón REGRESAR - Color morado llamativo
                 st.markdown("""
                 <style>
                 button[key="btn_volver"] {
                     background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
                     color: white !important;
                     font-weight: bold !important;
+                    font-size: 1.1rem !important;
                     border: none !important;
-                    padding: 12px !important;
+                    padding: 14px !important;
+                }
+                button[key="btn_volver"]:hover {
+                    transform: scale(1.05) !important;
                 }
                 </style>
                 """, unsafe_allow_html=True)
                 
                 if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True):
-                    st.session_state.modulo_activo = None
-                    st.rerun()
-            
-            with col_logout:
-                # Botón CERRAR SESIÓN - Color rojo llamativo
-                st.markdown("""
-                <style>
-                button[key="btn_logout_modulo"] {
-                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-                    color: white !important;
-                    font-weight: bold !important;
-                    border: none !important;
-                    padding: 12px !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-                
-                if st.button("🚪 CERRAR SESIÓN", key="btn_logout_modulo", use_container_width=True):
-                    st.session_state.rol = None
-                    st.session_state.usuario_actual = None
                     st.session_state.modulo_activo = None
                     st.rerun()
             
