@@ -9475,9 +9475,42 @@ def main():
                             </div>
                             """, unsafe_allow_html=True)
                             
+                            # Inyectar CSS específico para este botón usando marcador único
+                            st.markdown(f"""
+                            <style>
+                            div[data-testid="stVerticalBlock"] div#marker_{key} + div div[data-testid="stButton"] button,
+                            #marker_{key} ~ div button {{
+                                background: {color} !important;
+                                background-color: {color} !important;
+                                color: white !important;
+                                -webkit-text-fill-color: white !important;
+                                border: none !important;
+                                font-weight: bold !important;
+                                font-size: 1rem !important;
+                                opacity: 1 !important;
+                                transition: none !important;
+                                transform: none !important;
+                                box-shadow: 0 3px 8px rgba(0,0,0,0.25) !important;
+                            }}
+                            #marker_{key} ~ div button:hover,
+                            #marker_{key} ~ div button:focus,
+                            #marker_{key} ~ div button:active {{
+                                background: {color} !important;
+                                background-color: {color} !important;
+                                color: white !important;
+                                -webkit-text-fill-color: white !important;
+                                opacity: 1 !important;
+                                transform: none !important;
+                                filter: brightness(0.92) !important;
+                                box-shadow: 0 3px 8px rgba(0,0,0,0.35) !important;
+                            }}
+                            </style>
+                            <span id="marker_{key}" style="display:none;"></span>
+                            """, unsafe_allow_html=True)
+                            
                             # Botón visible debajo para hacer click
                             if st.button(f"▶ Abrir {nombre}", key=f"dash_{key}", 
-                                        type="primary", use_container_width=True):
+                                        use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
 
