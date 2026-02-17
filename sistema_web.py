@@ -175,6 +175,23 @@ st.markdown("""
         /* Sus colores ya están definidos individualmente */
     }
     
+    /* EXCLUIR barra de herramientas de Streamlit - dejar en su estilo original */
+    [data-testid="stToolbar"] button,
+    [data-testid="stToolbar"] [role="button"],
+    header button,
+    header [role="button"] {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+        font-size: inherit !important;
+        padding: inherit !important;
+        font-weight: inherit !important;
+        opacity: inherit !important;
+        transform: none !important;
+    }
+    
     /* FORZAR eliminar fondos transparentes o grises */
     button[style*="background: transparent"],
     button[style*="background: rgba"],
