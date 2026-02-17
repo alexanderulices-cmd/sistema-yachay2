@@ -3293,30 +3293,6 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - ROJO SIEMPRE VISIBLE
-        st.markdown("""
-        <style>
-        /* FORZAR ROJO en sidebar - TODOS los botones del sidebar */
-        [data-testid="stSidebar"] [data-testid="stButton"] button,
-        [data-testid="stSidebar"] .stButton button,
-        [data-testid="stSidebar"] button {
-            background: #dc2626 !important;
-            color: white !important;
-            font-size: 1.1rem !important;
-            font-weight: bold !important;
-            padding: 16px !important;
-            border: none !important;
-            border-radius: 8px !important;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6) !important;
-            opacity: 1 !important;
-        }
-        [data-testid="stSidebar"] button:hover {
-            background: #b91c1c !important;
-            transform: scale(1.05) !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
         if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
@@ -9485,30 +9461,7 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - AZUL SIEMPRE VISIBLE
-            # CSS ANTES del botón para que se aplique
-            st.markdown("""
-            <style>
-            /* FORZAR AZUL en primera columna */
-            [data-testid="column"]:first-child button,
-            [data-testid="column"]:first-child .stButton button {
-                background: #2563eb !important;
-                color: white !important;
-                font-weight: bold !important;
-                font-size: 1rem !important;
-                padding: 14px !important;
-                border: none !important;
-                border-radius: 8px !important;
-                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6) !important;
-                opacity: 1 !important;
-            }
-            [data-testid="column"]:first-child button:hover {
-                background: #1d4ed8 !important;
-                transform: scale(1.05) !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
+            # Botón REGRESAR
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
