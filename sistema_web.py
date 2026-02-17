@@ -5903,10 +5903,60 @@ def tab_reportes(config):
 
     subtab = st.radio("Seleccionar:", [
         "📋 Asistencia Mensual", "📊 Reporte Integral",
-        "📄 Reporte ZipGrade"
+        "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones"
     ], horizontal=True, key="rep_tipo")
 
     gs = _gs()
+
+    if subtab == "🏆 Historial de Evaluaciones":
+        st.markdown("### 🏆 Historial de Evaluaciones — Vista Director")
+        hist = _cargar_historial_evaluaciones()
+        if not hist:
+            st.info("📭 No hay evaluaciones guardadas en el historial.")
+            return
+
+        # Filtros
+        fc1, fc2 = st.columns(2)
+        with fc1:
+            grados_hist = sorted(set(v.get('grado','') for v in hist.values()))
+            filtro_grado = st.selectbox("Filtrar por grado:", ["Todos"] + grados_hist, key="rep_hist_grado")
+        with fc2:
+            docentes_hist = sorted(set(v.get('docente','') for v in hist.values()))
+            filtro_doc = st.selectbox("Filtrar por docente:", ["Todos"] + docentes_hist, key="rep_hist_doc")
+
+        total_mostradas = 0
+        for clave, ev in sorted(hist.items(), reverse=True):
+            if filtro_grado != "Todos" and ev.get('grado') != filtro_grado:
+                continue
+            if filtro_doc != "Todos" and ev.get('docente') != filtro_doc:
+                continue
+            total_mostradas += 1
+            areas_ev = ev.get('areas', [])
+            if areas_ev and isinstance(areas_ev[0], dict):
+                areas_nombres_ev = [a['nombre'] for a in areas_ev]
+            else:
+                areas_nombres_ev = list(areas_ev)
+            titulo_ev = ev.get('titulo', '') or ''
+            label_ev = f"📝 {ev.get('grado','')} | {ev.get('periodo','')} | {ev.get('fecha','')}"
+            if titulo_ev:
+                label_ev += f" — {titulo_ev}"
+            with st.expander(label_ev):
+                st.caption(f"👤 Docente: {ev.get('docente','—')} | 📚 Áreas: {', '.join(areas_nombres_ev)} | 👥 Estudiantes: {len(ev.get('ranking',[]))}")
+                ranking_ev = ev.get('ranking', [])
+                if ranking_ev:
+                    df_ev = pd.DataFrame(ranking_ev)
+                    cols_ev = ['Puesto','Medalla','Nombre'] + areas_nombres_ev + ['Promedio']
+                    cols_ev = [c for c in cols_ev if c in df_ev.columns]
+                    st.dataframe(df_ev[cols_ev], use_container_width=True, hide_index=True)
+                    if st.button("📥 PDF Ranking", key=f"rep_pdf_{clave}"):
+                        pdf_ev = _generar_ranking_pdf(ranking_ev, areas_nombres_ev,
+                                                      ev.get('grado',''), ev.get('periodo',''), config)
+                        st.download_button("⬇️ Descargar PDF", pdf_ev,
+                                           f"Ranking_{ev.get('grado','')}_{ev.get('periodo','')}_{ev.get('fecha','')}.pdf",
+                                           "application/pdf", key=f"dl_rep_{clave}")
+        if total_mostradas == 0:
+            st.info("No hay evaluaciones para los filtros seleccionados.")
+        return
 
     if subtab == "📋 Asistencia Mensual":
         st.markdown("### 📋 Reporte Mensual de Asistencia por Grado")
@@ -6066,6 +6116,26 @@ def tab_reportes(config):
                                     'tipo': 'examen'
                                 })
 
+                    # Cargar notas del historial de evaluaciones (Registrar Notas)
+                    hist_eval = _cargar_historial_evaluaciones()
+                    for clave_h, ev_h in hist_eval.items():
+                        for fila_h in ev_h.get('ranking', []):
+                            if str(fila_h.get('DNI', '')) == str(dni_ri):
+                                areas_h = ev_h.get('areas', [])
+                                areas_nombres_h = [a['nombre'] for a in areas_h] if areas_h and isinstance(areas_h[0], dict) else list(areas_h)
+                                for a_n in areas_nombres_h:
+                                    nota_v = fila_h.get(a_n, 0)
+                                    if nota_v and float(nota_v) > 0:
+                                        notas_est.append({
+                                            'area': a_n,
+                                            'nota': float(nota_v),
+                                            'literal': nota_a_letra(float(nota_v)),
+                                            'bimestre': ev_h.get('periodo', ''),
+                                            'fecha': ev_h.get('fecha', ''),
+                                            'titulo': ev_h.get('titulo', ''),
+                                            'tipo': 'registro_notas'
+                                        })
+
                     al = BaseDatos.buscar_por_dni(dni_ri)
                     grado_est = str(al.get('Grado', grado_ri)) if al else grado_ri
 
@@ -6113,6 +6183,22 @@ def tab_reportes(config):
                                         'nota': area['nota'],
                                         'fecha': r.get('fecha', ''),
                                     })
+
+                        # De historial de evaluaciones (Registrar Notas)
+                        hist_eval_g = _cargar_historial_evaluaciones()
+                        for clave_hg, ev_hg in hist_eval_g.items():
+                            for fila_hg in ev_hg.get('ranking', []):
+                                if str(fila_hg.get('DNI', '')) == str(d_est):
+                                    areas_hg = ev_hg.get('areas', [])
+                                    areas_noms_hg = [a['nombre'] for a in areas_hg] if areas_hg and isinstance(areas_hg[0], dict) else list(areas_hg)
+                                    for a_ng in areas_noms_hg:
+                                        nota_vg = fila_hg.get(a_ng, 0)
+                                        if nota_vg and float(nota_vg) > 0:
+                                            notas_est.append({
+                                                'area': a_ng,
+                                                'nota': float(nota_vg),
+                                                'fecha': ev_hg.get('fecha', ''),
+                                            })
 
                         # Página del estudiante
                         c_pdf.setFont("Helvetica-Bold", 14)
@@ -6231,368 +6317,403 @@ BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 # TAB: REGISTRAR NOTAS (Manual — Para todos los docentes)
 # ================================================================
 
+def _cargar_historial_evaluaciones():
+    """Carga el historial de evaluaciones desde archivo JSON"""
+    try:
+        if Path('historial_evaluaciones.json').exists():
+            with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def _guardar_historial_evaluaciones(hist_data):
+    """Guarda el historial de evaluaciones en archivo JSON"""
+    try:
+        with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
+            json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
+        return True
+    except Exception:
+        return False
+
 def tab_registrar_notas(config):
-    """Módulo para que docentes registren notas manualmente"""
+    """Módulo para que docentes registren notas — multi-área, sesión limpia, historial"""
     st.header("📝 Registrar Notas")
 
     usuario = st.session_state.get('usuario_actual', '')
     gs = _gs()
 
-    # Determinar grado del docente
+    # ─── Determinar grado disponible para el docente ─────────────────────────
     grado_doc = None
     nivel_doc = None
     if st.session_state.docente_info:
         grado_doc = st.session_state.docente_info.get('grado', '')
         nivel_doc = st.session_state.docente_info.get('nivel', '')
 
-    # Admin/directivo puede elegir grado
-    if st.session_state.rol in ['admin', 'directivo']:
-        grado_sel = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_grado")
-    elif grado_doc:
-        # Secundaria/Preu: pueden elegir cualquier grado de su nivel
-        es_sec = (nivel_doc and ('SECUNDARIA' in str(nivel_doc).upper() or 'PREUNIVERSITARIO' in str(nivel_doc).upper()))
-        es_sec = es_sec or str(grado_doc) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
-        es_sec = es_sec or 'GRUPO' in str(grado_doc) or 'Sec' in str(grado_doc)
-        if es_sec:
-            grados_sec_preu = _grados_del_docente()
-            if not grados_sec_preu:
-                grados_sec_preu = [grado_doc]
-            grado_sel = st.selectbox("🎓 Grado:", grados_sec_preu, key="rn_grado_doc")
-        else:
-            grado_sel = grado_doc
-            st.info(f"🎓 **{grado_sel}**")
-    else:
-        st.warning("No se detectó grado asignado.")
+    # ─── PESTAÑA: Historial / Nueva Evaluación ────────────────────────────────
+    vista = st.radio("", ["📋 Nueva Evaluación", "📂 Historial de Evaluaciones"],
+                     horizontal=True, key="rn_vista")
+
+    if vista == "📂 Historial de Evaluaciones":
+        st.markdown("### 📂 Evaluaciones Guardadas")
+        hist = _cargar_historial_evaluaciones()
+        # Filtrar por rol
+        if st.session_state.rol not in ['admin', 'directivo']:
+            hist = {k: v for k, v in hist.items() if v.get('docente') == usuario}
+        if not hist:
+            st.info("📭 No hay evaluaciones guardadas aún.")
+            return
+        for clave, ev in sorted(hist.items(), reverse=True):
+            titulo_h = ev.get('titulo', '') or ''
+            label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
+            if titulo_h:
+                label_h += f" — {titulo_h}"
+            with st.expander(label_h):
+                areas_h = ev.get('areas', [])
+                areas_nombres = [a['nombre'] for a in areas_h] if isinstance(areas_h[0], dict) else areas_h
+                st.caption(f"Docente: {ev.get('docente','—')} | Áreas: {', '.join(areas_nombres)} | Estudiantes: {len(ev.get('ranking',[]))}")
+                ranking_h = ev.get('ranking', [])
+                if ranking_h:
+                    df_h = pd.DataFrame(ranking_h)
+                    cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
+                    cols_h = [c for c in cols_h if c in df_h.columns]
+                    st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
+                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
+                        pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                        st.download_button("⬇️ Descargar", pdf_h,
+                                           f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
+                                           "application/pdf", key=f"dl_hist_{clave}")
         return
 
-    # Determinar nivel y áreas correspondientes
-    nivel = 'PRIMARIA'
-    grado_str = str(grado_sel)
-    if 'Inicial' in grado_str:
-        nivel = 'INICIAL'
-    elif any(x in grado_str for x in ['1° Sec', '2° Sec', '3° Sec', '4° Sec', '5° Sec']):
-        nivel = 'SECUNDARIA'
-    elif 'GRUPO AB' in grado_str:
-        nivel = 'CEPRE_AB'
-    elif 'GRUPO CD' in grado_str:
-        nivel = 'CEPRE_CD'
-    elif any(x in grado_str for x in ['Ciclo', 'Reforzamiento']):
-        nivel = 'PREUNIVERSITARIO'
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NUEVA EVALUACIÓN
+    # ═══════════════════════════════════════════════════════════════════════════
 
-    # Seleccionar área y período
-    c1, c2 = st.columns(2)
-    with c1:
-        if nivel == 'CEPRE_AB':
-            areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO AB']
-        elif nivel == 'CEPRE_CD':
-            areas_nivel = AREAS_CEPRE_UNSAAC['GRUPO CD']
-        elif nivel == 'SECUNDARIA':
-            # Secundaria: áreas MINEDU + todas las áreas CEPRE UNSAAC
-            areas_cepre_all = sorted(set(
-                AREAS_CEPRE_UNSAAC['GRUPO AB'] + AREAS_CEPRE_UNSAAC['GRUPO CD']
-            ))
-            areas_nivel = AREAS_MINEDU['SECUNDARIA'] + ['──── CEPRE UNSAAC ────'] + areas_cepre_all
+    # ─── FASE 1: Configurar evaluación si no hay sesión activa ───────────────
+    if 'eval_sesion' not in st.session_state or st.session_state.eval_sesion is None:
+
+        st.markdown("### ⚙️ Configurar Nueva Evaluación")
+
+        # Grado
+        if st.session_state.rol in ['admin', 'directivo']:
+            grado_cfg = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="rn_cfg_grado")
+        elif grado_doc:
+            es_sec = (nivel_doc and ('SECUNDARIA' in str(nivel_doc).upper() or 'PREUNIVERSITARIO' in str(nivel_doc).upper()))
+            es_sec = es_sec or str(grado_doc) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA') or 'GRUPO' in str(grado_doc)
+            if es_sec:
+                grados_d = _grados_del_docente() or [grado_doc]
+                grado_cfg = st.selectbox("🎓 Grado:", grados_d, key="rn_cfg_grado_doc")
+            else:
+                grado_cfg = grado_doc
+                st.info(f"🎓 **{grado_cfg}**")
         else:
-            areas_nivel = AREAS_MINEDU.get(nivel, AREAS_MINEDU.get('PRIMARIA', []))
-        area_sel = st.selectbox("📚 Área:", areas_nivel, key="rn_area")
-    with c2:
-        bim_sel = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_bim")
-    titulo_eval_rn = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3",
-                                    key="rn_titulo")
+            st.warning("No se detectó grado asignado.")
+            return
 
-    # Cargar estudiantes
-    dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
+        # Período y título
+        c1, c2 = st.columns(2)
+        with c1:
+            bim_cfg = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_cfg_bim")
+        with c2:
+            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3", key="rn_cfg_titulo")
+
+        # Número de áreas
+        st.markdown("---")
+        num_areas = st.radio("📚 Número de áreas a evaluar:", [1, 2], horizontal=True, key="rn_cfg_nareas")
+
+        # Determinar áreas disponibles según nivel
+        nivel_cfg = 'PRIMARIA'
+        grado_str_cfg = str(grado_cfg)
+        if 'Inicial' in grado_str_cfg:
+            nivel_cfg = 'INICIAL'
+        elif any(x in grado_str_cfg for x in ['1° Sec','2° Sec','3° Sec','4° Sec','5° Sec']):
+            nivel_cfg = 'SECUNDARIA'
+        elif 'GRUPO AB' in grado_str_cfg:
+            nivel_cfg = 'CEPRE_AB'
+        elif 'GRUPO CD' in grado_str_cfg:
+            nivel_cfg = 'CEPRE_CD'
+        elif any(x in grado_str_cfg for x in ['Ciclo','Reforzamiento']):
+            nivel_cfg = 'PREUNIVERSITARIO'
+
+        if nivel_cfg == 'CEPRE_AB':
+            areas_disp = AREAS_CEPRE_UNSAAC['GRUPO AB']
+        elif nivel_cfg == 'CEPRE_CD':
+            areas_disp = AREAS_CEPRE_UNSAAC['GRUPO CD']
+        elif nivel_cfg == 'SECUNDARIA':
+            areas_cepre_all = sorted(set(AREAS_CEPRE_UNSAAC['GRUPO AB'] + AREAS_CEPRE_UNSAAC['GRUPO CD']))
+            areas_disp = AREAS_MINEDU['SECUNDARIA'] + areas_cepre_all
+        else:
+            areas_disp = AREAS_MINEDU.get(nivel_cfg, AREAS_MINEDU.get('PRIMARIA', []))
+
+        areas_cfg = []
+        cols_a = st.columns(num_areas)
+        for i in range(num_areas):
+            with cols_a[i]:
+                st.markdown(f"**Área {i+1}**")
+                nombre_a = st.selectbox(f"Área:", areas_disp, key=f"rn_cfg_area_{i}")
+                npregs_a = st.number_input(f"N° preguntas:", 1, 100, 20, key=f"rn_cfg_npregs_{i}")
+                areas_cfg.append({'nombre': nombre_a, 'num_preguntas': int(npregs_a)})
+
+        st.markdown("---")
+        if st.button("▶ INICIAR EVALUACIÓN", type="primary", use_container_width=True, key="btn_iniciar_eval"):
+            # Validar que no haya áreas repetidas
+            nombres_areas = [a['nombre'] for a in areas_cfg]
+            if len(set(nombres_areas)) < len(nombres_areas):
+                st.error("⚠️ Las dos áreas deben ser diferentes.")
+            else:
+                # Cargar y cachear lista de estudiantes AHORA para que no desaparezca
+                dg_cache = BaseDatos.obtener_estudiantes_grado(grado_cfg)
+                if dg_cache.empty:
+                    st.error("⚠️ No hay estudiantes matriculados en este grado. Verifica la matrícula.")
+                    return
+                import uuid
+                st.session_state.eval_sesion = {
+                    'id': str(uuid.uuid4())[:8],
+                    'grado': grado_cfg,
+                    'periodo': bim_cfg,
+                    'titulo': titulo_cfg,
+                    'areas': areas_cfg,
+                    'fecha': fecha_peru_str(),
+                    'docente': usuario,
+                }
+                # Guardar lista de estudiantes en session_state para estabilidad
+                st.session_state.eval_estudiantes = dg_cache.to_dict('records')
+                st.session_state.notas_sesion = {}  # Limpio
+                st.rerun()
+        return
+
+    # ─── FASE 2: Ingresar notas ───────────────────────────────────────────────
+    ev = st.session_state.eval_sesion
+    areas = ev['areas']  # lista de {nombre, num_preguntas}
+    grado_sel = ev['grado']
+    bim_sel = ev['periodo']
+    titulo_ev = ev.get('titulo', '')
+
+    # Encabezado de la evaluación activa
+    titulo_mostrar = f"{grado_sel} | {bim_sel}"
+    if titulo_ev:
+        titulo_mostrar += f" — {titulo_ev}"
+    st.success(f"✅ Evaluación activa: **{titulo_mostrar}**")
+    areas_str = " + ".join([f"{a['nombre']} ({a['num_preguntas']} pregs.)" for a in areas])
+    st.caption(f"📚 {areas_str}")
+
+    col_nueva, _ = st.columns([1, 4])
+    with col_nueva:
+        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval"):
+            st.session_state.eval_sesion = None
+            st.session_state.notas_sesion = {}
+            st.session_state.eval_estudiantes = []
+            st.rerun()
+
+    st.markdown("---")
+
+    # Cargar estudiantes — usar caché de sesión para estabilidad
+    if 'eval_estudiantes' in st.session_state and st.session_state.eval_estudiantes:
+        dg = pd.DataFrame(st.session_state.eval_estudiantes)
+    else:
+        # Fallback: intentar cargar de BD
+        dg = BaseDatos.obtener_estudiantes_grado(grado_sel)
+        if not dg.empty:
+            st.session_state.eval_estudiantes = dg.to_dict('records')
+    
     if dg.empty:
         st.warning("No hay estudiantes matriculados en este grado.")
         return
 
-    st.markdown(f"### 📋 {len(dg)} estudiantes — {area_sel} — {bim_sel}")
+    st.markdown(f"### 📋 {len(dg)} estudiantes")
 
-    # Tabla de ingreso de notas
-    notas_input = {}
-    st.markdown("""
-    <style>
-    .nota-ad { background: #dcfce7 !important; }
-    .nota-a { background: #dbeafe !important; }
-    .nota-b { background: #fef3c7 !important; }
-    .nota-c { background: #fee2e2 !important; }
-    </style>
-    """, unsafe_allow_html=True)
+    # Inicializar notas_sesion si no existe
+    if 'notas_sesion' not in st.session_state:
+        st.session_state.notas_sesion = {}
 
-    # Header
-    hc1, hc2, hc3, hc4 = st.columns([3, 1, 1, 1])
-    with hc1:
-        st.markdown("**Estudiante**")
-    with hc2:
-        st.markdown("**Nota (0-20)**")
-    with hc3:
-        st.markdown("**Literal**")
-    with hc4:
-        st.markdown("**Estado**")
+    # Encabezado tabla
+    num_areas = len(areas)
+    if num_areas == 1:
+        hcols = st.columns([3, 1, 1, 1, 1])
+        headers = ["Estudiante", f"Correctas/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:10]}/20", "Lit.", "Estado"]
+    else:
+        hcols = st.columns([2.5, 1, 1, 1, 1, 1, 1])
+        headers = ["Estudiante",
+                   f"C/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:8]}/20",
+                   f"C/{areas[1]['num_preguntas']}", f"{areas[1]['nombre'][:8]}/20",
+                   "Promedio", "Lit."]
+    for hc, hdr in zip(hcols, headers):
+        with hc:
+            st.markdown(f"**{hdr}**")
+
+    notas_actuales = {}
 
     for idx, row in dg.iterrows():
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
-        nc1, nc2, nc3, nc4 = st.columns([3, 1, 1, 1])
-        with nc1:
-            st.write(f"👤 {nombre}")
-        with nc2:
-            nota = st.number_input("Nota", 0, 20, 0,
-                                    key=f"rn_{dni}_{area_sel}_{bim_sel}",
-                                    label_visibility="collapsed")
-            notas_input[dni] = {'nombre': nombre, 'nota': nota}
-        with nc3:
-            lit = nota_a_letra(nota)
-            color = color_semaforo(lit)
-            st.markdown(f"<span style='color:{color};font-weight:bold;font-size:1.2em;'>{lit}</span>",
-                       unsafe_allow_html=True)
-        with nc4:
-            desc = ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:12]
-            st.caption(desc)
+        sesion_id = ev['id']
 
-    # Guardar
+        if num_areas == 1:
+            nc = st.columns([3, 1, 1, 1, 1])
+            with nc[0]:
+                st.write(f"👤 {nombre}")
+            with nc[1]:
+                correctas_0 = st.number_input("", 0, areas[0]['num_preguntas'],
+                                               st.session_state.notas_sesion.get(dni, {}).get('c0', 0),
+                                               key=f"c0_{sesion_id}_{dni}",
+                                               label_visibility="collapsed")
+            nota_0 = round(correctas_0 / areas[0]['num_preguntas'] * 20, 1)
+            lit_0 = nota_a_letra(nota_0)
+            with nc[2]:
+                color_0 = color_semaforo(lit_0)
+                st.markdown(f"<span style='font-weight:bold;font-size:1.1em;'>{nota_0}</span>", unsafe_allow_html=True)
+            with nc[3]:
+                st.markdown(f"<span style='color:{color_0};font-weight:bold;font-size:1.1em;'>{lit_0}</span>", unsafe_allow_html=True)
+            with nc[4]:
+                st.caption(ESCALA_MINEDU.get(lit_0, {}).get('nombre', '')[:10])
+            notas_actuales[dni] = {
+                'nombre': nombre,
+                'areas': {areas[0]['nombre']: nota_0},
+                'correctas': {areas[0]['nombre']: correctas_0},
+                'promedio': nota_0,
+                'c0': correctas_0
+            }
+        else:
+            nc = st.columns([2.5, 1, 1, 1, 1, 1, 1])
+            with nc[0]:
+                st.write(f"👤 {nombre}")
+            with nc[1]:
+                correctas_0 = st.number_input("", 0, areas[0]['num_preguntas'],
+                                               st.session_state.notas_sesion.get(dni, {}).get('c0', 0),
+                                               key=f"c0_{sesion_id}_{dni}",
+                                               label_visibility="collapsed")
+            nota_0 = round(correctas_0 / areas[0]['num_preguntas'] * 20, 1)
+            lit_0 = nota_a_letra(nota_0)
+            with nc[2]:
+                st.markdown(f"<span style='font-weight:bold;font-size:1.0em;'>{nota_0}</span>", unsafe_allow_html=True)
+            with nc[3]:
+                correctas_1 = st.number_input("", 0, areas[1]['num_preguntas'],
+                                               st.session_state.notas_sesion.get(dni, {}).get('c1', 0),
+                                               key=f"c1_{sesion_id}_{dni}",
+                                               label_visibility="collapsed")
+            nota_1 = round(correctas_1 / areas[1]['num_preguntas'] * 20, 1)
+            lit_1 = nota_a_letra(nota_1)
+            with nc[4]:
+                st.markdown(f"<span style='font-weight:bold;font-size:1.0em;'>{nota_1}</span>", unsafe_allow_html=True)
+            promedio = round((nota_0 + nota_1) / 2, 1)
+            lit_prom = nota_a_letra(promedio)
+            color_prom = color_semaforo(lit_prom)
+            with nc[5]:
+                st.markdown(f"<span style='color:{color_prom};font-weight:bold;font-size:1.1em;'>{promedio}</span>", unsafe_allow_html=True)
+            with nc[6]:
+                st.markdown(f"<span style='color:{color_prom};font-weight:bold;'>{lit_prom}</span>", unsafe_allow_html=True)
+            notas_actuales[dni] = {
+                'nombre': nombre,
+                'areas': {areas[0]['nombre']: nota_0, areas[1]['nombre']: nota_1},
+                'correctas': {areas[0]['nombre']: correctas_0, areas[1]['nombre']: correctas_1},
+                'promedio': promedio,
+                'c0': correctas_0,
+                'c1': correctas_1
+            }
+
+    # Actualizar sesión con lo ingresado
+    st.session_state.notas_sesion = notas_actuales
+
+    # ─── RANKING EN TIEMPO REAL ───────────────────────────────────────────────
     st.markdown("---")
-    if st.button("💾 GUARDAR NOTAS", type="primary",
-                 use_container_width=True, key="btn_guardar_notas"):
-        guardadas = 0
-        # Cargar notas locales
-        notas_local = {}
-        if Path('notas.json').exists():
-            try:
-                with open('notas.json', 'r', encoding='utf-8') as f:
-                    notas_local = json.load(f)
-            except Exception:
-                notas_local = {}
+    st.subheader("🏆 Ranking (evaluación actual)")
 
-        for dni, data in notas_input.items():
-            if data['nota'] > 0:
-                registro = {
-                    'fecha': fecha_peru_str(),
+    areas_nombres = [a['nombre'] for a in areas]
+    ranking_filas = []
+    for dni_r, data_r in notas_actuales.items():
+        if data_r['promedio'] > 0:
+            fila = {'DNI': dni_r, 'Nombre': data_r['nombre']}
+            for a_name in areas_nombres:
+                fila[a_name] = data_r['areas'].get(a_name, 0)
+            fila['Promedio'] = data_r['promedio']
+            ranking_filas.append(fila)
+
+    ranking_filas.sort(key=lambda x: x['Promedio'], reverse=True)
+    for i, f in enumerate(ranking_filas):
+        f['Puesto'] = i + 1
+        f['Medalla'] = ['🥇','🥈','🥉'][i] if i < 3 else f'#{i+1}'
+
+    if ranking_filas:
+        df_rank = pd.DataFrame(ranking_filas)
+        cols_order = ['Puesto', 'Medalla', 'Nombre'] + areas_nombres + ['Promedio']
+        cols_exist = [c for c in cols_order if c in df_rank.columns]
+        st.dataframe(df_rank[cols_exist], use_container_width=True, hide_index=True, height=350)
+        st.caption(f"📊 {len(ranking_filas)} estudiantes con nota > 0")
+    else:
+        st.info("📭 Ingresa correctas para ver el ranking en tiempo real")
+
+    # ─── GUARDAR Y FINALIZAR ──────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 💾 Guardar Evaluación en Historial")
+    st.info("💡 Al guardar, la evaluación queda registrada en el historial y podrás iniciar una nueva.")
+
+    if ranking_filas:
+        col_g1, col_g2 = st.columns(2)
+        with col_g1:
+            if st.button("💾 GUARDAR EN HISTORIAL", type="primary",
+                         use_container_width=True, key="btn_guardar_historial"):
+                hist = _cargar_historial_evaluaciones()
+                clave_hist = f"{grado_sel}_{bim_sel}_{ev['id']}_{fecha_peru_str()}"
+                hist[clave_hist] = {
+                    'id': ev['id'],
                     'grado': grado_sel,
-                    'area': area_sel,
-                    'bimestre': bim_sel,
-                    'dni': dni,
-                    'nombre': data['nombre'],
-                    'nota': data['nota'],
-                    'literal': nota_a_letra(data['nota']),
+                    'periodo': bim_sel,
+                    'titulo': titulo_ev,
+                    'fecha': fecha_peru_str(),
+                    'hora': hora_peru_str(),
                     'docente': usuario,
-                    'tipo': 'manual'
+                    'areas': areas,
+                    'ranking': ranking_filas,
                 }
-                key = f"nota_{dni}_{area_sel}_{bim_sel}"
-                # Guardar local
-                notas_local[key] = registro
-                guardadas += 1
-                # Guardar en GS también
+                # Guardar también en Google Sheets si está disponible
                 if gs:
                     try:
                         ws = gs._get_hoja('config')
                         if ws:
-                            ws.append_row([key, json.dumps(registro, ensure_ascii=False, default=str)])
+                            ws.append_row([f"histeval_{clave_hist}",
+                                           json.dumps(hist[clave_hist], ensure_ascii=False, default=str)])
                     except Exception:
                         pass
+                if _guardar_historial_evaluaciones(hist):
+                    st.success(f"✅ Evaluación guardada correctamente — {len(ranking_filas)} estudiantes")
+                    st.balloons()
+                    reproducir_beep_exitoso()
+                    # NO limpiamos la sesión para que el docente pueda seguir viendo/descargando
+                else:
+                    st.error("❌ Error al guardar. Intenta de nuevo.")
 
-        # Persistir local
-        if guardadas > 0:
-            try:
-                with open('notas.json', 'w', encoding='utf-8') as f:
-                    json.dump(notas_local, f, ensure_ascii=False, indent=2, default=str)
-            except Exception:
-                pass
-            st.success(f"✅ **{guardadas} notas guardadas** correctamente")
-            reproducir_beep_exitoso()
-            st.balloons()
-        else:
-            st.warning("⚠️ Ingrese al menos una nota mayor a 0")
-
-    # Historial de notas guardadas
-    st.markdown("---")
-    notas_hist = []
-    # Cargar de local primero
-    if Path('notas.json').exists():
-        try:
-            with open('notas.json', 'r', encoding='utf-8') as f:
-                notas_local = json.load(f)
-                for k, n in notas_local.items():
-                    if isinstance(n, dict) and n.get('grado') == grado_sel:
-                        notas_hist.append(n)
-        except Exception:
-            pass
-    # Si no hay local, intentar GS
-    if not notas_hist and gs:
-        try:
-            ws = gs._get_hoja('config')
-            if ws:
-                data = ws.get_all_records()
-                for d in data:
-                    clave = str(d.get('clave', ''))
-                    if clave.startswith('nota_'):
-                        try:
-                            n = json.loads(d.get('valor', '{}'))
-                            if n.get('grado') == grado_sel:
-                                notas_hist.append(n)
-                        except Exception:
-                            pass
-        except Exception:
-            pass
-
-    with st.expander("📊 Ver notas guardadas"):
-        notas_area = [n for n in notas_hist if n.get('area') == area_sel]
-        if notas_area:
-            df_n = pd.DataFrame(notas_area)
-            cols_show = [c for c in ['nombre', 'nota', 'literal', 'bimestre', 'fecha'] if c in df_n.columns]
-            st.dataframe(df_n[cols_show], use_container_width=True, hide_index=True)
-        else:
-            st.info("Sin notas guardadas para este grado/área")
-
-    # ===== RANKING Y REPORTES =====
-    st.markdown("---")
-    st.subheader("🏆 Ranking y Reportes")
-
-    if notas_hist:
-        # Agrupar por estudiante y área
-        from collections import defaultdict
-        ranking_data = defaultdict(lambda: {'nombre': '', 'areas': {}})
-        for n in notas_hist:
-            dni_r = n.get('dni', '')
-            ranking_data[dni_r]['nombre'] = n.get('nombre', '')
-            area_r = n.get('area', '')
-            nota_r = n.get('nota', 0)
-            try:
-                nota_r = int(nota_r)
-            except (ValueError, TypeError):
-                nota_r = 0
-            # Guardar la última nota por área
-            ranking_data[dni_r]['areas'][area_r] = nota_r
-
-        # Construir tabla ranking
-        areas_unicas = sorted(set(a for d in ranking_data.values() for a in d['areas']))
-        ranking_filas = []
-        for dni_r, data_r in ranking_data.items():
-            fila = {'DNI': dni_r, 'Nombre': data_r['nombre']}
-            total = 0
-            count = 0
-            for a in areas_unicas:
-                nota_a = data_r['areas'].get(a, 0)
-                fila[a] = nota_a
-                total += nota_a
-                count += 1
-            fila['Promedio'] = round(total / max(count, 1), 1)
-            ranking_filas.append(fila)
-
-        ranking_filas.sort(key=lambda x: x['Promedio'], reverse=True)
-        for i, f in enumerate(ranking_filas):
-            f['Puesto'] = i + 1
-            if i == 0:
-                f['Medalla'] = '🥇'
-            elif i == 1:
-                f['Medalla'] = '🥈'
-            elif i == 2:
-                f['Medalla'] = '🥉'
-            else:
-                f['Medalla'] = f'#{i+1}'
-
-        df_rank = pd.DataFrame(ranking_filas)
-        cols_order = ['Puesto', 'Medalla', 'Nombre'] + areas_unicas + ['Promedio']
-        cols_exist = [c for c in cols_order if c in df_rank.columns]
-        df_rank = df_rank[cols_exist]
-
-        st.dataframe(df_rank, use_container_width=True, hide_index=True, height=400)
-        st.caption(f"📊 {len(ranking_filas)} estudiantes — {len(areas_unicas)} área(s) evaluada(s)")
-
-        # Descargar Ranking PDF
-        c_rnk1, c_rnk2 = st.columns(2)
-        with c_rnk1:
-            if st.button("📥 DESCARGAR RANKING PDF", type="primary",
-                         use_container_width=True, key="btn_ranking_pdf"):
-                pdf_rank = _generar_ranking_pdf(ranking_filas, areas_unicas, grado_sel,
-                                                 bim_sel, config)
-                st.download_button("⬇️ Descargar PDF", pdf_rank,
+        with col_g2:
+            # PDF descarga
+            if st.button("📥 DESCARGAR RANKING PDF", use_container_width=True, key="btn_pdf_eval"):
+                pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
+                st.download_button("⬇️ Descargar PDF", pdf_r,
                                    f"Ranking_{grado_sel}_{bim_sel}.pdf",
-                                   "application/pdf", key="dl_ranking_pdf")
-        with c_rnk2:
-            if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_notas"):
-                st.session_state['_mostrar_wa_notas'] = True
+                                   "application/pdf", key="dl_pdf_eval")
 
-        # WhatsApp individual
-        if st.session_state.get('_mostrar_wa_notas'):
+        # WhatsApp
+        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
+            st.session_state['_mostrar_wa_eval'] = True
+        if st.session_state.get('_mostrar_wa_eval'):
             st.markdown("### 📱 Enviar Notas por WhatsApp")
             for fila in ranking_filas:
-                nombre_wa = fila['Nombre']
-                # Buscar celular del apoderado
-                alumno = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
-                cel = alumno.get('Celular_Apoderado', '') if alumno else ''
+                alumno_wa = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
+                cel = alumno_wa.get('Celular_Apoderado', '') if alumno_wa else ''
                 if cel:
-                    msg = "🏫 *I.E.P. YACHAY - CHINCHERO*\n"
-                    msg += "📊 *REPORTE DE NOTAS*\n\n"
-                    msg += f"👤 Alumno: {nombre_wa}\n"
-                    msg += f"📚 Grado: {grado_sel}\n"
-                    msg += f"📅 Período: {bim_sel}\n"
-                    msg += "─" * 35 + "\n"
-                    for a in areas_unicas:
-                        nota_w = fila.get(a, 0)
-                        lit_w = nota_a_letra(nota_w) if nota_w > 0 else '-'
-                        msg += f"📖 {a}: *{nota_w}* ({lit_w})\n"
-                    msg += "─" * 35 + "\n"
-                    msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n"
-                    msg += f"🏆 *PUESTO: {fila['Medalla']}*"
-                    cel_clean = cel.replace(' ', '').replace('+', '')
-                    if not cel_clean.startswith('51'):
-                        cel_clean = '51' + cel_clean
-                    url_wa = f"https://wa.me/{cel_clean}?text={urllib.parse.quote(msg)}"
-                    st.markdown(f"📱 **{nombre_wa}** → [{cel}]({url_wa})")
+                    msg = "🏫 *I.E.P. YACHAY - CHINCHERO*\n📊 *REPORTE DE NOTAS*\n\n"
+                    msg += f"👤 Alumno: {fila['Nombre']}\n📚 Grado: {grado_sel}\n📅 Período: {bim_sel}\n"
+                    msg += "─" * 30 + "\n"
+                    for a_n in areas_nombres:
+                        nota_w = fila.get(a_n, 0)
+                        msg += f"📖 {a_n}: *{nota_w}* ({nota_a_letra(nota_w)})\n"
+                    msg += "─" * 30 + "\n"
+                    msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n🏆 *PUESTO: {fila['Medalla']}*"
+                    cel_c = ('51' + cel.replace(' ','').replace('+','').lstrip('51'))
+                    url_wa = f"https://wa.me/{cel_c}?text={urllib.parse.quote(msg)}"
+                    st.markdown(f"📱 **{fila['Nombre']}** → [{cel}]({url_wa})")
                 else:
-                    st.caption(f"⚠️ {nombre_wa} — Sin celular registrado")
-        
-        # NUEVO: Botones para guardar evaluación y limpiar
-        st.markdown("---")
-        st.markdown("### 💾 Gestionar Evaluación")
-        col_g1, col_g2 = st.columns(2)
-        
-        with col_g1:
-            if st.button("💾 GUARDAR EVALUACIÓN EN HISTORIAL", 
-                       type="primary", use_container_width=True, key="btn_guardar_hist"):
-                # Guardar en historial
-                if 'historial_evaluaciones' not in st.session_state:
-                    st.session_state['historial_evaluaciones'] = {}
-                
-                clave_hist = f"{grado_sel}_{bim_sel}_{fecha_peru_str()}"
-                st.session_state['historial_evaluaciones'][clave_hist] = {
-                    'grado': grado_sel,
-                    'periodo': bim_sel,
-                    'fecha': fecha_peru_str(),
-                    'hora': hora_peru_str(),
-                    'ranking': ranking_filas,
-                    'areas': areas_unicas
-                }
-                
-                # Guardar en archivo JSON
-                try:
-                    historial_file = 'historial_evaluaciones.json'
-                    if Path(historial_file).exists():
-                        with open(historial_file, 'r', encoding='utf-8') as f:
-                            hist_data = json.load(f)
-                    else:
-                        hist_data = {}
-                    
-                    hist_data[clave_hist] = st.session_state['historial_evaluaciones'][clave_hist]
-                    
-                    with open(historial_file, 'w', encoding='utf-8') as f:
-                        json.dump(hist_data, f, ensure_ascii=False, indent=2)
-                    
-                    st.success(f"✅ Evaluación guardada: {grado_sel} - {bim_sel}")
-                    st.balloons()
-                except Exception as e:
-                    st.error(f"Error al guardar: {str(e)}")
-        
-        with col_g2:
-            st.info("💡 Guarda primero antes de limpiar")
-            if st.checkbox("Confirmar limpieza de notas", key="conf_limpiar_notas"):
-                if st.button("🗑️ LIMPIAR NOTAS ACTUALES", 
-                           use_container_width=True, key="btn_limpiar_notas"):
-                    st.warning("⚠️ Esta función eliminará las notas del período actual")
-                    st.info("📝 Implementar limpieza en Google Sheets si es necesario")
+                    st.caption(f"⚠️ {fila['Nombre']} — Sin celular registrado")
     else:
-        st.info("📭 Registre notas primero para ver el ranking")
+        st.warning("⚠️ Ingresa al menos una nota para guardar")
 
 
 def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
