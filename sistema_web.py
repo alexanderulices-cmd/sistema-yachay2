@@ -3293,24 +3293,22 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - MUY VISIBLE para señora mayor
+        # Botón CERRAR SESIÓN - ROJO SIMPLE
         st.markdown("""
         <style>
-        /* Botón cerrar sesión sidebar - SUPER VISIBLE */
-        div[data-testid="stSidebar"] button[kind="secondary"]:has(p:contains("CERRAR SESIÓN")) {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+        div[data-testid="stSidebar"] button:has(p:contains("CERRAR SESIÓN")) {
+            background: #dc2626 !important;
             color: white !important;
-            font-size: 1.2rem !important;
+            font-size: 1.1rem !important;
             font-weight: bold !important;
-            padding: 18px 20px !important;
-            border: 3px solid #7f1d1d !important;
-            border-radius: 12px !important;
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5) !important;
-            margin: 10px 0 !important;
+            padding: 16px !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
         }
-        div[data-testid="stSidebar"] button[kind="secondary"]:has(p:contains("CERRAR SESIÓN")):hover {
-            transform: scale(1.08) !important;
-            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.7) !important;
+        div[data-testid="stSidebar"] button:has(p:contains("CERRAR SESIÓN")):hover {
+            background: #b91c1c !important;
+            transform: scale(1.05) !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -9483,21 +9481,24 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR con color morado llamativo
+            # Botón REGRESAR - AZUL SIMPLE
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
                 st.markdown("""
                 <style>
                 button[key="btn_volver"] {
-                    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+                    background: #2563eb !important;
                     color: white !important;
                     font-weight: bold !important;
-                    font-size: 1.1rem !important;
+                    font-size: 1rem !important;
+                    padding: 12px !important;
                     border: none !important;
-                    padding: 14px !important;
+                    border-radius: 8px !important;
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
                 }
                 button[key="btn_volver"]:hover {
+                    background: #1d4ed8 !important;
                     transform: scale(1.05) !important;
                 }
                 </style>
