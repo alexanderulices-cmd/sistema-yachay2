@@ -44,7 +44,6 @@ except ImportError:
     GOOGLE_SYNC_DISPONIBLE = False
 
 import base64  # Para Aula Virtual
-import streamlit.components.v1 as components  # Para inyección JS directa
 
 # python-docx para leer archivos Word
 try:
@@ -173,6 +172,31 @@ st.markdown("""
     button[data-testid*="dash_"] {
         font-family: 'Segoe UI', Tahoma, sans-serif;
         /* Sus colores ya están definidos individualmente */
+    }
+
+    /* CERRAR SESIÓN - rojo sólido */
+    [data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] button,
+    [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] button,
+    [data-testid="stBaseButton-secondary"][key="btn_logout_sidebar"] button,
+    button[key="btn_logout_sidebar"],
+    [data-testid="stSidebar"] .stButton button {
+        background-color: #dc2626 !important;
+        background: #dc2626 !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        border: none !important;
+        opacity: 1 !important;
+    }
+
+    /* REGRESAR - azul sólido */
+    button[key="btn_volver"],
+    [data-testid="stBaseButton-secondary"][key="btn_volver"] button {
+        background-color: #2563eb !important;
+        background: #2563eb !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        border: none !important;
+        opacity: 1 !important;
     }
     
     /* EXCLUIR barra de herramientas de Streamlit - dejar en su estilo original */
@@ -3312,29 +3336,6 @@ def configurar_sidebar():
                     </div>""", unsafe_allow_html=True)
         
         st.markdown("---")
-        
-        # Botón CERRAR SESIÓN - JS real via components para forzar estilo
-        components.html("""
-        <script>
-        function estilizarCerrarSesion() {
-            var btns = window.parent.document.querySelectorAll('button');
-            for (var i = 0; i < btns.length; i++) {
-                var txt = btns[i].innerText || btns[i].textContent;
-                if (txt.indexOf('CERRAR') !== -1 || txt.indexOf('SESIÓN') !== -1) {
-                    btns[i].style.cssText = 'background:#dc2626 !important; background-color:#dc2626 !important; color:#000000 !important; font-weight:900 !important; font-size:1.1rem !important; border:none !important; border-radius:8px !important; padding:16px !important; opacity:1 !important; cursor:pointer !important;';
-                    var hijos = btns[i].querySelectorAll('*');
-                    for (var j = 0; j < hijos.length; j++) {
-                        hijos[j].style.cssText = 'color:#000000 !important; font-weight:900 !important;';
-                    }
-                }
-            }
-        }
-        setTimeout(estilizarCerrarSesion, 200);
-        setTimeout(estilizarCerrarSesion, 600);
-        setTimeout(estilizarCerrarSesion, 1200);
-        setTimeout(estilizarCerrarSesion, 2500);
-        </script>
-        """, height=0)
         
         if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
@@ -9504,29 +9505,6 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - JS real via components para forzar estilo
-            components.html("""
-            <script>
-            function estilizarRegresar() {
-                var btns = window.parent.document.querySelectorAll('button');
-                for (var i = 0; i < btns.length; i++) {
-                    var txt = btns[i].innerText || btns[i].textContent;
-                    if (txt.indexOf('REGRESAR') !== -1) {
-                        btns[i].style.cssText = 'background:#2563eb !important; background-color:#2563eb !important; color:#000000 !important; font-weight:900 !important; font-size:1rem !important; border:none !important; border-radius:8px !important; padding:14px !important; opacity:1 !important; cursor:pointer !important;';
-                        var hijos = btns[i].querySelectorAll('*');
-                        for (var j = 0; j < hijos.length; j++) {
-                            hijos[j].style.cssText = 'color:#000000 !important; font-weight:900 !important;';
-                        }
-                    }
-                }
-            }
-            setTimeout(estilizarRegresar, 200);
-            setTimeout(estilizarRegresar, 600);
-            setTimeout(estilizarRegresar, 1200);
-            setTimeout(estilizarRegresar, 2500);
-            </script>
-            """, height=0)
-            
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
