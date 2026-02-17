@@ -81,7 +81,6 @@ st.markdown("""
     input[type="submit"] {
         background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
         color: white !important;
-        -webkit-text-fill-color: white !important;
         border: 2px solid #1e3a8a !important;
         border-radius: 8px !important;
         padding: 10px 20px !important;
@@ -108,7 +107,6 @@ st.markdown("""
     div[class*="stButton"] button {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
         color: white !important;
-        -webkit-text-fill-color: white !important;
         border: 2px solid #1e40af !important;
         font-weight: 600 !important;
         opacity: 1 !important;
@@ -3297,40 +3295,29 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - Estilo como Google Sheets con pulse
+        # Botón CERRAR SESIÓN - color rojo sólido, sin efectos
         st.markdown("""
         <style>
-        @keyframes pulse-red {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        /* Selector ultra específico para CERRAR SESIÓN */
-        div[data-testid="stSidebar"] button[key="btn_logout_sidebar"],
-        div[data-testid="stSidebar"] button:has-text("CERRAR"),
-        button[data-testid="btn_logout_sidebar"],
-        div[data-testid="stSidebar"] div[data-testid="stButton"] button,
         div[data-testid="stSidebar"] .stButton button,
         div[data-testid="stSidebar"] button {
             background: #dc2626 !important;
-            background-color: #dc2626 !important;
             color: white !important;
-            font-size: 1.1rem !important;
-            font-weight: 900 !important;
-            padding: 16px !important;
-            border: 3px solid #991b1b !important;
-            border-radius: 8px !important;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.8) !important;
-            animation: pulse-red 2s infinite !important;
-            opacity: 1 !important;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
             -webkit-text-fill-color: white !important;
+            font-size: 1.1rem !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
         }
         div[data-testid="stSidebar"] .stButton button:hover,
         div[data-testid="stSidebar"] button:hover {
-            background: #b91c1c !important;
-            background-color: #b91c1c !important;
+            background: #dc2626 !important;
             color: white !important;
             -webkit-text-fill-color: white !important;
+            transform: none !important;
             opacity: 1 !important;
         }
         </style>
@@ -9475,42 +9462,9 @@ def main():
                             </div>
                             """, unsafe_allow_html=True)
                             
-                            # Inyectar CSS específico para este botón usando marcador único
-                            st.markdown(f"""
-                            <style>
-                            div[data-testid="stVerticalBlock"] div#marker_{key} + div div[data-testid="stButton"] button,
-                            #marker_{key} ~ div button {{
-                                background: {color} !important;
-                                background-color: {color} !important;
-                                color: white !important;
-                                -webkit-text-fill-color: white !important;
-                                border: none !important;
-                                font-weight: bold !important;
-                                font-size: 1rem !important;
-                                opacity: 1 !important;
-                                transition: none !important;
-                                transform: none !important;
-                                box-shadow: 0 3px 8px rgba(0,0,0,0.25) !important;
-                            }}
-                            #marker_{key} ~ div button:hover,
-                            #marker_{key} ~ div button:focus,
-                            #marker_{key} ~ div button:active {{
-                                background: {color} !important;
-                                background-color: {color} !important;
-                                color: white !important;
-                                -webkit-text-fill-color: white !important;
-                                opacity: 1 !important;
-                                transform: none !important;
-                                filter: brightness(0.92) !important;
-                                box-shadow: 0 3px 8px rgba(0,0,0,0.35) !important;
-                            }}
-                            </style>
-                            <span id="marker_{key}" style="display:none;"></span>
-                            """, unsafe_allow_html=True)
-                            
                             # Botón visible debajo para hacer click
                             if st.button(f"▶ Abrir {nombre}", key=f"dash_{key}", 
-                                        use_container_width=True):
+                                        type="primary", use_container_width=True):
                                 st.session_state.modulo_activo = key
                                 st.rerun()
 
@@ -9537,38 +9491,29 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - Estilo como Google Sheets con pulse
+            # Botón REGRESAR - color azul sólido, sin efectos
             st.markdown("""
             <style>
-            @keyframes pulse-blue {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
-            /* Selector ultra específico para REGRESAR */
-            button[data-testid="btn_volver"],
             div[data-testid="column"]:first-child button,
-            div[data-testid="column"]:first-child .stButton button,
-            div[data-testid="column"]:first-child div[data-testid="stButton"] button {
+            div[data-testid="column"]:first-child .stButton button {
                 background: #2563eb !important;
-                background-color: #2563eb !important;
                 color: white !important;
                 -webkit-text-fill-color: white !important;
-                font-weight: 900 !important;
+                font-weight: bold !important;
                 font-size: 1rem !important;
-                padding: 14px !important;
-                border: 3px solid #1d4ed8 !important;
+                border: none !important;
                 border-radius: 8px !important;
-                box-shadow: 0 4px 15px rgba(37, 99, 235, 0.8) !important;
-                animation: pulse-blue 2s infinite !important;
+                box-shadow: none !important;
+                animation: none !important;
+                transform: none !important;
                 opacity: 1 !important;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
             }
             div[data-testid="column"]:first-child button:hover,
             div[data-testid="column"]:first-child .stButton button:hover {
-                background: #1d4ed8 !important;
-                background-color: #1d4ed8 !important;
+                background: #2563eb !important;
                 color: white !important;
                 -webkit-text-fill-color: white !important;
+                transform: none !important;
                 opacity: 1 !important;
             }
             </style>
