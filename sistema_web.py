@@ -3293,10 +3293,13 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        # Botón CERRAR SESIÓN - ROJO SIMPLE
+        # Botón CERRAR SESIÓN - ROJO INTENSO
         st.markdown("""
         <style>
-        div[data-testid="stSidebar"] button:has(p:contains("CERRAR SESIÓN")) {
+        /* Selector por key - MÁS FUERTE */
+        div[data-testid="stSidebar"] button[key="btn_logout_sidebar"],
+        div[data-testid="stSidebar"] div:has(button[key="btn_logout_sidebar"]) button,
+        div[data-testid="stSidebar"] .stButton button {
             background: #dc2626 !important;
             color: white !important;
             font-size: 1.1rem !important;
@@ -3304,16 +3307,17 @@ def configurar_sidebar():
             padding: 16px !important;
             border: none !important;
             border-radius: 8px !important;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6) !important;
+            opacity: 1 !important;
         }
-        div[data-testid="stSidebar"] button:has(p:contains("CERRAR SESIÓN")):hover {
+        div[data-testid="stSidebar"] button:hover {
             background: #b91c1c !important;
             transform: scale(1.05) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, type="secondary", key="btn_logout_sidebar"):
+        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
             st.rerun()
@@ -9481,23 +9485,27 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR - AZUL SIMPLE
+            # Botón REGRESAR - AZUL INTENSO
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
                 st.markdown("""
                 <style>
-                button[key="btn_volver"] {
+                /* Selector MÁS FUERTE para botón regresar */
+                div[data-testid="column"] button,
+                button[data-testid*="btn_volver"],
+                div:has(button) button:first-child {
                     background: #2563eb !important;
                     color: white !important;
                     font-weight: bold !important;
                     font-size: 1rem !important;
-                    padding: 12px !important;
+                    padding: 14px !important;
                     border: none !important;
                     border-radius: 8px !important;
-                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6) !important;
+                    opacity: 1 !important;
                 }
-                button[key="btn_volver"]:hover {
+                button:hover {
                     background: #1d4ed8 !important;
                     transform: scale(1.05) !important;
                 }
