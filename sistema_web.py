@@ -9291,12 +9291,35 @@ def main():
 
         if st.session_state.modulo_activo is None:
             # === DASHBOARD PRINCIPAL ===
-            st.markdown(f"""
-            <div class='main-header'>
-                <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
-                <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
-            </div>
-            """, unsafe_allow_html=True)
+            # Botón cerrar sesión arriba a la derecha
+            col_titulo, col_logout_dash = st.columns([4, 1])
+            
+            with col_titulo:
+                st.markdown(f"""
+                <div class='main-header'>
+                    <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
+                    <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col_logout_dash:
+                st.markdown("""
+                <style>
+                button[key="btn_logout_dashboard"] {
+                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+                    color: white !important;
+                    font-weight: bold !important;
+                    border: none !important;
+                    margin-top: 10px !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
+                if st.button("🚪 CERRAR SESIÓN", key="btn_logout_dashboard", use_container_width=True):
+                    st.session_state.rol = None
+                    st.session_state.usuario_actual = None
+                    st.session_state.modulo_activo = None
+                    st.rerun()
 
             # Grid de módulos
             # Grid de módulos
@@ -9367,10 +9390,44 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón de regresar más visible
-            col_back, col_space = st.columns([1, 4])
+            # Botones de navegación con colores llamativos
+            col_back, col_logout, col_space = st.columns([1, 1, 3])
+            
             with col_back:
-                if st.button("⬅️ REGRESAR", key="btn_volver", type="secondary", use_container_width=True):
+                # Botón REGRESAR - Color morado llamativo
+                st.markdown("""
+                <style>
+                button[key="btn_volver"] {
+                    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+                    color: white !important;
+                    font-weight: bold !important;
+                    border: none !important;
+                    padding: 12px !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
+                if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True):
+                    st.session_state.modulo_activo = None
+                    st.rerun()
+            
+            with col_logout:
+                # Botón CERRAR SESIÓN - Color rojo llamativo
+                st.markdown("""
+                <style>
+                button[key="btn_logout_modulo"] {
+                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+                    color: white !important;
+                    font-weight: bold !important;
+                    border: none !important;
+                    padding: 12px !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
+                if st.button("🚪 CERRAR SESIÓN", key="btn_logout_modulo", use_container_width=True):
+                    st.session_state.rol = None
+                    st.session_state.usuario_actual = None
                     st.session_state.modulo_activo = None
                     st.rerun()
             
