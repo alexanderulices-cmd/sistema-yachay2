@@ -4721,11 +4721,27 @@ def tab_calificacion_yachay(config):
                                    ["📋 Lista de mi grado", "🔍 Buscar por DNI"],
                                    horizontal=True, key="metodo_sel")
             if metodo_sel == "📋 Lista de mi grado":
-                grado_doc = None
-                if st.session_state.docente_info:
-                    grado_doc = st.session_state.docente_info.get('grado')
-                if not grado_doc and st.session_state.rol in ['admin', 'directivo']:
-                    grado_doc = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_cal_sel")
+                # Usar el helper central que filtra según rol
+                rol_act = st.session_state.get('rol', '')
+                info_act = st.session_state.get('docente_info', {}) or {}
+                nivel_act = str(info_act.get('nivel', '')).upper()
+                grado_act = str(info_act.get('grado', ''))
+
+                es_sec_act = ('SECUNDARIA' in nivel_act or 'PREUNIVERSITARIO' in nivel_act
+                              or 'GRUPO' in grado_act or grado_act in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+
+                if rol_act in ['admin', 'directivo']:
+                    grado_doc = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="grado_cal_sel")
+                elif es_sec_act:
+                    grados_d = _grados_del_docente()
+                    grado_doc = st.selectbox("🎓 Grado:", grados_d, key="grado_cal_sel_sec")
+                elif grado_act and grado_act != 'N/A':
+                    grado_doc = grado_act
+                    st.info(f"🎓 **{grado_doc}**")
+                else:
+                    grado_doc = None
+                    st.warning("Sin grado asignado.")
+
                 if grado_doc:
                     dg = BaseDatos.obtener_estudiantes_grado(grado_doc)
                     if not dg.empty and 'Nombre' in dg.columns:
@@ -6452,25 +6468,31 @@ def tab_registrar_notas(config):
             if len(set(nombres_areas)) < len(nombres_areas):
                 st.error("⚠️ Las áreas seleccionadas deben ser diferentes entre sí.")
             else:
-                # Cargar y cachear lista de estudiantes AHORA para que no desaparezca
+                # Intentar cargar estudiantes - búsqueda robusta
                 dg_cache = BaseDatos.obtener_estudiantes_grado(grado_cfg)
                 if dg_cache.empty:
-                    st.error("⚠️ No hay estudiantes matriculados en este grado. Verifica la matrícula.")
-                    return
-                import uuid
-                st.session_state.eval_sesion = {
-                    'id': str(uuid.uuid4())[:8],
-                    'grado': grado_cfg,
-                    'periodo': bim_cfg,
-                    'titulo': titulo_cfg,
-                    'areas': areas_cfg,
-                    'fecha': fecha_peru_str(),
-                    'docente': usuario,
-                }
-                # Guardar lista de estudiantes en session_state para estabilidad
-                st.session_state.eval_estudiantes = dg_cache.to_dict('records')
-                st.session_state.notas_sesion = {}  # Limpio
-                st.rerun()
+                    # Mostrar info diagnóstico
+                    df_all = BaseDatos.cargar_matricula()
+                    if df_all.empty:
+                        st.error("⚠️ La matrícula está vacía. Registra estudiantes primero.")
+                    else:
+                        grados_existentes = sorted(df_all['Grado'].dropna().unique().tolist()) if 'Grado' in df_all.columns else []
+                        st.error(f"⚠️ No hay estudiantes en **{grado_cfg}**.")
+                        st.info(f"💡 Grados con estudiantes: {', '.join(str(g) for g in grados_existentes[:10])}")
+                else:
+                    import uuid
+                    st.session_state.eval_sesion = {
+                        'id': str(uuid.uuid4())[:8],
+                        'grado': grado_cfg,
+                        'periodo': bim_cfg,
+                        'titulo': titulo_cfg,
+                        'areas': areas_cfg,
+                        'fecha': fecha_peru_str(),
+                        'docente': usuario,
+                    }
+                    st.session_state.eval_estudiantes = dg_cache.to_dict('records')
+                    st.session_state.notas_sesion = {}
+                    st.rerun()
         return
 
     # ─── FASE 2: Ingresar notas ───────────────────────────────────────────────
@@ -7962,63 +7984,114 @@ def _leer_docx(file_bytes):
 
 
 def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, semana, titulo, tipo_doc="FICHA"):
-    """Genera PDF con formato oficial del colegio desde contenido de Word."""
+    """Genera PDF con formato oficial del colegio desde contenido de Word — 2 columnas."""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
 
     # ENCABEZADO OFICIAL
     _pdf_encabezado_material(c_pdf, w, h, config, semana, area, titulo, grado, nombre_doc)
-    y_pos = h - 195  # Justo debajo del título + línea del encabezado
 
-    # Tipo de documento
+    # Tipo de documento (pequeño, gris)
     c_pdf.setFont("Helvetica", 8)
     c_pdf.setFillColor(colors.HexColor("#6b7280"))
     c_pdf.drawRightString(w - 35, h - 192, f"{tipo_doc} — Docente: {nombre_doc}")
     c_pdf.setFillColor(colors.black)
-    y_pos -= 12
+
+    # ── CONFIGURACIÓN 2 COLUMNAS ─────────────────────────────────────────
+    MARGEN_IZQ = 30
+    MARGEN_DER = 30
+    GAP_COLS   = 14          # espacio entre columnas
+    CONTENT_W  = w - MARGEN_IZQ - MARGEN_DER
+    COL_W      = (CONTENT_W - GAP_COLS) / 2
+    COL1_X     = MARGEN_IZQ
+    COL2_X     = MARGEN_IZQ + COL_W + GAP_COLS
+    Y_TOP      = h - 205     # inicio de contenido
+    Y_BOTTOM   = 45          # margen inferior
+
+    # Línea divisoria entre columnas
+    def _dibujar_linea_col(c, y_top, y_bot):
+        c.setStrokeColor(colors.HexColor("#e5e7eb"))
+        c.setLineWidth(0.5)
+        c.line(COL2_X - GAP_COLS / 2, y_bot, COL2_X - GAP_COLS / 2, y_top)
+
+    col_actual = 0   # 0 = izquierda, 1 = derecha
+    y = Y_TOP
+    pagina = [1]
+
+    def x_col():
+        return COL1_X if col_actual == 0 else COL2_X
+
+    def max_chars():
+        # Ancho de columna en caracteres aproximados (Helvetica 10pt)
+        return int(COL_W / 5.5)
+
+    def nueva_columna_o_pagina():
+        nonlocal col_actual, y
+        if col_actual == 0:
+            col_actual = 1
+            y = Y_TOP
+        else:
+            _dibujar_linea_col(c_pdf, Y_TOP, Y_BOTTOM)
+            _pdf_pie_material(c_pdf, w, grado, area, semana, pagina[0])
+            c_pdf.showPage()
+            pagina[0] += 1
+            col_actual = 0
+            y = Y_TOP
+            _pdf_encabezado_cont(c_pdf, w, h, grado, area, nombre_doc, semana)
+
+    _dibujar_linea_col(c_pdf, Y_TOP, Y_BOTTOM)
 
     for bloque in bloques_docx:
         tipo = bloque.get('tipo', '')
         contenido = bloque.get('contenido', '')
 
-        if y_pos < 90:
-            c_pdf.showPage()
-            _pdf_pie_material(c_pdf, w, grado, area, semana)
-            y_pos = h - 60
-
         if tipo == 'vacio':
-            y_pos -= 8
-        elif tipo == 'titulo':
-            c_pdf.setFont("Helvetica-Bold", 14)
+            y -= 7
+            if y < Y_BOTTOM:
+                nueva_columna_o_pagina()
+            continue
+
+        if tipo == 'titulo':
+            if y < Y_BOTTOM + 30:
+                nueva_columna_o_pagina()
+            c_pdf.setFont("Helvetica-Bold", 13)
             c_pdf.setFillColor(colors.HexColor("#1a56db"))
-            c_pdf.drawString(60, y_pos, contenido[:70])
+            for linea in textwrap.wrap(contenido, width=max_chars()):
+                if y < Y_BOTTOM:
+                    nueva_columna_o_pagina()
+                c_pdf.drawString(x_col(), y, linea)
+                y -= 18
             c_pdf.setFillColor(colors.black)
-            y_pos -= 22
+
         elif tipo == 'subtitulo':
-            c_pdf.setFont("Helvetica-Bold", 11)
-            c_pdf.setFillColor(colors.HexColor("#1e40af"))
-            c_pdf.drawString(60, y_pos, contenido[:80])
-            c_pdf.setFillColor(colors.black)
-            y_pos -= 18
-        elif tipo == 'negrita':
+            if y < Y_BOTTOM + 20:
+                nueva_columna_o_pagina()
             c_pdf.setFont("Helvetica-Bold", 10)
-            for linea in textwrap.wrap(contenido, width=85):
-                if y_pos < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
-                c_pdf.drawString(65, y_pos, linea)
-                y_pos -= 14
+            c_pdf.setFillColor(colors.HexColor("#1e40af"))
+            for linea in textwrap.wrap(contenido, width=max_chars()):
+                if y < Y_BOTTOM:
+                    nueva_columna_o_pagina()
+                c_pdf.drawString(x_col(), y, linea)
+                y -= 14
+            c_pdf.setFillColor(colors.black)
+
+        elif tipo == 'negrita':
+            c_pdf.setFont("Helvetica-Bold", 9)
+            for linea in textwrap.wrap(contenido, width=max_chars()):
+                if y < Y_BOTTOM:
+                    nueva_columna_o_pagina()
+                c_pdf.drawString(x_col(), y, linea)
+                y -= 13
+
         elif tipo == 'texto':
-            c_pdf.setFont("Helvetica", 10)
-            for linea in textwrap.wrap(contenido, width=85):
-                if y_pos < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
-                c_pdf.drawString(65, y_pos, linea)
-                y_pos -= 14
+            c_pdf.setFont("Helvetica", 9)
+            for linea in textwrap.wrap(contenido, width=max_chars()):
+                if y < Y_BOTTOM:
+                    nueva_columna_o_pagina()
+                c_pdf.drawString(x_col(), y, linea)
+                y -= 13
+
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
             try:
                 img_bytes = base64.b64decode(bloque['imagen_b64'])
@@ -8026,18 +8099,16 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
                 if img.mode == 'RGBA':
                     img = img.convert('RGB')
                 img_w, img_h = img.size
-                max_w = w - 140
-                max_h = 250
-                ratio = min(max_w / img_w, max_h / img_h, 1.0)
+                max_w_img = COL_W - 4
+                max_h_img = 180
+                ratio = min(max_w_img / img_w, max_h_img / img_h, 1.0)
                 dw, dh = img_w * ratio, img_h * ratio
-                if y_pos - dh < 80:
-                    c_pdf.showPage()
-                    _pdf_pie_material(c_pdf, w, grado, area, semana)
-                    y_pos = h - 60
+                if y - dh < Y_BOTTOM:
+                    nueva_columna_o_pagina()
                 tmp = f"tmp_docx_{int(time.time())}.jpg"
                 img.save(tmp, 'JPEG', quality=80)
-                c_pdf.drawImage(tmp, (w - dw) / 2, y_pos - dh, dw, dh)
-                y_pos -= dh + 15
+                c_pdf.drawImage(tmp, x_col(), y - dh, dw, dh)
+                y -= dh + 10
                 try:
                     os.remove(tmp)
                 except Exception:
@@ -8045,7 +8116,8 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
             except Exception:
                 pass
 
-    _pdf_pie_material(c_pdf, w, grado, area, semana)
+    _dibujar_linea_col(c_pdf, Y_TOP, Y_BOTTOM)
+    _pdf_pie_material(c_pdf, w, grado, area, semana, pagina[0])
     c_pdf.save()
     buffer.seek(0)
     return buffer.getvalue()
@@ -8413,83 +8485,60 @@ def tab_examenes_semanales(config):
                     key=f"correcta_{i}"
                 )
                 
-                # Guardar datos de la pregunta
                 preguntas.append({
                     'numero': i,
                     'texto': texto_pregunta,
                     'imagen': imagen_pregunta,
-                    'alternativas': {
-                        'A': alt_a,
-                        'B': alt_b,
-                        'C': alt_c,
-                        'D': alt_d
-                    },
+                    'alternativas': {'A': alt_a, 'B': alt_b, 'C': alt_c, 'D': alt_d},
                     'correcta': correcta
                 })
                 
                 if i < num_preguntas:
                     st.markdown("---")
             
-            # Botón para generar PDF
+            # submit dentro del form
             submitted = st.form_submit_button(
-                "📥 GENERAR PDF DEL EXAMEN",
+                "🖨️ GENERAR PDF DEL EXAMEN",
                 type="primary",
                 use_container_width=True
             )
             
             if submitted:
                 if not titulo_examen or not area_examen or not grado_examen:
-                    st.error("⚠️ Por favor complete: Título, Grado y Área del examen")
+                    st.error("⚠️ Complete: Título, Grado y Área")
                 else:
-                    # Verificar que todas las preguntas tengan texto
                     preguntas_vacias = [p['numero'] for p in preguntas if not p['texto'].strip()]
                     if preguntas_vacias:
-                        st.warning(f"⚠️ Las siguientes preguntas están vacías: {', '.join(map(str, preguntas_vacias))}")
+                        st.warning(f"⚠️ Preguntas vacías: {', '.join(map(str, preguntas_vacias))}")
                     else:
                         try:
-                            with st.spinner("📄 Generando PDF del examen..."):
-                                # Generar PDF del examen
+                            with st.spinner("📄 Generando PDF..."):
                                 pdf_bytes = _generar_pdf_examen_2columnas(
-                                    titulo_examen,
-                                    area_examen,
-                                    grado_examen,
-                                    preguntas,
-                                    config
-                                )
-                                
-                                # Guardar en carpeta de exámenes
+                                    titulo_examen, area_examen, grado_examen, preguntas, config)
                                 fecha_actual = fecha_peru_str()
-                                nombre_archivo = f"examen_{usuario}_{grado_examen}_{fecha_actual}_{titulo_examen[:30]}.pdf"
-                                nombre_archivo = nombre_archivo.replace(' ', '_').replace('/', '_').replace(':', '_')
-                                
+                                nombre_archivo = f"examen_{usuario}_{grado_examen}_{fecha_actual}_{titulo_examen[:25]}.pdf"
+                                nombre_archivo = nombre_archivo.replace(' ','_').replace('/','_').replace(':','_')
                                 ruta_archivo = examenes_dir / nombre_archivo
                                 with open(ruta_archivo, 'wb') as f:
                                     f.write(pdf_bytes)
-                                
-                                st.success("🎉 ¡Examen generado exitosamente!")
+                                # Guardar en session_state para descarga fuera del form
+                                st.session_state['_ultimo_examen_pdf'] = pdf_bytes
+                                st.session_state['_ultimo_examen_nombre'] = nombre_archivo
+                                st.success("🎉 ¡Examen generado! Descárgalo abajo.")
                                 st.balloons()
-                                
-                                # Botón de descarga
-                                st.download_button(
-                                    "📥 DESCARGAR EXAMEN PDF",
-                                    pdf_bytes,
-                                    nombre_archivo,
-                                    "application/pdf",
-                                    use_container_width=True,
-                                    key="dl_examen_generado"
-                                )
-                                
-                                # Mostrar resumen
-                                with st.expander("📊 Resumen del Examen"):
-                                    st.write(f"**Título:** {titulo_examen}")
-                                    st.write(f"**Grado:** {grado_examen}")
-                                    st.write(f"**Área:** {area_examen}")
-                                    st.write(f"**Preguntas:** {len(preguntas)}")
-                                    st.write(f"**Archivo:** {nombre_archivo}")
-                                
                         except Exception as e:
-                            st.error(f"❌ Error al generar PDF: {str(e)}")
-                            st.caption("Verifique que todos los datos estén completos")
+                            st.error(f"❌ Error: {str(e)}")
+
+        # ── Descarga FUERA del form (evita el error de Streamlit) ──────────
+        if st.session_state.get('_ultimo_examen_pdf'):
+            st.download_button(
+                "📥 DESCARGAR EXAMEN PDF",
+                st.session_state['_ultimo_examen_pdf'],
+                st.session_state.get('_ultimo_examen_nombre', 'examen.pdf'),
+                "application/pdf",
+                use_container_width=True,
+                key="dl_examen_fuera_form"
+            )
     
     # ===== TAB 2: MIS EXÁMENES =====
     with tab2:
