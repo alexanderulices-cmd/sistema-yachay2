@@ -3293,6 +3293,29 @@ def configurar_sidebar():
         
         st.markdown("---")
         
+        # Botón CERRAR SESIÓN - Estilo como Google Sheets con pulse
+        st.markdown("""
+        <style>
+        @keyframes pulse-red {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        div[data-testid="stSidebar"] button[data-testid*="btn_logout"],
+        div[data-testid="stSidebar"] .stButton:last-of-type button {
+            background: #dc2626 !important;
+            color: white !important;
+            font-size: 1.1rem !important;
+            font-weight: bold !important;
+            padding: 16px !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6) !important;
+            animation: pulse-red 2s infinite !important;
+            opacity: 1 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
@@ -9461,7 +9484,29 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR
+            # Botón REGRESAR - Estilo como Google Sheets con pulse
+            st.markdown("""
+            <style>
+            @keyframes pulse-blue {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            div[data-testid="column"]:first-child button,
+            div[data-testid="column"]:first-child .stButton button {
+                background: #2563eb !important;
+                color: white !important;
+                font-weight: bold !important;
+                font-size: 1rem !important;
+                padding: 14px !important;
+                border: none !important;
+                border-radius: 8px !important;
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6) !important;
+                animation: pulse-blue 2s infinite !important;
+                opacity: 1 !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
