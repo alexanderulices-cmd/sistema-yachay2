@@ -2400,17 +2400,17 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
 def generar_link_whatsapp(tel, msg):
     # Limpiar: puede venir como float (987654321.0) si Excel lo guardó como número
     t = str(tel).strip()
-    # Si viene como float tipo "987654321.0", quitar el .0
     if '.' in t:
         t = t.split('.')[0]
     t = t.replace("+", "").replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
-    # Solo dejar dígitos
     t = ''.join(c for c in t if c.isdigit())
     if len(t) == 9:
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
-    return f"https://wa.me/{t}?text={urllib.parse.quote(msg)}"
+    # Codificar correctamente incluyendo emojis (UTF-8, sin safe chars)
+    msg_encoded = urllib.parse.quote(msg, safe='', encoding='utf-8')
+    return f"https://wa.me/{t}?text={msg_encoded}"
 
 
 FRASES_MOTIVACIONALES = [
@@ -6625,8 +6625,8 @@ def tab_registrar_notas(config):
         col_widths = [2.5, 0.7]  # Estudiante + NSP
         headers_list = ["Estudiante", "NSP"]
         for i in range(num_areas):
-            col_widths.extend([1.2, 0.1])  # Nota + Separador visual
-            headers_list.extend([f"{areas[i]['nombre'][:8]}/20", ""])
+            col_widths.append(1.3)  # Solo nota, sin separador
+            headers_list.append(f"{areas[i]['nombre'][:8]}/20")
         col_widths.extend([1, 0.8])  # Promedio + Lit
         headers_list.extend(["Prom.", "Lit."])
         hcols = st.columns(col_widths)
@@ -6693,8 +6693,6 @@ def tab_registrar_notas(config):
                                             key=f"nota_{i}_{sesion_id}_{dni}",
                                             label_visibility="collapsed")
                     notas_vals.append(nota_i)
-                col_idx += 1
-
                 col_idx += 1
 
             # Promedio y literal (solo si hay más de 1 área)
