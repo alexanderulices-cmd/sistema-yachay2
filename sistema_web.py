@@ -2398,7 +2398,6 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
 # ================================================================
 
 def generar_link_whatsapp(tel, msg):
-    # Limpiar: puede venir como float (987654321.0) si Excel lo guardó como número
     t = str(tel).strip()
     if '.' in t:
         t = t.split('.')[0]
@@ -2408,9 +2407,9 @@ def generar_link_whatsapp(tel, msg):
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
-    # Codificar correctamente incluyendo emojis (UTF-8, sin safe chars)
-    msg_encoded = urllib.parse.quote(msg, safe='', encoding='utf-8')
-    return f"https://wa.me/{t}?text={msg_encoded}"
+    msg_encoded = urllib.parse.quote(msg.encode('utf-8'), safe=b'')
+    # whatsapp:// abre directamente la app de escritorio
+    return f"whatsapp://send?phone={t}&text={msg_encoded}"
 
 
 FRASES_MOTIVACIONALES = [
