@@ -1132,9 +1132,23 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    # ── PROTECCIÓN: combinar con local para no perder datos ──────
+                    try:
+                        if Path(ARCHIVO_MATRICULA).exists():
+                            df_local = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+                            df_local.columns = df_local.columns.str.strip()
+                            if not df_local.empty and 'DNI' in df_local.columns and 'DNI' in df_gs.columns:
+                                # Agregar al GS los que están en local pero no en GS
+                                dnis_gs = set(df_gs['DNI'].astype(str).str.strip())
+                                df_solo_local = df_local[~df_local['DNI'].astype(str).str.strip().isin(dnis_gs)]
+                                if not df_solo_local.empty:
+                                    df_gs = pd.concat([df_gs, df_solo_local], ignore_index=True)
+                    except Exception:
+                        pass
                     return df_gs
             except Exception:
                 pass
+        # Fallback: leer local
         try:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
@@ -4224,33 +4238,25 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia RÁPIDO sin enviar WhatsApp (se envía después)"""
-    # Limpiar caché de matrícula para asegurar datos frescos en el registro
+    """Registra asistencia — si DNI no está en matrícula, permite registrar con nombre manual"""
+    # Limpiar caché para datos frescos
     if '_cache_matricula' in st.session_state:
         del st.session_state['_cache_matricula']
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
         tipo = st.session_state.tipo_asistencia.lower()
-        
-        # CORREGIDO: Asegurar nombre correcto para docentes
         es_d = persona.get('_tipo', '') == 'docente'
         if es_d:
-            # Para docentes, usar el nombre del registro de docentes
             df_doc = BaseDatos.cargar_docentes()
             if not df_doc.empty and 'DNI' in df_doc.columns:
                 df_doc['DNI'] = df_doc['DNI'].astype(str).str.strip()
                 doc_encontrado = df_doc[df_doc['DNI'] == str(dni).strip()]
-                if not doc_encontrado.empty:
-                    nombre = doc_encontrado.iloc[0]['Nombre']
-                else:
-                    nombre = persona.get('Nombre', '')
+                nombre = doc_encontrado.iloc[0]['Nombre'] if not doc_encontrado.empty else persona.get('Nombre', '')
             else:
                 nombre = persona.get('Nombre', '')
         else:
-            # Para alumnos, usar nombre normal
             nombre = persona.get('Nombre', '')
-        
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         emoji_tipo = "🟢" if tipo == "entrada" else "🟡"
@@ -4259,8 +4265,17 @@ def _registrar_asistencia_rapida(dni):
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
-        st.error(f"❌ DNI {dni} no encontrado en el sistema")
-        reproducir_beep_error()
+        # DNI no encontrado — permitir registro manual con nombre
+        st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
+        nombre_manual = st.text_input("Nombre completo:", key=f"nombre_manual_{dni}",
+                                      placeholder="Ej: FLORES QUISPE JUAN")
+        if nombre_manual and st.button("✅ Registrar de todas formas", key=f"reg_manual_{dni}", type="primary"):
+            hora = hora_peru_str()
+            tipo = st.session_state.tipo_asistencia.lower()
+            BaseDatos.guardar_asistencia(dni, nombre_manual.upper().strip(), tipo, hora, es_docente=False)
+            st.success(f"✅ Registrado: {nombre_manual.upper()} — {hora}")
+            reproducir_beep_exitoso()
+            st.info("💡 Recuerda matricular a este estudiante para que aparezca normalmente.")
 
 
 # ================================================================
