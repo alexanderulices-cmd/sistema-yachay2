@@ -4085,50 +4085,95 @@ def tab_asistencias():
             st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
                          use_container_width=True, hide_index=True)
 
-        # ===== ZONA WHATSAPP — ENVÍO MASIVO =====
+    # ===== LISTA DE ASISTENCIA DE HOY =====
+    st.markdown("---")
+    st.subheader("📊 Registros de Hoy")
+    asis = BaseDatos.obtener_asistencias_hoy()
+    if asis:
+        # Separar alumnos y docentes
+        alumnos_h = []
+        docentes_h = []
+        for dk, v in asis.items():
+            reg = {'DNI': dk, 'Nombre': v['nombre'],
+                   'Entrada': v.get('entrada', '—'),
+                   'Salida': v.get('salida', '—'),
+                   'es_docente': v.get('es_docente', False)}
+            if v.get('es_docente', False):
+                docentes_h.append(reg)
+            else:
+                alumnos_h.append(reg)
+
+        # Métricas rápidas
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.metric("📚 Alumnos", len(alumnos_h))
+        with c2:
+            st.metric("👨‍🏫 Docentes", len(docentes_h))
+        with c3:
+            entradas = sum(1 for v in asis.values() if v.get('entrada'))
+            st.metric("🌅 Entradas", entradas)
+        with c4:
+            salidas = sum(1 for v in asis.values() if v.get('salida'))
+            st.metric("🌙 Salidas", salidas)
+
+        if alumnos_h:
+            st.markdown("**📚 Alumnos registrados:**")
+            st.dataframe(pd.DataFrame(alumnos_h).drop(columns=['es_docente']),
+                         use_container_width=True, hide_index=True)
+        if docentes_h:
+            st.markdown("**👨‍🏫 Docentes registrados:**")
+            st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
+                         use_container_width=True, hide_index=True)
+
+        # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
-        st.caption("Toque cada botón para enviar. Al enviar se marca como ✅")
+        st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        # Recargar asistencias frescas para tener todos los registros
-        asis = BaseDatos.obtener_asistencias_hoy()
-        tipo_actual = st.session_state.tipo_asistencia.lower()
-        pendientes = 0
-        enviados = 0
-        sin_celular = []
+        tab_ent, tab_sal = st.tabs(["🌅 Entrada", "🌙 Salida"])
 
-        for dk, dat in asis.items():
-            hora_reg = dat.get(tipo_actual, '')
-            if not hora_reg:
-                continue
+        def _render_wa_tab(tipo_tab):
+            asis_fresh = BaseDatos.obtener_asistencias_hoy()
+            pendientes = 0
+            enviados = 0
+            sin_celular = []
 
-            clave_envio = f"{dk}_{tipo_actual}_{fecha_peru_str()}"
-            ya_enviado = clave_envio in st.session_state.wa_enviados
+            for dk, dat in asis_fresh.items():
+                hora_reg = dat.get(tipo_tab, '')
+                if not hora_reg:
+                    continue
 
-            al = BaseDatos.buscar_por_dni(dk)
-            nombre = dat['nombre']
-            es_doc = dat.get('es_docente', False)
-            tipo_icon = "👨‍🏫" if es_doc else "📚"
+                clave_envio = f"{dk}_{tipo_tab}_{fecha_peru_str()}"
+                ya_enviado = clave_envio in st.session_state.wa_enviados
+                if ya_enviado:
+                    enviados += 1
+                    continue  # Ya enviado: NO mostrar, desaparece de lista
 
-            cel = ''
-            if al:
-                cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
-                # Limpiar si viene como float: "987654321.0" -> "987654321"
-                if '.' in cel:
-                    cel = cel.split('.')[0]
-                cel = ''.join(c for c in cel if c.isdigit())
-                cel = '' if len(cel) < 7 else cel
+                # Buscar celular directo desde matrícula local (sin GS)
+                nombre = dat['nombre']
+                es_doc = dat.get('es_docente', False)
+                tipo_icon = "👨‍🏫" if es_doc else "📚"
 
-            if not cel:
-                sin_celular.append(f"{tipo_icon} {nombre}")
-                continue
+                cel = ''
+                df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
+                if df_m.empty:
+                    df_m = BaseDatos.cargar_matricula()
+                    st.session_state['_cache_matricula'] = df_m
+                if not df_m.empty and 'DNI' in df_m.columns:
+                    fila = df_m[df_m['DNI'].astype(str).str.strip() == str(dk).strip()]
+                    if not fila.empty:
+                        cel = str(fila.iloc[0].get('Celular_Apoderado', fila.iloc[0].get('Celular', ''))).strip()
+                        if '.' in cel:
+                            cel = cel.split('.')[0]
+                        cel = ''.join(c for c in cel if c.isdigit())
+                        cel = '' if len(cel) < 7 else cel
 
-            if ya_enviado:
-                enviados += 1
-                st.markdown(f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ *(enviado)*")
-            else:
+                if not cel:
+                    sin_celular.append(f"{tipo_icon} {nombre}")
+                    continue
+
                 pendientes += 1
-                msg = generar_mensaje_asistencia(nombre, tipo_actual, hora_reg)
+                msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
                 col_btn, col_check = st.columns([4, 1])
                 with col_btn:
@@ -4137,20 +4182,27 @@ def tab_asistencias():
                         f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
                         unsafe_allow_html=True)
                 with col_check:
-                    if st.button("✅", key=f"wa_{dk}_{tipo_actual}",
-                                 help="Marcar como enviado"):
+                    if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
+                                 help="Marcar como enviado y quitar de lista"):
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
 
-        if sin_celular:
-            with st.expander(f"⚠️ {len(sin_celular)} sin número de celular registrado"):
-                for s in sin_celular:
-                    st.caption(f"• {s}")
+            if sin_celular:
+                with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
+                    for s in sin_celular:
+                        st.caption(f"• {s}")
 
-        if pendientes == 0 and enviados > 0:
-            st.success(f"🎉 ¡Todos los WhatsApp enviados! ({enviados} mensajes)")
-        elif pendientes > 0:
-            st.info(f"📱 {pendientes} pendientes | ✅ {enviados} enviados")
+            if pendientes == 0 and enviados > 0:
+                st.success(f"🎉 ¡Todos enviados! ({enviados} mensajes)")
+            elif pendientes == 0 and enviados == 0:
+                st.info("No hay registros de este tipo aún.")
+            else:
+                st.info(f"📱 {pendientes} pendientes de envío")
+
+        with tab_ent:
+            _render_wa_tab("entrada")
+        with tab_sal:
+            _render_wa_tab("salida")
 
         # Botón para resetear marcas de enviado
         if enviados > 0:
@@ -4174,6 +4226,9 @@ def tab_asistencias():
 
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia RÁPIDO sin enviar WhatsApp (se envía después)"""
+    # Limpiar caché de matrícula para asegurar datos frescos en el registro
+    if '_cache_matricula' in st.session_state:
+        del st.session_state['_cache_matricula']
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
