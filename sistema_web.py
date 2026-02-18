@@ -2398,12 +2398,18 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
 # ================================================================
 
 def generar_link_whatsapp(tel, msg):
-    t = str(tel).strip().replace("+", "").replace(" ", "").replace("-", "")
+    # Limpiar: puede venir como float (987654321.0) si Excel lo guardó como número
+    t = str(tel).strip()
+    # Si viene como float tipo "987654321.0", quitar el .0
+    if '.' in t:
+        t = t.split('.')[0]
+    t = t.replace("+", "").replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
+    # Solo dejar dígitos
+    t = ''.join(c for c in t if c.isdigit())
     if len(t) == 9:
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
-    # wa.me funciona tanto en móvil como en WhatsApp Web
     return f"https://wa.me/{t}?text={urllib.parse.quote(msg)}"
 
 
@@ -4082,36 +4088,42 @@ def tab_asistencias():
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al enviar se marca como ✅")
 
+        # Recargar asistencias frescas para tener todos los registros
+        asis = BaseDatos.obtener_asistencias_hoy()
         tipo_actual = st.session_state.tipo_asistencia.lower()
         pendientes = 0
         enviados = 0
+        sin_celular = []
 
         for dk, dat in asis.items():
-            # Verificar si ya fue enviado
-            clave_envio = f"{dk}_{tipo_actual}_{fecha_peru_str()}"
-            ya_enviado = clave_envio in st.session_state.wa_enviados
-
-            # Buscar celular
-            al = BaseDatos.buscar_por_dni(dk)
-            if not al:
-                continue
-            cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
-            if not cel or cel == 'None' or cel == 'nan':
-                continue
-
             hora_reg = dat.get(tipo_actual, '')
             if not hora_reg:
                 continue
 
+            clave_envio = f"{dk}_{tipo_actual}_{fecha_peru_str()}"
+            ya_enviado = clave_envio in st.session_state.wa_enviados
+
+            al = BaseDatos.buscar_por_dni(dk)
             nombre = dat['nombre']
             es_doc = dat.get('es_docente', False)
             tipo_icon = "👨‍🏫" if es_doc else "📚"
 
+            cel = ''
+            if al:
+                cel = str(al.get('Celular_Apoderado', al.get('Celular', ''))).strip()
+                # Limpiar si viene como float: "987654321.0" -> "987654321"
+                if '.' in cel:
+                    cel = cel.split('.')[0]
+                cel = ''.join(c for c in cel if c.isdigit())
+                cel = '' if len(cel) < 7 else cel
+
+            if not cel:
+                sin_celular.append(f"{tipo_icon} {nombre}")
+                continue
+
             if ya_enviado:
                 enviados += 1
-                st.markdown(
-                    f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ "
-                    f"*(enviado)*")
+                st.markdown(f"✅ ~~{tipo_icon} {nombre} — {hora_reg} → {cel}~~ *(enviado)*")
             else:
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_actual, hora_reg)
@@ -4127,6 +4139,11 @@ def tab_asistencias():
                                  help="Marcar como enviado"):
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
+
+        if sin_celular:
+            with st.expander(f"⚠️ {len(sin_celular)} sin número de celular registrado"):
+                for s in sin_celular:
+                    st.caption(f"• {s}")
 
         if pendientes == 0 and enviados > 0:
             st.success(f"🎉 ¡Todos los WhatsApp enviados! ({enviados} mensajes)")
@@ -8143,12 +8160,12 @@ def _leer_docx(file_bytes):
         return []
     doc = DocxDocument(io.BytesIO(file_bytes))
     bloques = []
+    contadores_lista = {}  # nivel -> contador para listas numeradas
     for para in doc.paragraphs:
         texto = para.text.strip()
         if not texto:
             bloques.append({'tipo': 'vacio'})
             continue
-        # Detectar estilo
         style_name = (para.style.name or '').lower()
         is_bold = para.runs and all(r.bold for r in para.runs if r.text.strip())
         is_heading = 'heading' in style_name or 'título' in style_name
@@ -8158,13 +8175,35 @@ def _leer_docx(file_bytes):
                 if r.font.size:
                     font_size = r.font.size.pt
                     break
-        if is_heading or ('heading 1' in style_name):
+
+        # Detectar listas numeradas
+        is_lista_num = any(x in style_name for x in ['list number', 'lista con número', 'list paragraph'])
+        # Detectar listas con viñetas
+        is_lista_bullet = any(x in style_name for x in ['list bullet', 'list paragraph', 'lista con viñeta'])
+        # Detectar por formato XML si tiene numeración
+        if not is_lista_num and para._element.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr') is not None:
+            numPr = para._element.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+            ilvl = numPr.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
+            nivel = int(ilvl.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', 0)) if ilvl is not None else 0
+            contadores_lista[nivel] = contadores_lista.get(nivel, 0) + 1
+            # Resetear niveles más profundos
+            for k in list(contadores_lista.keys()):
+                if k > nivel:
+                    del contadores_lista[k]
+            prefijo = "  " * nivel + f"{contadores_lista[nivel]}. "
+            bloques.append({'tipo': 'lista_num', 'contenido': prefijo + texto, 'nivel': nivel})
+            continue
+
+        if is_heading or 'heading 1' in style_name:
+            contadores_lista.clear()
             bloques.append({'tipo': 'titulo', 'contenido': texto})
         elif 'heading 2' in style_name or (is_bold and font_size and font_size >= 13):
+            contadores_lista.clear()
             bloques.append({'tipo': 'subtitulo', 'contenido': texto})
         elif is_bold:
             bloques.append({'tipo': 'negrita', 'contenido': texto})
         else:
+            contadores_lista.clear()
             bloques.append({'tipo': 'texto', 'contenido': texto})
     # Extraer imágenes
     for rel in doc.part.rels.values():
@@ -8310,18 +8349,19 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
             p_neg.drawOn(c_pdf, x_col(), y - h_neg)
             y -= (h_neg + 4)
 
-        elif tipo == 'texto':
+        elif tipo in ('texto', 'lista_num'):
             c_pdf.setFont("Helvetica", 9)
-            # Usar Paragraph para texto justificado
             from reportlab.platypus import Paragraph
             from reportlab.lib.styles import ParagraphStyle
+            indent = bloque.get('nivel', 0) * 10 if tipo == 'lista_num' else 0
             style_txt = ParagraphStyle('texto_just', fontName='Helvetica', fontSize=9,
-                                      leading=12, alignment=TA_JUSTIFY, hyphenationLang='es_ES')
+                                      leading=12, alignment=TA_JUSTIFY,
+                                      leftIndent=indent)
             p_txt = Paragraph(contenido, style_txt)
-            w_txt, h_txt = p_txt.wrap(COL_W - 8, 500)
+            w_txt, h_txt = p_txt.wrap(COL_W - 8 - indent, 500)
             if y - h_txt < Y_BOTTOM:
                 nueva_columna_o_pagina()
-            p_txt.drawOn(c_pdf, x_col(), y - h_txt)
+            p_txt.drawOn(c_pdf, x_col() + indent, y - h_txt)
             y -= h_txt
 
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
