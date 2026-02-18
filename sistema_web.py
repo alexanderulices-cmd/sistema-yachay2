@@ -6719,25 +6719,51 @@ def tab_registrar_notas(config):
     st.markdown("### 💾 Guardar Evaluación en Historial")
     st.info("💡 Al guardar, la evaluación queda registrada en el historial y podrás iniciar una nueva.")
 
+    # CSS global para TODOS los botones en esta sección
+    st.markdown("""
+    <style>
+    /* Botón GUARDAR - Verde */
+    div[data-testid="column"]:nth-of-type(1) button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
+        border: none !important;
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.5) !important;
+    }
+    /* Botón DESCARGAR PDF - Naranja */
+    div[data-testid="column"]:nth-of-type(2) button {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
+        border: none !important;
+        box-shadow: 0 4px 8px rgba(249, 115, 22, 0.5) !important;
+    }
+    /* Botón WhatsApp - Verde WA */
+    button[key="btn_wa_eval"] {
+        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
+        border: none !important;
+        box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5) !important;
+    }
+    /* Botón NUEVA EVALUACIÓN - Cyan */
+    button[key="btn_nueva_eval"] {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
+        border: none !important;
+        box-shadow: 0 4px 8px rgba(6, 182, 212, 0.5) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     if ranking_filas:
         col_g1, col_g2 = st.columns(2)
         with col_g1:
-            # Botón GUARDAR con color verde intenso
-            st.markdown("""
-            <style>
-            div.stButton > button[kind="primary"] {
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-                color: white !important;
-                font-weight: bold !important;
-                border: none !important;
-                box-shadow: 0 4px 6px rgba(16, 185, 129, 0.4) !important;
-            }
-            div.stButton > button[kind="primary"]:hover {
-                background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-                box-shadow: 0 6px 10px rgba(16, 185, 129, 0.6) !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
             if st.button("💾 GUARDAR EN HISTORIAL", type="primary",
                          use_container_width=True, key="btn_guardar_historial"):
                 hist = _cargar_historial_evaluaciones()
@@ -6753,7 +6779,6 @@ def tab_registrar_notas(config):
                     'areas': areas,
                     'ranking': ranking_filas,
                 }
-                # Guardar también en Google Sheets si está disponible
                 if gs:
                     try:
                         ws = gs._get_hoja('config')
@@ -6766,49 +6791,16 @@ def tab_registrar_notas(config):
                     st.success(f"✅ Evaluación guardada correctamente — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
-                    # NO limpiamos la sesión para que el docente pueda seguir viendo/descargando
                 else:
                     st.error("❌ Error al guardar. Intenta de nuevo.")
 
         with col_g2:
-            # Botón DESCARGAR PDF con color naranja intenso
-            st.markdown("""
-            <style>
-            div[data-testid="column"]:nth-of-type(2) div.stButton > button {
-                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-                color: white !important;
-                font-weight: bold !important;
-                border: none !important;
-                box-shadow: 0 4px 6px rgba(249, 115, 22, 0.4) !important;
-            }
-            div[data-testid="column"]:nth-of-type(2) div.stButton > button:hover {
-                background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
-                box-shadow: 0 6px 10px rgba(249, 115, 22, 0.6) !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
             if st.button("📥 DESCARGAR RANKING PDF", use_container_width=True, key="btn_pdf_eval"):
                 pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
                 st.download_button("⬇️ Descargar PDF", pdf_r,
                                    f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
-        # Botón WhatsApp con color verde WhatsApp
-        st.markdown("""
-        <style>
-        button[key="btn_wa_eval"] {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
-            color: white !important;
-            font-weight: bold !important;
-            border: none !important;
-            box-shadow: 0 4px 6px rgba(37, 211, 102, 0.4) !important;
-        }
-        button[key="btn_wa_eval"]:hover {
-            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%) !important;
-            box-shadow: 0 6px 10px rgba(37, 211, 102, 0.6) !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
         if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
             st.session_state['_mostrar_wa_eval'] = True
         if st.session_state.get('_mostrar_wa_eval'):
@@ -6817,17 +6809,23 @@ def tab_registrar_notas(config):
                 alumno_wa = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
                 cel = alumno_wa.get('Celular_Apoderado', '') if alumno_wa else ''
                 if cel:
-                    msg = "🏫 *I.E.P. YACHAY - CHINCHERO*\n📊 *REPORTE DE NOTAS*\n\n"
-                    msg += f"👤 Alumno: {fila['Nombre']}\n📚 Grado: {grado_sel}\n📅 Período: {bim_sel}\n"
-                    msg += "─" * 30 + "\n"
+                    # Usar solo caracteres ASCII seguros en WhatsApp
+                    msg = f"🏫 *I.E.P. YACHAY - CHINCHERO*\n📊 *REPORTE DE NOTAS*\n\n"
+                    msg += f"👤 Alumno: {fila['Nombre']}\n📚 Grado: {grado_sel}\n📅 Periodo: {bim_sel}\n"
+                    msg += "━" * 30 + "\n"
                     for a_n in areas_nombres:
                         nota_w = fila.get(a_n, 0)
                         msg += f"📖 {a_n}: *{nota_w}* ({nota_a_letra(nota_w)})\n"
-                    msg += "─" * 30 + "\n"
+                    msg += "━" * 30 + "\n"
                     msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n🏆 *PUESTO: {fila['Medalla']}*"
-                    cel_c = ('51' + cel.replace(' ','').replace('+','').lstrip('51'))
-                    url_wa = f"https://wa.me/{cel_c}?text={urllib.parse.quote(msg)}"
-                    st.markdown(f"📱 **{fila['Nombre']}** → [{cel}]({url_wa})")
+                    
+                    # Normalizar número y crear URL para desktop app
+                    cel_c = cel.replace(' ','').replace('+','').replace('-','').strip()
+                    if not cel_c.startswith('51'):
+                        cel_c = '51' + cel_c
+                    # URL para desktop WhatsApp (no web)
+                    url_wa = f"https://api.whatsapp.com/send?phone={cel_c}&text={urllib.parse.quote(msg)}"
+                    st.markdown(f"[📱 **{fila['Nombre']}** → {cel}]({url_wa})", unsafe_allow_html=True)
                 else:
                     st.caption(f"⚠️ {fila['Nombre']} — Sin celular registrado")
     else:
@@ -6835,45 +6833,62 @@ def tab_registrar_notas(config):
 
 
 def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
-    """Genera PDF del ranking con colores y medallas"""
+    """Genera PDF del ranking con colores y medallas — PÁGINA COMPLETA"""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
 
-    # Encabezado
+    # Encabezado más compacto
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.rect(0, h - 15, w, 15, fill=1, stroke=0)
+    c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
     if Path("escudo_upload.png").exists():
         try:
-            c_pdf.drawImage("escudo_upload.png", 30, h - 80, 45, 45, mask='auto')
+            c_pdf.drawImage("escudo_upload.png", 15, h - 60, 45, 45, mask='auto')
         except Exception:
             pass
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.setFont("Helvetica-Bold", 14)
-    c_pdf.drawCentredString(w / 2, h - 40, "🏆 RANKING DE ESTUDIANTES")
-    c_pdf.setFont("Helvetica", 10)
-    c_pdf.drawCentredString(w / 2, h - 55, f"I.E.P. YACHAY — {grado} — {periodo}")
-    c_pdf.drawRightString(w - 30, h - 55, hora_peru().strftime('%d/%m/%Y'))
+    c_pdf.setFont("Helvetica-Bold", 18)
+    c_pdf.drawCentredString(w / 2, h - 35, "🏆 RANKING DE ESTUDIANTES")
+    c_pdf.setFont("Helvetica-Bold", 12)
+    c_pdf.drawCentredString(w / 2, h - 52, f"I.E.P. YACHAY — {grado} — {periodo}")
+    c_pdf.setFont("Helvetica", 9)
+    c_pdf.drawRightString(w - 15, h - 52, hora_peru().strftime('%d/%m/%Y'))
 
-    # Tabla
-    col_headers = ['#', 'Estudiante'] + [a[:12] for a in areas] + ['Promedio']
-    y = h - 85
-    col_widths = [30, 180] + [55] * len(areas) + [60]
-    x_start = 25
+    # Tabla más grande — usa todo el ancho disponible
+    y_start = h - 70
+    x_margin = 15
+    table_width = w - 2 * x_margin
+    
+    # Columnas dinámicas según número de áreas
+    col_headers = ['#', 'Estudiante'] + [a[:15] for a in areas] + ['Promedio']
+    num_cols = len(col_headers)
+    
+    # Ancho dinámico: más espacio a Estudiante, resto proporcional
+    col_w_puesto = 40
+    col_w_nombre = min(200, table_width * 0.25)
+    col_w_prom = 70
+    remaining = table_width - col_w_puesto - col_w_nombre - col_w_prom
+    col_w_area = remaining / len(areas) if areas else 60
+    
+    col_widths = [col_w_puesto, col_w_nombre] + [col_w_area] * len(areas) + [col_w_prom]
+    
+    y = y_start
 
-    # Header row
+    # Header row — más grande
     c_pdf.setFillColor(colors.HexColor("#1e3a8a"))
-    total_w = sum(col_widths)
-    c_pdf.rect(x_start, y - 3, total_w, 18, fill=1, stroke=0)
+    c_pdf.rect(x_margin, y - 5, table_width, 22, fill=1, stroke=0)
     c_pdf.setFillColor(colors.white)
-    c_pdf.setFont("Helvetica-Bold", 7)
-    x = x_start
+    c_pdf.setFont("Helvetica-Bold", 10)
+    x = x_margin
     for i, hdr in enumerate(col_headers):
-        c_pdf.drawString(x + 3, y + 2, hdr)
+        c_pdf.drawString(x + 5, y + 3, hdr)
         x += col_widths[i]
-    y -= 18
+    y -= 22
 
-    # Data rows
+    # Data rows — más grandes
+    row_height = 20
+    c_pdf.setFont("Helvetica", 10)
+    
     for idx, fila in enumerate(ranking_filas):
         if y < 40:
             c_pdf.showPage()
@@ -6890,49 +6905,53 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             c_pdf.setFillColor(colors.HexColor("#f9fafb"))
         else:
             c_pdf.setFillColor(colors.white)
-        c_pdf.rect(x_start, y - 3, total_w, 16, fill=1, stroke=0)
+        c_pdf.rect(x_margin, y - 5, table_width, row_height, fill=1, stroke=0)
 
         c_pdf.setFillColor(colors.black)
-        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 8)
-        x = x_start
-        # Puesto
+        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 11 if idx < 3 else 10)
+        x = x_margin
+        
+        # Puesto con medalla
         medalla = fila.get('Medalla', str(idx + 1))
-        c_pdf.drawString(x + 3, y + 1, medalla)
+        c_pdf.drawString(x + 5, y + 3, medalla)
         x += col_widths[0]
+        
         # Nombre
-        c_pdf.drawString(x + 3, y + 1, str(fila['Nombre'])[:30])
+        c_pdf.drawString(x + 5, y + 3, str(fila['Nombre'])[:35])
         x += col_widths[1]
+        
         # Notas por área
+        c_pdf.setFont("Helvetica-Bold", 10)
         for a in areas:
             nota_v = fila.get(a, 0)
             lit_v = nota_a_letra(nota_v) if nota_v > 0 else '-'
             col_n = color_semaforo(lit_v)
             c_pdf.setFillColor(colors.HexColor(col_n))
-            c_pdf.drawString(x + 3, y + 1, f"{nota_v} ({lit_v})" if nota_v > 0 else "-")
+            c_pdf.drawString(x + 5, y + 3, f"{nota_v} ({lit_v})" if nota_v > 0 else "-")
             c_pdf.setFillColor(colors.black)
-            x += col_widths[len(col_widths) - len(areas) - 1]
-        # Promedio
-        c_pdf.setFont("Helvetica-Bold", 9)
+            x += col_w_area
+        
+        # Promedio más grande
+        c_pdf.setFont("Helvetica-Bold", 12)
         prom_c = "#16a34a" if fila['Promedio'] >= 14 else "#dc2626" if fila['Promedio'] < 11 else "#f59e0b"
         c_pdf.setFillColor(colors.HexColor(prom_c))
-        c_pdf.drawString(x + 3, y + 1, str(fila['Promedio']))
+        c_pdf.drawString(x + 5, y + 3, str(fila['Promedio']))
         c_pdf.setFillColor(colors.black)
-        y -= 16
+        y -= row_height
 
     # Pie
-    y -= 20
-    c_pdf.setFont("Helvetica", 7)
+    c_pdf.setFont("Helvetica", 8)
     c_pdf.setFillColor(colors.HexColor("#6b7280"))
-    c_pdf.drawString(30, 20, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
-    c_pdf.drawString(30, 10, "NOTA: Este es un documento referencial. El consolidado oficial lo registra el/la docente.")
-    c_pdf.drawRightString(w - 30, 20, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    c_pdf.drawString(15, 22, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
+    c_pdf.drawString(15, 10, "Este es un documento referencial. El consolidado oficial lo registra el/la docente.")
+    c_pdf.drawRightString(w - 15, 22, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
 
     # Marca de agua
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.04)
-            c_pdf.drawImage("escudo_upload.png", w / 2 - 80, h / 2 - 80, 160, 160, mask='auto')
+            c_pdf.setFillAlpha(0.03)
+            c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
             pass
@@ -8115,8 +8134,20 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
             c_pdf.showPage()
             pagina[0] += 1
             col_actual = 0
-            y = Y_TOP
-            _pdf_encabezado_cont(c_pdf, w, h, grado, area, nombre_doc, semana)
+            # En páginas de continuación, el contenido empieza MUY arriba
+            y = h - 25  # Solo 25 pts del borde superior
+            # Dibujar encabezado mínimo
+            c_pdf.setFillColor(colors.HexColor("#001e7c"))
+            c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
+            c_pdf.setFont("Helvetica-Bold", 7)
+            c_pdf.setFillColor(colors.HexColor("#6b7280"))
+            c_pdf.drawString(30, h - 22, f"I.E.P. YACHAY — {grado} — {area}")
+            c_pdf.drawRightString(w - 30, h - 22, f"Docente: {nombre_doc} — Semana {semana}")
+            c_pdf.setStrokeColor(colors.HexColor("#d1d5db"))
+            c_pdf.setLineWidth(0.5)
+            c_pdf.line(30, h - 24, w - 30, h - 24)
+            c_pdf.setFillColor(colors.black)
+            _dibujar_linea_col(c_pdf, h - 25, Y_BOTTOM)
 
     _dibujar_linea_col(c_pdf, Y_TOP, Y_BOTTOM)
 
@@ -8672,176 +8703,181 @@ def tab_examenes_semanales(config):
 
 
 def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
-    """Genera PDF de examen en 2 columnas con formato profesional"""
+    """Genera PDF de examen con encabezado oficial, 2 columnas, imágenes uniformes y hoja de claves"""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    
-    # Comprimir fondo si existe
-    if Path("fondo.png").exists():
-        try:
-            fondo_comp = comprimir_imagen_para_pdf("fondo.png", max_width=800, calidad=70)
-            c_pdf.drawImage(fondo_comp, 0, 0, w, h, preserveAspectRatio=True, mask='auto')
-        except:
-            pass
-    
-    # Encabezado
+    usuario_doc = st.session_state.get('usuario_actual', 'Docente')
+
+    # ── ENCABEZADO OFICIAL (igual que ficha) ────────────────────────────────
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.rect(0, h - 15, w, 15, fill=1, stroke=0)
     
-    # Logo
     if Path("escudo_upload.png").exists():
         try:
-            logo_comp = comprimir_imagen_para_pdf("escudo_upload.png", max_width=800, calidad=70)
-            c_pdf.drawImage(logo_comp, 30, h - 80, 45, 45, mask='auto')
-        except:
+            c_pdf.drawImage("escudo_upload.png", 25, h - 90, 62, 62, mask='auto')
+        except Exception:
             pass
     
-    # Título del encabezado
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.setFont("Helvetica-Bold", 16)
-    c_pdf.drawCentredString(w / 2, h - 45, "I.E.P. YACHAY - CHINCHERO")
+    c_pdf.setFont("Helvetica-Bold", 7.5)
+    c_pdf.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c_pdf.setFont("Helvetica-Bold", 11)
+    c_pdf.drawCentredString(w / 2, h - 43, "I.E.P. YACHAY — CHINCHERO")
+    frase = config.get('frase', '')
+    if frase:
+        c_pdf.setFont("Helvetica-Oblique", 7)
+        c_pdf.drawCentredString(w / 2, h - 56, f'"{frase}"')
     
+    # Cuadro de datos
+    c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
+    c_pdf.setLineWidth(1.5)
+    c_pdf.roundRect(25, h - 148, w - 50, 68, 8, fill=0)
+    c_pdf.setFillColor(colors.black)
+    c_pdf.setFont("Helvetica", 9)
+    c_pdf.drawString(35, h - 90,  f"GRADO: {grado}")
+    c_pdf.drawRightString(w - 35, h - 90, f"FECHA: {hora_peru().strftime('%d/%m/%Y')}")
+    c_pdf.drawString(35, h - 107, f"ÁREA: {area}")
+    c_pdf.drawRightString(w - 35, h - 107, f"DOCENTE: {usuario_doc}")
+    c_pdf.drawString(35, h - 128, "ALUMNO(A): _______________________________________________")
+    c_pdf.drawRightString(w - 35, h - 128, "N° ______")
+    
+    # Título del examen
+    c_pdf.setFillColor(colors.HexColor("#1a56db"))
     c_pdf.setFont("Helvetica-Bold", 14)
-    c_pdf.drawCentredString(w / 2, h - 65, titulo)
-    
-    c_pdf.setFont("Helvetica", 11)
-    c_pdf.drawCentredString(w / 2, h - 82, f"Área: {area} | Grado: {grado} | Fecha: {fecha_peru_str()}")
-    
-    # Línea separadora
+    c_pdf.drawCentredString(w / 2, h - 167, titulo.upper())
     c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
     c_pdf.setLineWidth(2)
-    c_pdf.line(40, h - 90, w - 40, h - 90)
+    c_pdf.line(60, h - 174, w - 60, h - 174)
     
     # Instrucciones
-    c_pdf.setFont("Helvetica-Oblique", 9)
+    c_pdf.setFont("Helvetica-Oblique", 8)
+    c_pdf.setFillColor(colors.HexColor("#6b7280"))
+    c_pdf.drawCentredString(w / 2, h - 185, "Instrucciones: Marque con X la alternativa correcta para cada pregunta.")
     c_pdf.setFillColor(colors.black)
-    c_pdf.drawString(40, h - 105, "Instrucciones: Marque la alternativa correcta para cada pregunta.")
     
     # Configuración de 2 columnas
-    col_width = (w - 80) / 2  # Ancho de cada columna
-    col_gap = 20  # Espacio entre columnas
-    y_start = h - 125
+    col_width = (w - 80) / 2
+    col_gap = 20
+    y_start = h - 200
     y = y_start
     x_col1 = 40
     x_col2 = 40 + col_width + col_gap
     columna_actual = 1
     x = x_col1
-    
-    # Margen inferior
     y_min = 60
     
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.styles import ParagraphStyle
+    
     for pregunta in preguntas:
-        # Verificar si necesitamos nueva página
-        if y < y_min + 100:  # Espacio mínimo para una pregunta
-            c_pdf.showPage()
-            # Repetir encabezado simple en nueva página
-            c_pdf.setFillColor(colors.HexColor("#001e7c"))
-            c_pdf.setFont("Helvetica-Bold", 10)
-            c_pdf.drawCentredString(w / 2, h - 25, f"{titulo} - Pág. {c_pdf.getPageNumber()}")
-            c_pdf.setStrokeColor(colors.HexColor("#1a56db"))
-            c_pdf.line(40, h - 30, w - 40, h - 30)
-            y = h - 45
-            columna_actual = 1
-            x = x_col1
+        # Verificar espacio para pregunta completa (incluyendo imagen)
+        espacio_necesario = 120 if pregunta['imagen'] else 80
+        if y < y_min + espacio_necesario:
+            if columna_actual == 1:
+                columna_actual = 2
+                x = x_col2
+                y = y_start
+            else:
+                c_pdf.showPage()
+                c_pdf.setFont("Helvetica-Bold", 9)
+                c_pdf.setFillColor(colors.HexColor("#6b7280"))
+                c_pdf.drawCentredString(w / 2, h - 20, f"{titulo} — Página {c_pdf.getPageNumber()}")
+                c_pdf.setFillColor(colors.black)
+                columna_actual = 1
+                x = x_col1
+                y = h - 35
         
-        # Número de pregunta en negrita
-        c_pdf.setFont("Helvetica-Bold", 11)
+        # Número de pregunta
+        c_pdf.setFont("Helvetica-Bold", 10)
         c_pdf.setFillColor(colors.HexColor("#1e3a8a"))
         c_pdf.drawString(x, y, f"{pregunta['numero']}.")
-        
-        # Texto de la pregunta en negrita
-        c_pdf.setFont("Helvetica-Bold", 10)
         c_pdf.setFillColor(colors.black)
         
-        # Dividir texto en líneas si es muy largo
-        texto = pregunta['texto']
-        max_width = col_width - 25
-        
-        # Usar Paragraph para texto justificado
-        from reportlab.platypus import Paragraph
-        from reportlab.lib.styles import ParagraphStyle
-        
-        style = ParagraphStyle(
-            'pregunta',
-            fontName='Helvetica-Bold',
-            fontSize=10,
-            leading=12,
-            alignment=TA_JUSTIFY,
-            leftIndent=15
-        )
-        
-        p = Paragraph(texto, style)
-        w_p, h_p = p.wrap(max_width, 200)
+        # Texto de la pregunta
+        style = ParagraphStyle('pregunta', fontName='Helvetica-Bold', fontSize=9, 
+                              leading=11, alignment=TA_JUSTIFY, leftIndent=12)
+        p = Paragraph(pregunta['texto'], style)
+        w_p, h_p = p.wrap(col_width - 15, 200)
         p.drawOn(c_pdf, x, y - h_p)
         y -= (h_p + 5)
         
-        # Imagen si existe
+        # Imagen UNIFORME si existe
         if pregunta['imagen']:
             try:
                 img_bytes = pregunta['imagen'].getvalue()
-                img_comp = comprimir_imagen_para_pdf(img_bytes, max_width=800, calidad=70)
-                img_pil = Image.open(img_comp)
+                img_pil = Image.open(io.BytesIO(img_bytes))
+                if img_pil.mode == 'RGBA':
+                    img_pil = img_pil.convert('RGB')
                 
-                # Calcular tamaño para ajustar a la columna
-                img_w, img_h = img_pil.size
-                max_img_width = col_width - 30
-                max_img_height = 100
+                # TAMAÑO UNIFORME: 80x80 para todas las imágenes
+                IMG_SIZE = 75
+                tmp_img = f"tmp_exam_img_{int(time.time())}_{pregunta['numero']}.jpg"
+                img_pil.thumbnail((IMG_SIZE, IMG_SIZE), Image.Resampling.LANCZOS)
+                img_pil.save(tmp_img, 'JPEG', quality=85)
                 
-                ratio = min(max_img_width / img_w, max_img_height / img_h)
-                new_w = img_w * ratio
-                new_h = img_h * ratio
-                
-                c_pdf.drawImage(img_comp, x + 10, y - new_h, new_w, new_h, mask='auto')
-                y -= (new_h + 5)
-            except:
+                # Centrar imagen en la columna
+                x_img = x + (col_width - IMG_SIZE) / 2
+                c_pdf.drawImage(tmp_img, x_img, y - IMG_SIZE, IMG_SIZE, IMG_SIZE)
+                y -= (IMG_SIZE + 5)
+                try:
+                    os.remove(tmp_img)
+                except Exception:
+                    pass
+            except Exception:
                 pass
         
         # Alternativas con burbujas
-        c_pdf.setFont("Helvetica", 9)
+        c_pdf.setFont("Helvetica", 8.5)
         alternativas = pregunta['alternativas']
-        correcta = pregunta['correcta']
-        
         for letra in ['A', 'B', 'C', 'D']:
             texto_alt = alternativas.get(letra, '')
             if texto_alt:
-                # Dibujar burbuja
-                c_pdf.circle(x + 5, y - 3, 4, stroke=1, fill=0)
-                
-                # Marcar con punto si es la correcta (para clave de respuestas)
-                # if letra == correcta:
-                #     c_pdf.circle(x + 5, y - 3, 2, stroke=0, fill=1)
-                
-                # Texto de la alternativa
-                style_alt = ParagraphStyle(
-                    'alternativa',
-                    fontName='Helvetica',
-                    fontSize=9,
-                    leading=11,
-                    alignment=TA_JUSTIFY,
-                    leftIndent=15
-                )
-                
-                p_alt = Paragraph(f"{letra}) {texto_alt}", style_alt)
-                w_alt, h_alt = p_alt.wrap(max_width - 20, 100)
+                c_pdf.circle(x + 4, y - 2, 3.5, stroke=1, fill=0)
+                style_alt = ParagraphStyle('alt', fontName='Helvetica', fontSize=8.5,
+                                          leading=10, alignment=TA_JUSTIFY, leftIndent=12)
+                p_alt = Paragraph(f"<b>{letra})</b> {texto_alt}", style_alt)
+                w_alt, h_alt = p_alt.wrap(col_width - 18, 100)
                 p_alt.drawOn(c_pdf, x, y - h_alt)
-                y -= (h_alt + 2)
-        
-        # Espacio entre preguntas
-        y -= 10
-        
-        # Cambiar de columna si es necesario
-        if y < y_min and columna_actual == 1:
-            columna_actual = 2
-            x = x_col2
-            y = y_start
+                y -= (h_alt + 1)
+        y -= 8
     
-    # Pie de página
-    c_pdf.setFont("Helvetica", 8)
-    c_pdf.setFillColor(colors.grey)
-    c_pdf.drawCentredString(w / 2, 30, f"I.E.P. YACHAY - {config.get('anio', 2026)}")
-    c_pdf.drawString(40, 20, f"Generado: {hora_peru_str()}")
-    c_pdf.drawRightString(w - 40, 20, f"Página {c_pdf.getPageNumber()}")
+    # ── HOJA DE CLAVES (página nueva) ──────────────────────────────────────
+    c_pdf.showPage()
+    c_pdf.setFont("Helvetica-Bold", 16)
+    c_pdf.setFillColor(colors.HexColor("#dc2626"))
+    c_pdf.drawCentredString(w / 2, h - 50, "CLAVE DE RESPUESTAS — USO EXCLUSIVO DOCENTE")
+    c_pdf.setStrokeColor(colors.HexColor("#dc2626"))
+    c_pdf.setLineWidth(2)
+    c_pdf.line(w / 4, h - 55, 3 * w / 4, h - 55)
+    c_pdf.setFillColor(colors.black)
+    c_pdf.setFont("Helvetica-Bold", 11)
+    c_pdf.drawCentredString(w / 2, h - 75, f"{grado} — {area} — {titulo}")
+    
+    y_clave = h - 100
+    c_pdf.setFont("Helvetica", 10)
+    num_cols_clave = 5
+    col_w_clave = (w - 80) / num_cols_clave
+    
+    for i, preg in enumerate(preguntas):
+        col_idx = i % num_cols_clave
+        row_idx = i // num_cols_clave
+        x_c = 40 + col_idx * col_w_clave
+        y_c = y_clave - row_idx * 20
+        
+        if y_c < 60:
+            c_pdf.showPage()
+            y_clave = h - 60
+            row_idx = 0
+            y_c = y_clave
+        
+        c_pdf.setFont("Helvetica-Bold", 10)
+        c_pdf.drawString(x_c, y_c, f"{preg['numero']}.")
+        c_pdf.setFont("Helvetica", 10)
+        resp_correcta = preg['correcta'].upper()
+        c_pdf.setFillColor(colors.HexColor("#16a34a"))
+        c_pdf.drawString(x_c + 15, y_c, resp_correcta)
+        c_pdf.setFillColor(colors.black)
     
     c_pdf.save()
     buffer.seek(0)
@@ -9672,9 +9708,105 @@ def main():
     # DOCENTE — Su grado solamente
     # ========================================
     elif st.session_state.rol == "docente":
-        st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
-        st.markdown("*¿Qué vamos a hacer hoy?*")
-        vista_docente(config)
+        # Si no hay módulo seleccionado, mostrar dashboard
+        if 'modulo_activo' not in st.session_state:
+            st.session_state.modulo_activo = None
+
+        if st.session_state.modulo_activo is None:
+            # === DASHBOARD PRINCIPAL (IGUAL QUE ADMIN) ===
+            st.markdown(f"""
+            <div class='main-header'>
+                <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
+                <p style='color:#ccc;'>¿Qué vamos a hacer hoy?</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Grid de módulos para docentes
+            modulos = [
+                ("📋", "Asistencia", "asistencia", "#16a34a"),
+                ("📊", "Calificación", "calificacion", "#dc2626"),
+                ("📝", "Registrar Notas", "reg_notas", "#059669"),
+                ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
+                ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
+                ("📈", "Reportes", "reportes", "#ea580c"),
+            ]
+
+            # Grid de módulos - VISUAL
+            for i in range(0, len(modulos), 3):
+                cols = st.columns(3)
+                for j, col in enumerate(cols):
+                    idx = i + j
+                    if idx < len(modulos):
+                        icono, nombre, key, color = modulos[idx]
+                        with col:
+                            st.markdown(f"""
+                            <div style='background: {color}; 
+                                        color: white; 
+                                        padding: 40px 20px; 
+                                        border-radius: 12px; 
+                                        text-align: center;
+                                        margin-bottom: 10px;
+                                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+                                <div style='font-size: 3rem; margin-bottom: 15px;'>{icono}</div>
+                                <div style='font-size: 1.3rem; font-weight: bold;'>{nombre}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Botón para hacer click
+                            if st.button(f"▶ Abrir {nombre}", key=f"dash_doc_{key}", 
+                                        type="primary", use_container_width=True):
+                                st.session_state.modulo_activo = key
+                                st.rerun()
+
+            # Estadísticas del grado
+            st.markdown("---")
+            info_doc = st.session_state.get('docente_info', {}) or {}
+            grado_doc = info_doc.get('grado', '')
+            if grado_doc:
+                estudiantes_grado = BaseDatos.obtener_estudiantes_grado(grado_doc)
+                asis_hoy = BaseDatos.obtener_asistencias_hoy()
+                s1, s2, s3 = st.columns(3)
+                with s1:
+                    st.markdown(f"""<div class="stat-card">
+                        <h3>🎓 {grado_doc}</h3>
+                        <p>Tu Grado</p>
+                    </div>""", unsafe_allow_html=True)
+                with s2:
+                    st.markdown(f"""<div class="stat-card">
+                        <h3>📚 {len(estudiantes_grado) if not estudiantes_grado.empty else 0}</h3>
+                        <p>Estudiantes</p>
+                    </div>""", unsafe_allow_html=True)
+                with s3:
+                    st.markdown(f"""<div class="stat-card">
+                        <h3>📋 {len(asis_hoy)}</h3>
+                        <p>Asistencias Hoy</p>
+                    </div>""", unsafe_allow_html=True)
+
+        else:
+            # === MÓDULO SELECCIONADO ===
+            col_back, col_space = st.columns([1, 4])
+            
+            with col_back:
+                if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True):
+                    st.session_state.modulo_activo = None
+                    st.rerun()
+            
+            st.markdown("---")
+            st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
+
+            mod = st.session_state.modulo_activo
+            if mod == "asistencia":
+                tab_asistencia(config)
+            elif mod == "calificacion":
+                tab_calificacion_yachay(config)
+            elif mod == "reg_notas":
+                tab_registrar_notas(config)
+            elif mod == "aula_virtual":
+                tab_material_docente(config)
+            elif mod == "examenes_sem":
+                tab_examenes_semanales(config)
+            elif mod == "reportes":
+                tab_reportes(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
