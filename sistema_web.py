@@ -3322,6 +3322,72 @@ def configurar_sidebar():
                     else:
                         st.info("✅ Todos los estudiantes ya tienen sección")
 
+                # Resetear notas — solo admin y directivo
+                if st.session_state.rol in ['admin', 'directivo']:
+                    st.markdown("---")
+                    st.markdown("### 🗑️ Resetear Notas por Grado")
+                    st.caption("⚠️ Elimina TODAS las notas del grado seleccionado del historial y resultados.")
+                    df_mat_reset = BaseDatos.cargar_matricula()
+                    grados_reset = []
+                    if not df_mat_reset.empty and 'Grado' in df_mat_reset.columns:
+                        grados_reset = sorted(df_mat_reset['Grado'].dropna().astype(str).unique().tolist())
+                    grado_reset_sel = st.selectbox("📚 Grado a resetear:", grados_reset, key="sel_reset_grado_tool")
+                    confirmar_reset = st.checkbox(f"✅ Confirmo que deseo eliminar todas las notas de '{grado_reset_sel}'", key="chk_reset_notas")
+                    if confirmar_reset and st.button("🗑️ RESETEAR NOTAS", type="primary", use_container_width=True, key="btn_reset_notas_tool"):
+                        eliminados = 0
+                        # 1. Limpiar historial_evaluaciones.json
+                        hist_r = _cargar_historial_evaluaciones()
+                        claves_del = [k for k, v in hist_r.items() if str(v.get('grado', '')) == str(grado_reset_sel)]
+                        for k in claves_del:
+                            del hist_r[k]
+                            eliminados += 1
+                        _guardar_historial_evaluaciones(hist_r)
+                        # 2. Limpiar resultados.json
+                        try:
+                            todos_res = BaseDatos.cargar_todos_resultados()
+                            filtrados = [r for r in todos_res if str(r.get('grado', '')) != str(grado_reset_sel)]
+                            eliminados += len(todos_res) - len(filtrados)
+                            with open('resultados.json', 'w', encoding='utf-8') as f_r:
+                                json.dump(filtrados, f_r, ensure_ascii=False, indent=2)
+                        except Exception:
+                            pass
+                        # 3. Limpiar resultados_examenes.json
+                        try:
+                            if Path(ARCHIVO_RESULTADOS).exists():
+                                with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f_re:
+                                    datos_re = json.load(f_re)
+                                if isinstance(datos_re, list):
+                                    datos_re = [r for r in datos_re if str(r.get('grado', '')) != str(grado_reset_sel)]
+                                elif isinstance(datos_re, dict):
+                                    for usr_k in datos_re:
+                                        if isinstance(datos_re[usr_k], list):
+                                            datos_re[usr_k] = [r for r in datos_re[usr_k] if str(r.get('grado', '')) != str(grado_reset_sel)]
+                                with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f_re:
+                                    json.dump(datos_re, f_re, ensure_ascii=False, indent=2)
+                        except Exception:
+                            pass
+                        st.success(f"✅ Se eliminaron {eliminados} registros de notas de '{grado_reset_sel}'")
+                        st.rerun()
+
+                # Resetear matrícula de grado — solo admin y directivo
+                if st.session_state.rol in ['admin', 'directivo']:
+                    st.markdown("---")
+                    st.markdown("### 🎓 Resetear Matrícula por Grado")
+                    st.caption("⚠️ Elimina TODOS los estudiantes matriculados en el grado seleccionado.")
+                    df_mat_rm = BaseDatos.cargar_matricula()
+                    grados_rm = []
+                    if not df_mat_rm.empty and 'Grado' in df_mat_rm.columns:
+                        grados_rm = sorted(df_mat_rm['Grado'].dropna().astype(str).unique().tolist())
+                    grado_rm_sel = st.selectbox("📚 Grado a limpiar:", grados_rm, key="sel_reset_matricula_tool")
+                    n_alumnos_rm = int((df_mat_rm['Grado'].astype(str) == str(grado_rm_sel)).sum()) if not df_mat_rm.empty else 0
+                    st.info(f"👥 Estudiantes en '{grado_rm_sel}': **{n_alumnos_rm}**")
+                    confirmar_rm = st.checkbox(f"✅ Confirmo que deseo eliminar los {n_alumnos_rm} estudiantes de '{grado_rm_sel}'", key="chk_reset_matricula")
+                    if confirmar_rm and st.button("🗑️ RESETEAR MATRÍCULA", type="primary", use_container_width=True, key="btn_reset_matricula_tool"):
+                        df_limpia = df_mat_rm[df_mat_rm['Grado'].astype(str) != str(grado_rm_sel)]
+                        BaseDatos.guardar_matricula(df_limpia)
+                        st.success(f"✅ Se eliminaron {n_alumnos_rm} estudiantes de '{grado_rm_sel}'")
+                        st.rerun()
+
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
         
@@ -6333,10 +6399,13 @@ AREAS_MINEDU = {
 }
 
 PERIODOS_EVALUACION = [
-    'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
-    'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
-    'Quincenal 1', 'Quincenal 2',
+    # Semanas 1-40
+    *[f'Semana {i}' for i in range(1, 41)],
+    # Quincenales
+    'Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
+    # Bimestres
     'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
+    # Otros
     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
     'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
     'Reforzamiento Pre-U',
