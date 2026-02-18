@@ -6634,7 +6634,7 @@ def tab_registrar_notas(config):
         else:
             col_widths = [2.5, 0.7]  # Nombre + NSP
             for _ in range(num_areas):
-                col_widths.extend([1.2, 0.1])  # Nota + Separador
+                col_widths.append(1.3)  # Solo nota
             col_widths.extend([1, 0.8])  # Promedio + Lit
 
         nc = st.columns(col_widths)
@@ -6678,18 +6678,6 @@ def tab_registrar_notas(config):
                     notas_vals.append(nota_i)
                 col_idx += 1
 
-                # Mostrar nota con línea divisoria
-                with nc[col_idx]:
-                    if i > 0:
-                        st.markdown(
-                            f"<div style='border-left:2px solid #e0e0e0; height:30px; "
-                            f"display:inline-block; margin-right:8px;'></div>"
-                            f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>",
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        st.markdown(f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>", 
-                                   unsafe_allow_html=True)
                 col_idx += 1
 
             # Promedio y literal (solo si hay más de 1 área)
