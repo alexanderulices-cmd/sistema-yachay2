@@ -4110,46 +4110,6 @@ def tab_asistencias():
             st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
                          use_container_width=True, hide_index=True)
 
-    # ===== LISTA DE ASISTENCIA DE HOY =====
-    st.markdown("---")
-    st.subheader("📊 Registros de Hoy")
-    asis = BaseDatos.obtener_asistencias_hoy()
-    if asis:
-        # Separar alumnos y docentes
-        alumnos_h = []
-        docentes_h = []
-        for dk, v in asis.items():
-            reg = {'DNI': dk, 'Nombre': v['nombre'],
-                   'Entrada': v.get('entrada', '—'),
-                   'Salida': v.get('salida', '—'),
-                   'es_docente': v.get('es_docente', False)}
-            if v.get('es_docente', False):
-                docentes_h.append(reg)
-            else:
-                alumnos_h.append(reg)
-
-        # Métricas rápidas
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            st.metric("📚 Alumnos", len(alumnos_h))
-        with c2:
-            st.metric("👨‍🏫 Docentes", len(docentes_h))
-        with c3:
-            entradas = sum(1 for v in asis.values() if v.get('entrada'))
-            st.metric("🌅 Entradas", entradas)
-        with c4:
-            salidas = sum(1 for v in asis.values() if v.get('salida'))
-            st.metric("🌙 Salidas", salidas)
-
-        if alumnos_h:
-            st.markdown("**📚 Alumnos registrados:**")
-            st.dataframe(pd.DataFrame(alumnos_h).drop(columns=['es_docente']),
-                         use_container_width=True, hide_index=True)
-        if docentes_h:
-            st.markdown("**👨‍🏫 Docentes registrados:**")
-            st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
-                         use_container_width=True, hide_index=True)
-
         # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
