@@ -5043,11 +5043,20 @@ def tab_calificacion_yachay(config):
                         with st.expander(f"📝 {eval_data['grado']} - {eval_data['periodo']} ({eval_data['fecha']})"):
                             st.write(f"**Hora:** {eval_data.get('hora', 'N/A')}")
                             st.write(f"**Estudiantes evaluados:** {len(eval_data.get('ranking', []))}")
-                            st.write(f"**Áreas:** {', '.join(eval_data.get('areas', []))}")
+                            st.write(f"**Áreas:** {', '.join([a['nombre'] for a in eval_data.get('areas', [])] if isinstance(eval_data.get('areas', []), list) else eval_data.get('areas', []))}")
                             
-                            if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
-                                df_hist = pd.DataFrame(eval_data.get('ranking', []))
-                                st.dataframe(df_hist, use_container_width=True)
+                            col_ver, col_del = st.columns([3, 1])
+                            with col_ver:
+                                if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
+                                    df_hist = pd.DataFrame(eval_data.get('ranking', []))
+                                    st.dataframe(df_hist, use_container_width=True)
+                            with col_del:
+                                if st.button("🗑️ Eliminar", key=f"del_eval_{clave}"):
+                                    del hist_data[clave]
+                                    with open(historial_file, 'w', encoding='utf-8') as f:
+                                        json.dump(hist_data, f, ensure_ascii=False, indent=2)
+                                    st.success("✅ Evaluación eliminada")
+                                    st.rerun()
                 else:
                     st.info("No hay evaluaciones guardadas en historial")
             else:
@@ -6557,17 +6566,17 @@ def tab_registrar_notas(config):
         st.session_state.notas_sesion = {}
 
     # Encabezado tabla — dinámico según número de áreas
-    # Layout: [Estudiante, NSP] + [(C/N, Nota/20) × num_areas] + [Promedio, Lit]
+    # Layout: [Estudiante, NSP] + [Nota/20 × num_areas] + [Promedio, Lit]
     if num_areas == 1:
-        hcols = st.columns([3, 0.7, 1, 1, 1, 1])
-        headers = ["Estudiante", "NSP", f"C/{areas[0]['num_preguntas']}", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
+        hcols = st.columns([3, 0.7, 1.5, 1, 1])
+        headers = ["Estudiante", "NSP", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
     else:
-        # Para 2-6 áreas: mostrar nombre corto + nota por cada área
+        # Para 2-6 áreas: mostrar nota directa por cada área
         col_widths = [2.5, 0.7]  # Estudiante + NSP
         headers_list = ["Estudiante", "NSP"]
         for i in range(num_areas):
-            col_widths.extend([0.8, 1])  # Correctas + Nota por área
-            headers_list.extend([f"C/{areas[i]['num_preguntas']}", f"{areas[i]['nombre'][:7]}/20"])
+            col_widths.extend([1.2, 0.1])  # Nota + Separador visual
+            headers_list.extend([f"{areas[i]['nombre'][:8]}/20", ""])
         col_widths.extend([1, 0.8])  # Promedio + Lit
         headers_list.extend(["Prom.", "Lit."])
         hcols = st.columns(col_widths)
@@ -6575,7 +6584,8 @@ def tab_registrar_notas(config):
 
     for hc, hdr in zip(hcols, headers):
         with hc:
-            st.markdown(f"**{hdr}**")
+            if hdr:  # No mostrar header vacío para separadores
+                st.markdown(f"**{hdr}**")
 
     notas_actuales = {}
 
@@ -6587,11 +6597,11 @@ def tab_registrar_notas(config):
 
         # ── Crear columnas dinámicas ─────────────────────────────────────────
         if num_areas == 1:
-            col_widths = [3, 0.7, 1, 1, 1, 1]
+            col_widths = [3, 0.7, 1.5, 1, 1]
         else:
             col_widths = [2.5, 0.7]  # Nombre + NSP
             for _ in range(num_areas):
-                col_widths.extend([0.8, 1])  # Correctas + Nota por área
+                col_widths.extend([1.2, 0.1])  # Nota + Separador
             col_widths.extend([1, 0.8])  # Promedio + Lit
 
         nc = st.columns(col_widths)
@@ -6625,29 +6635,28 @@ def tab_registrar_notas(config):
             col_idx = 2  # Empieza después de Nombre y NSP
 
             for i, area in enumerate(areas):
-                # Correctas
+                # NOTA DIRECTA sobre 20 (con decimales)
                 with nc[col_idx]:
-                    ci = st.number_input("", 0, area['num_preguntas'],
-                                        st.session_state.notas_sesion.get(dni, {}).get(f'c{i}', 0),
-                                        key=f"c{i}_{sesion_id}_{dni}",
-                                        label_visibility="collapsed")
-                    correctas_vals.append(ci)
+                    nota_actual = st.session_state.notas_sesion.get(dni, {}).get(f'nota_{i}', 0.0)
+                    nota_i = st.number_input("", min_value=0.0, max_value=20.0, value=float(nota_actual),
+                                            step=0.5,  # Incrementos de 0.5
+                                            key=f"nota_{i}_{sesion_id}_{dni}",
+                                            label_visibility="collapsed")
+                    notas_vals.append(nota_i)
                 col_idx += 1
 
-                # Nota sobre 20
-                nota_i = round(ci / max(area['num_preguntas'], 1) * 20, 1)
-                notas_vals.append(nota_i)
+                # Mostrar nota con línea divisoria
                 with nc[col_idx]:
-                    # Línea divisoria vertical antes de cada nota (excepto la primera)
                     if i > 0:
                         st.markdown(
                             f"<div style='border-left:2px solid #e0e0e0; height:30px; "
                             f"display:inline-block; margin-right:8px;'></div>"
-                            f"<b>{nota_i}</b>",
+                            f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>",
                             unsafe_allow_html=True
                         )
                     else:
-                        st.markdown(f"<b>{nota_i}</b>", unsafe_allow_html=True)
+                        st.markdown(f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>", 
+                                   unsafe_allow_html=True)
                 col_idx += 1
 
             # Promedio y literal (solo si hay más de 1 área)
@@ -6671,13 +6680,13 @@ def tab_registrar_notas(config):
                     st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
                                unsafe_allow_html=True)
 
-            # Guardar en diccionario
+            # Guardar en diccionario - ahora con notas directas
             notas_actuales[dni] = {
                 'nombre': nombre,
                 'nsp': False,
                 'areas': {areas[i]['nombre']: notas_vals[i] for i in range(num_areas)},
                 'promedio': promedio,
-                **{f'c{i}': correctas_vals[i] for i in range(num_areas)}
+                **{f'nota_{i}': notas_vals[i] for i in range(num_areas)}
             }
 
     # Actualizar sesión con lo ingresado
@@ -6782,6 +6791,34 @@ def tab_registrar_notas(config):
                     except Exception:
                         pass
                 if _guardar_historial_evaluaciones(hist):
+                    # También guardar notas individuales para Reporte Integral
+                    try:
+                        for dni_nota, data_nota in notas_actuales.items():
+                            if data_nota.get('nsp', False):
+                                continue  # No guardar NSP
+                            # Crear registro individual
+                            reg = {
+                                'dni': dni_nota,
+                                'nombre': data_nota['nombre'],
+                                'grado': grado_sel,
+                                'periodo': bim_sel,
+                                'titulo': titulo_ev,
+                                'fecha': fecha_peru_str(),
+                                'hora': hora_peru_str(),
+                                'docente': usuario,
+                                'areas': [{'nombre': a_name, 'nota': data_nota['areas'].get(a_name, 0)}
+                                         for a_name in areas_nombres],
+                                'promedio_general': data_nota['promedio'],
+                                '_docente': usuario
+                            }
+                            # Guardar en resultados.json
+                            resultados_actuales = BaseDatos.cargar_todos_resultados()
+                            resultados_actuales.append(reg)
+                            with open('resultados.json', 'w', encoding='utf-8') as f:
+                                json.dump(resultados_actuales, f, ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
+                    
                     st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
@@ -7984,11 +8021,28 @@ def tab_material_docente(config):
                         st.stop()
 
                     with st.spinner("📄 Generando PDF con encabezado oficial..."):
-                        # Leer el Word y extraer bloques
+                        # Leer el Word y extraer bloques (texto E imágenes)
                         doc_orig = DocxDocument(io.BytesIO(archivo_ficha.getvalue()))
                         bloques = []
+                        
                         for para in doc_orig.paragraphs:
                             txt = para.text.strip()
+                            
+                            # Extraer imágenes del párrafo
+                            for run in para.runs:
+                                if run._element.xml.find('pic:pic') != -1 or run._element.xml.find('w:pict') != -1:
+                                    try:
+                                        # Buscar imágenes en el documento
+                                        for rel in doc_orig.part.rels.values():
+                                            if "image" in rel.target_ref:
+                                                img_data = rel.target_part.blob
+                                                img_b64 = base64.b64encode(img_data).decode('utf-8')
+                                                bloques.append({'tipo': 'imagen', 'imagen_b64': img_b64, 'contenido': ''})
+                                                break
+                                    except Exception:
+                                        pass
+                            
+                            # Procesar texto
                             if not txt:
                                 bloques.append({'tipo': 'vacio', 'contenido': ''})
                                 continue
@@ -8193,11 +8247,16 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
                 nueva_columna_o_pagina()
             c_pdf.setFont("Helvetica-Bold", 13)
             c_pdf.setFillColor(colors.HexColor("#1a56db"))
-            for linea in textwrap.wrap(contenido, width=max_chars()):
-                if y < Y_BOTTOM:
-                    nueva_columna_o_pagina()
-                c_pdf.drawString(x_col(), y, linea)
-                y -= 18
+            from reportlab.platypus import Paragraph
+            from reportlab.lib.styles import ParagraphStyle
+            style_tit = ParagraphStyle('titulo', fontName='Helvetica-Bold', fontSize=13,
+                                      leading=16, alignment=TA_JUSTIFY)
+            p_tit = Paragraph(contenido, style_tit)
+            w_tit, h_tit = p_tit.wrap(COL_W - 8, 500)
+            if y - h_tit < Y_BOTTOM:
+                nueva_columna_o_pagina()
+            p_tit.drawOn(c_pdf, x_col(), y - h_tit)
+            y -= (h_tit + 8)
             c_pdf.setFillColor(colors.black)
 
         elif tipo == 'subtitulo':
@@ -8205,20 +8264,30 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
                 nueva_columna_o_pagina()
             c_pdf.setFont("Helvetica-Bold", 10)
             c_pdf.setFillColor(colors.HexColor("#1e40af"))
-            for linea in textwrap.wrap(contenido, width=max_chars()):
-                if y < Y_BOTTOM:
-                    nueva_columna_o_pagina()
-                c_pdf.drawString(x_col(), y, linea)
-                y -= 14
+            from reportlab.platypus import Paragraph
+            from reportlab.lib.styles import ParagraphStyle
+            style_sub = ParagraphStyle('subtitulo', fontName='Helvetica-Bold', fontSize=10,
+                                      leading=13, alignment=TA_JUSTIFY)
+            p_sub = Paragraph(contenido, style_sub)
+            w_sub, h_sub = p_sub.wrap(COL_W - 8, 500)
+            if y - h_sub < Y_BOTTOM:
+                nueva_columna_o_pagina()
+            p_sub.drawOn(c_pdf, x_col(), y - h_sub)
+            y -= (h_sub + 6)
             c_pdf.setFillColor(colors.black)
 
         elif tipo == 'negrita':
             c_pdf.setFont("Helvetica-Bold", 9)
-            for linea in textwrap.wrap(contenido, width=max_chars()):
-                if y < Y_BOTTOM:
-                    nueva_columna_o_pagina()
-                c_pdf.drawString(x_col(), y, linea)
-                y -= 13
+            from reportlab.platypus import Paragraph
+            from reportlab.lib.styles import ParagraphStyle
+            style_neg = ParagraphStyle('negrita', fontName='Helvetica-Bold', fontSize=9,
+                                      leading=12, alignment=TA_JUSTIFY)
+            p_neg = Paragraph(contenido, style_neg)
+            w_neg, h_neg = p_neg.wrap(COL_W - 8, 500)
+            if y - h_neg < Y_BOTTOM:
+                nueva_columna_o_pagina()
+            p_neg.drawOn(c_pdf, x_col(), y - h_neg)
+            y -= (h_neg + 4)
 
         elif tipo == 'texto':
             c_pdf.setFont("Helvetica", 9)
@@ -9793,17 +9862,11 @@ def main():
             info_doc = st.session_state.get('docente_info', {}) or {}
             grado_doc = info_doc.get('grado', '')
             if grado_doc:
-                estudiantes_grado = BaseDatos.obtener_estudiantes_grado(grado_doc)
-                s1, s2 = st.columns(2)
+                s1 = st.columns(1)[0]
                 with s1:
                     st.markdown(f"""<div class="stat-card">
                         <h3>🎓 {grado_doc}</h3>
-                        <p>Tu Grado</p>
-                    </div>""", unsafe_allow_html=True)
-                with s2:
-                    st.markdown(f"""<div class="stat-card">
-                        <h3>📚 {len(estudiantes_grado) if not estudiantes_grado.empty else 0}</h3>
-                        <p>Estudiantes</p>
+                        <p>Tu Grado Asignado</p>
                     </div>""", unsafe_allow_html=True)
 
         else:
