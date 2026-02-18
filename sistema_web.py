@@ -4205,9 +4205,8 @@ def tab_asistencias():
             _render_wa_tab("salida")
 
         # Botón para resetear marcas de enviado
-        if enviados > 0:
-            if st.button("🔄 Resetear marcas de enviado",
-                         key="reset_wa"):
+        if st.session_state.wa_enviados:
+            if st.button("🔄 Resetear marcas de enviado", key="reset_wa"):
                 st.session_state.wa_enviados = set()
                 st.rerun()
 
