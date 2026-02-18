@@ -6395,7 +6395,10 @@ def tab_registrar_notas(config):
             return
         for clave, ev in sorted(hist.items(), reverse=True):
             titulo_h = ev.get('titulo', '') or ''
+            hora_h = ev.get('hora', '')
             label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
+            if hora_h:
+                label_h += f" {hora_h}"
             if titulo_h:
                 label_h += f" — {titulo_h}"
             with st.expander(label_h):
@@ -6408,11 +6411,21 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
-                        pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
-                        st.download_button("⬇️ Descargar", pdf_h,
-                                           f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
-                                           "application/pdf", key=f"dl_hist_{clave}")
+                    col_pdf_h, col_del_h = st.columns([3, 1])
+                    with col_pdf_h:
+                        if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
+                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                            st.download_button("⬇️ Descargar", pdf_h,
+                                               f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
+                                               "application/pdf", key=f"dl_hist_{clave}")
+                    with col_del_h:
+                        if st.button("🗑️ Eliminar", key=f"del_hist_{clave}", type="secondary"):
+                            hist_del = _cargar_historial_evaluaciones()
+                            if clave in hist_del:
+                                del hist_del[clave]
+                                _guardar_historial_evaluaciones(hist_del)
+                                st.success("✅ Evaluación eliminada")
+                                st.rerun()
         return
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -6601,7 +6614,7 @@ def tab_registrar_notas(config):
         else:
             col_widths = [2.5, 0.7]  # Nombre + NSP
             for _ in range(num_areas):
-                col_widths.extend([1.2, 0.1])  # Nota + Separador
+                col_widths.append(1.3)  # Solo Nota, sin columna duplicada
             col_widths.extend([1, 0.8])  # Promedio + Lit
 
         nc = st.columns(col_widths)
@@ -6643,21 +6656,6 @@ def tab_registrar_notas(config):
                                             key=f"nota_{i}_{sesion_id}_{dni}",
                                             label_visibility="collapsed")
                     notas_vals.append(nota_i)
-                col_idx += 1
-
-                # Mostrar nota con línea divisoria
-                with nc[col_idx]:
-                    color_nota = "#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"
-                    if i > 0:
-                        st.markdown(
-                            f"<div style='border-left:2px solid #e0e0e0; height:30px; "
-                            f"display:inline-block; margin-right:8px;'></div>"
-                            f"<b style='color:{color_nota};'>{nota_i}</b>",
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        st.markdown(f"<b style='color:{color_nota};'>{nota_i}</b>", 
-                                   unsafe_allow_html=True)
                 col_idx += 1
 
             # Promedio y literal (solo si hay más de 1 área)
@@ -7011,7 +7009,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.03)
+            c_pdf.setFillAlpha(0.08)
             c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7253,7 +7251,7 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
     # Pie de página
     c.setFont("Helvetica-Oblique", 7)
     c.drawCentredString(w/2, 25, f"YACHAY PRO — Sistema de Gestión Educativa © {hora_peru().year}")
-    c.drawCentredString(w/2, 15, "Documento generado automáticamente — Válido sin firma ni sello")
+    c.drawCentredString(w/2, 15, "Documento generado automáticamente")
 
     c.save()
     buf.seek(0)
