@@ -3322,71 +3322,30 @@ def configurar_sidebar():
                     else:
                         st.info("✅ Todos los estudiantes ya tienen sección")
 
-        st.markdown("---")
-
-        # ── Herramientas de reset: admin Y directivo ──────────────────────────
-        if st.session_state.rol in ['admin', 'directivo']:
-            with st.expander("⚠️ Resetear Datos"):
-                # --- RESET NOTAS ---
-                st.markdown("### 🗑️ Resetear Notas por Grado")
-                st.caption("Elimina todas las notas del historial y resultados del grado elegido.")
-                df_mat_reset = BaseDatos.cargar_matricula()
-                grados_reset = sorted(df_mat_reset['Grado'].dropna().astype(str).unique().tolist()) if not df_mat_reset.empty and 'Grado' in df_mat_reset.columns else []
-                grado_reset_sel = st.selectbox("📚 Grado (notas):", grados_reset, key="sel_reset_grado2")
-                confirmar_reset = st.checkbox(f"Confirmo eliminar notas de '{grado_reset_sel}'", key="chk_reset_notas2")
-                if confirmar_reset and st.button("🗑️ RESETEAR NOTAS", type="primary", use_container_width=True, key="btn_reset_notas2"):
-                    eliminados = 0
-                    hist_r = _cargar_historial_evaluaciones()
-                    claves_del = [k for k, v in hist_r.items() if str(v.get('grado', '')) == str(grado_reset_sel)]
-                    for k in claves_del:
-                        del hist_r[k]
-                        eliminados += 1
-                    _guardar_historial_evaluaciones(hist_r)
-                    try:
-                        todos_res = BaseDatos.cargar_todos_resultados()
-                        filtrados = [r for r in todos_res if str(r.get('grado', '')) != str(grado_reset_sel)]
-                        eliminados += len(todos_res) - len(filtrados)
-                        with open('resultados.json', 'w', encoding='utf-8') as f_r:
-                            json.dump(filtrados, f_r, ensure_ascii=False, indent=2)
-                    except Exception:
-                        pass
-                    try:
-                        if Path(ARCHIVO_RESULTADOS).exists():
-                            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f_re:
-                                datos_re = json.load(f_re)
-                            if isinstance(datos_re, list):
-                                datos_re = [r for r in datos_re if str(r.get('grado', '')) != str(grado_reset_sel)]
-                            elif isinstance(datos_re, dict):
-                                for usr_k in datos_re:
-                                    if isinstance(datos_re[usr_k], list):
-                                        datos_re[usr_k] = [r for r in datos_re[usr_k] if str(r.get('grado', '')) != str(grado_reset_sel)]
-                            with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f_re:
-                                json.dump(datos_re, f_re, ensure_ascii=False, indent=2)
-                    except Exception:
-                        pass
-                    st.success(f"✅ {eliminados} registros de notas eliminados de '{grado_reset_sel}'")
-                    st.rerun()
-
                 st.markdown("---")
-
-                # --- RESET MATRÍCULA ---
-                st.markdown("### 🎓 Resetear Matrícula por Grado")
-                st.caption("Elimina todos los estudiantes matriculados en el grado elegido.")
-                df_mat_rm = BaseDatos.cargar_matricula()
-                grados_rm = sorted(df_mat_rm['Grado'].dropna().astype(str).unique().tolist()) if not df_mat_rm.empty and 'Grado' in df_mat_rm.columns else []
-                grado_rm_sel = st.selectbox("📚 Grado (matrícula):", grados_rm, key="sel_reset_matricula2")
-                n_alumnos_rm = int((df_mat_rm['Grado'].astype(str) == str(grado_rm_sel)).sum()) if not df_mat_rm.empty else 0
-                st.info(f"👥 Estudiantes en '{grado_rm_sel}': **{n_alumnos_rm}**")
-                confirmar_rm = st.checkbox(f"Confirmo eliminar {n_alumnos_rm} estudiantes de '{grado_rm_sel}'", key="chk_reset_matricula2")
-                if confirmar_rm and st.button("🗑️ RESETEAR MATRÍCULA", type="primary", use_container_width=True, key="btn_reset_matricula2"):
-                    df_limpia = df_mat_rm[df_mat_rm['Grado'].astype(str) != str(grado_rm_sel)]
-                    BaseDatos.guardar_matricula(df_limpia)
-                    st.success(f"✅ Se eliminaron {n_alumnos_rm} estudiantes de '{grado_rm_sel}'")
+                st.markdown("### 🗑️ Resetear TODAS las Notas")
+                st.caption("⚠️ Borra todos los registros de notas y evaluaciones del sistema.")
+                _chk_all = st.checkbox("Confirmo que deseo borrar TODAS las notas", key="chk_reset_all")
+                if _chk_all and st.button("🗑️ BORRAR TODAS LAS NOTAS", type="primary",
+                                           use_container_width=True, key="btn_reset_all"):
+                    try:
+                        with open('historial_evaluaciones.json', 'w', encoding='utf-8') as _f:
+                            json.dump({}, _f)
+                    except Exception: pass
+                    try:
+                        with open('resultados.json', 'w', encoding='utf-8') as _f:
+                            json.dump([], _f)
+                    except Exception: pass
+                    try:
+                        with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as _f:
+                            json.dump([], _f)
+                    except Exception: pass
+                    st.success("✅ Todas las notas han sido eliminadas")
                     st.rerun()
 
         st.markdown("---")
         anio = st.number_input("📅 Año:", 2024, 2040, 2026, key="ai")
-
+        
         # Solo admin y directivo ven estadísticas
         if st.session_state.rol in ['admin', 'directivo']:
             stats = BaseDatos.obtener_estadisticas()
@@ -6195,9 +6154,13 @@ def tab_reportes(config):
                             pass
 
                     # También cargar de resultados de examen
+                    _anio_rep = str(config.get('anio', 2026))
                     all_res = BaseDatos.cargar_todos_resultados()
                     for r in all_res:
                         if str(r.get('dni', '')) == str(dni_ri):
+                            _fecha_r = str(r.get('fecha', ''))
+                            if not _fecha_r.startswith(_anio_rep):
+                                continue
                             for area in r.get('areas', []):
                                 notas_est.append({
                                     'area': area['nombre'],
@@ -6211,6 +6174,9 @@ def tab_reportes(config):
                     # Cargar notas del historial de evaluaciones (Registrar Notas)
                     hist_eval = _cargar_historial_evaluaciones()
                     for clave_h, ev_h in hist_eval.items():
+                        _fecha_h = str(ev_h.get('fecha', ''))
+                        if not _fecha_h.startswith(_anio_rep):
+                            continue
                         for fila_h in ev_h.get('ranking', []):
                             if str(fila_h.get('DNI', '')) == str(dni_ri):
                                 areas_h = ev_h.get('areas', [])
@@ -6266,9 +6232,12 @@ def tab_reportes(config):
                                 pass
 
                         # De exámenes también
+                        _anio_rep_g = str(config.get('anio', 2026))
                         all_res = BaseDatos.cargar_todos_resultados()
                         for r in all_res:
                             if str(r.get('dni', '')) == d_est:
+                                if not str(r.get('fecha', '')).startswith(_anio_rep_g):
+                                    continue
                                 for area in r.get('areas', []):
                                     notas_est.append({
                                         'area': area['nombre'],
@@ -6279,6 +6248,8 @@ def tab_reportes(config):
                         # De historial de evaluaciones (Registrar Notas)
                         hist_eval_g = _cargar_historial_evaluaciones()
                         for clave_hg, ev_hg in hist_eval_g.items():
+                            if not str(ev_hg.get('fecha', '')).startswith(_anio_rep_g):
+                                continue
                             for fila_hg in ev_hg.get('ranking', []):
                                 if str(fila_hg.get('DNI', '')) == str(d_est):
                                     areas_hg = ev_hg.get('areas', [])
@@ -6395,13 +6366,10 @@ AREAS_MINEDU = {
 }
 
 PERIODOS_EVALUACION = [
-    # Semanas 1-40
-    *[f'Semana {i}' for i in range(1, 41)],
-    # Quincenales
-    'Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
-    # Bimestres
+    'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
+    'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
+    'Quincenal 1', 'Quincenal 2',
     'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
-    # Otros
     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
     'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
     'Reforzamiento Pre-U',
@@ -6460,10 +6428,7 @@ def tab_registrar_notas(config):
             return
         for clave, ev in sorted(hist.items(), reverse=True):
             titulo_h = ev.get('titulo', '') or ''
-            hora_h = ev.get('hora', '')
             label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
-            if hora_h:
-                label_h += f" {hora_h}"
             if titulo_h:
                 label_h += f" — {titulo_h}"
             with st.expander(label_h):
@@ -6476,21 +6441,11 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    col_pdf_h, col_del_h = st.columns([3, 1])
-                    with col_pdf_h:
-                        if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
-                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
-                            st.download_button("⬇️ Descargar", pdf_h,
-                                               f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
-                                               "application/pdf", key=f"dl_hist_{clave}")
-                    with col_del_h:
-                        if st.button("🗑️ Eliminar", key=f"del_hist_{clave}", type="secondary"):
-                            hist_del = _cargar_historial_evaluaciones()
-                            if clave in hist_del:
-                                del hist_del[clave]
-                                _guardar_historial_evaluaciones(hist_del)
-                                st.success("✅ Evaluación eliminada")
-                                st.rerun()
+                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
+                        pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                        st.download_button("⬇️ Descargar", pdf_h,
+                                           f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
+                                           "application/pdf", key=f"dl_hist_{clave}")
         return
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -6679,7 +6634,7 @@ def tab_registrar_notas(config):
         else:
             col_widths = [2.5, 0.7]  # Nombre + NSP
             for _ in range(num_areas):
-                col_widths.append(1.3)  # Solo Nota, sin columna duplicada
+                col_widths.extend([1.2, 0.1])  # Nota + Separador
             col_widths.extend([1, 0.8])  # Promedio + Lit
 
         nc = st.columns(col_widths)
@@ -6721,6 +6676,20 @@ def tab_registrar_notas(config):
                                             key=f"nota_{i}_{sesion_id}_{dni}",
                                             label_visibility="collapsed")
                     notas_vals.append(nota_i)
+                col_idx += 1
+
+                # Mostrar nota con línea divisoria
+                with nc[col_idx]:
+                    if i > 0:
+                        st.markdown(
+                            f"<div style='border-left:2px solid #e0e0e0; height:30px; "
+                            f"display:inline-block; margin-right:8px;'></div>"
+                            f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>",
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown(f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>", 
+                                   unsafe_allow_html=True)
                 col_idx += 1
 
             # Promedio y literal (solo si hay más de 1 área)
@@ -7074,7 +7043,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.08)
+            c_pdf.setFillAlpha(0.03)
             c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7316,7 +7285,7 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
     # Pie de página
     c.setFont("Helvetica-Oblique", 7)
     c.drawCentredString(w/2, 25, f"YACHAY PRO — Sistema de Gestión Educativa © {hora_peru().year}")
-    c.drawCentredString(w/2, 15, "Documento generado automáticamente")
+    c.drawCentredString(w/2, 15, "Documento generado automáticamente — Válido sin firma ni sello")
 
     c.save()
     buf.seek(0)
