@@ -1363,16 +1363,16 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Sincronizar con Google Sheets
-        gs = _gs()
-        if gs:
+        # Sincronizar con Google Sheets en silencio (errores 429 no deben mostrarse)
+        def _sync_gs_asistencia():
             try:
+                gs = _gs()
+                if not gs:
+                    return
                 grado = ''
                 nivel = ''
-                # Usar caché de matrícula en session_state para evitar llamadas repetidas a GS
-                if '_cache_matricula' not in st.session_state or st.session_state.get('_forzar_local', False):
-                    st.session_state['_cache_matricula'] = BaseDatos.cargar_matricula()
-                df_m = st.session_state['_cache_matricula']
+                # Usar SOLO caché local — nunca llamar GS desde aquí para evitar 429
+                df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
                 if not df_m.empty and 'DNI' in df_m.columns:
                     est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
                     if not est.empty:
@@ -1390,7 +1390,12 @@ class BaseDatos:
                     'nivel': nivel,
                 })
             except Exception:
-                pass
+                pass  # Error silencioso — la asistencia ya está guardada localmente
+        try:
+            import threading
+            threading.Thread(target=_sync_gs_asistencia, daemon=True).start()
+        except Exception:
+            pass
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -4040,7 +4045,10 @@ def tab_asistencias():
         if dm and dm.strip() and len(dm.strip()) >= 8:
             dni_limpio = ''.join(c for c in dm.strip() if c.isdigit())
             if len(dni_limpio) == 8:
-                _registrar_asistencia_rapida(dni_limpio)
+                try:
+                    _registrar_asistencia_rapida(dni_limpio)
+                except Exception:
+                    pass
                 # JavaScript para vibrar en celular y sonar
                 st.markdown("""
                 <script>
@@ -4057,7 +4065,10 @@ def tab_asistencias():
         elif dm and dm.strip():
             if st.button("✅ REGISTRAR", type="primary",
                          use_container_width=True, key="rm"):
-                _registrar_asistencia_rapida(dm.strip())
+                try:
+                    _registrar_asistencia_rapida(dm.strip())
+                except Exception:
+                    pass
 
     # ===== LISTA DE ASISTENCIA DE HOY =====
     st.markdown("---")
