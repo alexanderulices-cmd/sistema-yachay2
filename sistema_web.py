@@ -6647,15 +6647,16 @@ def tab_registrar_notas(config):
 
                 # Mostrar nota con línea divisoria
                 with nc[col_idx]:
+                    color_nota = "#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"
                     if i > 0:
                         st.markdown(
                             f"<div style='border-left:2px solid #e0e0e0; height:30px; "
                             f"display:inline-block; margin-right:8px;'></div>"
-                            f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>",
+                            f"<b style='color:{color_nota};'>{nota_i}</b>",
                             unsafe_allow_html=True
                         )
                     else:
-                        st.markdown(f"<b style='color:{"#16a34a" if nota_i >= 14 else "#dc2626" if nota_i < 11 else "#f59e0b"};'>{nota_i}</b>", 
+                        st.markdown(f"<b style='color:{color_nota};'>{nota_i}</b>", 
                                    unsafe_allow_html=True)
                 col_idx += 1
 
