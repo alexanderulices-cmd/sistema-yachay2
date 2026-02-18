@@ -1355,12 +1355,15 @@ class BaseDatos:
             try:
                 grado = ''
                 nivel = ''
-                df_m = BaseDatos.cargar_matricula()
+                # Usar caché de matrícula en session_state para evitar llamadas repetidas a GS
+                if '_cache_matricula' not in st.session_state or st.session_state.get('_forzar_local', False):
+                    st.session_state['_cache_matricula'] = BaseDatos.cargar_matricula()
+                df_m = st.session_state['_cache_matricula']
                 if not df_m.empty and 'DNI' in df_m.columns:
                     est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
                     if not est.empty:
-                        grado = est.iloc[0].get('Grado', '')
-                        nivel = est.iloc[0].get('Nivel', '')
+                        grado = str(est.iloc[0].get('Grado', ''))
+                        nivel = str(est.iloc[0].get('Nivel', ''))
                 reg = asistencias[fecha_hoy][dni]
                 gs.guardar_asistencia({
                     'fecha': fecha_hoy,
