@@ -6719,44 +6719,38 @@ def tab_registrar_notas(config):
     st.markdown("### 💾 Guardar Evaluación en Historial")
     st.info("💡 Al guardar, la evaluación queda registrada en el historial y podrás iniciar una nueva.")
 
-    # CSS global para TODOS los botones en esta sección
+    # CSS global - Colores SÓLIDOS FIJOS que no cambian
     st.markdown("""
     <style>
-    /* Botón GUARDAR - Verde */
+    /* TODOS los botones en esta sección */
+    div[data-testid="column"] button,
+    div.stButton > button {
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 16px !important;
+        border: 2px solid rgba(0,0,0,0.2) !important;
+        text-shadow: none !important;
+    }
+    /* Botón GUARDAR - Verde sólido */
     div[data-testid="column"]:nth-of-type(1) button {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 15px !important;
-        border: none !important;
-        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.5) !important;
+        background: #10b981 !important;
     }
-    /* Botón DESCARGAR PDF - Naranja */
+    /* Botón DESCARGAR - Naranja sólido */
     div[data-testid="column"]:nth-of-type(2) button {
-        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 15px !important;
-        border: none !important;
-        box-shadow: 0 4px 8px rgba(249, 115, 22, 0.5) !important;
+        background: #f97316 !important;
     }
-    /* Botón WhatsApp - Verde WA */
+    /* Botón WhatsApp - Verde WA sólido */
     button[key="btn_wa_eval"] {
-        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 15px !important;
-        border: none !important;
-        box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5) !important;
+        background: #25D366 !important;
     }
-    /* Botón NUEVA EVALUACIÓN - Cyan */
+    /* Botón NUEVA EVALUACIÓN - Cyan sólido */
     button[key="btn_nueva_eval"] {
-        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 15px !important;
-        border: none !important;
-        box-shadow: 0 4px 8px rgba(6, 182, 212, 0.5) !important;
+        background: #0891b2 !important;
+    }
+    /* Hover - solo un poco más oscuro */
+    div.stButton > button:hover {
+        opacity: 0.9 !important;
+        transform: scale(1.02);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -6788,17 +6782,16 @@ def tab_registrar_notas(config):
                     except Exception:
                         pass
                 if _guardar_historial_evaluaciones(hist):
-                    st.success(f"✅ Evaluación guardada correctamente — {len(ranking_filas)} estudiantes")
+                    st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
                 else:
-                    st.error("❌ Error al guardar. Intenta de nuevo.")
+                    st.error("❌ Error al guardar")
 
         with col_g2:
-            if st.button("📥 DESCARGAR RANKING PDF", use_container_width=True, key="btn_pdf_eval"):
+            if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval"):
                 pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
-                st.download_button("⬇️ Descargar PDF", pdf_r,
-                                   f"Ranking_{grado_sel}_{bim_sel}.pdf",
+                st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
         if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
@@ -6809,7 +6802,7 @@ def tab_registrar_notas(config):
                 alumno_wa = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
                 cel = alumno_wa.get('Celular_Apoderado', '') if alumno_wa else ''
                 if cel:
-                    # Usar solo caracteres ASCII seguros en WhatsApp
+                    # Mensaje con caracteres seguros
                     msg = f"🏫 *I.E.P. YACHAY - CHINCHERO*\n📊 *REPORTE DE NOTAS*\n\n"
                     msg += f"👤 Alumno: {fila['Nombre']}\n📚 Grado: {grado_sel}\n📅 Periodo: {bim_sel}\n"
                     msg += "━" * 30 + "\n"
@@ -6819,13 +6812,29 @@ def tab_registrar_notas(config):
                     msg += "━" * 30 + "\n"
                     msg += f"📊 *PROMEDIO: {fila['Promedio']}*\n🏆 *PUESTO: {fila['Medalla']}*"
                     
-                    # Normalizar número y crear URL para desktop app
+                    # Normalizar número
                     cel_c = cel.replace(' ','').replace('+','').replace('-','').strip()
                     if not cel_c.startswith('51'):
                         cel_c = '51' + cel_c
-                    # URL para desktop WhatsApp (no web)
-                    url_wa = f"https://api.whatsapp.com/send?phone={cel_c}&text={urllib.parse.quote(msg)}"
-                    st.markdown(f"[📱 **{fila['Nombre']}** → {cel}]({url_wa})", unsafe_allow_html=True)
+                    
+                    # URL que abre DIRECTO en desktop app (no web)
+                    # whatsapp:// funciona en desktop, wa.me en móvil
+                    msg_encoded = urllib.parse.quote(msg)
+                    url_desktop = f"whatsapp://send?phone={cel_c}&text={msg_encoded}"
+                    url_movil = f"https://wa.me/{cel_c}?text={msg_encoded}"
+                    
+                    # Mostrar ambos links con HTML para abrir directo
+                    st.markdown(f"""
+                    <div style='margin:10px 0; padding:10px; background:#f0fdf4; border-radius:8px;'>
+                        <b>📱 {fila['Nombre']}</b> → {cel}<br>
+                        <a href="{url_desktop}" style='display:inline-block; margin:5px; padding:8px 15px; background:#25D366; color:white; text-decoration:none; border-radius:5px; font-weight:bold;'>
+                            💻 WhatsApp Desktop
+                        </a>
+                        <a href="{url_movil}" target="_blank" style='display:inline-block; margin:5px; padding:8px 15px; background:#128C7E; color:white; text-decoration:none; border-radius:5px; font-weight:bold;'>
+                            📱 WhatsApp Móvil
+                        </a>
+                    </div>
+                    """, unsafe_allow_html=True)
                 else:
                     st.caption(f"⚠️ {fila['Nombre']} — Sin celular registrado")
     else:
@@ -6894,13 +6903,13 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             c_pdf.showPage()
             y = h - 30
 
-        # Color de fondo
+        # Color de fondo según puesto
         if idx == 0:
-            c_pdf.setFillColor(colors.HexColor("#fef3c7"))  # Gold
+            c_pdf.setFillColor(colors.HexColor("#fef3c7"))  # Oro
         elif idx == 1:
-            c_pdf.setFillColor(colors.HexColor("#e5e7eb"))  # Silver
+            c_pdf.setFillColor(colors.HexColor("#e5e7eb"))  # Plata
         elif idx == 2:
-            c_pdf.setFillColor(colors.HexColor("#fed7aa"))  # Bronze
+            c_pdf.setFillColor(colors.HexColor("#fed7aa"))  # Bronce
         elif idx % 2 == 0:
             c_pdf.setFillColor(colors.HexColor("#f9fafb"))
         else:
@@ -6911,13 +6920,27 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
         c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 11 if idx < 3 else 10)
         x = x_margin
         
-        # Puesto con medalla
-        medalla = fila.get('Medalla', str(idx + 1))
-        c_pdf.drawString(x + 5, y + 3, medalla)
+        # Puesto con MEDALLA MUY VISIBLE
+        medalla_txt = fila.get('Medalla', f"#{idx + 1}")
+        if idx == 0:
+            medalla_txt = "🥇 1°"
+        elif idx == 1:
+            medalla_txt = "🥈 2°"
+        elif idx == 2:
+            medalla_txt = "🥉 3°"
+        else:
+            medalla_txt = f"#{idx + 1}"
+        
+        c_pdf.setFont("Helvetica-Bold", 12 if idx < 3 else 10)
+        c_pdf.drawString(x + 5, y + 3, medalla_txt)
         x += col_widths[0]
         
-        # Nombre
-        c_pdf.drawString(x + 5, y + 3, str(fila['Nombre'])[:35])
+        # Nombre - ajustar longitud para que no se salga
+        nombre_completo = str(fila['Nombre'])
+        max_nombre_chars = int(col_w_nombre / 6)  # ~6 pixels por char
+        nombre_display = nombre_completo[:max_nombre_chars] if len(nombre_completo) > max_nombre_chars else nombre_completo
+        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 10)
+        c_pdf.drawString(x + 5, y + 3, nombre_display)
         x += col_widths[1]
         
         # Notas por área
@@ -6931,8 +6954,8 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             c_pdf.setFillColor(colors.black)
             x += col_w_area
         
-        # Promedio más grande
-        c_pdf.setFont("Helvetica-Bold", 12)
+        # Promedio MÁS GRANDE Y DESTACADO
+        c_pdf.setFont("Helvetica-Bold", 13 if idx < 3 else 11)
         prom_c = "#16a34a" if fila['Promedio'] >= 14 else "#dc2626" if fila['Promedio'] < 11 else "#f59e0b"
         c_pdf.setFillColor(colors.HexColor(prom_c))
         c_pdf.drawString(x + 5, y + 3, str(fila['Promedio']))
@@ -8082,6 +8105,10 @@ def _leer_docx(file_bytes):
 
 def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, semana, titulo, tipo_doc="FICHA"):
     """Genera PDF con formato oficial del colegio desde contenido de Word — 2 columnas."""
+    from reportlab.lib.enums import TA_JUSTIFY
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.styles import ParagraphStyle
+    
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
@@ -8195,11 +8222,17 @@ def _generar_pdf_desde_docx(bloques_docx, config, nombre_doc, grado, area, seman
 
         elif tipo == 'texto':
             c_pdf.setFont("Helvetica", 9)
-            for linea in textwrap.wrap(contenido, width=max_chars()):
-                if y < Y_BOTTOM:
-                    nueva_columna_o_pagina()
-                c_pdf.drawString(x_col(), y, linea)
-                y -= 13
+            # Usar Paragraph para texto justificado
+            from reportlab.platypus import Paragraph
+            from reportlab.lib.styles import ParagraphStyle
+            style_txt = ParagraphStyle('texto_just', fontName='Helvetica', fontSize=9,
+                                      leading=12, alignment=TA_JUSTIFY, hyphenationLang='es_ES')
+            p_txt = Paragraph(contenido, style_txt)
+            w_txt, h_txt = p_txt.wrap(COL_W - 8, 500)
+            if y - h_txt < Y_BOTTOM:
+                nueva_columna_o_pagina()
+            p_txt.drawOn(c_pdf, x_col(), y - h_txt)
+            y -= h_txt
 
         elif tipo == 'imagen' and bloque.get('imagen_b64'):
             try:
@@ -9713,7 +9746,7 @@ def main():
             st.session_state.modulo_activo = None
 
         if st.session_state.modulo_activo is None:
-            # === DASHBOARD PRINCIPAL (IGUAL QUE ADMIN) ===
+            # === DASHBOARD PRINCIPAL ===
             st.markdown(f"""
             <div class='main-header'>
                 <h2 style='color:white;margin:0;'>{saludo}, {nombre_usuario} 👋</h2>
@@ -9721,17 +9754,15 @@ def main():
             </div>
             """, unsafe_allow_html=True)
 
-            # Grid de módulos para docentes
+            # Grid de módulos para docentes (SIN asistencia ni reportes)
             modulos = [
-                ("📋", "Asistencia", "asistencia", "#16a34a"),
-                ("📊", "Calificación", "calificacion", "#dc2626"),
+                ("📊", "Calificación BETA", "calificacion", "#dc2626"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
-                ("📈", "Reportes", "reportes", "#ea580c"),
             ]
 
-            # Grid de módulos - VISUAL
+            # Grid de módulos
             for i in range(0, len(modulos), 3):
                 cols = st.columns(3)
                 for j, col in enumerate(cols):
@@ -9752,7 +9783,6 @@ def main():
                             </div>
                             """, unsafe_allow_html=True)
                             
-                            # Botón para hacer click
                             if st.button(f"▶ Abrir {nombre}", key=f"dash_doc_{key}", 
                                         type="primary", use_container_width=True):
                                 st.session_state.modulo_activo = key
@@ -9764,8 +9794,7 @@ def main():
             grado_doc = info_doc.get('grado', '')
             if grado_doc:
                 estudiantes_grado = BaseDatos.obtener_estudiantes_grado(grado_doc)
-                asis_hoy = BaseDatos.obtener_asistencias_hoy()
-                s1, s2, s3 = st.columns(3)
+                s1, s2 = st.columns(2)
                 with s1:
                     st.markdown(f"""<div class="stat-card">
                         <h3>🎓 {grado_doc}</h3>
@@ -9776,16 +9805,22 @@ def main():
                         <h3>📚 {len(estudiantes_grado) if not estudiantes_grado.empty else 0}</h3>
                         <p>Estudiantes</p>
                     </div>""", unsafe_allow_html=True)
-                with s3:
-                    st.markdown(f"""<div class="stat-card">
-                        <h3>📋 {len(asis_hoy)}</h3>
-                        <p>Asistencias Hoy</p>
-                    </div>""", unsafe_allow_html=True)
 
         else:
             # === MÓDULO SELECCIONADO ===
-            col_back, col_space = st.columns([1, 4])
+            # Botón REGRESAR con color sólido visible
+            st.markdown("""
+            <style>
+            button[key="btn_volver_doc"] {
+                background: #ef4444 !important;
+                color: #000000 !important;
+                font-weight: 900 !important;
+                border: 2px solid #991b1b !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
             
+            col_back, col_space = st.columns([1, 4])
             with col_back:
                 if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True):
                     st.session_state.modulo_activo = None
@@ -9795,9 +9830,7 @@ def main():
             st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
 
             mod = st.session_state.modulo_activo
-            if mod == "asistencia":
-                tab_asistencia(config)
-            elif mod == "calificacion":
+            if mod == "calificacion":
                 tab_calificacion_yachay(config)
             elif mod == "reg_notas":
                 tab_registrar_notas(config)
@@ -9805,8 +9838,6 @@ def main():
                 tab_material_docente(config)
             elif mod == "examenes_sem":
                 tab_examenes_semanales(config)
-            elif mod == "reportes":
-                tab_reportes(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
