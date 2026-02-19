@@ -70,136 +70,110 @@ st.markdown("""
     }
     
     /* ============================================================
-       BOTONES - ULTRA AGRESIVOS - TODOS VISIBLES 
-       Sin excepciones - Sin transparencias
+       BOTONES - COLORES SÓLIDOS SIN EFECTOS
        ============================================================ */
-    
-    /* CAPTURAR ABSOLUTAMENTE TODO - Selector universal */
+
+    /* TODOS los botones — azul sólido por defecto */
     button,
     [role="button"],
     input[type="button"],
-    input[type="submit"] {
-        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
+    input[type="submit"],
+    .stButton button,
+    div[data-testid="stButton"] button,
+    div[data-testid="column"] button,
+    div[class*="stButton"] button,
+    button[kind],
+    button[class],
+    button[data-testid] {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
         color: white !important;
-        border: 2px solid #1e3a8a !important;
+        border: none !important;
         border-radius: 8px !important;
         padding: 10px 20px !important;
         font-weight: bold !important;
         font-size: 0.95rem !important;
-        box-shadow: 0 4px 10px rgba(30, 64, 175, 0.4) !important;
         opacity: 1 !important;
-        transition: all 0.2s ease !important;
+        box-shadow: none !important;
+        transition: none !important;
+        transform: none !important;
     }
-    
-    /* Hover universal */
+
+    /* Hover — solo oscurecer ligeramente, sin movimiento */
     button:hover,
     [role="button"]:hover {
-        transform: translateY(-2px) scale(1.03) !important;
-        box-shadow: 0 6px 16px rgba(30, 64, 175, 0.5) !important;
+        background: #1d4ed8 !important;
+        background-color: #1d4ed8 !important;
         color: white !important;
-        -webkit-text-fill-color: white !important;
+        transform: none !important;
+        box-shadow: none !important;
     }
-    
-    /* Forzar en contenedores de Streamlit */
-    .stButton button,
-    div[data-testid="stButton"] button,
-    div[data-testid="column"] button,
-    div[class*="stButton"] button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: 2px solid #1e40af !important;
-        font-weight: 600 !important;
-        opacity: 1 !important;
-    }
-    
-    /* Tabs - Forzar colores */
-    button[data-baseweb="tab"],
-    [role="tab"] {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-        color: white !important;
-        border: 2px solid #4338ca !important;
-        font-weight: 600 !important;
-        padding: 10px 20px !important;
-        opacity: 1 !important;
-    }
-    
-    button[data-baseweb="tab"][aria-selected="true"],
-    [role="tab"][aria-selected="true"] {
-        background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%) !important;
-        border: 3px solid #312e81 !important;
-        box-shadow: 0 4px 12px rgba(67, 56, 202, 0.6) !important;
-    }
-    
-    /* Eliminar CUALQUIER opacidad o transparencia */
-    button[kind],
-    button[class],
-    button[data-testid] {
-        opacity: 1 !important;
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: 2px solid #1e40af !important;
-    }
-    
-    /* Secondary buttons - Verde intenso */
+
+    /* Secondary — verde sólido */
     button[kind="secondary"],
     button.secondary,
-    button[data-baseweb*="secondary"] {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        border: 2px solid #065f46 !important;
+    button[data-baseweb*="secondary"],
+    button[style*="background: transparent"],
+    button[style*="background: rgba"],
+    button[class*="secondary"] {
+        background: #059669 !important;
+        background-color: #059669 !important;
         color: white !important;
+        border: none !important;
     }
-    
-    /* Botones de pestañas específicos */
+
+    /* Tabs — morado sólido */
+    button[data-baseweb="tab"],
+    [role="tab"],
     div[role="tablist"] button {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+        background: #7c3aed !important;
+        background-color: #7c3aed !important;
         color: white !important;
-        border: 2px solid #4338ca !important;
+        border: none !important;
         font-weight: 600 !important;
         min-height: 40px !important;
         opacity: 1 !important;
     }
-    
-    /* Botones del sidebar */
-    div[data-testid="stSidebar"] button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    button[data-baseweb="tab"][aria-selected="true"],
+    [role="tab"][aria-selected="true"] {
+        background: #4c1d95 !important;
+        background-color: #4c1d95 !important;
+        border-bottom: 3px solid #f59e0b !important;
+    }
+
+    /* Sidebar — azul oscuro sólido */
+    div[data-testid="stSidebar"] button,
+    [data-testid="stSidebar"] .stButton button {
+        background: #1e3a8a !important;
+        background-color: #1e3a8a !important;
         color: white !important;
-        border: 2px solid #1e40af !important;
+        border: none !important;
         font-weight: bold !important;
         opacity: 1 !important;
     }
-    
-    /* Botones del dashboard - mantener personalizados */
-    button[data-testid*="dash_"] {
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        /* Sus colores ya están definidos individualmente */
-    }
 
-    /* CERRAR SESIÓN - rojo sólido */
+    /* CERRAR SESIÓN — rojo sólido */
+    button[key="btn_logout_sidebar"],
     [data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] button,
     [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] button,
-    [data-testid="stBaseButton-secondary"][key="btn_logout_sidebar"] button,
-    button[key="btn_logout_sidebar"],
     [data-testid="stSidebar"] .stButton button {
-        background-color: #dc2626 !important;
         background: #dc2626 !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
+        background-color: #dc2626 !important;
+        color: white !important;
         border: none !important;
-        opacity: 1 !important;
     }
 
-    /* REGRESAR - azul sólido */
+    /* REGRESAR — naranja sólido */
     button[key="btn_volver"],
-    [data-testid="stBaseButton-secondary"][key="btn_volver"] button {
-        background-color: #2563eb !important;
-        background: #2563eb !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
+    button[key="btn_volver_doc"] {
+        background: #ea580c !important;
+        background-color: #ea580c !important;
+        color: white !important;
         border: none !important;
-        opacity: 1 !important;
+        font-weight: 900 !important;
     }
-    
-    /* EXCLUIR barra de herramientas de Streamlit - dejar en su estilo original */
+
+    /* Barra herramientas Streamlit — no tocar */
     [data-testid="stToolbar"] button,
     [data-testid="stToolbar"] [role="button"],
     header button,
@@ -209,21 +183,9 @@ st.markdown("""
         border: none !important;
         box-shadow: none !important;
         color: inherit !important;
-        font-size: inherit !important;
-        padding: inherit !important;
         font-weight: inherit !important;
         opacity: inherit !important;
         transform: none !important;
-    }
-    
-    /* FORZAR eliminar fondos transparentes o grises */
-    button[style*="background: transparent"],
-    button[style*="background: rgba"],
-    button[class*="secondary"] {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        border: 2px solid #065f46 !important;
-        color: white !important;
-        opacity: 1 !important;
     }
     
     
@@ -1356,7 +1318,7 @@ class BaseDatos:
             asistencias[fecha_hoy] = {}
         if dni not in asistencias[fecha_hoy]:
             asistencias[fecha_hoy][dni] = {
-                'nombre': nombre, 'entrada': '', 'salida': '',
+                'nombre': nombre, 'entrada': '', 'salida': '', 'tardanza': '',
                 'es_docente': es_docente
             }
         asistencias[fecha_hoy][dni][tipo] = hora
@@ -2462,7 +2424,12 @@ import random as _random
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
     saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
-    em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
+    if tipo == "entrada":
+        em = "✅ ENTRADA"
+    elif tipo == "tardanza":
+        em = "⏰ TARDANZA"
+    else:
+        em = "🏁 SALIDA"
     frase = _random.choice(FRASES_MOTIVACIONALES)
     return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
             f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
@@ -3998,7 +3965,7 @@ def tab_asistencias():
     if 'wa_enviados' not in st.session_state:
         st.session_state.wa_enviados = set()
 
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("🌅 ENTRADA", use_container_width=True,
                       type="primary" if st.session_state.tipo_asistencia == "Entrada"
@@ -4006,14 +3973,20 @@ def tab_asistencias():
             st.session_state.tipo_asistencia = "Entrada"
             st.rerun()
     with c2:
+        if st.button("⏰ TARDANZA", use_container_width=True,
+                      type="primary" if st.session_state.tipo_asistencia == "Tardanza"
+                      else "secondary", key="bt"):
+            st.session_state.tipo_asistencia = "Tardanza"
+            st.rerun()
+    with c3:
         if st.button("🌙 SALIDA", use_container_width=True,
                       type="primary" if st.session_state.tipo_asistencia == "Salida"
                       else "secondary", key="bs"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
-    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — "
-            f"Registre todos los alumnos/docentes. "
-            f"Luego envíe WhatsApp desde la lista de abajo.")
+    _color_modo = {"Entrada": "#16a34a", "Tardanza": "#f59e0b", "Salida": "#2563eb"}
+    _modo = st.session_state.tipo_asistencia
+    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {_modo} — Registre alumnos/docentes. Luego envíe WhatsApp.</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -4036,39 +4009,44 @@ def tab_asistencias():
     with cm:
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
-        
-        # Auto-registro: cuando cambia el valor se registra
-        dm = st.text_input("DNI:", key="dm",
-                           placeholder="Escanee código de barras o escriba DNI + Enter")
-        
-        # Auto-registro si hay valor (el lector envía Enter automáticamente)
-        if dm and dm.strip() and len(dm.strip()) >= 8:
-            dni_limpio = ''.join(c for c in dm.strip() if c.isdigit())
+
+        # Callback que se ejecuta al cambiar el campo (Enter o scanner)
+        def _on_dni_submit():
+            val = st.session_state.get('dm_input', '').strip()
+            dni_limpio = ''.join(c for c in val if c.isdigit())
             if len(dni_limpio) == 8:
                 try:
                     _registrar_asistencia_rapida(dni_limpio)
                 except Exception:
                     pass
-                # JavaScript para vibrar en celular y sonar
-                st.markdown("""
-                <script>
-                    if ('vibrate' in navigator) { navigator.vibrate([200, 100, 200]); }
-                    try {
-                        var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                        var o = ctx.createOscillator();
-                        o.type = 'sine'; o.frequency.value = 800;
-                        o.connect(ctx.destination);
-                        o.start(); setTimeout(function(){ o.stop(); }, 200);
-                    } catch(e) {}
-                </script>
-                """, unsafe_allow_html=True)
-        elif dm and dm.strip():
-            if st.button("✅ REGISTRAR", type="primary",
-                         use_container_width=True, key="rm"):
-                try:
-                    _registrar_asistencia_rapida(dm.strip())
-                except Exception:
-                    pass
+            # Limpiar campo inmediatamente
+            st.session_state['dm_input'] = ''
+
+        dm = st.text_input("DNI:", key="dm_input",
+                           placeholder="Escanee código de barras o escriba DNI + Enter",
+                           on_change=_on_dni_submit)
+
+        # Sonido/vibración via JS después de registrar
+        if not dm:  # Campo fue limpiado = se registró
+            st.markdown("""
+            <script>
+            (function() {
+                if ('vibrate' in navigator) { navigator.vibrate([200, 100, 200]); }
+                try {
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var o = ctx.createOscillator();
+                    o.type = 'sine'; o.frequency.value = 800;
+                    o.connect(ctx.destination);
+                    o.start(); setTimeout(function(){ o.stop(); }, 200);
+                } catch(e) {}
+                // Devolver foco al campo para siguiente escaneo
+                setTimeout(function() {
+                    var inputs = window.parent.document.querySelectorAll('input[placeholder*="DNI"]');
+                    if (inputs.length > 0) inputs[0].focus();
+                }, 100);
+            })();
+            </script>
+            """, unsafe_allow_html=True)
 
     # ===== LISTA DE ASISTENCIA DE HOY =====
     st.markdown("---")
@@ -4081,6 +4059,7 @@ def tab_asistencias():
         for dk, v in asis.items():
             reg = {'DNI': dk, 'Nombre': v['nombre'],
                    'Entrada': v.get('entrada', '—'),
+                   'Tardanza': v.get('tardanza', '—'),
                    'Salida': v.get('salida', '—'),
                    'es_docente': v.get('es_docente', False)}
             if v.get('es_docente', False):
@@ -4089,7 +4068,7 @@ def tab_asistencias():
                 alumnos_h.append(reg)
 
         # Métricas rápidas
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
         with c1:
             st.metric("📚 Alumnos", len(alumnos_h))
         with c2:
@@ -4098,6 +4077,9 @@ def tab_asistencias():
             entradas = sum(1 for v in asis.values() if v.get('entrada'))
             st.metric("🌅 Entradas", entradas)
         with c4:
+            tardanzas = sum(1 for v in asis.values() if v.get('tardanza'))
+            st.metric("⏰ Tardanzas", tardanzas)
+        with c5:
             salidas = sum(1 for v in asis.values() if v.get('salida'))
             st.metric("🌙 Salidas", salidas)
 
@@ -4115,13 +4097,14 @@ def tab_asistencias():
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        tab_ent, tab_sal = st.tabs(["🌅 Entrada", "🌙 Salida"])
+        tab_ent, tab_tard, tab_sal = st.tabs(["🌅 Entrada", "⏰ Tardanza", "🌙 Salida"])
 
         def _render_wa_tab(tipo_tab):
             asis_fresh = BaseDatos.obtener_asistencias_hoy()
             pendientes = 0
             enviados = 0
             sin_celular = []
+            links_pendientes = []  # Para el botón enviar todo
 
             for dk, dat in asis_fresh.items():
                 hora_reg = dat.get(tipo_tab, '')
@@ -4132,9 +4115,8 @@ def tab_asistencias():
                 ya_enviado = clave_envio in st.session_state.wa_enviados
                 if ya_enviado:
                     enviados += 1
-                    continue  # Ya enviado: NO mostrar, desaparece de lista
+                    continue
 
-                # Buscar celular directo desde matrícula local (sin GS)
                 nombre = dat['nombre']
                 es_doc = dat.get('es_docente', False)
                 tipo_icon = "👨‍🏫" if es_doc else "📚"
@@ -4160,6 +4142,8 @@ def tab_asistencias():
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
+                links_pendientes.append({'link': link, 'clave': clave_envio, 'nombre': nombre, 'hora': hora_reg, 'cel': cel, 'icon': tipo_icon})
+
                 col_btn, col_check = st.columns([4, 1])
                 with col_btn:
                     st.markdown(
@@ -4172,6 +4156,38 @@ def tab_asistencias():
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
 
+            # ── BOTÓN ENVIAR TODO ──────────────────────────────────────────
+            if links_pendientes:
+                st.markdown("---")
+                pausa = st.slider("⏱ Pausa entre mensajes (seg):", 3, 10, 5,
+                                  key=f"pausa_{tipo_tab}")
+                if st.button(f"🚀 ENVIAR TODOS ({len(links_pendientes)}) automáticamente",
+                             type="primary", use_container_width=True,
+                             key=f"enviar_todo_{tipo_tab}"):
+                    # Marcar todos como enviados en session_state
+                    for item in links_pendientes:
+                        st.session_state.wa_enviados.add(item['clave'])
+                    # JS: abrir links en secuencia con pausa
+                    links_js = [item['link'] for item in links_pendientes]
+                    links_json = json.dumps(links_js)
+                    pausa_ms = pausa * 1000
+                    st.markdown(f"""
+                    <script>
+                    (function() {{
+                        var links = {links_json};
+                        var delay = {pausa_ms};
+                        function abrirSiguiente(i) {{
+                            if (i >= links.length) return;
+                            window.location.href = links[i];
+                            setTimeout(function() {{ abrirSiguiente(i + 1); }}, delay);
+                        }}
+                        abrirSiguiente(0);
+                    }})();
+                    </script>
+                    """, unsafe_allow_html=True)
+                    st.success(f"✅ Abriendo {len(links_pendientes)} conversaciones con {pausa}s de pausa...")
+                    st.rerun()
+
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
                     for s in sin_celular:
@@ -4181,11 +4197,11 @@ def tab_asistencias():
                 st.success(f"🎉 ¡Todos enviados! ({enviados} mensajes)")
             elif pendientes == 0 and enviados == 0:
                 st.info("No hay registros de este tipo aún.")
-            else:
-                st.info(f"📱 {pendientes} pendientes de envío")
 
         with tab_ent:
             _render_wa_tab("entrada")
+        with tab_tard:
+            _render_wa_tab("tardanza")
         with tab_sal:
             _render_wa_tab("salida")
 
@@ -9972,18 +9988,6 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR con color sólido visible
-            st.markdown("""
-            <style>
-            button[key="btn_volver_doc"] {
-                background: #ef4444 !important;
-                color: #000000 !important;
-                font-weight: 900 !important;
-                border: 2px solid #991b1b !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
             col_back, col_space = st.columns([1, 4])
             with col_back:
                 if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True):
