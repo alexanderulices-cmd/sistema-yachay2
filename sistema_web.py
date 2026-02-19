@@ -3394,7 +3394,7 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
+        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar", type="primary"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
             st.rerun()
@@ -3428,7 +3428,7 @@ def _gestion_usuarios_admin():
             st.caption(f"🗑️ {cv} → {usuarios[cv].get('label', 'Sin nombre')}")
         
         if st.button("🗑️ ELIMINAR TODAS LAS CUENTAS OBSOLETAS", 
-                   type="secondary", key="btn_del_obsoletas"):
+                   type="primary", key="btn_del_obsoletas"):
             for cv in cuentas_viejas:
                 del usuarios[cv]
             guardar_usuarios(usuarios)
@@ -3491,7 +3491,7 @@ def _gestion_usuarios_admin():
                 st.success(f"✅ {edit_usr} actualizado")
                 st.rerun()
         with c2:
-            if st.button("🗑️ Eliminar", key="btn_del_usr"):
+            if st.button("🗑️ Eliminar", key="btn_del_usr", type="primary"):
                 if edit_usr != "administrador":
                     del usuarios[edit_usr]
                     guardar_usuarios(usuarios)
@@ -3710,7 +3710,7 @@ def tab_matricula(config):
             if puede_borrar():
                 with st.expander("🗑️ Eliminar Alumno"):
                     deld = st.text_input("DNI a eliminar:", key="dd")
-                    if st.button("🗑️ Eliminar", key="bdel"):
+                    if st.button("🗑️ Eliminar", key="bdel", type="primary"):
                         if deld:
                             BaseDatos.eliminar_estudiante(deld)
                             st.rerun()
@@ -3732,7 +3732,7 @@ def tab_matricula(config):
             if puede_borrar():
                 with st.expander("🗑️ Eliminar Docente"):
                     deld2 = st.text_input("DNI:", key="dddoc")
-                    if st.button("🗑️ Eliminar", key="bdeldoc"):
+                    if st.button("🗑️ Eliminar", key="bdeldoc", type="primary"):
                         if deld2:
                             BaseDatos.eliminar_docente(deld2)
                             st.rerun()
@@ -3813,7 +3813,7 @@ def tab_documentos(config):
         ], key="td")
         st.markdown("---")
         db = st.text_input("🔍 Buscar DNI:", key="db")
-        if st.button("🔎 Buscar", use_container_width=True, key="bb"):
+        if st.button("🔎 Buscar", use_container_width=True, key="bb", type="primary"):
             r = BaseDatos.buscar_por_dni(db)
             if r:
                 st.session_state.alumno = r.get('Nombre', '')
@@ -3918,7 +3918,7 @@ def tab_carnets(config):
 
     with t2:
         dbs = st.text_input("🔍 DNI:", key="cbd")
-        if st.button("🔎 Buscar", key="cbb"):
+        if st.button("🔎 Buscar", key="cbb", type="primary"):
             a = BaseDatos.buscar_por_dni(dbs)
             if a:
                 st.session_state['ce'] = a
@@ -4183,7 +4183,7 @@ def tab_asistencias():
                         unsafe_allow_html=True)
                 with col_check:
                     if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
-                                 help="Marcar como enviado y quitar de lista"):
+                                 help="Marcar como enviado y quitar de lista", type="primary"):
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
 
@@ -4192,7 +4192,7 @@ def tab_asistencias():
                 st.markdown("---")
                 pausa = st.slider("⏱ Pausa entre mensajes (seg):", 3, 10, 5,
                                   key=f"pausa_{tipo_tab}")
-                if st.button(f"🚀 ENVIAR TODOS ({len(links_pendientes)}) automáticamente",
+                if st.button(f"🚀 ENVIAR TODOS ({len(links_pendientes, type="primary")}) automáticamente",
                              type="primary", use_container_width=True,
                              key=f"enviar_todo_{tipo_tab}"):
                     # Marcar todos como enviados en session_state
@@ -4239,7 +4239,7 @@ def tab_asistencias():
 
         # Botón para resetear marcas de enviado
         if st.session_state.wa_enviados:
-            if st.button("🔄 Resetear marcas de enviado", key="reset_wa"):
+            if st.button("🔄 Resetear marcas de enviado", key="reset_wa", type="primary"):
                 st.session_state.wa_enviados = set()
                 st.rerun()
 
@@ -4781,7 +4781,7 @@ def tab_calificacion_yachay(config):
                                   index=1, key="nn")
             with cb:
                 st.markdown("###")
-                if st.button("➕ Agregar", key="aa"):
+                if st.button("➕ Agregar", key="aa", type="primary"):
                     if na:
                         st.session_state.areas_examen.append({
                             'nombre': na, 'num': nn, 'claves': ''})
@@ -4798,7 +4798,7 @@ def tab_calificacion_yachay(config):
                     tc_.extend(list(cl.upper()))
                     tp += a['num']
                     if len(st.session_state.areas_examen) > 1:
-                        if st.button("🗑️ Quitar", key=f"d{i}"):
+                        if st.button("🗑️ Quitar", key=f"d{i}", type="primary"):
                             st.session_state.areas_examen.pop(i)
                             st.rerun()
 
@@ -4813,7 +4813,7 @@ def tab_calificacion_yachay(config):
                                   index=1, key="nn_r")
             with cb:
                 st.markdown("###")
-                if st.button("➕ Agregar", key="aa_r"):
+                if st.button("➕ Agregar", key="aa_r", type="primary"):
                     if na:
                         st.session_state.areas_examen.append({
                             'nombre': na, 'num': nn, 'claves': ''})
@@ -5015,7 +5015,7 @@ def tab_calificacion_yachay(config):
                             unsafe_allow_html=True)
 
                 # Reporte PDF individual
-                if st.button("📥 Descargar Reporte PDF del Estudiante", key="dl_rep_est"):
+                if st.button("📥 Descargar Reporte PDF del Estudiante", key="dl_rep_est", type="primary"):
                     pdf = generar_reporte_estudiante_pdf(
                         nm, de, grado_est, [res], config)
                     st.download_button("⬇️ PDF", pdf,
@@ -5175,11 +5175,11 @@ def tab_calificacion_yachay(config):
                             
                             col_ver, col_del = st.columns([3, 1])
                             with col_ver:
-                                if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
+                                if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}", type="primary"):
                                     df_hist = pd.DataFrame(eval_data.get('ranking', []))
                                     st.dataframe(df_hist, use_container_width=True)
                             with col_del:
-                                if st.button("🗑️ Eliminar", key=f"del_eval_{clave}"):
+                                if st.button("🗑️ Eliminar", key=f"del_eval_{clave}", type="primary"):
                                     del hist_data[clave]
                                     with open(historial_file, 'w', encoding='utf-8') as f:
                                         json.dump(hist_data, f, ensure_ascii=False, indent=2)
@@ -5231,7 +5231,7 @@ def tab_calificacion_yachay(config):
                         st.write(f"**Promedio:** {h.get('promedio_general', 0)}/20")
 
                 # Descargar reporte completo
-                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf"):
+                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf", type="primary"):
                     al_h = BaseDatos.buscar_por_dni(dni_hist)
                     grado_h = str(al_h.get('Grado', '')) if al_h else ""
                     pdf = generar_reporte_estudiante_pdf(
@@ -6106,7 +6106,7 @@ def tab_reportes(config):
                     cols_ev = ['Puesto','Medalla','Nombre'] + areas_nombres_ev + ['Promedio']
                     cols_ev = [c for c in cols_ev if c in df_ev.columns]
                     st.dataframe(df_ev[cols_ev], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"rep_pdf_{clave}"):
+                    if st.button("📥 PDF Ranking", key=f"rep_pdf_{clave}", type="primary"):
                         pdf_ev = _generar_ranking_pdf(ranking_ev, areas_nombres_ev,
                                                       ev.get('grado',''), ev.get('periodo',''), config)
                         st.download_button("⬇️ Descargar PDF", pdf_ev,
@@ -6206,7 +6206,7 @@ def tab_reportes(config):
                                                           float(nota.get('nota', 0)), 0.5,
                                                           key=f"ne_{idx}_{dni_ri}")
                                 with col3:
-                                    if st.button("💾", key=f"sv_{idx}_{dni_ri}"):
+                                    if st.button("💾", key=f"sv_{idx}_{dni_ri}", type="primary"):
                                         if gs and '_clave' in nota:
                                             try:
                                                 nota['nota'] = nueva
@@ -6548,7 +6548,7 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
+                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
                         pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
                         st.download_button("⬇️ Descargar", pdf_h,
                                            f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
@@ -6678,7 +6678,7 @@ def tab_registrar_notas(config):
         }
         </style>
         """, unsafe_allow_html=True)
-        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval"):
+        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval", type="primary"):
             st.session_state.eval_sesion = None
             st.session_state.notas_sesion = {}
             st.session_state.eval_estudiantes = []
@@ -6952,12 +6952,12 @@ def tab_registrar_notas(config):
                     st.error("❌ Error al guardar")
 
         with col_g2:
-            if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval"):
+            if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval", type="primary"):
                 pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
                 st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
-        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
+        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval", type="primary"):
             st.session_state['_mostrar_wa_eval'] = True
         if st.session_state.get('_mostrar_wa_eval'):
             st.markdown("### 📱 Enviar Notas por WhatsApp")
@@ -8231,7 +8231,7 @@ def tab_material_docente(config):
                             st.download_button("⬇️ Descargar", f.read(), ficha.name, mime,
                                                key=f"dl_{ficha.name}", use_container_width=True)
                     with col_c:
-                        if st.button("🗑️ Eliminar", key=f"del_{ficha.name}"):
+                        if st.button("🗑️ Eliminar", key=f"del_{ficha.name}", type="primary"):
                             ficha.unlink()
                             st.success("Eliminada")
                             time.sleep(0.5)
@@ -8689,7 +8689,7 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                     for mat in por_semana[sem]:
                         st.markdown(f"**📚 {mat.get('area', '')}** — *{mat.get('titulo', '')}*")
                         st.caption(f"🕒 Subido: {mat.get('fecha_creacion', '')}")
-                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '')}"):
+                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '', type="primary")}"):
                             try:
                                 pdf = _generar_pdf_material(mat, config)
                                 st.download_button("⬇️ Descargar", pdf,
@@ -8943,7 +8943,7 @@ def tab_examenes_semanales(config):
                     
                     # Botón para eliminar
                     if st.session_state.rol in ['admin', 'docente']:
-                        if st.button(f"🗑️ Eliminar", key=f"del_exam_{examen.name}"):
+                        if st.button(f"🗑️ Eliminar", key=f"del_exam_{examen.name}", type="primary"):
                             examen.unlink()
                             st.success("🎉 Examen eliminado")
                             time.sleep(0.5)
@@ -9937,13 +9937,13 @@ def main():
         st.markdown("*¿Qué vamos a hacer hoy?*")
         ca1, ca2, ca3 = st.columns(3)
         with ca1:
-            if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist"):
+            if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist", type="primary"):
                 st.session_state.modulo_activo = "asistencia"
         with ca2:
-            if st.button("📈\n\n**Reportes**", use_container_width=True, key="aux_rep"):
+            if st.button("📈\n\n**Reportes**", use_container_width=True, key="aux_rep", type="primary"):
                 st.session_state.modulo_activo = "reportes"
         with ca3:
-            if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc"):
+            if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc", type="primary"):
                 st.session_state.modulo_activo = "incidencias"
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
@@ -10022,7 +10022,7 @@ def main():
             # === MÓDULO SELECCIONADO ===
             col_back, col_space = st.columns([1, 4])
             with col_back:
-                if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True):
+                if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True, type="primary"):
                     st.session_state.modulo_activo = None
                     st.rerun()
             
@@ -10128,7 +10128,7 @@ def main():
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
-                if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True):
+                if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True, type="primary"):
                     st.session_state.modulo_activo = None
                     st.rerun()
             
