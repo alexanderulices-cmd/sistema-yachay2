@@ -2159,24 +2159,36 @@ def generar_ranking_pdf(resultados, anio):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
+    # Marca de agua central
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
-            c.setFillAlpha(0.06)
-            c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
-                        200, 200, mask='auto')
+            c.setFillAlpha(0.05)
+            c.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
             c.restoreState()
         except Exception:
             pass
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(w / 2, h - 40, "I.E.P. ALTERNATIVO YACHAY")
-    c.setFont("Helvetica", 11)
-    c.drawCentredString(w / 2, h - 58, '"Pioneros en la Educación de Calidad"')
-    c.setFont("Helvetica-Bold", 20)  # IEP YACHAY - MÁS GRANDE
-    c.drawCentredString(w / 2, h - 85, f"RANKING DE RESULTADOS — {anio}")
+    # Barra azul superior
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.rect(0, h-15, w, 15, fill=1, stroke=0)
+    # Escudo izquierda y derecha
+    if Path("escudo_upload.png").exists():
+        try:
+            c.drawImage("escudo_upload.png", 18, h-88, 62, 62, mask='auto')
+            c.drawImage("escudo_upload.png", w-80, h-88, 62, 62, mask='auto')
+        except Exception:
+            pass
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.setFont("Helvetica-Bold", 8)
+    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawCentredString(w/2, h-43, "I.E.P. YACHAY — CHINCHERO")
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(w/2, h-62, f"RANKING DE RESULTADOS — {anio}")
     c.setFont("Helvetica", 9)
-    c.drawCentredString(w / 2, h - 100,
-                        f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    c.setFillColor(colors.HexColor("#6b7280"))
+    c.drawCentredString(w/2, h-75, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    c.setFillColor(colors.black)
 
     rk = sorted(resultados,
                 key=lambda r: r.get('promedio_general', 0), reverse=True)
@@ -4288,37 +4300,19 @@ def tab_asistencias():
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
 
-            # ── BOTÓN ENVIAR TODO ──────────────────────────────────────────
             if links_pendientes:
-                st.markdown("---")
-                pausa = st.slider("⏱ Pausa entre mensajes (seg):", 3, 10, 5,
-                                  key=f"pausa_{tipo_tab}")
-                if st.button(f"🚀 ENVIAR TODOS ({len(links_pendientes)}) automáticamente",
-                             type="primary", use_container_width=True,
-                             key=f"enviar_todo_{tipo_tab}"):
-                    # Marcar todos como enviados en session_state
-                    for item in links_pendientes:
-                        st.session_state.wa_enviados.add(item['clave'])
-                    # JS: abrir links en secuencia con pausa
-                    links_js = [item['link'] for item in links_pendientes]
-                    links_json = json.dumps(links_js)
-                    pausa_ms = pausa * 1000
-                    st.markdown(f"""
-                    <script>
-                    (function() {{
-                        var links = {links_json};
-                        var delay = {pausa_ms};
-                        function abrirSiguiente(i) {{
-                            if (i >= links.length) return;
-                            window.location.href = links[i];
-                            setTimeout(function() {{ abrirSiguiente(i + 1); }}, delay);
-                        }}
-                        abrirSiguiente(0);
-                    }})();
-                    </script>
-                    """, unsafe_allow_html=True)
-                    st.success(f"✅ Abriendo {len(links_pendientes)} conversaciones con {pausa}s de pausa...")
-                    st.rerun()
+                for item in links_pendientes:
+                    col_btn, col_check = st.columns([4, 1])
+                    with col_btn:
+                        st.markdown(
+                            f'<a href="{item["link"]}" target="_blank" class="wa-btn">'
+                            f'📱 {item["icon"]} {item["nombre"]} — 🕒 {item["hora"]} → {item["cel"]}</a>',
+                            unsafe_allow_html=True)
+                    with col_check:
+                        if st.button("✅", key=f"next_wa_{tipo_tab}_{item['clave']}", type="primary",
+                                     help="Enviado — quitar de lista"):
+                            st.session_state.wa_enviados.add(item['clave'])
+                            st.rerun()
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
@@ -4429,25 +4423,57 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=A4)
     w, h = A4
-    
-    # Encabezado
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(w/2, h-50, "INFORME ACADÉMICO INDIVIDUAL")
-    c.setFont("Helvetica", 10)
-    c.drawCentredString(w/2, h-68, f"I.E.P. ALTERNATIVO YACHAY — {config.get('anio', 2026)}")
-    
-    c.setFont("Helvetica-Bold", 12)
-    y = h - 100
-    c.drawString(50, y, f"Estudiante: {nombre}")
-    c.drawString(350, y, f"DNI: {dni}")
-    y -= 20
-    c.drawString(50, y, f"Grado: {grado}")
-    c.drawString(350, y, f"Fecha: {fecha_peru_str()}")
-    y -= 15
+
+    # ── Marca de agua ────────────────────────────────────────────────────
+    if Path("escudo_upload.png").exists():
+        try:
+            c.saveState()
+            c.setFillAlpha(0.05)
+            c.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+            c.restoreState()
+        except Exception:
+            pass
+
+    # ── Barra azul superior ──────────────────────────────────────────────
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.rect(0, h-15, w, 15, fill=1, stroke=0)
+
+    # ── Escudo izquierda y derecha ───────────────────────────────────────
+    if Path("escudo_upload.png").exists():
+        try:
+            c.drawImage("escudo_upload.png", 18, h-88, 62, 62, mask='auto')
+            c.drawImage("escudo_upload.png", w-80, h-88, 62, 62, mask='auto')
+        except Exception:
+            pass
+
+    # ── Textos institucionales ───────────────────────────────────────────
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.setFont("Helvetica-Bold", 7.5)
+    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(w/2, h-43, "I.E.P. YACHAY — CHINCHERO")
+    c.setFont("Helvetica-Bold", 13)
+    c.drawCentredString(w/2, h-60, "INFORME ACADÉMICO INDIVIDUAL")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(colors.HexColor("#6b7280"))
+    c.drawCentredString(w/2, h-73, f"Año Escolar {config.get('anio', 2026)}")
+    c.setFillColor(colors.black)
+
+    # ── Datos del estudiante ─────────────────────────────────────────────
+    c.setStrokeColor(colors.HexColor("#1a56db"))
+    c.setLineWidth(1.5)
+    c.roundRect(25, h-148, w-50, 60, 8, fill=0)
+    c.setFont("Helvetica-Bold", 10)
+    y = h - 105
+    c.drawString(35, y, f"Estudiante: {nombre}")
+    c.drawRightString(w-35, y, f"DNI: {dni}")
+    y -= 18
+    c.drawString(35, y, f"Grado: {grado}")
+    c.drawRightString(w-35, y, f"Fecha: {fecha_peru_str()}")
     c.setStrokeColor(colors.HexColor("#1a56db"))
     c.setLineWidth(2)
-    c.line(50, y, w-50, y)
-    y -= 25
+    c.line(25, h-152, w-25, h-152)
+    y = h - 175
     
     if not resultados_hist:
         c.setFont("Helvetica", 12)
@@ -7124,12 +7150,23 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
 
-    # Encabezado más compacto
+    # Encabezado con escudos
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
+    # Marca de agua
     if Path("escudo_upload.png").exists():
         try:
-            c_pdf.drawImage("escudo_upload.png", 15, h - 60, 45, 45, mask='auto')
+            c_pdf.saveState()
+            c_pdf.setFillAlpha(0.05)
+            c_pdf.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+            c_pdf.restoreState()
+        except Exception:
+            pass
+    # Escudo izquierda y derecha
+    if Path("escudo_upload.png").exists():
+        try:
+            c_pdf.drawImage("escudo_upload.png", 15, h - 62, 45, 45, mask='auto')
+            c_pdf.drawImage("escudo_upload.png", w - 60, h - 62, 45, 45, mask='auto')
         except Exception:
             pass
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
@@ -7764,10 +7801,11 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h - 15, w, 15, fill=1, stroke=0)
 
-    # ── Escudo a la izquierda ────────────────────────────────────────────
+    # ── Escudo IZQUIERDA y DERECHA ───────────────────────────────────────
     if Path("escudo_upload.png").exists():
         try:
-            c.drawImage("escudo_upload.png", 25, h - 90, 62, 62, mask='auto')
+            c.drawImage("escudo_upload.png", 18, h - 90, 62, 62, mask='auto')  # izquierda
+            c.drawImage("escudo_upload.png", w - 80, h - 90, 62, 62, mask='auto')  # derecha
         except Exception:
             pass
 
@@ -7804,12 +7842,13 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
     c.setLineWidth(2)
     c.line(60, h - 174, w - 60, h - 174)
 
-    # ── Marca de agua central ────────────────────────────────────────────
+    # ── Marca de agua: escudo central + 4 esquinas ───────────────────────
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
-            c.setFillAlpha(0.04)
-            c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
+            c.setFillAlpha(0.05)
+            # Centro grande
+            c.drawImage("escudo_upload.png", w / 2 - 110, h / 2 - 110, 220, 220, mask='auto')
             c.restoreState()
         except Exception:
             pass
@@ -9131,6 +9170,8 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     columna_actual = 1
     x = x_col1
     y_min = 60
+    y_col1 = y_start  # rastrear y de cada columna independientemente
+    y_col2 = y_start
     
     from reportlab.platypus import Paragraph
     from reportlab.lib.styles import ParagraphStyle
@@ -9142,12 +9183,26 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
             if columna_actual == 1:
                 columna_actual = 2
                 x = x_col2
-                y = y_start
+                y = y_start  # columna 2 arranca desde el mismo y_start
             else:
-                c_pdf.showPage()
+                # Pie de página antes de nueva página
                 c_pdf.setFont("Helvetica-Bold", 9)
                 c_pdf.setFillColor(colors.HexColor("#6b7280"))
-                c_pdf.drawCentredString(w / 2, h - 20, f"{titulo} — Página {c_pdf.getPageNumber()}")
+                c_pdf.drawCentredString(w / 2, 20, f"{titulo} — Página {c_pdf.getPageNumber()}")
+                c_pdf.setFillColor(colors.black)
+                c_pdf.showPage()
+                # Marca de agua en nueva página
+                if Path("escudo_upload.png").exists():
+                    try:
+                        c_pdf.saveState()
+                        c_pdf.setFillAlpha(0.05)
+                        c_pdf.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+                        c_pdf.restoreState()
+                    except Exception:
+                        pass
+                columna_actual = 1
+                x = x_col1
+                y = h - 35
                 c_pdf.setFillColor(colors.black)
                 columna_actual = 1
                 x = x_col1
