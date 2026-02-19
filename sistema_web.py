@@ -70,136 +70,87 @@ st.markdown("""
     }
     
     /* ============================================================
-       BOTONES - ULTRA AGRESIVOS - TODOS VISIBLES 
-       Sin excepciones - Sin transparencias
+       BOTONES BASE — forzado máximo
        ============================================================ */
-    
-    /* CAPTURAR ABSOLUTAMENTE TODO - Selector universal */
-    button,
-    [role="button"],
-    input[type="button"],
-    input[type="submit"] {
-        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
-        color: white !important;
-        border: 2px solid #1e3a8a !important;
-        border-radius: 8px !important;
-        padding: 10px 20px !important;
-        font-weight: bold !important;
-        font-size: 0.95rem !important;
-        box-shadow: 0 4px 10px rgba(30, 64, 175, 0.4) !important;
-        opacity: 1 !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    /* Hover universal */
-    button:hover,
-    [role="button"]:hover {
-        transform: translateY(-2px) scale(1.03) !important;
-        box-shadow: 0 6px 16px rgba(30, 64, 175, 0.5) !important;
-        color: white !important;
-        -webkit-text-fill-color: white !important;
-    }
-    
-    /* Forzar en contenedores de Streamlit */
-    .stButton button,
-    div[data-testid="stButton"] button,
-    div[data-testid="column"] button,
-    div[class*="stButton"] button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: 2px solid #1e40af !important;
-        font-weight: 600 !important;
-        opacity: 1 !important;
-    }
-    
-    /* Tabs - Forzar colores */
-    button[data-baseweb="tab"],
-    [role="tab"] {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-        color: white !important;
-        border: 2px solid #4338ca !important;
-        font-weight: 600 !important;
-        padding: 10px 20px !important;
-        opacity: 1 !important;
-    }
-    
-    button[data-baseweb="tab"][aria-selected="true"],
-    [role="tab"][aria-selected="true"] {
-        background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%) !important;
-        border: 3px solid #312e81 !important;
-        box-shadow: 0 4px 12px rgba(67, 56, 202, 0.6) !important;
-    }
-    
-    /* Eliminar CUALQUIER opacidad o transparencia */
-    button[kind],
-    button[class],
-    button[data-testid] {
-        opacity: 1 !important;
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: 2px solid #1e40af !important;
-    }
-    
-    /* Secondary buttons - Verde intenso */
-    button[kind="secondary"],
-    button.secondary,
-    button[data-baseweb*="secondary"] {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        border: 2px solid #065f46 !important;
-        color: white !important;
-    }
-    
-    /* Botones de pestañas específicos */
-    div[role="tablist"] button {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-        color: white !important;
-        border: 2px solid #4338ca !important;
-        font-weight: 600 !important;
-        min-height: 40px !important;
-        opacity: 1 !important;
-    }
-    
-    /* Botones del sidebar */
-    div[data-testid="stSidebar"] button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: 2px solid #1e40af !important;
-        font-weight: bold !important;
-        opacity: 1 !important;
-    }
-    
-    /* Botones del dashboard - mantener personalizados */
-    button[data-testid*="dash_"] {
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        /* Sus colores ya están definidos individualmente */
-    }
 
-    /* CERRAR SESIÓN - rojo sólido */
-    [data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] button,
-    [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] button,
-    [data-testid="stBaseButton-secondary"][key="btn_logout_sidebar"] button,
-    button[key="btn_logout_sidebar"],
-    [data-testid="stSidebar"] .stButton button {
-        background-color: #dc2626 !important;
-        background: #dc2626 !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
-        border: none !important;
-        opacity: 1 !important;
-    }
-
-    /* REGRESAR - azul sólido */
-    button[key="btn_volver"],
-    [data-testid="stBaseButton-secondary"][key="btn_volver"] button {
+    /* Capturar TODO con máxima especificidad */
+    html body div.stApp button,
+    html body div.stApp [role="button"],
+    html body .stButton > button,
+    html body div[data-testid="stButton"] > button,
+    html body div[data-testid="column"] button,
+    html body div[data-testid="stBaseButton-primary"] > button,
+    html body div[data-testid="stBaseButton-secondary"] > button {
         background-color: #2563eb !important;
         background: #2563eb !important;
-        color: #000000 !important;
-        font-weight: 900 !important;
+        color: white !important;
         border: none !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+        box-shadow: none !important;
+        transition: background-color 0.1s !important;
+        transform: none !important;
+        -webkit-text-fill-color: white !important;
+    }
+
+    html body div.stApp button:hover,
+    html body .stButton > button:hover,
+    html body div[data-testid="stBaseButton-secondary"] > button:hover,
+    html body div[data-testid="stBaseButton-primary"] > button:hover {
+        background-color: #1d4ed8 !important;
+        background: #1d4ed8 !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tabs — morado */
+    html body div[data-testid="stTabs"] button,
+    html body button[data-baseweb="tab"],
+    html body [role="tab"] {
+        background-color: #7c3aed !important;
+        background: #7c3aed !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        border: none !important;
+        font-weight: 600 !important;
         opacity: 1 !important;
     }
-    
-    /* EXCLUIR barra de herramientas de Streamlit - dejar en su estilo original */
+    html body button[data-baseweb="tab"][aria-selected="true"],
+    html body [role="tab"][aria-selected="true"] {
+        background-color: #4c1d95 !important;
+        background: #4c1d95 !important;
+        border-bottom: 3px solid #f59e0b !important;
+    }
+
+    /* Sidebar — azul oscuro */
+    html body div[data-testid="stSidebar"] button,
+    html body div[data-testid="stSidebar"] .stButton > button,
+    html body div[data-testid="stSidebar"] div[data-testid="stBaseButton-secondary"] > button,
+    html body div[data-testid="stSidebar"] div[data-testid="stBaseButton-primary"] > button {
+        background-color: #dc2626 !important;
+        background: #dc2626 !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        border: none !important;
+        font-weight: bold !important;
+    }
+
+    /* Barra herramientas Streamlit — no tocar */
+    [data-testid="stToolbar"] button,
+    header button,
+    header [role="button"] {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+        -webkit-text-fill-color: inherit !important;
+    }
+
+    /* Barra herramientas Streamlit — no tocar */
     [data-testid="stToolbar"] button,
     [data-testid="stToolbar"] [role="button"],
     header button,
@@ -209,21 +160,9 @@ st.markdown("""
         border: none !important;
         box-shadow: none !important;
         color: inherit !important;
-        font-size: inherit !important;
-        padding: inherit !important;
         font-weight: inherit !important;
         opacity: inherit !important;
         transform: none !important;
-    }
-    
-    /* FORZAR eliminar fondos transparentes o grises */
-    button[style*="background: transparent"],
-    button[style*="background: rgba"],
-    button[class*="secondary"] {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        border: 2px solid #065f46 !important;
-        color: white !important;
-        opacity: 1 !important;
     }
     
     
@@ -315,6 +254,74 @@ st.markdown("""
         color: white;
     }
 </style>
+""", unsafe_allow_html=True)
+
+# JS con MutationObserver — solo actúa cuando Streamlit cambia el DOM, sin loop
+st.markdown("""
+<script>
+(function() {
+    var css = `
+        div[data-testid="stBaseButton-secondary"] button,
+        div[data-testid="stBaseButton-primary"] button {
+            background-color: #2563eb !important;
+            background: #2563eb !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-weight: bold !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stSidebar"] div[data-testid="stBaseButton-secondary"] button,
+        div[data-testid="stSidebar"] div[data-testid="stBaseButton-primary"] button {
+            background-color: #dc2626 !important;
+            background: #dc2626 !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+        div[data-testid="stTabs"] button[data-baseweb="tab"] {
+            background-color: #7c3aed !important;
+            background: #7c3aed !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            border: none !important;
+        }
+        div[data-testid="stTabs"] button[data-baseweb="tab"][aria-selected="true"] {
+            background-color: #4c1d95 !important;
+            background: #4c1d95 !important;
+        }
+    `;
+
+    function inyectar(doc) {
+        if (!doc) return;
+        var id = 'yachay-btn-override';
+        var existing = doc.getElementById(id);
+        if (existing) return; // Ya inyectado, no hacer nada
+        var style = doc.createElement('style');
+        style.id = id;
+        style.textContent = css;
+        (doc.head || doc.body).appendChild(style);
+    }
+
+    // Inyectar una vez al cargar
+    inyectar(document);
+    try { inyectar(window.parent.document); } catch(e) {}
+
+    // MutationObserver: solo actúa si Streamlit agrega/quita nodos
+    var observer = new MutationObserver(function(mutations) {
+        for (var m of mutations) {
+            if (m.addedNodes.length > 0) {
+                // Streamlit re-renderizó algo — re-inyectar si fue removido
+                inyectar(document);
+                try { inyectar(window.parent.document); } catch(e) {}
+                break;
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 """, unsafe_allow_html=True)
 
 
@@ -1199,22 +1206,57 @@ class BaseDatos:
     @staticmethod
     def buscar_por_dni(dni):
         dni_str = str(dni).strip()
-        df = BaseDatos.cargar_matricula()
-        if not df.empty and 'DNI' in df.columns:
-            df['DNI'] = df['DNI'].astype(str).str.strip()
-            res = df[df['DNI'] == dni_str]
-            if not res.empty:
-                r = res.iloc[0].to_dict()
-                r['_tipo'] = 'alumno'
-                return r
+
+        def _buscar_en_df(df, tipo):
+            if df is not None and not df.empty and 'DNI' in df.columns:
+                df = df.copy()
+                df['DNI'] = df['DNI'].astype(str).str.strip()
+                res = df[df['DNI'] == dni_str]
+                if not res.empty:
+                    r = res.iloc[0].to_dict()
+                    r['_tipo'] = tipo
+                    return r
+            return None
+
+        # 1. Intentar con caché en session_state (más rápido)
+        try:
+            df_cache = st.session_state.get('_cache_matricula')
+            if df_cache is not None and not df_cache.empty:
+                found = _buscar_en_df(df_cache, 'alumno')
+                if found:
+                    return found
+        except Exception:
+            pass
+
+        # 2. Leer matrícula fresco — ignorar caché
+        try:
+            if '_cache_matricula' in st.session_state:
+                del st.session_state['_cache_matricula']
+        except Exception:
+            pass
+        df_m = BaseDatos.cargar_matricula()
+        found = _buscar_en_df(df_m, 'alumno')
+        if found:
+            return found
+
+        # 3. Leer directo del archivo local (más confiable que GS)
+        try:
+            if Path(ARCHIVO_MATRICULA).exists():
+                df_local = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+                df_local.columns = df_local.columns.str.strip()
+                found = _buscar_en_df(df_local, 'alumno')
+                if found:
+                    return found
+        except Exception:
+            pass
+
+        # 4. Buscar en docentes
         df_d = BaseDatos.cargar_docentes()
-        if not df_d.empty and 'DNI' in df_d.columns:
-            df_d['DNI'] = df_d['DNI'].astype(str).str.strip()
-            res2 = df_d[df_d['DNI'] == dni_str]
-            if not res2.empty:
-                r = res2.iloc[0].to_dict()
-                r['_tipo'] = 'docente'
-                return r
+        found = _buscar_en_df(df_d, 'docente')
+        if found:
+            return found
+
+        # 5. Fallback archivo BD antiguo
         try:
             if Path(ARCHIVO_BD).exists():
                 df2 = pd.read_excel(ARCHIVO_BD, dtype=str, engine='openpyxl')
@@ -1241,10 +1283,69 @@ class BaseDatos:
 
     @staticmethod
     def eliminar_estudiante(dni):
+        dni_str = str(dni).strip()
+        # 1. Quitar de matrícula
         df = BaseDatos.cargar_matricula()
         df['DNI'] = df['DNI'].astype(str).str.strip()
-        df = df[df['DNI'] != str(dni).strip()]
+        df = df[df['DNI'] != dni_str]
         BaseDatos.guardar_matricula(df)
+        # 2. Borrar notas en historial_evaluaciones.json
+        try:
+            if Path('historial_evaluaciones.json').exists():
+                with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
+                    hist = json.load(f)
+                # Eliminar todas las claves que contengan este DNI
+                hist = {k: v for k, v in hist.items() if dni_str not in k}
+                with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
+                    json.dump(hist, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        # 3. Borrar de resultados.json
+        try:
+            if Path('resultados.json').exists():
+                with open('resultados.json', 'r', encoding='utf-8') as f:
+                    res = json.load(f)
+                res = {k: v for k, v in res.items() if dni_str not in k}
+                with open('resultados.json', 'w', encoding='utf-8') as f:
+                    json.dump(res, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        # 4. Borrar de resultados_examenes.json
+        try:
+            if Path('resultados_examenes.json').exists():
+                with open('resultados_examenes.json', 'r', encoding='utf-8') as f:
+                    rex = json.load(f)
+                rex = {k: v for k, v in rex.items() if dni_str not in k}
+                with open('resultados_examenes.json', 'w', encoding='utf-8') as f:
+                    json.dump(rex, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        # Limpiar notas del estudiante al eliminar
+        BaseDatos.eliminar_notas_por_dni(dni)
+
+    @staticmethod
+    def eliminar_notas_por_dni(dni):
+        """Borra todas las notas y evaluaciones de un DNI específico"""
+        dni_str = str(dni).strip()
+        # historial_evaluaciones.json
+        try:
+            if Path('historial_evaluaciones.json').exists():
+                with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
+                    hist = json.load(f)
+                hist.pop(dni_str, None)
+                with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
+                    json.dump(hist, f, indent=2, ensure_ascii=False)
+        except Exception: pass
+        # resultados.json y ARCHIVO_RESULTADOS
+        for archivo in ['resultados.json', ARCHIVO_RESULTADOS]:
+            try:
+                if Path(archivo).exists():
+                    with open(archivo, 'r', encoding='utf-8') as f:
+                        res = json.load(f)
+                    res = [r for r in res if str(r.get('dni', '')) != dni_str]
+                    with open(archivo, 'w', encoding='utf-8') as f:
+                        json.dump(res, f, indent=2, ensure_ascii=False)
+            except Exception: pass
 
     @staticmethod
     def obtener_estudiantes_grado(grado, seccion=None):
@@ -1356,22 +1457,19 @@ class BaseDatos:
             asistencias[fecha_hoy] = {}
         if dni not in asistencias[fecha_hoy]:
             asistencias[fecha_hoy][dni] = {
-                'nombre': nombre, 'entrada': '', 'salida': '',
+                'nombre': nombre, 'entrada': '', 'salida': '', 'tardanza': '',
                 'es_docente': es_docente
             }
         asistencias[fecha_hoy][dni][tipo] = hora
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Sincronizar con Google Sheets en silencio (errores 429 no deben mostrarse)
-        def _sync_gs_asistencia():
-            try:
-                gs = _gs()
-                if not gs:
-                    return
+        # Sincronizar con Google Sheets en silencio (sin thread para evitar warnings)
+        try:
+            gs = _gs()
+            if gs:
                 grado = ''
                 nivel = ''
-                # Usar SOLO caché local — nunca llamar GS desde aquí para evitar 429
                 df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
                 if not df_m.empty and 'DNI' in df_m.columns:
                     est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
@@ -1389,13 +1487,8 @@ class BaseDatos:
                     'grado': grado,
                     'nivel': nivel,
                 })
-            except Exception:
-                pass  # Error silencioso — la asistencia ya está guardada localmente
-        try:
-            import threading
-            threading.Thread(target=_sync_gs_asistencia, daemon=True).start()
         except Exception:
-            pass
+            pass  # Error silencioso — asistencia ya guardada localmente
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -2462,7 +2555,12 @@ import random as _random
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
     saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
-    em = "✅ ENTRADA" if tipo == "entrada" else "🏁 SALIDA"
+    if tipo == "entrada":
+        em = "✅ ENTRADA"
+    elif tipo == "tardanza":
+        em = "⏰ TARDANZA"
+    else:
+        em = "🏁 SALIDA"
     frase = _random.choice(FRASES_MOTIVACIONALES)
     return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
             f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
@@ -3355,19 +3453,26 @@ def configurar_sidebar():
                 _chk_all = st.checkbox("Confirmo que deseo borrar TODAS las notas", key="chk_reset_all")
                 if _chk_all and st.button("🗑️ BORRAR TODAS LAS NOTAS", type="primary",
                                            use_container_width=True, key="btn_reset_all"):
+                    for _archivo in ['historial_evaluaciones.json', 'resultados.json',
+                                     'resultados_examenes.json', ARCHIVO_RESULTADOS]:
+                        try:
+                            with open(_archivo, 'w', encoding='utf-8') as _f:
+                                json.dump({}, _f)
+                        except Exception: pass
+                    # Limpiar también en Google Sheets
                     try:
-                        with open('historial_evaluaciones.json', 'w', encoding='utf-8') as _f:
-                            json.dump({}, _f)
+                        _gs_inst = _gs()
+                        if _gs_inst:
+                            ws_cfg = _gs_inst._get_hoja('config')
+                            if ws_cfg:
+                                registros = ws_cfg.get_all_records()
+                                # Borrar desde el final para no desplazar índices
+                                for i in range(len(registros), 0, -1):
+                                    clave = str(registros[i-1].get('clave', ''))
+                                    if clave.startswith('nota_') or clave.startswith('resultado_'):
+                                        ws_cfg.delete_rows(i + 1)
                     except Exception: pass
-                    try:
-                        with open('resultados.json', 'w', encoding='utf-8') as _f:
-                            json.dump([], _f)
-                    except Exception: pass
-                    try:
-                        with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as _f:
-                            json.dump([], _f)
-                    except Exception: pass
-                    st.success("✅ Todas las notas han sido eliminadas")
+                    st.success("✅ Todas las notas eliminadas del sistema y GS")
                     st.rerun()
 
         st.markdown("---")
@@ -3390,7 +3495,7 @@ def configurar_sidebar():
         
         st.markdown("---")
         
-        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar"):
+        if st.button("🚪 CERRAR SESIÓN", use_container_width=True, key="btn_logout_sidebar", type="primary"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
             st.rerun()
@@ -3424,7 +3529,7 @@ def _gestion_usuarios_admin():
             st.caption(f"🗑️ {cv} → {usuarios[cv].get('label', 'Sin nombre')}")
         
         if st.button("🗑️ ELIMINAR TODAS LAS CUENTAS OBSOLETAS", 
-                   type="secondary", key="btn_del_obsoletas"):
+                   type="primary", key="btn_del_obsoletas"):
             for cv in cuentas_viejas:
                 del usuarios[cv]
             guardar_usuarios(usuarios)
@@ -3487,7 +3592,7 @@ def _gestion_usuarios_admin():
                 st.success(f"✅ {edit_usr} actualizado")
                 st.rerun()
         with c2:
-            if st.button("🗑️ Eliminar", key="btn_del_usr"):
+            if st.button("🗑️ Eliminar", key="btn_del_usr", type="primary"):
                 if edit_usr != "administrador":
                     del usuarios[edit_usr]
                     guardar_usuarios(usuarios)
@@ -3706,7 +3811,7 @@ def tab_matricula(config):
             if puede_borrar():
                 with st.expander("🗑️ Eliminar Alumno"):
                     deld = st.text_input("DNI a eliminar:", key="dd")
-                    if st.button("🗑️ Eliminar", key="bdel"):
+                    if st.button("🗑️ Eliminar", key="bdel", type="primary"):
                         if deld:
                             BaseDatos.eliminar_estudiante(deld)
                             st.rerun()
@@ -3728,7 +3833,7 @@ def tab_matricula(config):
             if puede_borrar():
                 with st.expander("🗑️ Eliminar Docente"):
                     deld2 = st.text_input("DNI:", key="dddoc")
-                    if st.button("🗑️ Eliminar", key="bdeldoc"):
+                    if st.button("🗑️ Eliminar", key="bdeldoc", type="primary"):
                         if deld2:
                             BaseDatos.eliminar_docente(deld2)
                             st.rerun()
@@ -3809,7 +3914,7 @@ def tab_documentos(config):
         ], key="td")
         st.markdown("---")
         db = st.text_input("🔍 Buscar DNI:", key="db")
-        if st.button("🔎 Buscar", use_container_width=True, key="bb"):
+        if st.button("🔎 Buscar", use_container_width=True, key="bb", type="primary"):
             r = BaseDatos.buscar_por_dni(db)
             if r:
                 st.session_state.alumno = r.get('Nombre', '')
@@ -3914,7 +4019,7 @@ def tab_carnets(config):
 
     with t2:
         dbs = st.text_input("🔍 DNI:", key="cbd")
-        if st.button("🔎 Buscar", key="cbb"):
+        if st.button("🔎 Buscar", key="cbb", type="primary"):
             a = BaseDatos.buscar_por_dni(dbs)
             if a:
                 st.session_state['ce'] = a
@@ -3998,22 +4103,22 @@ def tab_asistencias():
     if 'wa_enviados' not in st.session_state:
         st.session_state.wa_enviados = set()
 
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("🌅 ENTRADA", use_container_width=True,
-                      type="primary" if st.session_state.tipo_asistencia == "Entrada"
-                      else "secondary", key="be"):
+        if st.button("🌅 ENTRADA", use_container_width=True, key="be", type="primary"):
             st.session_state.tipo_asistencia = "Entrada"
             st.rerun()
     with c2:
-        if st.button("🌙 SALIDA", use_container_width=True,
-                      type="primary" if st.session_state.tipo_asistencia == "Salida"
-                      else "secondary", key="bs"):
+        if st.button("⏰ TARDANZA", use_container_width=True, key="bt", type="primary"):
+            st.session_state.tipo_asistencia = "Tardanza"
+            st.rerun()
+    with c3:
+        if st.button("🌙 SALIDA", use_container_width=True, key="bs", type="primary"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
-    st.info(f"📌 **Modo: {st.session_state.tipo_asistencia}** — "
-            f"Registre todos los alumnos/docentes. "
-            f"Luego envíe WhatsApp desde la lista de abajo.")
+    _color_modo = {"Entrada": "#16a34a", "Tardanza": "#f59e0b", "Salida": "#2563eb"}
+    _modo = st.session_state.tipo_asistencia
+    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {_modo} — Registre alumnos/docentes. Luego envíe WhatsApp.</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -4036,39 +4141,44 @@ def tab_asistencias():
     with cm:
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
-        
-        # Auto-registro: cuando cambia el valor se registra
-        dm = st.text_input("DNI:", key="dm",
-                           placeholder="Escanee código de barras o escriba DNI + Enter")
-        
-        # Auto-registro si hay valor (el lector envía Enter automáticamente)
-        if dm and dm.strip() and len(dm.strip()) >= 8:
-            dni_limpio = ''.join(c for c in dm.strip() if c.isdigit())
+
+        # Callback que se ejecuta al cambiar el campo (Enter o scanner)
+        def _on_dni_submit():
+            val = st.session_state.get('dm_input', '').strip()
+            dni_limpio = ''.join(c for c in val if c.isdigit())
             if len(dni_limpio) == 8:
                 try:
                     _registrar_asistencia_rapida(dni_limpio)
                 except Exception:
                     pass
-                # JavaScript para vibrar en celular y sonar
-                st.markdown("""
-                <script>
-                    if ('vibrate' in navigator) { navigator.vibrate([200, 100, 200]); }
-                    try {
-                        var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                        var o = ctx.createOscillator();
-                        o.type = 'sine'; o.frequency.value = 800;
-                        o.connect(ctx.destination);
-                        o.start(); setTimeout(function(){ o.stop(); }, 200);
-                    } catch(e) {}
-                </script>
-                """, unsafe_allow_html=True)
-        elif dm and dm.strip():
-            if st.button("✅ REGISTRAR", type="primary",
-                         use_container_width=True, key="rm"):
-                try:
-                    _registrar_asistencia_rapida(dm.strip())
-                except Exception:
-                    pass
+            # Limpiar campo inmediatamente
+            st.session_state['dm_input'] = ''
+
+        dm = st.text_input("DNI:", key="dm_input",
+                           placeholder="Escanee código de barras o escriba DNI + Enter",
+                           on_change=_on_dni_submit)
+
+        # Sonido/vibración via JS después de registrar
+        if not dm:  # Campo fue limpiado = se registró
+            st.markdown("""
+            <script>
+            (function() {
+                if ('vibrate' in navigator) { navigator.vibrate([200, 100, 200]); }
+                try {
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var o = ctx.createOscillator();
+                    o.type = 'sine'; o.frequency.value = 800;
+                    o.connect(ctx.destination);
+                    o.start(); setTimeout(function(){ o.stop(); }, 200);
+                } catch(e) {}
+                // Devolver foco al campo para siguiente escaneo
+                setTimeout(function() {
+                    var inputs = window.parent.document.querySelectorAll('input[placeholder*="DNI"]');
+                    if (inputs.length > 0) inputs[0].focus();
+                }, 100);
+            })();
+            </script>
+            """, unsafe_allow_html=True)
 
     # ===== LISTA DE ASISTENCIA DE HOY =====
     st.markdown("---")
@@ -4081,6 +4191,7 @@ def tab_asistencias():
         for dk, v in asis.items():
             reg = {'DNI': dk, 'Nombre': v['nombre'],
                    'Entrada': v.get('entrada', '—'),
+                   'Tardanza': v.get('tardanza', '—'),
                    'Salida': v.get('salida', '—'),
                    'es_docente': v.get('es_docente', False)}
             if v.get('es_docente', False):
@@ -4089,7 +4200,7 @@ def tab_asistencias():
                 alumnos_h.append(reg)
 
         # Métricas rápidas
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
         with c1:
             st.metric("📚 Alumnos", len(alumnos_h))
         with c2:
@@ -4098,6 +4209,9 @@ def tab_asistencias():
             entradas = sum(1 for v in asis.values() if v.get('entrada'))
             st.metric("🌅 Entradas", entradas)
         with c4:
+            tardanzas = sum(1 for v in asis.values() if v.get('tardanza'))
+            st.metric("⏰ Tardanzas", tardanzas)
+        with c5:
             salidas = sum(1 for v in asis.values() if v.get('salida'))
             st.metric("🌙 Salidas", salidas)
 
@@ -4115,13 +4229,14 @@ def tab_asistencias():
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        tab_ent, tab_sal = st.tabs(["🌅 Entrada", "🌙 Salida"])
+        tab_ent, tab_tard, tab_sal = st.tabs(["🌅 Entrada", "⏰ Tardanza", "🌙 Salida"])
 
         def _render_wa_tab(tipo_tab):
             asis_fresh = BaseDatos.obtener_asistencias_hoy()
             pendientes = 0
             enviados = 0
             sin_celular = []
+            links_pendientes = []  # Para el botón enviar todo
 
             for dk, dat in asis_fresh.items():
                 hora_reg = dat.get(tipo_tab, '')
@@ -4132,9 +4247,8 @@ def tab_asistencias():
                 ya_enviado = clave_envio in st.session_state.wa_enviados
                 if ya_enviado:
                     enviados += 1
-                    continue  # Ya enviado: NO mostrar, desaparece de lista
+                    continue
 
-                # Buscar celular directo desde matrícula local (sin GS)
                 nombre = dat['nombre']
                 es_doc = dat.get('es_docente', False)
                 tipo_icon = "👨‍🏫" if es_doc else "📚"
@@ -4160,6 +4274,8 @@ def tab_asistencias():
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
+                links_pendientes.append({'link': link, 'clave': clave_envio, 'nombre': nombre, 'hora': hora_reg, 'cel': cel, 'icon': tipo_icon})
+
                 col_btn, col_check = st.columns([4, 1])
                 with col_btn:
                     st.markdown(
@@ -4168,30 +4284,63 @@ def tab_asistencias():
                         unsafe_allow_html=True)
                 with col_check:
                     if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
-                                 help="Marcar como enviado y quitar de lista"):
+                                 help="Marcar como enviado y quitar de lista", type="primary"):
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
+
+            # ── BOTÓN ENVIAR TODO ──────────────────────────────────────────
+            if links_pendientes:
+                st.markdown("---")
+                pausa = st.slider("⏱ Pausa entre mensajes (seg):", 3, 10, 5,
+                                  key=f"pausa_{tipo_tab}")
+                if st.button(f"🚀 ENVIAR TODOS ({len(links_pendientes)}) automáticamente",
+                             type="primary", use_container_width=True,
+                             key=f"enviar_todo_{tipo_tab}"):
+                    # Marcar todos como enviados en session_state
+                    for item in links_pendientes:
+                        st.session_state.wa_enviados.add(item['clave'])
+                    # JS: abrir links en secuencia con pausa
+                    links_js = [item['link'] for item in links_pendientes]
+                    links_json = json.dumps(links_js)
+                    pausa_ms = pausa * 1000
+                    st.markdown(f"""
+                    <script>
+                    (function() {{
+                        var links = {links_json};
+                        var delay = {pausa_ms};
+                        function abrirSiguiente(i) {{
+                            if (i >= links.length) return;
+                            window.location.href = links[i];
+                            setTimeout(function() {{ abrirSiguiente(i + 1); }}, delay);
+                        }}
+                        abrirSiguiente(0);
+                    }})();
+                    </script>
+                    """, unsafe_allow_html=True)
+                    st.success(f"✅ Abriendo {len(links_pendientes)} conversaciones con {pausa}s de pausa...")
+                    st.rerun()
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
                     for s in sin_celular:
                         st.caption(f"• {s}")
 
-            if pendientes == 0 and enviados > 0:
-                st.success(f"🎉 ¡Todos enviados! ({enviados} mensajes)")
-            elif pendientes == 0 and enviados == 0:
+            _total_enviados = len(st.session_state.wa_enviados)
+            if pendientes == 0 and _total_enviados > 0:
+                st.success(f"🎉 ¡Todos enviados! ({_total_enviados} mensajes)")
+            elif pendientes == 0 and _total_enviados == 0:
                 st.info("No hay registros de este tipo aún.")
-            else:
-                st.info(f"📱 {pendientes} pendientes de envío")
 
         with tab_ent:
             _render_wa_tab("entrada")
+        with tab_tard:
+            _render_wa_tab("tardanza")
         with tab_sal:
             _render_wa_tab("salida")
 
         # Botón para resetear marcas de enviado
         if st.session_state.wa_enviados:
-            if st.button("🔄 Resetear marcas de enviado", key="reset_wa"):
+            if st.button("🔄 Resetear marcas de enviado", key="reset_wa", type="primary"):
                 st.session_state.wa_enviados = set()
                 st.rerun()
 
@@ -4733,7 +4882,7 @@ def tab_calificacion_yachay(config):
                                   index=1, key="nn")
             with cb:
                 st.markdown("###")
-                if st.button("➕ Agregar", key="aa"):
+                if st.button("➕ Agregar", key="aa", type="primary"):
                     if na:
                         st.session_state.areas_examen.append({
                             'nombre': na, 'num': nn, 'claves': ''})
@@ -4750,7 +4899,7 @@ def tab_calificacion_yachay(config):
                     tc_.extend(list(cl.upper()))
                     tp += a['num']
                     if len(st.session_state.areas_examen) > 1:
-                        if st.button("🗑️ Quitar", key=f"d{i}"):
+                        if st.button("🗑️ Quitar", key=f"d{i}", type="primary"):
                             st.session_state.areas_examen.pop(i)
                             st.rerun()
 
@@ -4765,7 +4914,7 @@ def tab_calificacion_yachay(config):
                                   index=1, key="nn_r")
             with cb:
                 st.markdown("###")
-                if st.button("➕ Agregar", key="aa_r"):
+                if st.button("➕ Agregar", key="aa_r", type="primary"):
                     if na:
                         st.session_state.areas_examen.append({
                             'nombre': na, 'num': nn, 'claves': ''})
@@ -4967,7 +5116,7 @@ def tab_calificacion_yachay(config):
                             unsafe_allow_html=True)
 
                 # Reporte PDF individual
-                if st.button("📥 Descargar Reporte PDF del Estudiante", key="dl_rep_est"):
+                if st.button("📥 Descargar Reporte PDF del Estudiante", key="dl_rep_est", type="primary"):
                     pdf = generar_reporte_estudiante_pdf(
                         nm, de, grado_est, [res], config)
                     st.download_button("⬇️ PDF", pdf,
@@ -5127,11 +5276,11 @@ def tab_calificacion_yachay(config):
                             
                             col_ver, col_del = st.columns([3, 1])
                             with col_ver:
-                                if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}"):
+                                if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}", type="primary"):
                                     df_hist = pd.DataFrame(eval_data.get('ranking', []))
                                     st.dataframe(df_hist, use_container_width=True)
                             with col_del:
-                                if st.button("🗑️ Eliminar", key=f"del_eval_{clave}"):
+                                if st.button("🗑️ Eliminar", key=f"del_eval_{clave}", type="primary"):
                                     del hist_data[clave]
                                     with open(historial_file, 'w', encoding='utf-8') as f:
                                         json.dump(hist_data, f, ensure_ascii=False, indent=2)
@@ -5183,7 +5332,7 @@ def tab_calificacion_yachay(config):
                         st.write(f"**Promedio:** {h.get('promedio_general', 0)}/20")
 
                 # Descargar reporte completo
-                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf"):
+                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf", type="primary"):
                     al_h = BaseDatos.buscar_por_dni(dni_hist)
                     grado_h = str(al_h.get('Grado', '')) if al_h else ""
                     pdf = generar_reporte_estudiante_pdf(
@@ -6058,7 +6207,7 @@ def tab_reportes(config):
                     cols_ev = ['Puesto','Medalla','Nombre'] + areas_nombres_ev + ['Promedio']
                     cols_ev = [c for c in cols_ev if c in df_ev.columns]
                     st.dataframe(df_ev[cols_ev], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"rep_pdf_{clave}"):
+                    if st.button("📥 PDF Ranking", key=f"rep_pdf_{clave}", type="primary"):
                         pdf_ev = _generar_ranking_pdf(ranking_ev, areas_nombres_ev,
                                                       ev.get('grado',''), ev.get('periodo',''), config)
                         st.download_button("⬇️ Descargar PDF", pdf_ev,
@@ -6158,7 +6307,7 @@ def tab_reportes(config):
                                                           float(nota.get('nota', 0)), 0.5,
                                                           key=f"ne_{idx}_{dni_ri}")
                                 with col3:
-                                    if st.button("💾", key=f"sv_{idx}_{dni_ri}"):
+                                    if st.button("💾", key=f"sv_{idx}_{dni_ri}", type="primary"):
                                         if gs and '_clave' in nota:
                                             try:
                                                 nota['nota'] = nueva
@@ -6192,6 +6341,18 @@ def tab_reportes(config):
                     # Cargar notas del estudiante
                     notas_est = []
                     asist_est = {}
+
+                    # Cargar asistencia LOCAL primero (fuente principal)
+                    try:
+                        if Path(ARCHIVO_ASISTENCIAS).exists():
+                            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                                todas_asis = json.load(f)
+                            for fecha_a, registros in todas_asis.items():
+                                if str(dni_ri) in registros:
+                                    asist_est[fecha_a] = registros[str(dni_ri)]
+                    except Exception:
+                        pass
+
                     if gs:
                         try:
                             ws = gs._get_hoja('config')
@@ -6204,11 +6365,12 @@ def tab_reportes(config):
                                             notas_est.append(json.loads(d.get('valor', '{}')))
                                         except Exception:
                                             pass
-                            # Asistencia
-                            try:
-                                asist_est = gs.historial_asistencia_estudiante(dni_ri) or {}
-                            except Exception:
-                                asist_est = {}
+                            # Asistencia de GS como complemento si local está vacío
+                            if not asist_est:
+                                try:
+                                    asist_est = gs.historial_asistencia_estudiante(dni_ri) or {}
+                                except Exception:
+                                    asist_est = {}
                         except Exception:
                             pass
 
@@ -6500,7 +6662,7 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}"):
+                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
                         pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
                         st.download_button("⬇️ Descargar", pdf_h,
                                            f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
@@ -6630,7 +6792,7 @@ def tab_registrar_notas(config):
         }
         </style>
         """, unsafe_allow_html=True)
-        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval"):
+        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval", type="primary"):
             st.session_state.eval_sesion = None
             st.session_state.notas_sesion = {}
             st.session_state.eval_estudiantes = []
@@ -6904,12 +7066,12 @@ def tab_registrar_notas(config):
                     st.error("❌ Error al guardar")
 
         with col_g2:
-            if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval"):
+            if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval", type="primary"):
                 pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
                 st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
-        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval"):
+        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval", type="primary"):
             st.session_state['_mostrar_wa_eval'] = True
         if st.session_state.get('_mostrar_wa_eval'):
             st.markdown("### 📱 Enviar Notas por WhatsApp")
@@ -8183,7 +8345,7 @@ def tab_material_docente(config):
                             st.download_button("⬇️ Descargar", f.read(), ficha.name, mime,
                                                key=f"dl_{ficha.name}", use_container_width=True)
                     with col_c:
-                        if st.button("🗑️ Eliminar", key=f"del_{ficha.name}"):
+                        if st.button("🗑️ Eliminar", key=f"del_{ficha.name}", type="primary"):
                             ficha.unlink()
                             st.success("Eliminada")
                             time.sleep(0.5)
@@ -8641,7 +8803,7 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                     for mat in por_semana[sem]:
                         st.markdown(f"**📚 {mat.get('area', '')}** — *{mat.get('titulo', '')}*")
                         st.caption(f"🕒 Subido: {mat.get('fecha_creacion', '')}")
-                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '')}"):
+                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '', type="primary")}"):
                             try:
                                 pdf = _generar_pdf_material(mat, config)
                                 st.download_button("⬇️ Descargar", pdf,
@@ -8895,7 +9057,7 @@ def tab_examenes_semanales(config):
                     
                     # Botón para eliminar
                     if st.session_state.rol in ['admin', 'docente']:
-                        if st.button(f"🗑️ Eliminar", key=f"del_exam_{examen.name}"):
+                        if st.button(f"🗑️ Eliminar", key=f"del_exam_{examen.name}", type="primary"):
                             examen.unlink()
                             st.success("🎉 Examen eliminado")
                             time.sleep(0.5)
@@ -9889,13 +10051,13 @@ def main():
         st.markdown("*¿Qué vamos a hacer hoy?*")
         ca1, ca2, ca3 = st.columns(3)
         with ca1:
-            if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist"):
+            if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist", type="primary"):
                 st.session_state.modulo_activo = "asistencia"
         with ca2:
-            if st.button("📈\n\n**Reportes**", use_container_width=True, key="aux_rep"):
+            if st.button("📈\n\n**Reportes**", use_container_width=True, key="aux_rep", type="primary"):
                 st.session_state.modulo_activo = "reportes"
         with ca3:
-            if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc"):
+            if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc", type="primary"):
                 st.session_state.modulo_activo = "incidencias"
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
@@ -9972,21 +10134,9 @@ def main():
 
         else:
             # === MÓDULO SELECCIONADO ===
-            # Botón REGRESAR con color sólido visible
-            st.markdown("""
-            <style>
-            button[key="btn_volver_doc"] {
-                background: #ef4444 !important;
-                color: #000000 !important;
-                font-weight: 900 !important;
-                border: 2px solid #991b1b !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
             col_back, col_space = st.columns([1, 4])
             with col_back:
-                if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True):
+                if st.button("⬅️ REGRESAR", key="btn_volver_doc", use_container_width=True, type="primary"):
                     st.session_state.modulo_activo = None
                     st.rerun()
             
@@ -10092,7 +10242,7 @@ def main():
             col_back, col_space = st.columns([1, 4])
             
             with col_back:
-                if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True):
+                if st.button("⬅️ REGRESAR", key="btn_volver", use_container_width=True, type="primary"):
                     st.session_state.modulo_activo = None
                     st.rerun()
             
