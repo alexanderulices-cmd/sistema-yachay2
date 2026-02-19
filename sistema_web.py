@@ -70,107 +70,84 @@ st.markdown("""
     }
     
     /* ============================================================
-       BOTONES - COLORES SÓLIDOS SIN EFECTOS
+       BOTONES BASE — forzado máximo
        ============================================================ */
 
-    /* TODOS los botones — azul sólido por defecto */
-    button,
-    [role="button"],
-    input[type="button"],
-    input[type="submit"],
-    .stButton button,
-    div[data-testid="stButton"] button,
-    div[data-testid="column"] button,
-    div[class*="stButton"] button,
-    button[kind],
-    button[class],
-    button[data-testid] {
-        background: #2563eb !important;
+    /* Capturar TODO con máxima especificidad */
+    html body div.stApp button,
+    html body div.stApp [role="button"],
+    html body .stButton > button,
+    html body div[data-testid="stButton"] > button,
+    html body div[data-testid="column"] button,
+    html body div[data-testid="stBaseButton-primary"] > button,
+    html body div[data-testid="stBaseButton-secondary"] > button {
         background-color: #2563eb !important;
+        background: #2563eb !important;
         color: white !important;
         border: none !important;
         border-radius: 8px !important;
-        padding: 10px 20px !important;
         font-weight: bold !important;
-        font-size: 0.95rem !important;
         opacity: 1 !important;
         box-shadow: none !important;
-        transition: none !important;
+        transition: background-color 0.1s !important;
         transform: none !important;
+        -webkit-text-fill-color: white !important;
     }
 
-    /* Hover — solo oscurecer ligeramente, sin movimiento */
-    button:hover,
-    [role="button"]:hover {
-        background: #1d4ed8 !important;
+    html body div.stApp button:hover,
+    html body .stButton > button:hover,
+    html body div[data-testid="stBaseButton-secondary"] > button:hover,
+    html body div[data-testid="stBaseButton-primary"] > button:hover {
         background-color: #1d4ed8 !important;
+        background: #1d4ed8 !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         transform: none !important;
         box-shadow: none !important;
     }
 
-    /* Secondary — verde sólido */
-    button[kind="secondary"],
-    button.secondary,
-    button[data-baseweb*="secondary"],
-    button[style*="background: transparent"],
-    button[style*="background: rgba"],
-    button[class*="secondary"] {
-        background: #059669 !important;
-        background-color: #059669 !important;
-        color: white !important;
-        border: none !important;
-    }
-
-    /* Tabs — morado sólido */
-    button[data-baseweb="tab"],
-    [role="tab"],
-    div[role="tablist"] button {
-        background: #7c3aed !important;
+    /* Tabs — morado */
+    html body div[data-testid="stTabs"] button,
+    html body button[data-baseweb="tab"],
+    html body [role="tab"] {
         background-color: #7c3aed !important;
+        background: #7c3aed !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         border: none !important;
         font-weight: 600 !important;
-        min-height: 40px !important;
         opacity: 1 !important;
     }
-    button[data-baseweb="tab"][aria-selected="true"],
-    [role="tab"][aria-selected="true"] {
-        background: #4c1d95 !important;
+    html body button[data-baseweb="tab"][aria-selected="true"],
+    html body [role="tab"][aria-selected="true"] {
         background-color: #4c1d95 !important;
+        background: #4c1d95 !important;
         border-bottom: 3px solid #f59e0b !important;
     }
 
-    /* Sidebar — azul oscuro sólido */
-    div[data-testid="stSidebar"] button,
-    [data-testid="stSidebar"] .stButton button {
-        background: #1e3a8a !important;
-        background-color: #1e3a8a !important;
+    /* Sidebar — azul oscuro */
+    html body div[data-testid="stSidebar"] button,
+    html body div[data-testid="stSidebar"] .stButton > button,
+    html body div[data-testid="stSidebar"] div[data-testid="stBaseButton-secondary"] > button,
+    html body div[data-testid="stSidebar"] div[data-testid="stBaseButton-primary"] > button {
+        background-color: #dc2626 !important;
+        background: #dc2626 !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         border: none !important;
         font-weight: bold !important;
-        opacity: 1 !important;
     }
 
-    /* CERRAR SESIÓN — rojo sólido */
-    button[key="btn_logout_sidebar"],
-    [data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] button,
-    [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] button,
-    [data-testid="stSidebar"] .stButton button {
-        background: #dc2626 !important;
-        background-color: #dc2626 !important;
-        color: white !important;
+    /* Barra herramientas Streamlit — no tocar */
+    [data-testid="stToolbar"] button,
+    header button,
+    header [role="button"] {
+        background: transparent !important;
+        background-color: transparent !important;
         border: none !important;
-    }
-
-    /* REGRESAR — naranja sólido */
-    button[key="btn_volver"],
-    button[key="btn_volver_doc"] {
-        background: #ea580c !important;
-        background-color: #ea580c !important;
-        color: white !important;
-        border: none !important;
-        font-weight: 900 !important;
+        box-shadow: none !important;
+        color: inherit !important;
+        -webkit-text-fill-color: inherit !important;
     }
 
     /* Barra herramientas Streamlit — no tocar */
@@ -277,6 +254,74 @@ st.markdown("""
         color: white;
     }
 </style>
+""", unsafe_allow_html=True)
+
+# JS con MutationObserver — solo actúa cuando Streamlit cambia el DOM, sin loop
+st.markdown("""
+<script>
+(function() {
+    var css = `
+        div[data-testid="stBaseButton-secondary"] button,
+        div[data-testid="stBaseButton-primary"] button {
+            background-color: #2563eb !important;
+            background: #2563eb !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-weight: bold !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stSidebar"] div[data-testid="stBaseButton-secondary"] button,
+        div[data-testid="stSidebar"] div[data-testid="stBaseButton-primary"] button {
+            background-color: #dc2626 !important;
+            background: #dc2626 !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+        div[data-testid="stTabs"] button[data-baseweb="tab"] {
+            background-color: #7c3aed !important;
+            background: #7c3aed !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            border: none !important;
+        }
+        div[data-testid="stTabs"] button[data-baseweb="tab"][aria-selected="true"] {
+            background-color: #4c1d95 !important;
+            background: #4c1d95 !important;
+        }
+    `;
+
+    function inyectar(doc) {
+        if (!doc) return;
+        var id = 'yachay-btn-override';
+        var existing = doc.getElementById(id);
+        if (existing) return; // Ya inyectado, no hacer nada
+        var style = doc.createElement('style');
+        style.id = id;
+        style.textContent = css;
+        (doc.head || doc.body).appendChild(style);
+    }
+
+    // Inyectar una vez al cargar
+    inyectar(document);
+    try { inyectar(window.parent.document); } catch(e) {}
+
+    // MutationObserver: solo actúa si Streamlit agrega/quita nodos
+    var observer = new MutationObserver(function(mutations) {
+        for (var m of mutations) {
+            if (m.addedNodes.length > 0) {
+                // Streamlit re-renderizó algo — re-inyectar si fue removido
+                inyectar(document);
+                try { inyectar(window.parent.document); } catch(e) {}
+                break;
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 """, unsafe_allow_html=True)
 
 
