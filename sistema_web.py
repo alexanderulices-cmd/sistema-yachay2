@@ -4004,21 +4004,15 @@ def tab_asistencias():
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("🌅 ENTRADA", use_container_width=True,
-                      type="primary" if st.session_state.tipo_asistencia == "Entrada"
-                      else "secondary", key="be"):
+        if st.button("🌅 ENTRADA", use_container_width=True, key="be", type="primary"):
             st.session_state.tipo_asistencia = "Entrada"
             st.rerun()
     with c2:
-        if st.button("⏰ TARDANZA", use_container_width=True,
-                      type="primary" if st.session_state.tipo_asistencia == "Tardanza"
-                      else "secondary", key="bt"):
+        if st.button("⏰ TARDANZA", use_container_width=True, key="bt", type="primary"):
             st.session_state.tipo_asistencia = "Tardanza"
             st.rerun()
     with c3:
-        if st.button("🌙 SALIDA", use_container_width=True,
-                      type="primary" if st.session_state.tipo_asistencia == "Salida"
-                      else "secondary", key="bs"):
+        if st.button("🌙 SALIDA", use_container_width=True, key="bs", type="primary"):
             st.session_state.tipo_asistencia = "Salida"
             st.rerun()
     _color_modo = {"Entrada": "#16a34a", "Tardanza": "#f59e0b", "Salida": "#2563eb"}
