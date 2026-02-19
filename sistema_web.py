@@ -8803,7 +8803,7 @@ def _vista_docente_material(config, usuario, nombre_doc, grado_doc, semana_actua
                     for mat in por_semana[sem]:
                         st.markdown(f"**📚 {mat.get('area', '')}** — *{mat.get('titulo', '')}*")
                         st.caption(f"🕒 Subido: {mat.get('fecha_creacion', '')}")
-                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '', type="primary")}"):
+                        if st.button(f"📥 Descargar PDF", key=f"dl_{mat.get('id', '')}", type="primary"):
                             try:
                                 pdf = _generar_pdf_material(mat, config)
                                 st.download_button("⬇️ Descargar", pdf,
