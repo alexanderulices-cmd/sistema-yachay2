@@ -1370,15 +1370,12 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Sincronizar con Google Sheets en silencio (errores 429 no deben mostrarse)
-        def _sync_gs_asistencia():
-            try:
-                gs = _gs()
-                if not gs:
-                    return
+        # Sincronizar con Google Sheets en silencio (sin thread para evitar warnings)
+        try:
+            gs = _gs()
+            if gs:
                 grado = ''
                 nivel = ''
-                # Usar SOLO caché local — nunca llamar GS desde aquí para evitar 429
                 df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
                 if not df_m.empty and 'DNI' in df_m.columns:
                     est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
@@ -1396,13 +1393,8 @@ class BaseDatos:
                     'grado': grado,
                     'nivel': nivel,
                 })
-            except Exception:
-                pass  # Error silencioso — la asistencia ya está guardada localmente
-        try:
-            import threading
-            threading.Thread(target=_sync_gs_asistencia, daemon=True).start()
         except Exception:
-            pass
+            pass  # Error silencioso — asistencia ya guardada localmente
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -4238,9 +4230,10 @@ def tab_asistencias():
                     for s in sin_celular:
                         st.caption(f"• {s}")
 
-            if pendientes == 0 and enviados > 0:
-                st.success(f"🎉 ¡Todos enviados! ({enviados} mensajes)")
-            elif pendientes == 0 and enviados == 0:
+            _total_enviados = len(st.session_state.wa_enviados)
+            if pendientes == 0 and _total_enviados > 0:
+                st.success(f"🎉 ¡Todos enviados! ({_total_enviados} mensajes)")
+            elif pendientes == 0 and _total_enviados == 0:
                 st.info("No hay registros de este tipo aún.")
 
         with tab_ent:
