@@ -1666,7 +1666,7 @@ class GeneradorPDF:
         if Path("escudo_upload.png").exists():
             try:
                 self.canvas.saveState()
-                self.canvas.setFillAlpha(0.06)
+                self.canvas.setFillAlpha(0.15)
                 self.canvas.drawImage("escudo_upload.png",
                                        self.width / 2 - 120, self.height / 2 - 120,
                                        240, 240, mask='auto')
@@ -1974,7 +1974,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
-            c.setFillAlpha(0.05)
+            c.setFillAlpha(0.15)
             c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
                         200, 200, mask='auto')
             c.restoreState()
@@ -2093,7 +2093,7 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
         if Path("escudo_upload.png").exists():
             try:
                 c.saveState()
-                c.setFillAlpha(0.05)
+                c.setFillAlpha(0.15)
                 c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
                             200, 200, mask='auto')
                 c.restoreState()
@@ -2168,7 +2168,7 @@ def generar_ranking_pdf(resultados, anio):
             ratio = iw / ih
             mw = 280; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.06)
+            c.setFillAlpha(0.15)
             c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -4454,7 +4454,7 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
             ratio = iw / ih
             mw = 280; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.06)
+            c.setFillAlpha(0.15)
             c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -7199,7 +7199,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             ratio = iw / ih
             mw = 280; mh = mw / ratio
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.05)
+            c_pdf.setFillAlpha(0.15)
             c_pdf.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7340,7 +7340,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.03)
+            c_pdf.setFillAlpha(0.15)
             c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7937,7 +7937,7 @@ def _pdf_pie_material(c, w, grado, area, semana, pagina=None):
             ratio = iw / ih
             mw = 360; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.06)
+            c.setFillAlpha(0.15)
             c.drawImage("escudo_upload.png", w/2 - mw/2, A4[1]/2 - mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -8174,7 +8174,7 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.04)
+            c_pdf.setFillAlpha(0.15)
             c_pdf.drawImage("escudo_upload.png", w/2 - 100, h/2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -9248,8 +9248,13 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     columna_actual = 1
     x = x_col1
     y_min = 60
-    y_col1 = y_start  # rastrear y de cada columna independientemente
+    y_col1 = y_start
     y_col2 = y_start
+
+    # Línea divisoria entre columnas
+    c_pdf.setStrokeColor(colors.HexColor("#e5e7eb"))
+    c_pdf.setLineWidth(0.5)
+    c_pdf.line(w/2, y_start, w/2, y_min)
     
     from reportlab.platypus import Paragraph
     from reportlab.lib.styles import ParagraphStyle
@@ -9283,7 +9288,7 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
                         _iw, _ih = _img.size
                         _mw = 380; _mh = _mw / (_iw / _ih)
                         c_pdf.saveState()
-                        c_pdf.setFillAlpha(0.06)
+                        c_pdf.setFillAlpha(0.15)
                         c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
                         c_pdf.restoreState()
                     except Exception:
@@ -9348,8 +9353,27 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
                 y -= (h_alt + 1)
         y -= 8
     
-    # ── HOJA DE CLAVES (página nueva) ──────────────────────────────────────
+    # ── HOJA DE CLAVES — solo si hay respuestas correctas definidas ────────
+    tiene_claves = any(preg.get('correcta', '').strip() for preg in preguntas)
+    if not tiene_claves:
+        c_pdf.save()
+        buffer.seek(0)
+        return buffer.getvalue()
+
     c_pdf.showPage()
+    # Marca de agua en clave
+    if Path("escudo_upload.png").exists():
+        try:
+            from PIL import Image as PILImage
+            _img = PILImage.open("escudo_upload.png")
+            _iw, _ih = _img.size
+            _mw = 380; _mh = _mw / (_iw/_ih)
+            c_pdf.saveState()
+            c_pdf.setFillAlpha(0.15)
+            c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
+            c_pdf.restoreState()
+        except Exception:
+            pass
     c_pdf.setFont("Helvetica-Bold", 16)
     c_pdf.setFillColor(colors.HexColor("#dc2626"))
     c_pdf.drawCentredString(w / 2, h - 50, "CLAVE DE RESPUESTAS — USO EXCLUSIVO DOCENTE")
@@ -9380,7 +9404,7 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
         c_pdf.setFont("Helvetica-Bold", 10)
         c_pdf.drawString(x_c, y_c, f"{preg['numero']}.")
         c_pdf.setFont("Helvetica", 10)
-        resp_correcta = preg['correcta'].upper()
+        resp_correcta = preg.get('correcta', '').upper()
         c_pdf.setFillColor(colors.HexColor("#16a34a"))
         c_pdf.drawString(x_c + 15, y_c, resp_correcta)
         c_pdf.setFillColor(colors.black)
