@@ -7191,24 +7191,26 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
 
-    # Encabezado con escudos
-    c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
-    # Marca de agua
+    # ── Marca de agua PRIMERO (detrás de todo) — más abajo para no tapar tabla ──
     if Path("escudo_upload.png").exists():
         try:
             from PIL import Image as PILImage
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
-            ratio = iw / ih
-            mw = 420; mh = mw / ratio
+            mw = 220; mh = mw / (iw/ih)
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.35)
-            c_pdf.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
+            c_pdf.setFillAlpha(0.20)
+            # Posicionar en zona inferior vacía (debajo de filas de datos)
+            c_pdf.drawImage("escudo_upload.png", w/2-mw/2, 40, mw, mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
             pass
-    # Escudos con proporción correcta
+
+    # ── Barra azul superior ──────────────────────────────────────────────
+    c_pdf.setFillColor(colors.HexColor("#001e7c"))
+    c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
+
+    # ── Escudos — 45px, bien separados del centro ────────────────────────
     ALTO_ESC = 45
     esc_izq = "escudo_upload.png"
     esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
@@ -7218,21 +7220,25 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             img = PILImage.open(esc_izq)
             iw, ih = img.size
             aw = ALTO_ESC * (iw/ih)
-            c_pdf.drawImage(esc_izq, 15, h-14-ALTO_ESC, aw, ALTO_ESC, mask='auto')
+            c_pdf.drawImage(esc_izq, 12, h-13-ALTO_ESC, aw, ALTO_ESC, mask='auto')
         if Path(esc_der).exists():
             img2 = PILImage.open(esc_der)
             iw2, ih2 = img2.size
             aw2 = ALTO_ESC * (iw2/ih2)
-            c_pdf.drawImage(esc_der, w-15-aw2, h-14-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+            c_pdf.drawImage(esc_der, w-12-aw2, h-13-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
     except Exception:
         pass
+
+    # ── Textos centrados — título, institución y fecha en zona central ───
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.setFont("Helvetica-Bold", 18)
-    c_pdf.drawCentredString(w / 2, h - 35, "🏆 RANKING DE ESTUDIANTES")
-    c_pdf.setFont("Helvetica-Bold", 12)
-    c_pdf.drawCentredString(w / 2, h - 52, f"I.E.P. YACHAY — {grado} — {periodo}")
-    c_pdf.setFont("Helvetica", 9)
-    c_pdf.drawRightString(w - 15, h - 52, hora_peru().strftime('%d/%m/%Y'))
+    c_pdf.drawCentredString(w / 2, h - 30, "🏆 RANKING DE ESTUDIANTES")
+    c_pdf.setFont("Helvetica-Bold", 11)
+    c_pdf.drawCentredString(w / 2, h - 45, f"I.E.P. YACHAY — {grado} — {periodo}")
+    c_pdf.setFont("Helvetica", 8)
+    c_pdf.setFillColor(colors.HexColor("#6b7280"))
+    c_pdf.drawCentredString(w / 2, h - 58, hora_peru().strftime('%d/%m/%Y'))
+    c_pdf.setFillColor(colors.black)
 
     # Tabla más grande — usa todo el ancho disponible
     y_start = h - 70
@@ -7339,16 +7345,6 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     c_pdf.drawString(15, 22, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
     c_pdf.drawString(15, 10, "Este es un documento referencial. El consolidado oficial lo registra el/la docente.")
     c_pdf.drawRightString(w - 15, 22, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
-
-    # Marca de agua
-    if Path("escudo_upload.png").exists():
-        try:
-            c_pdf.saveState()
-            c_pdf.setFillAlpha(0.35)
-            c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
-            c_pdf.restoreState()
-        except Exception:
-            pass
 
     c_pdf.save()
     buffer.seek(0)
