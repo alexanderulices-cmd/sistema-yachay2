@@ -1177,6 +1177,9 @@ class BaseDatos:
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
         st.session_state['_forzar_local'] = True
+        # Invalidar índice DNI para que se reconstruya con datos nuevos
+        st.session_state.pop('_indice_dni', None)
+        st.session_state.pop('_indice_dni_ts', None)
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -1205,6 +1208,7 @@ class BaseDatos:
 
     @staticmethod
     def buscar_por_dni(dni):
+        """Búsqueda RÁPIDA: índice memoria (1ms) → local (50ms) → GS (último recurso)"""
         dni_str = str(dni).strip()
 
         def _buscar_en_df(df, tipo):
@@ -1218,45 +1222,61 @@ class BaseDatos:
                     return r
             return None
 
-        # 1. Intentar con caché en session_state (más rápido)
-        try:
-            df_cache = st.session_state.get('_cache_matricula')
-            if df_cache is not None and not df_cache.empty:
-                found = _buscar_en_df(df_cache, 'alumno')
-                if found:
-                    return found
-        except Exception:
-            pass
+        # 1. ÍNDICE EN MEMORIA — instantáneo (<1ms)
+        indice = st.session_state.get('_indice_dni')
+        if indice and dni_str in indice:
+            return indice[dni_str].copy()
 
-        # 2. Leer matrícula fresco — ignorar caché
-        try:
-            if '_cache_matricula' in st.session_state:
-                del st.session_state['_cache_matricula']
-        except Exception:
-            pass
-        df_m = BaseDatos.cargar_matricula()
-        found = _buscar_en_df(df_m, 'alumno')
-        if found:
-            return found
+        # 2. Reconstruir índice si no existe o es viejo (>3 min)
+        ultima = st.session_state.get('_indice_dni_ts', 0)
+        if not indice or (time.time() - ultima > 180):
+            _construir_indice_dni()
+            indice = st.session_state.get('_indice_dni', {})
+            if dni_str in indice:
+                return indice[dni_str].copy()
 
-        # 3. Leer directo del archivo local (más confiable que GS)
+        # 3. Archivo local directo (sin GS, ~50ms)
         try:
             if Path(ARCHIVO_MATRICULA).exists():
                 df_local = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df_local.columns = df_local.columns.str.strip()
                 found = _buscar_en_df(df_local, 'alumno')
                 if found:
+                    if '_indice_dni' not in st.session_state:
+                        st.session_state['_indice_dni'] = {}
+                    st.session_state['_indice_dni'][dni_str] = found
                     return found
         except Exception:
             pass
 
-        # 4. Buscar en docentes
-        df_d = BaseDatos.cargar_docentes()
-        found = _buscar_en_df(df_d, 'docente')
-        if found:
-            return found
+        # 4. Docentes local
+        try:
+            if Path(ARCHIVO_DOCENTES).exists():
+                df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
+                df_d.columns = df_d.columns.str.strip()
+                found = _buscar_en_df(df_d, 'docente')
+                if found:
+                    if '_indice_dni' not in st.session_state:
+                        st.session_state['_indice_dni'] = {}
+                    st.session_state['_indice_dni'][dni_str] = found
+                    return found
+        except Exception:
+            pass
 
-        # 5. Fallback archivo BD antiguo
+        # 5. GS como último recurso (lento)
+        try:
+            df_m = BaseDatos.cargar_matricula()
+            found = _buscar_en_df(df_m, 'alumno')
+            if found:
+                return found
+            df_d = BaseDatos.cargar_docentes()
+            found = _buscar_en_df(df_d, 'docente')
+            if found:
+                return found
+        except Exception:
+            pass
+
+        # 6. Fallback archivo BD antiguo
         try:
             if Path(ARCHIVO_BD).exists():
                 df2 = pd.read_excel(ARCHIVO_BD, dtype=str, engine='openpyxl')
@@ -1415,6 +1435,9 @@ class BaseDatos:
             df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar
         st.session_state['_forzar_local_doc'] = True
+        # Invalidar índice DNI
+        st.session_state.pop('_indice_dni', None)
+        st.session_state.pop('_indice_dni_ts', None)
         gs = _gs()
         if gs:
             try:
@@ -1641,6 +1664,61 @@ class BaseDatos:
         return 0
 
 
+def _construir_indice_dni():
+    """Construye índice DNI→persona en memoria para búsqueda instantánea.
+    Se refresca cada 3 minutos automáticamente."""
+    indice = {}
+    # 1. Archivo local matricula (rápido)
+    try:
+        if Path(ARCHIVO_MATRICULA).exists():
+            df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+            df.columns = df.columns.str.strip()
+            if not df.empty and 'DNI' in df.columns:
+                for _, row in df.iterrows():
+                    dni = str(row.get('DNI', '')).strip()
+                    if dni and len(dni) >= 7:
+                        r = row.to_dict()
+                        r['_tipo'] = 'alumno'
+                        indice[dni] = r
+    except Exception:
+        pass
+    # 2. Archivo local docentes
+    try:
+        if Path(ARCHIVO_DOCENTES).exists():
+            df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
+            df_d.columns = df_d.columns.str.strip()
+            if not df_d.empty and 'DNI' in df_d.columns:
+                for _, row in df_d.iterrows():
+                    dni = str(row.get('DNI', '')).strip()
+                    if dni and len(dni) >= 7:
+                        r = row.to_dict()
+                        r['_tipo'] = 'docente'
+                        indice[dni] = r
+    except Exception:
+        pass
+    # 3. GS complementa (sin bloquear si falla)
+    try:
+        gs = _gs()
+        if gs:
+            df_gs = gs.leer_matricula()
+            if not df_gs.empty:
+                col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
+                           'grado': 'Grado', 'seccion': 'Seccion',
+                           'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
+                           'celular_apoderado': 'Celular_Apoderado'}
+                df_gs = df_gs.rename(columns=col_map)
+                for _, row in df_gs.iterrows():
+                    dni = str(row.get('DNI', '')).strip()
+                    if dni and len(dni) >= 7 and dni not in indice:
+                        r = row.to_dict()
+                        r['_tipo'] = 'alumno'
+                        indice[dni] = r
+    except Exception:
+        pass
+    st.session_state['_indice_dni'] = indice
+    st.session_state['_indice_dni_ts'] = time.time()
+
+
 # ================================================================
 # GENERADOR PDF — DOCUMENTOS (6 tipos)
 # CORREGIDO: "Se expide a solicitud del padre/madre/apoderado"
@@ -1747,7 +1825,6 @@ class GeneradorPDF:
 
     def generar_constancia_vacante(self, d):
         self._fondo()
-        self._marca_agua()
         self._encabezado("CONSTANCIA DE VACANTE")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
@@ -1784,7 +1861,6 @@ class GeneradorPDF:
 
     def generar_constancia_no_deudor(self, d):
         self._fondo()
-        self._marca_agua()
         self._encabezado("CONSTANCIA DE NO ADEUDO")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
@@ -1807,7 +1883,6 @@ class GeneradorPDF:
 
     def generar_constancia_estudios(self, d):
         self._fondo()
-        self._marca_agua()
         self._encabezado("CONSTANCIA DE ESTUDIOS")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
@@ -1832,7 +1907,6 @@ class GeneradorPDF:
 
     def generar_constancia_conducta(self, d):
         self._fondo()
-        self._marca_agua()
         self._encabezado("CONSTANCIA DE CONDUCTA")
         y = self.config['y_titulo'] - 50
         mx, an = 60, self.width - 120
@@ -1869,7 +1943,6 @@ class GeneradorPDF:
 
     def generar_carta_compromiso(self, d):
         self._fondo()
-        self._marca_agua()
         self._encabezado("CARTA DE COMPROMISO")
         y = self.config['y_titulo'] - 40
         mx, an = 50, self.width - 100
@@ -1918,7 +1991,6 @@ class GeneradorPDF:
 
     def generar_resolucion_traslado(self, d):
         self._fondo()
-        self._marca_agua()
         self.canvas.setFont("Helvetica-Oblique", 11)
         self.canvas.drawCentredString(self.width / 2, 700,
                                        f'"{self.config["frase"]}"')
@@ -3192,12 +3264,30 @@ def pantalla_login():
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if Path("escudo_upload.png").exists():
-            c_img = st.columns([1, 1, 1])
-            with c_img[1]:
-                st.markdown('<div class="escudo-login">', unsafe_allow_html=True)
-                st.image("escudo_upload.png", width=180)
-                st.markdown('</div>', unsafe_allow_html=True)
+        # ═══ DOS ESCUDOS ═══
+        esc_izq = Path("escudo_upload.png").exists()
+        esc_der = Path("fondo.png").exists()
+        if esc_izq or esc_der:
+            if esc_izq and esc_der:
+                ce1, ce2, ce3 = st.columns([1, 1, 1])
+                with ce1:
+                    st.markdown('<div class="escudo-login" style="text-align:right">', unsafe_allow_html=True)
+                    st.image("escudo_upload.png", width=130)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                with ce2:
+                    st.markdown("<div style='text-align:center;padding-top:30px;'>"
+                                "<p style='font-size:2.2rem;margin:0;'>🎓</p>"
+                                "</div>", unsafe_allow_html=True)
+                with ce3:
+                    st.markdown('<div class="escudo-login" style="text-align:left">', unsafe_allow_html=True)
+                    st.image("fondo.png", width=130)
+                    st.markdown('</div>', unsafe_allow_html=True)
+            elif esc_izq:
+                c_img = st.columns([1, 1, 1])
+                with c_img[1]:
+                    st.markdown('<div class="escudo-login">', unsafe_allow_html=True)
+                    st.image("escudo_upload.png", width=160)
+                    st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown("""
         <div class='login-header'>
@@ -8212,17 +8302,53 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
     c_pdf.drawCentredString(w / 2, y_pos, f"TOTAL: {total_preguntas} preguntas — {areas_resumen}")
     c_pdf.setFillColor(colors.black)
     y_pos -= 20
+    pagina_num = [1]
+    LM_EX = 30  # Margen izquierdo estrecho
+    RM_EX = w - 30  # Margen derecho estrecho
+    ANCHO_TEXTO = 95  # Ancho de wrap más amplio
+
+    def _nueva_pagina_examen():
+        """Página nueva con encabezado compacto y número"""
+        # Pie de página actual
+        c_pdf.setFont("Helvetica", 7)
+        c_pdf.setFillColor(colors.HexColor("#9ca3af"))
+        c_pdf.drawString(LM_EX, 18, f"I.E.P. YACHAY — {grado} — Semana {semana}")
+        c_pdf.drawCentredString(w/2, 18, f"— Pág. {pagina_num[0]} —")
+        c_pdf.drawRightString(RM_EX, 18, hora_peru().strftime('%d/%m/%Y'))
+        c_pdf.setFillColor(colors.black)
+        c_pdf.showPage()
+        pagina_num[0] += 1
+        # Encabezado compacto página 2+
+        c_pdf.setFillColor(colors.HexColor("#001e7c"))
+        c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
+        c_pdf.setFillColor(colors.HexColor("#374151"))
+        c_pdf.setFont("Helvetica-Bold", 7)
+        titulo_corto = (titulo_examen or "EVALUACIÓN SEMANAL").upper()
+        c_pdf.drawString(LM_EX, h - 24, f"I.E.P. YACHAY — {grado} — {titulo_corto}")
+        c_pdf.drawRightString(RM_EX, h - 24, f"Semana {semana} — Pág. {pagina_num[0]}")
+        c_pdf.setStrokeColor(colors.HexColor("#d1d5db"))
+        c_pdf.setLineWidth(0.5)
+        c_pdf.line(LM_EX, h - 28, RM_EX, h - 28)
+        # Marca de agua
+        if Path("escudo_upload.png").exists():
+            try:
+                c_pdf.saveState()
+                c_pdf.setFillAlpha(0.04)
+                c_pdf.drawImage("escudo_upload.png", w/2-80, h/2-80, 160, 160, mask='auto')
+                c_pdf.restoreState()
+            except Exception:
+                pass
+        return h - 40
 
     # PREGUNTAS POR ÁREA
     for area, preguntas in preguntas_por_area.items():
         if not preguntas:
             continue
         if y_pos < 120:
-            c_pdf.showPage()
-            y_pos = h - 50
+            y_pos = _nueva_pagina_examen()
 
         c_pdf.setFillColor(colors.HexColor("#1a56db"))
-        c_pdf.roundRect(35, y_pos - 20, w - 70, 22, 4, fill=1)
+        c_pdf.roundRect(LM_EX, y_pos - 20, RM_EX - LM_EX, 22, 4, fill=1)
         c_pdf.setFillColor(colors.white)
         c_pdf.setFont("Helvetica-Bold", 11)
         c_pdf.drawCentredString(w / 2, y_pos - 14, f"{area.upper()}")
@@ -8234,22 +8360,21 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
             opciones = pregunta.get('opciones', {})
             tiene_imagen = bool(pregunta.get('imagen_b64'))
 
-            lineas_texto = textwrap.wrap(texto_p, width=80)
-            espacio = len(lineas_texto) * 14 + len(opciones) * 16 + 30 + (120 if tiene_imagen else 0)
+            lineas_texto = textwrap.wrap(texto_p, width=ANCHO_TEXTO)
+            espacio = len(lineas_texto) * 13 + len(opciones) * 15 + 25 + (120 if tiene_imagen else 0)
 
-            if y_pos - espacio < 60:
-                c_pdf.showPage()
-                y_pos = h - 50
+            if y_pos - espacio < 50:
+                y_pos = _nueva_pagina_examen()
 
             c_pdf.setFont("Helvetica-Bold", 10)
             c_pdf.setFillColor(colors.HexColor("#1a56db"))
-            c_pdf.drawString(40, y_pos, f"{num_pregunta_global}.")
+            c_pdf.drawString(LM_EX + 5, y_pos, f"{num_pregunta_global}.")
             c_pdf.setFillColor(colors.black)
             c_pdf.setFont("Helvetica", 10)
-            x_t = 60
+            x_t = LM_EX + 25
             for linea in lineas_texto:
                 c_pdf.drawString(x_t, y_pos, linea)
-                y_pos -= 14
+                y_pos -= 13
             y_pos -= 3
 
             if tiene_imagen:
@@ -8259,16 +8384,15 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
                     if img.mode == 'RGBA':
                         img = img.convert('RGB')
                     iw, ih = img.size
-                    ratio = min((w - 180) / iw, 150 / ih, 1.0)
+                    ratio = min((RM_EX - LM_EX - 40) / iw, 150 / ih, 1.0)
                     dw = iw * ratio
                     dh = ih * ratio
-                    if y_pos - dh < 60:
-                        c_pdf.showPage()
-                        y_pos = h - 50
+                    if y_pos - dh < 50:
+                        y_pos = _nueva_pagina_examen()
                     tmp = f"tmp_ex_{int(time.time())}.jpg"
                     img.save(tmp, 'JPEG', quality=80)
                     c_pdf.drawImage(tmp, (w - dw) / 2, y_pos - dh, dw, dh)
-                    y_pos -= dh + 10
+                    y_pos -= dh + 8
                     try:
                         os.remove(tmp)
                     except Exception:
@@ -8282,18 +8406,25 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
                 txt = opciones.get(letra, '')
                 if not txt:
                     continue
-                if y_pos < 60:
-                    c_pdf.showPage()
-                    y_pos = h - 50
-                c_pdf.circle(75, y_pos + 3, 5, stroke=1, fill=0)
+                if y_pos < 50:
+                    y_pos = _nueva_pagina_examen()
+                c_pdf.circle(LM_EX + 35, y_pos + 3, 5, stroke=1, fill=0)
                 c_pdf.setFont("Helvetica-Bold", 9)
-                c_pdf.drawString(83, y_pos, f"{letra.upper()})")
+                c_pdf.drawString(LM_EX + 43, y_pos, f"{letra.upper()})")
                 c_pdf.setFont("Helvetica", 9)
-                txt_disp = txt[:70] + ('...' if len(txt) > 70 else '')
-                c_pdf.drawString(100, y_pos, txt_disp)
-                y_pos -= 16
-            y_pos -= 12
+                txt_disp = txt[:80] + ('...' if len(txt) > 80 else '')
+                c_pdf.drawString(LM_EX + 58, y_pos, txt_disp)
+                y_pos -= 15
+            y_pos -= 10
             num_pregunta_global += 1
+
+    # Pie de última página
+    c_pdf.setFont("Helvetica", 7)
+    c_pdf.setFillColor(colors.HexColor("#9ca3af"))
+    c_pdf.drawString(LM_EX, 18, f"I.E.P. YACHAY — {grado} — Semana {semana}")
+    c_pdf.drawCentredString(w/2, 18, f"— Pág. {pagina_num[0]} —")
+    c_pdf.drawRightString(RM_EX, 18, hora_peru().strftime('%d/%m/%Y'))
+    c_pdf.setFillColor(colors.black)
 
     # CLAVE DE RESPUESTAS — Página nueva
     c_pdf.showPage()
