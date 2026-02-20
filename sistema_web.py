@@ -3266,7 +3266,7 @@ def pantalla_login():
     with col2:
         # ═══ DOS ESCUDOS ═══
         esc_izq = Path("escudo_upload.png").exists()
-        esc_der = Path("fondo.png").exists()
+        esc_der = Path("escudo2_upload.png").exists()
         if esc_izq or esc_der:
             if esc_izq and esc_der:
                 ce1, ce2, ce3 = st.columns([1, 1, 1])
@@ -3280,7 +3280,7 @@ def pantalla_login():
                                 "</div>", unsafe_allow_html=True)
                 with ce3:
                     st.markdown('<div class="escudo-login" style="text-align:left">', unsafe_allow_html=True)
-                    st.image("fondo.png", width=130)
+                    st.image("escudo2_upload.png", width=130)
                     st.markdown('</div>', unsafe_allow_html=True)
             elif esc_izq:
                 c_img = st.columns([1, 1, 1])
