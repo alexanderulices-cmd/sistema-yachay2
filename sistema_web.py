@@ -7842,22 +7842,6 @@ def _dibujar_escudo(c, x, y, alto_deseado):
 
 # ---- PDF Material Docente ----
 def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docente):
-    # ── Marca de agua grande y centrada ─────────────────────────────────
-    if Path("escudo_upload.png").exists():
-        try:
-            from PIL import Image as PILImage
-            img = PILImage.open("escudo_upload.png")
-            iw, ih = img.size
-            ratio = iw / ih
-            mw = 280
-            mh = mw / ratio
-            c.saveState()
-            c.setFillAlpha(0.06)
-            c.drawImage("escudo_upload.png", w/2 - mw/2, h/2 - mh/2, mw, mh, mask='auto')
-            c.restoreState()
-        except Exception:
-            pass
-
     # ── Barra azul superior ──────────────────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h - 15, w, 15, fill=1, stroke=0)
@@ -7909,25 +7893,19 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
     c.setLineWidth(2)
     c.line(60, h - 174, w - 60, h - 174)
 
-    # ── Marca de agua: escudo central + 4 esquinas ───────────────────────
-    if Path("escudo_upload.png").exists():
-        try:
-            c.saveState()
-            c.setFillAlpha(0.05)
-            # Centro grande
-            c.drawImage("escudo_upload.png", w / 2 - 110, h / 2 - 110, 220, 220, mask='auto')
-            c.restoreState()
-        except Exception:
-            pass
-
 
 def _pdf_pie_material(c, w, grado, area, semana, pagina=None):
-    # Marca de agua (escudo) en cada página
+    # Marca de agua GRANDE en cada página (sin duplicar con encabezado)
     if Path("escudo_upload.png").exists():
         try:
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            mw = 360; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.04)
-            c.drawImage("escudo_upload.png", w / 2 - 100, A4[1] / 2 - 100, 200, 200, mask='auto')
+            c.setFillAlpha(0.06)
+            c.drawImage("escudo_upload.png", w/2 - mw/2, A4[1]/2 - mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
             pass
