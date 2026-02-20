@@ -10386,12 +10386,14 @@ def main():
             </div>
             """, unsafe_allow_html=True)
 
-            # Grid de módulos para docentes (SIN asistencia ni reportes)
+            # Grid de módulos para docentes — TODOS los permitidos
             modulos = [
-                ("📊", "Calificación BETA", "calificacion", "#dc2626"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
+                ("📝", "Registro Auxiliar", "reg_auxiliar", "#2563eb"),
+                ("📋", "Registro PDF", "reg_pdf", "#0891b2"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
+                ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
             ]
 
             # Grid de módulos
@@ -10452,6 +10454,14 @@ def main():
                 tab_material_docente(config)
             elif mod == "examenes_sem":
                 tab_examenes_semanales(config)
+            elif mod == "reg_auxiliar":
+                info_d = st.session_state.get('docente_info', {}) or {}
+                grado_d = info_d.get('grado', '')
+                _tab_registro_auxiliar_docente(grado_d, config)
+            elif mod == "reg_pdf":
+                info_d = st.session_state.get('docente_info', {}) or {}
+                grado_d = info_d.get('grado', '')
+                _tab_registro_pdf_docente(grado_d, config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
