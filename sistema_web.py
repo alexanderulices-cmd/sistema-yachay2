@@ -2178,16 +2178,22 @@ def generar_ranking_pdf(resultados, anio):
     c.rect(0, h-15, w, 15, fill=1, stroke=0)
     # Escudos con proporción correcta
     ALTO_ESC = 65
-    if Path("escudo_upload.png").exists():
-        try:
-            from PIL import Image as PILImage
-            img = PILImage.open("escudo_upload.png")
+    esc_izq = "escudo_upload.png"
+    esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
+    try:
+        from PIL import Image as PILImage
+        if Path(esc_izq).exists():
+            img = PILImage.open(esc_izq)
             iw, ih = img.size
-            ancho_esc = ALTO_ESC * (iw / ih)
-            c.drawImage("escudo_upload.png", 18, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-            c.drawImage("escudo_upload.png", w-18-ancho_esc, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-        except Exception:
-            pass
+            aw = ALTO_ESC * (iw/ih)
+            c.drawImage(esc_izq, 18, h-12-ALTO_ESC, aw, ALTO_ESC, mask='auto')
+        if Path(esc_der).exists():
+            img2 = PILImage.open(esc_der)
+            iw2, ih2 = img2.size
+            aw2 = ALTO_ESC * (iw2/ih2)
+            c.drawImage(esc_der, w-18-aw2, h-12-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+    except Exception:
+        pass
     c.setFillColor(colors.HexColor("#001e7c"))
     c.setFont("Helvetica-Bold", 8)
     c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
@@ -3401,11 +3407,16 @@ def configurar_sidebar():
                     with open("fondo.png", "wb") as f:
                         f.write(uf.getbuffer())
                     st.success("🎉")
-                ue = st.file_uploader("🛡️ Escudo/Logo", type=["png"], key="ue")
+                ue = st.file_uploader("🛡️ Escudo Izquierda", type=["png"], key="ue")
                 if ue:
                     with open("escudo_upload.png", "wb") as f:
                         f.write(ue.getbuffer())
-                    st.success("🎉")
+                    st.success("🎉 Escudo izquierda guardado")
+                ue2 = st.file_uploader("🛡️ Escudo Derecha", type=["png"], key="ue2")
+                if ue2:
+                    with open("escudo2_upload.png", "wb") as f:
+                        f.write(ue2.getbuffer())
+                    st.success("🎉 Escudo derecho guardado")
             with st.expander("👥 Autoridades"):
                 directora = st.text_input("Directora:", directora, key="di")
                 promotor = st.text_input("Promotor:", promotor, key="pi")
@@ -4455,16 +4466,22 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
 
     # ── Escudo izquierda y derecha (proporción correcta) ─────────────────
     ALTO_ESC = 65
-    if Path("escudo_upload.png").exists():
-        try:
-            from PIL import Image as PILImage
-            img = PILImage.open("escudo_upload.png")
+    esc_izq = "escudo_upload.png"
+    esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
+    try:
+        from PIL import Image as PILImage
+        if Path(esc_izq).exists():
+            img = PILImage.open(esc_izq)
             iw, ih = img.size
-            ancho_esc = ALTO_ESC * (iw / ih)
-            c.drawImage("escudo_upload.png", 18, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-            c.drawImage("escudo_upload.png", w-18-ancho_esc, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-        except Exception:
-            pass
+            aw = ALTO_ESC * (iw/ih)
+            c.drawImage(esc_izq, 18, h-12-ALTO_ESC, aw, ALTO_ESC, mask='auto')
+        if Path(esc_der).exists():
+            img2 = PILImage.open(esc_der)
+            iw2, ih2 = img2.size
+            aw2 = ALTO_ESC * (iw2/ih2)
+            c.drawImage(esc_der, w-18-aw2, h-12-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+    except Exception:
+        pass
 
     # ── Textos institucionales ───────────────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
@@ -7189,16 +7206,22 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             pass
     # Escudos con proporción correcta
     ALTO_ESC = 45
-    if Path("escudo_upload.png").exists():
-        try:
-            from PIL import Image as PILImage
-            img = PILImage.open("escudo_upload.png")
+    esc_izq = "escudo_upload.png"
+    esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
+    try:
+        from PIL import Image as PILImage
+        if Path(esc_izq).exists():
+            img = PILImage.open(esc_izq)
             iw, ih = img.size
-            ancho_esc = ALTO_ESC * (iw / ih)
-            c_pdf.drawImage("escudo_upload.png", 15, h-14-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-            c_pdf.drawImage("escudo_upload.png", w-15-ancho_esc, h-14-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-        except Exception:
-            pass
+            aw = ALTO_ESC * (iw/ih)
+            c_pdf.drawImage(esc_izq, 15, h-14-ALTO_ESC, aw, ALTO_ESC, mask='auto')
+        if Path(esc_der).exists():
+            img2 = PILImage.open(esc_der)
+            iw2, ih2 = img2.size
+            aw2 = ALTO_ESC * (iw2/ih2)
+            c_pdf.drawImage(esc_der, w-15-aw2, h-14-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+    except Exception:
+        pass
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.setFont("Helvetica-Bold", 18)
     c_pdf.drawCentredString(w / 2, h - 35, "🏆 RANKING DE ESTUDIANTES")
@@ -7848,15 +7871,25 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
 
     # ── Escudo IZQUIERDA y DERECHA (proporción correcta, alto=65) ───────
     ALTO_ESC = 65
-    if Path("escudo_upload.png").exists():
+    esc_izq = "escudo_upload.png"
+    esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
+    if Path(esc_izq).exists():
         try:
             from PIL import Image as PILImage
-            img = PILImage.open("escudo_upload.png")
+            img = PILImage.open(esc_izq)
             iw, ih = img.size
             ratio = iw / ih
             ancho_esc = ALTO_ESC * ratio
-            c.drawImage("escudo_upload.png", 18, h - 18 - ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
-            c.drawImage("escudo_upload.png", w - 18 - ancho_esc, h - 18 - ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+            c.drawImage(esc_izq, 18, h - 12 - ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+        except Exception:
+            pass
+    if Path(esc_der).exists():
+        try:
+            from PIL import Image as PILImage
+            img2 = PILImage.open(esc_der)
+            iw2, ih2 = img2.size
+            ancho_esc2 = ALTO_ESC * (iw2 / ih2)
+            c.drawImage(esc_der, w - 18 - ancho_esc2, h - 12 - ALTO_ESC, ancho_esc2, ALTO_ESC, mask='auto')
         except Exception:
             pass
 
@@ -9222,12 +9255,20 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     from reportlab.lib.styles import ParagraphStyle
     
     for pregunta in preguntas:
-        espacio_necesario = 120 if pregunta['imagen'] else 80
+        # Calcular espacio real necesario para la pregunta completa
+        n_alternativas = sum(1 for l in ['A','B','C','D'] if pregunta['alternativas'].get(l,''))
+        espacio_necesario = (
+            (120 if pregunta['imagen'] else 0) +
+            max(40, len(pregunta['texto']) // 4) +  # espacio por texto
+            n_alternativas * 12 + 25  # alternativas + margen
+        )
+        espacio_necesario = min(espacio_necesario, 200)  # tope máximo
+
         if y < y_min + espacio_necesario:
             if columna_actual == 1:
                 columna_actual = 2
                 x = x_col2
-                y = y_start  # col2 misma altura que col1 inicio de página
+                y = y_start  # col2 misma altura inicio de página
             else:
                 # Nueva página
                 c_pdf.setFont("Helvetica-Bold", 9)
@@ -9235,20 +9276,18 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
                 c_pdf.drawCentredString(w / 2, 20, f"{titulo} — Página {c_pdf.getPageNumber()}")
                 c_pdf.setFillColor(colors.black)
                 c_pdf.showPage()
-                # Marca de agua en nueva página con proporción correcta
                 if Path("escudo_upload.png").exists():
                     try:
                         from PIL import Image as PILImage
                         _img = PILImage.open("escudo_upload.png")
                         _iw, _ih = _img.size
-                        _mw = 280; _mh = _mw / (_iw / _ih)
+                        _mw = 380; _mh = _mw / (_iw / _ih)
                         c_pdf.saveState()
-                        c_pdf.setFillAlpha(0.05)
+                        c_pdf.setFillAlpha(0.06)
                         c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
                         c_pdf.restoreState()
                     except Exception:
                         pass
-                # En página nueva sin encabezado, y_start = casi arriba
                 y_start = h - 35
                 columna_actual = 1
                 x = x_col1
