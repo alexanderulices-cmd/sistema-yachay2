@@ -1666,7 +1666,7 @@ class GeneradorPDF:
         if Path("escudo_upload.png").exists():
             try:
                 self.canvas.saveState()
-                self.canvas.setFillAlpha(0.15)
+                self.canvas.setFillAlpha(0.35)
                 self.canvas.drawImage("escudo_upload.png",
                                        self.width / 2 - 120, self.height / 2 - 120,
                                        240, 240, mask='auto')
@@ -1974,7 +1974,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     if Path("escudo_upload.png").exists():
         try:
             c.saveState()
-            c.setFillAlpha(0.15)
+            c.setFillAlpha(0.35)
             c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
                         200, 200, mask='auto')
             c.restoreState()
@@ -2093,7 +2093,7 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
         if Path("escudo_upload.png").exists():
             try:
                 c.saveState()
-                c.setFillAlpha(0.15)
+                c.setFillAlpha(0.35)
                 c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
                             200, 200, mask='auto')
                 c.restoreState()
@@ -2166,9 +2166,9 @@ def generar_ranking_pdf(resultados, anio):
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
             ratio = iw / ih
-            mw = 280; mh = mw / ratio
+            mw = 420; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.15)
+            c.setFillAlpha(0.35)
             c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -2191,7 +2191,9 @@ def generar_ranking_pdf(resultados, anio):
             img2 = PILImage.open(esc_der)
             iw2, ih2 = img2.size
             aw2 = ALTO_ESC * (iw2/ih2)
-            c.drawImage(esc_der, w-18-aw2, h-12-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+            _alto_der2 = 80
+            _aw_der2 = _alto_der2 * (iw2/ih2)
+            c.drawImage(esc_der, w-18-_aw_der2, h-12-_alto_der2, _aw_der2, _alto_der2, mask='auto')
     except Exception:
         pass
     c.setFillColor(colors.HexColor("#001e7c"))
@@ -4452,9 +4454,9 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
             ratio = iw / ih
-            mw = 280; mh = mw / ratio
+            mw = 420; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.15)
+            c.setFillAlpha(0.35)
             c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -4479,7 +4481,9 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
             img2 = PILImage.open(esc_der)
             iw2, ih2 = img2.size
             aw2 = ALTO_ESC * (iw2/ih2)
-            c.drawImage(esc_der, w-18-aw2, h-12-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
+            _alto_der2 = 80
+            _aw_der2 = _alto_der2 * (iw2/ih2)
+            c.drawImage(esc_der, w-18-_aw_der2, h-12-_alto_der2, _aw_der2, _alto_der2, mask='auto')
     except Exception:
         pass
 
@@ -7197,9 +7201,9 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
             ratio = iw / ih
-            mw = 280; mh = mw / ratio
+            mw = 420; mh = mw / ratio
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.15)
+            c_pdf.setFillAlpha(0.35)
             c_pdf.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7340,7 +7344,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.15)
+            c_pdf.setFillAlpha(0.35)
             c_pdf.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -7889,7 +7893,9 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
             img2 = PILImage.open(esc_der)
             iw2, ih2 = img2.size
             ancho_esc2 = ALTO_ESC * (iw2 / ih2)
-            c.drawImage(esc_der, w - 18 - ancho_esc2, h - 12 - ALTO_ESC, ancho_esc2, ALTO_ESC, mask='auto')
+            _alto_der = 80
+            _ancho_der = _alto_der * (iw2 / ih2)
+            c.drawImage(esc_der, w - 18 - _ancho_der, h - 12 - _alto_der, _ancho_der, _alto_der, mask='auto')
         except Exception:
             pass
 
@@ -7935,9 +7941,9 @@ def _pdf_pie_material(c, w, grado, area, semana, pagina=None):
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
             ratio = iw / ih
-            mw = 360; mh = mw / ratio
+            mw = 420; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.15)
+            c.setFillAlpha(0.35)
             c.drawImage("escudo_upload.png", w/2 - mw/2, A4[1]/2 - mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
@@ -8174,7 +8180,7 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
     if Path("escudo_upload.png").exists():
         try:
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.15)
+            c_pdf.setFillAlpha(0.35)
             c_pdf.drawImage("escudo_upload.png", w/2 - 100, h/2 - 100, 200, 200, mask='auto')
             c_pdf.restoreState()
         except Exception:
@@ -9286,9 +9292,9 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
                         from PIL import Image as PILImage
                         _img = PILImage.open("escudo_upload.png")
                         _iw, _ih = _img.size
-                        _mw = 380; _mh = _mw / (_iw / _ih)
+                        _mw = 420; _mh = _mw / (_iw / _ih)
                         c_pdf.saveState()
-                        c_pdf.setFillAlpha(0.15)
+                        c_pdf.setFillAlpha(0.35)
                         c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
                         c_pdf.restoreState()
                     except Exception:
@@ -9367,9 +9373,9 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
             from PIL import Image as PILImage
             _img = PILImage.open("escudo_upload.png")
             _iw, _ih = _img.size
-            _mw = 380; _mh = _mw / (_iw/_ih)
+            _mw = 420; _mh = _mw / (_iw/_ih)
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.15)
+            c_pdf.setFillAlpha(0.35)
             c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
