@@ -2159,23 +2159,33 @@ def generar_ranking_pdf(resultados, anio):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    # Marca de agua central
+    # Marca de agua grande
     if Path("escudo_upload.png").exists():
         try:
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            mw = 280; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.05)
-            c.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+            c.setFillAlpha(0.06)
+            c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
             pass
-    # Barra azul superior
+    # Barra azul
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h-15, w, 15, fill=1, stroke=0)
-    # Escudo izquierda y derecha
+    # Escudos con proporción correcta
+    ALTO_ESC = 65
     if Path("escudo_upload.png").exists():
         try:
-            c.drawImage("escudo_upload.png", 18, h-88, 62, 62, mask='auto')
-            c.drawImage("escudo_upload.png", w-80, h-88, 62, 62, mask='auto')
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ancho_esc = ALTO_ESC * (iw / ih)
+            c.drawImage("escudo_upload.png", 18, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+            c.drawImage("escudo_upload.png", w-18-ancho_esc, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
         except Exception:
             pass
     c.setFillColor(colors.HexColor("#001e7c"))
@@ -4427,9 +4437,14 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     # ── Marca de agua ────────────────────────────────────────────────────
     if Path("escudo_upload.png").exists():
         try:
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            mw = 280; mh = mw / ratio
             c.saveState()
-            c.setFillAlpha(0.05)
-            c.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+            c.setFillAlpha(0.06)
+            c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
             pass
@@ -4438,11 +4453,16 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h-15, w, 15, fill=1, stroke=0)
 
-    # ── Escudo izquierda y derecha ───────────────────────────────────────
+    # ── Escudo izquierda y derecha (proporción correcta) ─────────────────
+    ALTO_ESC = 65
     if Path("escudo_upload.png").exists():
         try:
-            c.drawImage("escudo_upload.png", 18, h-88, 62, 62, mask='auto')
-            c.drawImage("escudo_upload.png", w-80, h-88, 62, 62, mask='auto')
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ancho_esc = ALTO_ESC * (iw / ih)
+            c.drawImage("escudo_upload.png", 18, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+            c.drawImage("escudo_upload.png", w-18-ancho_esc, h-18-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
         except Exception:
             pass
 
@@ -7156,17 +7176,27 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
     # Marca de agua
     if Path("escudo_upload.png").exists():
         try:
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            mw = 280; mh = mw / ratio
             c_pdf.saveState()
             c_pdf.setFillAlpha(0.05)
-            c_pdf.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+            c_pdf.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
             pass
-    # Escudo izquierda y derecha
+    # Escudos con proporción correcta
+    ALTO_ESC = 45
     if Path("escudo_upload.png").exists():
         try:
-            c_pdf.drawImage("escudo_upload.png", 15, h - 62, 45, 45, mask='auto')
-            c_pdf.drawImage("escudo_upload.png", w - 60, h - 62, 45, 45, mask='auto')
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ancho_esc = ALTO_ESC * (iw / ih)
+            c_pdf.drawImage("escudo_upload.png", 15, h-14-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+            c_pdf.drawImage("escudo_upload.png", w-15-ancho_esc, h-14-ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
         except Exception:
             pass
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
@@ -7795,17 +7825,54 @@ def _guardar_pregunta_examen(pregunta):
     return pregunta['id']
 
 
+def _dibujar_escudo(c, x, y, alto_deseado):
+    """Dibuja escudo manteniendo proporción correcta"""
+    if not Path("escudo_upload.png").exists():
+        return
+    try:
+        from PIL import Image as PILImage
+        img = PILImage.open("escudo_upload.png")
+        iw, ih = img.size
+        ratio = iw / ih
+        ancho = alto_deseado * ratio
+        c.drawImage("escudo_upload.png", x, y, ancho, alto_deseado, mask='auto')
+    except Exception:
+        pass
+
+
 # ---- PDF Material Docente ----
 def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docente):
+    # ── Marca de agua grande y centrada ─────────────────────────────────
+    if Path("escudo_upload.png").exists():
+        try:
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            mw = 280
+            mh = mw / ratio
+            c.saveState()
+            c.setFillAlpha(0.06)
+            c.drawImage("escudo_upload.png", w/2 - mw/2, h/2 - mh/2, mw, mh, mask='auto')
+            c.restoreState()
+        except Exception:
+            pass
+
     # ── Barra azul superior ──────────────────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h - 15, w, 15, fill=1, stroke=0)
 
-    # ── Escudo IZQUIERDA y DERECHA ───────────────────────────────────────
+    # ── Escudo IZQUIERDA y DERECHA (proporción correcta, alto=65) ───────
+    ALTO_ESC = 65
     if Path("escudo_upload.png").exists():
         try:
-            c.drawImage("escudo_upload.png", 18, h - 90, 62, 62, mask='auto')  # izquierda
-            c.drawImage("escudo_upload.png", w - 80, h - 90, 62, 62, mask='auto')  # derecha
+            from PIL import Image as PILImage
+            img = PILImage.open("escudo_upload.png")
+            iw, ih = img.size
+            ratio = iw / ih
+            ancho_esc = ALTO_ESC * ratio
+            c.drawImage("escudo_upload.png", 18, h - 18 - ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
+            c.drawImage("escudo_upload.png", w - 18 - ancho_esc, h - 18 - ALTO_ESC, ancho_esc, ALTO_ESC, mask='auto')
         except Exception:
             pass
 
@@ -9177,36 +9244,38 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     from reportlab.lib.styles import ParagraphStyle
     
     for pregunta in preguntas:
-        # Verificar espacio para pregunta completa (incluyendo imagen)
         espacio_necesario = 120 if pregunta['imagen'] else 80
         if y < y_min + espacio_necesario:
             if columna_actual == 1:
                 columna_actual = 2
                 x = x_col2
-                y = y_start  # columna 2 arranca desde el mismo y_start
+                y = y_start  # col2 misma altura que col1 inicio de página
             else:
-                # Pie de página antes de nueva página
+                # Nueva página
                 c_pdf.setFont("Helvetica-Bold", 9)
                 c_pdf.setFillColor(colors.HexColor("#6b7280"))
                 c_pdf.drawCentredString(w / 2, 20, f"{titulo} — Página {c_pdf.getPageNumber()}")
                 c_pdf.setFillColor(colors.black)
                 c_pdf.showPage()
-                # Marca de agua en nueva página
+                # Marca de agua en nueva página con proporción correcta
                 if Path("escudo_upload.png").exists():
                     try:
+                        from PIL import Image as PILImage
+                        _img = PILImage.open("escudo_upload.png")
+                        _iw, _ih = _img.size
+                        _mw = 280; _mh = _mw / (_iw / _ih)
                         c_pdf.saveState()
                         c_pdf.setFillAlpha(0.05)
-                        c_pdf.drawImage("escudo_upload.png", w/2-110, h/2-110, 220, 220, mask='auto')
+                        c_pdf.drawImage("escudo_upload.png", w/2-_mw/2, h/2-_mh/2, _mw, _mh, mask='auto')
                         c_pdf.restoreState()
                     except Exception:
                         pass
+                # En página nueva sin encabezado, y_start = casi arriba
+                y_start = h - 35
                 columna_actual = 1
                 x = x_col1
-                y = h - 35
+                y = y_start
                 c_pdf.setFillColor(colors.black)
-                columna_actual = 1
-                x = x_col1
-                y = h - 35
         
         # Número de pregunta
         c_pdf.setFont("Helvetica-Bold", 10)
