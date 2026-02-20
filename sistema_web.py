@@ -2159,25 +2159,27 @@ def generar_ranking_pdf(resultados, anio):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    # Marca de agua grande
+
+    # ── Marca de agua UNA SOLA — zona inferior vacía ─────────────────────
     if Path("escudo_upload.png").exists():
         try:
             from PIL import Image as PILImage
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
-            ratio = iw / ih
-            mw = 420; mh = mw / ratio
+            mw = 220; mh = mw / (iw/ih)
             c.saveState()
-            c.setFillAlpha(0.35)
-            c.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
+            c.setFillAlpha(0.20)
+            c.drawImage("escudo_upload.png", w/2-mw/2, 30, mw, mh, mask='auto')
             c.restoreState()
         except Exception:
             pass
+
     # Barra azul
     c.setFillColor(colors.HexColor("#001e7c"))
     c.rect(0, h-15, w, 15, fill=1, stroke=0)
-    # Escudos con proporción correcta
-    ALTO_ESC = 65
+
+    # ── Escudos — 60px izq, 60px der, separados del texto central ────────
+    ALTO_ESC = 60
     esc_izq = "escudo_upload.png"
     esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
     try:
@@ -2191,18 +2193,18 @@ def generar_ranking_pdf(resultados, anio):
             img2 = PILImage.open(esc_der)
             iw2, ih2 = img2.size
             aw2 = ALTO_ESC * (iw2/ih2)
-            _alto_der2 = 80
-            _aw_der2 = _alto_der2 * (iw2/ih2)
-            c.drawImage(esc_der, w-18-_aw_der2, h-12-_alto_der2, _aw_der2, _alto_der2, mask='auto')
+            c.drawImage(esc_der, w-18-aw2, h-12-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
     except Exception:
         pass
+
+    # ── Textos institucionales centrados ─────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.setFont("Helvetica-Bold", 8)
     c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
     c.setFont("Helvetica-Bold", 12)
     c.drawCentredString(w/2, h-43, "I.E.P. YACHAY — CHINCHERO")
     c.setFont("Helvetica-Bold", 14)
-    c.drawCentredString(w/2, h-62, f"RANKING DE RESULTADOS — {anio}")
+    c.drawCentredString(w/2, h-60, f"RANKING DE RESULTADOS — {anio}")
     c.setFont("Helvetica", 9)
     c.setFillColor(colors.HexColor("#6b7280"))
     c.drawCentredString(w/2, h-75, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
