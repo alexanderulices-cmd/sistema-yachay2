@@ -659,6 +659,96 @@ init_session_state()
 
 
 # ================================================================
+# AUTO-BACKUP Y RESTAURACIÓN DESDE GOOGLE SHEETS
+# Los archivos locales se pierden al reiniciar Streamlit Cloud.
+# Este sistema sincroniza automáticamente con GS.
+# ================================================================
+
+ARCHIVOS_AUTOBACKUP = [
+    ("asistencias.json", "backup_asistencias"),
+    ("notas.json", "backup_notas"),
+    ("materiales_docente.json", "backup_materiales"),
+    ("examenes_semanales.json", "backup_examenes"),
+]
+
+
+def _auto_restaurar_desde_gs():
+    """Al iniciar la app, restaura archivos locales desde GS si no existen."""
+    if st.session_state.get('_restaurado_gs'):
+        return
+    try:
+        gs = _gs()
+        if not gs:
+            st.session_state['_restaurado_gs'] = True
+            return
+        ws = gs._get_hoja('config')
+        if not ws:
+            st.session_state['_restaurado_gs'] = True
+            return
+        data = ws.get_all_records()
+        restaurados = []
+        for archivo_local, clave_gs in ARCHIVOS_AUTOBACKUP:
+            if not Path(archivo_local).exists():
+                for row in data:
+                    if str(row.get('clave', '')) == clave_gs:
+                        try:
+                            contenido = str(row.get('valor', ''))
+                            if contenido and contenido.strip() not in ('', '{}', '[]'):
+                                with open(archivo_local, 'w', encoding='utf-8') as f:
+                                    f.write(contenido)
+                                restaurados.append(archivo_local)
+                        except Exception:
+                            pass
+                        break
+        st.session_state['_restaurado_gs'] = True
+        if restaurados:
+            st.session_state['_archivos_restaurados'] = restaurados
+    except Exception:
+        st.session_state['_restaurado_gs'] = True
+
+
+def _auto_backup_a_gs():
+    """Guarda archivos locales en GS cada 5 minutos automáticamente."""
+    ultimo = st.session_state.get('_ultimo_backup_gs', 0)
+    if time.time() - ultimo < 300:
+        return
+    try:
+        gs = _gs()
+        if not gs:
+            return
+        ws = gs._get_hoja('config')
+        if not ws:
+            return
+        data = ws.get_all_records()
+        claves_fila = {}
+        for i, row in enumerate(data):
+            claves_fila[str(row.get('clave', ''))] = i + 2
+
+        for archivo_local, clave_gs in ARCHIVOS_AUTOBACKUP:
+            if Path(archivo_local).exists():
+                try:
+                    with open(archivo_local, 'r', encoding='utf-8') as f:
+                        contenido = f.read()
+                    if not contenido or contenido.strip() in ('{}', '[]', ''):
+                        continue
+                    if len(contenido) > 49000:
+                        contenido = contenido[:49000]
+                    if clave_gs in claves_fila:
+                        ws.update_cell(claves_fila[clave_gs], 2, contenido)
+                    else:
+                        ws.append_row([clave_gs, contenido])
+                except Exception:
+                    pass
+        st.session_state['_ultimo_backup_gs'] = time.time()
+    except Exception:
+        pass
+
+
+# Ejecutar restauración automática al arrancar
+_auto_restaurar_desde_gs()
+
+
+# ================================================================
 # ESTILOS CSS + ANIMACIONES + SONIDO
 # ================================================================
 
@@ -1487,18 +1577,30 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Sincronizar con Google Sheets en silencio (sin thread para evitar warnings)
+        # Sincronizar con Google Sheets en silencio
         try:
             gs = _gs()
             if gs:
                 grado = ''
                 nivel = ''
-                df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
-                if not df_m.empty and 'DNI' in df_m.columns:
-                    est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
-                    if not est.empty:
-                        grado = str(est.iloc[0].get('Grado', ''))
-                        nivel = str(est.iloc[0].get('Nivel', ''))
+                # Usar índice DNI (rápido) para obtener grado/nivel
+                indice = st.session_state.get('_indice_dni', {})
+                if dni in indice:
+                    grado = str(indice[dni].get('Grado', indice[dni].get('grado', '')))
+                    nivel = str(indice[dni].get('Nivel', indice[dni].get('nivel', '')))
+                else:
+                    # Fallback: buscar en archivo local
+                    try:
+                        if Path(ARCHIVO_MATRICULA).exists():
+                            df_m = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+                            df_m.columns = df_m.columns.str.strip()
+                            if 'DNI' in df_m.columns:
+                                est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
+                                if not est.empty:
+                                    grado = str(est.iloc[0].get('Grado', ''))
+                                    nivel = str(est.iloc[0].get('Nivel', ''))
+                    except Exception:
+                        pass
                 reg = asistencias[fecha_hoy][dni]
                 gs.guardar_asistencia({
                     'fecha': fecha_hoy,
@@ -1512,6 +1614,8 @@ class BaseDatos:
                 })
         except Exception:
             pass  # Error silencioso — asistencia ya guardada localmente
+        # Forzar backup en próximo ciclo (resetear timer)
+        st.session_state['_ultimo_backup_gs'] = 0
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -6512,6 +6616,23 @@ def tab_reportes(config):
                     except Exception:
                         pass
 
+                    # SIEMPRE complementar con GS (puede tener datos que local perdió)
+                    if gs:
+                        try:
+                            asist_gs = gs.historial_asistencia_estudiante(dni_ri)
+                            if asist_gs:
+                                for fecha_g, datos_g in asist_gs.items():
+                                    if fecha_g not in asist_est:
+                                        asist_est[fecha_g] = datos_g
+                                    else:
+                                        # Completar campos vacíos
+                                        if not asist_est[fecha_g].get('entrada') and datos_g.get('entrada'):
+                                            asist_est[fecha_g]['entrada'] = datos_g['entrada']
+                                        if not asist_est[fecha_g].get('salida') and datos_g.get('salida'):
+                                            asist_est[fecha_g]['salida'] = datos_g['salida']
+                        except Exception:
+                            pass
+
                     if gs:
                         try:
                             ws = gs._get_hoja('config')
@@ -6524,12 +6645,6 @@ def tab_reportes(config):
                                             notas_est.append(json.loads(d.get('valor', '{}')))
                                         except Exception:
                                             pass
-                            # Asistencia de GS como complemento si local está vacío
-                            if not asist_est:
-                                try:
-                                    asist_est = gs.historial_asistencia_estudiante(dni_ri) or {}
-                                except Exception:
-                                    asist_est = {}
                         except Exception:
                             pass
 
@@ -10326,6 +10441,14 @@ def main():
         st.stop()
 
     config = configurar_sidebar()
+
+    # Auto-backup a GS cada 5 minutos (silencioso)
+    _auto_backup_a_gs()
+
+    # Notificar si se restauraron datos desde GS
+    _rest = st.session_state.pop('_archivos_restaurados', None)
+    if _rest:
+        st.toast(f"☁️ Datos restaurados desde Google Sheets: {', '.join(_rest)}", icon="✅")
 
     # Saludo personalizado
     usuario = st.session_state.get('usuario_actual', '')
