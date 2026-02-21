@@ -1372,7 +1372,9 @@ class BaseDatos:
         df = BaseDatos.cargar_matricula()
         if df.empty:
             return df
-        if grado in ('ALL_SECUNDARIA',):
+        if grado in ('ALL_NIVELES',):
+            pass  # No filtrar — todos los grados/niveles
+        elif grado in ('ALL_SECUNDARIA',):
             if 'Nivel' in df.columns:
                 df = df[df['Nivel'] == "SECUNDARIA"]
         elif grado in ('ALL_SEC_PREU',):
@@ -3701,11 +3703,18 @@ def _gestion_usuarios_admin():
         ne_nivel = "PRIMARIA"
         ne_grado = "N/A"
         if ne_rol == "docente":
-            ne_nivel = st.selectbox("Nivel:", ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
-                                     index=["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"].index(
-                                         datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
-                                     ), key="ne_nivel")
-            grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
+            niveles_opciones = ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO", "TODOS"]
+            nivel_actual = datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
+            if nivel_actual not in niveles_opciones:
+                nivel_actual = "PRIMARIA"
+            ne_nivel = st.selectbox("Nivel:", niveles_opciones,
+                                     index=niveles_opciones.index(nivel_actual),
+                                     key="ne_nivel")
+            if ne_nivel == "TODOS":
+                grados_opts = ["ALL_NIVELES"]
+                st.success("🔓 Acceso a TODOS los grados (Inicial, Primaria, Secundaria, Pre-U)")
+            else:
+                grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
             ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
         else:
             st.caption(f"🔓 **{ne_rol.title()}** tiene acceso completo (sin grado específico)")
@@ -3820,9 +3829,20 @@ def tab_matricula(config):
             dn_areas_sel = ""
             if dn_c in ["Docente", "Coordinador"]:
                 dn_nivel = st.selectbox("🏫 Nivel:", 
-                                         ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO"],
+                                         ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO",
+                                          "TODOS LOS NIVELES"],
                                          key="dn_nivel_reg")
-                if dn_nivel in ["INICIAL", "PRIMARIA"]:
+                if dn_nivel == "TODOS LOS NIVELES":
+                    # Ed. Física, Inglés, etc. — acceso a TODOS los grados
+                    dn_g = "ALL_NIVELES"
+                    dn_nivel = "TODOS"
+                    st.success(f"✅ Acceso a TODOS los grados: Inicial ({len(NIVELES_GRADOS['INICIAL'])}), "
+                               f"Primaria ({len(NIVELES_GRADOS['PRIMARIA'])}), "
+                               f"Secundaria ({len(NIVELES_GRADOS['SECUNDARIA'])}), "
+                               f"Pre-U ({len(NIVELES_GRADOS['PREUNIVERSITARIO'])})")
+                    st.caption("Grados: " + ", ".join(TODOS_LOS_GRADOS))
+                    dn_areas_sel = ""
+                elif dn_nivel in ["INICIAL", "PRIMARIA"]:
                     dn_g = st.selectbox("🎓 Grado Asignado:",
                                          ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
                                          key="dn_grado")
@@ -5126,7 +5146,7 @@ def tab_calificacion_yachay(config):
                 grado_act = str(info_act.get('grado', ''))
 
                 es_sec_act = ('SECUNDARIA' in nivel_act or 'PREUNIVERSITARIO' in nivel_act
-                              or 'GRUPO' in grado_act or grado_act in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+                              or 'GRUPO' in grado_act or grado_act in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA'))
 
                 if rol_act in ['admin', 'directivo']:
                     grado_doc = st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key="grado_cal_sel")
@@ -5634,7 +5654,9 @@ def vista_docente(config):
     
     grado = str(info.get('grado', ''))
     label = str(info.get('label', usuario.replace('.', ' ').title()))
-    if grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
+    if grado == 'ALL_NIVELES':
+        st.markdown(f"### 👨‍🏫 {label} — Todos los Niveles")
+    elif grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
         st.markdown(f"### 👨‍🏫 {label} — Secundaria / Pre-Universitario")
     elif grado:
         st.markdown(f"### 👨‍🏫 {label} — {grado}")
@@ -5644,15 +5666,18 @@ def vista_docente(config):
 
     # Determinar nivel del docente
     nivel_doc = str(info.get('nivel', ''))
-    es_secundaria = ('SECUNDARIA' in nivel_doc or 'PREUNIVERSITARIO' in nivel_doc
+    es_multigrado = (grado == 'ALL_NIVELES'
+                     or 'SECUNDARIA' in nivel_doc or 'PREUNIVERSITARIO' in nivel_doc
                      or 'GRUPO' in grado or 'Sec' in grado
-                     or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+                     or grado in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     
-    # Para sec/preu: mostrar grado como info general
-    if es_secundaria and grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
+    # Para multigrado: mostrar info general
+    if es_multigrado and grado == 'ALL_NIVELES':
+        st.caption("🔓 Acceso a todos los grados: Inicial, Primaria, Secundaria y Pre-Universitario")
+    elif es_multigrado and grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
         st.caption("🔓 Acceso a todos los grados de Secundaria y Pre-Universitario")
     
-    if es_secundaria:
+    if es_multigrado:
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
@@ -5700,7 +5725,7 @@ def _tab_registro_auxiliar_docente(grado, config):
     info = st.session_state.get('docente_info', {}) or {}
     nivel_d = str(info.get('nivel', '')).upper()
     es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
-              or str(grado) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
+              or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
               or 'GRUPO' in str(grado) or 'Sec' in str(grado))
     
     if es_sec:
@@ -5786,7 +5811,7 @@ def _tab_registro_pdf_docente(grado, config):
     info = st.session_state.get('docente_info', {}) or {}
     nivel_d = str(info.get('nivel', '')).upper()
     es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
-              or str(grado) in ('ALL_SEC_PREU', 'ALL_SECUNDARIA')
+              or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
               or 'GRUPO' in str(grado) or 'Sec' in str(grado))
     if es_sec:
         grados_disp = _grados_del_docente()
@@ -7790,7 +7815,7 @@ def _areas_del_docente():
     # Secundaria/Preu: incluir todas las áreas de ambos niveles
     es_sec = ('SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel
               or 'GRUPO' in grado or 'Sec' in grado
-              or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+              or grado in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     if es_sec:
         areas_sec = AREAS_POR_NIVEL.get("SECUNDARIA", [])
         areas_preu = AREAS_POR_NIVEL.get("PREUNIVERSITARIO", [])
@@ -7811,9 +7836,14 @@ def _grados_del_docente():
     info = st.session_state.get('docente_info', {}) or {}
     nivel = str(info.get('nivel', 'PRIMARIA')).upper()
     grado = str(info.get('grado', ''))
+    
+    # ALL_NIVELES: acceso a TODOS (Ed. Física, Inglés, etc.)
+    if grado == 'ALL_NIVELES':
+        return TODOS_LOS_GRADOS
+    
     es_sec = ('SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel
               or 'GRUPO' in grado or 'Sec' in grado
-              or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+              or grado in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     if es_sec:
         grados_sec = NIVELES_GRADOS.get('SECUNDARIA', [])
         grados_preu = NIVELES_GRADOS.get('PREUNIVERSITARIO', [])
@@ -7839,8 +7869,12 @@ def _grados_para_selector(key_prefix="gs"):
     if rol in ['admin', 'directivo']:
         return st.selectbox("🎓 Grado:", GRADOS_OPCIONES, key=f"{key_prefix}_grado")
 
+    # ALL_NIVELES: todos los grados (Ed. Física, Inglés, etc.)
+    if grado == 'ALL_NIVELES':
+        return st.selectbox("🎓 Grado:", TODOS_LOS_GRADOS, key=f"{key_prefix}_grado")
+
     es_sec = ('SECUNDARIA' in nivel or 'PREUNIVERSITARIO' in nivel
-              or 'GRUPO' in grado or grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'))
+              or 'GRUPO' in grado or grado in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA'))
     if es_sec:
         grados_disp = _grados_del_docente()
         return st.selectbox("🎓 Grado:", grados_disp, key=f"{key_prefix}_grado")
@@ -10370,7 +10404,7 @@ def main():
     if st.session_state.rol == "auxiliar":
         st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
         st.markdown("*¿Qué vamos a hacer hoy?*")
-        ca1, ca2, ca3 = st.columns(3)
+        ca1, ca2, ca3, ca4 = st.columns(4)
         with ca1:
             if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist", type="primary"):
                 st.session_state.modulo_activo = "asistencia"
@@ -10380,6 +10414,9 @@ def main():
         with ca3:
             if st.button("📝\n\n**Incidencias**", use_container_width=True, key="aux_inc", type="primary"):
                 st.session_state.modulo_activo = "incidencias"
+        with ca4:
+            if st.button("📋\n\n**Registros PDF**", use_container_width=True, key="aux_regpdf", type="primary"):
+                st.session_state.modulo_activo = "registros_pdf"
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
@@ -10389,6 +10426,9 @@ def main():
             tab_reportes(config)
         elif mod == "incidencias":
             tab_incidencias(config)
+        elif mod == "registros_pdf":
+            st.subheader("📋 Registros PDF — Asistencia y Auxiliar")
+            _seccion_registros_pdf(config)
 
     # ========================================
     # DOCENTE — Su grado solamente
