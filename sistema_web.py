@@ -659,96 +659,6 @@ init_session_state()
 
 
 # ================================================================
-# AUTO-BACKUP Y RESTAURACIÓN DESDE GOOGLE SHEETS
-# Los archivos locales se pierden al reiniciar Streamlit Cloud.
-# Este sistema sincroniza automáticamente con GS.
-# ================================================================
-
-ARCHIVOS_AUTOBACKUP = [
-    ("asistencias.json", "backup_asistencias"),
-    ("notas.json", "backup_notas"),
-    ("materiales_docente.json", "backup_materiales"),
-    ("examenes_semanales.json", "backup_examenes"),
-]
-
-
-def _auto_restaurar_desde_gs():
-    """Al iniciar la app, restaura archivos locales desde GS si no existen."""
-    if st.session_state.get('_restaurado_gs'):
-        return
-    try:
-        gs = _gs()
-        if not gs:
-            st.session_state['_restaurado_gs'] = True
-            return
-        ws = gs._get_hoja('config')
-        if not ws:
-            st.session_state['_restaurado_gs'] = True
-            return
-        data = ws.get_all_records()
-        restaurados = []
-        for archivo_local, clave_gs in ARCHIVOS_AUTOBACKUP:
-            if not Path(archivo_local).exists():
-                for row in data:
-                    if str(row.get('clave', '')) == clave_gs:
-                        try:
-                            contenido = str(row.get('valor', ''))
-                            if contenido and contenido.strip() not in ('', '{}', '[]'):
-                                with open(archivo_local, 'w', encoding='utf-8') as f:
-                                    f.write(contenido)
-                                restaurados.append(archivo_local)
-                        except Exception:
-                            pass
-                        break
-        st.session_state['_restaurado_gs'] = True
-        if restaurados:
-            st.session_state['_archivos_restaurados'] = restaurados
-    except Exception:
-        st.session_state['_restaurado_gs'] = True
-
-
-def _auto_backup_a_gs():
-    """Guarda archivos locales en GS cada 5 minutos automáticamente."""
-    ultimo = st.session_state.get('_ultimo_backup_gs', 0)
-    if time.time() - ultimo < 300:
-        return
-    try:
-        gs = _gs()
-        if not gs:
-            return
-        ws = gs._get_hoja('config')
-        if not ws:
-            return
-        data = ws.get_all_records()
-        claves_fila = {}
-        for i, row in enumerate(data):
-            claves_fila[str(row.get('clave', ''))] = i + 2
-
-        for archivo_local, clave_gs in ARCHIVOS_AUTOBACKUP:
-            if Path(archivo_local).exists():
-                try:
-                    with open(archivo_local, 'r', encoding='utf-8') as f:
-                        contenido = f.read()
-                    if not contenido or contenido.strip() in ('{}', '[]', ''):
-                        continue
-                    if len(contenido) > 49000:
-                        contenido = contenido[:49000]
-                    if clave_gs in claves_fila:
-                        ws.update_cell(claves_fila[clave_gs], 2, contenido)
-                    else:
-                        ws.append_row([clave_gs, contenido])
-                except Exception:
-                    pass
-        st.session_state['_ultimo_backup_gs'] = time.time()
-    except Exception:
-        pass
-
-
-# Ejecutar restauración automática al arrancar
-_auto_restaurar_desde_gs()
-
-
-# ================================================================
 # ESTILOS CSS + ANIMACIONES + SONIDO
 # ================================================================
 
@@ -1614,8 +1524,6 @@ class BaseDatos:
                 })
         except Exception:
             pass  # Error silencioso — asistencia ya guardada localmente
-        # Forzar backup en próximo ciclo (resetear timer)
-        st.session_state['_ultimo_backup_gs'] = 0
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -10439,14 +10347,6 @@ def main():
         st.stop()
 
     config = configurar_sidebar()
-
-    # Auto-backup a GS cada 5 minutos (silencioso)
-    _auto_backup_a_gs()
-
-    # Notificar si se restauraron datos desde GS
-    _rest = st.session_state.pop('_archivos_restaurados', None)
-    if _rest:
-        st.toast(f"☁️ Datos restaurados desde Google Sheets: {', '.join(_rest)}", icon="✅")
 
     # Saludo personalizado
     usuario = st.session_state.get('usuario_actual', '')
