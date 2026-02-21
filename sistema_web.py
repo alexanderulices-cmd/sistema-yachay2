@@ -1746,7 +1746,7 @@ class BaseDatos:
 
     @staticmethod
     def corregir_secciones_vacias():
-        """Asigna sección 'A' a estudiantes sin sección (excepto Sec/PreU)"""
+        """Asigna sección 'A' a TODOS los estudiantes sin sección (incluye Sec/PreU)"""
         df = BaseDatos.cargar_matricula()
         if df.empty or 'Seccion' not in df.columns:
             return 0
@@ -1754,15 +1754,9 @@ class BaseDatos:
         df['Seccion'] = df['Seccion'].fillna('').astype(str).str.strip()
         sin_seccion = df['Seccion'].isin(['', 'nan', 'None', 'N/A'])
         
-        if 'Nivel' in df.columns:
-            es_sec_preu = df['Nivel'].isin(['SECUNDARIA', 'PREUNIVERSITARIO'])
-            to_fix = sin_seccion & ~es_sec_preu
-        else:
-            to_fix = sin_seccion
-        
-        cantidad = to_fix.sum()
+        cantidad = sin_seccion.sum()
         if cantidad > 0:
-            df.loc[to_fix, 'Seccion'] = 'A'
+            df.loc[sin_seccion, 'Seccion'] = 'A'
             BaseDatos.guardar_matricula(df)
             return cantidad
         return 0
@@ -3850,7 +3844,11 @@ def tab_matricula(config):
             md = st.text_input("DNI:", key="md", max_chars=8)
             mnv = st.selectbox("Nivel:", list(NIVELES_GRADOS.keys()), key="mnv")
             mg = st.selectbox("Grado:", NIVELES_GRADOS[mnv], key="mg")
-            ms = st.selectbox("Sección:", SECCIONES, key="ms")
+            # Secundaria/Preuniversitario → sección A por defecto
+            if mnv in ("SECUNDARIA", "PREUNIVERSITARIO"):
+                ms = st.selectbox("Sección:", SECCIONES, index=SECCIONES.index("A"), key="ms")
+            else:
+                ms = st.selectbox("Sección:", SECCIONES, key="ms")
         with c2:
             msexo = st.selectbox("Sexo:", ["Masculino", "Femenino"], key="msexo")
             ma = st.text_input("Apoderado (Padre/Madre):", key="ma")
