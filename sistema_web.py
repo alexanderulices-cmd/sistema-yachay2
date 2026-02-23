@@ -488,17 +488,24 @@ def cargar_usuarios():
                 
                 # Reconstruir docente_info si tiene grado
                 if 'docente_info' not in datos and datos.get('grado'):
+                    nombre_gs = datos.get('nombre', '').strip()
+                    label_gs = datos.get('label', '').strip()
+                    nombre_final = nombre_gs if (nombre_gs and nombre_gs != uname) else (
+                        label_gs if (label_gs and label_gs != uname) else uname
+                    )
                     datos['docente_info'] = {
-                        'label': datos.get('nombre', datos.get('label', uname)),
+                        'label': nombre_final,
                         'grado': datos.get('grado', ''),
                         'nivel': datos.get('nivel', ''),
                     }
                 
-                # Reconstruir label si falta
-                if not datos.get('label') and datos.get('nombre'):
-                    datos['label'] = datos['nombre']
-                elif not datos.get('label'):
-                    datos['label'] = uname.replace('.', ' ').title()
+                # Reconstruir label si falta o es el username
+                nombre_gs = datos.get('nombre', '').strip()
+                label_gs = datos.get('label', '').strip()
+                if nombre_gs and ' ' in nombre_gs and len(nombre_gs) > 5:
+                    datos['label'] = nombre_gs
+                elif not label_gs or label_gs == uname.replace('.', ' ').title():
+                    datos['label'] = nombre_gs if nombre_gs else uname.replace('.', ' ').title()
                 
                 if uname in USUARIOS_DEFAULT:
                     # Para admin: mantener password default, actualizar el resto
@@ -1725,6 +1732,88 @@ def _construir_indice_dni():
         pass
     st.session_state['_indice_dni'] = indice
     st.session_state['_indice_dni_ts'] = time.time()
+
+
+def _nombre_completo_docente():
+    """Resuelve el nombre COMPLETO del docente actual.
+    Busca en: docente_info DNI → Docentes Excel/GS → match inteligente → label → usuario.
+    Evita mostrar el nombre de cuenta (ej: 'aucordova') en PDFs y registros."""
+    usuario = st.session_state.get('usuario_actual', '')
+    info = st.session_state.get('docente_info', {}) or {}
+    label_info = str(info.get('label', '')).strip()
+
+    # 1. Si label parece nombre completo (tiene espacio y >8 chars), usarlo
+    if label_info and ' ' in label_info and len(label_info) > 8:
+        return label_info
+
+    # 2. Buscar por DNI del docente (más confiable)
+    dni_doc = str(info.get('dni', '')).strip()
+    try:
+        df_d = BaseDatos.cargar_docentes()
+        if not df_d.empty and 'Nombre' in df_d.columns:
+            # 2a. Búsqueda exacta por DNI
+            if dni_doc and len(dni_doc) >= 7 and 'DNI' in df_d.columns:
+                df_d['DNI'] = df_d['DNI'].astype(str).str.strip()
+                match_dni = df_d[df_d['DNI'] == dni_doc]
+                if not match_dni.empty:
+                    nombre_d = str(match_dni.iloc[0]['Nombre']).strip()
+                    if nombre_d and nombre_d.upper() not in ('NAN', 'NONE', ''):
+                        _actualizar_label_docente(info, nombre_d)
+                        return nombre_d
+
+            # 2b. Búsqueda inteligente por nombre de usuario
+            usuario_lower = usuario.replace('.', ' ').strip().lower()
+            mejor_match = None
+            mejor_score = 0
+            for _, row in df_d.iterrows():
+                nombre_d = str(row.get('Nombre', '')).strip()
+                if not nombre_d or len(nombre_d) < 3:
+                    continue
+                nombre_lower = nombre_d.lower()
+                # Verificar si alguna parte del nombre (>3 chars) aparece en el usuario
+                partes_nombre = [p for p in nombre_lower.split() if len(p) > 3]
+                score = 0
+                for parte in partes_nombre:
+                    if parte in usuario_lower:
+                        score += len(parte)
+                # También verificar si partes del usuario aparecen en el nombre
+                partes_usuario = usuario_lower.replace('.', ' ').split()
+                for parte_u in partes_usuario:
+                    if len(parte_u) > 2 and parte_u in nombre_lower:
+                        score += len(parte_u)
+                if score > mejor_score:
+                    mejor_score = score
+                    mejor_match = nombre_d
+            
+            # Solo aceptar si el score es significativo (>=5 chars coinciden)
+            if mejor_match and mejor_score >= 5:
+                _actualizar_label_docente(info, mejor_match)
+                return mejor_match
+    except Exception:
+        pass
+
+    # 3. Buscar en usuarios dict
+    try:
+        usuarios = cargar_usuarios()
+        datos_u = usuarios.get(usuario, {})
+        lbl = str(datos_u.get('label', '')).strip()
+        if lbl and ' ' in lbl and len(lbl) > 8:
+            return lbl
+    except Exception:
+        pass
+
+    # 4. Fallback: label o usuario formateado
+    if label_info:
+        return label_info
+    return usuario.replace('.', ' ').title()
+
+
+def _actualizar_label_docente(info, nombre_completo):
+    """Actualiza docente_info con el nombre completo para futuras consultas."""
+    if info:
+        info['label'] = nombre_completo
+        info['nombre'] = nombre_completo
+        st.session_state['docente_info'] = info
 
 
 # ================================================================
@@ -3464,7 +3553,7 @@ def configurar_sidebar():
         }
         label = roles_nombres.get(st.session_state.rol, '')
         if st.session_state.rol == "docente" and st.session_state.docente_info:
-            label += f" — {st.session_state.docente_info['label']}"
+            label += f" — {_nombre_completo_docente()}"
         st.info(f"**{label}**")
         st.caption(f"🕒 {hora_peru().strftime('%H:%M:%S')} | "
                    f"📅 {hora_peru().strftime('%d/%m/%Y')}")
@@ -3726,7 +3815,10 @@ def _gestion_usuarios_admin():
                 usuarios[edit_usr]['password'] = ne_pass
                 usuarios[edit_usr]['rol'] = ne_rol
                 if ne_rol == "docente":
-                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel}
+                    # Preservar DNI existente o intentar resolverlo
+                    old_di = datos_edit.get('docente_info') or {}
+                    dni_doc = old_di.get('dni', '')
+                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel, "dni": dni_doc}
                     usuarios[edit_usr]['docente_info'] = di
                 else:
                     usuarios[edit_usr]['docente_info'] = None
@@ -3914,7 +4006,7 @@ def tab_matricula(config):
                     
                     # Solo docentes tienen grado/nivel
                     if rol_auto == "docente":
-                        di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel}
+                        di = {"label": dn_n.strip().upper(), "grado": dn_g, "nivel": dn_nivel, "dni": dn_d.strip()}
                     else:
                         di = None  # Directivos y auxiliares no necesitan grado
                     
@@ -4303,17 +4395,27 @@ def tab_asistencias():
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
             dni_limpio = ''.join(c for c in val if c.isdigit())
-            if len(dni_limpio) == 8:
-                try:
-                    _registrar_asistencia_rapida(dni_limpio)
-                except Exception:
-                    pass
+            if len(dni_limpio) >= 7:  # Aceptar 7-8 dígitos
+                # Guardar DNI pendiente para procesarlo fuera del callback
+                st.session_state['_dni_pendiente'] = dni_limpio[:8]
             # Limpiar campo inmediatamente
             st.session_state['dm_input'] = ''
 
         dm = st.text_input("DNI:", key="dm_input",
                            placeholder="Escanee código de barras o escriba DNI + Enter",
                            on_change=_on_dni_submit)
+
+        # Procesar DNI pendiente FUERA del callback (más estable)
+        _dni_pend = st.session_state.pop('_dni_pendiente', None)
+        if _dni_pend:
+            _registrar_asistencia_rapida(_dni_pend)
+        
+        # También procesar si escribieron DNI y no activó on_change
+        if dm:
+            dni_directo = ''.join(c for c in dm.strip() if c.isdigit())
+            if len(dni_directo) == 8:
+                _registrar_asistencia_rapida(dni_directo)
+                st.session_state['dm_input'] = ''
 
         # Sonido/vibración via JS después de registrar
         if not dm:  # Campo fue limpiado = se registró
@@ -4498,13 +4600,10 @@ def tab_asistencias():
 
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia — si DNI no está en matrícula, permite registrar con nombre manual"""
-    # Limpiar caché para datos frescos
-    if '_cache_matricula' in st.session_state:
-        del st.session_state['_cache_matricula']
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
-        tipo = st.session_state.tipo_asistencia.lower()
+        tipo = st.session_state.get('tipo_asistencia', 'Entrada').lower()
         es_d = persona.get('_tipo', '') == 'docente'
         if es_d:
             df_doc = BaseDatos.cargar_docentes()
@@ -4517,10 +4616,15 @@ def _registrar_asistencia_rapida(dni):
         else:
             nombre = persona.get('Nombre', '')
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
-        BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
-        emoji_tipo = "🟢" if tipo == "entrada" else "🟡"
+        try:
+            BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
+        except Exception as e:
+            st.error(f"❌ Error al guardar: {e}")
+            return
+        emoji_tipo = "🟢" if tipo == "entrada" else ("🟡" if tipo == "tardanza" else "🔵")
+        st.toast(f"{emoji_tipo} {tp} {nombre} — {tipo.title()}: {hora}", icon="✅")
         st.markdown(f"""<div class="asist-{'ok' if tipo == 'entrada' else 'salida'}">
-            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {st.session_state.tipo_asistencia}: <strong>{hora}</strong>
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {st.session_state.get('tipo_asistencia','')}: <strong>{hora}</strong>
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
@@ -4530,7 +4634,7 @@ def _registrar_asistencia_rapida(dni):
                                       placeholder="Ej: FLORES QUISPE JUAN")
         if nombre_manual and st.button("✅ Registrar de todas formas", key=f"reg_manual_{dni}", type="primary"):
             hora = hora_peru_str()
-            tipo = st.session_state.tipo_asistencia.lower()
+            tipo = st.session_state.get('tipo_asistencia', 'Entrada').lower()
             BaseDatos.guardar_asistencia(dni, nombre_manual.upper().strip(), tipo, hora, es_docente=False)
             st.success(f"✅ Registrado: {nombre_manual.upper()} — {hora}")
             reproducir_beep_exitoso()
@@ -5653,7 +5757,7 @@ def vista_docente(config):
         st.session_state.docente_info = info
     
     grado = str(info.get('grado', ''))
-    label = str(info.get('label', usuario.replace('.', ' ').title()))
+    label = _nombre_completo_docente()
     if grado == 'ALL_NIVELES':
         st.markdown(f"### 👨‍🏫 {label} — Todos los Niveles")
     elif grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
@@ -6394,7 +6498,7 @@ def tab_reportes(config):
             if titulo_ev:
                 label_ev += f" — {titulo_ev}"
             with st.expander(label_ev):
-                st.caption(f"👤 Docente: {ev.get('docente','—')} | 📚 Áreas: {', '.join(areas_nombres_ev)} | 👥 Estudiantes: {len(ev.get('ranking',[]))}")
+                st.caption(f"👤 Docente: {ev.get('docente_nombre', ev.get('docente','—'))} | 📚 Áreas: {', '.join(areas_nombres_ev)} | 👥 Estudiantes: {len(ev.get('ranking',[]))}")
                 ranking_ev = ev.get('ranking', [])
                 if ranking_ev:
                     df_ev = pd.DataFrame(ranking_ev)
@@ -6830,6 +6934,8 @@ def tab_registrar_notas(config):
     st.header("📝 Registrar Notas")
 
     usuario = st.session_state.get('usuario_actual', '')
+    _di_rn = st.session_state.get('docente_info', {}) or {}
+    nombre_completo_doc = _nombre_completo_docente()
     gs = _gs()
 
     # ─── Determinar grado disponible para el docente ─────────────────────────
@@ -6860,7 +6966,7 @@ def tab_registrar_notas(config):
             with st.expander(label_h):
                 areas_h = ev.get('areas', [])
                 areas_nombres = [a['nombre'] for a in areas_h] if isinstance(areas_h[0], dict) else areas_h
-                st.caption(f"Docente: {ev.get('docente','—')} | Áreas: {', '.join(areas_nombres)} | Estudiantes: {len(ev.get('ranking',[]))}")
+                st.caption(f"Docente: {ev.get('docente_nombre', ev.get('docente','—'))} | Áreas: {', '.join(areas_nombres)} | Estudiantes: {len(ev.get('ranking',[]))}")
                 ranking_h = ev.get('ranking', [])
                 if ranking_h:
                     df_h = pd.DataFrame(ranking_h)
@@ -6957,6 +7063,7 @@ def tab_registrar_notas(config):
                         'areas': areas_cfg,
                         'fecha': fecha_peru_str(),
                         'docente': usuario,
+                        'docente_nombre': nombre_completo_doc,
                     }
                     st.session_state.eval_estudiantes = dg_cache.to_dict('records')
                     st.session_state.notas_sesion = {}
@@ -7224,6 +7331,7 @@ def tab_registrar_notas(config):
                     'fecha': fecha_peru_str(),
                     'hora': hora_peru_str(),
                     'docente': usuario,
+                    'docente_nombre': nombre_completo_doc,
                     'areas': areas,
                     'ranking': ranking_filas,
                 }
@@ -7251,6 +7359,7 @@ def tab_registrar_notas(config):
                                 'fecha': fecha_peru_str(),
                                 'hora': hora_peru_str(),
                                 'docente': usuario,
+                                'docente_nombre': nombre_completo_doc,
                                 'areas': [{'nombre': a_name, 'nota': data_nota['areas'].get(a_name, 0)}
                                          for a_name in areas_nombres],
                                 'promedio_general': data_nota['promedio'],
@@ -8125,6 +8234,9 @@ def _generar_pdf_material(material, config):
     titulo = material.get('titulo', 'Material de Trabajo')
     grado = material.get('grado', '')
     docente = material.get('docente_nombre', '')
+    # Si el nombre almacenado parece un username (sin espacio), resolver nombre completo
+    if not docente or (docente and ' ' not in docente and len(docente) < 20):
+        docente = _nombre_completo_docente() or docente
     bloques = material.get('bloques', [])
     pagina = [1]  # mutable counter
     LM = 35  # margen izquierdo estrecho
@@ -8529,7 +8641,7 @@ def tab_material_docente(config):
 
     usuario = st.session_state.get('usuario_actual', '')
     info_doc = st.session_state.get('docente_info', {}) or {}
-    nombre_doc = info_doc.get('nombre', usuario)
+    nombre_doc = _nombre_completo_docente()
 
     fichas_dir = Path("fichas")
     fichas_dir.mkdir(exist_ok=True)
@@ -9379,7 +9491,8 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    usuario_doc = st.session_state.get('usuario_actual', 'Docente')
+    _info_doc = st.session_state.get('docente_info', {}) or {}
+    usuario_doc = _nombre_completo_docente()
 
     # ── ENCABEZADO OFICIAL (igual que ficha) ────────────────────────────────
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
@@ -10352,7 +10465,7 @@ def mostrar_registro_mensual_notas():
                                 notas_mes[alumno].append(nota)
             
             if notas_mes:
-                docente = st.session_state.get('usuario_actual', 'Docente')
+                docente = _nombre_completo_docente()
                 buffer = generar_registro_mensual_pdf(
                     docente, mes, grado, area, notas_mes
                 )
@@ -10385,11 +10498,14 @@ def main():
     # Saludo personalizado
     usuario = st.session_state.get('usuario_actual', '')
     usuarios = cargar_usuarios()
-    # Priorizar nombre completo de docente_info, luego label, luego usuario
-    _di = st.session_state.get('docente_info') or {}
-    nombre_usuario = (_di.get('label') or _di.get('nombre') or
-                      usuarios.get(usuario, {}).get('label', '') or
-                      usuario.replace('.', ' ').title())
+    # Nombre completo: busca en Docentes, docente_info, usuarios
+    if st.session_state.rol == 'docente':
+        nombre_usuario = _nombre_completo_docente()
+    else:
+        _di = st.session_state.get('docente_info') or {}
+        nombre_usuario = (_di.get('label') or _di.get('nombre') or
+                          usuarios.get(usuario, {}).get('label', '') or
+                          usuario.replace('.', ' ').title())
     hora_actual = hora_peru().hour
     if hora_actual < 12:
         saludo = "☀️ Buenos días"
