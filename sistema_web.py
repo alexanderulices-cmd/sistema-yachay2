@@ -2246,7 +2246,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 # ================================================================
 
 def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
-                                     meses_sel):
+                                     meses_sel, docente=""):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
@@ -2289,9 +2289,11 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
         c.drawCentredString(w / 2, h - 22,
                             "I.E.P. ALTERNATIVO YACHAY - REGISTRO DE ASISTENCIA")
         c.setFont("Helvetica", 8)
-        c.drawCentredString(w / 2, h - 35,
-                            f"Grado: {grado} | Sección: {seccion} | "
-                            f"Mes: {mnm} | Año: {anio}")
+        info_line = (f"Grado: {grado} | Sección: {seccion} | "
+                     f"Mes: {mnm} | Año: {anio}")
+        if docente:
+            info_line += f" | Docente: {docente}"
+        c.drawCentredString(w / 2, h - 35, info_line)
         dias = dias_habiles_mes(int(anio), mn)
         nd = len(dias)
 
@@ -5533,12 +5535,11 @@ def tab_calificacion_yachay(config):
             st.markdown("---")
             bc1, bc2 = st.columns(2)
             with bc1:
-                if st.button("📥 RANKING PDF", type="primary",
-                             use_container_width=True, key="grpdf"):
-                    pdf = generar_ranking_pdf(rs, config['anio'])
-                    st.download_button("⬇️ PDF", pdf,
-                                       f"Ranking_{config['anio']}.pdf",
-                                       "application/pdf", key="drpdf")
+                pdf = generar_ranking_pdf(rs, config['anio'])
+                st.download_button("📥 RANKING PDF", pdf,
+                                   f"Ranking_{config['anio']}.pdf",
+                                   "application/pdf", key="drpdf",
+                                   use_container_width=True, type="primary")
             with bc2:
                 if st.button("📥 REPORTES INDIVIDUALES PDF", type="primary",
                              use_container_width=True, key="reps_ind"):
@@ -5844,7 +5845,7 @@ def vista_docente(config):
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📄 Registrar Ficha",
+            "📋 Registro de Asistencia", "📄 Registrar Ficha",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -5863,7 +5864,7 @@ def vista_docente(config):
         # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro PDF", "📄 Registrar Ficha",
+            "📋 Registro de Asistencia", "📄 Registrar Ficha",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -5998,7 +5999,8 @@ def _tab_registro_pdf_docente(grado, config):
             lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
             sl = sec2 if sec2 != "Todas" else "Todas"
             pdf = generar_registro_asistencia_pdf(
-                lg, sl, config['anio'], dg2, meses_nums)
+                lg, sl, config['anio'], dg2, meses_nums,
+                docente=_nombre_completo_docente())
             st.download_button("⬇️ PDF", pdf,
                                f"RegAsist_{lg}.pdf",
                                "application/pdf", key="ddas2")
@@ -9507,98 +9509,170 @@ def tab_examenes_semanales(config):
         area_examen = st.text_input("📚 Área/Curso:", 
                                     placeholder="Ej: Matemática, Comunicación, etc.",
                                     key="area_exam")
+
+        # ── Zona de pegado de imágenes ──────────────────────────────────────
+        with st.expander("📋 Pegar imagen desde captura de pantalla (Ctrl+V)", expanded=False):
+            st.caption("💡 **Instrucciones:** Haz captura de pantalla (Win+Shift+S), "
+                       "luego haz clic en la zona gris y presiona **Ctrl+V**. "
+                       "La imagen aparecerá abajo y podrás descargarla para subirla en la pregunta.")
+            import streamlit.components.v1 as components
+            components.html("""
+            <style>
+                #paste-zone {
+                    border: 2px dashed #94a3b8; border-radius: 12px; padding: 25px;
+                    text-align: center; cursor: pointer; background: #f8fafc;
+                    transition: all 0.3s; min-height: 60px; font-family: sans-serif;
+                }
+                #paste-zone:hover, #paste-zone:focus { 
+                    border-color: #3b82f6; background: #eff6ff; 
+                }
+                #paste-zone.has-image { border-color: #22c55e; background: #f0fdf4; }
+                #preview-img { max-width: 100%; max-height: 300px; margin: 10px 0; border-radius: 8px; display: none; }
+                #download-link { 
+                    display: none; padding: 10px 20px; background: #2563eb; color: white; 
+                    border-radius: 8px; text-decoration: none; font-weight: bold; margin: 10px 0;
+                }
+                #download-link:hover { background: #1d4ed8; }
+                .paste-info { color: #64748b; font-size: 13px; margin-top: 5px; }
+            </style>
+            <div id="paste-zone" tabindex="0" contenteditable="false">
+                📋 <strong>Haz clic aquí</strong> y presiona <strong>Ctrl+V</strong> para pegar tu captura de pantalla
+            </div>
+            <img id="preview-img" />
+            <br>
+            <a id="download-link" download="captura_examen.png">⬇️ DESCARGAR IMAGEN para subirla en la pregunta</a>
+            <p class="paste-info" id="status-text"></p>
+            <script>
+            const zone = document.getElementById('paste-zone');
+            const preview = document.getElementById('preview-img');
+            const link = document.getElementById('download-link');
+            const status = document.getElementById('status-text');
+            
+            zone.addEventListener('click', () => zone.focus());
+            
+            zone.addEventListener('paste', function(e) {
+                const items = e.clipboardData.items;
+                for (let item of items) {
+                    if (item.type.startsWith('image/')) {
+                        const blob = item.getAsFile();
+                        const url = URL.createObjectURL(blob);
+                        preview.src = url;
+                        preview.style.display = 'block';
+                        link.href = url;
+                        link.style.display = 'inline-block';
+                        zone.classList.add('has-image');
+                        zone.innerHTML = '✅ <strong>¡Imagen pegada!</strong> Descárgala abajo y súbela en la pregunta correspondiente';
+                        status.textContent = '💡 Haz clic en DESCARGAR, luego arrastra el archivo al campo de imagen de la pregunta';
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                status.textContent = '⚠️ No se detectó imagen en el portapapeles. Haz una captura primero (Win+Shift+S)';
+            });
+            
+            // Also listen on document for convenience
+            document.addEventListener('paste', function(e) {
+                if (document.activeElement !== zone) {
+                    const items = e.clipboardData.items;
+                    for (let item of items) {
+                        if (item.type.startsWith('image/')) {
+                            zone.focus();
+                            zone.dispatchEvent(new ClipboardEvent('paste', {clipboardData: e.clipboardData}));
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                }
+            });
+            </script>
+            """, height=250)
         
         st.markdown("---")
         st.markdown("### 📝 Preguntas del Examen")
-        st.caption("Las preguntas aparecerán en **negrita** en el PDF. Las alternativas con burbujas **○A ○B ○C ○D**")
+        st.caption("Las preguntas aparecerán en **negrita** en el PDF. "
+                   "Sube imagen por archivo o descárgala desde la zona de pegado de arriba.")
         
-        # Formulario para todas las preguntas
-        with st.form("form_examen_completo"):
-            preguntas = []
+        # Preguntas SIN form (para que file_uploader funcione mejor)
+        preguntas = []
+        
+        for i in range(1, int(num_preguntas) + 1):
+            st.markdown(f"#### 📌 Pregunta {i}")
             
-            for i in range(1, int(num_preguntas) + 1):
-                st.markdown(f"#### 📌 Pregunta {i}")
-                
-                col_texto, col_img = st.columns([3, 1])
-                with col_texto:
-                    texto_pregunta = st.text_area(
-                        f"Enunciado de la pregunta {i}:",
-                        height=100,
-                        key=f"texto_p_{i}",
-                        placeholder="Escriba el enunciado de la pregunta..."
-                    )
-                
-                with col_img:
-                    st.caption("Imagen (opcional)")
-                    imagen_pregunta = st.file_uploader(
-                        f"🖼️",
-                        type=['png', 'jpg', 'jpeg'],
-                        key=f"img_p_{i}",
-                        label_visibility="collapsed"
-                    )
-                
-                # Alternativas en 2 columnas
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    alt_a = st.text_input(f"A)", key=f"alt_a_{i}", placeholder="Primera alternativa")
-                    alt_c = st.text_input(f"C)", key=f"alt_c_{i}", placeholder="Tercera alternativa")
-                with col_b:
-                    alt_b = st.text_input(f"B)", key=f"alt_b_{i}", placeholder="Segunda alternativa")
-                    alt_d = st.text_input(f"D)", key=f"alt_d_{i}", placeholder="Cuarta alternativa")
-                
-                # Respuesta correcta
-                correcta = st.radio(
-                    f"✅ Respuesta correcta de la pregunta {i}:",
-                    ['A', 'B', 'C', 'D'],
-                    horizontal=True,
-                    key=f"correcta_{i}"
+            col_texto, col_img = st.columns([3, 1])
+            with col_texto:
+                texto_pregunta = st.text_area(
+                    f"Enunciado de la pregunta {i}:",
+                    height=80,
+                    key=f"texto_p_{i}",
+                    placeholder="Escriba el enunciado de la pregunta..."
                 )
-                
-                preguntas.append({
-                    'numero': i,
-                    'texto': texto_pregunta,
-                    'imagen': imagen_pregunta,
-                    'alternativas': {'A': alt_a, 'B': alt_b, 'C': alt_c, 'D': alt_d},
-                    'correcta': correcta
-                })
-                
-                if i < num_preguntas:
-                    st.markdown("---")
             
-            # submit dentro del form
-            submitted = st.form_submit_button(
-                "🖨️ GENERAR PDF DEL EXAMEN",
-                type="primary",
-                use_container_width=True
+            with col_img:
+                st.caption("🖼️ Imagen (opcional)")
+                imagen_pregunta = st.file_uploader(
+                    f"Imagen {i}",
+                    type=['png', 'jpg', 'jpeg'],
+                    key=f"img_p_{i}",
+                    label_visibility="collapsed"
+                )
+            
+            # Alternativas en 2 columnas
+            col_a, col_b = st.columns(2)
+            with col_a:
+                alt_a = st.text_input(f"A)", key=f"alt_a_{i}", placeholder="Primera alternativa")
+                alt_c = st.text_input(f"C)", key=f"alt_c_{i}", placeholder="Tercera alternativa")
+            with col_b:
+                alt_b = st.text_input(f"B)", key=f"alt_b_{i}", placeholder="Segunda alternativa")
+                alt_d = st.text_input(f"D)", key=f"alt_d_{i}", placeholder="Cuarta alternativa")
+            
+            # Respuesta correcta
+            correcta = st.radio(
+                f"✅ Respuesta correcta de la pregunta {i}:",
+                ['A', 'B', 'C', 'D'],
+                horizontal=True,
+                key=f"correcta_{i}"
             )
             
-            if submitted:
-                if not titulo_examen or not area_examen or not grado_examen:
-                    st.error("⚠️ Complete: Título, Grado y Área")
+            preguntas.append({
+                'numero': i,
+                'texto': texto_pregunta,
+                'imagen': imagen_pregunta,
+                'alternativas': {'A': alt_a, 'B': alt_b, 'C': alt_c, 'D': alt_d},
+                'correcta': correcta
+            })
+            
+            if i < num_preguntas:
+                st.markdown("---")
+        
+        # Botón de generar (fuera del form)
+        st.markdown("---")
+        if st.button("🖨️ GENERAR PDF DEL EXAMEN", type="primary",
+                     use_container_width=True, key="btn_generar_exam"):
+            if not titulo_examen or not area_examen or not grado_examen:
+                st.error("⚠️ Complete: Título, Grado y Área")
+            else:
+                preguntas_vacias = [p['numero'] for p in preguntas if not p['texto'].strip()]
+                if preguntas_vacias:
+                    st.warning(f"⚠️ Preguntas vacías: {', '.join(map(str, preguntas_vacias))}")
                 else:
-                    preguntas_vacias = [p['numero'] for p in preguntas if not p['texto'].strip()]
-                    if preguntas_vacias:
-                        st.warning(f"⚠️ Preguntas vacías: {', '.join(map(str, preguntas_vacias))}")
-                    else:
-                        try:
-                            with st.spinner("📄 Generando PDF..."):
-                                pdf_bytes = _generar_pdf_examen_2columnas(
-                                    titulo_examen, area_examen, grado_examen, preguntas, config)
-                                fecha_actual = fecha_peru_str()
-                                nombre_archivo = f"examen_{usuario}_{grado_examen}_{fecha_actual}_{titulo_examen[:25]}.pdf"
-                                nombre_archivo = nombre_archivo.replace(' ','_').replace('/','_').replace(':','_')
-                                ruta_archivo = examenes_dir / nombre_archivo
-                                with open(ruta_archivo, 'wb') as f:
-                                    f.write(pdf_bytes)
-                                # Guardar en session_state para descarga fuera del form
-                                st.session_state['_ultimo_examen_pdf'] = pdf_bytes
-                                st.session_state['_ultimo_examen_nombre'] = nombre_archivo
-                                st.success("🎉 ¡Examen generado! Descárgalo abajo.")
-                                st.balloons()
-                        except Exception as e:
-                            st.error(f"❌ Error: {str(e)}")
+                    try:
+                        with st.spinner("📄 Generando PDF..."):
+                            pdf_bytes = _generar_pdf_examen_2columnas(
+                                titulo_examen, area_examen, grado_examen, preguntas, config)
+                            fecha_actual = fecha_peru_str()
+                            nombre_archivo = f"examen_{usuario}_{grado_examen}_{fecha_actual}_{titulo_examen[:25]}.pdf"
+                            nombre_archivo = nombre_archivo.replace(' ','_').replace('/','_').replace(':','_')
+                            ruta_archivo = examenes_dir / nombre_archivo
+                            with open(ruta_archivo, 'wb') as f:
+                                f.write(pdf_bytes)
+                            st.session_state['_ultimo_examen_pdf'] = pdf_bytes
+                            st.session_state['_ultimo_examen_nombre'] = nombre_archivo
+                            st.success("🎉 ¡Examen generado!")
+                            st.balloons()
+                    except Exception as e:
+                        st.error(f"❌ Error: {str(e)}")
 
-        # ── Descarga FUERA del form (evita el error de Streamlit) ──────────
+        # ── Descarga ────────────────────────────────────────────────────────
         if st.session_state.get('_ultimo_examen_pdf'):
             st.download_button(
                 "📥 DESCARGAR EXAMEN PDF",
@@ -10743,7 +10817,7 @@ def main():
             modulos = [
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
                 ("📝", "Registro Auxiliar", "reg_auxiliar", "#2563eb"),
-                ("📋", "Registro PDF", "reg_pdf", "#0891b2"),
+                ("📋", "Registro de Asistencia", "reg_pdf", "#0891b2"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
