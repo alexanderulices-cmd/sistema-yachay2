@@ -2255,6 +2255,23 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
     else:
         est = pd.DataFrame()
     ds = {0: "L", 1: "M", 2: "Mi", 3: "J", 4: "V"}
+
+    # Colores pastel por semana (suaves para llenar a mano)
+    COLORES_SEMANA = [
+        colors.Color(0.88, 0.95, 1.0),    # Sem 1: celeste pastel
+        colors.Color(0.93, 1.0, 0.88),     # Sem 2: verde menta pastel
+        colors.Color(1.0, 0.95, 0.85),     # Sem 3: durazno pastel
+        colors.Color(0.95, 0.90, 1.0),     # Sem 4: lavanda pastel
+        colors.Color(1.0, 0.92, 0.92),     # Sem 5: rosa pastel
+    ]
+    COLORES_SEMANA_HEADER = [
+        colors.Color(0.55, 0.75, 0.92),    # Sem 1: celeste header
+        colors.Color(0.60, 0.85, 0.55),    # Sem 2: verde header
+        colors.Color(0.92, 0.72, 0.45),    # Sem 3: naranja header
+        colors.Color(0.72, 0.58, 0.88),    # Sem 4: lavanda header
+        colors.Color(0.90, 0.55, 0.55),    # Sem 5: rosa header
+    ]
+
     for mi, mn in enumerate(meses_sel):
         if mi > 0:
             c.showPage()
@@ -2277,6 +2294,15 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
                             f"Mes: {mnm} | Año: {anio}")
         dias = dias_habiles_mes(int(anio), mn)
         nd = len(dias)
+
+        # Calcular semana de cada día (1-5 dentro del mes)
+        semana_de_dia = []
+        for d in dias:
+            semana_idx = (d - 1) // 7  # 0-based: days 1-7→0, 8-14→1, etc.
+            if semana_idx > 4:
+                semana_idx = 4
+            semana_de_dia.append(semana_idx)
+
         header = ["N°", "APELLIDOS Y NOMBRES"]
         for d in dias:
             dt = date(int(anio), mn, d)
@@ -2292,7 +2318,9 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
         dw = max(15, min(22, (w - 18 - 140 - 72 - 30) / max(nd, 1)))
         cw = [18, 140] + [dw] * nd + [18, 18, 18, 18]
         t = Table(data, colWidths=cw, repeatRows=1)
-        t.setStyle(TableStyle([
+
+        # Estilos base
+        estilos = [
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 5),
             ('FONTSIZE', (0, 1), (-1, -1), 6),
@@ -2300,21 +2328,52 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('ALIGN', (1, 1), (1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0, 0.3, 0.15)),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
-             [colors.white, colors.Color(0.95, 1, 0.95)]),
+            # N° y Nombres header
+            ('BACKGROUND', (0, 0), (1, 0), colors.Color(0, 0.3, 0.15)),
+            ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
+            # Columnas A/T/F/J header
             ('BACKGROUND', (-4, 0), (-1, 0), colors.Color(0.6, 0, 0)),
-        ]))
+            ('TEXTCOLOR', (-4, 0), (-1, 0), colors.white),
+            # Columnas A/T/F/J data (gris claro)
+            ('BACKGROUND', (-4, 1), (-1, -1), colors.Color(0.96, 0.96, 0.96)),
+        ]
+
+        # Aplicar colores por semana a cada columna de día
+        for di, sem_idx in enumerate(semana_de_dia):
+            col = di + 2  # +2 por N° y Nombre
+            # Header: color fuerte de la semana
+            estilos.append(('BACKGROUND', (col, 0), (col, 0),
+                           COLORES_SEMANA_HEADER[sem_idx]))
+            estilos.append(('TEXTCOLOR', (col, 0), (col, 0), colors.white))
+            # Data: color pastel suave de la semana
+            estilos.append(('BACKGROUND', (col, 1), (col, -1),
+                           COLORES_SEMANA[sem_idx]))
+
+        t.setStyle(TableStyle(estilos))
         tw, th2 = t.wrap(w - 20, h - 60)
         t.drawOn(c, 10, h - 48 - th2)
+
+        # Leyenda de semanas
         fer = feriados_del_mes(mn)
         c.setFont("Helvetica", 5)
-        pie = ("A=Asistió | T=Tardanza | F=Falta | J=Justificada | "
-               "Sin sábados, domingos ni feriados")
+        # Leyenda de colores
+        ley_y = 18
+        c.drawString(10, ley_y, "SEMANAS: ")
+        ley_x = 55
+        for si in range(5):
+            # Ver si hay días de esta semana
+            if si in semana_de_dia:
+                c.setFillColor(COLORES_SEMANA_HEADER[si])
+                c.rect(ley_x, ley_y - 1, 8, 7, fill=1, stroke=0)
+                c.setFillColor(colors.black)
+                c.drawString(ley_x + 10, ley_y, f"Sem {si+1}")
+                ley_x += 40
+        c.setFillColor(colors.black)
+        pie = (" | A=Asistió | T=Tardanza | F=Falta | J=Justificada | "
+               "Sin sáb/dom/feriados")
         if fer:
-            pie += f" | FERIADOS EXCLUIDOS: {', '.join(fer)}"
-        c.drawString(10, 8, pie)
+            pie += f" | FERIADOS: {', '.join(fer)}"
+        c.drawString(ley_x + 5, ley_y, pie)
     c.save()
     buffer.seek(0)
     return buffer
@@ -6460,7 +6519,8 @@ def tab_reportes(config):
 
     subtab = st.radio("Seleccionar:", [
         "📋 Asistencia Mensual", "📊 Reporte Integral",
-        "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones"
+        "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones",
+        "📁 Fichas Docentes"
     ], horizontal=True, key="rep_tipo")
 
     gs = _gs()
@@ -6862,6 +6922,93 @@ def tab_reportes(config):
                                    "application/pdf", key="dl_zg")
         else:
             st.info("Sin evaluaciones. Califica exámenes primero.")
+
+    elif subtab == "📁 Fichas Docentes":
+        st.markdown("### 📁 Fichas de Trabajo — Registro por Docente")
+        st.caption("Vista consolidada de todas las fichas subidas por los docentes")
+
+        fichas = _cargar_fichas_registro()
+        if not fichas:
+            st.info("📭 No hay fichas registradas aún. Los docentes pueden subirlas desde 'Registrar Ficha'.")
+            return
+
+        # ── Filtros ──
+        fc1, fc2, fc3, fc4 = st.columns(4)
+        with fc1:
+            grados_f = sorted(set(f.get('grado', '') for f in fichas if f.get('grado')))
+            filtro_grado = st.selectbox("🎓 Grado:", ["Todos"] + grados_f, key="fichas_f_grado")
+        with fc2:
+            meses_f = sorted(set(f.get('mes', '') for f in fichas if f.get('mes')))
+            filtro_mes = st.selectbox("📅 Mes:", ["Todos"] + meses_f, key="fichas_f_mes")
+        with fc3:
+            semanas_f = sorted(set(str(f.get('semana', '')) for f in fichas if f.get('semana')))
+            filtro_semana = st.selectbox("📆 Semana:", ["Todas"] + semanas_f, key="fichas_f_sem")
+        with fc4:
+            docentes_f = sorted(set(f.get('docente_nombre', f.get('docente', ''))
+                                    for f in fichas if f.get('docente')))
+            filtro_doc = st.selectbox("👨‍🏫 Docente:", ["Todos"] + docentes_f, key="fichas_f_doc")
+
+        # ── Aplicar filtros ──
+        fichas_filtradas = fichas.copy()
+        if filtro_grado != "Todos":
+            fichas_filtradas = [f for f in fichas_filtradas if f.get('grado') == filtro_grado]
+        if filtro_mes != "Todos":
+            fichas_filtradas = [f for f in fichas_filtradas if f.get('mes') == filtro_mes]
+        if filtro_semana != "Todas":
+            fichas_filtradas = [f for f in fichas_filtradas if str(f.get('semana')) == filtro_semana]
+        if filtro_doc != "Todos":
+            fichas_filtradas = [f for f in fichas_filtradas
+                                if f.get('docente_nombre') == filtro_doc or f.get('docente') == filtro_doc]
+
+        # ── Métricas ──
+        mc1, mc2, mc3, mc4 = st.columns(4)
+        with mc1:
+            st.metric("📄 Total fichas", len(fichas_filtradas))
+        with mc2:
+            docs_unicos = len(set(f.get('docente', '') for f in fichas_filtradas))
+            st.metric("👨‍🏫 Docentes", docs_unicos)
+        with mc3:
+            grados_unicos = len(set(f.get('grado', '') for f in fichas_filtradas))
+            st.metric("🎓 Grados", grados_unicos)
+        with mc4:
+            areas_unicas = len(set(f.get('area', '') for f in fichas_filtradas))
+            st.metric("📚 Áreas", areas_unicas)
+
+        st.markdown("---")
+
+        # ── Tabla de fichas ──
+        if fichas_filtradas:
+            for ficha in sorted(fichas_filtradas,
+                                key=lambda x: x.get('fecha_subida', ''), reverse=True):
+                doc_nombre = ficha.get('docente_nombre', ficha.get('docente', ''))
+                titulo_f = ficha.get('titulo', 'Sin título')
+                area_f = ficha.get('area', '')
+                grado_f = ficha.get('grado', '')
+                sem_f = ficha.get('semana', '')
+                mes_f = ficha.get('mes', '')
+                fecha_f = ficha.get('fecha_subida', '')
+                tipo_f = ficha.get('tipo', '')
+                archivo_f = ficha.get('archivo', '')
+
+                with st.expander(f"📄 **{titulo_f}** — {area_f} | {grado_f} | Sem {sem_f} | {mes_f}"):
+                    ec1, ec2 = st.columns([3, 1])
+                    with ec1:
+                        st.markdown(f"**Docente:** {doc_nombre}")
+                        st.markdown(f"**Área:** {area_f} | **Grado:** {grado_f} | "
+                                    f"**Semana:** {sem_f} | **Mes:** {mes_f}")
+                        st.caption(f"📅 Subido: {fecha_f} | Tipo: {tipo_f} | Archivo: {archivo_f}")
+                    with ec2:
+                        # Intentar ofrecer descarga si el archivo existe localmente
+                        ruta_ficha = Path("fichas") / archivo_f if archivo_f else None
+                        if ruta_ficha and ruta_ficha.exists():
+                            with open(ruta_ficha, 'rb') as ff:
+                                st.download_button("⬇️ Descargar", ff.read(),
+                                                   archivo_f, "application/pdf",
+                                                   key=f"dl_rep_{ficha.get('id', '')}")
+                        else:
+                            st.caption("📁 Solo en servidor")
+        else:
+            st.info("No hay fichas que coincidan con los filtros seleccionados.")
 
 
 # ================================================================
@@ -7845,6 +7992,65 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
 # ================================================================
 ARCHIVO_MATERIALES = "materiales_docente.json"
 ARCHIVO_EXAMENES_SEM = "examenes_semanales.json"
+ARCHIVO_FICHAS_REGISTRO = "fichas_registro.json"
+
+
+def _cargar_fichas_registro():
+    """Carga el registro de fichas subidas por docentes."""
+    # Intentar desde GS primero
+    gs = _gs()
+    if gs:
+        try:
+            ws = gs._get_hoja('config')
+            if ws:
+                data = ws.get_all_records()
+                for row in data:
+                    if str(row.get('clave', '')) == 'fichas_registro':
+                        contenido = str(row.get('valor', ''))
+                        if contenido and contenido.strip() not in ('', '[]'):
+                            return json.loads(contenido)
+        except Exception:
+            pass
+    # Fallback: archivo local
+    if Path(ARCHIVO_FICHAS_REGISTRO).exists():
+        try:
+            with open(ARCHIVO_FICHAS_REGISTRO, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
+def _guardar_ficha_registro(ficha):
+    """Guarda una ficha en el registro (local + GS)."""
+    fichas = _cargar_fichas_registro()
+    ficha['id'] = f"FICHA-{int(time.time())}"
+    ficha['fecha_subida'] = hora_peru().strftime('%Y-%m-%d %H:%M')
+    fichas.append(ficha)
+    # Guardar local
+    with open(ARCHIVO_FICHAS_REGISTRO, 'w', encoding='utf-8') as f:
+        json.dump(fichas, f, indent=2, ensure_ascii=False)
+    # Sync a GS
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja('config')
+            if ws:
+                data = ws.get_all_records()
+                fila = None
+                for i, row in enumerate(data):
+                    if str(row.get('clave', '')) == 'fichas_registro':
+                        fila = i + 2
+                        break
+                contenido = json.dumps(fichas, ensure_ascii=False)
+                if len(contenido) < 45000:
+                    if fila:
+                        ws.update_cell(fila, 2, contenido)
+                    else:
+                        ws.append_row(['fichas_registro', contenido])
+    except Exception:
+        pass
+    return ficha
 
 AREAS_POR_NIVEL = {
     "INICIAL": ["Comunicación", "Matemática", "Personal Social",
@@ -8635,9 +8841,9 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
 # ================================================================
 
 def tab_material_docente(config):
-    """REGISTRAR FICHA — genera PDF con encabezado oficial"""
+    """REGISTRAR FICHA — subir PDF o Word tal cual"""
     st.subheader("📄 Registrar Ficha")
-    st.info("💡 Sube tu ficha en Word (.docx). Se convertirá a PDF con el encabezado oficial del colegio.")
+    st.info("💡 Sube tu ficha de trabajo en PDF o Word. Se guardará tal cual sin modificar.")
 
     usuario = st.session_state.get('usuario_actual', '')
     info_doc = st.session_state.get('docente_info', {}) or {}
@@ -8648,97 +8854,67 @@ def tab_material_docente(config):
 
     tab1, tab2 = st.tabs(["📤 Cargar Ficha", "📥 Mis Fichas"])
 
-    # ── TAB 1: CARGAR Y CONVERTIR ──────────────────────────────────────────
+    # ── TAB 1: SUBIR FICHA ─────────────────────────────────────────────────
     with tab1:
-        st.markdown("### 📤 Subir Ficha en Word → PDF Oficial")
+        st.markdown("### 📤 Subir Ficha de Trabajo")
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            titulo_ficha = st.text_input("📝 Título:", placeholder="Ej: Lógica y Formas")
+            titulo_ficha = st.text_input("📝 Título:", placeholder="Ej: Lógica y Formas",
+                                          key="ficha_titulo")
         with col2:
             grado_ficha = _grados_para_selector("ficha")
         with col3:
             semana_ficha = st.number_input("📅 Semana N°:", 1, 52,
                                            int(hora_peru().strftime('%V')), key="ficha_semana")
 
-        col4, col5 = st.columns(2)
+        col4, col5, col6 = st.columns(3)
         with col4:
             area_ficha = st.text_input("📚 Área/Curso:", placeholder="Ej: Personal Social",
                                        key="ficha_area")
         with col5:
+            mes_ficha = st.selectbox("📅 Mes:", list(MESES_ESCOLARES.values()),
+                                      index=hora_peru().month - 1, key="ficha_mes")
+        with col6:
             docente_ficha = st.text_input("👤 Docente:", value=nombre_doc, key="ficha_docente")
 
-        archivo_ficha = st.file_uploader("📎 Subir ficha (.docx):", type=['docx'],
-                                         key="upload_ficha_word")
+        archivo_ficha = st.file_uploader("📎 Subir ficha (.pdf o .docx):",
+                                         type=['pdf', 'docx'],
+                                         key="upload_ficha_archivo")
 
         if archivo_ficha and titulo_ficha and grado_ficha and area_ficha:
-            if st.button("💾 PROCESAR Y GENERAR PDF OFICIAL", type="primary",
-                         use_container_width=True, key="btn_procesar_ficha"):
+            # Mostrar preview del archivo
+            ext = archivo_ficha.name.rsplit('.', 1)[-1].lower()
+            st.caption(f"📁 **{archivo_ficha.name}** ({archivo_ficha.size/1024:.1f} KB) — Tipo: .{ext}")
+
+            if st.button("💾 GUARDAR FICHA", type="primary",
+                         use_container_width=True, key="btn_guardar_ficha"):
                 try:
-                    if not HAS_DOCX:
-                        st.error("⚠️ Módulo python-docx no disponible.")
-                        st.stop()
-
-                    with st.spinner("📄 Generando PDF con encabezado oficial..."):
-                        # Leer el Word y extraer bloques (texto E imágenes)
-                        doc_orig = DocxDocument(io.BytesIO(archivo_ficha.getvalue()))
-                        bloques = []
-                        
-                        for para in doc_orig.paragraphs:
-                            txt = para.text.strip()
-                            
-                            # Extraer imágenes del párrafo
-                            for run in para.runs:
-                                if run._element.xml.find('pic:pic') != -1 or run._element.xml.find('w:pict') != -1:
-                                    try:
-                                        # Buscar imágenes en el documento
-                                        for rel in doc_orig.part.rels.values():
-                                            if "image" in rel.target_ref:
-                                                img_data = rel.target_part.blob
-                                                img_b64 = base64.b64encode(img_data).decode('utf-8')
-                                                bloques.append({'tipo': 'imagen', 'imagen_b64': img_b64, 'contenido': ''})
-                                                break
-                                    except Exception:
-                                        pass
-                            
-                            # Procesar texto
-                            if not txt:
-                                bloques.append({'tipo': 'vacio', 'contenido': ''})
-                                continue
-                            estilo = para.style.name if para.style else ''
-                            tiene_negrita = any(r.bold for r in para.runs if r.text.strip())
-                            if 'Heading 1' in estilo or 'Title' in estilo:
-                                bloques.append({'tipo': 'titulo', 'contenido': txt})
-                            elif 'Heading 2' in estilo or 'Heading 3' in estilo:
-                                bloques.append({'tipo': 'subtitulo', 'contenido': txt})
-                            elif tiene_negrita and len(txt) < 120:
-                                bloques.append({'tipo': 'negrita', 'contenido': txt})
-                            else:
-                                bloques.append({'tipo': 'texto', 'contenido': txt})
-
-                        # Generar PDF usando la función oficial
-                        pdf_bytes = _generar_pdf_desde_docx(
-                            bloques, config, docente_ficha,
-                            str(grado_ficha), area_ficha,
-                            semana_ficha, titulo_ficha.upper(), "FICHA"
-                        )
-
-                        # Guardar copia en disco
-                        nombre_arch = f"ficha_{usuario}_{grado_ficha}_{fecha_peru_str()}_{titulo_ficha[:25]}.pdf"
-                        nombre_arch = nombre_arch.replace(' ', '_').replace('/', '-').replace(':', '-')
-                        with open(fichas_dir / nombre_arch, 'wb') as f:
-                            f.write(pdf_bytes)
-
-                    st.success("✅ Ficha convertida con encabezado oficial")
+                    archivo_bytes = archivo_ficha.getvalue()
+                    nombre_arch = (f"ficha_{usuario}_{grado_ficha}_{fecha_peru_str()}_"
+                                   f"{titulo_ficha[:25]}.{ext}")
+                    nombre_arch = nombre_arch.replace(' ', '_').replace('/', '-').replace(':', '-')
+                    with open(fichas_dir / nombre_arch, 'wb') as f:
+                        f.write(archivo_bytes)
+                    # Registrar metadata
+                    _guardar_ficha_registro({
+                        'titulo': titulo_ficha, 'area': area_ficha,
+                        'grado': str(grado_ficha), 'semana': semana_ficha,
+                        'mes': mes_ficha, 'docente': usuario,
+                        'docente_nombre': docente_ficha,
+                        'archivo': nombre_arch, 'tipo': ext,
+                    })
+                    st.success(f"✅ Ficha guardada correctamente ({ext.upper()})")
                     st.balloons()
-                    st.download_button("📥 Descargar PDF Oficial", pdf_bytes,
-                                       nombre_arch, "application/pdf",
-                                       use_container_width=True, key="dl_ficha_pdf")
-
+                    mime = "application/pdf" if ext == 'pdf' else \
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    st.download_button(f"📥 Descargar {ext.upper()}", archivo_bytes,
+                                       nombre_arch, mime,
+                                       use_container_width=True, key="dl_ficha_guardada")
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
         else:
-            st.caption("⚠️ Completa todos los campos y sube el archivo .docx para continuar.")
+            st.caption("⚠️ Completa todos los campos y sube el archivo para continuar.")
     
     # ── TAB 2: MIS FICHAS ──────────────────────────────────────────────────
     with tab2:
