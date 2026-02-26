@@ -609,6 +609,18 @@ BIMESTRES = {
     "Bimestre 4": [10, 11, 12]
 }
 
+# Periodos para Registro Auxiliar (llenado de notas)
+PERIODOS_REGISTRO_AUX = (
+    ["I Bimestre", "II Bimestre", "III Bimestre", "IV Bimestre"]
+    + [f"Examen Semanal {i}" for i in range(1, 41)]
+    + ["Repaso 1", "Repaso 2", "Repaso 3", "Repaso 4",
+       "Repaso General", "Repaso Final"]
+    + ["Recuperación 1", "Recuperación 2", "Recuperación 3",
+       "Recuperación 4", "Recuperación Final"]
+    + ["Evaluación Parcial", "Evaluación Final",
+       "Práctica Calificada", "Control de Lectura"]
+)
+
 ARCHIVO_BD = "base_datos.xlsx"
 ARCHIVO_MATRICULA = "matricula.xlsx"
 ARCHIVO_DOCENTES = "docentes.xlsx"
@@ -3424,30 +3436,22 @@ def pantalla_login():
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # ═══ DOS ESCUDOS ═══
+        # ═══ DOS ESCUDOS (base64 para render confiable) ═══
         esc_izq = Path("escudo_upload.png").exists()
         esc_der = Path("escudo2_upload.png").exists()
         if esc_izq or esc_der:
-            if esc_izq and esc_der:
-                ce1, ce2, ce3 = st.columns([1, 1, 1])
-                with ce1:
-                    st.markdown('<div class="escudo-login" style="text-align:right">', unsafe_allow_html=True)
-                    st.image("escudo_upload.png", width=130)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                with ce2:
-                    st.markdown("<div style='text-align:center;padding-top:30px;'>"
-                                "<p style='font-size:2.2rem;margin:0;'>🎓</p>"
-                                "</div>", unsafe_allow_html=True)
-                with ce3:
-                    st.markdown('<div class="escudo-login" style="text-align:left">', unsafe_allow_html=True)
-                    st.image("escudo2_upload.png", width=130)
-                    st.markdown('</div>', unsafe_allow_html=True)
-            elif esc_izq:
-                c_img = st.columns([1, 1, 1])
-                with c_img[1]:
-                    st.markdown('<div class="escudo-login">', unsafe_allow_html=True)
-                    st.image("escudo_upload.png", width=160)
-                    st.markdown('</div>', unsafe_allow_html=True)
+            esc_html = '<div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:10px;">'
+            if esc_izq:
+                with open("escudo_upload.png", "rb") as ef:
+                    b64_izq = base64.b64encode(ef.read()).decode()
+                esc_html += f'<img src="data:image/png;base64,{b64_izq}" style="width:120px;height:auto;border-radius:50%;filter:drop-shadow(0 0 12px rgba(26,86,219,0.5));" />'
+            esc_html += '<span style="font-size:2.2rem;">🎓</span>'
+            if esc_der:
+                with open("escudo2_upload.png", "rb") as ef:
+                    b64_der = base64.b64encode(ef.read()).decode()
+                esc_html += f'<img src="data:image/png;base64,{b64_der}" style="width:120px;height:auto;border-radius:50%;filter:drop-shadow(0 0 12px rgba(26,86,219,0.5));" />'
+            esc_html += '</div>'
+            st.markdown(esc_html, unsafe_allow_html=True)
         
         st.markdown("""
         <div class='login-header'>
@@ -4172,7 +4176,7 @@ def _seccion_registros_pdf(config):
 
     st.markdown("---")
     st.markdown("**📝 Registro Auxiliar (Cursos × Competencias × Desempeños)**")
-    bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="bim_sel")
+    bim = st.selectbox("📅 Periodo:", PERIODOS_REGISTRO_AUX, key="bim_sel")
     st.markdown("**Cursos (hasta 3 por hoja):**")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -5903,7 +5907,7 @@ def _tab_registro_auxiliar_docente(grado, config):
     tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
                         horizontal=True, key="tipo_reg_aux")
     sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
-    bim = st.selectbox("Bimestre:", list(BIMESTRES.keys()), key="dbim")
+    bim = st.selectbox("📅 Periodo:", PERIODOS_REGISTRO_AUX, key="dbim")
     
     # Determinar áreas según nivel del grado seleccionado
     grado_str = str(grado_sel)
@@ -9773,87 +9777,14 @@ def tab_examenes_semanales(config):
                                     placeholder="Ej: Matemática, Comunicación, etc.",
                                     key="area_exam")
 
-        # ── Zona de pegado de imágenes ──────────────────────────────────────
-        with st.expander("📋 Pegar imagen desde captura de pantalla (Ctrl+V)", expanded=False):
-            st.caption("💡 **Instrucciones:** Haz captura de pantalla (Win+Shift+S), "
-                       "luego haz clic en la zona gris y presiona **Ctrl+V**. "
-                       "La imagen aparecerá abajo y podrás descargarla para subirla en la pregunta.")
-            import streamlit.components.v1 as components
-            components.html("""
-            <style>
-                #paste-zone {
-                    border: 2px dashed #94a3b8; border-radius: 12px; padding: 25px;
-                    text-align: center; cursor: pointer; background: #f8fafc;
-                    transition: all 0.3s; min-height: 60px; font-family: sans-serif;
-                }
-                #paste-zone:hover, #paste-zone:focus { 
-                    border-color: #3b82f6; background: #eff6ff; 
-                }
-                #paste-zone.has-image { border-color: #22c55e; background: #f0fdf4; }
-                #preview-img { max-width: 100%; max-height: 300px; margin: 10px 0; border-radius: 8px; display: none; }
-                #download-link { 
-                    display: none; padding: 10px 20px; background: #2563eb; color: white; 
-                    border-radius: 8px; text-decoration: none; font-weight: bold; margin: 10px 0;
-                }
-                #download-link:hover { background: #1d4ed8; }
-                .paste-info { color: #64748b; font-size: 13px; margin-top: 5px; }
-            </style>
-            <div id="paste-zone" tabindex="0" contenteditable="false">
-                📋 <strong>Haz clic aquí</strong> y presiona <strong>Ctrl+V</strong> para pegar tu captura de pantalla
-            </div>
-            <img id="preview-img" />
-            <br>
-            <a id="download-link" download="captura_examen.png">⬇️ DESCARGAR IMAGEN para subirla en la pregunta</a>
-            <p class="paste-info" id="status-text"></p>
-            <script>
-            const zone = document.getElementById('paste-zone');
-            const preview = document.getElementById('preview-img');
-            const link = document.getElementById('download-link');
-            const status = document.getElementById('status-text');
-            
-            zone.addEventListener('click', () => zone.focus());
-            
-            zone.addEventListener('paste', function(e) {
-                const items = e.clipboardData.items;
-                for (let item of items) {
-                    if (item.type.startsWith('image/')) {
-                        const blob = item.getAsFile();
-                        const url = URL.createObjectURL(blob);
-                        preview.src = url;
-                        preview.style.display = 'block';
-                        link.href = url;
-                        link.style.display = 'inline-block';
-                        zone.classList.add('has-image');
-                        zone.innerHTML = '✅ <strong>¡Imagen pegada!</strong> Descárgala abajo y súbela en la pregunta correspondiente';
-                        status.textContent = '💡 Haz clic en DESCARGAR, luego arrastra el archivo al campo de imagen de la pregunta';
-                        e.preventDefault();
-                        return;
-                    }
-                }
-                status.textContent = '⚠️ No se detectó imagen en el portapapeles. Haz una captura primero (Win+Shift+S)';
-            });
-            
-            // Also listen on document for convenience
-            document.addEventListener('paste', function(e) {
-                if (document.activeElement !== zone) {
-                    const items = e.clipboardData.items;
-                    for (let item of items) {
-                        if (item.type.startsWith('image/')) {
-                            zone.focus();
-                            zone.dispatchEvent(new ClipboardEvent('paste', {clipboardData: e.clipboardData}));
-                            e.preventDefault();
-                            return;
-                        }
-                    }
-                }
-            });
-            </script>
-            """, height=250)
+        # ── Tip para capturas de pantalla ────────────────────────────────────
+        st.info("💡 **Capturas de pantalla:** Haz captura (Win+Shift+S), "
+                "guárdala como imagen (.png), luego súbela en el campo 🖼️ de cada pregunta.")
         
         st.markdown("---")
         st.markdown("### 📝 Preguntas del Examen")
         st.caption("Las preguntas aparecerán en **negrita** en el PDF. "
-                   "Sube imagen por archivo o descárgala desde la zona de pegado de arriba.")
+                   "Sube imagen por archivo desde tu computadora.")
         
         # Preguntas SIN form (para que file_uploader funcione mejor)
         preguntas = []
