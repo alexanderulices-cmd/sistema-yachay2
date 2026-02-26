@@ -2634,8 +2634,10 @@ class GeneradorCarnet:
             self.draw.text((xt, yc), nm, font=fn, fill="black")
             yc += 30
         yc += 8
-        self.draw.text((xt, yc), "DNI:", font=fl, fill="black")
-        self.draw.text((xt + 60, yc), dni, font=fd, fill="black")
+        # DNI prominente
+        self.draw.text((xt, yc), "DNI:", font=fl, fill=self.AZUL)
+        fd_dni = RecursoManager.obtener_fuente("", 17, True)
+        self.draw.text((xt + 60, yc), dni, font=fd_dni, fill="black")
         yc += 28
         if self.es_docente:
             cg = self.datos.get('Cargo', 'DOCENTE').upper()
@@ -5968,15 +5970,20 @@ def _tab_registro_auxiliar_docente(grado, config):
 
 
 def _tab_registro_pdf_docente(grado, config):
-    """Tab de registro PDF para docentes"""
-    st.subheader("📋 Registro de Asistencia PDF")
+    """Tab de registro PDF para docentes — Asistencia + Notas Bimestrales"""
+    st.subheader("📋 Registros PDF")
     
-    # Sec/Preu: seleccionar grado
+    # Resolver grado
     info = st.session_state.get('docente_info', {}) or {}
     nivel_d = str(info.get('nivel', '')).upper()
     es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
               or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
               or 'GRUPO' in str(grado) or 'Sec' in str(grado))
+
+    tipo_reg = st.radio("Tipo de registro:", [
+        "📋 Registro de Asistencia", "📝 Registro Bimestral de Notas"
+    ], horizontal=True, key="tipo_reg_pdf")
+
     if es_sec:
         grados_disp = _grados_del_docente()
         grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="reg_pdf_grado")
@@ -5984,26 +5991,78 @@ def _tab_registro_pdf_docente(grado, config):
         grado_sel = grado
     
     sec2 = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds2")
-    meses_opts = list(MESES_ESCOLARES.items())
-    meses_sel = st.multiselect(
-        "Meses:",
-        [f"{v} ({k})" for k, v in meses_opts],
-        default=[f"{v} ({k})" for k, v in meses_opts[:1]],
-        key="dmsel")
-    meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
-    dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
-    st.info(f"📊 {len(dg2)} estudiantes — {grado_sel}")
-    if st.button("📥 Descargar Registro Asistencia PDF", type="primary",
-                 use_container_width=True, key="ddas"):
-        if not dg2.empty and meses_nums:
-            lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
-            sl = sec2 if sec2 != "Todas" else "Todas"
-            pdf = generar_registro_asistencia_pdf(
-                lg, sl, config['anio'], dg2, meses_nums,
-                docente=_nombre_completo_docente())
-            st.download_button("⬇️ PDF", pdf,
-                               f"RegAsist_{lg}.pdf",
-                               "application/pdf", key="ddas2")
+
+    if tipo_reg == "📋 Registro de Asistencia":
+        meses_opts = list(MESES_ESCOLARES.items())
+        meses_sel = st.multiselect(
+            "Meses:",
+            [f"{v} ({k})" for k, v in meses_opts],
+            default=[f"{v} ({k})" for k, v in meses_opts[:1]],
+            key="dmsel")
+        meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
+        dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
+        st.info(f"📊 {len(dg2)} estudiantes — {grado_sel}")
+        if st.button("📥 Descargar Registro Asistencia PDF", type="primary",
+                     use_container_width=True, key="ddas"):
+            if not dg2.empty and meses_nums:
+                lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
+                sl = sec2 if sec2 != "Todas" else "Todas"
+                pdf = generar_registro_asistencia_pdf(
+                    lg, sl, config['anio'], dg2, meses_nums,
+                    docente=_nombre_completo_docente())
+                st.download_button("⬇️ PDF", pdf,
+                                   f"RegAsist_{lg}.pdf",
+                                   "application/pdf", key="ddas2")
+
+    else:
+        # ── REGISTRO BIMESTRAL DE NOTAS ─────────────────────────────────
+        st.markdown("---")
+        st.caption("📝 Registro para llenar notas consolidadas por competencia del Currículo Nacional")
+
+        bimestre = st.selectbox("📅 Bimestre:", [
+            "I Bimestre", "II Bimestre", "III Bimestre", "IV Bimestre"
+        ], key="bim_sel")
+
+        # Determinar nivel del grado seleccionado
+        nivel_grado = "PRIMARIA"
+        for niv, grados_niv in NIVELES_GRADOS.items():
+            if grado_sel in grados_niv:
+                nivel_grado = niv
+                break
+
+        # Áreas del Currículo Nacional para este nivel
+        areas_cn = AREAS_MINEDU.get(nivel_grado, AREAS_MINEDU.get('PRIMARIA', []))
+        areas_sel = st.multiselect(
+            "📚 Áreas (Currículo Nacional):", areas_cn,
+            default=areas_cn, key="areas_bim_sel")
+
+        if areas_sel:
+            # Preview de competencias
+            with st.expander("👁️ Ver competencias por área", expanded=False):
+                for area in areas_sel:
+                    comps = COMPETENCIAS_CN.get(area, ['Competencia general'])
+                    st.markdown(f"**{area}:** {', '.join(comps)}")
+
+            dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
+            st.info(f"📊 {len(dg2)} estudiantes — {grado_sel} | "
+                    f"{len(areas_sel)} áreas | {bimestre}")
+
+            if st.button("📥 Descargar Registro Bimestral PDF", type="primary",
+                         use_container_width=True, key="ddbs"):
+                if not dg2.empty:
+                    lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
+                    sl = sec2 if sec2 != "Todas" else "Todas"
+                    pdf = generar_registro_bimestral_pdf(
+                        lg, sl, config['anio'], dg2,
+                        bimestre, areas_sel, nivel_grado,
+                        docente=_nombre_completo_docente())
+                    st.download_button("⬇️ PDF Bimestral", pdf,
+                                       f"RegNotas_{bimestre.replace(' ','_')}_{lg}.pdf",
+                                       "application/pdf", key="ddbs2")
+                else:
+                    st.warning("No hay estudiantes para este grado/sección.")
+        else:
+            st.warning("Seleccione al menos un área.")
 
 
 # ================================================================
@@ -7021,7 +7080,7 @@ AREAS_MINEDU = {
     'INICIAL': [
         'Personal Social', 'Psicomotriz', 'Comunicación',
         'Castellano como segunda lengua', 'Matemática',
-        'Ciencia y Tecnología'
+        'Ciencia y Tecnología', 'Educación Física', 'Inglés'
     ],
     'PRIMARIA': [
         'Personal Social', 'Educación Física', 'Comunicación',
@@ -7054,6 +7113,202 @@ PERIODOS_EVALUACION = [
     'Reforzamiento Pre-U',
 ]
 BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
+
+# ================================================================
+# COMPETENCIAS DEL CURRÍCULO NACIONAL DEL PERÚ (MINEDU)
+# ================================================================
+COMPETENCIAS_CN = {
+    'Personal Social': [
+        'Construye su identidad',
+        'Convive y participa democráticamente'
+    ],
+    'Psicomotriz': [
+        'Se desenvuelve de manera autónoma a través de su motricidad'
+    ],
+    'Comunicación': [
+        'Se comunica oralmente en su lengua materna',
+        'Lee diversos tipos de textos escritos',
+        'Escribe diversos tipos de textos'
+    ],
+    'Matemática': [
+        'Resuelve problemas de cantidad',
+        'Resuelve problemas de regularidad, equivalencia y cambio',
+        'Resuelve problemas de forma, movimiento y localización',
+        'Resuelve problemas de gestión de datos e incertidumbre'
+    ],
+    'Ciencia y Tecnología': [
+        'Indaga mediante métodos científicos',
+        'Explica el mundo físico basándose en conocimientos científicos',
+        'Diseña y construye soluciones tecnológicas'
+    ],
+    'Educación Física': [
+        'Se desenvuelve de manera autónoma a través de su motricidad',
+        'Asume una vida saludable',
+        'Interactúa a través de sus habilidades sociomotrices'
+    ],
+    'Inglés': [
+        'Se comunica oralmente en inglés como lengua extranjera',
+        'Lee diversos tipos de textos en inglés',
+        'Escribe diversos tipos de textos en inglés'
+    ],
+    'Arte y Cultura': [
+        'Aprecia de manera crítica manifestaciones artístico-culturales',
+        'Crea proyectos desde los lenguajes artísticos'
+    ],
+    'Educación Religiosa': [
+        'Construye su identidad como persona humana, amada por Dios',
+        'Asume la experiencia del encuentro personal y comunitario con Dios'
+    ],
+    'Castellano como segunda lengua': [
+        'Se comunica oralmente en castellano como segunda lengua',
+        'Lee diversos tipos de textos en castellano como segunda lengua',
+        'Escribe diversos tipos de textos en castellano como segunda lengua'
+    ],
+    'Ciencias Sociales': [
+        'Construye interpretaciones históricas',
+        'Gestiona responsablemente el espacio y el ambiente',
+        'Gestiona responsablemente los recursos económicos'
+    ],
+    'Desarrollo Personal, Ciudadanía y Cívica': [
+        'Construye su identidad',
+        'Convive y participa democráticamente'
+    ],
+    'Educación para el Trabajo': [
+        'Gestiona proyectos de emprendimiento económico o social'
+    ],
+}
+
+COLORES_BIMESTRE = {
+    'I Bimestre': colors.Color(0.88, 0.95, 1.0),      # celeste pastel
+    'II Bimestre': colors.Color(0.93, 1.0, 0.88),     # verde menta
+    'III Bimestre': colors.Color(1.0, 0.95, 0.85),    # durazno
+    'IV Bimestre': colors.Color(0.95, 0.90, 1.0),     # lavanda
+}
+
+COLORES_AREA_PASTEL = [
+    colors.Color(0.90, 0.95, 1.0),    # celeste
+    colors.Color(0.93, 1.0, 0.90),    # verde
+    colors.Color(1.0, 0.95, 0.88),    # durazno
+    colors.Color(0.95, 0.90, 1.0),    # lavanda
+    colors.Color(1.0, 0.92, 0.92),    # rosa
+    colors.Color(0.95, 0.98, 0.88),   # lima
+    colors.Color(0.92, 0.92, 1.0),    # azul claro
+    colors.Color(1.0, 0.93, 0.88),    # salmon
+    colors.Color(0.90, 1.0, 0.95),    # menta
+    colors.Color(0.98, 0.92, 1.0),    # lila
+    colors.Color(0.95, 0.95, 0.88),   # crema
+]
+
+
+def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
+                                    bimestre, areas_sel, nivel="PRIMARIA",
+                                    docente=""):
+    """Genera PDF de registro bimestral con competencias del Currículo Nacional."""
+    buffer = io.BytesIO()
+    c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
+    w, h = landscape(A4)
+
+    if not estudiantes_df.empty:
+        est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
+    else:
+        est = pd.DataFrame()
+
+    ne = len(est) if not est.empty else 25
+
+    for ai, area in enumerate(areas_sel):
+        if ai > 0:
+            c_pdf.showPage()
+
+        color_area = COLORES_AREA_PASTEL[ai % len(COLORES_AREA_PASTEL)]
+        comps = COMPETENCIAS_CN.get(area, [f'Competencia {area}'])
+
+        # Marca de agua
+        if Path("escudo_upload.png").exists():
+            try:
+                c_pdf.saveState()
+                c_pdf.setFillAlpha(0.25)
+                c_pdf.drawImage("escudo_upload.png", w/2-80, h/2-80,
+                                160, 160, mask='auto')
+                c_pdf.restoreState()
+            except Exception:
+                pass
+
+        # Encabezado
+        c_pdf.setFont("Helvetica-Bold", 11)
+        c_pdf.drawCentredString(w/2, h-20,
+                                "I.E.P. ALTERNATIVO YACHAY — REGISTRO DE NOTAS BIMESTRAL")
+        c_pdf.setFont("Helvetica", 8)
+        info_line = (f"Grado: {grado} | Sección: {seccion} | {bimestre} | "
+                     f"Año: {anio} | Área: {area}")
+        if docente:
+            info_line += f" | Docente: {docente}"
+        c_pdf.drawCentredString(w/2, h-33, info_line)
+
+        # Construir tabla
+        # Header: N° | APELLIDOS Y NOMBRES | Comp1 | Comp2 | ... | PROM | OBS
+        header = ["N°", "APELLIDOS Y NOMBRES"]
+        for ci, comp in enumerate(comps):
+            # Abreviar competencia para header
+            abrev = comp[:35] + "..." if len(comp) > 35 else comp
+            header.append(abrev)
+        header.extend(["PROM.", "OBS."])
+
+        data = [header]
+        for idx in range(ne):
+            nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
+            if len(nm) > 30:
+                nm = nm[:30] + "."
+            fila = [str(idx+1), nm] + [""] * len(comps) + ["", ""]
+            data.append(fila)
+
+        # Anchos de columna
+        nc = len(comps)
+        comp_w = max(40, min(80, (w - 20 - 18 - 140 - 35 - 40) / max(nc, 1)))
+        cw = [18, 140] + [comp_w] * nc + [35, 40]
+
+        t = Table(data, colWidths=cw, repeatRows=1)
+
+        estilos = [
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 5),
+            ('FONTSIZE', (0, 1), (-1, -1), 6),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            # Header N° y Nombres
+            ('BACKGROUND', (0, 0), (1, 0), colors.Color(0, 0.3, 0.15)),
+            ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
+            # Header PROM y OBS
+            ('BACKGROUND', (-2, 0), (-1, 0), colors.Color(0.5, 0, 0.15)),
+            ('TEXTCOLOR', (-2, 0), (-1, 0), colors.white),
+            # Datos: color pastel del área
+            ('BACKGROUND', (2, 1), (-3, -1), color_area),
+        ]
+
+        # Header competencias con color del área (más fuerte)
+        color_header = colors.Color(
+            min(color_area.red - 0.15, 0.85),
+            min(color_area.green - 0.15, 0.85),
+            min(color_area.blue - 0.15, 0.85))
+        for ci in range(nc):
+            estilos.append(('BACKGROUND', (ci+2, 0), (ci+2, 0), color_header))
+            estilos.append(('TEXTCOLOR', (ci+2, 0), (ci+2, 0), colors.black))
+
+        t.setStyle(TableStyle(estilos))
+        tw, th2 = t.wrap(w - 20, h - 55)
+        t.drawOn(c_pdf, 10, h - 45 - th2)
+
+        # Pie
+        c_pdf.setFont("Helvetica", 5)
+        comps_texto = " | ".join([f"C{i+1}: {c[:50]}" for i, c in enumerate(comps)])
+        c_pdf.drawString(10, 10, f"COMPETENCIAS: {comps_texto}")
+        c_pdf.drawRightString(w-10, 10,
+                              f"Currículo Nacional MINEDU — {bimestre} {anio}")
+
+    c_pdf.save()
+    buffer.seek(0)
+    return buffer
 
 # ================================================================
 # TAB: REGISTRAR NOTAS (Manual — Para todos los docentes)
@@ -8057,11 +8312,18 @@ def _guardar_ficha_registro(ficha):
 AREAS_POR_NIVEL = {
     "INICIAL": ["Comunicación", "Matemática", "Personal Social",
                 "Ciencia y Tecnología", "Psicomotriz",
-                "Castellano como segunda lengua", "Tutoría"],
+                "Castellano como segunda lengua", "Educación Física",
+                "Inglés", "Tutoría"],
     "PRIMARIA": ["Comunicación", "Matemática", "Personal Social",
                  "Ciencia y Tecnología", "Educación Religiosa",
                  "Arte y Cultura", "Educación Física", "Inglés",
-                 "Castellano como segunda lengua", "Tutoría"],
+                 "Castellano como segunda lengua", "Tutoría",
+                 "Gramática", "Razonamiento Verbal", "Redacción",
+                 "Expresión Oral", "Aritmética", "Geometría",
+                 "Razonamiento Matemático", "Álgebra", "Física",
+                 "Química", "Biología", "Lenguaje",
+                 "Competencia Lingüística", "Historia", "Geografía",
+                 "Trigonometría"],
     "SECUNDARIA": ["Comunicación", "Matemática", "Ciencia y Tecnología",
                     "Ciencias Sociales", "Desarrollo Personal, Ciudadanía y Cívica",
                     "Educación para el Trabajo", "Educación Religiosa",
@@ -8072,7 +8334,8 @@ AREAS_POR_NIVEL = {
                           "Razonamiento Verbal", "Historia del Perú",
                           "Historia Universal", "Geografía", "Economía",
                           "Filosofía y Lógica", "Psicología", "Educación Cívica",
-                          "Biología", "Química", "Física", "Anatomía"],
+                          "Biología", "Química", "Física", "Anatomía",
+                          "Educación Física", "Inglés"],
 }
 
 TIPOS_EVALUACION = [
