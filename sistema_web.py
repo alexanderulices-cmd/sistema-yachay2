@@ -609,18 +609,6 @@ BIMESTRES = {
     "Bimestre 4": [10, 11, 12]
 }
 
-# Periodos para Registro Auxiliar (llenado de notas)
-PERIODOS_REGISTRO_AUX = (
-    ["I Bimestre", "II Bimestre", "III Bimestre", "IV Bimestre"]
-    + [f"Examen Semanal {i}" for i in range(1, 41)]
-    + ["Repaso 1", "Repaso 2", "Repaso 3", "Repaso 4",
-       "Repaso General", "Repaso Final"]
-    + ["Recuperación 1", "Recuperación 2", "Recuperación 3",
-       "Recuperación 4", "Recuperación Final"]
-    + ["Evaluación Parcial", "Evaluación Final",
-       "Práctica Calificada", "Control de Lectura"]
-)
-
 ARCHIVO_BD = "base_datos.xlsx"
 ARCHIVO_MATRICULA = "matricula.xlsx"
 ARCHIVO_DOCENTES = "docentes.xlsx"
@@ -4176,7 +4164,7 @@ def _seccion_registros_pdf(config):
 
     st.markdown("---")
     st.markdown("**📝 Registro Auxiliar (Cursos × Competencias × Desempeños)**")
-    bim = st.selectbox("📅 Periodo:", PERIODOS_REGISTRO_AUX, key="bim_sel")
+    bim = st.selectbox("📅 Periodo:", list(BIMESTRES.keys()), key="bim_sel")
     st.markdown("**Cursos (hasta 3 por hoja):**")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -5851,7 +5839,8 @@ def vista_docente(config):
         # SECUNDARIA/PREUNIVERSITARIO: Sin asistencia, acceso a todos los grados
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro de Asistencia", "📄 Registrar Ficha",
+            "📋 Registro de Asistencia", "📝 Registro Bimestral",
+            "📄 Registrar Ficha",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -5861,16 +5850,19 @@ def vista_docente(config):
         with tabs[2]:
             _tab_registro_pdf_docente(grado, config)
         with tabs[3]:
-            tab_material_docente(config)
+            _tab_registro_bimestral_docente(grado, config)
         with tabs[4]:
-            tab_examenes_semanales(config)
+            tab_material_docente(config)
         with tabs[5]:
+            tab_examenes_semanales(config)
+        with tabs[6]:
             tab_calificacion_yachay(config)
     else:
         # INICIAL/PRIMARIA: Sin asistencia (solo directivo/auxiliar la manejan)
         tabs = st.tabs([
             "📝 Registrar Notas", "📝 Registro Auxiliar",
-            "📋 Registro de Asistencia", "📄 Registrar Ficha",
+            "📋 Registro de Asistencia", "📝 Registro Bimestral",
+            "📄 Registrar Ficha",
             "📝 Exámenes", "📸 Calificación YACHAY"
         ])
         with tabs[0]:
@@ -5880,10 +5872,12 @@ def vista_docente(config):
         with tabs[2]:
             _tab_registro_pdf_docente(grado, config)
         with tabs[3]:
-            tab_material_docente(config)
+            _tab_registro_bimestral_docente(grado, config)
         with tabs[4]:
-            tab_examenes_semanales(config)
+            tab_material_docente(config)
         with tabs[5]:
+            tab_examenes_semanales(config)
+        with tabs[6]:
             tab_calificacion_yachay(config)
 
 
@@ -5907,7 +5901,7 @@ def _tab_registro_auxiliar_docente(grado, config):
     tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
                         horizontal=True, key="tipo_reg_aux")
     sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
-    bim = st.selectbox("📅 Periodo:", PERIODOS_REGISTRO_AUX, key="dbim")
+    bim = st.selectbox("📅 Periodo:", list(BIMESTRES.keys()), key="dbim")
     
     # Determinar áreas según nivel del grado seleccionado
     grado_str = str(grado_sel)
@@ -5974,8 +5968,8 @@ def _tab_registro_auxiliar_docente(grado, config):
 
 
 def _tab_registro_pdf_docente(grado, config):
-    """Tab de registro PDF para docentes — Asistencia + Notas Bimestrales"""
-    st.subheader("📋 Registros PDF")
+    """Tab de registro PDF para docentes — SOLO Asistencia"""
+    st.subheader("📋 Registro de Asistencia PDF")
     
     # Resolver grado
     info = st.session_state.get('docente_info', {}) or {}
@@ -5984,10 +5978,6 @@ def _tab_registro_pdf_docente(grado, config):
               or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
               or 'GRUPO' in str(grado) or 'Sec' in str(grado))
 
-    tipo_reg = st.radio("Tipo de registro:", [
-        "📋 Registro de Asistencia", "📝 Registro Bimestral de Notas"
-    ], horizontal=True, key="tipo_reg_pdf")
-
     if es_sec:
         grados_disp = _grados_del_docente()
         grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="reg_pdf_grado")
@@ -5995,78 +5985,90 @@ def _tab_registro_pdf_docente(grado, config):
         grado_sel = grado
     
     sec2 = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds2")
+    meses_opts = list(MESES_ESCOLARES.items())
+    meses_sel = st.multiselect(
+        "Meses:",
+        [f"{v} ({k})" for k, v in meses_opts],
+        default=[f"{v} ({k})" for k, v in meses_opts[:1]],
+        key="dmsel")
+    meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
+    dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
+    st.info(f"📊 {len(dg2)} estudiantes — {grado_sel}")
+    if st.button("📥 Descargar Registro Asistencia PDF", type="primary",
+                 use_container_width=True, key="ddas"):
+        if not dg2.empty and meses_nums:
+            lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
+            sl = sec2 if sec2 != "Todas" else "Todas"
+            pdf = generar_registro_asistencia_pdf(
+                lg, sl, config['anio'], dg2, meses_nums,
+                docente=_nombre_completo_docente())
+            st.download_button("⬇️ PDF", pdf,
+                               f"RegAsist_{lg}.pdf",
+                               "application/pdf", key="ddas2")
 
-    if tipo_reg == "📋 Registro de Asistencia":
-        meses_opts = list(MESES_ESCOLARES.items())
-        meses_sel = st.multiselect(
-            "Meses:",
-            [f"{v} ({k})" for k, v in meses_opts],
-            default=[f"{v} ({k})" for k, v in meses_opts[:1]],
-            key="dmsel")
-        meses_nums = [int(m.split('(')[1].replace(')', '')) for m in meses_sel]
+
+def _tab_registro_bimestral_docente(grado, config):
+    """Tab SEPARADA de registro bimestral de notas"""
+    st.subheader("📝 Registro Bimestral de Notas")
+    st.caption("Registro para llenar notas consolidadas por competencia del Currículo Nacional")
+
+    info = st.session_state.get('docente_info', {}) or {}
+    nivel_d = str(info.get('nivel', '')).upper()
+    es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
+              or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
+              or 'GRUPO' in str(grado) or 'Sec' in str(grado))
+
+    if es_sec:
+        grados_disp = _grados_del_docente()
+        grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="rbim_grado")
+    else:
+        grado_sel = grado
+
+    sec2 = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="rbim_sec")
+
+    bimestre = st.selectbox("📅 Bimestre:", [
+        "I Bimestre", "II Bimestre", "III Bimestre", "IV Bimestre"
+    ], key="rbim_bim")
+
+    # Determinar nivel del grado seleccionado
+    nivel_grado = "PRIMARIA"
+    for niv, grados_niv in NIVELES_GRADOS.items():
+        if grado_sel in grados_niv:
+            nivel_grado = niv
+            break
+
+    # Áreas del Currículo Nacional para este nivel
+    areas_cn = AREAS_MINEDU.get(nivel_grado, AREAS_MINEDU.get('PRIMARIA', []))
+    areas_sel = st.multiselect(
+        "📚 Áreas (Currículo Nacional):", areas_cn,
+        default=areas_cn, key="rbim_areas")
+
+    if areas_sel:
+        with st.expander("👁️ Ver competencias por área", expanded=False):
+            for area in areas_sel:
+                comps = COMPETENCIAS_CN.get(area, ['Competencia general'])
+                st.markdown(f"**{area}:** {', '.join(comps)}")
+
         dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
-        st.info(f"📊 {len(dg2)} estudiantes — {grado_sel}")
-        if st.button("📥 Descargar Registro Asistencia PDF", type="primary",
-                     use_container_width=True, key="ddas"):
-            if not dg2.empty and meses_nums:
+        st.info(f"📊 {len(dg2)} estudiantes — {grado_sel} | "
+                f"{len(areas_sel)} áreas | {bimestre}")
+
+        if st.button("📥 Descargar Registro Bimestral PDF", type="primary",
+                     use_container_width=True, key="rbim_dl"):
+            if not dg2.empty:
                 lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
                 sl = sec2 if sec2 != "Todas" else "Todas"
-                pdf = generar_registro_asistencia_pdf(
-                    lg, sl, config['anio'], dg2, meses_nums,
+                pdf = generar_registro_bimestral_pdf(
+                    lg, sl, config['anio'], dg2,
+                    bimestre, areas_sel, nivel_grado,
                     docente=_nombre_completo_docente())
-                st.download_button("⬇️ PDF", pdf,
-                                   f"RegAsist_{lg}.pdf",
-                                   "application/pdf", key="ddas2")
-
+                st.download_button("⬇️ PDF Bimestral", pdf,
+                                   f"RegNotas_{bimestre.replace(' ','_')}_{lg}.pdf",
+                                   "application/pdf", key="rbim_dl2")
+            else:
+                st.warning("No hay estudiantes para este grado/sección.")
     else:
-        # ── REGISTRO BIMESTRAL DE NOTAS ─────────────────────────────────
-        st.markdown("---")
-        st.caption("📝 Registro para llenar notas consolidadas por competencia del Currículo Nacional")
-
-        bimestre = st.selectbox("📅 Bimestre:", [
-            "I Bimestre", "II Bimestre", "III Bimestre", "IV Bimestre"
-        ], key="bim_sel")
-
-        # Determinar nivel del grado seleccionado
-        nivel_grado = "PRIMARIA"
-        for niv, grados_niv in NIVELES_GRADOS.items():
-            if grado_sel in grados_niv:
-                nivel_grado = niv
-                break
-
-        # Áreas del Currículo Nacional para este nivel
-        areas_cn = AREAS_MINEDU.get(nivel_grado, AREAS_MINEDU.get('PRIMARIA', []))
-        areas_sel = st.multiselect(
-            "📚 Áreas (Currículo Nacional):", areas_cn,
-            default=areas_cn, key="areas_bim_sel")
-
-        if areas_sel:
-            # Preview de competencias
-            with st.expander("👁️ Ver competencias por área", expanded=False):
-                for area in areas_sel:
-                    comps = COMPETENCIAS_CN.get(area, ['Competencia general'])
-                    st.markdown(f"**{area}:** {', '.join(comps)}")
-
-            dg2 = BaseDatos.obtener_estudiantes_grado(grado_sel, sec2)
-            st.info(f"📊 {len(dg2)} estudiantes — {grado_sel} | "
-                    f"{len(areas_sel)} áreas | {bimestre}")
-
-            if st.button("📥 Descargar Registro Bimestral PDF", type="primary",
-                         use_container_width=True, key="ddbs"):
-                if not dg2.empty:
-                    lg = grado_sel if grado_sel not in ("ALL_SECUNDARIA", "ALL_SEC_PREU") else "Secundaria"
-                    sl = sec2 if sec2 != "Todas" else "Todas"
-                    pdf = generar_registro_bimestral_pdf(
-                        lg, sl, config['anio'], dg2,
-                        bimestre, areas_sel, nivel_grado,
-                        docente=_nombre_completo_docente())
-                    st.download_button("⬇️ PDF Bimestral", pdf,
-                                       f"RegNotas_{bimestre.replace(' ','_')}_{lg}.pdf",
-                                       "application/pdf", key="ddbs2")
-                else:
-                    st.warning("No hay estudiantes para este grado/sección.")
-        else:
-            st.warning("Seleccione al menos un área.")
+        st.warning("Seleccione al menos un área.")
 
 
 # ================================================================
@@ -7182,32 +7184,11 @@ COMPETENCIAS_CN = {
     ],
 }
 
-COLORES_BIMESTRE = {
-    'I Bimestre': colors.Color(0.88, 0.95, 1.0),      # celeste pastel
-    'II Bimestre': colors.Color(0.93, 1.0, 0.88),     # verde menta
-    'III Bimestre': colors.Color(1.0, 0.95, 0.85),    # durazno
-    'IV Bimestre': colors.Color(0.95, 0.90, 1.0),     # lavanda
-}
-
-COLORES_AREA_PASTEL = [
-    colors.Color(0.90, 0.95, 1.0),    # celeste
-    colors.Color(0.93, 1.0, 0.90),    # verde
-    colors.Color(1.0, 0.95, 0.88),    # durazno
-    colors.Color(0.95, 0.90, 1.0),    # lavanda
-    colors.Color(1.0, 0.92, 0.92),    # rosa
-    colors.Color(0.95, 0.98, 0.88),   # lima
-    colors.Color(0.92, 0.92, 1.0),    # azul claro
-    colors.Color(1.0, 0.93, 0.88),    # salmon
-    colors.Color(0.90, 1.0, 0.95),    # menta
-    colors.Color(0.98, 0.92, 1.0),    # lila
-    colors.Color(0.95, 0.95, 0.88),   # crema
-]
-
 
 def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
                                     bimestre, areas_sel, nivel="PRIMARIA",
                                     docente=""):
-    """Genera PDF de registro bimestral con competencias del Currículo Nacional."""
+    """Genera PDF de registro bimestral — hasta 3 áreas por hoja, proporcional."""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
@@ -7219,96 +7200,154 @@ def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
 
     ne = len(est) if not est.empty else 25
 
-    for ai, area in enumerate(areas_sel):
-        if ai > 0:
+    # Agrupar áreas: hasta 3 por página
+    AREAS_POR_PAG = 3
+    grupos = []
+    for i in range(0, len(areas_sel), AREAS_POR_PAG):
+        grupos.append(areas_sel[i:i + AREAS_POR_PAG])
+
+    COLORES_AREA = [
+        colors.Color(0.85, 0.92, 1.0),    # celeste
+        colors.Color(0.88, 1.0, 0.88),     # verde
+        colors.Color(1.0, 0.92, 0.85),     # durazno
+        colors.Color(0.92, 0.88, 1.0),     # lavanda
+        colors.Color(1.0, 0.90, 0.90),     # rosa
+        colors.Color(0.92, 0.98, 0.88),    # lima
+        colors.Color(0.90, 0.90, 1.0),     # azul
+        colors.Color(1.0, 0.92, 0.88),     # salmon
+        colors.Color(0.88, 1.0, 0.95),     # menta
+    ]
+    COLORES_HDR = [
+        colors.Color(0.50, 0.70, 0.90),
+        colors.Color(0.50, 0.82, 0.50),
+        colors.Color(0.90, 0.70, 0.40),
+        colors.Color(0.68, 0.55, 0.85),
+        colors.Color(0.88, 0.50, 0.50),
+        colors.Color(0.65, 0.82, 0.50),
+        colors.Color(0.55, 0.55, 0.88),
+        colors.Color(0.88, 0.65, 0.50),
+        colors.Color(0.50, 0.85, 0.72),
+    ]
+
+    area_idx_global = 0
+    for pg_idx, grupo in enumerate(grupos):
+        if pg_idx > 0:
             c_pdf.showPage()
-
-        color_area = COLORES_AREA_PASTEL[ai % len(COLORES_AREA_PASTEL)]
-        comps = COMPETENCIAS_CN.get(area, [f'Competencia {area}'])
-
-        # Marca de agua
-        if Path("escudo_upload.png").exists():
-            try:
-                c_pdf.saveState()
-                c_pdf.setFillAlpha(0.25)
-                c_pdf.drawImage("escudo_upload.png", w/2-80, h/2-80,
-                                160, 160, mask='auto')
-                c_pdf.restoreState()
-            except Exception:
-                pass
 
         # Encabezado
         c_pdf.setFont("Helvetica-Bold", 11)
-        c_pdf.drawCentredString(w/2, h-20,
+        c_pdf.drawCentredString(w / 2, h - 18,
                                 "I.E.P. ALTERNATIVO YACHAY — REGISTRO DE NOTAS BIMESTRAL")
-        c_pdf.setFont("Helvetica", 8)
+        c_pdf.setFont("Helvetica", 7)
         info_line = (f"Grado: {grado} | Sección: {seccion} | {bimestre} | "
-                     f"Año: {anio} | Área: {area}")
+                     f"Año: {anio}")
         if docente:
             info_line += f" | Docente: {docente}"
-        c_pdf.drawCentredString(w/2, h-33, info_line)
+        c_pdf.drawCentredString(w / 2, h - 30, info_line)
 
-        # Construir tabla
-        # Header: N° | APELLIDOS Y NOMBRES | Comp1 | Comp2 | ... | PROM | OBS
-        header = ["N°", "APELLIDOS Y NOMBRES"]
-        for ci, comp in enumerate(comps):
-            # Abreviar competencia para header
-            abrev = comp[:35] + "..." if len(comp) > 35 else comp
-            header.append(abrev)
-        header.extend(["PROM.", "OBS."])
+        # Calcular todas las competencias de este grupo
+        all_comps = []  # [(area_name, comp_name, color_idx)]
+        for gi, area in enumerate(grupo):
+            comps = COMPETENCIAS_CN.get(area, [f'Competencia {area}'])
+            for comp in comps:
+                all_comps.append((area, comp, area_idx_global + gi))
 
-        data = [header]
+        total_comp_cols = len(all_comps)
+
+        # Construir DOBLE header: Fila 0 = ÁREAS (merged), Fila 1 = Competencias
+        # Fila 0: N° | NOMBRES | [ÁREA spanning comps] ... | PROM | OBS
+        header_areas = ["N°", "APELLIDOS Y NOMBRES"]
+        header_comps = ["", ""]
+        for gi, area in enumerate(grupo):
+            comps = COMPETENCIAS_CN.get(area, [f'Competencia {area}'])
+            header_areas.append(area)
+            header_comps.append(comps[0][:30] if comps else "")
+            for ci in range(1, len(comps)):
+                header_areas.append("")  # merged visually
+                header_comps.append(comps[ci][:30])
+        header_areas.extend(["PROM.", "OBS."])
+        header_comps.extend(["", ""])
+
+        # Data rows
+        data = [header_areas, header_comps]
         for idx in range(ne):
             nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
-            if len(nm) > 30:
-                nm = nm[:30] + "."
-            fila = [str(idx+1), nm] + [""] * len(comps) + ["", ""]
+            if len(nm) > 28:
+                nm = nm[:28] + "."
+            fila = [str(idx + 1), nm] + [""] * total_comp_cols + ["", ""]
             data.append(fila)
 
-        # Anchos de columna
-        nc = len(comps)
-        comp_w = max(40, min(80, (w - 20 - 18 - 140 - 35 - 40) / max(nc, 1)))
-        cw = [18, 140] + [comp_w] * nc + [35, 40]
+        # Column widths — proporcional
+        avail_w = w - 20  # 10px margins
+        num_w = 16
+        name_w = 130
+        prom_w = 30
+        obs_w = 35
+        fixed = num_w + name_w + prom_w + obs_w
+        comp_w = max(28, (avail_w - fixed) / max(total_comp_cols, 1))
+        cw = [num_w, name_w] + [comp_w] * total_comp_cols + [prom_w, obs_w]
 
-        t = Table(data, colWidths=cw, repeatRows=1)
+        t = Table(data, colWidths=cw, repeatRows=2)
 
         estilos = [
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 5),
-            ('FONTSIZE', (0, 1), (-1, -1), 6),
+            ('FONTNAME', (0, 0), (-1, 1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 6),       # Áreas
+            ('FONTSIZE', (0, 1), (-1, 1), 4.5),     # Competencias
+            ('FONTSIZE', (0, 2), (-1, -1), 6),       # Datos
             ('GRID', (0, 0), (-1, -1), 0.4, colors.black),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+            ('ALIGN', (1, 2), (1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            # Header N° y Nombres
-            ('BACKGROUND', (0, 0), (1, 0), colors.Color(0, 0.3, 0.15)),
-            ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
-            # Header PROM y OBS
-            ('BACKGROUND', (-2, 0), (-1, 0), colors.Color(0.5, 0, 0.15)),
-            ('TEXTCOLOR', (-2, 0), (-1, 0), colors.white),
-            # Datos: color pastel del área
-            ('BACKGROUND', (2, 1), (-3, -1), color_area),
+            ('ROWHEIGHTS', (0, 0), (-1, 0), 16),    # Fila áreas
+            ('ROWHEIGHTS', (0, 1), (-1, 1), 22),    # Fila competencias
+            # N° y Nombres header
+            ('BACKGROUND', (0, 0), (1, 1), colors.Color(0, 0.30, 0.15)),
+            ('TEXTCOLOR', (0, 0), (1, 1), colors.white),
+            ('SPAN', (0, 0), (0, 1)),  # N° merge vertical
+            ('SPAN', (1, 0), (1, 1)),  # Nombres merge vertical
+            # PROM y OBS header
+            ('BACKGROUND', (-2, 0), (-1, 1), colors.Color(0.50, 0, 0.15)),
+            ('TEXTCOLOR', (-2, 0), (-1, 1), colors.white),
+            ('SPAN', (-2, 0), (-2, 1)),  # PROM merge vertical
+            ('SPAN', (-1, 0), (-1, 1)),  # OBS merge vertical
         ]
 
-        # Header competencias con color del área (más fuerte)
-        color_header = colors.Color(
-            min(color_area.red - 0.15, 0.85),
-            min(color_area.green - 0.15, 0.85),
-            min(color_area.blue - 0.15, 0.85))
-        for ci in range(nc):
-            estilos.append(('BACKGROUND', (ci+2, 0), (ci+2, 0), color_header))
-            estilos.append(('TEXTCOLOR', (ci+2, 0), (ci+2, 0), colors.black))
+        # Merge ÁREA cells y colorear
+        col_offset = 2
+        for gi, area in enumerate(grupo):
+            comps = COMPETENCIAS_CN.get(area, [f'Competencia {area}'])
+            nc = len(comps)
+            ci_global = area_idx_global + gi
+            c_hdr = COLORES_HDR[ci_global % len(COLORES_HDR)]
+            c_data = COLORES_AREA[ci_global % len(COLORES_AREA)]
+
+            # Merge área row
+            if nc > 1:
+                estilos.append(('SPAN', (col_offset, 0), (col_offset + nc - 1, 0)))
+            # Color área header
+            estilos.append(('BACKGROUND', (col_offset, 0), (col_offset + nc - 1, 0), c_hdr))
+            estilos.append(('TEXTCOLOR', (col_offset, 0), (col_offset + nc - 1, 0), colors.white))
+            # Color competencias header
+            estilos.append(('BACKGROUND', (col_offset, 1), (col_offset + nc - 1, 1), c_hdr))
+            estilos.append(('TEXTCOLOR', (col_offset, 1), (col_offset + nc - 1, 1), colors.white))
+            # Data pastel
+            estilos.append(('BACKGROUND', (col_offset, 2), (col_offset + nc - 1, -1), c_data))
+
+            col_offset += nc
 
         t.setStyle(TableStyle(estilos))
-        tw, th2 = t.wrap(w - 20, h - 55)
-        t.drawOn(c_pdf, 10, h - 45 - th2)
+        tw, th2 = t.wrap(w - 20, h - 50)
+        t.drawOn(c_pdf, 10, h - 40 - th2)
 
         # Pie
         c_pdf.setFont("Helvetica", 5)
-        comps_texto = " | ".join([f"C{i+1}: {c[:50]}" for i, c in enumerate(comps)])
-        c_pdf.drawString(10, 10, f"COMPETENCIAS: {comps_texto}")
-        c_pdf.drawRightString(w-10, 10,
-                              f"Currículo Nacional MINEDU — {bimestre} {anio}")
+        areas_texto = " | ".join(grupo)
+        c_pdf.drawString(10, 8, f"Áreas: {areas_texto}")
+        c_pdf.drawRightString(w - 10, 8,
+                              f"Currículo Nacional MINEDU — {bimestre} {anio} — "
+                              f"Pág {pg_idx + 1}/{len(grupos)}")
+
+        area_idx_global += len(grupo)
 
     c_pdf.save()
     buffer.seek(0)
@@ -9110,9 +9149,8 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
 # ================================================================
 
 def tab_material_docente(config):
-    """REGISTRAR FICHA — subir PDF o Word tal cual"""
+    """REGISTRAR FICHA — Dos opciones: generar con diseño O cargar tal cual"""
     st.subheader("📄 Registrar Ficha")
-    st.info("💡 Sube tu ficha de trabajo en PDF o Word. Se guardará tal cual sin modificar.")
 
     usuario = st.session_state.get('usuario_actual', '')
     info_doc = st.session_state.get('docente_info', {}) or {}
@@ -9121,11 +9159,81 @@ def tab_material_docente(config):
     fichas_dir = Path("fichas")
     fichas_dir.mkdir(exist_ok=True)
 
-    tab1, tab2 = st.tabs(["📤 Cargar Ficha", "📥 Mis Fichas"])
+    tab1, tab2, tab3 = st.tabs([
+        "📝 Generar Ficha con Diseño",
+        "📤 Cargar Ficha (PDF/Word)",
+        "📥 Mis Fichas"
+    ])
 
-    # ── TAB 1: SUBIR FICHA ─────────────────────────────────────────────────
+    # ── TAB 1: GENERAR CON DISEÑO (DOCX → PDF oficial) ─────────────────────
     with tab1:
-        st.markdown("### 📤 Subir Ficha de Trabajo")
+        st.markdown("### 📝 Generar Ficha con Diseño Oficial")
+        st.info("💡 Sube tu Word (.docx) sin diseño. El sistema le agregará "
+                "la portada y formato oficial del colegio automáticamente.")
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            titulo_f1 = st.text_input("📝 Título:", placeholder="Ej: Lógica y Formas",
+                                       key="ficha_titulo_diseno")
+        with col2:
+            grado_f1 = _grados_para_selector("ficha_dis")
+        with col3:
+            semana_f1 = st.number_input("📅 Semana N°:", 1, 52,
+                                         int(hora_peru().strftime('%V')), key="ficha_semana_dis")
+
+        col4, col5 = st.columns(2)
+        with col4:
+            area_f1 = st.text_input("📚 Área/Curso:", placeholder="Ej: Personal Social",
+                                     key="ficha_area_diseno")
+        with col5:
+            tipo_doc = st.selectbox("📄 Tipo:", ["FICHA", "PRÁCTICA", "EXAMEN",
+                                                  "ACTIVIDAD", "TALLER"], key="ficha_tipo_dis")
+
+        archivo_docx = st.file_uploader("📎 Subir Word (.docx):",
+                                         type=['docx'],
+                                         key="upload_ficha_docx_dis")
+
+        if archivo_docx and titulo_f1 and grado_f1 and area_f1:
+            st.caption(f"📁 **{archivo_docx.name}** ({archivo_docx.size/1024:.1f} KB)")
+
+            if st.button("🎨 GENERAR PDF CON DISEÑO", type="primary",
+                         use_container_width=True, key="btn_gen_diseno"):
+                try:
+                    with st.spinner("📄 Procesando Word y generando PDF con diseño..."):
+                        bloques = _leer_docx(archivo_docx.getvalue())
+                        if bloques:
+                            pdf_bytes = _generar_pdf_desde_docx(
+                                bloques, config, nombre_doc, str(grado_f1),
+                                area_f1, str(semana_f1), titulo_f1, tipo_doc)
+                            nombre_arch = (f"ficha_{usuario}_{grado_f1}_{fecha_peru_str()}_"
+                                           f"{titulo_f1[:25]}.pdf")
+                            nombre_arch = nombre_arch.replace(' ', '_').replace('/', '-').replace(':', '-')
+                            with open(fichas_dir / nombre_arch, 'wb') as f:
+                                f.write(pdf_bytes)
+                            _guardar_ficha_registro({
+                                'titulo': titulo_f1, 'area': area_f1,
+                                'grado': str(grado_f1), 'semana': semana_f1,
+                                'mes': list(MESES_ESCOLARES.values())[hora_peru().month - 1],
+                                'docente': usuario, 'docente_nombre': nombre_doc,
+                                'archivo': nombre_arch, 'tipo': 'pdf (con diseño)',
+                            })
+                            st.success("✅ ¡Ficha generada con diseño oficial!")
+                            st.balloons()
+                            st.download_button("📥 Descargar PDF", pdf_bytes,
+                                               nombre_arch, "application/pdf",
+                                               use_container_width=True, key="dl_ficha_dis")
+                        else:
+                            st.error("⚠️ No se pudo leer el archivo Word. Verifique el formato.")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+        else:
+            st.caption("⚠️ Completa todos los campos y sube el archivo Word (.docx)")
+
+    # ── TAB 2: CARGAR TAL CUAL (PDF o Word ya con diseño) ───────────────────
+    with tab2:
+        st.markdown("### 📤 Cargar Ficha (ya tiene diseño)")
+        st.info("💡 Sube tu ficha en PDF o Word que **ya tiene** los diseños del colegio. "
+                "Se guardará tal cual sin modificar, solo para registro y verificación.")
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -9152,9 +9260,8 @@ def tab_material_docente(config):
                                          key="upload_ficha_archivo")
 
         if archivo_ficha and titulo_ficha and grado_ficha and area_ficha:
-            # Mostrar preview del archivo
             ext = archivo_ficha.name.rsplit('.', 1)[-1].lower()
-            st.caption(f"📁 **{archivo_ficha.name}** ({archivo_ficha.size/1024:.1f} KB) — Tipo: .{ext}")
+            st.caption(f"📁 **{archivo_ficha.name}** ({archivo_ficha.size/1024:.1f} KB) — .{ext}")
 
             if st.button("💾 GUARDAR FICHA", type="primary",
                          use_container_width=True, key="btn_guardar_ficha"):
@@ -9165,7 +9272,6 @@ def tab_material_docente(config):
                     nombre_arch = nombre_arch.replace(' ', '_').replace('/', '-').replace(':', '-')
                     with open(fichas_dir / nombre_arch, 'wb') as f:
                         f.write(archivo_bytes)
-                    # Registrar metadata
                     _guardar_ficha_registro({
                         'titulo': titulo_ficha, 'area': area_ficha,
                         'grado': str(grado_ficha), 'semana': semana_ficha,
@@ -9185,8 +9291,8 @@ def tab_material_docente(config):
         else:
             st.caption("⚠️ Completa todos los campos y sube el archivo para continuar.")
     
-    # ── TAB 2: MIS FICHAS ──────────────────────────────────────────────────
-    with tab2:
+    # ── TAB 3: MIS FICHAS ──────────────────────────────────────────────────
+    with tab3:
         st.markdown("### 📥 Mis Fichas Guardadas")
         fichas_pdf = sorted(fichas_dir.glob(f"ficha_{usuario}_*.pdf"), key=lambda x: x.stat().st_mtime, reverse=True)
         fichas_docx = sorted(fichas_dir.glob(f"ficha_{usuario}_*.docx"), key=lambda x: x.stat().st_mtime, reverse=True)
