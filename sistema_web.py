@@ -4685,7 +4685,7 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia — si DNI no está en matrícula, permite registrar con nombre manual"""
+    """Registra asistencia — auto-detecta tardanza para docentes (>8:05am)"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
@@ -4699,22 +4699,36 @@ def _registrar_asistencia_rapida(dni):
                 nombre = doc_encontrado.iloc[0]['Nombre'] if not doc_encontrado.empty else persona.get('Nombre', '')
             else:
                 nombre = persona.get('Nombre', '')
+            # Docente: auto-detectar tardanza en entrada
+            if tipo in ('entrada', 'tardanza'):
+                if _es_tardanza_docente(hora):
+                    tipo = 'tardanza'
+                    emoji_tipo = "🟡"
+                    msg_extra = " ⏰ TARDANZA (después de 8:05am)"
+                else:
+                    tipo = 'entrada'
+                    emoji_tipo = "🟢"
+                    msg_extra = " ✅ PUNTUAL"
+            else:
+                emoji_tipo = "🔵"
+                msg_extra = ""
         else:
             nombre = persona.get('Nombre', '')
+            emoji_tipo = "🟢" if tipo == "entrada" else ("🟡" if tipo == "tardanza" else "🔵")
+            msg_extra = ""
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
             return
-        emoji_tipo = "🟢" if tipo == "entrada" else ("🟡" if tipo == "tardanza" else "🔵")
-        st.toast(f"{emoji_tipo} {tp} {nombre} — {tipo.title()}: {hora}", icon="✅")
-        st.markdown(f"""<div class="asist-{'ok' if tipo == 'entrada' else 'salida'}">
-            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {st.session_state.get('tipo_asistencia','')}: <strong>{hora}</strong>
+        st.toast(f"{emoji_tipo} {tp} {nombre} — {tipo.title()}: {hora}{msg_extra}", icon="✅")
+        color_div = "ok" if tipo == "entrada" else "salida"
+        st.markdown(f"""<div class="asist-{color_div}">
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {tipo.title()}: <strong>{hora}</strong>{msg_extra}
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
-        # DNI no encontrado — permitir registro manual con nombre
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
         nombre_manual = st.text_input("Nombre completo:", key=f"nombre_manual_{dni}",
                                       placeholder="Ej: FLORES QUISPE JUAN")
@@ -6675,9 +6689,14 @@ def tab_reportes(config):
         return
 
     if subtab == "👨‍🏫 Asistencia Docentes":
-        st.markdown("### 👨‍🏫 Asistencia de Docentes — Semanal y Mensual")
+        st.markdown("""<div style='background:linear-gradient(135deg,#001e7c,#0044cc);color:white;
+            padding:15px 20px;border-radius:12px;margin-bottom:15px;text-align:center;'>
+            <h3 style='margin:0;color:white;'>👨‍🏫 I.E.P. ALTERNATIVO YACHAY</h3>
+            <p style='margin:4px 0 0;color:#b8d4ff;'>Reporte de Asistencia y Puntualidad — Docentes</p>
+            <p style='margin:2px 0 0;color:#FFD700;font-size:0.85rem;'>📍 Chinchero, Cusco — {hora_peru().year}</p>
+        </div>""", unsafe_allow_html=True)
 
-        # Cargar todas las asistencias
+        # ── Cargar datos de asistencia ──────────────────────────────────
         asistencias = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             try:
@@ -6686,7 +6705,7 @@ def tab_reportes(config):
             except Exception:
                 pass
 
-        # También intentar GS
+        # GS
         datos_gs_doc = {}
         if gs:
             try:
@@ -6708,143 +6727,250 @@ def tab_reportes(config):
             except Exception:
                 pass
 
-        # Combinar local + GS
         todas_fechas = set(asistencias.keys()) | set(datos_gs_doc.keys())
 
         # Extraer solo docentes
-        docentes_asist = {}  # {nombre: {fecha: {entrada, salida}}}
+        docentes_asist = {}
         for fecha in sorted(todas_fechas):
-            regs_local = asistencias.get(fecha, {})
-            regs_gs = datos_gs_doc.get(fecha, {})
-            regs = {**regs_gs, **regs_local}
+            regs = {**datos_gs_doc.get(fecha, {}), **asistencias.get(fecha, {})}
             for dni, dat in regs.items():
                 if dat.get('es_docente', False):
                     nm = dat.get('nombre', dni)
                     if nm not in docentes_asist:
                         docentes_asist[nm] = {}
+                    entrada = dat.get('entrada', '')
+                    tardanza_auto = _es_tardanza_docente(entrada) if entrada else False
                     docentes_asist[nm][fecha] = {
-                        'entrada': dat.get('entrada', ''),
+                        'entrada': entrada,
                         'salida': dat.get('salida', ''),
-                        'tardanza': dat.get('tardanza', ''),
+                        'tardanza': tardanza_auto,
                     }
 
         if not docentes_asist:
-            st.info("📭 No hay registros de asistencia de docentes.")
+            st.info("📭 No hay registros de asistencia de docentes aún.")
         else:
-            modo = st.radio("Vista:", ["📅 Semanal", "📆 Mensual", "📱 WhatsApp Docentes"],
-                            horizontal=True, key="rep_doc_modo")
-
             df_doc_list = BaseDatos.cargar_docentes()
 
-            if modo == "📅 Semanal":
-                semana_sel = st.number_input("Semana N°:", 1, 52,
-                                             int(hora_peru().strftime('%V')),
-                                             key="rep_doc_sem")
-                lunes, viernes = _rango_semana(semana_sel)
-                st.caption(f"Semana {semana_sel}: {lunes.strftime('%d/%m')} — {viernes.strftime('%d/%m/%Y')}")
+            modo = st.radio("Vista:", [
+                "📅 Semanal por Mes", "📆 Resumen Mensual", "📱 WhatsApp Docentes"
+            ], horizontal=True, key="rep_doc_modo")
 
-                data_tabla = []
-                for nm in sorted(docentes_asist.keys()):
-                    dias_semana = 0
-                    tardanzas = 0
-                    faltas = 0
-                    for d in range(5):
-                        dia = lunes + timedelta(days=d)
-                        fecha_str = dia.strftime('%Y-%m-%d')
-                        reg = docentes_asist[nm].get(fecha_str, {})
-                        if reg.get('entrada'):
-                            dias_semana += 1
-                            if reg.get('tardanza'):
-                                tardanzas += 1
-                        else:
-                            # Solo contar falta si es día hábil pasado
-                            if dia <= hora_peru().date():
-                                faltas += 1
-                    data_tabla.append({
-                        'Docente': nm, 'Días': dias_semana,
-                        'Tardanzas': tardanzas, 'Faltas': faltas
-                    })
-                if data_tabla:
-                    df_sem = pd.DataFrame(data_tabla)
-                    st.dataframe(df_sem, use_container_width=True, hide_index=True)
-                    st.metric("Total docentes", len(data_tabla))
-                else:
-                    st.info("Sin datos para esta semana.")
+            # ── Meses escolares (marzo a diciembre) ──────────────────────
+            meses_esc = [(m, n) for m, n in MESES_ESCOLARES.items() if m >= 3]
 
-            elif modo == "📆 Mensual":
-                mes_sel = st.selectbox("Mes:", list(range(1, 13)),
-                                        format_func=lambda x: list(MESES_ESCOLARES.values())[x-1] if x <= len(MESES_ESCOLARES) else str(x),
-                                        index=hora_peru().month - 1,
-                                        key="rep_doc_mes")
+            if modo == "📅 Semanal por Mes":
+                mes_sel = st.selectbox("📆 Mes:", meses_esc,
+                                        format_func=lambda x: x[1],
+                                        key="rep_doc_mes_sem")
+                mes_num = mes_sel[0]
+                mes_nombre = mes_sel[1]
                 anio_sel = hora_peru().year
+
+                semanas = _semanas_del_mes(mes_num, anio_sel)
+                if not semanas:
+                    st.info("Sin semanas para este mes.")
+                else:
+                    st.markdown(f"### 📅 {mes_nombre} {anio_sel} — Semanas {semanas[0][0]} a {semanas[-1][0]}")
+
+                    for sem_num, lun, vie in semanas:
+                        with st.expander(
+                            f"📌 Semana {sem_num}: {lun.strftime('%d/%m')} – {vie.strftime('%d/%m')}",
+                            expanded=(sem_num == _semana_escolar_actual())
+                        ):
+                            data_sem = []
+                            for nm in sorted(docentes_asist.keys()):
+                                dias_ok = 0
+                                tardanzas = 0
+                                faltas = 0
+                                detalle = []
+                                for d in range(5):
+                                    dia = lun + timedelta(days=d)
+                                    fecha_str = dia.strftime('%Y-%m-%d')
+                                    reg = docentes_asist[nm].get(fecha_str, {})
+                                    dia_nombre = ['Lun','Mar','Mié','Jue','Vie'][d]
+                                    if reg.get('entrada'):
+                                        dias_ok += 1
+                                        if reg.get('tardanza'):
+                                            tardanzas += 1
+                                            detalle.append(f"{dia_nombre}:⏰{reg['entrada']}")
+                                        else:
+                                            detalle.append(f"{dia_nombre}:✅{reg['entrada']}")
+                                    elif dia <= hora_peru().date():
+                                        faltas += 1
+                                        detalle.append(f"{dia_nombre}:❌")
+                                    else:
+                                        detalle.append(f"{dia_nombre}:—")
+                                puntualidad = round((dias_ok - tardanzas) / max(dias_ok, 1) * 100)
+                                data_sem.append({
+                                    'Docente': nm, 'Asist.': dias_ok,
+                                    'Tard.': tardanzas, 'Faltas': faltas,
+                                    'Puntualidad': f"{puntualidad}%",
+                                    'Detalle': ' | '.join(detalle)
+                                })
+
+                            if data_sem:
+                                df_s = pd.DataFrame(data_sem)
+                                st.dataframe(df_s, use_container_width=True, hide_index=True)
+
+                    # ── Gráfico de barras del mes ──────────────────────────
+                    st.markdown("---")
+                    st.markdown(f"### 📊 Resumen Gráfico — {mes_nombre}")
+                    chart_data = []
+                    for nm in sorted(docentes_asist.keys()):
+                        dias_total = 0
+                        puntuales = 0
+                        tardes = 0
+                        for fecha_str, reg in docentes_asist[nm].items():
+                            try:
+                                fd = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                                if fd.month == mes_num and fd.year == anio_sel:
+                                    if reg.get('entrada'):
+                                        dias_total += 1
+                                        if reg.get('tardanza'):
+                                            tardes += 1
+                                        else:
+                                            puntuales += 1
+                            except Exception:
+                                pass
+                        # Nombre corto
+                        nm_corto = nm.split()[-1] if ' ' in nm else nm
+                        if len(nm_corto) > 12:
+                            nm_corto = nm_corto[:10] + ".."
+                        chart_data.append({'Docente': nm_corto, 'Puntuales': puntuales, 'Tardanzas': tardes})
+
+                    if chart_data:
+                        df_chart = pd.DataFrame(chart_data)
+                        import altair as alt
+                        df_melt = df_chart.melt(id_vars='Docente', value_vars=['Puntuales', 'Tardanzas'],
+                                                 var_name='Tipo', value_name='Días')
+                        chart = alt.Chart(df_melt).mark_bar().encode(
+                            x=alt.X('Docente:N', sort='-y', title=''),
+                            y=alt.Y('Días:Q', title='Días'),
+                            color=alt.Color('Tipo:N', scale=alt.Scale(
+                                domain=['Puntuales', 'Tardanzas'],
+                                range=['#22c55e', '#f59e0b']
+                            )),
+                            xOffset='Tipo:N'
+                        ).properties(height=300, title=f'Asistencia y Puntualidad — {mes_nombre} {anio_sel}')
+                        st.altair_chart(chart, use_container_width=True)
+
+            elif modo == "📆 Resumen Mensual":
+                mes_sel2 = st.selectbox("📆 Mes:", meses_esc,
+                                         format_func=lambda x: x[1],
+                                         key="rep_doc_mes2")
+                mes_num = mes_sel2[0]
+                mes_nombre = mes_sel2[1]
+                anio_sel = hora_peru().year
+
+                st.markdown(f"### 📆 Resumen Mensual — {mes_nombre} {anio_sel}")
 
                 data_tabla = []
                 for nm in sorted(docentes_asist.keys()):
                     dias_mes = 0
+                    puntuales = 0
                     tardanzas = 0
                     entradas = []
                     for fecha_str, reg in docentes_asist[nm].items():
                         try:
                             fd = datetime.strptime(fecha_str, '%Y-%m-%d').date()
-                            if fd.month == mes_sel and fd.year == anio_sel:
+                            if fd.month == mes_num and fd.year == anio_sel:
                                 if reg.get('entrada'):
                                     dias_mes += 1
                                     entradas.append(reg['entrada'])
-                                if reg.get('tardanza'):
-                                    tardanzas += 1
+                                    if reg.get('tardanza'):
+                                        tardanzas += 1
+                                    else:
+                                        puntuales += 1
                         except Exception:
                             pass
+                    puntualidad = round(puntuales / max(dias_mes, 1) * 100)
                     data_tabla.append({
-                        'Docente': nm, 'Días Asistidos': dias_mes,
-                        'Tardanzas': tardanzas,
-                        'Hora Prom. Entrada': (
-                            sorted(entradas)[len(entradas)//2] if entradas else '—'
-                        ),
+                        'Docente': nm, 'Días': dias_mes,
+                        'Puntuales': puntuales, 'Tardanzas': tardanzas,
+                        'Puntualidad': f"{puntualidad}%",
+                        'Hora Prom.': sorted(entradas)[len(entradas)//2] if entradas else '—',
                     })
 
                 if data_tabla:
-                    df_mes = pd.DataFrame(data_tabla)
-                    df_mes = df_mes.sort_values('Días Asistidos', ascending=False)
+                    df_mes = pd.DataFrame(data_tabla).sort_values('Días', ascending=False)
                     st.dataframe(df_mes, use_container_width=True, hide_index=True)
 
-                    # Resumen
-                    col_m1, col_m2, col_m3 = st.columns(3)
-                    col_m1.metric("Docentes", len(data_tabla))
-                    col_m2.metric("Prom. días", f"{sum(r['Días Asistidos'] for r in data_tabla)/max(len(data_tabla),1):.1f}")
-                    col_m3.metric("Tardanzas total", sum(r['Tardanzas'] for r in data_tabla))
+                    # Métricas
+                    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+                    col_m1.metric("👨‍🏫 Docentes", len(data_tabla))
+                    col_m2.metric("📅 Prom. días", f"{sum(r['Días'] for r in data_tabla)/max(len(data_tabla),1):.1f}")
+                    total_punt = sum(r['Puntuales'] for r in data_tabla)
+                    total_tard = sum(r['Tardanzas'] for r in data_tabla)
+                    col_m3.metric("✅ Puntuales", total_punt)
+                    col_m4.metric("⏰ Tardanzas", total_tard)
+
+                    # Gráfico
+                    st.markdown("---")
+                    chart_data = []
+                    for r in data_tabla:
+                        nm_c = r['Docente'].split()[-1] if ' ' in r['Docente'] else r['Docente']
+                        if len(nm_c) > 12:
+                            nm_c = nm_c[:10] + ".."
+                        chart_data.append({'Docente': nm_c, 'Puntuales': r['Puntuales'], 'Tardanzas': r['Tardanzas']})
+
+                    df_chart = pd.DataFrame(chart_data)
+                    import altair as alt
+                    df_melt = df_chart.melt(id_vars='Docente', value_vars=['Puntuales', 'Tardanzas'],
+                                             var_name='Tipo', value_name='Días')
+                    chart = alt.Chart(df_melt).mark_bar().encode(
+                        x=alt.X('Docente:N', sort='-y', title=''),
+                        y=alt.Y('Días:Q', title='Días'),
+                        color=alt.Color('Tipo:N', scale=alt.Scale(
+                            domain=['Puntuales', 'Tardanzas'],
+                            range=['#22c55e', '#f59e0b']
+                        )),
+                        xOffset='Tipo:N'
+                    ).properties(height=300, title=f'Asistencia y Puntualidad — {mes_nombre} {anio_sel}')
+                    st.altair_chart(chart, use_container_width=True)
 
                     # PDF
-                    if st.button("📥 Descargar PDF Asistencia Docentes", type="primary",
-                                 key="dl_asist_doc_pdf"):
+                    if st.button("📥 Descargar PDF", type="primary", key="dl_asist_doc_pdf"):
                         buf = io.BytesIO()
                         c_p = canvas.Canvas(buf, pagesize=landscape(A4))
                         wp, hp = landscape(A4)
-                        c_p.setFont("Helvetica-Bold", 14)
-                        c_p.drawCentredString(wp/2, hp-25,
-                                              "I.E.P. YACHAY — ASISTENCIA DOCENTES")
-                        mes_nombre = list(MESES_ESCOLARES.values())[mes_sel-1] if mes_sel <= len(MESES_ESCOLARES) else str(mes_sel)
-                        c_p.setFont("Helvetica", 9)
-                        c_p.drawCentredString(wp/2, hp-40,
-                                              f"Mes: {mes_nombre} {anio_sel}")
+                        # Encabezado oficial
+                        c_p.setFillColor(colors.HexColor("#001e7c"))
+                        c_p.rect(0, hp - 55, wp, 55, fill=1, stroke=0)
+                        c_p.setFillColor(colors.white)
+                        c_p.setFont("Helvetica-Bold", 16)
+                        c_p.drawCentredString(wp/2, hp-22, "I.E.P. ALTERNATIVO YACHAY")
+                        c_p.setFont("Helvetica", 10)
+                        c_p.drawCentredString(wp/2, hp-38,
+                                              f"REPORTE DE ASISTENCIA DOCENTES — {mes_nombre.upper()} {anio_sel}")
+                        c_p.setFillColor(colors.HexColor("#FFD700"))
+                        c_p.setFont("Helvetica", 8)
+                        c_p.drawCentredString(wp/2, hp-50, "Chinchero, Cusco — Perú")
+                        c_p.setFillColor(colors.black)
                         # Tabla
-                        headers = ["N°", "DOCENTE", "DÍAS ASISTIDOS", "TARDANZAS", "HORA PROM."]
+                        headers = ["N°", "DOCENTE", "DÍAS", "PUNTUALES", "TARDANZAS", "PUNTUALIDAD", "HORA PROM."]
                         rows = [headers]
                         for i, r in enumerate(data_tabla):
-                            rows.append([str(i+1), r['Docente'], str(r['Días Asistidos']),
-                                        str(r['Tardanzas']), r['Hora Prom. Entrada']])
-                        t_doc = Table(rows, colWidths=[25, 220, 80, 70, 80])
+                            rows.append([str(i+1), r['Docente'], str(r['Días']),
+                                        str(r['Puntuales']), str(r['Tardanzas']),
+                                        r['Puntualidad'], r['Hora Prom.']])
+                        t_doc = Table(rows, colWidths=[25, 200, 50, 65, 65, 70, 65])
                         t_doc.setStyle(TableStyle([
                             ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
                             ('FONTSIZE', (0,0), (-1,-1), 7),
                             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
-                            ('BACKGROUND', (0,0), (-1,0), colors.Color(0,0.3,0.15)),
+                            ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#001e7c")),
                             ('TEXTCOLOR', (0,0), (-1,0), colors.white),
                             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
                             ('ALIGN', (1,1), (1,-1), 'LEFT'),
                             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1.0)]),
                         ]))
-                        tw2, th2 = t_doc.wrap(wp-40, hp-60)
-                        t_doc.drawOn(c_p, 20, hp-55-th2)
+                        tw2, th2 = t_doc.wrap(wp-40, hp-80)
+                        t_doc.drawOn(c_p, 20, hp-70-th2)
+                        # Pie
+                        c_p.setFont("Helvetica", 6)
+                        c_p.drawString(20, 12, f"Generado: {fecha_peru_str()} | Puntualidad: entrada antes de 8:05am")
+                        c_p.drawRightString(wp-20, 12, "Sistema YACHAY PRO")
                         c_p.save()
                         buf.seek(0)
                         st.download_button("⬇️ PDF", buf, f"Asistencia_Docentes_{mes_nombre}.pdf",
@@ -6875,7 +7001,7 @@ def tab_reportes(config):
                     for _, row in df_doc_list.iterrows():
                         nm = str(row.get('Nombre', '')).strip()
                         cel = str(row.get('Celular', '')).strip()
-                        if cel and cel != 'nan':
+                        if cel and cel not in ('nan', 'None', ''):
                             if '.' in cel:
                                 cel = cel.split('.')[0]
                             cel = ''.join(c for c in cel if c.isdigit())
@@ -6888,7 +7014,7 @@ def tab_reportes(config):
                                            f"y compromiso con la I.E.P. YACHAY. ¡Siga así!")
                                 elif msg_tipo == "Comunicado general":
                                     msg = (f"Estimado(a) Prof. {nm}, se le comunica que "
-                                           f"hay una reunión de coordinación pendiente. "
+                                           f"hay una reunión de coordinación. "
                                            f"Por favor revise el sistema YACHAY. Gracias.")
                                 else:
                                     msg = f"Prof. {nm}: {msg_custom}" if msg_custom else f"Mensaje para {nm}"
@@ -8652,23 +8778,62 @@ TIPOS_EVALUACION = [
 ]
 
 
+def _inicio_escolar(anio=None):
+    """Primer día de clases: primer día hábil de marzo"""
+    if anio is None:
+        anio = hora_peru().year
+    d = date(anio, 3, 1)
+    while d.weekday() >= 5:  # sáb/dom → avanzar al lunes
+        d += timedelta(days=1)
+    return d
+
+
 def _semana_escolar_actual():
     hoy = hora_peru().date()
-    inicio_escolar = date(hoy.year, 3, 1)
-    if hoy < inicio_escolar:
-        return 1
-    return ((hoy - inicio_escolar).days // 7) + 1
+    inicio = _inicio_escolar(hoy.year)
+    if hoy < inicio:
+        return 0
+    return ((hoy - inicio).days // 7) + 1
 
 
 def _rango_semana(semana_num, anio=None):
     if anio is None:
         anio = hora_peru().year
-    inicio = date(anio, 3, 1)
+    inicio = _inicio_escolar(anio)
     dias_a_lunes = inicio.weekday()
     primer_lunes = inicio - timedelta(days=dias_a_lunes)
     lunes = primer_lunes + timedelta(weeks=semana_num - 1)
     viernes = lunes + timedelta(days=4)
     return lunes, viernes
+
+
+def _semanas_del_mes(mes, anio=None):
+    """Retorna [(semana_num, lunes, viernes)] que caen en el mes dado"""
+    if anio is None:
+        anio = hora_peru().year
+    resultado = []
+    for sem in range(1, 45):
+        lun, vie = _rango_semana(sem, anio)
+        if lun.month == mes or vie.month == mes:
+            resultado.append((sem, lun, vie))
+        elif lun.month > mes and vie.month > mes:
+            break
+    return resultado
+
+
+# Hora límite puntualidad docente: antes de 8:05 = puntual, después = tardanza
+HORA_LIMITE_DOCENTE = "08:05"
+
+
+def _es_tardanza_docente(hora_str):
+    """Determina si la hora de entrada es tardanza para docente"""
+    try:
+        h, m = hora_str.split(':')[:2]
+        minutos = int(h) * 60 + int(m)
+        limite = 8 * 60 + 5  # 08:05
+        return minutos > limite
+    except Exception:
+        return False
 
 
 def _comprimir_imagen_aula(img_bytes, max_size=400, quality=65):
