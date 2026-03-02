@@ -4414,7 +4414,7 @@ def tab_asistencias():
         st.session_state.wa_enviados = set()
 
     # ── Horario y Modo ──────────────────────────────────────────
-    col_h, col_sep, col_modo = st.columns([2, 0.2, 3])
+    col_h, col_modo = st.columns([2, 3])
     with col_h:
         horario_sel = st.radio("⏰ Horario:", ['normal', 'invierno'],
                                 format_func=lambda x: HORARIOS[x]['nombre'],
@@ -4425,28 +4425,18 @@ def tab_asistencias():
         st.caption(f"Límite puntualidad: **{limite}** — después = tardanza automática")
 
     with col_modo:
-        c1, c2, c3 = st.columns(3)
+        c1, c2 = st.columns(2)
         with c1:
-            if st.button("🌅 ENTRADA", use_container_width=True, key="be", type="primary"):
+            if st.button("🟢 ENTRADA", use_container_width=True, key="be", type="primary"):
                 st.session_state.tipo_asistencia = "Entrada"
                 st.rerun()
         with c2:
-            if st.button("🌙 SALIDA", use_container_width=True, key="bs", type="primary"):
+            if st.button("🔵 SALIDA", use_container_width=True, key="bs", type="primary"):
                 st.session_state.tipo_asistencia = "Salida"
                 st.rerun()
-        with c3:
-            if st.button("🌤️ ENTRADA TARDE", use_container_width=True, key="bet"):
-                st.session_state.tipo_asistencia = "Entrada_Tarde"
-                st.rerun()
-        # Fila 2: Salida Tarde
-        _, _, c3b = st.columns(3)
-        with c3b:
-            if st.button("🌙 SALIDA TARDE", use_container_width=True, key="bst"):
-                st.session_state.tipo_asistencia = "Salida_Tarde"
-                st.rerun()
+        st.caption("💡 El sistema detecta automáticamente si es turno mañana o tarde")
 
-    _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb", "Tardanza": "#f59e0b",
-                   "Entrada_Tarde": "#8b5cf6", "Salida_Tarde": "#6366f1"}
+    _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb"}
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
     modo_label = _modo.replace('_', ' ')
     st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {modo_label} | Horario: {HORARIOS[horario_sel]['nombre']} — Tardanza auto después de {limite}</div>", unsafe_allow_html=True)
@@ -4716,7 +4706,7 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia — auto-detecta tardanza, soporta turno tarde"""
+    """Registra asistencia — AUTO-DETECTA mañana/tarde, tardanza, horas docente"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
@@ -4738,32 +4728,76 @@ def _registrar_asistencia_rapida(dni):
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         limite_txt = HORARIOS[_horario_activo()]['limite']
 
-        # Determinar tipo y tardanza
+        # ── AUTO-DETECTAR TURNO mañana/tarde ─────────────────────────
+        asis_hoy = BaseDatos.obtener_asistencias_hoy()
+        reg_hoy = asis_hoy.get(str(dni).strip(), {})
+
         if modo == "Entrada":
-            if _es_tardanza(hora):
-                tipo = 'tardanza'
-                emoji_tipo = "🟡"
-                msg_extra = f" ⏰ TARDANZA (después de {limite_txt})"
+            tiene_entrada = reg_hoy.get('entrada') or reg_hoy.get('tardanza')
+            tiene_salida = reg_hoy.get('salida')
+            tiene_ent_tarde = reg_hoy.get('entrada_tarde')
+
+            if tiene_entrada and tiene_salida and not tiene_ent_tarde:
+                # Mañana completa → auto ENTRADA TARDE
+                tipo = 'entrada_tarde'
+                emoji_tipo = "🌤️"
+                msg_extra = " 📌 TURNO TARDE (auto-detectado)"
+            elif tiene_entrada and not tiene_salida:
+                st.warning(f"⚠️ **{nombre}** ya registró entrada ({reg_hoy.get('entrada') or reg_hoy.get('tardanza')}). Registre salida primero.")
+                return
+            elif tiene_ent_tarde:
+                st.warning(f"⚠️ **{nombre}** ya tiene entrada tarde ({tiene_ent_tarde}). Ya registrado.")
+                return
             else:
-                tipo = 'entrada'
-                emoji_tipo = "🟢"
-                msg_extra = " ✅ PUNTUAL"
+                # Primera entrada del día
+                if _es_tardanza(hora):
+                    tipo = 'tardanza'
+                    emoji_tipo = "🟡"
+                    msg_extra = f" ⏰ TARDANZA (después de {limite_txt})"
+                else:
+                    tipo = 'entrada'
+                    emoji_tipo = "🟢"
+                    msg_extra = " ✅ PUNTUAL"
+
         elif modo == "Salida":
-            tipo = 'salida'
-            emoji_tipo = "🔵"
-            msg_extra = ""
-        elif modo == "Entrada_Tarde":
-            tipo = 'entrada_tarde'
-            emoji_tipo = "🌤️"
-            msg_extra = " (Turno Tarde)"
-        elif modo == "Salida_Tarde":
-            tipo = 'salida_tarde'
-            emoji_tipo = "🌙"
-            msg_extra = " (Turno Tarde)"
+            tiene_ent_tarde = reg_hoy.get('entrada_tarde')
+            tiene_sal_tarde = reg_hoy.get('salida_tarde')
+            tiene_salida = reg_hoy.get('salida')
+
+            if tiene_ent_tarde and not tiene_sal_tarde:
+                # Tarde abierta → auto SALIDA TARDE
+                tipo = 'salida_tarde'
+                emoji_tipo = "🌙"
+                msg_extra = " 📌 SALIDA TARDE (auto-detectado)"
+            elif tiene_sal_tarde:
+                st.warning(f"⚠️ **{nombre}** ya completó ambos turnos hoy.")
+                return
+            elif tiene_salida and not tiene_ent_tarde:
+                st.info(f"ℹ️ **{nombre}** ya salió de mañana ({tiene_salida}). Presione Entrada para turno tarde.")
+                return
+            else:
+                tipo = 'salida'
+                emoji_tipo = "🔵"
+                msg_extra = ""
         else:
             tipo = modo.lower()
             emoji_tipo = "⚪"
             msg_extra = ""
+
+        # ── Calcular horas trabajadas para docentes ──────────────────
+        horas_info = ""
+        if es_d and tipo in ('salida', 'salida_tarde'):
+            try:
+                ent_key = 'entrada_tarde' if tipo == 'salida_tarde' else 'entrada'
+                hora_ent = reg_hoy.get(ent_key) or reg_hoy.get('tardanza', '')
+                if hora_ent:
+                    h1, m1 = hora_ent.split(':')[:2]
+                    h2, m2 = hora.split(':')[:2]
+                    mins = (int(h2)*60+int(m2)) - (int(h1)*60+int(m1))
+                    if mins > 0:
+                        horas_info = f" | ⏱️ {mins//60}h{mins%60:02d}m"
+            except Exception:
+                pass
 
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
@@ -4775,7 +4809,7 @@ def _registrar_asistencia_rapida(dni):
         color_div = "ok" if 'entrada' in tipo else "salida"
         st.toast(f"{emoji_tipo} {tp} {nombre} — {label}: {hora}{msg_extra}", icon="✅")
         st.markdown(f"""<div class="asist-{color_div}">
-            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {label}: <strong>{hora}</strong>{msg_extra}
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {label}: <strong>{hora}</strong>{msg_extra}{horas_info}
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
@@ -4789,6 +4823,8 @@ def _registrar_asistencia_rapida(dni):
             st.success(f"✅ Registrado: {nombre_manual.upper()} — {hora}")
             reproducir_beep_exitoso()
             st.info("💡 Recuerda matricular a este estudiante para que aparezca normalmente.")
+
+
 
 
 def nota_a_letra(nota):
