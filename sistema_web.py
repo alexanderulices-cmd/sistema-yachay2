@@ -4572,14 +4572,39 @@ def tab_asistencias():
                 if df_m.empty:
                     df_m = BaseDatos.cargar_matricula()
                     st.session_state['_cache_matricula'] = df_m
-                if not df_m.empty and 'DNI' in df_m.columns:
-                    fila = df_m[df_m['DNI'].astype(str).str.strip() == str(dk).strip()]
-                    if not fila.empty:
-                        cel = str(fila.iloc[0].get('Celular_Apoderado', fila.iloc[0].get('Celular', ''))).strip()
-                        if '.' in cel:
-                            cel = cel.split('.')[0]
-                        cel = ''.join(c for c in cel if c.isdigit())
-                        cel = '' if len(cel) < 7 else cel
+
+                if es_doc:
+                    # Buscar celular en tabla de DOCENTES
+                    df_doc = st.session_state.get('_cache_docentes_wa', pd.DataFrame())
+                    if df_doc.empty:
+                        df_doc = BaseDatos.cargar_docentes()
+                        st.session_state['_cache_docentes_wa'] = df_doc
+                    if not df_doc.empty and 'DNI' in df_doc.columns:
+                        fila_d = df_doc[df_doc['DNI'].astype(str).str.strip() == str(dk).strip()]
+                        if not fila_d.empty:
+                            cel = str(fila_d.iloc[0].get('Celular', '')).strip()
+                    # Fallback: buscar en usuarios config
+                    if not cel or len(cel) < 7:
+                        usuarios = st.session_state.get('usuarios', {})
+                        for u, info_u in usuarios.items():
+                            if isinstance(info_u, dict):
+                                di = st.session_state.get('docente_info_all', {}).get(u, {})
+                                if str(di.get('dni', '')).strip() == str(dk).strip():
+                                    cel = str(di.get('celular', di.get('telefono', ''))).strip()
+                                    break
+
+                if not cel or len(cel) < 7:
+                    # Buscar en matrícula (alumnos)
+                    if not df_m.empty and 'DNI' in df_m.columns:
+                        fila = df_m[df_m['DNI'].astype(str).str.strip() == str(dk).strip()]
+                        if not fila.empty:
+                            cel = str(fila.iloc[0].get('Celular_Apoderado', fila.iloc[0].get('Celular', ''))).strip()
+
+                if cel:
+                    if '.' in cel:
+                        cel = cel.split('.')[0]
+                    cel = ''.join(c for c in cel if c.isdigit())
+                    cel = '' if len(cel) < 7 else cel
 
                 if not cel:
                     sin_celular.append(f"{tipo_icon} {nombre}")
@@ -6585,7 +6610,8 @@ def tab_reportes(config):
     st.subheader("📊 Reportes e Historial")
 
     subtab = st.radio("Seleccionar:", [
-        "📋 Asistencia Mensual", "📊 Reporte Integral",
+        "📋 Asistencia Mensual", "👨‍🏫 Asistencia Docentes",
+        "📊 Reporte Integral",
         "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones",
         "📁 Fichas Docentes"
     ], horizontal=True, key="rep_tipo")
@@ -6641,6 +6667,238 @@ def tab_reportes(config):
         if total_mostradas == 0:
             st.info("No hay evaluaciones para los filtros seleccionados.")
         return
+
+    if subtab == "👨‍🏫 Asistencia Docentes":
+        st.markdown("### 👨‍🏫 Asistencia de Docentes — Semanal y Mensual")
+
+        # Cargar todas las asistencias
+        asistencias = {}
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            try:
+                with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                    asistencias = json.load(f)
+            except Exception:
+                pass
+
+        # También intentar GS
+        datos_gs_doc = {}
+        if gs:
+            try:
+                ws = gs.sh.worksheet('asistencias')
+                registros = ws.get_all_records()
+                for r in registros:
+                    if str(r.get('tipo_persona', '')).lower() == 'docente':
+                        fecha = str(r.get('fecha', ''))
+                        dni = str(r.get('dni', ''))
+                        if fecha and dni:
+                            if fecha not in datos_gs_doc:
+                                datos_gs_doc[fecha] = {}
+                            datos_gs_doc[fecha][dni] = {
+                                'nombre': r.get('nombre', ''),
+                                'entrada': r.get('hora_entrada', ''),
+                                'salida': r.get('hora_salida', ''),
+                                'es_docente': True
+                            }
+            except Exception:
+                pass
+
+        # Combinar local + GS
+        todas_fechas = set(asistencias.keys()) | set(datos_gs_doc.keys())
+
+        # Extraer solo docentes
+        docentes_asist = {}  # {nombre: {fecha: {entrada, salida}}}
+        for fecha in sorted(todas_fechas):
+            regs_local = asistencias.get(fecha, {})
+            regs_gs = datos_gs_doc.get(fecha, {})
+            regs = {**regs_gs, **regs_local}
+            for dni, dat in regs.items():
+                if dat.get('es_docente', False):
+                    nm = dat.get('nombre', dni)
+                    if nm not in docentes_asist:
+                        docentes_asist[nm] = {}
+                    docentes_asist[nm][fecha] = {
+                        'entrada': dat.get('entrada', ''),
+                        'salida': dat.get('salida', ''),
+                        'tardanza': dat.get('tardanza', ''),
+                    }
+
+        if not docentes_asist:
+            st.info("📭 No hay registros de asistencia de docentes.")
+        else:
+            modo = st.radio("Vista:", ["📅 Semanal", "📆 Mensual", "📱 WhatsApp Docentes"],
+                            horizontal=True, key="rep_doc_modo")
+
+            df_doc_list = BaseDatos.cargar_docentes()
+
+            if modo == "📅 Semanal":
+                semana_sel = st.number_input("Semana N°:", 1, 52,
+                                             int(hora_peru().strftime('%V')),
+                                             key="rep_doc_sem")
+                lunes, viernes = _rango_semana(semana_sel)
+                st.caption(f"Semana {semana_sel}: {lunes.strftime('%d/%m')} — {viernes.strftime('%d/%m/%Y')}")
+
+                data_tabla = []
+                for nm in sorted(docentes_asist.keys()):
+                    dias_semana = 0
+                    tardanzas = 0
+                    faltas = 0
+                    for d in range(5):
+                        dia = lunes + timedelta(days=d)
+                        fecha_str = dia.strftime('%Y-%m-%d')
+                        reg = docentes_asist[nm].get(fecha_str, {})
+                        if reg.get('entrada'):
+                            dias_semana += 1
+                            if reg.get('tardanza'):
+                                tardanzas += 1
+                        else:
+                            # Solo contar falta si es día hábil pasado
+                            if dia <= hora_peru().date():
+                                faltas += 1
+                    data_tabla.append({
+                        'Docente': nm, 'Días': dias_semana,
+                        'Tardanzas': tardanzas, 'Faltas': faltas
+                    })
+                if data_tabla:
+                    df_sem = pd.DataFrame(data_tabla)
+                    st.dataframe(df_sem, use_container_width=True, hide_index=True)
+                    st.metric("Total docentes", len(data_tabla))
+                else:
+                    st.info("Sin datos para esta semana.")
+
+            elif modo == "📆 Mensual":
+                mes_sel = st.selectbox("Mes:", list(range(1, 13)),
+                                        format_func=lambda x: list(MESES_ESCOLARES.values())[x-1] if x <= len(MESES_ESCOLARES) else str(x),
+                                        index=hora_peru().month - 1,
+                                        key="rep_doc_mes")
+                anio_sel = hora_peru().year
+
+                data_tabla = []
+                for nm in sorted(docentes_asist.keys()):
+                    dias_mes = 0
+                    tardanzas = 0
+                    entradas = []
+                    for fecha_str, reg in docentes_asist[nm].items():
+                        try:
+                            fd = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                            if fd.month == mes_sel and fd.year == anio_sel:
+                                if reg.get('entrada'):
+                                    dias_mes += 1
+                                    entradas.append(reg['entrada'])
+                                if reg.get('tardanza'):
+                                    tardanzas += 1
+                        except Exception:
+                            pass
+                    data_tabla.append({
+                        'Docente': nm, 'Días Asistidos': dias_mes,
+                        'Tardanzas': tardanzas,
+                        'Hora Prom. Entrada': (
+                            sorted(entradas)[len(entradas)//2] if entradas else '—'
+                        ),
+                    })
+
+                if data_tabla:
+                    df_mes = pd.DataFrame(data_tabla)
+                    df_mes = df_mes.sort_values('Días Asistidos', ascending=False)
+                    st.dataframe(df_mes, use_container_width=True, hide_index=True)
+
+                    # Resumen
+                    col_m1, col_m2, col_m3 = st.columns(3)
+                    col_m1.metric("Docentes", len(data_tabla))
+                    col_m2.metric("Prom. días", f"{sum(r['Días Asistidos'] for r in data_tabla)/max(len(data_tabla),1):.1f}")
+                    col_m3.metric("Tardanzas total", sum(r['Tardanzas'] for r in data_tabla))
+
+                    # PDF
+                    if st.button("📥 Descargar PDF Asistencia Docentes", type="primary",
+                                 key="dl_asist_doc_pdf"):
+                        buf = io.BytesIO()
+                        c_p = canvas.Canvas(buf, pagesize=landscape(A4))
+                        wp, hp = landscape(A4)
+                        c_p.setFont("Helvetica-Bold", 14)
+                        c_p.drawCentredString(wp/2, hp-25,
+                                              "I.E.P. YACHAY — ASISTENCIA DOCENTES")
+                        mes_nombre = list(MESES_ESCOLARES.values())[mes_sel-1] if mes_sel <= len(MESES_ESCOLARES) else str(mes_sel)
+                        c_p.setFont("Helvetica", 9)
+                        c_p.drawCentredString(wp/2, hp-40,
+                                              f"Mes: {mes_nombre} {anio_sel}")
+                        # Tabla
+                        headers = ["N°", "DOCENTE", "DÍAS ASISTIDOS", "TARDANZAS", "HORA PROM."]
+                        rows = [headers]
+                        for i, r in enumerate(data_tabla):
+                            rows.append([str(i+1), r['Docente'], str(r['Días Asistidos']),
+                                        str(r['Tardanzas']), r['Hora Prom. Entrada']])
+                        t_doc = Table(rows, colWidths=[25, 220, 80, 70, 80])
+                        t_doc.setStyle(TableStyle([
+                            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0,0), (-1,-1), 7),
+                            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+                            ('BACKGROUND', (0,0), (-1,0), colors.Color(0,0.3,0.15)),
+                            ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+                            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+                            ('ALIGN', (1,1), (1,-1), 'LEFT'),
+                            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                        ]))
+                        tw2, th2 = t_doc.wrap(wp-40, hp-60)
+                        t_doc.drawOn(c_p, 20, hp-55-th2)
+                        c_p.save()
+                        buf.seek(0)
+                        st.download_button("⬇️ PDF", buf, f"Asistencia_Docentes_{mes_nombre}.pdf",
+                                           "application/pdf", key="dl_doc_pdf2")
+                else:
+                    st.info("Sin datos para este mes.")
+
+            else:
+                # ── WhatsApp Docentes ──────────────────────────────────────
+                st.markdown("### 📱 Enviar WhatsApp a Docentes")
+                st.caption("Enviar mensajes de asistencia o comunicados a docentes")
+
+                if not df_doc_list.empty and 'Celular' in df_doc_list.columns:
+                    msg_tipo = st.selectbox("Tipo de mensaje:", [
+                        "Recordatorio de asistencia",
+                        "Felicitación por puntualidad",
+                        "Comunicado general",
+                        "Mensaje personalizado"
+                    ], key="wa_doc_tipo")
+
+                    msg_custom = ""
+                    if msg_tipo == "Mensaje personalizado":
+                        msg_custom = st.text_area("Mensaje:", placeholder="Escriba su mensaje...",
+                                                   key="wa_doc_msg")
+
+                    st.markdown("---")
+                    enviados_count = 0
+                    for _, row in df_doc_list.iterrows():
+                        nm = str(row.get('Nombre', '')).strip()
+                        cel = str(row.get('Celular', '')).strip()
+                        if cel and cel != 'nan':
+                            if '.' in cel:
+                                cel = cel.split('.')[0]
+                            cel = ''.join(c for c in cel if c.isdigit())
+                            if len(cel) >= 7:
+                                if msg_tipo == "Recordatorio de asistencia":
+                                    msg = (f"Buenos días Prof. {nm}. Le recordamos registrar "
+                                           f"su asistencia en el sistema YACHAY. Gracias.")
+                                elif msg_tipo == "Felicitación por puntualidad":
+                                    msg = (f"Estimado(a) Prof. {nm}, felicitamos su puntualidad "
+                                           f"y compromiso con la I.E.P. YACHAY. ¡Siga así!")
+                                elif msg_tipo == "Comunicado general":
+                                    msg = (f"Estimado(a) Prof. {nm}, se le comunica que "
+                                           f"hay una reunión de coordinación pendiente. "
+                                           f"Por favor revise el sistema YACHAY. Gracias.")
+                                else:
+                                    msg = f"Prof. {nm}: {msg_custom}" if msg_custom else f"Mensaje para {nm}"
+
+                                link = generar_link_whatsapp(cel, msg)
+                                st.markdown(
+                                    f'<a href="{link}" target="_blank" class="wa-btn">'
+                                    f'📱 👨‍🏫 {nm} → {cel}</a>',
+                                    unsafe_allow_html=True)
+                                enviados_count += 1
+                    if enviados_count == 0:
+                        st.warning("No hay docentes con celular registrado.")
+                    else:
+                        st.success(f"📱 {enviados_count} docentes con WhatsApp disponible")
+                else:
+                    st.warning("No hay docentes registrados o sin campo Celular.")
 
     if subtab == "📋 Asistencia Mensual":
         st.markdown("### 📋 Reporte Mensual de Asistencia por Grado")
