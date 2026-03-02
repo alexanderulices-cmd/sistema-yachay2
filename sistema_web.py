@@ -1489,10 +1489,14 @@ class BaseDatos:
             asistencias[fecha_hoy] = {}
         if dni not in asistencias[fecha_hoy]:
             asistencias[fecha_hoy][dni] = {
-                'nombre': nombre, 'entrada': '', 'salida': '', 'tardanza': '',
+                'nombre': nombre, 'entrada': '', 'salida': '',
+                'tardanza': '', 'entrada_tarde': '', 'salida_tarde': '',
                 'es_docente': es_docente
             }
-        asistencias[fecha_hoy][dni][tipo] = hora
+        # Mapear tipos a campos
+        campo = tipo.lower().replace(' ', '_')
+        if campo in ('entrada', 'salida', 'tardanza', 'entrada_tarde', 'salida_tarde'):
+            asistencias[fecha_hoy][dni][campo] = hora
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
@@ -1528,6 +1532,8 @@ class BaseDatos:
                     'tipo_persona': 'docente' if es_docente else 'alumno',
                     'hora_entrada': reg.get('entrada', ''),
                     'hora_salida': reg.get('salida', ''),
+                    'hora_entrada_tarde': reg.get('entrada_tarde', ''),
+                    'hora_salida_tarde': reg.get('salida_tarde', ''),
                     'grado': grado,
                     'nivel': nivel,
                 })
@@ -4407,22 +4413,43 @@ def tab_asistencias():
     if 'wa_enviados' not in st.session_state:
         st.session_state.wa_enviados = set()
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if st.button("🌅 ENTRADA", use_container_width=True, key="be", type="primary"):
-            st.session_state.tipo_asistencia = "Entrada"
-            st.rerun()
-    with c2:
-        if st.button("⏰ TARDANZA", use_container_width=True, key="bt", type="primary"):
-            st.session_state.tipo_asistencia = "Tardanza"
-            st.rerun()
-    with c3:
-        if st.button("🌙 SALIDA", use_container_width=True, key="bs", type="primary"):
-            st.session_state.tipo_asistencia = "Salida"
-            st.rerun()
-    _color_modo = {"Entrada": "#16a34a", "Tardanza": "#f59e0b", "Salida": "#2563eb"}
-    _modo = st.session_state.tipo_asistencia
-    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {_modo} — Registre alumnos/docentes. Luego envíe WhatsApp.</div>", unsafe_allow_html=True)
+    # ── Horario y Modo ──────────────────────────────────────────
+    col_h, col_sep, col_modo = st.columns([2, 0.2, 3])
+    with col_h:
+        horario_sel = st.radio("⏰ Horario:", ['normal', 'invierno'],
+                                format_func=lambda x: HORARIOS[x]['nombre'],
+                                horizontal=True, key="horario_radio",
+                                index=0 if _horario_activo() == 'normal' else 1)
+        st.session_state.horario_escolar = horario_sel
+        limite = HORARIOS[horario_sel]['limite']
+        st.caption(f"Límite puntualidad: **{limite}** — después = tardanza automática")
+
+    with col_modo:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            if st.button("🌅 ENTRADA", use_container_width=True, key="be", type="primary"):
+                st.session_state.tipo_asistencia = "Entrada"
+                st.rerun()
+        with c2:
+            if st.button("🌙 SALIDA", use_container_width=True, key="bs", type="primary"):
+                st.session_state.tipo_asistencia = "Salida"
+                st.rerun()
+        with c3:
+            if st.button("🌤️ ENTRADA TARDE", use_container_width=True, key="bet"):
+                st.session_state.tipo_asistencia = "Entrada_Tarde"
+                st.rerun()
+        # Fila 2: Salida Tarde
+        _, _, c3b = st.columns(3)
+        with c3b:
+            if st.button("🌙 SALIDA TARDE", use_container_width=True, key="bst"):
+                st.session_state.tipo_asistencia = "Salida_Tarde"
+                st.rerun()
+
+    _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb", "Tardanza": "#f59e0b",
+                   "Entrada_Tarde": "#8b5cf6", "Salida_Tarde": "#6366f1"}
+    _modo = st.session_state.get('tipo_asistencia', 'Entrada')
+    modo_label = _modo.replace('_', ' ')
+    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {modo_label} | Horario: {HORARIOS[horario_sel]['nombre']} — Tardanza auto después de {limite}</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -4505,8 +4532,10 @@ def tab_asistencias():
         for dk, v in asis.items():
             reg = {'DNI': dk, 'Nombre': v['nombre'],
                    'Entrada': v.get('entrada', '—'),
-                   'Tardanza': v.get('tardanza', '—'),
+                   'Tardanza': '⏰' if _es_tardanza(v.get('entrada', '') or v.get('tardanza', '')) and (v.get('entrada') or v.get('tardanza')) else '—',
                    'Salida': v.get('salida', '—'),
+                   'Ent.Tarde': v.get('entrada_tarde', '—'),
+                   'Sal.Tarde': v.get('salida_tarde', '—'),
                    'es_docente': v.get('es_docente', False)}
             if v.get('es_docente', False):
                 docentes_h.append(reg)
@@ -4523,7 +4552,9 @@ def tab_asistencias():
             entradas = sum(1 for v in asis.values() if v.get('entrada'))
             st.metric("🌅 Entradas", entradas)
         with c4:
-            tardanzas = sum(1 for v in asis.values() if v.get('tardanza'))
+            tardanzas = sum(1 for v in asis.values()
+                          if _es_tardanza(v.get('entrada', '') or v.get('tardanza', ''))
+                          and (v.get('entrada') or v.get('tardanza')))
             st.metric("⏰ Tardanzas", tardanzas)
         with c5:
             salidas = sum(1 for v in asis.values() if v.get('salida'))
@@ -4685,47 +4716,66 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia — auto-detecta tardanza para docentes (>8:05am)"""
+    """Registra asistencia — auto-detecta tardanza, soporta turno tarde"""
     persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
-        tipo = st.session_state.get('tipo_asistencia', 'Entrada').lower()
+        modo = st.session_state.get('tipo_asistencia', 'Entrada')
         es_d = persona.get('_tipo', '') == 'docente'
+
+        # Obtener nombre
         if es_d:
             df_doc = BaseDatos.cargar_docentes()
             if not df_doc.empty and 'DNI' in df_doc.columns:
                 df_doc['DNI'] = df_doc['DNI'].astype(str).str.strip()
-                doc_encontrado = df_doc[df_doc['DNI'] == str(dni).strip()]
-                nombre = doc_encontrado.iloc[0]['Nombre'] if not doc_encontrado.empty else persona.get('Nombre', '')
+                doc_e = df_doc[df_doc['DNI'] == str(dni).strip()]
+                nombre = doc_e.iloc[0]['Nombre'] if not doc_e.empty else persona.get('Nombre', '')
             else:
                 nombre = persona.get('Nombre', '')
-            # Docente: auto-detectar tardanza en entrada
-            if tipo in ('entrada', 'tardanza'):
-                if _es_tardanza_docente(hora):
-                    tipo = 'tardanza'
-                    emoji_tipo = "🟡"
-                    msg_extra = " ⏰ TARDANZA (después de 8:05am)"
-                else:
-                    tipo = 'entrada'
-                    emoji_tipo = "🟢"
-                    msg_extra = " ✅ PUNTUAL"
-            else:
-                emoji_tipo = "🔵"
-                msg_extra = ""
         else:
             nombre = persona.get('Nombre', '')
-            emoji_tipo = "🟢" if tipo == "entrada" else ("🟡" if tipo == "tardanza" else "🔵")
-            msg_extra = ""
+
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
+        limite_txt = HORARIOS[_horario_activo()]['limite']
+
+        # Determinar tipo y tardanza
+        if modo == "Entrada":
+            if _es_tardanza(hora):
+                tipo = 'tardanza'
+                emoji_tipo = "🟡"
+                msg_extra = f" ⏰ TARDANZA (después de {limite_txt})"
+            else:
+                tipo = 'entrada'
+                emoji_tipo = "🟢"
+                msg_extra = " ✅ PUNTUAL"
+        elif modo == "Salida":
+            tipo = 'salida'
+            emoji_tipo = "🔵"
+            msg_extra = ""
+        elif modo == "Entrada_Tarde":
+            tipo = 'entrada_tarde'
+            emoji_tipo = "🌤️"
+            msg_extra = " (Turno Tarde)"
+        elif modo == "Salida_Tarde":
+            tipo = 'salida_tarde'
+            emoji_tipo = "🌙"
+            msg_extra = " (Turno Tarde)"
+        else:
+            tipo = modo.lower()
+            emoji_tipo = "⚪"
+            msg_extra = ""
+
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
             return
-        st.toast(f"{emoji_tipo} {tp} {nombre} — {tipo.title()}: {hora}{msg_extra}", icon="✅")
-        color_div = "ok" if tipo == "entrada" else "salida"
+
+        label = tipo.replace('_', ' ').title()
+        color_div = "ok" if 'entrada' in tipo else "salida"
+        st.toast(f"{emoji_tipo} {tp} {nombre} — {label}: {hora}{msg_extra}", icon="✅")
         st.markdown(f"""<div class="asist-{color_div}">
-            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {tipo.title()}: <strong>{hora}</strong>{msg_extra}
+            {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {label}: <strong>{hora}</strong>{msg_extra}
         </div>""", unsafe_allow_html=True)
         reproducir_beep_exitoso()
     else:
@@ -4740,23 +4790,6 @@ def _registrar_asistencia_rapida(dni):
             reproducir_beep_exitoso()
             st.info("💡 Recuerda matricular a este estudiante para que aparezca normalmente.")
 
-
-# ================================================================
-# TAB: CALIFICACIÓN YACHAY — RANKING POR DOCENTE
-# Cada docente ve SOLO su ranking. Selección de alumno por lista.
-# Grid estilo ZipGrade + Guardar Evaluaciones + Reportes individuales
-# ================================================================
-
-ESCALA_MINEDU = {
-    'AD': {'min': 18, 'max': 20, 'nombre': 'Logro Destacado', 'color': '#16a34a',
-           'desc': 'El estudiante evidencia un nivel superior a lo esperado. Maneja solventemente las situaciones propuestas.'},
-    'A': {'min': 14, 'max': 17, 'nombre': 'Logro Previsto', 'color': '#2563eb',
-          'desc': 'El estudiante evidencia el logro de los aprendizajes previstos en el tiempo programado.'},
-    'B': {'min': 11, 'max': 13, 'nombre': 'En Proceso', 'color': '#f59e0b',
-          'desc': 'El estudiante está en camino de lograr los aprendizajes previstos. Requiere acompañamiento durante un tiempo razonable.'},
-    'C': {'min': 0, 'max': 10, 'nombre': 'En Inicio', 'color': '#dc2626',
-          'desc': 'El estudiante está empezando a desarrollar los aprendizajes previstos. Necesita mayor tiempo de acompañamiento e intervención del docente.'},
-}
 
 def nota_a_letra(nota):
     if nota >= 18: return 'AD'
@@ -6738,12 +6771,15 @@ def tab_reportes(config):
                     nm = dat.get('nombre', dni)
                     if nm not in docentes_asist:
                         docentes_asist[nm] = {}
-                    entrada = dat.get('entrada', '')
+                    entrada = dat.get('entrada', '') or dat.get('tardanza', '')
                     tardanza_auto = _es_tardanza_docente(entrada) if entrada else False
                     docentes_asist[nm][fecha] = {
                         'entrada': entrada,
                         'salida': dat.get('salida', ''),
                         'tardanza': tardanza_auto,
+                        'entrada_tarde': dat.get('entrada_tarde', ''),
+                        'salida_tarde': dat.get('salida_tarde', ''),
+                        'dni': dni,
                     }
 
         if not docentes_asist:
@@ -6752,7 +6788,9 @@ def tab_reportes(config):
             df_doc_list = BaseDatos.cargar_docentes()
 
             modo = st.radio("Vista:", [
-                "📅 Semanal por Mes", "📆 Resumen Mensual", "📱 WhatsApp Docentes"
+                "📅 Semanal por Mes", "📆 Resumen Mensual",
+                "✏️ Editar Registros", "⏱️ Horas Sec/PreU",
+                "📱 WhatsApp Docentes"
             ], horizontal=True, key="rep_doc_modo")
 
             # ── Meses escolares (marzo a diciembre) ──────────────────────
@@ -6978,7 +7016,191 @@ def tab_reportes(config):
                 else:
                     st.info("Sin datos para este mes.")
 
-            else:
+            elif modo == "✏️ Editar Registros":
+                # ── Editar registros de docentes ─────────────────────────
+                st.markdown("### ✏️ Editar Registro de Asistencia — Docente")
+                st.caption("Para docentes con actividades especiales que justifican la hora de llegada")
+
+                docente_edit = st.selectbox("👨‍🏫 Docente:",
+                                            sorted(docentes_asist.keys()),
+                                            key="edit_doc_sel")
+                fecha_edit = st.date_input("📅 Fecha:", value=hora_peru().date(),
+                                            key="edit_fecha")
+                fecha_str_e = fecha_edit.strftime('%Y-%m-%d')
+
+                reg_actual = docentes_asist.get(docente_edit, {}).get(fecha_str_e, {})
+                st.info(f"Registro actual: Entrada: **{reg_actual.get('entrada', '—')}** | "
+                        f"Salida: **{reg_actual.get('salida', '—')}** | "
+                        f"Tardanza: **{'Sí' if reg_actual.get('tardanza') else 'No'}**")
+
+                col_e1, col_e2, col_e3 = st.columns(3)
+                with col_e1:
+                    nueva_entrada = st.text_input("🕒 Entrada:", value=reg_actual.get('entrada', ''),
+                                                   placeholder="07:45", key="edit_ent")
+                with col_e2:
+                    nueva_salida = st.text_input("🕒 Salida:", value=reg_actual.get('salida', ''),
+                                                  placeholder="13:30", key="edit_sal")
+                with col_e3:
+                    quitar_tard = st.checkbox("✅ Marcar como PUNTUAL (quitar tardanza)",
+                                              key="edit_puntual")
+
+                motivo = st.text_input("📝 Motivo de la modificación:",
+                                        placeholder="Ej: Actividad extracurricular autorizada",
+                                        key="edit_motivo")
+
+                if st.button("💾 GUARDAR CAMBIOS", type="primary", key="btn_edit_doc"):
+                    if motivo:
+                        try:
+                            asist_data = {}
+                            if Path(ARCHIVO_ASISTENCIAS).exists():
+                                with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                                    asist_data = json.load(f)
+                            # Buscar DNI del docente
+                            dni_edit = None
+                            if fecha_str_e in asist_data:
+                                for dk, dv in asist_data[fecha_str_e].items():
+                                    if dv.get('nombre', '').strip().upper() == docente_edit.strip().upper():
+                                        dni_edit = dk
+                                        break
+                            if dni_edit and fecha_str_e in asist_data and dni_edit in asist_data[fecha_str_e]:
+                                if nueva_entrada:
+                                    asist_data[fecha_str_e][dni_edit]['entrada'] = nueva_entrada
+                                if nueva_salida:
+                                    asist_data[fecha_str_e][dni_edit]['salida'] = nueva_salida
+                                if quitar_tard:
+                                    asist_data[fecha_str_e][dni_edit]['tardanza'] = ''
+                                    if not asist_data[fecha_str_e][dni_edit].get('entrada'):
+                                        asist_data[fecha_str_e][dni_edit]['entrada'] = nueva_entrada or '07:30'
+                                asist_data[fecha_str_e][dni_edit]['modificado'] = motivo
+                                asist_data[fecha_str_e][dni_edit]['modificado_por'] = st.session_state.get('usuario_actual', '')
+                                with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
+                                    json.dump(asist_data, f, indent=2, ensure_ascii=False)
+                                st.success(f"✅ Registro de {docente_edit} modificado — {fecha_str_e}")
+                                st.rerun()
+                            else:
+                                st.warning("No se encontró registro para esa fecha. Puede crear uno nuevo.")
+                                # Crear registro
+                                if fecha_str_e not in asist_data:
+                                    asist_data[fecha_str_e] = {}
+                                # Buscar DNI en docentes
+                                df_doc_e = BaseDatos.cargar_docentes()
+                                if not df_doc_e.empty:
+                                    fd = df_doc_e[df_doc_e['Nombre'].astype(str).str.upper() == docente_edit.upper()]
+                                    if not fd.empty:
+                                        dn = str(fd.iloc[0].get('DNI', f'edit_{docente_edit[:10]}'))
+                                        asist_data[fecha_str_e][dn] = {
+                                            'nombre': docente_edit, 'entrada': nueva_entrada or '07:30',
+                                            'salida': nueva_salida, 'tardanza': '' if quitar_tard else '',
+                                            'es_docente': True, 'modificado': motivo,
+                                            'entrada_tarde': '', 'salida_tarde': '',
+                                        }
+                                        with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
+                                            json.dump(asist_data, f, indent=2, ensure_ascii=False)
+                                        st.success(f"✅ Registro creado para {docente_edit} — {fecha_str_e}")
+                                        st.rerun()
+                        except Exception as e:
+                            st.error(f"❌ Error: {e}")
+                    else:
+                        st.warning("⚠️ Debe ingresar el motivo de la modificación.")
+
+            elif modo == "⏱️ Horas Sec/PreU":
+                # ── Horas de trabajo Sec/PreU ────────────────────────────
+                st.markdown("### ⏱️ Control de Horas — Docentes Secundaria / PreUniversitario")
+                st.caption("Docentes que trabajan por horas: registro de horas por día, semana y mes")
+
+                mes_h = st.selectbox("📆 Mes:", meses_esc,
+                                      format_func=lambda x: x[1],
+                                      key="horas_mes")
+                mes_num_h = mes_h[0]
+                mes_nombre_h = mes_h[1]
+                anio_h = hora_peru().year
+
+                # Calcular horas por docente
+                horas_data = []
+                for nm in sorted(docentes_asist.keys()):
+                    horas_dia = {}
+                    total_horas_mes = 0.0
+                    for fecha_str, reg in docentes_asist[nm].items():
+                        try:
+                            fd = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                            if fd.month == mes_num_h and fd.year == anio_h:
+                                ent = reg.get('entrada', '')
+                                sal = reg.get('salida', '')
+                                horas_d = 0.0
+                                if ent and sal:
+                                    try:
+                                        h1, m1 = ent.split(':')[:2]
+                                        h2, m2 = sal.split(':')[:2]
+                                        min1 = int(h1) * 60 + int(m1)
+                                        min2 = int(h2) * 60 + int(m2)
+                                        horas_d = max(0, (min2 - min1) / 60)
+                                    except Exception:
+                                        pass
+                                # Sumar turno tarde si existe
+                                ent_t = reg.get('entrada_tarde', '')
+                                sal_t = reg.get('salida_tarde', '')
+                                if ent_t and sal_t:
+                                    try:
+                                        h1t, m1t = ent_t.split(':')[:2]
+                                        h2t, m2t = sal_t.split(':')[:2]
+                                        min1t = int(h1t) * 60 + int(m1t)
+                                        min2t = int(h2t) * 60 + int(m2t)
+                                        horas_d += max(0, (min2t - min1t) / 60)
+                                    except Exception:
+                                        pass
+                                horas_dia[fecha_str] = round(horas_d, 1)
+                                total_horas_mes += horas_d
+                        except Exception:
+                            pass
+
+                    if horas_dia:
+                        # Calcular por semana
+                        semanas_h = _semanas_del_mes(mes_num_h, anio_h)
+                        horas_por_sem = []
+                        for sem_n, lun_s, vie_s in semanas_h:
+                            h_sem = 0.0
+                            for d in range(5):
+                                dia_s = lun_s + timedelta(days=d)
+                                h_sem += horas_dia.get(dia_s.strftime('%Y-%m-%d'), 0.0)
+                            horas_por_sem.append(round(h_sem, 1))
+
+                        horas_data.append({
+                            'Docente': nm,
+                            'Días': len(horas_dia),
+                            'Horas Total': round(total_horas_mes, 1),
+                            'Prom/Día': round(total_horas_mes / max(len(horas_dia), 1), 1),
+                            **{f'Sem {s[0]}': h for s, h in zip(semanas_h, horas_por_sem)},
+                        })
+
+                if horas_data:
+                    st.markdown(f"### {mes_nombre_h} {anio_h}")
+                    df_h = pd.DataFrame(horas_data).sort_values('Horas Total', ascending=False)
+                    st.dataframe(df_h, use_container_width=True, hide_index=True)
+
+                    # Métricas
+                    ch1, ch2, ch3 = st.columns(3)
+                    ch1.metric("👨‍🏫 Docentes", len(horas_data))
+                    ch2.metric("⏱️ Prom. horas/mes", f"{sum(r['Horas Total'] for r in horas_data)/max(len(horas_data),1):.1f}h")
+                    ch3.metric("⏱️ Total horas", f"{sum(r['Horas Total'] for r in horas_data):.0f}h")
+
+                    # Gráfico
+                    import altair as alt
+                    chart_h = []
+                    for r in horas_data:
+                        nm_c = r['Docente'].split()[-1] if ' ' in r['Docente'] else r['Docente']
+                        if len(nm_c) > 12:
+                            nm_c = nm_c[:10] + ".."
+                        chart_h.append({'Docente': nm_c, 'Horas': r['Horas Total']})
+                    df_ch = pd.DataFrame(chart_h)
+                    bar = alt.Chart(df_ch).mark_bar(color='#3b82f6').encode(
+                        x=alt.X('Docente:N', sort='-y', title=''),
+                        y=alt.Y('Horas:Q', title='Horas trabajadas'),
+                    ).properties(height=280, title=f'Horas Trabajadas — {mes_nombre_h} {anio_h}')
+                    st.altair_chart(bar, use_container_width=True)
+                else:
+                    st.info("Sin datos de horas para este mes. Se necesita entrada Y salida registradas.")
+
+            elif modo == "📱 WhatsApp Docentes":
                 # ── WhatsApp Docentes ──────────────────────────────────────
                 st.markdown("### 📱 Enviar WhatsApp a Docentes")
                 st.caption("Enviar mensajes de asistencia o comunicados a docentes")
@@ -8822,18 +9044,35 @@ def _semanas_del_mes(mes, anio=None):
 
 
 # Hora límite puntualidad docente: antes de 8:05 = puntual, después = tardanza
-HORA_LIMITE_DOCENTE = "08:05"
+# ── HORARIOS DE PUNTUALIDAD ──────────────────────────────────────
+HORARIOS = {
+    'normal': {'limite': '08:05', 'nombre': '☀️ Normal (8:05am)', 'minutos': 8*60+5},
+    'invierno': {'limite': '08:15', 'nombre': '❄️ Invierno (8:15am)', 'minutos': 8*60+15},
+}
 
 
-def _es_tardanza_docente(hora_str):
-    """Determina si la hora de entrada es tardanza para docente"""
+def _horario_activo():
+    """Retorna el horario activo (normal o invierno)"""
+    return st.session_state.get('horario_escolar', 'normal')
+
+
+def _limite_minutos():
+    return HORARIOS[_horario_activo()]['minutos']
+
+
+def _es_tardanza(hora_str):
+    """Determina si la hora de entrada es tardanza según horario activo"""
     try:
         h, m = hora_str.split(':')[:2]
         minutos = int(h) * 60 + int(m)
-        limite = 8 * 60 + 5  # 08:05
-        return minutos > limite
+        return minutos > _limite_minutos()
     except Exception:
         return False
+
+
+# Alias para compatibilidad
+def _es_tardanza_docente(hora_str):
+    return _es_tardanza(hora_str)
 
 
 def _comprimir_imagen_aula(img_bytes, max_size=400, quality=65):
