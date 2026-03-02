@@ -4568,38 +4568,44 @@ def tab_asistencias():
                 tipo_icon = "👨‍🏫" if es_doc else "📚"
 
                 cel = ''
-                df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
-                if df_m.empty:
-                    df_m = BaseDatos.cargar_matricula()
-                    st.session_state['_cache_matricula'] = df_m
-
-                if es_doc:
-                    # Buscar celular en tabla de DOCENTES
-                    df_doc = st.session_state.get('_cache_docentes_wa', pd.DataFrame())
-                    if df_doc.empty:
-                        df_doc = BaseDatos.cargar_docentes()
-                        st.session_state['_cache_docentes_wa'] = df_doc
-                    if not df_doc.empty and 'DNI' in df_doc.columns:
-                        fila_d = df_doc[df_doc['DNI'].astype(str).str.strip() == str(dk).strip()]
+                # ── Buscar celular en AMBAS tablas siempre ───────────────
+                # 1) DOCENTES — por DNI y por nombre
+                df_doc_wa = st.session_state.get('_cache_docentes_wa', pd.DataFrame())
+                if df_doc_wa.empty:
+                    df_doc_wa = BaseDatos.cargar_docentes()
+                    st.session_state['_cache_docentes_wa'] = df_doc_wa
+                if not df_doc_wa.empty and 'Celular' in df_doc_wa.columns:
+                    # Por DNI
+                    if 'DNI' in df_doc_wa.columns:
+                        fila_d = df_doc_wa[df_doc_wa['DNI'].astype(str).str.strip() == str(dk).strip()]
                         if not fila_d.empty:
-                            cel = str(fila_d.iloc[0].get('Celular', '')).strip()
-                    # Fallback: buscar en usuarios config
-                    if not cel or len(cel) < 7:
-                        usuarios = st.session_state.get('usuarios', {})
-                        for u, info_u in usuarios.items():
-                            if isinstance(info_u, dict):
-                                di = st.session_state.get('docente_info_all', {}).get(u, {})
-                                if str(di.get('dni', '')).strip() == str(dk).strip():
-                                    cel = str(di.get('celular', di.get('telefono', ''))).strip()
-                                    break
+                            cv = str(fila_d.iloc[0].get('Celular', '')).strip()
+                            if cv and cv not in ('nan', 'None', '', 'NaN'):
+                                cel = cv
+                    # Por nombre (fallback si DNI no coincide)
+                    if not cel and 'Nombre' in df_doc_wa.columns:
+                        nm_up = nombre.strip().upper()
+                        fila_n = df_doc_wa[df_doc_wa['Nombre'].astype(str).str.strip().str.upper() == nm_up]
+                        if not fila_n.empty:
+                            cv = str(fila_n.iloc[0].get('Celular', '')).strip()
+                            if cv and cv not in ('nan', 'None', '', 'NaN'):
+                                cel = cv
 
-                if not cel or len(cel) < 7:
-                    # Buscar en matrícula (alumnos)
+                # 2) MATRÍCULA — alumnos por DNI
+                if not cel:
+                    df_m = st.session_state.get('_cache_matricula', pd.DataFrame())
+                    if df_m.empty:
+                        df_m = BaseDatos.cargar_matricula()
+                        st.session_state['_cache_matricula'] = df_m
                     if not df_m.empty and 'DNI' in df_m.columns:
                         fila = df_m[df_m['DNI'].astype(str).str.strip() == str(dk).strip()]
                         if not fila.empty:
-                            cel = str(fila.iloc[0].get('Celular_Apoderado', fila.iloc[0].get('Celular', ''))).strip()
+                            cv = str(fila.iloc[0].get('Celular_Apoderado',
+                                     fila.iloc[0].get('Celular', ''))).strip()
+                            if cv and cv not in ('nan', 'None', '', 'NaN'):
+                                cel = cv
 
+                # Limpiar número
                 if cel:
                     if '.' in cel:
                         cel = cel.split('.')[0]
