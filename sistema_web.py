@@ -11762,154 +11762,224 @@ def mostrar_registro_mensual_notas():
 # ================================================================
 
 # ================================================================
-# MODULO: YACHAY PLICKERS - Evaluacion con QR
+# MODULO: YACHAY QAWAY - Evaluacion con QR
 # ================================================================
 
+
+# ================================================================
+# MODULO: YACHAY QAWAY v2 — Sync PC + Celular
+# ================================================================
+# PC: crear preguntas, proyectar, ver respuestas en vivo
+# Celular: escanear QR caminando
+# Datos compartidos via archivo JSON
+
+def _plk_dir():
+    d = Path("plickers_data")
+    d.mkdir(exist_ok=True)
+    return d
+
+def _plk_guardar_sesion(sesion_id, data):
+    """Guarda sesion activa en archivo para sync PC<->Celular"""
+    p = _plk_dir() / f"sesion_{sesion_id}.json"
+    with open(p, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+def _plk_cargar_sesion(sesion_id):
+    """Carga sesion desde archivo"""
+    p = _plk_dir() / f"sesion_{sesion_id}.json"
+    if p.exists():
+        with open(p, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return None
+
+def _plk_guardar_respuesta(sesion_id, dni, nombre, pregunta_idx, respuesta, correcta_es):
+    """Guarda respuesta individual en archivo compartido"""
+    p = _plk_dir() / f"resp_{sesion_id}.json"
+    resp = {}
+    if p.exists():
+        with open(p, 'r', encoding='utf-8') as f:
+            resp = json.load(f)
+    if dni not in resp:
+        resp[dni] = {'nombre': nombre, 'respuestas': {}}
+    resp[dni]['respuestas'][str(pregunta_idx)] = {
+        'resp': respuesta, 'correcta': correcta_es,
+        'ok': respuesta == correcta_es
+    }
+    with open(p, 'w', encoding='utf-8') as f:
+        json.dump(resp, f, indent=2, ensure_ascii=False)
+
+def _plk_cargar_respuestas(sesion_id):
+    """Carga todas las respuestas"""
+    p = _plk_dir() / f"resp_{sesion_id}.json"
+    if p.exists():
+        with open(p, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
 def _generar_tarjeta_plickers(nombre, dni, numero):
-    """Genera tarjeta QR estilo Plickers con 4 QR (A,B,C,D)"""
+    """Tarjeta PLEGABLE: doblar en 4, cada cara = 1 QR"""
     import qrcode
     from PIL import Image, ImageDraw, ImageFont
-    ANCHO, ALTO = 400, 500
-    img = Image.new('RGB', (ANCHO, ALTO), 'white')
+    W, H = 600, 600
+    img = Image.new('RGB', (W, H), 'white')
     draw = ImageDraw.Draw(img)
-    draw.rectangle([2, 2, ANCHO-3, ALTO-3], outline='#001e7c', width=2)
-    draw.rectangle([0, 0, ANCHO, 45], fill='#001e7c')
     try:
-        font_h = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14)
-        font_s = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11)
-        font_l = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+        fx = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
+        fm = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14)
     except Exception:
-        font_h = font_s = font_l = ImageFont.load_default()
-    draw.text((ANCHO//2, 15), "YACHAY PLICKERS", fill='white', anchor='mm', font=font_h)
-    draw.text((ANCHO//2, 35), f"#{numero:03d}", fill='#FFD700', anchor='mm', font=font_s)
-    nm_c = nombre[:28] + ".." if len(nombre) > 30 else nombre
-    draw.text((ANCHO//2, 60), nm_c, fill='#001e7c', anchor='mm', font=font_s)
-    opciones = ['A', 'B', 'C', 'D']
-    colores_bg = ['#dcfce7', '#dbeafe', '#fef3c7', '#fce7f3']
-    colores_let = ['#16a34a', '#2563eb', '#d97706', '#db2777']
-    posiciones = [(30, 80), (210, 80), (30, 290), (210, 290)]
-    for i, (op, cbg, clet, pos) in enumerate(zip(opciones, colores_bg, colores_let, posiciones)):
-        qr_data = f"YQ_{dni}_{op}"
-        qr = qrcode.QRCode(version=1, box_size=4, border=1, error_correction=qrcode.constants.ERROR_CORRECT_M)
+        fs = fx = fm = ImageFont.load_default()
+    # Lineas de doblez
+    for x in range(0, W, 8):
+        draw.line([(x, H//2), (x+4, H//2)], fill='#999', width=1)
+    for y in range(0, H, 8):
+        draw.line([(W//2, y), (W//2, y+4)], fill='#999', width=1)
+    ops = ['A','B','C','D']
+    cls = ['#16a34a','#2563eb','#d97706','#db2777']
+    bgs = ['#f0fdf4','#eff6ff','#fffbeb','#fdf2f8']
+    pnl = [(0,0),(W//2,0),(0,H//2),(W//2,H//2)]
+    pw, ph = W//2, H//2
+    for i in range(4):
+        op, cl, bg = ops[i], cls[i], bgs[i]
+        px, py = pnl[i]
+        draw.rectangle([px+2,py+2,px+pw-2,py+ph-2], fill=bg, outline=cl, width=3)
+        draw.text((px+pw//2, py+25), op, fill=cl, anchor='mm', font=fx)
+        qr_data = f"YP|{dni}|{op}|{numero}"
+        qr = qrcode.QRCode(version=2, box_size=5, border=1, error_correction=qrcode.constants.ERROR_CORRECT_H)
         qr.add_data(qr_data)
         qr.make(fit=True)
-        qr_img = qr.make_image(fill_color='black', back_color='white').resize((120, 120))
-        x, y = pos
-        draw.rectangle([x, y, x+160, y+195], fill=cbg, outline=clet, width=2)
-        draw.text((x+80, y+15), op, fill=clet, anchor='mm', font=font_l)
-        img.paste(qr_img, (x+20, y+35))
-        draw.text((x+80, y+170), f"Mostrar para {op}", fill=clet, anchor='mm', font=font_s)
-    draw.text((ANCHO//2, ALTO-12), f"DNI: {dni}", fill='gray', anchor='mm', font=font_s)
+        qi = qr.make_image(fill_color='black', back_color='white').resize((150,150))
+        img.paste(qi, (px+pw//2-75, py+55))
+        draw.text((px+pw//2, py+ph-25), f"#{numero:03d} {nombre[:18]}", fill='#666', anchor='mm', font=fs)
+        draw.text((px+pw//2, py+ph-10), f"Doblar y mostrar {op}", fill=cl, anchor='mm', font=fm)
     return img
 
 
 def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
-    """PDF con tarjetas Plickers (4 por hoja A4)"""
-    from PIL import Image as PILImage
+    """PDF tarjetas plegables (1 por hoja A4)"""
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
     est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
-    posiciones = [(20, h/2+10), (w/2+10, h/2+10), (20, 10), (w/2+10, 10)]
     for idx in range(len(est)):
-        pi = idx % 4
-        if idx > 0 and pi == 0:
+        if idx > 0:
             c_pdf.showPage()
         row = est.iloc[idx]
+        nombre = str(row.get('Nombre', ''))
+        dni = str(row.get('DNI', ''))
         try:
-            img = _generar_tarjeta_plickers(str(row.get('Nombre','')), str(row.get('DNI','')), idx+1)
+            img = _generar_tarjeta_plickers(nombre, dni, idx + 1)
             img_buf = io.BytesIO()
             img.save(img_buf, format='PNG')
             img_buf.seek(0)
             from reportlab.lib.utils import ImageReader
-            x, y = posiciones[pi]
-            c_pdf.drawImage(ImageReader(img_buf), x, y, width=w/2-30, height=h/2-20,
+            tam = min(w, h) - 40
+            xp, yp = (w - tam) / 2, (h - tam) / 2
+            c_pdf.drawImage(ImageReader(img_buf), xp, yp, width=tam, height=tam,
                             preserveAspectRatio=True, mask='auto')
+            c_pdf.setFont('Helvetica-Bold', 12)
+            c_pdf.drawCentredString(w/2, h-20, f'YACHAY QAWAY #{idx+1:03d} {nombre}')
+            c_pdf.setFont('Helvetica', 8)
+            c_pdf.drawCentredString(w/2, h-32, 'Recortar. Doblar por lineas punteadas. Mostrar solo la cara de su respuesta.')
         except Exception as e:
-            x, y = posiciones[pi]
-            c_pdf.setFont("Helvetica", 8)
-            c_pdf.drawString(x+10, y+100, f"Error: {str(e)[:50]}")
+            c_pdf.drawString(50, h/2, f'Error: {str(e)[:60]}')
     c_pdf.save()
     buffer.seek(0)
     return buffer
 
 
 def tab_yachay_plickers(config):
-    """Modulo YACHAY Plickers"""
+    """YACHAY QAWAY v2 — sync PC + celular"""
     st.markdown("""<div style='background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;
         padding:15px 20px;border-radius:12px;text-align:center;margin-bottom:15px;'>
-        <h2 style='margin:0;color:white;'>YACHAY Plickers</h2>
-        <p style='margin:4px 0 0;color:#c4b5fd;'>Evaluacion interactiva con tarjetas QR</p>
+        <h2 style='margin:0;color:white;'>YACHAY QAWAY</h2>
+        <p style='margin:4px 0 0;color:#c4b5fd;'>Qaway rikuy yachayta | PC: proyectar | Celular: escanear</p>
     </div>""", unsafe_allow_html=True)
 
-    tab_cards, tab_quiz, tab_scan, tab_results = st.tabs([
-        "Tarjetas QR", "Crear Preguntas", "Escanear Respuestas", "Resultados"])
+    tab_cards, tab_quiz, tab_proj, tab_scan, tab_results = st.tabs([
+        "Tarjetas QR", "Crear Preguntas", "Proyectar (PC)", "Escanear (Celular)", "Resultados"])
 
     usuario = st.session_state.get('usuario_actual', '')
-    plickers_dir = Path("plickers_data")
-    plickers_dir.mkdir(exist_ok=True)
+    plickers_dir = _plk_dir()
 
+    # ================================================================
     # TAB 1: TARJETAS
+    # ================================================================
     with tab_cards:
-        st.markdown("### Generar Tarjetas QR para Estudiantes")
-        st.info("Cada estudiante recibe tarjeta con 4 QR (A,B,C,D). Muestra el QR de su respuesta y el profesor escanea.")
+        st.markdown("### Generar Tarjetas QR Plegables")
+        st.markdown("""**Instrucciones:** Imprima 1 hoja por alumno. Recorte el cuadrado.
+        Doble por las lineas punteadas (en cruz). El alumno muestra solo la cara de su respuesta.""")
         grado_p = st.selectbox("Grado:", GRADOS_OPCIONES, key="plik_grado")
         sec_p = st.selectbox("Seccion:", ["Todas"] + SECCIONES, key="plik_sec")
         df_est = BaseDatos.obtener_estudiantes_grado(grado_p, sec_p)
         st.caption(f"{len(df_est)} estudiantes en {grado_p}")
         if not df_est.empty:
             if st.button("GENERAR TARJETAS PDF", type="primary", use_container_width=True, key="btn_gen_t"):
-                with st.spinner("Generando tarjetas QR..."):
+                with st.spinner("Generando tarjetas plegables..."):
                     try:
                         pdf = _generar_pdf_tarjetas_plickers(df_est, grado_p)
                         st.success(f"{len(df_est)} tarjetas generadas")
                         st.download_button("Descargar PDF Tarjetas", pdf,
-                                           f"Tarjetas_Plickers_{grado_p}.pdf", "application/pdf",
+                                           f"Tarjetas_Qaway_{grado_p}.pdf", "application/pdf",
                                            use_container_width=True, key="dl_tarj")
                     except Exception as e:
                         st.error(f"Error: {e}")
-            with st.expander("Vista previa de tarjeta"):
+            with st.expander("Vista previa"):
                 if len(df_est) > 0:
                     est_sel = st.selectbox("Estudiante:", df_est['Nombre'].tolist(), key="plik_prev")
                     fila = df_est[df_est['Nombre'] == est_sel].iloc[0]
                     try:
                         img = _generar_tarjeta_plickers(str(fila['Nombre']), str(fila['DNI']), 1)
-                        st.image(img, width=350)
+                        st.image(img, width=400)
                     except Exception as e:
                         st.error(f"Error: {e}")
 
+    # ================================================================
     # TAB 2: CREAR PREGUNTAS
+    # ================================================================
     with tab_quiz:
         st.markdown("### Crear Cuestionario")
         if 'plickers_preguntas' not in st.session_state:
             st.session_state.plickers_preguntas = []
         if 'plickers_titulo' not in st.session_state:
             st.session_state.plickers_titulo = ""
-        st.session_state.plickers_titulo = st.text_input("Titulo del cuestionario:",
+        st.session_state.plickers_titulo = st.text_input("Titulo:",
             value=st.session_state.plickers_titulo,
             placeholder="Ej: Evaluacion Matematica Semana 1", key="plik_tit")
         ca, cg = st.columns(2)
         with ca:
-            area_q = st.text_input("Area:", key="plik_aq", placeholder="Ej: Matematica")
+            area_q = st.text_input("Area:", key="plik_aq", placeholder="Matematica")
         with cg:
             grado_q = st.selectbox("Grado:", GRADOS_OPCIONES, key="plik_gq")
         st.markdown("---")
         st.markdown("#### Agregar Pregunta")
-        preg_txt = st.text_area("Pregunta:", key="plik_pt", placeholder="Ej: Cuanto es 25 x 4?", height=80)
+        preg_txt = st.text_area("Pregunta:", key="plik_pt", height=80)
+        img_file = st.file_uploader("Imagen opcional (ecuaciones, figuras, geometria):",
+                                     type=['png','jpg','jpeg','gif','webp'], key="plik_img")
+        img_b64 = ""
+        img_mime = "image/png"
+        if img_file:
+            img_bytes = img_file.read()
+            img_b64 = base64.b64encode(img_bytes).decode('utf-8')
+            img_mime = img_file.type or 'image/png'
+            st.image(img_bytes, caption="Vista previa", width=300)
         ca2, cb2 = st.columns(2)
         with ca2:
-            opt_a = st.text_input("A:", key="plik_oa", placeholder="Alternativa A")
-            opt_c = st.text_input("C:", key="plik_oc", placeholder="Alternativa C")
+            opt_a = st.text_input("A:", key="plik_oa")
+            opt_c = st.text_input("C:", key="plik_oc")
         with cb2:
-            opt_b = st.text_input("B:", key="plik_ob", placeholder="Alternativa B")
-            opt_d = st.text_input("D:", key="plik_od", placeholder="Alternativa D")
+            opt_b = st.text_input("B:", key="plik_ob")
+            opt_d = st.text_input("D:", key="plik_od")
         correcta = st.radio("Respuesta correcta:", ['A','B','C','D'], horizontal=True, key="plik_cor")
         if st.button("AGREGAR PREGUNTA", type="primary", key="btn_add_p"):
             if preg_txt and opt_a and opt_b:
-                st.session_state.plickers_preguntas.append({
-                    'pregunta': preg_txt,
+                q_item = {'pregunta': preg_txt,
                     'opciones': {'A': opt_a, 'B': opt_b, 'C': opt_c, 'D': opt_d},
-                    'correcta': correcta})
+                    'correcta': correcta}
+                if img_b64:
+                    q_item['imagen'] = img_b64
+                    q_item['imagen_mime'] = img_mime
+                st.session_state.plickers_preguntas.append(q_item)
                 st.success(f"Pregunta {len(st.session_state.plickers_preguntas)} agregada")
                 st.rerun()
         if st.session_state.plickers_preguntas:
@@ -11917,6 +11987,11 @@ def tab_yachay_plickers(config):
             st.markdown(f"#### Preguntas ({len(st.session_state.plickers_preguntas)})")
             for i, p in enumerate(st.session_state.plickers_preguntas):
                 with st.expander(f"P{i+1}: {p['pregunta'][:60]}"):
+                    if p.get('imagen'):
+                        try:
+                            st.image(base64.b64decode(p['imagen']), width=250)
+                        except Exception:
+                            pass
                     for letra, texto in p['opciones'].items():
                         marca = ">>>" if letra == p['correcta'] else "   "
                         st.write(f"{marca} **{letra}:** {texto}")
@@ -11926,162 +12001,268 @@ def tab_yachay_plickers(config):
             cs, cc2 = st.columns(2)
             with cs:
                 if st.button("GUARDAR CUESTIONARIO", type="primary", use_container_width=True, key="btn_sv_q"):
-                    qd = {'titulo': st.session_state.plickers_titulo, 'area': area_q, 'grado': grado_q,
-                           'fecha': fecha_peru_str(), 'docente': usuario,
-                           'preguntas': st.session_state.plickers_preguntas}
-                    aq = plickers_dir / f"quiz_{usuario}_{fecha_peru_str()}.json"
+                    sesion_id = f"{usuario}_{fecha_peru_str()}"
+                    qd = {'titulo': st.session_state.plickers_titulo, 'area': area_q,
+                           'grado': grado_q, 'fecha': fecha_peru_str(), 'docente': usuario,
+                           'preguntas': st.session_state.plickers_preguntas,
+                           'pregunta_actual': 0, 'sesion_id': sesion_id}
+                    _plk_guardar_sesion(sesion_id, qd)
+                    # Tambien guardar como quiz
+                    aq = plickers_dir / f"quiz_{sesion_id}.json"
                     with open(aq, 'w', encoding='utf-8') as fq:
                         json.dump(qd, fq, indent=2, ensure_ascii=False)
-                    st.success("Cuestionario guardado")
+                    st.success(f"Cuestionario guardado. ID: {sesion_id}")
             with cc2:
                 if st.button("Limpiar todo", use_container_width=True, key="btn_cl_q"):
                     st.session_state.plickers_preguntas = []
                     st.session_state.plickers_titulo = ""
                     st.rerun()
 
-    # TAB 3: ESCANEAR
-    with tab_scan:
-        st.markdown("### Escanear Respuestas de Estudiantes")
+    # ================================================================
+    # TAB 3: PROYECTAR (PC) — Pantalla grande + nombres en vivo
+    # ================================================================
+    with tab_proj:
+        st.markdown("### Proyectar Preguntas (abrir en PC/proyector)")
+        st.caption("Los estudiantes responden con sus tarjetas QR. El profesor escanea desde el celular en otra pestana.")
+
         qf = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
         if not qf:
-            st.warning("Primero cree un cuestionario en la pestana anterior.")
+            st.warning("Primero cree un cuestionario.")
         else:
             qs = st.selectbox("Cuestionario:", qf,
-                              format_func=lambda x: x.stem.replace('quiz_',''), key="plik_qs")
+                              format_func=lambda x: x.stem.replace('quiz_',''), key="plik_proj_qs")
             with open(qs, 'r', encoding='utf-8') as fq:
                 quiz = json.load(fq)
-            st.info(f"**{quiz['titulo']}** | {len(quiz['preguntas'])} preguntas | {quiz.get('area','')} | {quiz.get('grado','')}")
-            if 'plickers_respuestas' not in st.session_state:
-                st.session_state.plickers_respuestas = {}
-            if 'plickers_pregunta_actual' not in st.session_state:
-                st.session_state.plickers_pregunta_actual = 0
-            pidx = st.session_state.plickers_pregunta_actual
+            sesion_id = quiz.get('sesion_id', qs.stem.replace('quiz_',''))
             total_p = len(quiz['preguntas'])
+
+            # Controles de navegacion
+            if 'plik_pidx' not in st.session_state:
+                st.session_state.plik_pidx = quiz.get('pregunta_actual', 0)
+            pidx = st.session_state.plik_pidx
+
             if pidx < total_p:
                 preg = quiz['preguntas'][pidx]
                 op = preg['opciones']
-                # PANTALLA DE PROYECCION
-                st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:25px;
-                    border-radius:16px;text-align:center;margin:15px 0;'>
-                    <p style='color:#a5b4fc;margin:0;font-size:1.1rem;'>Pregunta {pidx+1} de {total_p}</p>
-                    <h2 style='color:white;margin:10px 0;font-size:1.8rem;'>{preg['pregunta']}</h2>
-                    <div style='display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:15px;'>
-                        <div style='background:#16a34a;padding:12px 25px;border-radius:10px;min-width:180px;'>
+
+                # Actualizar pregunta actual en archivo para sync
+                quiz['pregunta_actual'] = pidx
+                _plk_guardar_sesion(sesion_id, quiz)
+
+                # PANTALLA DE PROYECCION (grande, para proyector)
+                st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:30px;
+                    border-radius:16px;text-align:center;margin:10px 0;'>
+                    <p style='color:#a5b4fc;margin:0;font-size:1.2rem;'>Pregunta {pidx+1} de {total_p}</p>
+                    <h1 style='color:white;margin:15px 0;font-size:2.2rem;'>{preg['pregunta']}</h1>
+                    <div style='display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;max-width:700px;margin-left:auto;margin-right:auto;'>
+                        <div style='background:#16a34a;padding:15px 20px;border-radius:12px;font-size:1.2rem;'>
                             <strong>A)</strong> {op.get('A','')}</div>
-                        <div style='background:#2563eb;padding:12px 25px;border-radius:10px;min-width:180px;'>
+                        <div style='background:#2563eb;padding:15px 20px;border-radius:12px;font-size:1.2rem;'>
                             <strong>B)</strong> {op.get('B','')}</div>
-                        <div style='background:#d97706;padding:12px 25px;border-radius:10px;min-width:180px;'>
+                        <div style='background:#d97706;padding:15px 20px;border-radius:12px;font-size:1.2rem;'>
                             <strong>C)</strong> {op.get('C','')}</div>
-                        <div style='background:#db2777;padding:12px 25px;border-radius:10px;min-width:180px;'>
+                        <div style='background:#db2777;padding:15px 20px;border-radius:12px;font-size:1.2rem;'>
                             <strong>D)</strong> {op.get('D','')}</div>
                     </div></div>""", unsafe_allow_html=True)
-                # ESCANEO QR
-                st.markdown("#### Escanear QR de estudiantes")
-                cam_on = st.checkbox("Activar camara", key="plik_cam")
-                if cam_on:
-                    foto = st.camera_input("Apunte al QR:", key="plik_foto")
+                # Imagen de la pregunta (ecuaciones, geometria)
+                if preg.get('imagen'):
+                    try:
+                        st.image(base64.b64decode(preg['imagen']), width=500)
+                    except Exception:
+                        pass
+
+                # PANEL LATERAL: nombres que respondieron (en vivo)
+                resp_all = _plk_cargar_respuestas(sesion_id)
+                resp_preg = {}
+                for dni_r, datos_r in resp_all.items():
+                    r_item = datos_r.get('respuestas', {}).get(str(pidx))
+                    if r_item:
+                        resp_preg[dni_r] = {'nombre': datos_r['nombre'], **r_item}
+
+                st.markdown("---")
+                n_resp = len(resp_preg)
+                correctos = sum(1 for r in resp_preg.values() if r.get('ok'))
+                incorrectos = n_resp - correctos
+
+                cr1, cr2, cr3 = st.columns(3)
+                cr1.metric("Respondieron", n_resp)
+                cr2.metric("Correctas", correctos)
+                cr3.metric("Incorrectas", incorrectos)
+
+                if resp_preg:
+                    st.progress(correctos / max(n_resp, 1))
+                    # Mostrar nombres con color
+                    cols_nombres = st.columns(4)
+                    for idx_r, (dni_r, r_data) in enumerate(resp_preg.items()):
+                        col_i = idx_r % 4
+                        color = '#16a34a' if r_data.get('ok') else '#dc2626'
+                        emoji = 'OK' if r_data.get('ok') else 'X'
+                        nombre_corto = r_data['nombre'].split()[-1] if ' ' in r_data['nombre'] else r_data['nombre']
+                        cols_nombres[col_i].markdown(
+                            f"<div style='background:{color};color:white;padding:5px 8px;border-radius:6px;margin:2px;font-size:0.85rem;text-align:center;'>"
+                            f"{emoji} {nombre_corto} = {r_data['resp']}</div>", unsafe_allow_html=True)
+
+                # Boton refrescar (para ver nuevas respuestas)
+                st.markdown("---")
+                col_ref, col_prev, col_next = st.columns([1, 1, 1])
+                with col_ref:
+                    if st.button("REFRESCAR", use_container_width=True, key="plik_refresh"):
+                        st.rerun()
+                    # Auto-refresh cada 5 segundos
+                    auto_ref = st.checkbox("Auto-refrescar (5s)", key="plik_auto_ref", value=True)
+                    if auto_ref:
+                        import streamlit.components.v1 as components
+                        components.html("<script>setTimeout(function(){window.parent.document.querySelector('[data-testid=\"stApp\"]').__streamlitWebSocket && window.parent.location.reload()}, 5000)</script>", height=0)
+
+                with col_prev:
+                    if pidx > 0 and st.button("ANTERIOR", use_container_width=True, key="plik_prev"):
+                        st.session_state.plik_pidx -= 1
+                        st.rerun()
+                with col_next:
+                    if pidx < total_p - 1:
+                        if st.button("SIGUIENTE", type="primary", use_container_width=True, key="plik_next"):
+                            st.session_state.plik_pidx += 1
+                            st.rerun()
+                    else:
+                        if st.button("FINALIZAR", type="primary", use_container_width=True, key="plik_fin"):
+                            st.session_state.plik_pidx = total_p
+                            st.rerun()
+            else:
+                st.success("Cuestionario finalizado! Ve a la pestana Resultados.")
+                if st.button("Reiniciar", key="plik_reset"):
+                    st.session_state.plik_pidx = 0
+                    st.rerun()
+
+    # ================================================================
+    # TAB 4: ESCANEAR (CELULAR) — Camara foto o manual
+    # ================================================================
+    with tab_scan:
+        st.markdown("### Escanear QR (abrir en celular)")
+        st.caption("Abra esta pestana desde su celular. Escanee las tarjetas de los alumnos.")
+
+        qf2 = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
+        if not qf2:
+            st.warning("No hay cuestionarios creados.")
+        else:
+            qs2 = st.selectbox("Cuestionario:", qf2,
+                               format_func=lambda x: x.stem.replace('quiz_',''), key="plik_scan_qs")
+            with open(qs2, 'r', encoding='utf-8') as fq:
+                quiz2 = json.load(fq)
+            sesion_id2 = quiz2.get('sesion_id', qs2.stem.replace('quiz_',''))
+            total_p2 = len(quiz2['preguntas'])
+
+            # Leer pregunta actual desde archivo (sync con PC)
+            sesion_data = _plk_cargar_sesion(sesion_id2)
+            pidx2 = sesion_data.get('pregunta_actual', 0) if sesion_data else 0
+
+            if pidx2 < total_p2:
+                preg2 = quiz2['preguntas'][pidx2]
+                op2 = preg2['opciones']
+
+                # Mini display de la pregunta
+                st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:12px;
+                    border-radius:10px;text-align:center;margin:8px 0;'>
+                    <small style='color:#a5b4fc;'>P{pidx2+1}/{total_p2}</small><br>
+                    <strong style='font-size:1.1rem;'>{preg2['pregunta']}</strong><br>
+                    <small>A:{op2.get('A','')} | B:{op2.get('B','')} | C:{op2.get('C','')} | D:{op2.get('D','')}</small>
+                </div>""", unsafe_allow_html=True)
+                # Imagen pregunta
+                if preg2.get('imagen'):
+                    try:
+                        st.image(base64.b64decode(preg2['imagen']), width=300)
+                    except Exception:
+                        pass
+
+                # CAMARA PARA ESCANEAR
+                scan_modo = st.radio("Modo:", ["Camara", "Manual"], horizontal=True, key="plik_scan_m")
+
+                if scan_modo == "Camara":
+                    foto = st.camera_input("Apunte al QR del alumno:", key="plik_foto2")
                     if foto:
                         d = decodificar_qr_imagen(foto.getvalue())
-                        if d and d.startswith("YQ_"):
-                            partes = d.split("_")
+                        if d and (d.startswith("YP|") or d.startswith("YQ_")):
+                            if d.startswith("YP|"):
+                                partes = d.split("|")
+                            else:
+                                partes = d.replace("YQ_", "").split("_")
+                                partes = ["", partes[0], partes[1]] if len(partes) >= 2 else partes
                             if len(partes) >= 3:
                                 dni_qr = partes[1]
                                 resp_qr = partes[2].upper()
                                 if resp_qr in ('A','B','C','D'):
                                     pqr = BaseDatos.buscar_por_dni(dni_qr)
                                     nqr = pqr.get('Nombre', dni_qr) if pqr else dni_qr
-                                    esc = resp_qr == preg['correcta']
-                                    if dni_qr not in st.session_state.plickers_respuestas:
-                                        st.session_state.plickers_respuestas[dni_qr] = {}
-                                    st.session_state.plickers_respuestas[dni_qr][str(pidx)] = {
-                                        'nombre': nqr, 'respuesta': resp_qr,
-                                        'correcta': preg['correcta'], 'es_correcto': esc}
+                                    esc = resp_qr == preg2['correcta']
+                                    # GUARDAR EN ARCHIVO (sync con PC)
+                                    _plk_guardar_respuesta(sesion_id2, dni_qr, nqr, pidx2, resp_qr, preg2['correcta'])
                                     col_r = "#16a34a" if esc else "#dc2626"
                                     em = "CORRECTO" if esc else "INCORRECTO"
-                                    st.markdown(f"<div style='background:{col_r};color:white;padding:10px;border-radius:8px;text-align:center;font-size:1.3rem;'>{em}: <strong>{nqr}</strong> respondio <strong>{resp_qr}</strong></div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='background:{col_r};color:white;padding:12px;border-radius:8px;text-align:center;font-size:1.3rem;'>{em}: <strong>{nqr}</strong> = <strong>{resp_qr}</strong></div>", unsafe_allow_html=True)
                                     reproducir_beep_exitoso()
                         elif d:
-                            st.warning(f"QR no es de Plickers: {d[:30]}")
-                # REGISTRO MANUAL
-                with st.expander("Registro manual (sin QR)"):
-                    gsc = quiz.get('grado', '')
-                    dfs = BaseDatos.obtener_estudiantes_grado(gsc, "Todas")
-                    if not dfs.empty:
-                        em2 = st.selectbox("Alumno:", dfs['Nombre'].tolist(), key="plik_me")
-                        rm = st.radio("Respuesta:", ['A','B','C','D'], horizontal=True, key="plik_mr")
-                        if st.button("Registrar respuesta", key="btn_mr"):
-                            fm = dfs[dfs['Nombre']==em2].iloc[0]
-                            dm = str(fm['DNI'])
-                            ec = rm == preg['correcta']
-                            if dm not in st.session_state.plickers_respuestas:
-                                st.session_state.plickers_respuestas[dm] = {}
-                            st.session_state.plickers_respuestas[dm][str(pidx)] = {
-                                'nombre': em2, 'respuesta': rm,
-                                'correcta': preg['correcta'], 'es_correcto': ec}
-                            st.success(f"{'CORRECTO' if ec else 'INCORRECTO'}: {em2} = {rm}")
+                            st.warning(f"QR no reconocido: {d[:30]}")
+                        else:
+                            st.warning("No se detecto QR.")
+                else:
+                    # MANUAL
+                    gsc2 = quiz2.get('grado', '')
+                    dfs2 = BaseDatos.obtener_estudiantes_grado(gsc2, "Todas")
+                    if not dfs2.empty:
+                        em2 = st.selectbox("Alumno:", dfs2['Nombre'].tolist(), key="plik_me2")
+                        rm2 = st.radio("Respuesta:", ['A','B','C','D'], horizontal=True, key="plik_mr2")
+                        if st.button("Registrar", type="primary", key="btn_mr2"):
+                            fm2 = dfs2[dfs2['Nombre']==em2].iloc[0]
+                            dm2 = str(fm2['DNI'])
+                            ec2 = rm2 == preg2['correcta']
+                            _plk_guardar_respuesta(sesion_id2, dm2, em2, pidx2, rm2, preg2['correcta'])
+                            st.success(f"{'CORRECTO' if ec2 else 'INCORRECTO'}: {em2} = {rm2}")
                             st.rerun()
-                # RESUMEN PREGUNTA
-                rp = {dn: r[str(pidx)] for dn, r in st.session_state.plickers_respuestas.items() if str(pidx) in r}
-                if rp:
-                    cq = sum(1 for r in rp.values() if r['es_correcto'])
-                    st.markdown(f"**{len(rp)} respuestas | {cq} correctas | {len(rp)-cq} incorrectas**")
-                    st.progress(cq / max(len(rp), 1))
-                # NAVEGACION
-                st.markdown("---")
-                cprev, cnext = st.columns(2)
-                with cprev:
-                    if pidx > 0 and st.button("Anterior", use_container_width=True, key="plik_prev"):
-                        st.session_state.plickers_pregunta_actual -= 1
-                        st.rerun()
-                with cnext:
-                    if pidx < total_p - 1:
-                        if st.button("Siguiente", type="primary", use_container_width=True, key="plik_next"):
-                            st.session_state.plickers_pregunta_actual += 1
-                            st.rerun()
-                    else:
-                        if st.button("FINALIZAR", type="primary", use_container_width=True, key="plik_fin"):
-                            st.session_state.plickers_pregunta_actual = total_p
-                            st.rerun()
-            else:
-                st.success("Cuestionario finalizado! Ve a la pestana Resultados.")
-                if st.button("Reiniciar", key="plik_reset"):
-                    st.session_state.plickers_pregunta_actual = 0
-                    st.rerun()
 
-    # TAB 4: RESULTADOS
+                # Resumen de esta pregunta
+                resp_scan = _plk_cargar_respuestas(sesion_id2)
+                n_scan = sum(1 for d in resp_scan.values() if str(pidx2) in d.get('respuestas', {}))
+                st.caption(f"{n_scan} respuestas registradas para esta pregunta")
+
+                # Sync: refrescar para ver siguiente pregunta
+                if st.button("REFRESCAR pregunta", use_container_width=True, key="plik_scan_ref"):
+                    st.rerun()
+            else:
+                st.success("Cuestionario finalizado!")
+
+    # ================================================================
+    # TAB 5: RESULTADOS (funciona en PC y celular)
+    # ================================================================
     with tab_results:
         st.markdown("### Resultados y Ranking")
         qfr = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
         if not qfr:
-            st.info("No hay cuestionarios aun.")
+            st.info("No hay cuestionarios.")
         else:
             qsr = st.selectbox("Cuestionario:", qfr,
                                format_func=lambda x: x.stem.replace('quiz_',''), key="plik_qr")
             with open(qsr, 'r', encoding='utf-8') as fq:
                 qr2 = json.load(fq)
-            resp = st.session_state.get('plickers_respuestas', {})
+            sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
+            resp = _plk_cargar_respuestas(sesion_id_r)
             if not resp:
-                st.info("No hay respuestas registradas. Escanee primero.")
+                st.info("No hay respuestas registradas.")
             else:
                 tpr = len(qr2['preguntas'])
                 res = []
                 for dni_r, pr in resp.items():
-                    nm_r = ""
-                    cor_r = 0
+                    nm_r = pr.get('nombre', dni_r)
+                    resps = pr.get('respuestas', {})
+                    cor_r = sum(1 for r in resps.values() if r.get('ok'))
                     det_r = []
                     for pi_r in range(tpr):
-                        r_item = pr.get(str(pi_r), {})
+                        r_item = resps.get(str(pi_r))
                         if r_item:
-                            nm_r = r_item.get('nombre', dni_r)
-                            if r_item.get('es_correcto'):
-                                cor_r += 1
-                            det_r.append(f"{'OK' if r_item.get('es_correcto') else 'X'}")
+                            det_r.append('OK' if r_item.get('ok') else 'X')
                         else:
                             det_r.append("-")
                     nota_r = round(cor_r / max(tpr, 1) * 20, 1)
-                    res.append({'DNI': dni_r, 'Nombre': nm_r or dni_r,
-                                'Correctas': cor_r, 'Total': tpr,
-                                'Nota': nota_r, 'Detalle': ' '.join(det_r)})
+                    res.append({'DNI': dni_r, 'Nombre': nm_r, 'Correctas': cor_r,
+                                'Total': tpr, 'Nota': nota_r, 'Detalle': ' '.join(det_r)})
                 res.sort(key=lambda x: x['Nota'], reverse=True)
                 puestos = {0: '1ro', 1: '2do', 2: '3ro'}
                 for i_r, r_item in enumerate(res):
@@ -12100,10 +12281,7 @@ def tab_yachay_plickers(config):
                 # GRAFICO
                 try:
                     import altair as alt
-                    cd_r = []
-                    for r in res:
-                        nm_ch = r['Nombre'].split()[-1][:12] if ' ' in r['Nombre'] else r['Nombre'][:12]
-                        cd_r.append({'Alumno': nm_ch, 'Nota': r['Nota']})
+                    cd_r = [{'Alumno': r['Nombre'].split()[-1][:12] if ' ' in r['Nombre'] else r['Nombre'][:12], 'Nota': r['Nota']} for r in res]
                     dfc_r = pd.DataFrame(cd_r)
                     bar_r = alt.Chart(dfc_r).mark_bar().encode(
                         x=alt.X('Alumno:N', sort='-y'),
@@ -12113,46 +12291,47 @@ def tab_yachay_plickers(config):
                     st.altair_chart(bar_r, use_container_width=True)
                 except Exception:
                     pass
+                # DESCARGAS Y WHATSAPP
                 st.markdown("---")
                 col_pdf_r, col_wa_r = st.columns(2)
-                # PDF RESULTADOS
                 with col_pdf_r:
                     if st.button("PDF Resultados", type="primary", use_container_width=True, key="plik_pdf"):
                         buf_r = io.BytesIO()
                         cp_r = canvas.Canvas(buf_r, pagesize=A4)
                         wp_r, hp_r = A4
                         cp_r.setFillColor(colors.HexColor("#7c3aed"))
-                        cp_r.rect(0, hp_r-50, wp_r, 50, fill=1, stroke=0)
+                        cp_r.rect(0, hp_r-55, wp_r, 55, fill=1, stroke=0)
                         cp_r.setFillColor(colors.white)
-                        cp_r.setFont("Helvetica-Bold", 14)
-                        cp_r.drawCentredString(wp_r/2, hp_r-22, "YACHAY PLICKERS - RESULTADOS")
-                        cp_r.setFont("Helvetica", 9)
+                        cp_r.setFont("Helvetica-Bold", 16)
+                        cp_r.drawCentredString(wp_r/2, hp_r-22, "YACHAY QAWAY - RESULTADOS")
+                        cp_r.setFont("Helvetica", 10)
                         cp_r.drawCentredString(wp_r/2, hp_r-38, f"{qr2.get('titulo','')} | {qr2.get('area','')} | {qr2.get('grado','')}")
+                        cp_r.setFont("Helvetica", 8)
+                        cp_r.drawCentredString(wp_r/2, hp_r-50, f"Promedio: {pm_r:.1f}/20 | Aprobados: {ap_r}/{len(res)} | {fecha_peru_str()}")
                         cp_r.setFillColor(colors.black)
-                        hdr_r = ["N", "ALUMNO", "CORRECTAS", "NOTA /20"]
+                        hdr_r = ["PUESTO", "ALUMNO", "CORRECTAS", "NOTA /20"]
                         rows_r = [hdr_r]
-                        for i_r2, r2 in enumerate(res):
+                        for r2 in res:
                             rows_r.append([r2['Puesto'], r2['Nombre'], f"{r2['Correctas']}/{r2['Total']}", str(r2['Nota'])])
-                        tb_r = Table(rows_r, colWidths=[40, 220, 80, 70])
+                        tb_r = Table(rows_r, colWidths=[50, 250, 80, 70])
                         tb_r.setStyle(TableStyle([
                             ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-                            ('FONTSIZE', (0,0), (-1,-1), 8),
+                            ('FONTSIZE', (0,0), (-1,-1), 9),
                             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
                             ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#7c3aed")),
                             ('TEXTCOLOR', (0,0), (-1,0), colors.white),
                             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
                             ('ALIGN', (1,1), (1,-1), 'LEFT'),
                             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95, 0.93, 1.0)])]))
+                            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.93,1.0)])]))
                         tw_r, th_r = tb_r.wrap(wp_r-40, hp_r-80)
-                        tb_r.drawOn(cp_r, 20, hp_r-65-th_r)
-                        cp_r.setFont("Helvetica", 6)
-                        cp_r.drawString(20, 12, f"Generado: {fecha_peru_str()} | Sistema YACHAY PRO")
+                        tb_r.drawOn(cp_r, 20, hp_r-70-th_r)
+                        cp_r.setFont("Helvetica", 7)
+                        cp_r.drawString(20, 12, f"I.E.P. ALTERNATIVO YACHAY | {fecha_peru_str()}")
                         cp_r.save()
                         buf_r.seek(0)
                         st.download_button("Descargar PDF", buf_r,
-                                           f"Plickers_Resultados.pdf", "application/pdf", key="dl_plik_pdf")
-                # WHATSAPP PADRES
+                                           "Qaway_Resultados.pdf", "application/pdf", key="dl_plik_pdf")
                 with col_wa_r:
                     if st.button("WhatsApp a Padres", type="primary", use_container_width=True, key="plik_wa"):
                         st.session_state.plik_wa_show = True
@@ -12173,19 +12352,15 @@ def tab_yachay_plickers(config):
                                     cel_wa = ''.join(c for c in cel_wa if c.isdigit())
                                     cel_wa = '' if len(cel_wa) < 7 else cel_wa
                         if cel_wa:
-                            elogio = 'Excelente trabajo!' if r_wa['Nota'] >= 14 else ('Buen trabajo.' if r_wa['Nota'] >= 11 else 'Puede mejorar, apoyemos juntos.')
+                            elogio = 'Excelente!' if r_wa['Nota'] >= 14 else ('Buen trabajo.' if r_wa['Nota'] >= 11 else 'Puede mejorar.')
                             msg_wa = (f"Estimado apoderado, {r_wa['Nombre']} obtuvo "
                                       f"{r_wa['Nota']}/20 ({r_wa['Correctas']}/{r_wa['Total']} correctas) "
                                       f"en: {qr2.get('titulo', '')}. {elogio} - I.E.P. YACHAY")
                             link_wa = generar_link_whatsapp(cel_wa, msg_wa)
-                            icono_wa = "OK" if r_wa['Nota'] >= 11 else "!!"
-                            st.markdown(f'<a href="{link_wa}" target="_blank" class="wa-btn">{icono_wa} {r_wa["Nombre"]} - {r_wa["Nota"]}/20 -> {cel_wa}</a>', unsafe_allow_html=True)
+                            st.markdown(f'<a href="{link_wa}" target="_blank" class="wa-btn">{r_wa["Nombre"]} - {r_wa["Nota"]}/20</a>', unsafe_allow_html=True)
                             envios_wa += 1
                         else:
                             st.caption(f"Sin celular: {r_wa['Nombre']}")
-                    if envios_wa:
-                        st.success(f"{envios_wa} padres con WhatsApp disponible")
-
 
 
 def main():
