@@ -11826,6 +11826,25 @@ def _plk_guardar_respuesta(sesion_id, dni, nombre, pregunta_idx, respuesta, corr
     with open(p, 'w', encoding='utf-8') as f:
         json.dump(resp, f, indent=2, ensure_ascii=False)
 
+def _plk_format_quiz(path):
+    """Muestra titulo del quiz en selectbox en vez del nombre de archivo"""
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            q = json.load(f)
+        titulo = q.get('titulo', '')
+        area = q.get('area', '')
+        grado = q.get('grado', '')
+        docente = q.get('docente', '')
+        fecha = q.get('fecha', '')
+        parts = [titulo or path.stem.replace('quiz_','')]
+        if area: parts.append(area)
+        if grado: parts.append(grado)
+        if docente: parts.append(docente)
+        if fecha: parts.append(fecha)
+        return ' | '.join(parts)
+    except Exception:
+        return path.stem.replace('quiz_','')
+
 def _plk_cargar_respuestas(sesion_id):
     """Carga todas las respuestas"""
     p = _plk_dir() / f"resp_{sesion_id}.json"
@@ -12257,8 +12276,9 @@ def tab_yachay_plickers(config):
             with cs:
                 if st.button("GUARDAR CUESTIONARIO", type="primary", use_container_width=True, key="btn_sv_q"):
                     sesion_id = f"{usuario}_{fecha_peru_str()}"
+                    nombre_doc = _nombre_completo_docente()
                     qd = {'titulo': st.session_state.plickers_titulo, 'area': area_q,
-                           'grado': grado_q, 'fecha': fecha_peru_str(), 'docente': usuario,
+                           'grado': grado_q, 'fecha': fecha_peru_str(), 'docente': nombre_doc, 'usuario': usuario,
                            'preguntas': st.session_state.plickers_preguntas,
                            'pregunta_actual': 0, 'sesion_id': sesion_id}
                     _plk_guardar_sesion(sesion_id, qd)
@@ -12301,7 +12321,7 @@ def tab_yachay_plickers(config):
             st.warning("Primero cree un cuestionario.")
         else:
             qs = st.selectbox("Cuestionario:", qf,
-                              format_func=lambda x: x.stem.replace('quiz_',''), key="plik_proj_qs")
+                              format_func=_plk_format_quiz, key="plik_proj_qs")
             with open(qs, 'r', encoding='utf-8') as fq:
                 quiz = json.load(fq)
             sesion_id = quiz.get('sesion_id', qs.stem.replace('quiz_',''))
@@ -12552,7 +12572,7 @@ def tab_yachay_plickers(config):
             st.warning("No hay cuestionarios creados.")
         else:
             qs2 = st.selectbox("Cuestionario:", qf2,
-                               format_func=lambda x: x.stem.replace('quiz_',''), key="plik_scan_qs")
+                               format_func=_plk_format_quiz, key="plik_scan_qs")
             with open(qs2, 'r', encoding='utf-8') as fq:
                 quiz2 = json.load(fq)
             sesion_id2 = quiz2.get('sesion_id', qs2.stem.replace('quiz_',''))
@@ -12647,19 +12667,73 @@ def tab_yachay_plickers(config):
             st.info("No hay cuestionarios.")
         else:
             qsr = st.selectbox("Cuestionario:", qfr,
-                               format_func=lambda x: x.stem.replace('quiz_',''), key="plik_qr")
+                               format_func=_plk_format_quiz, key="plik_qr")
             with open(qsr, 'r', encoding='utf-8') as fq:
                 qr2 = json.load(fq)
             sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
-            # Descargar PDF del cuestionario
-            if st.button("📄 Descargar PDF del cuestionario", use_container_width=True, type="primary", key="btn_dl_quiz_r"):
-                try:
-                    pdf_q = _generar_pdf_cuestionario_qaway(qr2)
-                    st.download_button("Descargar PDF", pdf_q,
-                                       'Cuestionario_' + qr2.get('grado','') + '.pdf',
-                                       "application/pdf", type="primary", key="dl_qr_pdf")
-                except Exception as e:
-                    st.error(f"Error: {e}")
+            col_pdf_q, col_pdf_r2 = st.columns(2)
+            with col_pdf_q:
+                if st.button("📄 PDF Preguntas", use_container_width=True, type="primary", key="btn_dl_quiz_r"):
+                    try:
+                        pdf_q = _generar_pdf_cuestionario_qaway(qr2)
+                        st.download_button("Descargar PDF", pdf_q,
+                                           'Cuestionario_' + qr2.get('grado','') + '.pdf',
+                                           "application/pdf", type="primary", key="dl_qr_pdf")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+            with col_pdf_r2:
+                if st.button("🏆 PDF Ranking", use_container_width=True, type="primary", key="btn_dl_rank_r"):
+                    resp_rk = _plk_cargar_respuestas(sesion_id_r)
+                    if not resp_rk:
+                        st.warning("No hay respuestas aun.")
+                    else:
+                        tpr_rk = len(qr2['preguntas'])
+                        res_rk = []
+                        for dni_rk, pr_rk in resp_rk.items():
+                            nm_rk = pr_rk.get('nombre', dni_rk)
+                            resps_rk = pr_rk.get('respuestas', {})
+                            cor_rk = sum(1 for r in resps_rk.values() if r.get('ok'))
+                            nota_rk = round(cor_rk / max(tpr_rk, 1) * 20, 1)
+                            res_rk.append({'Puesto': '', 'Nombre': nm_rk, 'Correctas': f"{cor_rk}/{tpr_rk}", 'Nota': str(nota_rk)})
+                        res_rk.sort(key=lambda x: float(x['Nota']), reverse=True)
+                        med_rk = ['1ro','2do','3ro']
+                        for idx_rk, r in enumerate(res_rk):
+                            r['Puesto'] = med_rk[idx_rk] if idx_rk < 3 else f"{idx_rk+1}to"
+                        buf_rk = io.BytesIO()
+                        cp_rk = canvas.Canvas(buf_rk, pagesize=A4)
+                        wp_rk, hp_rk = A4
+                        cp_rk.setFillColor(colors.HexColor("#7c3aed"))
+                        cp_rk.rect(0, hp_rk-55, wp_rk, 55, fill=1, stroke=0)
+                        cp_rk.setFillColor(colors.white)
+                        cp_rk.setFont("Helvetica-Bold", 16)
+                        cp_rk.drawCentredString(wp_rk/2, hp_rk-22, "YACHAY QAWAY - RANKING")
+                        cp_rk.setFont("Helvetica", 10)
+                        cp_rk.drawCentredString(wp_rk/2, hp_rk-38, f"{qr2.get('titulo','')} | {qr2.get('area','')} | {qr2.get('grado','')}")
+                        cp_rk.setFont("Helvetica", 8)
+                        pm_rk = sum(float(r['Nota']) for r in res_rk) / max(len(res_rk), 1)
+                        ap_rk = sum(1 for r in res_rk if float(r['Nota']) >= 11)
+                        cp_rk.drawCentredString(wp_rk/2, hp_rk-50, f"Docente: {qr2.get('docente','')} | Promedio: {pm_rk:.1f}/20 | Aprobados: {ap_rk}/{len(res_rk)} | {qr2.get('fecha','')}")
+                        cp_rk.setFillColor(colors.black)
+                        hdr_rk = ["PUESTO", "ALUMNO", "CORRECTAS", "NOTA /20"]
+                        rows_rk = [hdr_rk] + [[r['Puesto'], r['Nombre'], r['Correctas'], r['Nota']] for r in res_rk]
+                        tb_rk = Table(rows_rk, colWidths=[50, 250, 80, 70])
+                        tb_rk.setStyle(TableStyle([
+                            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0,0), (-1,-1), 9),
+                            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+                            ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#7c3aed")),
+                            ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+                            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+                            ('ALIGN', (1,1), (1,-1), 'LEFT'),
+                            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.93,1.0)])]))
+                        tw_rk, th_rk = tb_rk.wrap(wp_rk-40, hp_rk-80)
+                        tb_rk.drawOn(cp_rk, 20, hp_rk-70-th_rk)
+                        cp_rk.setFont("Helvetica", 7)
+                        cp_rk.drawString(20, 12, f"I.E.P. ALTERNATIVO YACHAY | YACHAY QAWAY | {qr2.get('fecha','')}")
+                        cp_rk.save()
+                        buf_rk.seek(0)
+                        st.download_button("Descargar Ranking PDF", buf_rk, "Ranking_Qaway.pdf", "application/pdf", type="primary", key="dl_rank_top")
             resp = _plk_cargar_respuestas(sesion_id_r)
             if not resp:
                 st.info("No hay respuestas registradas.")
