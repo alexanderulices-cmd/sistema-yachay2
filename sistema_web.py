@@ -11944,12 +11944,27 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
     style_footer = ParagraphStyle('foot', parent=styles['Normal'], fontSize=7,
                                    textColor=colors.HexColor('#999'), alignment=TA_CENTER)
 
-    # Header con barra morada
-    header_data = [[
-        Paragraph("I.E.P. ALTERNATIVO YACHAY", ParagraphStyle('h1', parent=styles['Normal'],
-                   fontSize=12, fontName='Helvetica-Bold', textColor=colors.white, alignment=TA_CENTER)),
-    ]]
-    header_table = Table(header_data, colWidths=[w_page])
+    # Header con barra morada + escudos
+    esc_izq = None
+    esc_der = None
+    try:
+        if Path("escudo_upload.png").exists():
+            esc_izq = RLImage("escudo_upload.png", width=12*mm, height=12*mm)
+        if Path("escudo2_upload.png").exists():
+            esc_der = RLImage("escudo2_upload.png", width=12*mm, height=12*mm)
+    except Exception:
+        pass
+    h_center = Paragraph("I.E.P. ALTERNATIVO YACHAY", ParagraphStyle('h1', parent=styles['Normal'],
+                   fontSize=12, fontName='Helvetica-Bold', textColor=colors.white, alignment=TA_CENTER))
+    if esc_izq and esc_der:
+        header_data = [[esc_izq, h_center, esc_der]]
+        header_table = Table(header_data, colWidths=[16*mm, w_page - 32*mm, 16*mm])
+    elif esc_izq:
+        header_data = [[esc_izq, h_center]]
+        header_table = Table(header_data, colWidths=[16*mm, w_page - 16*mm])
+    else:
+        header_data = [[h_center]]
+        header_table = Table(header_data, colWidths=[w_page])
     header_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#7c3aed')),
         ('TOPPADDING', (0,0), (-1,-1), 8),
@@ -11990,6 +12005,10 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
         Paragraph(f"<b>Area:</b> {area}", styles['Normal']),
         Paragraph(f"<b>Grado:</b> {grado}", styles['Normal']),
         Paragraph(f"<b>Fecha:</b> {fecha}", styles['Normal']),
+    ], [
+        Paragraph(f"<b>Docente:</b> {docente}", styles['Normal']),
+        Paragraph(f"<b>Preguntas:</b> {total_pregs}", styles['Normal']),
+        Paragraph("", styles['Normal']),
     ]]
     info_table = Table(info_data, colWidths=[w_page/3]*3)
     info_table.setStyle(TableStyle([
@@ -12095,7 +12114,14 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
     elements.append(Spacer(1, 8*mm))
     elements.append(Paragraph(f"I.E.P. ALTERNATIVO YACHAY | Sistema YACHAY PRO | {fecha}", style_footer))
 
-    doc.build(elements)
+    def _qaway_page_footer(canv, doc_obj):
+        canv.saveState()
+        canv.setFont('Helvetica', 7)
+        canv.setFillColor(colors.HexColor('#999'))
+        canv.drawCentredString(A4[0]/2, 10*mm,
+            f"I.E.P. ALTERNATIVO YACHAY | YACHAY QAWAY | Pag. {doc_obj.page}")
+        canv.restoreState()
+    doc.build(elements, onFirstPage=_qaway_page_footer, onLaterPages=_qaway_page_footer)
     buf.seek(0)
     return buf
 
@@ -12133,7 +12159,7 @@ def tab_yachay_plickers(config):
                         st.success(f"{len(df_est)} tarjetas generadas")
                         st.download_button("Descargar PDF Tarjetas", pdf,
                                            f"Tarjetas_Qaway_{grado_p}.pdf", "application/pdf",
-                                           use_container_width=True, key="dl_tarj")
+                                           use_container_width=True, type="primary", key="dl_tarj")
                     except Exception as e:
                         st.error(f"Error: {e}")
             with st.expander("Vista previa"):
@@ -12242,7 +12268,7 @@ def tab_yachay_plickers(config):
                         json.dump(qd, fq, indent=2, ensure_ascii=False)
                     st.success(f"Cuestionario guardado. ID: {sesion_id}")
             with cc2:
-                if st.button("Limpiar todo", use_container_width=True, key="btn_cl_q"):
+                if st.button("Limpiar todo", use_container_width=True, type="primary", key="btn_cl_q"):
                     st.session_state.plickers_preguntas = []
                     st.session_state.plickers_titulo = ""
                     st.rerun()
@@ -12258,7 +12284,7 @@ def tab_yachay_plickers(config):
                         pdf_quiz = _generar_pdf_cuestionario_qaway(qd_pdf)
                         st.download_button("Descargar PDF", pdf_quiz,
                                            f"Cuestionario_{grado_q}_{area_q}.pdf",
-                                           "application/pdf", key="dl_quiz_pdf")
+                                           "application/pdf", type="primary", key="dl_quiz_pdf")
                     except Exception as e:
                         st.error(f"Error generando PDF: {e}")
 
@@ -12269,7 +12295,8 @@ def tab_yachay_plickers(config):
         st.markdown("### Proyectar Preguntas (abrir en PC/proyector)")
         st.caption("Los estudiantes responden con sus tarjetas QR. El profesor escanea desde el celular en otra pestana.")
 
-        qf = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
+        qf = sorted([q for q in plickers_dir.glob("quiz_*.json")
+                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
         if not qf:
             st.warning("Primero cree un cuestionario.")
         else:
@@ -12410,7 +12437,7 @@ def tab_yachay_plickers(config):
                         components.html("<script>setTimeout(function(){window.parent.document.querySelector('[data-testid=\"stApp\"]').__streamlitWebSocket && window.parent.location.reload()}, 5000)</script>", height=0)
 
                 with col_prev:
-                    if pidx > 0 and st.button("ANTERIOR", use_container_width=True, key="plik_prev"):
+                    if pidx > 0 and st.button("ANTERIOR", use_container_width=True, type="primary", key="plik_prev"):
                         st.session_state.plik_pidx -= 1
                         st.rerun()
                 with col_next:
@@ -12519,7 +12546,8 @@ def tab_yachay_plickers(config):
         st.markdown("### Escanear QR (abrir en celular)")
         st.caption("Abra esta pestana desde su celular. Escanee las tarjetas de los alumnos.")
 
-        qf2 = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
+        qf2 = sorted([q for q in plickers_dir.glob("quiz_*.json")
+                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
         if not qf2:
             st.warning("No hay cuestionarios creados.")
         else:
@@ -12603,7 +12631,7 @@ def tab_yachay_plickers(config):
                 st.caption(f"{n_scan} respuestas registradas para esta pregunta")
 
                 # Sync: refrescar para ver siguiente pregunta
-                if st.button("REFRESCAR pregunta", use_container_width=True, key="plik_scan_ref"):
+                if st.button("REFRESCAR pregunta", use_container_width=True, type="primary", key="plik_scan_ref"):
                     st.rerun()
             else:
                 st.success("Cuestionario finalizado!")
@@ -12613,7 +12641,8 @@ def tab_yachay_plickers(config):
     # ================================================================
     with tab_results:
         st.markdown("### Resultados y Ranking")
-        qfr = sorted(plickers_dir.glob("quiz_*.json"), reverse=True)
+        qfr = sorted([q for q in plickers_dir.glob("quiz_*.json")
+                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
         if not qfr:
             st.info("No hay cuestionarios.")
         else:
@@ -12623,12 +12652,12 @@ def tab_yachay_plickers(config):
                 qr2 = json.load(fq)
             sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
             # Descargar PDF del cuestionario
-            if st.button("📄 Descargar PDF del cuestionario", use_container_width=True, key="btn_dl_quiz_r"):
+            if st.button("📄 Descargar PDF del cuestionario", use_container_width=True, type="primary", key="btn_dl_quiz_r"):
                 try:
                     pdf_q = _generar_pdf_cuestionario_qaway(qr2)
                     st.download_button("Descargar PDF", pdf_q,
                                        'Cuestionario_' + qr2.get('grado','') + '.pdf',
-                                       "application/pdf", key="dl_qr_pdf")
+                                       "application/pdf", type="primary", key="dl_qr_pdf")
                 except Exception as e:
                     st.error(f"Error: {e}")
             resp = _plk_cargar_respuestas(sesion_id_r)
@@ -12719,7 +12748,7 @@ def tab_yachay_plickers(config):
                         cp_r.save()
                         buf_r.seek(0)
                         st.download_button("Descargar PDF", buf_r,
-                                           "Qaway_Resultados.pdf", "application/pdf", key="dl_plik_pdf")
+                                           "Qaway_Resultados.pdf", "application/pdf", type="primary", key="dl_plik_pdf")
                 with col_wa_r:
                     if st.button("WhatsApp a Padres", type="primary", use_container_width=True, key="plik_wa"):
                         st.session_state.plik_wa_show = True
