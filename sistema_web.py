@@ -12627,7 +12627,7 @@ def tab_yachay_plickers(config):
                 try:
                     pdf_q = _generar_pdf_cuestionario_qaway(qr2)
                     st.download_button("Descargar PDF", pdf_q,
-                                       f"Cuestionario_{qr2.get("grado","")}.pdf",
+                                       'Cuestionario_' + qr2.get('grado','') + '.pdf',
                                        "application/pdf", key="dl_qr_pdf")
                 except Exception as e:
                     st.error(f"Error: {e}")
