@@ -1018,23 +1018,26 @@ def reproducir_sonido_asistencia():
 
 
 def reproducir_beep_exitoso():
-    """Sonido de éxito para escaneos y registros"""
-    # Genera un tono de 800Hz corto usando JavaScript AudioContext
+    """Sonido agradable tipo chime para registros exitosos"""
     st.markdown("""
     <script>
     (function() {
         try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc = ctx.createOscillator();
-            var gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 800;
-            osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.3);
+            function nota(freq, inicio, dur) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = freq;
+                o.type = 'sine';
+                g.gain.setValueAtTime(0.25, ctx.currentTime + inicio);
+                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
+                o.start(ctx.currentTime + inicio);
+                o.stop(ctx.currentTime + inicio + dur);
+            }
+            nota(523, 0, 0.15);
+            nota(659, 0.1, 0.15);
+            nota(784, 0.2, 0.3);
         } catch(e) {}
     })();
     </script>
@@ -11778,6 +11781,21 @@ def _plk_dir():
     d.mkdir(exist_ok=True)
     return d
 
+def _qaway_guardar_musica(audio_bytes):
+    """Guarda MP3 subido por admin para musica de fondo"""
+    p = _plk_dir() / "musica_fondo.mp3"
+    with open(p, 'wb') as f:
+        f.write(audio_bytes)
+    return p
+
+def _qaway_cargar_musica():
+    """Carga MP3 guardado como base64"""
+    p = _plk_dir() / "musica_fondo.mp3"
+    if p.exists():
+        with open(p, 'rb') as f:
+            return base64.b64encode(f.read()).decode('utf-8')
+    return None
+
 def _plk_guardar_sesion(sesion_id, data):
     """Guarda sesion activa en archivo para sync PC<->Celular"""
     p = _plk_dir() / f"sesion_{sesion_id}.json"
@@ -11888,6 +11906,200 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
     return buffer
 
 
+
+def _generar_pdf_cuestionario_qaway(quiz_data):
+    """Genera PDF bonito del cuestionario con preguntas y alternativas"""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import mm, cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=15*mm, bottomMargin=15*mm,
+                            leftMargin=20*mm, rightMargin=20*mm)
+    styles = getSampleStyleSheet()
+    elements = []
+    w_page = A4[0] - 40*mm
+
+    # === ENCABEZADO INSTITUCIONAL ===
+    style_inst = ParagraphStyle('inst', parent=styles['Normal'], fontSize=7,
+                                 textColor=colors.HexColor('#555555'), alignment=TA_CENTER)
+    style_title = ParagraphStyle('title_q', parent=styles['Title'], fontSize=16,
+                                  textColor=colors.HexColor('#7c3aed'), alignment=TA_CENTER,
+                                  spaceAfter=4*mm)
+    style_sub = ParagraphStyle('sub_q', parent=styles['Normal'], fontSize=10,
+                                textColor=colors.HexColor('#374151'), alignment=TA_CENTER,
+                                spaceAfter=2*mm)
+    style_preg = ParagraphStyle('preg', parent=styles['Normal'], fontSize=11,
+                                 textColor=colors.HexColor('#1e1b4b'), leading=14,
+                                 fontName='Helvetica-Bold', spaceBefore=5*mm, spaceAfter=3*mm)
+    style_opt = ParagraphStyle('opt', parent=styles['Normal'], fontSize=10,
+                                textColor=colors.HexColor('#374151'), leading=13,
+                                leftIndent=10*mm)
+    style_opt_ok = ParagraphStyle('opt_ok', parent=styles['Normal'], fontSize=10,
+                                   textColor=colors.HexColor('#16a34a'), leading=13,
+                                   fontName='Helvetica-Bold', leftIndent=10*mm)
+    style_footer = ParagraphStyle('foot', parent=styles['Normal'], fontSize=7,
+                                   textColor=colors.HexColor('#999'), alignment=TA_CENTER)
+
+    # Header con barra morada
+    header_data = [[
+        Paragraph("I.E.P. ALTERNATIVO YACHAY", ParagraphStyle('h1', parent=styles['Normal'],
+                   fontSize=12, fontName='Helvetica-Bold', textColor=colors.white, alignment=TA_CENTER)),
+    ]]
+    header_table = Table(header_data, colWidths=[w_page])
+    header_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#7c3aed')),
+        ('TOPPADDING', (0,0), (-1,-1), 8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ROUNDEDCORNERS', [8, 8, 0, 0]),
+    ]))
+    elements.append(header_table)
+
+    # Sub-header
+    sub_data = [[
+        Paragraph(f"UGEL CHINCHERO - URUBAMBA - CUSCO", style_inst),
+    ]]
+    sub_table = Table(sub_data, colWidths=[w_page])
+    sub_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ede9fe')),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('ROUNDEDCORNERS', [0, 0, 8, 8]),
+    ]))
+    elements.append(sub_table)
+    elements.append(Spacer(1, 5*mm))
+
+    # Titulo del cuestionario
+    titulo = quiz_data.get('titulo', 'Cuestionario')
+    elements.append(Paragraph(f"YACHAY QAWAY", style_title))
+    elements.append(Paragraph(f"<b>{titulo}</b>", ParagraphStyle('tit2', parent=styles['Normal'],
+                    fontSize=13, textColor=colors.HexColor('#1e1b4b'), alignment=TA_CENTER, spaceAfter=3*mm)))
+
+    # Info del cuestionario
+    area = quiz_data.get('area', '')
+    grado = quiz_data.get('grado', '')
+    fecha = quiz_data.get('fecha', '')
+    docente = quiz_data.get('docente', '')
+    total_pregs = len(quiz_data.get('preguntas', []))
+
+    info_data = [[
+        Paragraph(f"<b>Area:</b> {area}", styles['Normal']),
+        Paragraph(f"<b>Grado:</b> {grado}", styles['Normal']),
+        Paragraph(f"<b>Fecha:</b> {fecha}", styles['Normal']),
+    ]]
+    info_table = Table(info_data, colWidths=[w_page/3]*3)
+    info_table.setStyle(TableStyle([
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f5f3ff')),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#c4b5fd')),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    elements.append(info_table)
+
+    # Linea nombre y seccion
+    elements.append(Spacer(1, 4*mm))
+    elements.append(Paragraph("Nombre: ________________________________________ Seccion: _______", 
+                    ParagraphStyle('nombre', parent=styles['Normal'], fontSize=10, spaceAfter=3*mm)))
+    elements.append(Spacer(1, 3*mm))
+
+    # Linea separadora
+    sep_data = [[Paragraph(f"PREGUNTAS ({total_pregs})", ParagraphStyle('sep', parent=styles['Normal'],
+                 fontSize=9, fontName='Helvetica-Bold', textColor=colors.white, alignment=TA_CENTER))]]
+    sep_table = Table(sep_data, colWidths=[w_page])
+    sep_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#4c1d95')),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+    elements.append(sep_table)
+    elements.append(Spacer(1, 3*mm))
+
+    # === PREGUNTAS ===
+    letras_color = {
+        'A': '#16a34a', 'B': '#2563eb', 'C': '#d97706', 'D': '#db2777'
+    }
+    letras_bg = {
+        'A': '#f0fdf4', 'B': '#eff6ff', 'C': '#fffbeb', 'D': '#fdf2f8'
+    }
+
+    for idx, preg in enumerate(quiz_data.get('preguntas', [])):
+        # Numero y pregunta
+        num_preg = f"<font color='#7c3aed'><b>{idx+1}.</b></font> {preg['pregunta']}"
+        elements.append(Paragraph(num_preg, style_preg))
+
+        # Imagen si existe
+        if preg.get('imagen'):
+            try:
+                import base64 as b64mod
+                img_data = b64mod.b64decode(preg['imagen'])
+                img_buf = io.BytesIO(img_data)
+                from PIL import Image as PILImg
+                pil_img = PILImg.open(img_buf)
+                iw, ih = pil_img.size
+                max_w = 120*mm
+                ratio = min(max_w / iw, 60*mm / ih)
+                img_buf2 = io.BytesIO(img_data)
+                rl_img = RLImage(img_buf2, width=iw*ratio, height=ih*ratio)
+                elements.append(rl_img)
+                elements.append(Spacer(1, 2*mm))
+            except Exception:
+                pass
+
+        # Opciones en tabla 2x2
+        opciones = preg.get('opciones', {})
+        opt_cells = []
+        row1 = []
+        row2 = []
+        for letra in ['A', 'B', 'C', 'D']:
+            texto = opciones.get(letra, '')
+            color = letras_color.get(letra, '#333')
+            circulo = f"<font color='{color}'><b>  {letra})</b></font> {texto}"
+            p_opt = Paragraph(circulo, style_opt)
+            if letra in ('A', 'B'):
+                row1.append(p_opt)
+            else:
+                row2.append(p_opt)
+        opt_data = [row1, row2]
+        opt_table = Table(opt_data, colWidths=[w_page/2]*2)
+        opt_table.setStyle(TableStyle([
+            ('FONTSIZE', (0,0), (-1,-1), 10),
+            ('TOPPADDING', (0,0), (-1,-1), 4),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+            ('LEFTPADDING', (0,0), (-1,-1), 6),
+            ('BACKGROUND', (0,0), (0,0), colors.HexColor(letras_bg['A'])),
+            ('BACKGROUND', (1,0), (1,0), colors.HexColor(letras_bg['B'])),
+            ('BACKGROUND', (0,1), (0,1), colors.HexColor(letras_bg['C'])),
+            ('BACKGROUND', (1,1), (1,1), colors.HexColor(letras_bg['D'])),
+            ('BOX', (0,0), (-1,-1), 0.3, colors.HexColor('#e5e7eb')),
+            ('INNERGRID', (0,0), (-1,-1), 0.3, colors.HexColor('#e5e7eb')),
+        ]))
+        elements.append(opt_table)
+        elements.append(Spacer(1, 2*mm))
+
+        # Separador sutil entre preguntas
+        if idx < total_pregs - 1:
+            elements.append(Spacer(1, 1*mm))
+            sep_line = Table([['']], colWidths=[w_page])
+            sep_line.setStyle(TableStyle([
+                ('LINEBELOW', (0,0), (-1,-1), 0.5, colors.HexColor('#e5e7eb')),
+            ]))
+            elements.append(sep_line)
+
+    # Footer
+    elements.append(Spacer(1, 8*mm))
+    elements.append(Paragraph(f"I.E.P. ALTERNATIVO YACHAY | Sistema YACHAY PRO | {fecha}", style_footer))
+
+    doc.build(elements)
+    buf.seek(0)
+    return buf
+
+
 def tab_yachay_plickers(config):
     """YACHAY QAWAY v2 — sync PC + celular"""
     st.markdown("""<div style='background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;
@@ -11933,6 +12145,23 @@ def tab_yachay_plickers(config):
                         st.image(img, width=400)
                     except Exception as e:
                         st.error(f"Error: {e}")
+        st.markdown("---")
+        with st.expander("🎵 Configurar musica de fondo"):
+            st.caption("Suba un archivo MP3 para que suene durante las evaluaciones.")
+            musica_actual = _qaway_cargar_musica()
+            if musica_actual:
+                st.success("Ya hay musica cargada.")
+                if st.button("Eliminar musica", key="plik_del_mus"):
+                    p_mus = _plk_dir() / "musica_fondo.mp3"
+                    if p_mus.exists():
+                        p_mus.unlink()
+                    st.success("Musica eliminada")
+                    st.rerun()
+            mp3_file = st.file_uploader("Subir MP3:", type=['mp3'], key="plik_mp3_up")
+            if mp3_file:
+                _qaway_guardar_musica(mp3_file.read())
+                st.success(f"Musica guardada: {mp3_file.name}")
+                st.rerun()
 
     # ================================================================
     # TAB 2: CREAR PREGUNTAS
@@ -12018,6 +12247,21 @@ def tab_yachay_plickers(config):
                     st.session_state.plickers_titulo = ""
                     st.rerun()
 
+            # Boton PDF del cuestionario
+            if st.session_state.plickers_preguntas:
+                st.markdown("---")
+                if st.button("📄 DESCARGAR PDF DEL CUESTIONARIO", type="primary", use_container_width=True, key="btn_pdf_quiz"):
+                    qd_pdf = {"titulo": st.session_state.plickers_titulo, "area": area_q,
+                              "grado": grado_q, "fecha": fecha_peru_str(), "docente": usuario,
+                              "preguntas": st.session_state.plickers_preguntas}
+                    try:
+                        pdf_quiz = _generar_pdf_cuestionario_qaway(qd_pdf)
+                        st.download_button("Descargar PDF", pdf_quiz,
+                                           f"Cuestionario_{grado_q}_{area_q}.pdf",
+                                           "application/pdf", key="dl_quiz_pdf")
+                    except Exception as e:
+                        st.error(f"Error generando PDF: {e}")
+
     # ================================================================
     # TAB 3: PROYECTAR (PC) — Pantalla grande + nombres en vivo
     # ================================================================
@@ -12052,23 +12296,22 @@ def tab_yachay_plickers(config):
                 # Modo pantalla completa + musica de fondo
                 col_fs, col_mus = st.columns([1, 1])
                 with col_fs:
-                    if st.button("🖥️ PANTALLA COMPLETA", use_container_width=True, key="plik_fs", type="primary"):
-                        import streamlit.components.v1 as comp_fs
-                        comp_fs.html("<script>document.documentElement.requestFullscreen().catch(e=>{})</script>", height=0)
+                    fs_on = st.checkbox("🖥️ PANTALLA GIGANTE", key="plik_fs_chk")
                 with col_mus:
                     musica_on = st.checkbox("🎵 Musica de fondo", key="plik_musica", value=st.session_state.get("plik_musica_v", False))
                     st.session_state.plik_musica_v = musica_on
                 if musica_on:
                     import streamlit.components.v1 as comp_m
-                    comp_m.html("""
-                    <div id="music-box" style="text-align:center;padding:4px;">
-                        <audio id="bgm" loop autoplay style="display:none">
-                            <source src='https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3' type='audio/mpeg'>
-                        </audio>
-                        <button onclick="let a=document.getElementById('bgm');if(a.paused){a.play();this.textContent='🔊 Pausar'}else{a.pause();this.textContent='🔈 Reproducir'}" 
-                            style='background:#7c3aed;color:white;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;'>🔊 Pausar</button>
-                    </div>
-                    """, height=50)
+                    musica_b64 = _qaway_cargar_musica()
+                    if musica_b64:
+                        audio_src = 'data:audio/mpeg;base64,' + musica_b64
+                    else:
+                        audio_src = 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3'
+                    comp_m.html('<div style="text-align:center;padding:4px;">'
+                        '<audio id="bgm" loop autoplay><source src="' + audio_src + '" type="audio/mpeg"></audio>'
+                        '<button onclick="var a=document.getElementById(\'bgm\');if(a.paused){a.play();this.textContent=\'🔊 Pausar\'}else{a.pause();this.textContent=\'🔈 Reproducir\'}"'
+                        ' style="background:#7c3aed;color:white;border:none;padding:6px 16px;border-radius:8px;cursor:pointer">🔊 Pausar</button>'
+                        '</div>', height=50)
 
                 # PANTALLA DE PROYECCION (grande, para proyector)
                 st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:30px;
@@ -12091,6 +12334,37 @@ def tab_yachay_plickers(config):
                         st.image(base64.b64decode(preg['imagen']), width=500)
                     except Exception:
                         pass
+
+                # PANTALLA GIGANTE (overlay completo)
+                if fs_on:
+                    import streamlit.components.v1 as comp_giant
+                    img_html = ''
+                    if preg.get('imagen'):
+                        img_html = '<img src="data:image/png;base64,' + preg['imagen'] + '" style="max-width:500px;max-height:250px;border-radius:12px;margin:10px auto;display:block;">'
+                    opts = preg['opciones']
+                    giant_html = '''
+                    <style>
+                    * { margin:0; padding:0; box-sizing:border-box; }
+                    body { background:#0f0a2e; color:white; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
+                    .q-num { color:#a5b4fc; font-size:1.5rem; margin-bottom:10px; }
+                    .q-text { font-size:2.5rem; font-weight:bold; text-align:center; margin-bottom:20px; line-height:1.3; }
+                    .opts { display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:900px; width:100%; }
+                    .opt { padding:22px 30px; border-radius:14px; font-size:1.5rem; font-weight:bold; text-align:center; }
+                    .opt-a { background:#16a34a; } .opt-b { background:#2563eb; } .opt-c { background:#d97706; } .opt-d { background:#db2777; }
+                    </style>
+                    '''
+                    giant_body = f'''
+                    <div class='q-num'>Pregunta {pidx+1} de {total_p}</div>
+                    <div class='q-text'>{preg['pregunta']}</div>
+                    ''' + img_html + f'''
+                    <div class='opts'>
+                        <div class='opt opt-a'>A) {opts.get('A','')}</div>
+                        <div class='opt opt-b'>B) {opts.get('B','')}</div>
+                        <div class='opt opt-c'>C) {opts.get('C','')}</div>
+                        <div class='opt opt-d'>D) {opts.get('D','')}</div>
+                    </div>
+                    '''
+                    comp_giant.html(giant_html + giant_body + '<div style="margin-top:15px;text-align:center;"><button onclick="document.documentElement.requestFullscreen().catch(e=>{})" style="background:#7c3aed;color:white;border:none;padding:10px 25px;border-radius:10px;font-size:1.1rem;cursor:pointer;">⛶ Click aqui para pantalla completa</button></div>', height=750, scrolling=False)
 
                 # PANEL LATERAL: nombres que respondieron (en vivo)
                 resp_all = _plk_cargar_respuestas(sesion_id)
@@ -12348,6 +12622,15 @@ def tab_yachay_plickers(config):
             with open(qsr, 'r', encoding='utf-8') as fq:
                 qr2 = json.load(fq)
             sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
+            # Descargar PDF del cuestionario
+            if st.button("📄 Descargar PDF del cuestionario", use_container_width=True, key="btn_dl_quiz_r"):
+                try:
+                    pdf_q = _generar_pdf_cuestionario_qaway(qr2)
+                    st.download_button("Descargar PDF", pdf_q,
+                                       f"Cuestionario_{qr2.get("grado","")}.pdf",
+                                       "application/pdf", key="dl_qr_pdf")
+                except Exception as e:
+                    st.error(f"Error: {e}")
             resp = _plk_cargar_respuestas(sesion_id_r)
             if not resp:
                 st.info("No hay respuestas registradas.")
