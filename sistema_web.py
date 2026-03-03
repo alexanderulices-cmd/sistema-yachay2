@@ -12049,6 +12049,27 @@ def tab_yachay_plickers(config):
                 quiz['pregunta_actual'] = pidx
                 _plk_guardar_sesion(sesion_id, quiz)
 
+                # Modo pantalla completa + musica de fondo
+                col_fs, col_mus = st.columns([1, 1])
+                with col_fs:
+                    if st.button("🖥️ PANTALLA COMPLETA", use_container_width=True, key="plik_fs", type="primary"):
+                        import streamlit.components.v1 as comp_fs
+                        comp_fs.html("<script>document.documentElement.requestFullscreen().catch(e=>{})</script>", height=0)
+                with col_mus:
+                    musica_on = st.checkbox("🎵 Musica de fondo", key="plik_musica", value=st.session_state.get("plik_musica_v", False))
+                    st.session_state.plik_musica_v = musica_on
+                if musica_on:
+                    import streamlit.components.v1 as comp_m
+                    comp_m.html("""
+                    <div id="music-box" style="text-align:center;padding:4px;">
+                        <audio id="bgm" loop autoplay style="display:none">
+                            <source src='https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3' type='audio/mpeg'>
+                        </audio>
+                        <button onclick="let a=document.getElementById('bgm');if(a.paused){a.play();this.textContent='🔊 Pausar'}else{a.pause();this.textContent='🔈 Reproducir'}" 
+                            style='background:#7c3aed;color:white;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;'>🔊 Pausar</button>
+                    </div>
+                    """, height=50)
+
                 # PANTALLA DE PROYECCION (grande, para proyector)
                 st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:30px;
                     border-radius:16px;text-align:center;margin:10px 0;'>
@@ -12106,7 +12127,7 @@ def tab_yachay_plickers(config):
                 st.markdown("---")
                 col_ref, col_prev, col_next = st.columns([1, 1, 1])
                 with col_ref:
-                    if st.button("REFRESCAR", use_container_width=True, key="plik_refresh"):
+                    if st.button("🔄 REFRESCAR", use_container_width=True, key="plik_refresh", type="primary"):
                         st.rerun()
                     # Auto-refresh cada 5 segundos
                     auto_ref = st.checkbox("Auto-refrescar (5s)", key="plik_auto_ref", value=True)
@@ -12128,10 +12149,94 @@ def tab_yachay_plickers(config):
                             st.session_state.plik_pidx = total_p
                             st.rerun()
             else:
-                st.success("Cuestionario finalizado! Ve a la pestana Resultados.")
-                if st.button("Reiniciar", key="plik_reset"):
+                # ============ PODIUM ESTILO KAHOOT ============
+                resp_final = _plk_cargar_respuestas(sesion_id)
+                if resp_final:
+                    tpr_f = len(quiz["preguntas"])
+                    ranking = []
+                    for dni_f, pr_f in resp_final.items():
+                        nm_f = pr_f.get("nombre", dni_f)
+                        resps_f = pr_f.get("respuestas", {})
+                        cor_f = sum(1 for r in resps_f.values() if r.get("ok"))
+                        nota_f = round(cor_f / max(tpr_f, 1) * 20, 1)
+                        ranking.append({"nombre": nm_f, "correctas": cor_f, "total": tpr_f, "nota": nota_f, "dni": dni_f})
+                    ranking.sort(key=lambda x: x["nota"], reverse=True)
+
+                    # Podium animado Top 3
+                    top3 = ranking[:3]
+                    medallas = ["🥇", "🥈", "🥉"]
+                    colores_pod = ["#FFD700", "#C0C0C0", "#CD7F32"]
+                    alturas = [220, 170, 130]
+
+                    # Fanfarria
+                    import streamlit.components.v1 as comp_pod
+                    comp_pod.html("""
+                    <audio autoplay><source src="https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3" type="audio/mpeg"></audio>
+                    <style>
+                    @keyframes slideUp { from { transform: translateY(100px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+                    @keyframes glow { 0%,100% { text-shadow: 0 0 10px gold; } 50% { text-shadow: 0 0 30px gold, 0 0 60px orange; } }
+                    @keyframes confetti { 0% { transform: translateY(-10px) rotate(0deg); opacity:1; } 100% { transform: translateY(400px) rotate(720deg); opacity:0; } }
+                    .podium-title { font-size:2.5rem; text-align:center; animation: glow 2s infinite; color: #FFD700; font-weight:bold; margin:15px 0; }
+                    .confetti { position:absolute; width:10px; height:10px; border-radius:2px; animation: confetti 3s ease-out forwards; }
+                    </style>
+                    <div style="position:relative;overflow:hidden;padding:20px;">
+                    <div class="podium-title">🏆 RANKING FINAL 🏆</div>
+                    <div id="confetti-box" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></div>
+                    </div>
+                    <script>
+                    const box=document.getElementById("confetti-box");
+                    const colors=["#FFD700","#FF6B6B","#4ECDC4","#45B7D1","#96CEB4","#FFEAA7","#DDA0DD","#98D8C8"];
+                    for(let i=0;i<60;i++){const c=document.createElement("div");c.className="confetti";c.style.left=Math.random()*100+"%";c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDelay=Math.random()*2+"s";c.style.animationDuration=(2+Math.random()*2)+"s";box.appendChild(c)}
+                    </script>
+                    """, height=120)
+
+                    # Podium visual
+                    if len(top3) >= 1:
+                        # Orden visual: 2do - 1ro - 3ro
+                        orden = []
+                        if len(top3) >= 2: orden.append((top3[1], medallas[1], colores_pod[1], alturas[1]))
+                        orden.append((top3[0], medallas[0], colores_pod[0], alturas[0]))
+                        if len(top3) >= 3: orden.append((top3[2], medallas[2], colores_pod[2], alturas[2]))
+
+                        cols_pod = st.columns(len(orden))
+                        for ci, (alumno, medalla, color_p, altura) in enumerate(orden):
+                            with cols_pod[ci]:
+                                nm_pod = alumno["nombre"].split()[-1] if " " in alumno["nombre"] else alumno["nombre"]
+                                st.markdown(f"""
+                                <div style="text-align:center;animation:slideUp 1s ease-out;">
+                                    <div style="font-size:3rem;margin-bottom:5px;">{medalla}</div>
+                                    <div style="font-size:1.3rem;font-weight:bold;color:#1e1b4b;">{nm_pod}</div>
+                                    <div style="font-size:1.1rem;color:#7c3aed;font-weight:bold;">{alumno["nota"]}/20</div>
+                                    <div style="font-size:0.9rem;color:#666;">{alumno["correctas"]}/{alumno["total"]} correctas</div>
+                                    <div style="background:{color_p};width:80%;margin:10px auto 0;height:{altura}px;
+                                        border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;
+                                        font-size:2rem;font-weight:bold;color:white;text-shadow:1px 1px 3px rgba(0,0,0,0.3);
+                                        animation:slideUp 1.5s ease-out;">{medalla}</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                    st.markdown("---")
+                    # Lista completa
+                    st.markdown("### 📋 Ranking Completo")
+                    for idx_rk, al in enumerate(ranking):
+                        puesto = medallas[idx_rk] if idx_rk < 3 else f"{idx_rk+1}to"
+                        color_rk = "#16a34a" if al["nota"] >= 14 else ("#2563eb" if al["nota"] >= 11 else "#dc2626")
+                        st.markdown(f"""
+                        <div style="display:flex;align-items:center;padding:8px 12px;margin:4px 0;border-radius:8px;
+                            background:linear-gradient(90deg,{color_rk}15,transparent);border-left:4px solid {color_rk};">
+                            <span style="font-size:1.3rem;margin-right:10px;min-width:35px;">{puesto}</span>
+                            <span style="flex:1;font-weight:bold;">{al["nombre"]}</span>
+                            <span style="color:{color_rk};font-weight:bold;font-size:1.1rem;">{al["nota"]}/20</span>
+                            <span style="color:#666;margin-left:10px;font-size:0.85rem;">{al["correctas"]}/{al["total"]}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("No hay respuestas registradas.")
+
+                if st.button("🔄 Reiniciar", key="plik_reset", type="primary"):
                     st.session_state.plik_pidx = 0
                     st.rerun()
+
 
     # ================================================================
     # TAB 4: ESCANEAR (CELULAR) — Camara foto o manual
