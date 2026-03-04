@@ -11963,35 +11963,27 @@ def _generar_tarjeta_plickers(nombre, dni, numero):
 
 
 def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
-    """PDF tarjetas: 4 por hoja A4 (2x2 cuadricula)"""
+    """PDF tarjetas: 2 por hoja A4 (arriba y abajo), grandes con nombre visible"""
     from reportlab.lib.utils import ImageReader
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
     est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
-    tam = 240  # Tamano de cada tarjeta en puntos
-    margin_x = (w - tam * 2) / 3  # Margen horizontal
-    margin_y = (h - tam * 2 - 40) / 3  # Margen vertical (40 para header)
-    posiciones = [
-        (margin_x, h - 35 - margin_y - tam),                     # arriba-izq
-        (margin_x * 2 + tam, h - 35 - margin_y - tam),           # arriba-der
-        (margin_x, h - 35 - margin_y * 2 - tam * 2),             # abajo-izq
-        (margin_x * 2 + tam, h - 35 - margin_y * 2 - tam * 2),  # abajo-der
-    ]
+    tam = 350  # Tarjeta grande
     for idx in range(len(est)):
-        pos_en_pagina = idx % 4
+        pos_en_pagina = idx % 2  # 0=arriba, 1=abajo
         if pos_en_pagina == 0:
             if idx > 0:
                 c_pdf.showPage()
-            # Header de pagina
+            # Header morado
             c_pdf.setFillColor(colors.HexColor("#7c3aed"))
-            c_pdf.rect(0, h - 25, w, 25, fill=1, stroke=0)
+            c_pdf.rect(0, h - 22, w, 22, fill=1, stroke=0)
             c_pdf.setFillColor(colors.white)
-            c_pdf.setFont('Helvetica-Bold', 10)
-            c_pdf.drawCentredString(w/2, h - 18, f'YACHAY QAWAY - TARJETAS QR | {grado}')
-            c_pdf.setFillColor(colors.black)
+            c_pdf.setFont('Helvetica-Bold', 9)
+            c_pdf.drawCentredString(w/2, h - 16, f'YACHAY QAWAY - TARJETAS QR | {grado}')
+            c_pdf.setFillColor(colors.HexColor("#666"))
             c_pdf.setFont('Helvetica', 6)
-            c_pdf.drawCentredString(w/2, h - 30, 'Recortar. Doblar por lineas punteadas. Mostrar solo la cara de su respuesta.')
+            c_pdf.drawCentredString(w/2, h - 28, 'Recortar por linea punteada. Doblar en cruz. Mostrar solo la cara de su respuesta.')
         row = est.iloc[idx]
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
@@ -12000,18 +11992,23 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
             img_buf = io.BytesIO()
             img.save(img_buf, format='PNG')
             img_buf.seek(0)
-            xp, yp = posiciones[pos_en_pagina]
+            xp = (w - tam) / 2  # Centrado horizontal
+            if pos_en_pagina == 0:
+                yp = h - 35 - tam - 25  # Arriba (debajo del header + nombre)
+            else:
+                yp = 25  # Abajo
+            # Nombre del estudiante grande
+            c_pdf.setFillColor(colors.HexColor("#1e1b4b"))
+            c_pdf.setFont('Helvetica-Bold', 12)
+            c_pdf.drawCentredString(w/2, yp + tam + 12, f'#{idx+1:03d}  {nombre}')
+            # Tarjeta
             c_pdf.drawImage(ImageReader(img_buf), xp, yp, width=tam, height=tam,
                             preserveAspectRatio=True, mask='auto')
-            # Marco con linea de corte
-            c_pdf.setStrokeColor(colors.HexColor("#ccc"))
-            c_pdf.setDash(3, 3)
-            c_pdf.rect(xp - 2, yp - 2, tam + 4, tam + 4)
+            # Marco punteado de recorte
+            c_pdf.setStrokeColor(colors.HexColor("#999"))
+            c_pdf.setDash(4, 4)
+            c_pdf.rect(xp - 5, yp - 5, tam + 10, tam + 30)
             c_pdf.setDash()
-            # Numero
-            c_pdf.setFont('Helvetica-Bold', 7)
-            c_pdf.setFillColor(colors.HexColor("#7c3aed"))
-            c_pdf.drawString(xp + 2, yp + tam + 4, f'#{idx+1:03d}')
             c_pdf.setFillColor(colors.black)
         except Exception as e:
             c_pdf.drawString(50, h/2, f'Error: {str(e)[:60]}')
