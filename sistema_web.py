@@ -11826,6 +11826,76 @@ def _plk_guardar_respuesta(sesion_id, dni, nombre, pregunta_idx, respuesta, corr
     with open(p, 'w', encoding='utf-8') as f:
         json.dump(resp, f, indent=2, ensure_ascii=False)
 
+def _plk_guardar_en_reportes(quiz_data, sesion_id):
+    """Guarda resultados de QAWAY en historial_evaluaciones y resultados.json"""
+    try:
+        resp = _plk_cargar_respuestas(sesion_id)
+        if not resp:
+            return False
+        preguntas = quiz_data.get('preguntas', [])
+        total_p = len(preguntas)
+        titulo = quiz_data.get('titulo', 'YACHAY QAWAY')
+        area = quiz_data.get('area', '')
+        grado = quiz_data.get('grado', '')
+        docente = quiz_data.get('docente', '')
+        usuario = quiz_data.get('usuario', '')
+        fecha = quiz_data.get('fecha', fecha_peru_str())
+
+        # 1. Guardar en historial_evaluaciones.json
+        hist = _cargar_historial_evaluaciones()
+        clave = f"qaway_{sesion_id}"
+        ranking_filas = []
+        for dni_r, pr in resp.items():
+            nm = pr.get('nombre', dni_r)
+            resps = pr.get('respuestas', {})
+            cor = sum(1 for r in resps.values() if r.get('ok'))
+            nota = round(cor / max(total_p, 1) * 20, 1)
+            ranking_filas.append({
+                'nombre': nm, 'dni': dni_r,
+                'promedio': nota, 'correctas': cor, 'total': total_p
+            })
+        ranking_filas.sort(key=lambda x: x['promedio'], reverse=True)
+
+        hist[clave] = {
+            'id': sesion_id,
+            'grado': grado,
+            'periodo': 'QAWAY',
+            'titulo': f"QAWAY: {titulo}",
+            'fecha': fecha,
+            'hora': hora_peru_str(),
+            'docente': usuario,
+            'docente_nombre': docente,
+            'areas': [area] if area else [],
+            'ranking': ranking_filas,
+            'tipo': 'qaway'
+        }
+        _guardar_historial_evaluaciones(hist)
+
+        # 2. Guardar en resultados.json (por alumno)
+        resultados = BaseDatos.cargar_todos_resultados()
+        for r_item in ranking_filas:
+            reg = {
+                'dni': r_item['dni'],
+                'nombre': r_item['nombre'],
+                'grado': grado,
+                'periodo': 'QAWAY',
+                'titulo': f"QAWAY: {titulo}",
+                'fecha': fecha,
+                'hora': hora_peru_str(),
+                'docente': usuario,
+                'docente_nombre': docente,
+                'areas': [{'nombre': area or 'General', 'nota': r_item['promedio']}],
+                'promedio_general': r_item['promedio'],
+                '_docente': usuario,
+                'tipo': 'qaway'
+            }
+            resultados.append(reg)
+        with open('resultados.json', 'w', encoding='utf-8') as f:
+            json.dump(resultados, f, ensure_ascii=False, indent=2, default=str)
+        return True
+    except Exception:
+        return False
+
 def _plk_format_quiz(path):
     """Muestra titulo del quiz en selectbox en vez del nombre de archivo"""
     try:
@@ -12475,11 +12545,15 @@ def tab_yachay_plickers(config):
                 with col_ref:
                     if st.button("🔄 REFRESCAR", use_container_width=True, key="plik_refresh", type="primary"):
                         st.rerun()
-                    # Auto-refresh cada 5 segundos
-                    auto_ref = st.checkbox("Auto-refrescar (5s)", key="plik_auto_ref", value=True)
+                    # Auto-refresh cada 5 seg via time
+                    auto_ref = st.checkbox("Auto-refrescar (5s)", key="plik_auto_ref", value=False)
                     if auto_ref:
-                        import streamlit.components.v1 as components
-                        components.html("<script>setTimeout(function(){window.parent.document.querySelector('[data-testid=\"stApp\"]').__streamlitWebSocket && window.parent.location.reload()}, 5000)</script>", height=0)
+                        import time as _t_ref
+                        if 'plik_last_ref' not in st.session_state:
+                            st.session_state.plik_last_ref = _t_ref.time()
+                        if _t_ref.time() - st.session_state.plik_last_ref > 5:
+                            st.session_state.plik_last_ref = _t_ref.time()
+                            st.rerun()
 
                 with col_prev:
                     if pidx > 0 and st.button("ANTERIOR", use_container_width=True, type="primary", key="plik_prev"):
@@ -12626,9 +12700,9 @@ def tab_yachay_plickers(config):
                         pass
 
                 # CAMARA PARA ESCANEAR
-                scan_modo = st.radio("Modo:", ["Camara", "Manual"], horizontal=True, key="plik_scan_m")
+                scan_modo = st.radio("Modo de escaneo:", ["Manual", "Camara QR"], horizontal=True, key="plik_scan_m")
 
-                if scan_modo == "Camara":
+                if scan_modo == "Camara QR":
                     foto = st.camera_input("Apunte al QR del alumno:", key="plik_foto2")
                     if foto:
                         d = decodificar_qr_imagen(foto.getvalue())
@@ -12655,7 +12729,7 @@ def tab_yachay_plickers(config):
                             st.warning(f"QR no reconocido: {d[:30]}")
                         else:
                             st.warning("No se detecto QR.")
-                else:
+                elif scan_modo == "Manual":
                     # MANUAL
                     gsc2 = quiz2.get('grado', '')
                     dfs2 = BaseDatos.obtener_estudiantes_grado(gsc2, "Todas")
@@ -12696,6 +12770,13 @@ def tab_yachay_plickers(config):
             with open(qsr, 'r', encoding='utf-8') as fq:
                 qr2 = json.load(fq)
             sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
+            # Guardar en reportes de alumnos
+            if st.button("💾 GUARDAR EN REPORTES DE ALUMNOS", use_container_width=True, type="primary", key="btn_qaway_save_rep"):
+                if _plk_guardar_en_reportes(qr2, sesion_id_r):
+                    st.success("Resultados guardados en el historial de evaluaciones y reportes de alumnos.")
+                    reproducir_beep_exitoso()
+                else:
+                    st.warning("No hay respuestas para guardar.")
             col_pdf_q, col_pdf_r2 = st.columns(2)
             with col_pdf_q:
                 if st.button("📄 PDF Preguntas", use_container_width=True, type="primary", key="btn_dl_quiz_r"):
