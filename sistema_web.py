@@ -5861,6 +5861,56 @@ def tab_base_datos():
                 st.download_button("⬇️ Excel", buf, "alumnos.xlsx", key="dxlsx")
             with c3:
                 st.markdown("")
+            # Cambiar Grado/Seccion de alumno
+            with st.expander("✏️ Cambiar Grado / Sección de Alumno", expanded=False):
+                st.caption("Busque al alumno por DNI para cambiar su grado o sección (ej: Ciclo Intensivo → Ciclo Ordinario)")
+                edit_dni = st.text_input("DNI del alumno:", key="edit_dni_gs", max_chars=8, placeholder="12345678")
+                if edit_dni and len(edit_dni.strip()) == 8:
+                    alumno_edit = BaseDatos.buscar_por_dni(edit_dni.strip())
+                    if alumno_edit:
+                        st.info(f"**{alumno_edit.get('Nombre', '')}** — Actual: **{alumno_edit.get('Grado', '')}** | Sección: **{alumno_edit.get('Seccion', '')}**")
+                        ce1, ce2 = st.columns(2)
+                        with ce1:
+                            nuevo_grado = st.selectbox("Nuevo Grado:", GRADOS_OPCIONES, key="edit_new_grado",
+                                index=GRADOS_OPCIONES.index(alumno_edit.get('Grado','')) if alumno_edit.get('Grado','') in GRADOS_OPCIONES else 0)
+                        with ce2:
+                            nuevo_sec = st.selectbox("Nueva Sección:", SECCIONES, key="edit_new_sec",
+                                index=SECCIONES.index(alumno_edit.get('Seccion','')) if alumno_edit.get('Seccion','') in SECCIONES else 0)
+                        # Detectar nivel del nuevo grado
+                        nuevo_nivel = ""
+                        for nv, grados in NIVELES_GRADOS.items():
+                            if nuevo_grado in grados:
+                                nuevo_nivel = nv
+                                break
+                        cambio_grado = nuevo_grado != alumno_edit.get('Grado', '')
+                        cambio_sec = nuevo_sec != alumno_edit.get('Seccion', '')
+                        if cambio_grado or cambio_sec:
+                            cambios = []
+                            if cambio_grado:
+                                cambios.append(f"Grado: {alumno_edit.get('Grado','')} → **{nuevo_grado}**")
+                            if cambio_sec:
+                                cambios.append(f"Sección: {alumno_edit.get('Seccion','')} → **{nuevo_sec}**")
+                            st.warning(f"Cambios: {' | '.join(cambios)}")
+                            if st.button("✅ APLICAR CAMBIO", type="primary", key="btn_apply_edit"):
+                                df_edit = BaseDatos.cargar_matricula()
+                                df_edit['DNI'] = df_edit['DNI'].astype(str).str.strip()
+                                mask = df_edit['DNI'] == edit_dni.strip()
+                                if mask.any():
+                                    df_edit.loc[mask, 'Grado'] = nuevo_grado
+                                    df_edit.loc[mask, 'Seccion'] = nuevo_sec
+                                    if nuevo_nivel:
+                                        df_edit.loc[mask, 'Nivel'] = nuevo_nivel
+                                    BaseDatos.guardar_matricula(df_edit)
+                                    st.success(f"✅ {alumno_edit.get('Nombre','')} actualizado a {nuevo_grado} - {nuevo_sec}")
+                                    time.sleep(1)
+                                    st.rerun()
+                                else:
+                                    st.error("No se encontró el alumno en la base de datos")
+                        else:
+                            st.success("Sin cambios — el grado y sección son los mismos")
+                    else:
+                        st.error("⚠️ No se encontró alumno con ese DNI")
+
             # Eliminar alumno
             with st.expander("🗑️ Eliminar Alumno", expanded=False):
                 del_dni_a = st.text_input("DNI del alumno a eliminar:", key="del_dni_alum",
@@ -13121,6 +13171,9 @@ def main():
                 tab_examenes_semanales(config)
             elif mod == "plickers":
                 tab_yachay_plickers(config)
+            elif mod == "registros_pdf":
+                st.subheader("📋 Registros PDF — Asistencia")
+                _seccion_registros_pdf(config)
             elif mod == "reg_auxiliar":
                 info_d = st.session_state.get('docente_info', {}) or {}
                 grado_d = info_d.get('grado', '')
@@ -13162,6 +13215,7 @@ def main():
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
+                ("📋", "Registros PDF", "registros_pdf", "#0d9488"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -13254,6 +13308,9 @@ def main():
                 tab_examenes_semanales(config)
             elif mod == "plickers":
                 tab_yachay_plickers(config)
+            elif mod == "registros_pdf":
+                st.subheader("📋 Registros PDF — Asistencia")
+                _seccion_registros_pdf(config)
 
 
 # ================================================================
