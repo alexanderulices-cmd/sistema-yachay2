@@ -11897,23 +11897,18 @@ def _plk_guardar_en_reportes(quiz_data, sesion_id):
         return False
 
 def _plk_format_quiz(path):
-    """Muestra titulo del quiz en selectbox en vez del nombre de archivo"""
+    """Muestra titulo del quiz en selectbox"""
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(str(path), 'r', encoding='utf-8') as f:
             q = json.load(f)
-        titulo = q.get('titulo', '')
-        area = q.get('area', '')
-        grado = q.get('grado', '')
-        docente = q.get('docente', '')
-        fecha = q.get('fecha', '')
-        parts = [titulo or path.stem.replace('quiz_','')]
-        if area: parts.append(area)
-        if grado: parts.append(grado)
-        if docente: parts.append(docente)
-        if fecha: parts.append(fecha)
-        return ' | '.join(parts)
+        parts = []
+        for k in ['titulo', 'area', 'grado', 'docente', 'fecha']:
+            v = str(q.get(k, '')).strip()
+            if v:
+                parts.append(v)
+        return ' | '.join(parts) if parts else str(path.stem).replace('quiz_','')
     except Exception:
-        return path.stem.replace('quiz_','')
+        return str(path.stem).replace('quiz_','')
 
 def _plk_cargar_respuestas(sesion_id):
     """Carga todas las respuestas"""
@@ -11995,7 +11990,7 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
             # Tijera en linea de corte
             c_pdf.setFillColor(colors.HexColor("#999"))
             c_pdf.setFont('Helvetica', 8)
-            c_pdf.drawString(8, mitad - 4, chr(9986))  # Tijera unicode
+            c_pdf.drawString(5, mitad - 3, '- - -')
         row = est.iloc[idx]
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
@@ -12428,7 +12423,7 @@ def tab_yachay_plickers(config):
         st.caption("Los estudiantes responden con sus tarjetas QR. El profesor escanea desde el celular en otra pestana.")
 
         qf = sorted([q for q in plickers_dir.glob("quiz_*.json")
-                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
+                              if st.session_state.get('rol','') in ('directivo','admin') or str(usuario) in str(q.stem)], reverse=True)
         if not qf:
             st.warning("Primero cree un cuestionario.")
         else:
@@ -12683,7 +12678,7 @@ def tab_yachay_plickers(config):
         st.caption("Abra esta pestana desde su celular. Escanee las tarjetas de los alumnos.")
 
         qf2 = sorted([q for q in plickers_dir.glob("quiz_*.json")
-                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
+                              if st.session_state.get('rol','') in ('directivo','admin') or str(usuario) in str(q.stem)], reverse=True)
         if not qf2:
             st.warning("No hay cuestionarios creados.")
         else:
@@ -12778,7 +12773,7 @@ def tab_yachay_plickers(config):
     with tab_results:
         st.markdown("### Resultados y Ranking")
         qfr = sorted([q for q in plickers_dir.glob("quiz_*.json")
-                              if st.session_state.get('rol') in ('directivo','admin') or usuario in q.stem], reverse=True)
+                              if st.session_state.get('rol','') in ('directivo','admin') or str(usuario) in str(q.stem)], reverse=True)
         if not qfr:
             st.info("No hay cuestionarios.")
         else:
@@ -12789,11 +12784,14 @@ def tab_yachay_plickers(config):
             sesion_id_r = qr2.get('sesion_id', qsr.stem.replace('quiz_',''))
             # Guardar en reportes de alumnos
             if st.button("💾 GUARDAR EN REPORTES DE ALUMNOS", use_container_width=True, type="primary", key="btn_qaway_save_rep"):
-                if _plk_guardar_en_reportes(qr2, sesion_id_r):
-                    st.success("Resultados guardados en el historial de evaluaciones y reportes de alumnos.")
-                    reproducir_beep_exitoso()
-                else:
-                    st.warning("No hay respuestas para guardar.")
+                try:
+                    if _plk_guardar_en_reportes(qr2, sesion_id_r):
+                        st.success("Resultados guardados en el historial de evaluaciones y reportes de alumnos.")
+                        reproducir_beep_exitoso()
+                    else:
+                        st.warning("No hay respuestas para guardar.")
+                except Exception as e:
+                    st.error(f"Error al guardar: {e}")
             col_pdf_q, col_pdf_r2 = st.columns(2)
             with col_pdf_q:
                 if st.button("📄 PDF Preguntas", use_container_width=True, type="primary", key="btn_dl_quiz_r"):
