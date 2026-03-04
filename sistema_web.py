@@ -2439,7 +2439,7 @@ def generar_ranking_pdf(resultados, anio):
     # ── Textos institucionales centrados ─────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.setFont("Helvetica-Bold", 8)
-    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — PIONEROS EN LA EDUCACION DE CALIDAD")
     c.setFont("Helvetica-Bold", 12)
     c.drawCentredString(w/2, h-43, "I.E.P. YACHAY — CHINCHERO")
     c.setFont("Helvetica-Bold", 14)
@@ -4888,7 +4888,7 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
     # ── Textos institucionales ───────────────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.setFont("Helvetica-Bold", 7.5)
-    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c.drawCentredString(w/2, h-28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — PIONEROS EN LA EDUCACION DE CALIDAD")
     c.setFont("Helvetica-Bold", 11)
     c.drawCentredString(w/2, h-43, "I.E.P. YACHAY — CHINCHERO")
     c.setFont("Helvetica-Bold", 13)
@@ -9394,7 +9394,7 @@ def _pdf_encabezado_material(c, w, h, config, semana, area, titulo, grado, docen
     # ── Textos institucionales centrados ────────────────────────────────
     c.setFillColor(colors.HexColor("#001e7c"))
     c.setFont("Helvetica-Bold", 7.5)
-    c.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — PIONEROS EN LA EDUCACION DE CALIDAD")
     c.setFont("Helvetica-Bold", 11)
     c.drawCentredString(w / 2, h - 43, "I.E.P. YACHAY — CHINCHERO")
     frase = config.get('frase', '')
@@ -9640,7 +9640,7 @@ def _generar_pdf_examen_semanal(preguntas_por_area, config, grado, semana, titul
     # Textos institucionales centrados
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.setFont("Helvetica-Bold", 7.5)
-    c_pdf.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c_pdf.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — PIONEROS EN LA EDUCACION DE CALIDAD")
     c_pdf.setFont("Helvetica-Bold", 11)
     c_pdf.drawCentredString(w / 2, h - 43, "I.E.P. YACHAY — CHINCHERO")
     frase = config.get('frase', '')
@@ -10782,7 +10782,7 @@ def _generar_pdf_examen_2columnas(titulo, area, grado, preguntas, config):
     
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
     c_pdf.setFont("Helvetica-Bold", 7.5)
-    c_pdf.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — UGEL URUBAMBA")
+    c_pdf.drawCentredString(w / 2, h - 28, "MINISTERIO DE EDUCACIÓN — DRE CUSCO — PIONEROS EN LA EDUCACION DE CALIDAD")
     c_pdf.setFont("Helvetica-Bold", 11)
     c_pdf.drawCentredString(w / 2, h - 43, "I.E.P. YACHAY — CHINCHERO")
     frase = config.get('frase', '')
@@ -12102,7 +12102,7 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
 
     # Sub-header
     sub_data = [[
-        Paragraph(f"UGEL CHINCHERO - URUBAMBA - CUSCO", style_inst),
+        Paragraph(f"PIONEROS EN LA EDUCACION DE CALIDAD", style_inst),
     ]]
     sub_table = Table(sub_data, colWidths=[w_page])
     sub_table.setStyle(TableStyle([
@@ -13057,7 +13057,7 @@ def main():
                 ("📋", "Registro de Asistencia", "reg_pdf", "#0891b2"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
-                ("📝", "Plickers ", "plickers", "#7c3aed"),
+                ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
             ]
 
@@ -13161,7 +13161,7 @@ def main():
                 ("💾", "Base Datos", "base_datos", "#4f46e5"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
-                ("📝", "Plickers ", "plickers", "#7c3aed"),
+                ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
