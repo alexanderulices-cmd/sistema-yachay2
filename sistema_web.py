@@ -2274,11 +2274,11 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
         colors.Color(1.0, 0.92, 0.92),     # Sem 5: rosa pastel
     ]
     COLORES_SEMANA_HEADER = [
-        colors.Color(0.55, 0.75, 0.92),    # Sem 1: celeste header
-        colors.Color(0.60, 0.85, 0.55),    # Sem 2: verde header
-        colors.Color(0.92, 0.72, 0.45),    # Sem 3: naranja header
-        colors.Color(0.72, 0.58, 0.88),    # Sem 4: lavanda header
-        colors.Color(0.90, 0.55, 0.55),    # Sem 5: rosa header
+        colors.Color(0.70, 0.85, 0.95),    # Sem 1: celeste claro
+        colors.Color(0.72, 0.92, 0.72),    # Sem 2: verde claro
+        colors.Color(0.95, 0.82, 0.55),    # Sem 3: naranja claro
+        colors.Color(0.82, 0.75, 0.95),    # Sem 4: lavanda claro
+        colors.Color(0.95, 0.72, 0.72),    # Sem 5: rosa claro
     ]
 
     for mi, mn in enumerate(meses_sel):
@@ -2355,7 +2355,7 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
             # Header: color fuerte de la semana
             estilos.append(('BACKGROUND', (col, 0), (col, 0),
                            COLORES_SEMANA_HEADER[sem_idx]))
-            estilos.append(('TEXTCOLOR', (col, 0), (col, 0), colors.white))
+            estilos.append(('TEXTCOLOR', (col, 0), (col, 0), colors.black))
             # Data: color pastel suave de la semana
             estilos.append(('BACKGROUND', (col, 1), (col, -1),
                            COLORES_SEMANA[sem_idx]))
@@ -8058,6 +8058,88 @@ def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
 # TAB: REGISTRAR NOTAS (Manual — Para todos los docentes)
 # ================================================================
 
+def _sync_resultados_a_gs():
+    """Sincroniza resultados.json a Google Sheets"""
+    try:
+        gs = _gs()
+        if not gs:
+            return
+        if Path('resultados.json').exists():
+            with open('resultados.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            ws = gs._get_hoja('config')
+            if ws:
+                data_str = json.dumps(data, ensure_ascii=False, default=str)
+                all_vals = ws.get_all_values()
+                found = False
+                for idx, row in enumerate(all_vals):
+                    if row and row[0] == 'resultados_json':
+                        ws.update_cell(idx + 1, 2, data_str)
+                        found = True
+                        break
+                if not found:
+                    ws.append_row(['resultados_json', data_str])
+    except Exception:
+        pass
+
+def _sync_horario_a_gs():
+    """Sincroniza config_horario.json a Google Sheets"""
+    try:
+        gs = _gs()
+        if not gs:
+            return
+        if Path('config_horario.json').exists():
+            with open('config_horario.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            ws = gs._get_hoja('config')
+            if ws:
+                data_str = json.dumps(data, ensure_ascii=False, default=str)
+                all_vals = ws.get_all_values()
+                found = False
+                for idx, row in enumerate(all_vals):
+                    if row and row[0] == 'config_horario':
+                        ws.update_cell(idx + 1, 2, data_str)
+                        found = True
+                        break
+                if not found:
+                    ws.append_row(['config_horario', data_str])
+    except Exception:
+        pass
+
+def _restaurar_datos_desde_gs():
+    """Restaura archivos JSON locales desde Google Sheets al iniciar"""
+    try:
+        gs = _gs()
+        if not gs:
+            return
+        ws = gs._get_hoja('config')
+        if not ws:
+            return
+        data = ws.get_all_values()
+        restaurados = 0
+        for row in data:
+            if not row or len(row) < 2:
+                continue
+            key, val = row[0], row[1]
+            try:
+                if key == 'historial_evaluaciones' and not Path('historial_evaluaciones.json').exists():
+                    with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
+                        f.write(val)
+                    restaurados += 1
+                elif key == 'resultados_json' and not Path('resultados.json').exists():
+                    with open('resultados.json', 'w', encoding='utf-8') as f:
+                        f.write(val)
+                    restaurados += 1
+                elif key == 'config_horario' and not Path('config_horario.json').exists():
+                    with open('config_horario.json', 'w', encoding='utf-8') as f:
+                        f.write(val)
+                    restaurados += 1
+            except Exception:
+                pass
+        return restaurados
+    except Exception:
+        return 0
+
 def _cargar_historial_evaluaciones():
     """Carga el historial de evaluaciones desde archivo JSON"""
     try:
@@ -8069,10 +8151,28 @@ def _cargar_historial_evaluaciones():
     return {}
 
 def _guardar_historial_evaluaciones(hist_data):
-    """Guarda el historial de evaluaciones en archivo JSON"""
+    """Guarda el historial de evaluaciones en archivo JSON + Google Sheets"""
     try:
         with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
             json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
+        # Sync a Google Sheets
+        try:
+            gs = _gs()
+            if gs:
+                ws = gs._get_hoja('config')
+                if ws:
+                    data_str = json.dumps(hist_data, ensure_ascii=False, default=str)
+                    all_data = ws.get_all_values()
+                    found = False
+                    for idx, row in enumerate(all_data):
+                        if row and row[0] == 'historial_evaluaciones':
+                            ws.update_cell(idx + 1, 2, data_str)
+                            found = True
+                            break
+                    if not found:
+                        ws.append_row(['historial_evaluaciones', data_str])
+        except Exception:
+            pass
         return True
     except Exception:
         return False
@@ -8521,6 +8621,7 @@ def tab_registrar_notas(config):
                     except Exception:
                         pass
                     
+                    _sync_resultados_a_gs()
                     st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
@@ -11847,10 +11948,97 @@ def _qaway_cargar_musica():
     return None
 
 def _plk_guardar_sesion(sesion_id, data):
-    """Guarda sesion activa en archivo para sync PC<->Celular"""
+    """Guarda sesion activa en archivo + Google Sheets"""
     p = _plk_dir() / f"sesion_{sesion_id}.json"
     with open(p, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+
+def _plk_sync_quiz_a_gs(sesion_id, quiz_data):
+    """Sincroniza quiz completo a Google Sheets para persistencia"""
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja('config')
+            if ws:
+                key = f"qaway_quiz_{sesion_id}"
+                data_str = json.dumps(quiz_data, ensure_ascii=False, default=str)
+                # Buscar si ya existe para actualizar
+                all_data = ws.get_all_values()
+                found = False
+                for idx, row in enumerate(all_data):
+                    if row and row[0] == key:
+                        ws.update_cell(idx + 1, 2, data_str)
+                        found = True
+                        break
+                if not found:
+                    ws.append_row([key, data_str])
+    except Exception:
+        pass
+
+def _plk_sync_resp_a_gs(sesion_id):
+    """Sincroniza respuestas a Google Sheets"""
+    try:
+        gs = _gs()
+        if gs:
+            resp = _plk_cargar_respuestas(sesion_id)
+            if resp:
+                ws = gs._get_hoja('config')
+                if ws:
+                    key = f"qaway_resp_{sesion_id}"
+                    data_str = json.dumps(resp, ensure_ascii=False, default=str)
+                    all_data = ws.get_all_values()
+                    found = False
+                    for idx, row in enumerate(all_data):
+                        if row and row[0] == key:
+                            ws.update_cell(idx + 1, 2, data_str)
+                            found = True
+                            break
+                    if not found:
+                        ws.append_row([key, data_str])
+    except Exception:
+        pass
+
+def _plk_restaurar_desde_gs():
+    """Restaura quizzes y respuestas desde Google Sheets al iniciar"""
+    try:
+        gs = _gs()
+        if not gs:
+            return
+        ws = gs._get_hoja('config')
+        if not ws:
+            return
+        data = ws.get_all_values()
+        plk_dir = _plk_dir()
+        restaurados = 0
+        for row in data:
+            if not row or len(row) < 2:
+                continue
+            key, val = row[0], row[1]
+            if key.startswith('qaway_quiz_'):
+                sesion_id = key.replace('qaway_quiz_', '')
+                p = plk_dir / f"quiz_{sesion_id}.json"
+                if not p.exists():
+                    try:
+                        qdata = json.loads(val)
+                        with open(p, 'w', encoding='utf-8') as f:
+                            json.dump(qdata, f, indent=2, ensure_ascii=False)
+                        restaurados += 1
+                    except Exception:
+                        pass
+            elif key.startswith('qaway_resp_'):
+                sesion_id = key.replace('qaway_resp_', '')
+                p = plk_dir / f"resp_{sesion_id}.json"
+                if not p.exists():
+                    try:
+                        rdata = json.loads(val)
+                        with open(p, 'w', encoding='utf-8') as f:
+                            json.dump(rdata, f, indent=2, ensure_ascii=False)
+                        restaurados += 1
+                    except Exception:
+                        pass
+        return restaurados
+    except Exception:
+        return 0
 
 def _plk_cargar_sesion(sesion_id):
     """Carga sesion desde archivo"""
@@ -12304,6 +12492,13 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
 
 def tab_yachay_plickers(config):
     """YACHAY QAWAY v2 — sync PC + celular"""
+    # Restaurar quizzes desde Google Sheets si no hay locales
+    if 'qaway_restored' not in st.session_state:
+        try:
+            _plk_restaurar_desde_gs()
+            st.session_state.qaway_restored = True
+        except Exception:
+            st.session_state.qaway_restored = True
     st.markdown("""<div style='background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;
         padding:15px 20px;border-radius:12px;text-align:center;margin-bottom:15px;'>
         <h2 style='margin:0;color:white;'>YACHAY QAWAY</h2>
@@ -12443,6 +12638,8 @@ def tab_yachay_plickers(config):
                     aq = plickers_dir / f"quiz_{sesion_id}.json"
                     with open(aq, 'w', encoding='utf-8') as fq:
                         json.dump(qd, fq, indent=2, ensure_ascii=False)
+                    # Sync a Google Sheets para persistencia
+                    _plk_sync_quiz_a_gs(sesion_id, qd)
                     st.success(f"Cuestionario guardado. ID: {sesion_id}")
             with cc2:
                 if st.button("Limpiar todo", use_container_width=True, type="primary", key="btn_cl_q"):
@@ -12836,7 +13033,9 @@ def tab_yachay_plickers(config):
             if st.button("💾 GUARDAR EN REPORTES DE ALUMNOS", use_container_width=True, type="primary", key="btn_qaway_save_rep"):
                 try:
                     if _plk_guardar_en_reportes(qr2, sesion_id_r):
-                        st.success("Resultados guardados en el historial de evaluaciones y reportes de alumnos.")
+                        # Sync respuestas a GS
+                        _plk_sync_resp_a_gs(sesion_id_r)
+                        st.success("Resultados guardados en el historial y Google Sheets.")
                         reproducir_beep_exitoso()
                     else:
                         st.warning("No hay respuestas para guardar.")
@@ -13029,6 +13228,14 @@ def main():
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
+
+    # Restaurar datos desde Google Sheets si archivos locales no existen
+    if 'datos_restaurados' not in st.session_state:
+        try:
+            _restaurar_datos_desde_gs()
+            st.session_state.datos_restaurados = True
+        except Exception:
+            st.session_state.datos_restaurados = True
 
     config = configurar_sidebar()
 
