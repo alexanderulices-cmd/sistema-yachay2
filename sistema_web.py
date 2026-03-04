@@ -11893,14 +11893,35 @@ def _generar_tarjeta_plickers(nombre, dni, numero):
 
 
 def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
-    """PDF tarjetas plegables (1 por hoja A4)"""
+    """PDF tarjetas: 4 por hoja A4 (2x2 cuadricula)"""
+    from reportlab.lib.utils import ImageReader
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
     est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
+    tam = 240  # Tamano de cada tarjeta en puntos
+    margin_x = (w - tam * 2) / 3  # Margen horizontal
+    margin_y = (h - tam * 2 - 40) / 3  # Margen vertical (40 para header)
+    posiciones = [
+        (margin_x, h - 35 - margin_y - tam),                     # arriba-izq
+        (margin_x * 2 + tam, h - 35 - margin_y - tam),           # arriba-der
+        (margin_x, h - 35 - margin_y * 2 - tam * 2),             # abajo-izq
+        (margin_x * 2 + tam, h - 35 - margin_y * 2 - tam * 2),  # abajo-der
+    ]
     for idx in range(len(est)):
-        if idx > 0:
-            c_pdf.showPage()
+        pos_en_pagina = idx % 4
+        if pos_en_pagina == 0:
+            if idx > 0:
+                c_pdf.showPage()
+            # Header de pagina
+            c_pdf.setFillColor(colors.HexColor("#7c3aed"))
+            c_pdf.rect(0, h - 25, w, 25, fill=1, stroke=0)
+            c_pdf.setFillColor(colors.white)
+            c_pdf.setFont('Helvetica-Bold', 10)
+            c_pdf.drawCentredString(w/2, h - 18, f'YACHAY QAWAY - TARJETAS QR | {grado}')
+            c_pdf.setFillColor(colors.black)
+            c_pdf.setFont('Helvetica', 6)
+            c_pdf.drawCentredString(w/2, h - 30, 'Recortar. Doblar por lineas punteadas. Mostrar solo la cara de su respuesta.')
         row = est.iloc[idx]
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
@@ -11909,15 +11930,19 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
             img_buf = io.BytesIO()
             img.save(img_buf, format='PNG')
             img_buf.seek(0)
-            from reportlab.lib.utils import ImageReader
-            tam = min(w, h) - 40
-            xp, yp = (w - tam) / 2, (h - tam) / 2
+            xp, yp = posiciones[pos_en_pagina]
             c_pdf.drawImage(ImageReader(img_buf), xp, yp, width=tam, height=tam,
                             preserveAspectRatio=True, mask='auto')
-            c_pdf.setFont('Helvetica-Bold', 12)
-            c_pdf.drawCentredString(w/2, h-20, f'YACHAY QAWAY #{idx+1:03d} {nombre}')
-            c_pdf.setFont('Helvetica', 8)
-            c_pdf.drawCentredString(w/2, h-32, 'Recortar. Doblar por lineas punteadas. Mostrar solo la cara de su respuesta.')
+            # Marco con linea de corte
+            c_pdf.setStrokeColor(colors.HexColor("#ccc"))
+            c_pdf.setDash(3, 3)
+            c_pdf.rect(xp - 2, yp - 2, tam + 4, tam + 4)
+            c_pdf.setDash()
+            # Numero
+            c_pdf.setFont('Helvetica-Bold', 7)
+            c_pdf.setFillColor(colors.HexColor("#7c3aed"))
+            c_pdf.drawString(xp + 2, yp + tam + 4, f'#{idx+1:03d}')
+            c_pdf.setFillColor(colors.black)
         except Exception as e:
             c_pdf.drawString(50, h/2, f'Error: {str(e)[:60]}')
     c_pdf.save()
@@ -12183,7 +12208,7 @@ def tab_yachay_plickers(config):
                         st.error(f"Error: {e}")
             with st.expander("Vista previa"):
                 if len(df_est) > 0:
-                    est_sel = st.selectbox("Estudiante:", df_est['Nombre'].tolist(), key="plik_prev")
+                    est_sel = st.selectbox("Estudiante:", df_est['Nombre'].tolist(), key="plik_prev_est")
                     fila = df_est[df_est['Nombre'] == est_sel].iloc[0]
                     try:
                         img = _generar_tarjeta_plickers(str(fila['Nombre']), str(fila['DNI']), 1)
