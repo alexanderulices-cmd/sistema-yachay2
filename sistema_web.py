@@ -2570,7 +2570,7 @@ class GeneradorCarnet:
         fh = RecursoManager.obtener_fuente("", 48, True)  # Aumentado de 36 a 48
         fm = RecursoManager.obtener_fuente("", 22, True)  # Aumentado de 19 a 22
         fc = RecursoManager.obtener_fuente("", 18, True)
-        fp = RecursoManager.obtener_fuente("", 14, True)
+        fp = RecursoManager.obtener_fuente("", 18, True)
         self.draw.text((self.WIDTH // 2, 65), "I.E.P. YACHAY",  # Cambiado texto
                        font=fh, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
@@ -2631,45 +2631,45 @@ class GeneradorCarnet:
         xt = 290
         nm = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
         dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-        fn = RecursoManager.obtener_fuente("", 19 if len(nm) > 25 else 22, True)
-        fl = RecursoManager.obtener_fuente("", 14, True)
-        fd = RecursoManager.obtener_fuente("", 14)
+        fn = RecursoManager.obtener_fuente("", 26 if len(nm) > 25 else 30, True)
+        fl = RecursoManager.obtener_fuente("", 20, True)
+        fd = RecursoManager.obtener_fuente("", 20)
         yc = 240
         if len(nm) > 28:
             for l in textwrap.TextWrapper(width=28).wrap(nm)[:3]:
                 self.draw.text((xt, yc), l, font=fn, fill="black")
-                yc += 26
+                yc += 34
         else:
             self.draw.text((xt, yc), nm, font=fn, fill="black")
-            yc += 30
+            yc += 38
         yc += 8
         # DNI prominente
         self.draw.text((xt, yc), "DNI:", font=fl, fill=self.AZUL)
-        fd_dni = RecursoManager.obtener_fuente("", 17, True)
-        self.draw.text((xt + 60, yc), dni, font=fd_dni, fill="black")
-        yc += 28
+        fd_dni = RecursoManager.obtener_fuente("", 24, True)
+        self.draw.text((xt + 80, yc), dni, font=fd_dni, fill="black")
+        yc += 34
         if self.es_docente:
             cg = self.datos.get('Cargo', 'DOCENTE').upper()
             self.draw.text((xt, yc), "CARGO:", font=fl, fill="black")
-            self.draw.text((xt + 90, yc), cg, font=fd, fill="black")
-            yc += 28
+            self.draw.text((xt + 100, yc), cg, font=fd, fill="black")
+            yc += 34
             esp = self.datos.get('Especialidad', '').upper()
             if esp:
                 self.draw.text((xt, yc), "ESPEC.:", font=fl, fill="black")
-                self.draw.text((xt + 100, yc), esp[:20], font=fd, fill="black")
-                yc += 28
+                self.draw.text((xt + 110, yc), esp[:20], font=fd, fill="black")
+                yc += 34
         else:
             gr = self.datos.get('Grado', self.datos.get('grado', '')).upper()
             sc = self.datos.get('Seccion', self.datos.get('seccion', ''))
             self.draw.text((xt, yc), "GRADO:", font=fl, fill="black")
-            self.draw.text((xt + 90, yc), gr, font=fd, fill="black")
-            yc += 28
+            self.draw.text((xt + 110, yc), gr, font=fd, fill="black")
+            yc += 34
             if sc:
                 self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill="black")
-                self.draw.text((xt + 110, yc), str(sc), font=fd, fill="black")
-                yc += 28
+                self.draw.text((xt + 130, yc), str(sc), font=fd, fill="black")
+                yc += 34
         self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill="black")
-        self.draw.text((xt + 120, yc), str(self.anio), font=fd, fill="black")
+        self.draw.text((xt + 140, yc), str(self.anio), font=fd, fill="black")
 
     def _qr(self):
         try:
@@ -2680,7 +2680,7 @@ class GeneradorCarnet:
             iq = q.make_image(fill_color="black", back_color="white")
             iq = iq.resize((310, 310), Image.LANCZOS)
             self.img.paste(iq, (self.WIDTH - 345, 195))
-            fs = RecursoManager.obtener_fuente("", 13, True)
+            fs = RecursoManager.obtener_fuente("", 16, True)
             self.draw.text((self.WIDTH - 190, 510), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
@@ -2703,7 +2703,7 @@ class GeneradorCarnet:
             xb = (self.WIDTH - 420) // 2
             yb = self.HEIGHT - 140
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 14, True)
+            fbc = RecursoManager.obtener_fuente("", 18, True)
             self.draw.text((self.WIDTH // 2, yb + 85), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
