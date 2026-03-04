@@ -11969,7 +11969,8 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
     c_pdf = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
     est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
-    tam = 350  # Tarjeta grande
+    tam = 340  # Tarjeta grande
+    mitad = h / 2  # Linea de corte central
     for idx in range(len(est)):
         pos_en_pagina = idx % 2  # 0=arriba, 1=abajo
         if pos_en_pagina == 0:
@@ -11984,6 +11985,17 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
             c_pdf.setFillColor(colors.HexColor("#666"))
             c_pdf.setFont('Helvetica', 6)
             c_pdf.drawCentredString(w/2, h - 28, 'Recortar por linea punteada. Doblar en cruz. Mostrar solo la cara de su respuesta.')
+            # ── LINEA DE CORTE HORIZONTAL (centro de hoja) ──
+            c_pdf.setStrokeColor(colors.HexColor("#aaa"))
+            c_pdf.setDash(6, 4)
+            c_pdf.setLineWidth(0.8)
+            c_pdf.line(15, mitad, w - 15, mitad)
+            c_pdf.setDash()
+            c_pdf.setLineWidth(1)
+            # Tijera en linea de corte
+            c_pdf.setFillColor(colors.HexColor("#999"))
+            c_pdf.setFont('Helvetica', 8)
+            c_pdf.drawString(8, mitad - 4, chr(9986))  # Tijera unicode
         row = est.iloc[idx]
         nombre = str(row.get('Nombre', ''))
         dni = str(row.get('DNI', ''))
@@ -11994,21 +12006,29 @@ def _generar_pdf_tarjetas_plickers(estudiantes_df, grado):
             img_buf.seek(0)
             xp = (w - tam) / 2  # Centrado horizontal
             if pos_en_pagina == 0:
-                yp = h - 35 - tam - 25  # Arriba (debajo del header + nombre)
+                yp = mitad + (mitad - 30 - tam) / 2  # Centrado en mitad superior
             else:
-                yp = 25  # Abajo
-            # Nombre del estudiante grande
+                yp = (mitad - tam - 15) / 2  # Centrado en mitad inferior
+            # Nombre del estudiante grande encima
             c_pdf.setFillColor(colors.HexColor("#1e1b4b"))
-            c_pdf.setFont('Helvetica-Bold', 12)
-            c_pdf.drawCentredString(w/2, yp + tam + 12, f'#{idx+1:03d}  {nombre}')
-            # Tarjeta
+            c_pdf.setFont('Helvetica-Bold', 11)
+            c_pdf.drawCentredString(w/2, yp + tam + 8, f'#{idx+1:03d}  {nombre}')
+            # Tarjeta QR
             c_pdf.drawImage(ImageReader(img_buf), xp, yp, width=tam, height=tam,
                             preserveAspectRatio=True, mask='auto')
             # Marco punteado de recorte
-            c_pdf.setStrokeColor(colors.HexColor("#999"))
-            c_pdf.setDash(4, 4)
-            c_pdf.rect(xp - 5, yp - 5, tam + 10, tam + 30)
+            c_pdf.setStrokeColor(colors.HexColor("#bbb"))
+            c_pdf.setDash(4, 3)
+            c_pdf.rect(xp - 4, yp - 4, tam + 8, tam + 24)
             c_pdf.setDash()
+            # ── NOMBRE DEL SISTEMA LATERAL (rotado vertical) ──
+            c_pdf.saveState()
+            c_pdf.setFillColor(colors.HexColor("#c4b5fd"))
+            c_pdf.setFont('Helvetica-Bold', 7)
+            c_pdf.translate(xp - 12, yp + tam / 2)
+            c_pdf.rotate(90)
+            c_pdf.drawCentredString(0, 0, 'YACHAY QAWAY - I.E.P. ALTERNATIVO YACHAY')
+            c_pdf.restoreState()
             c_pdf.setFillColor(colors.black)
         except Exception as e:
             c_pdf.drawString(50, h/2, f'Error: {str(e)[:60]}')
