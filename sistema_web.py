@@ -2559,11 +2559,11 @@ class GeneradorCarnet:
                 pass
 
     def _barras(self):
-        self.draw.rectangle([(0, 0), (self.WIDTH, 135)], fill=self.AZUL)
-        self.draw.rectangle([(0, 132), (self.WIDTH, 138)], fill=self.DORADO)
-        self.draw.rectangle([(0, self.HEIGHT - 45), (self.WIDTH, self.HEIGHT)],
+        self.draw.rectangle([(0, 0), (self.WIDTH, 210)], fill=self.AZUL)
+        self.draw.rectangle([(0, 207), (self.WIDTH, 213)], fill=self.DORADO)
+        self.draw.rectangle([(0, self.HEIGHT - 65), (self.WIDTH, self.HEIGHT)],
                             fill=self.AZUL)
-        self.draw.rectangle([(0, self.HEIGHT - 48), (self.WIDTH, self.HEIGHT - 43)],
+        self.draw.rectangle([(0, self.HEIGHT - 68), (self.WIDTH, self.HEIGHT - 63)],
                             fill=self.DORADO)
 
     def _textos(self):
@@ -2571,19 +2571,19 @@ class GeneradorCarnet:
         fm = RecursoManager.obtener_fuente("", 26, True)
         fc = RecursoManager.obtener_fuente("", 18, True)
         fp = RecursoManager.obtener_fuente("", 22, True)
-        self.draw.text((self.WIDTH // 2, 35), "I.E.P. YACHAY",  # Cambiado texto
+        self.draw.text((self.WIDTH // 2, 65), "I.E. ALTERNATIVO YACHAY",  # Cambiado texto
                        font=fh, fill="white", anchor="mm")
-        self.draw.text((self.WIDTH // 2, 72), '"EDUCAR PARA LA VIDA"',
+        self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
                        font=fm, fill=self.DORADO, anchor="mm")
         tt = "CARNET DOCENTE" if self.es_docente else "CARNET ESCOLAR"
-        self.draw.text((self.WIDTH // 2, 108), f"{tt} {self.anio}",
+        self.draw.text((self.WIDTH // 2, 160), f"{tt} {self.anio}",
                        font=fc, fill="white", anchor="mm")
-        self.draw.text((self.WIDTH // 2, self.HEIGHT - 22),
+        self.draw.text((self.WIDTH // 2, self.HEIGHT - 35),
                        "PIONEROS EN LA EDUCACIÓN DE CALIDAD",
                        font=fp, fill=self.DORADO, anchor="mm")
 
     def _foto(self):
-        x, y, wf, hf = 30, 150, 200, 250
+        x, y, wf, hf = 40, 228, 220, 280
         if self.foto_bytes:
             try:
                 f = Image.open(self.foto_bytes).convert("RGB")
@@ -2628,13 +2628,13 @@ class GeneradorCarnet:
             pass
 
     def _datos(self):
-        xt = 260
+        xt = 290
         nm = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
         dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
         fn = RecursoManager.obtener_fuente("", 56 if len(nm) > 25 else 68, True)
         fl = RecursoManager.obtener_fuente("", 42, True)
         fd = RecursoManager.obtener_fuente("", 42)
-        yc = 155
+        yc = 240
         if len(nm) > 28:
             for l in textwrap.TextWrapper(width=28).wrap(nm)[:3]:
                 self.draw.text((xt, yc), l, font=fn, fill="black")
@@ -2678,10 +2678,10 @@ class GeneradorCarnet:
             q.add_data(dni)
             q.make(fit=True)
             iq = q.make_image(fill_color="black", back_color="white")
-            iq = iq.resize((220, 220), Image.LANCZOS)
-            self.img.paste(iq, (self.WIDTH - 255, 150))
+            iq = iq.resize((310, 310), Image.LANCZOS)
+            self.img.paste(iq, (self.WIDTH - 345, 195))
             fs = RecursoManager.obtener_fuente("", 20, True)
-            self.draw.text((self.WIDTH - 145, 375), "ESCANEAR QR",
+            self.draw.text((self.WIDTH - 190, 510), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -2699,9 +2699,9 @@ class GeneradorCarnet:
             buf2.seek(0)
             ib = Image.open(buf2)
             ib = ib.crop(ib.getbbox())
-            ib = ib.resize((380, 60), Image.LANCZOS)
-            xb = (self.WIDTH - 380) // 2
-            yb = self.HEIGHT - 105
+            ib = ib.resize((420, 80), Image.LANCZOS)
+            xb = (self.WIDTH - 420) // 2
+            yb = self.HEIGHT - 140
             self.img.paste(ib, (xb, yb))
             fbc = RecursoManager.obtener_fuente("", 22, True)
             self.draw.text((self.WIDTH // 2, yb + 85), f"DNI: {dni}",
