@@ -1098,13 +1098,25 @@ except ImportError:
 class RecursoManager:
     @staticmethod
     def obtener_fuente(nombre, tamanio, bold=False):
+        tam = int(tamanio)
+        rutas = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf" if bold else "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+            "/usr/share/fonts/truetype/ubuntu/Ubuntu-Bold.ttf" if bold else "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+        ]
+        for ruta in rutas:
+            try:
+                if Path(ruta).exists():
+                    return ImageFont.truetype(ruta, tam)
+            except Exception:
+                continue
+        # Fallback con tamanio (Pillow 10+)
         try:
-            ruta = ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold
-                    else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
-            if Path(ruta).exists():
-                return ImageFont.truetype(ruta, int(tamanio))
-            return ImageFont.load_default()
-        except Exception:
+            return ImageFont.load_default(size=tam)
+        except TypeError:
             return ImageFont.load_default()
 
 
