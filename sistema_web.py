@@ -2567,10 +2567,10 @@ class GeneradorCarnet:
                             fill=self.DORADO)
 
     def _textos(self):
-        fh = RecursoManager.obtener_fuente("", 48, True)  # Aumentado de 36 a 48
-        fm = RecursoManager.obtener_fuente("", 22, True)  # Aumentado de 19 a 22
+        fh = RecursoManager.obtener_fuente("", 54, True)
+        fm = RecursoManager.obtener_fuente("", 26, True)
         fc = RecursoManager.obtener_fuente("", 18, True)
-        fp = RecursoManager.obtener_fuente("", 18, True)
+        fp = RecursoManager.obtener_fuente("", 22, True)
         self.draw.text((self.WIDTH // 2, 65), "I.E.P. YACHAY",  # Cambiado texto
                        font=fh, fill="white", anchor="mm")
         self.draw.text((self.WIDTH // 2, 115), '"EDUCAR PARA LA VIDA"',
@@ -2631,45 +2631,45 @@ class GeneradorCarnet:
         xt = 290
         nm = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
         dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-        fn = RecursoManager.obtener_fuente("", 38 if len(nm) > 25 else 46, True)
-        fl = RecursoManager.obtener_fuente("", 28, True)
-        fd = RecursoManager.obtener_fuente("", 28)
+        fn = RecursoManager.obtener_fuente("", 56 if len(nm) > 25 else 68, True)
+        fl = RecursoManager.obtener_fuente("", 42, True)
+        fd = RecursoManager.obtener_fuente("", 42)
         yc = 240
         if len(nm) > 28:
             for l in textwrap.TextWrapper(width=28).wrap(nm)[:3]:
                 self.draw.text((xt, yc), l, font=fn, fill="black")
-                yc += 48
+                yc += 62
         else:
             self.draw.text((xt, yc), nm, font=fn, fill="black")
-            yc += 52
+            yc += 70
         yc += 8
         # DNI prominente
         self.draw.text((xt, yc), "DNI:", font=fl, fill=self.AZUL)
-        fd_dni = RecursoManager.obtener_fuente("", 36, True)
-        self.draw.text((xt + 90, yc), dni, font=fd_dni, fill="black")
-        yc += 42
+        fd_dni = RecursoManager.obtener_fuente("", 52, True)
+        self.draw.text((xt + 100, yc), dni, font=fd_dni, fill="black")
+        yc += 56
         if self.es_docente:
             cg = self.datos.get('Cargo', 'DOCENTE').upper()
             self.draw.text((xt, yc), "CARGO:", font=fl, fill="black")
-            self.draw.text((xt + 110, yc), cg, font=fd, fill="black")
-            yc += 42
+            self.draw.text((xt + 130, yc), cg, font=fd, fill="black")
+            yc += 50
             esp = self.datos.get('Especialidad', '').upper()
             if esp:
                 self.draw.text((xt, yc), "ESPEC.:", font=fl, fill="black")
-                self.draw.text((xt + 120, yc), esp[:20], font=fd, fill="black")
-                yc += 42
+                self.draw.text((xt + 140, yc), esp[:20], font=fd, fill="black")
+                yc += 50
         else:
             gr = self.datos.get('Grado', self.datos.get('grado', '')).upper()
             sc = self.datos.get('Seccion', self.datos.get('seccion', ''))
             self.draw.text((xt, yc), "GRADO:", font=fl, fill="black")
-            self.draw.text((xt + 120, yc), gr, font=fd, fill="black")
-            yc += 42
+            self.draw.text((xt + 130, yc), gr, font=fd, fill="black")
+            yc += 50
             if sc:
                 self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill="black")
-                self.draw.text((xt + 140, yc), str(sc), font=fd, fill="black")
-                yc += 42
+                self.draw.text((xt + 155, yc), str(sc), font=fd, fill="black")
+                yc += 50
         self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill="black")
-        self.draw.text((xt + 140, yc), str(self.anio), font=fd, fill="black")
+        self.draw.text((xt + 160, yc), str(self.anio), font=fd, fill="black")
 
     def _qr(self):
         try:
@@ -2680,8 +2680,8 @@ class GeneradorCarnet:
             iq = q.make_image(fill_color="black", back_color="white")
             iq = iq.resize((310, 310), Image.LANCZOS)
             self.img.paste(iq, (self.WIDTH - 345, 195))
-            fs = RecursoManager.obtener_fuente("", 16, True)
-            self.draw.text((self.WIDTH - 190, 510), "ESCANEAR QR",
+            fs = RecursoManager.obtener_fuente("", 20, True)
+            self.draw.text((self.WIDTH - 190, 515), "ESCANEAR QR",
                            font=fs, fill="black", anchor="mm")
         except Exception:
             pass
@@ -2703,7 +2703,7 @@ class GeneradorCarnet:
             xb = (self.WIDTH - 420) // 2
             yb = self.HEIGHT - 140
             self.img.paste(ib, (xb, yb))
-            fbc = RecursoManager.obtener_fuente("", 18, True)
+            fbc = RecursoManager.obtener_fuente("", 22, True)
             self.draw.text((self.WIDTH // 2, yb + 85), f"DNI: {dni}",
                            font=fbc, fill="black", anchor="mm")
         except Exception:
@@ -2731,12 +2731,13 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     w, h = A4
-    mx = 15 * mm
-    my = 10 * mm
-    cw2 = w - 2 * mx                        # 1 columna, ancho completo
-    ch2 = (h - 2 * my - 15 * mm) / 2        # 2 filas
-    gy = 15 * mm
-    pp = 2                                    # 2 por página
+    mx = 5 * mm
+    my = 5 * mm
+    gx = 4 * mm
+    gy = 4 * mm
+    cw2 = (w - 2 * mx - gx) / 2             # 2 columnas
+    ch2 = cw2 / 1.586                         # Ratio carnet 1012:638
+    pp = 4                                     # 4 por página (2x2)
     total = len(lista_datos)
     np2 = (total + pp - 1) // pp
     for pag in range(np2):
@@ -2746,9 +2747,10 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
         fin = min(ini + pp, total)
         for idx in range(ini, fin):
             pos = idx - ini
-            fila = pos
-            x = mx
-            y = h - my - (fila + 1) * ch2 - fila * gy
+            col = pos % 2
+            fila = pos // 2
+            x = mx + col * (cw2 + gx)
+            y = h - my - 12 - (fila + 1) * ch2 - fila * gy
             gen = GeneradorCarnet(lista_datos[idx], anio, es_docente=es_docente)
             ib = gen.generar()
             tmp = f"tmp_c_{idx}.png"
