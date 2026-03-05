@@ -2728,15 +2728,16 @@ class GeneradorCarnet:
 # ================================================================
 
 def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
+    from reportlab.lib.pagesizes import landscape
     buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=A4)
-    w, h = A4
-    mx = 5 * mm
-    my = 5 * mm
-    gx = 4 * mm
-    gy = 4 * mm
+    c = canvas.Canvas(buffer, pagesize=landscape(A4))
+    w, h = landscape(A4)    # 842 x 595
+    mx = 8 * mm
+    my = 8 * mm
+    gx = 5 * mm
+    gy = 5 * mm
     cw2 = (w - 2 * mx - gx) / 2             # 2 columnas
-    ch2 = cw2 / 1.586                         # Ratio carnet 1012:638
+    ch2 = (h - 2 * my - gy) / 2             # 2 filas - usar TODA la altura
     pp = 4                                     # 4 por página (2x2)
     total = len(lista_datos)
     np2 = (total + pp - 1) // pp
@@ -2750,7 +2751,7 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
             col = pos % 2
             fila = pos // 2
             x = mx + col * (cw2 + gx)
-            y = h - my - 12 - (fila + 1) * ch2 - fila * gy
+            y = h - my - (fila + 1) * ch2 - fila * gy
             gen = GeneradorCarnet(lista_datos[idx], anio, es_docente=es_docente)
             ib = gen.generar()
             tmp = f"tmp_c_{idx}.png"
