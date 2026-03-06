@@ -1701,20 +1701,32 @@ class BaseDatos:
 
     @staticmethod
     def corregir_secciones_vacias():
-        """Asigna sección 'A' a TODOS los estudiantes sin sección (incluye Sec/PreU)"""
+        """Asigna sección 'A' a estudiantes sin sección o con 'Única' (excepto INICIAL)"""
         df = BaseDatos.cargar_matricula()
         if df.empty or 'Seccion' not in df.columns:
             return 0
-        
+
         df['Seccion'] = df['Seccion'].fillna('').astype(str).str.strip()
+        nivel_col = df['Nivel'].astype(str).str.strip().str.upper() if 'Nivel' in df.columns else None
+
+        # Condición 1: sección vacía o valores nulos
         sin_seccion = df['Seccion'].isin(['', 'nan', 'None', 'N/A'])
-        
-        cantidad = sin_seccion.sum()
+
+        # Condición 2: sección "Única" en niveles que NO son INICIAL
+        if nivel_col is not None:
+            es_unica = df['Seccion'].str.upper().isin(['ÚNICA', 'UNICA', 'única', 'unica'])
+            no_es_inicial = ~nivel_col.isin(['INICIAL'])
+            unica_a_cambiar = es_unica & no_es_inicial
+        else:
+            unica_a_cambiar = df['Seccion'].str.upper().isin(['ÚNICA', 'UNICA', 'única', 'unica'])
+
+        mask_total = sin_seccion | unica_a_cambiar
+        cantidad = int(mask_total.sum())
+
         if cantidad > 0:
-            df.loc[sin_seccion, 'Seccion'] = 'A'
+            df.loc[mask_total, 'Seccion'] = 'A'
             BaseDatos.guardar_matricula(df)
-            return cantidad
-        return 0
+        return cantidad
 
 
 def _construir_indice_dni():
@@ -3754,7 +3766,7 @@ def configurar_sidebar():
             
             with st.expander("🔧 Herramientas"):
                 st.markdown("### 📝 Corregir Secciones")
-                st.caption("Asigna sección 'A' a estudiantes sin sección (excepto Sec/PreU)")
+                st.caption("Cambia a 'A' los estudiantes sin sección o con 'Única' (Primaria, Secundaria, PreU)")
                 if st.button("🔄 Corregir Secciones", type="primary", 
                            use_container_width=True, key="btn_corr_sec"):
                     cantidad = BaseDatos.corregir_secciones_vacias()
