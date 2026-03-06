@@ -1220,6 +1220,23 @@ class BaseDatos:
     @staticmethod
     def registrar_estudiante(datos):
         df = BaseDatos.cargar_matricula()
+        # --- MATRÍCULA PROVISIONAL: generar ID temporal si no hay DNI ---
+        if not datos.get('DNI') or str(datos.get('DNI', '')).strip() == '':
+            # Generar ID provisional único: PROV + número correlativo
+            existing_provs = []
+            if not df.empty and 'DNI' in df.columns:
+                for v in df['DNI'].astype(str):
+                    if v.startswith('PROV'):
+                        try:
+                            existing_provs.append(int(v[4:]))
+                        except Exception:
+                            pass
+            next_num = max(existing_provs, default=0) + 1
+            datos['DNI'] = f'PROV{next_num:04d}'
+            datos['_provisional'] = 'SI'
+        else:
+            datos['_provisional'] = datos.get('_provisional', 'NO')
+        # --- Actualizar si ya existe, sino agregar ---
         if not df.empty and 'DNI' in df.columns and datos['DNI'] in df['DNI'].values:
             idx = df[df['DNI'] == datos['DNI']].index[0]
             for k, v in datos.items():
@@ -3923,10 +3940,27 @@ def tab_matricula(config):
 
     with tab_est:
         st.subheader("📝 Matrícula de Estudiante")
+
+        # --- MODO DE REGISTRO ---
+        modo_reg = st.radio(
+            "Tipo de registro:",
+            ["✅ Completo (con DNI)", "⏳ Provisional (solo nombre)"],
+            horizontal=True, key="modo_matricula"
+        )
+        es_provisional = "Provisional" in modo_reg
+
+        if es_provisional:
+            st.info("💡 **Modo provisional**: solo ingrese apellidos y nombres. Puede completar DNI, apoderado y celular después en **Base de Datos → Completar Datos**.")
+
         c1, c2 = st.columns(2)
         with c1:
-            mn = st.text_input("Apellidos y Nombres:", key="mn")
-            md = st.text_input("DNI:", key="md", max_chars=8)
+            mn = st.text_input("Apellidos y Nombres: *", key="mn",
+                               placeholder="APELLIDO APELLIDO, Nombre")
+            if not es_provisional:
+                md = st.text_input("DNI: *", key="md", max_chars=8,
+                                   placeholder="12345678")
+            else:
+                md = ""
             mnv = st.selectbox("Nivel:", list(NIVELES_GRADOS.keys()), key="mnv")
             mg = st.selectbox("Grado:", NIVELES_GRADOS[mnv], key="mg")
             # Secundaria/Preuniversitario → sección A por defecto
@@ -3936,46 +3970,81 @@ def tab_matricula(config):
                 ms = st.selectbox("Sección:", SECCIONES, key="ms")
         with c2:
             msexo = st.selectbox("Sexo:", ["Masculino", "Femenino"], key="msexo")
-            ma = st.text_input("Apoderado (Padre/Madre):", key="ma")
-            mda = st.text_input("DNI Apoderado:", key="mda", max_chars=8)
-            mc = st.text_input("Celular Apoderado:", key="mc", max_chars=9,
-                               placeholder="987654321")
+            if not es_provisional:
+                ma = st.text_input("Apoderado (Padre/Madre):", key="ma")
+                mda = st.text_input("DNI Apoderado:", key="mda", max_chars=8)
+                mc = st.text_input("Celular Apoderado:", key="mc", max_chars=9,
+                                   placeholder="987654321")
+            else:
+                ma = ""
+                mda = ""
+                mc = ""
+                st.caption("👆 DNI, apoderado y celular se completan luego en Base de Datos")
+
         if st.button("✅ MATRICULAR", type="primary", use_container_width=True,
                      key="bm"):
-            if mn and md:
-                md_clean = ''.join(c for c in md.strip() if c.isdigit())
-                if len(md_clean) != 8:
-                    st.error(f"⚠️ El DNI debe tener 8 dígitos ({len(md_clean)} encontrados)")
-                else:
-                    with st.spinner("💾 Guardando matrícula..."):
+            if mn:
+                if es_provisional:
+                    # Registro provisional — sin DNI
+                    with st.spinner("💾 Guardando matrícula provisional..."):
                         BaseDatos.registrar_estudiante({
-                            'Nombre': mn.strip().upper(), 'DNI': md_clean, 'Nivel': mnv,
-                            'Grado': mg, 'Seccion': ms, 'Sexo': msexo,
-                            'Apoderado': ma.strip(), 'DNI_Apoderado': mda.strip(),
-                            'Celular_Apoderado': mc.strip()
+                            'Nombre': mn.strip().upper(), 'DNI': '',
+                            'Nivel': mnv, 'Grado': mg, 'Seccion': ms,
+                            'Sexo': msexo, 'Apoderado': '', 'DNI_Apoderado': '',
+                            'Celular_Apoderado': '', '_provisional': 'SI'
                         })
-                        time.sleep(2)  # Esperar sincronización con GS
-                    # Verificar que se guardó
-                    verificar = BaseDatos.buscar_por_dni(md_clean)
-                    if verificar:
-                        avatar = "👦" if msexo == "Masculino" else "👧"
-                        st.success(f"✅ **MATRICULADO CORRECTAMENTE** ☁️ Guardado en la nube")
-                        st.markdown(f"""
-                        <div class="asist-ok">
-                            <strong>📋 Confirmación de Matrícula</strong><br>
-                            {avatar} {mn.strip().upper()}<br>
-                            🆔 DNI: {md_clean}<br>
-                            🎓 {mg} — Sección {ms}<br>
-                            📅 {fecha_peru_str()}<br>
-                            <span style="color:green;font-weight:bold;">☑️ VERIFICADO EN BASE DE DATOS</span>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        reproducir_beep_exitoso()
-                        st.balloons()
+                        time.sleep(1)
+                    avatar = "👦" if msexo == "Masculino" else "👧"
+                    st.success(f"⏳ **MATRÍCULA PROVISIONAL REGISTRADA**")
+                    st.markdown(f"""
+                    <div class="asist-ok">
+                        <strong>📋 Matrícula Provisional</strong><br>
+                        {avatar} {mn.strip().upper()}<br>
+                        🎓 {mg} — Sección {ms}<br>
+                        📅 {fecha_peru_str()}<br>
+                        <span style="color:orange;font-weight:bold;">⚠️ PENDIENTE: completar DNI y celular en Base de Datos</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    reproducir_beep_exitoso()
+                else:
+                    # Registro completo — requiere DNI
+                    if not md:
+                        st.error("⚠️ En modo Completo el DNI es obligatorio")
                     else:
-                        st.warning("⚠️ Se intentó guardar pero no se pudo verificar. Revise en la lista.")
+                        md_clean = ''.join(c for c in md.strip() if c.isdigit())
+                        if len(md_clean) != 8:
+                            st.error(f"⚠️ El DNI debe tener 8 dígitos ({len(md_clean)} encontrados)")
+                        else:
+                            with st.spinner("💾 Guardando matrícula..."):
+                                BaseDatos.registrar_estudiante({
+                                    'Nombre': mn.strip().upper(), 'DNI': md_clean,
+                                    'Nivel': mnv, 'Grado': mg, 'Seccion': ms,
+                                    'Sexo': msexo, 'Apoderado': ma.strip(),
+                                    'DNI_Apoderado': mda.strip(),
+                                    'Celular_Apoderado': mc.strip(),
+                                    '_provisional': 'NO'
+                                })
+                                time.sleep(2)
+                            verificar = BaseDatos.buscar_por_dni(md_clean)
+                            if verificar:
+                                avatar = "👦" if msexo == "Masculino" else "👧"
+                                st.success(f"✅ **MATRICULADO CORRECTAMENTE** ☁️ Guardado en la nube")
+                                st.markdown(f"""
+                                <div class="asist-ok">
+                                    <strong>📋 Confirmación de Matrícula</strong><br>
+                                    {avatar} {mn.strip().upper()}<br>
+                                    🆔 DNI: {md_clean}<br>
+                                    🎓 {mg} — Sección {ms}<br>
+                                    📅 {fecha_peru_str()}<br>
+                                    <span style="color:green;font-weight:bold;">☑️ VERIFICADO EN BASE DE DATOS</span>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                reproducir_beep_exitoso()
+                                st.balloons()
+                            else:
+                                st.warning("⚠️ Se intentó guardar pero no se pudo verificar. Revise en la lista.")
             else:
-                st.error("⚠️ Nombre y DNI son obligatorios")
+                st.error("⚠️ El nombre es obligatorio")
 
     with tab_doc:
         st.subheader("👨‍🏫 Registro de Docente / Personal")
@@ -5824,11 +5893,145 @@ def tab_calificacion_yachay(config):
 # TAB: BASE DE DATOS
 # ================================================================
 
+def generar_pdf_datos_pendientes(df_pendientes, config):
+    """Genera un PDF imprimible con los datos faltantes de los estudiantes para llenar a mano."""
+    buf = io.BytesIO()
+    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors as rl_colors
+    from reportlab.platypus import Table, TableStyle
+
+    W, H = A4
+    c = rl_canvas.Canvas(buf, pagesize=A4)
+
+    colegio = config.get('colegio', 'INSTITUCIÓN EDUCATIVA')
+    anio = config.get('anio', '2025')
+
+    def nueva_pagina(titulo_extra=""):
+        c.setFillColorRGB(0.09, 0.39, 0.67)
+        c.rect(0, H - 50, W, 50, fill=1, stroke=0)
+        c.setFillColorRGB(1, 1, 1)
+        c.setFont("Helvetica-Bold", 13)
+        c.drawCentredString(W / 2, H - 30, f"{colegio} — FICHA DE DATOS PENDIENTES {anio}")
+        if titulo_extra:
+            c.setFont("Helvetica", 9)
+            c.drawCentredString(W / 2, H - 44, titulo_extra)
+
+    nueva_pagina()
+
+    # Agrupar por grado
+    grados = df_pendientes['Grado'].dropna().unique() if 'Grado' in df_pendientes.columns else ['Sin Grado']
+    y = H - 70
+
+    for grado in sorted(grados):
+        if 'Grado' in df_pendientes.columns:
+            sub = df_pendientes[df_pendientes['Grado'] == grado].copy()
+        else:
+            sub = df_pendientes.copy()
+
+        if sub.empty:
+            continue
+
+        # Cabecera de grado
+        if y < 140:
+            c.showPage()
+            nueva_pagina()
+            y = H - 70
+
+        c.setFillColorRGB(0.18, 0.55, 0.34)
+        c.rect(30, y - 18, W - 60, 18, fill=1, stroke=0)
+        c.setFillColorRGB(1, 1, 1)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(35, y - 13, f"  GRADO: {grado}  —  {len(sub)} estudiante(s) con datos pendientes")
+        y -= 22
+
+        # Tabla por grado
+        col_widths = [25, 165, 65, 65, 80, 80]
+        headers = ["N°", "APELLIDOS Y NOMBRES", "DNI ALUMNO", "DNI APODERADO", "APODERADO", "CELULAR"]
+
+        table_data = [headers]
+        for i, (_, row) in enumerate(sub.iterrows(), 1):
+            dni_val = str(row.get('DNI', '')).strip()
+            es_prov = dni_val.startswith('PROV') or str(row.get('_provisional', '')).upper() == 'SI'
+            dni_show = "___________" if es_prov else (dni_val if dni_val else "___________")
+            apod = str(row.get('Apoderado', '')).strip()
+            dni_apod = str(row.get('DNI_Apoderado', '')).strip()
+            cel = str(row.get('Celular_Apoderado', '')).strip()
+            table_data.append([
+                str(i),
+                str(row.get('Nombre', '')),
+                dni_show if es_prov else (dni_val or "___________"),
+                dni_apod if (dni_apod and dni_apod not in ('nan', '')) else "___________",
+                apod if (apod and apod not in ('nan', '')) else "___________________________",
+                cel if (cel and cel not in ('nan', '')) else "_________"
+            ])
+
+        rows_per_page = int((y - 60) / 16)
+        chunks = [table_data[0:1] + table_data[1:][i:i + rows_per_page]
+                  for i in range(0, len(table_data) - 1, max(rows_per_page, 1))]
+
+        for chunk_idx, chunk in enumerate(chunks):
+            if chunk_idx > 0:
+                c.showPage()
+                nueva_pagina(f"(continuación: {grado})")
+                y = H - 70
+
+            tbl = Table(chunk, colWidths=col_widths)
+            style = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), rl_colors.HexColor('#1565C0')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), rl_colors.white),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 7),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 7),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [rl_colors.white, rl_colors.HexColor('#EEF4FB')]),
+                ('GRID', (0, 0), (-1, -1), 0.4, rl_colors.grey),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+                ('TOPPADDING', (0, 0), (-1, -1), 3),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ])
+            # Marcar en naranja las celdas vacías (con guiones)
+            for row_i, row_data in enumerate(chunk[1:], 1):
+                for col_i, cell in enumerate(row_data[2:], 2):
+                    if '_' in str(cell):
+                        style.add('BACKGROUND', (col_i, row_i), (col_i, row_i),
+                                  rl_colors.HexColor('#FFF3CD'))
+            tbl.setStyle(style)
+            tbl_w, tbl_h = tbl.wrapOn(c, W - 60, y - 60)
+            if y - tbl_h < 50:
+                c.showPage()
+                nueva_pagina(f"(continuación: {grado})")
+                y = H - 70
+            tbl.drawOn(c, 30, y - tbl_h)
+            y = y - tbl_h - 12
+
+    # Pie de página final
+    c.setFont("Helvetica-Oblique", 8)
+    c.setFillColorRGB(0.5, 0.5, 0.5)
+    c.drawCentredString(W / 2, 30,
+                        f"Sistema YACHAY PRO — Impreso {fecha_peru_str()} — Las celdas en amarillo están PENDIENTES de completar")
+    c.save()
+    buf.seek(0)
+    return buf
+
+
 def tab_base_datos():
     st.header("📊 Base de Datos")
     df = BaseDatos.cargar_matricula()
     df_doc = BaseDatos.cargar_docentes()
-    c1, c2, c3, c4 = st.columns(4)
+
+    # Contar provisionales
+    n_prov = 0
+    if not df.empty:
+        if '_provisional' in df.columns:
+            n_prov = (df['_provisional'].astype(str).str.upper() == 'SI').sum()
+        elif 'DNI' in df.columns:
+            n_prov = df['DNI'].astype(str).str.startswith('PROV').sum()
+
+    c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
         st.metric("📚 Alumnos", len(df) if not df.empty else 0)
     with c2:
@@ -5841,8 +6044,12 @@ def tab_base_datos():
         st.metric("📱 Con Celular",
                    df['Celular_Apoderado'].notna().sum()
                    if not df.empty and 'Celular_Apoderado' in df.columns else 0)
+    with c5:
+        st.metric("⏳ Provisionales", n_prov,
+                  delta="pendientes" if n_prov > 0 else None,
+                  delta_color="inverse" if n_prov > 0 else "off")
 
-    tab_al, tab_dc = st.tabs(["📚 Alumnos", "👨‍🏫 Docentes"])
+    tab_al, tab_completar, tab_dc = st.tabs(["📚 Alumnos", "✏️ Completar Datos", "👨‍🏫 Docentes"])
     with tab_al:
         if not df.empty:
             c1, c2 = st.columns(2)
@@ -5941,6 +6148,136 @@ def tab_base_datos():
                         st.error("⚠️ Ingrese un DNI válido de 8 dígitos")
         else:
             st.info("📝 Sin alumnos.")
+
+    # ================================================================
+    # PESTAÑA: COMPLETAR DATOS (nueva)
+    # ================================================================
+    with tab_completar:
+        st.subheader("✏️ Completar Datos de Estudiantes")
+        st.info("🔍 Busque a los estudiantes registrados provisionalmente y agregue su DNI, apoderado y número de celular para generar su QR y carnet.")
+
+        df_comp = BaseDatos.cargar_matricula()
+        if df_comp.empty:
+            st.warning("No hay alumnos registrados aún.")
+        else:
+            def _es_incompleto(row):
+                dni = str(row.get("DNI", "")).strip()
+                cel = str(row.get("Celular_Apoderado", "")).strip()
+                prov = str(row.get("_provisional", "")).upper() == "SI"
+                dni_falta = prov or dni == "" or dni.startswith("PROV") or dni == "nan"
+                cel_falta = cel in ("", "nan")
+                return dni_falta or cel_falta
+
+            df_incomp = df_comp[df_comp.apply(_es_incompleto, axis=1)].copy()
+
+            col_res, col_pdf = st.columns([3, 1])
+            with col_res:
+                st.metric("⚠️ Estudiantes con datos incompletos", len(df_incomp))
+            with col_pdf:
+                if not df_incomp.empty:
+                    config_c = st.session_state.get("config", {"colegio": "IE YACHAY", "anio": "2025"})
+                    pdf_pend = generar_pdf_datos_pendientes(df_incomp, config_c)
+                    st.download_button(
+                        "🖨️ PDF para llenar a mano",
+                        pdf_pend,
+                        f"datos_pendientes_{config_c.get('anio','2025')}.pdf",
+                        mime="application/pdf",
+                        key="btn_pdf_pendientes",
+                        help="Genera PDF con tabla para llenar a mano y luego transcribir"
+                    )
+
+            if not df_incomp.empty:
+                cols_show = [c for c in ["Nombre","Grado","Seccion","DNI","Celular_Apoderado","_provisional"] if c in df_incomp.columns]
+                disp = df_incomp[cols_show].sort_values("Nombre") if "Nombre" in df_incomp.columns else df_incomp[cols_show]
+                st.dataframe(disp, use_container_width=True, hide_index=True, height=220)
+            else:
+                st.success("✅ ¡Todos los estudiantes tienen sus datos completos!")
+
+            st.markdown("---")
+            st.subheader("🔍 Buscar y completar datos de un estudiante")
+            st.caption("Busque por nombre o por ID provisional (PROVxxxx)")
+
+            busq_comp = st.text_input("🔍 Buscar por nombre o ID:", key="busq_completar",
+                                      placeholder="Ej: MAMANI o PROV0001")
+
+            alumno_sel = None
+            if busq_comp and len(busq_comp) >= 3:
+                df_busq = df_comp.copy()
+                mask_b = df_busq.apply(lambda r: busq_comp.strip().upper() in str(r).upper(), axis=1)
+                resultados = df_busq[mask_b]
+                if resultados.empty:
+                    st.warning("No se encontraron coincidencias.")
+                else:
+                    opciones = resultados.apply(
+                        lambda r: f"{r.get('Nombre','')} — {r.get('Grado','')} {r.get('Seccion','')} [ID: {r.get('DNI','')}]",
+                        axis=1
+                    ).tolist()
+                    sel_idx = st.selectbox("Seleccione el estudiante:", range(len(opciones)),
+                                           format_func=lambda i: opciones[i], key="sel_alumno_comp")
+                    alumno_sel = resultados.iloc[sel_idx].to_dict()
+
+            if alumno_sel:
+                id_actual = str(alumno_sel.get("DNI", "")).strip()
+                es_prov = id_actual.startswith("PROV") or str(alumno_sel.get("_provisional", "")).upper() == "SI"
+
+                st.markdown(f"""
+**Estudiante:** {alumno_sel.get("Nombre", "")}  
+**Grado:** {alumno_sel.get("Grado", "")} — Sección {alumno_sel.get("Seccion", "")}  
+**ID actual:** `{id_actual}` {"⚠️ Provisional" if es_prov else "✅ DNI registrado"}
+                """)
+
+                with st.form("form_completar_datos"):
+                    st.markdown("**Completar / actualizar datos:**")
+                    fc1, fc2 = st.columns(2)
+                    with fc1:
+                        nuevo_dni = st.text_input(
+                            "DNI del estudiante:" + (" (provisional)" if es_prov else ""),
+                            value="" if es_prov else id_actual,
+                            max_chars=8, placeholder="12345678", key="fc_dni"
+                        )
+                        nuevo_apod = st.text_input(
+                            "Apoderado (Padre/Madre):",
+                            value=str(alumno_sel.get("Apoderado", "")).replace("nan", ""),
+                            key="fc_apod"
+                        )
+                    with fc2:
+                        nuevo_dni_apod = st.text_input(
+                            "DNI del Apoderado:",
+                            value=str(alumno_sel.get("DNI_Apoderado", "")).replace("nan", ""),
+                            max_chars=8, placeholder="12345678", key="fc_dni_apod"
+                        )
+                        nuevo_cel = st.text_input(
+                            "📱 Celular Apoderado (para QR y WhatsApp):",
+                            value=str(alumno_sel.get("Celular_Apoderado", "")).replace("nan", ""),
+                            max_chars=9, placeholder="987654321", key="fc_cel"
+                        )
+                    submitted = st.form_submit_button("💾 GUARDAR DATOS", type="primary", use_container_width=True)
+
+                if submitted:
+                    df_upd = BaseDatos.cargar_matricula()
+                    df_upd["DNI"] = df_upd["DNI"].astype(str).str.strip()
+                    mask_upd = df_upd["DNI"] == id_actual
+                    if not mask_upd.any() and "Nombre" in df_upd.columns:
+                        mask_upd = df_upd["Nombre"] == alumno_sel.get("Nombre", "")
+                    if mask_upd.any():
+                        if nuevo_dni.strip() and len(nuevo_dni.strip()) == 8 and nuevo_dni.strip().isdigit():
+                            df_upd.loc[mask_upd, "DNI"] = nuevo_dni.strip()
+                            df_upd.loc[mask_upd, "_provisional"] = "NO"
+                        if nuevo_apod.strip():
+                            df_upd.loc[mask_upd, "Apoderado"] = nuevo_apod.strip().upper()
+                        if nuevo_dni_apod.strip():
+                            df_upd.loc[mask_upd, "DNI_Apoderado"] = nuevo_dni_apod.strip()
+                        if nuevo_cel.strip():
+                            df_upd.loc[mask_upd, "Celular_Apoderado"] = nuevo_cel.strip()
+                        BaseDatos.guardar_matricula(df_upd)
+                        st.success(f"✅ Datos de **{alumno_sel.get('Nombre','')}** actualizados correctamente.")
+                        if nuevo_cel.strip():
+                            st.info(f"📱 Celular guardado: {nuevo_cel.strip()} — Ya puede generar el QR y carnet.")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error("⚠️ No se pudo encontrar al estudiante para actualizar.")
+
     with tab_dc:
         if not df_doc.empty:
             if 'Nombre' in df_doc.columns:
