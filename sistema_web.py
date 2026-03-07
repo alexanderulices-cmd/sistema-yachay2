@@ -1700,6 +1700,96 @@ class BaseDatos:
         return []
 
     @staticmethod
+    def promover_grados():
+        """Avanza todos los estudiantes al siguiente grado del año escolar.
+        Retorna dict con resumen: {'promovidos': n, 'egresados': n, 'detalle': [...]}
+        """
+        # Cadena completa de promoción
+        CADENA_PROMOCION = {
+            # INICIAL
+            "Inicial 3 años":  ("Inicial 4 años",  "INICIAL"),
+            "Inicial 4 años":  ("Inicial 5 años",  "INICIAL"),
+            "Inicial 5 años":  ("1° Primaria",      "PRIMARIA"),
+            # PRIMARIA
+            "1° Primaria":     ("2° Primaria",      "PRIMARIA"),
+            "2° Primaria":     ("3° Primaria",      "PRIMARIA"),
+            "3° Primaria":     ("4° Primaria",      "PRIMARIA"),
+            "4° Primaria":     ("5° Primaria",      "PRIMARIA"),
+            "5° Primaria":     ("6° Primaria",      "PRIMARIA"),
+            "6° Primaria":     ("1° Secundaria",    "SECUNDARIA"),
+            # SECUNDARIA
+            "1° Secundaria":   ("2° Secundaria",    "SECUNDARIA"),
+            "2° Secundaria":   ("3° Secundaria",    "SECUNDARIA"),
+            "3° Secundaria":   ("4° Secundaria",    "SECUNDARIA"),
+            "4° Secundaria":   ("5° Secundaria",    "SECUNDARIA"),
+            "5° Secundaria":   ("EGRESADO",         "EGRESADO"),
+        }
+
+        df = BaseDatos.cargar_matricula()
+        if df.empty or 'Grado' not in df.columns:
+            return {'promovidos': 0, 'egresados': 0, 'sin_cambio': 0, 'detalle': []}
+
+        promovidos = 0
+        egresados = 0
+        sin_cambio = 0
+        detalle = []
+
+        for idx, row in df.iterrows():
+            grado_actual = str(row.get('Grado', '')).strip()
+            if grado_actual in CADENA_PROMOCION:
+                nuevo_grado, nuevo_nivel = CADENA_PROMOCION[grado_actual]
+                if nuevo_grado == "EGRESADO":
+                    df.at[idx, 'Grado'] = "EGRESADO 5° Sec"
+                    df.at[idx, 'Nivel'] = "EGRESADO"
+                    egresados += 1
+                    detalle.append(f"🎓 {row.get('Nombre','')} — {grado_actual} → EGRESADO")
+                else:
+                    df.at[idx, 'Grado'] = nuevo_grado
+                    df.at[idx, 'Nivel'] = nuevo_nivel
+                    promovidos += 1
+                    detalle.append(f"✅ {row.get('Nombre','')} — {grado_actual} → {nuevo_grado}")
+            else:
+                # PreUniversitario u otros ciclos especiales → no se tocan
+                sin_cambio += 1
+
+        BaseDatos.guardar_matricula(df)
+        return {
+            'promovidos': promovidos,
+            'egresados': egresados,
+            'sin_cambio': sin_cambio,
+            'detalle': detalle
+        }
+
+    @staticmethod
+    def previsualizar_promocion():
+        """Retorna resumen de cómo quedarían los grados SIN guardar."""
+        CADENA_PROMOCION = {
+            "Inicial 3 años":  "Inicial 4 años",
+            "Inicial 4 años":  "Inicial 5 años",
+            "Inicial 5 años":  "1° Primaria",
+            "1° Primaria":     "2° Primaria",
+            "2° Primaria":     "3° Primaria",
+            "3° Primaria":     "4° Primaria",
+            "4° Primaria":     "5° Primaria",
+            "5° Primaria":     "6° Primaria",
+            "6° Primaria":     "1° Secundaria",
+            "1° Secundaria":   "2° Secundaria",
+            "2° Secundaria":   "3° Secundaria",
+            "3° Secundaria":   "4° Secundaria",
+            "4° Secundaria":   "5° Secundaria",
+            "5° Secundaria":   "EGRESADO",
+        }
+        df = BaseDatos.cargar_matricula()
+        resumen = {}
+        if df.empty or 'Grado' not in df.columns:
+            return resumen
+        for grado_actual, nuevo in CADENA_PROMOCION.items():
+            n = int((df['Grado'].astype(str).str.strip() == grado_actual).sum())
+            if n > 0:
+                resumen[grado_actual] = {'nuevo': nuevo, 'cantidad': n}
+        return resumen
+
+    @staticmethod
     def corregir_secciones_vacias():
         """Asigna sección 'A' a estudiantes sin sección o con 'Única' (excepto INICIAL)"""
         df = BaseDatos.cargar_matricula()
@@ -2369,7 +2459,21 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
             data.append([str(idx + 1), nm] + [""] * nd + ["", "", "", ""])
         dw = max(15, min(22, (w - 18 - 140 - 72 - 30) / max(nd, 1)))
         cw = [18, 140] + [dw] * nd + [18, 18, 18, 18]
-        t = Table(data, colWidths=cw, repeatRows=1)
+
+        # Calcular altura disponible para la tabla (reservar espacio header + leyenda)
+        ESPACIO_HEADER = 48   # título + subtítulo arriba
+        ESPACIO_LEYENDA = 30  # leyenda de semanas abajo
+        altura_disponible = h - ESPACIO_HEADER - ESPACIO_LEYENDA
+
+        # Filas totales: 1 cabecera + alumnos
+        total_filas = 1 + ne
+        # Altura de fila: que quepan todas, mínimo 10pt máximo 18pt
+        fila_h_auto = altura_disponible / total_filas
+        fila_h = max(10, min(18, fila_h_auto))
+        cabecera_h = min(22, fila_h * 1.4)
+
+        row_heights = [cabecera_h] + [fila_h] * ne
+        t = Table(data, colWidths=cw, rowHeights=row_heights, repeatRows=1)
 
         # Estilos base
         estilos = [
@@ -2403,7 +2507,9 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
 
         t.setStyle(TableStyle(estilos))
         tw, th2 = t.wrap(w - 20, h - 60)
-        t.drawOn(c, 10, h - 48 - th2)
+        # Siempre dibujar la tabla justo encima de la leyenda (30pt desde abajo)
+        tabla_y = ESPACIO_LEYENDA
+        t.drawOn(c, 10, tabla_y)
 
         # Leyenda de semanas
         fer = feriados_del_mes(mn)
@@ -3775,6 +3881,50 @@ def configurar_sidebar():
                         st.balloons()
                     else:
                         st.info("✅ Todos los estudiantes ya tienen sección")
+
+                st.markdown("---")
+                st.markdown("### 🎓 Promoción de Año Escolar")
+                st.caption("Avanza todos los estudiantes al siguiente grado (Inicial→Primaria→Secundaria)")
+
+                # Previsualización
+                if st.button("🔍 Ver previsualización", key="btn_prev_promo", use_container_width=True):
+                    prev = BaseDatos.previsualizar_promocion()
+                    if prev:
+                        st.session_state['_prev_promo'] = prev
+                    else:
+                        st.warning("No hay estudiantes para promover.")
+
+                if st.session_state.get('_prev_promo'):
+                    prev = st.session_state['_prev_promo']
+                    st.markdown("**Vista previa de cambios:**")
+                    total_prev = sum(v['cantidad'] for v in prev.values())
+                    for grado_act, info in prev.items():
+                        emoji = "🎓" if info['nuevo'] == "EGRESADO" else "➡️"
+                        st.markdown(
+                            f"- **{grado_act}** {emoji} **{info['nuevo']}** "
+                            f"&nbsp;&nbsp;`{info['cantidad']} alumno(s)`"
+                        )
+                    st.warning(f"⚠️ Se modificarán **{total_prev} estudiantes**. ¿Confirmar?")
+                    c_si, c_no = st.columns(2)
+                    with c_si:
+                        if st.button("✅ SÍ, PROMOVER AHORA", type="primary",
+                                     use_container_width=True, key="btn_confirmar_promo"):
+                            with st.spinner("🔄 Promoviendo grados..."):
+                                resultado = BaseDatos.promover_grados()
+                            st.session_state.pop('_prev_promo', None)
+                            st.success(
+                                f"🎉 ¡Promoción completada!\n\n"
+                                f"✅ Promovidos: **{resultado['promovidos']}**\n\n"
+                                f"🎓 Egresados: **{resultado['egresados']}**\n\n"
+                                f"⏭️ Sin cambio (PreU/otros): **{resultado['sin_cambio']}**"
+                            )
+                            st.balloons()
+                            time.sleep(1)
+                            st.rerun()
+                    with c_no:
+                        if st.button("❌ Cancelar", use_container_width=True, key="btn_cancel_promo"):
+                            st.session_state.pop('_prev_promo', None)
+                            st.rerun()
 
                 st.markdown("---")
                 st.markdown("### 🗑️ Resetear TODAS las Notas")
@@ -6092,6 +6242,32 @@ def tab_base_datos():
                 st.download_button("⬇️ Excel", buf, "alumnos.xlsx", key="dxlsx")
             with c3:
                 st.markdown("")
+            # Editar nombre de alumno
+            with st.expander("✏️ Editar Nombre de Alumno", expanded=False):
+                st.caption("Busque al alumno por DNI o ID provisional para corregir su nombre")
+                enomb_busq = st.text_input("DNI o ID provisional:", key="enomb_busq", max_chars=10, placeholder="12345678 o PROV0001")
+                if enomb_busq and len(enomb_busq.strip()) >= 4:
+                    df_enomb = BaseDatos.cargar_matricula()
+                    df_enomb["DNI"] = df_enomb["DNI"].astype(str).str.strip()
+                    rows_found = df_enomb[df_enomb["DNI"] == enomb_busq.strip()]
+                    if rows_found.empty:
+                        # buscar por nombre parcial
+                        rows_found = df_enomb[df_enomb.apply(lambda r: enomb_busq.strip().upper() in str(r.get("Nombre","")).upper(), axis=1)]
+                    if not rows_found.empty:
+                        alumno_enomb = rows_found.iloc[0]
+                        st.info(f"**{alumno_enomb.get('Nombre','')}** — {alumno_enomb.get('Grado','')} {alumno_enomb.get('Seccion','')}")
+                        nuevo_nomb = st.text_input("Nuevo nombre completo:", value=str(alumno_enomb.get('Nombre','')), key="enomb_nuevo")
+                        if st.button("💾 GUARDAR NOMBRE", type="primary", key="btn_guardar_nomb"):
+                            if nuevo_nomb.strip():
+                                df_enomb.loc[rows_found.index, "Nombre"] = nuevo_nomb.strip().upper()
+                                BaseDatos.guardar_matricula(df_enomb)
+                                st.success(f"✅ Nombre actualizado a: **{nuevo_nomb.strip().upper()}**")
+                                time.sleep(1)
+                                st.rerun()
+                            else:
+                                st.error("El nombre no puede estar vacío")
+                    else:
+                        st.warning("No se encontró ningún alumno con ese DNI o nombre")
             # Cambiar Grado/Seccion de alumno
             with st.expander("✏️ Cambiar Grado / Sección de Alumno", expanded=False):
                 st.caption("Busque al alumno por DNI para cambiar su grado o sección (ej: Ciclo Intensivo → Ciclo Ordinario)")
@@ -6249,6 +6425,18 @@ def tab_base_datos():
 
                         # Formulario de edición
                         with st.form(f"form_edit_{i}_{dni_val}"):
+                            # Fila 0: Nombre y Sexo
+                            en0, en1 = st.columns([3, 1])
+                            with en0:
+                                inp_nombre = st.text_input("✏️ Apellidos y Nombres:",
+                                    value=nombre, key=f"inp_nombre_{i}",
+                                    placeholder="APELLIDOS, Nombres")
+                            with en1:
+                                sexo_actual = str(row.get("Sexo", "Masculino")).strip()
+                                inp_sexo = st.selectbox("Sexo:",
+                                    ["Masculino", "Femenino"],
+                                    index=0 if sexo_actual == "Masculino" else 1,
+                                    key=f"inp_sexo_{i}")
                             e1, e2 = st.columns(2)
                             with e1:
                                 inp_dni = st.text_input("DNI del alumno:",
@@ -6274,6 +6462,9 @@ def tab_base_datos():
                             if not mask_upd.any():
                                 mask_upd = df_upd["Nombre"] == nombre
                             if mask_upd.any():
+                                if inp_nombre.strip():
+                                    df_upd.loc[mask_upd, "Nombre"] = inp_nombre.strip().upper()
+                                df_upd.loc[mask_upd, "Sexo"] = inp_sexo
                                 if inp_dni.strip() and len(inp_dni.strip()) == 8 and inp_dni.strip().isdigit():
                                     df_upd.loc[mask_upd, "DNI"] = inp_dni.strip()
                                     df_upd.loc[mask_upd, "_provisional"] = "NO"
@@ -6284,7 +6475,7 @@ def tab_base_datos():
                                 if inp_cel.strip():
                                     df_upd.loc[mask_upd, "Celular_Apoderado"] = inp_cel.strip()
                                 BaseDatos.guardar_matricula(df_upd)
-                                st.success(f"✅ **{nombre}** actualizado correctamente.")
+                                st.success(f"✅ **{inp_nombre.strip().upper()}** actualizado correctamente.")
                                 if inp_cel.strip():
                                     st.info("📱 Celular guardado — ya puede generar QR y carnet.")
                                 time.sleep(1)
