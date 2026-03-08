@@ -2332,7 +2332,15 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     wname = 115
     wd = max(16, min(25, (avail - wn - wname) / total_d))
     cw = [wn, wname] + [wd] * total_d
-    tabla = Table(data, colWidths=cw, repeatRows=3)
+    # Calcular alturas para que todo quepa en la hoja sin desbordar
+    ESPACIO_HEADER_AUX = 58   # título + subtítulos
+    ESPACIO_PIE_AUX   = 20   # leyenda al pie
+    altura_disp = h - ESPACIO_HEADER_AUX - ESPACIO_PIE_AUX
+    total_filas_aux = 3 + ne   # 3 cabeceras + alumnos
+    fila_h_aux = max(9, min(16, altura_disp / total_filas_aux))
+    cab_h_aux  = min(18, fila_h_aux * 1.3)
+    row_heights_aux = [cab_h_aux, cab_h_aux, cab_h_aux] + [fila_h_aux] * ne
+    tabla = Table(data, colWidths=cw, rowHeights=row_heights_aux, repeatRows=3)
     sl = [
         ('FONTNAME', (0, 0), (-1, 2), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 2), 5),
@@ -2371,7 +2379,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
             sl.append(('TEXTCOLOR', (s, 2), (e, 2), colors.white))
     tabla.setStyle(TableStyle(sl))
     tw, th = tabla.wrap(w - 20, h - 70)
-    tabla.drawOn(c, 10, h - 58 - th)
+    tabla.drawOn(c, 10, ESPACIO_PIE_AUX)
     c.setFont("Helvetica", 5)
     c.drawString(10, 12,
                  f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) "
@@ -2384,6 +2392,170 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 # ================================================================
 # REGISTRO ASISTENCIA PDF (sin sáb/dom, sin feriados + pie feriados)
 # ================================================================
+
+def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_df, cursos=None):
+    """Genera el registro auxiliar en formato Word (.docx)"""
+    try:
+        from docx import Document as DocxDoc
+        from docx.shared import Pt, Cm, RGBColor
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+        from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        import copy
+    except ImportError:
+        return None
+
+    if cursos is None:
+        cursos = ["Matemática", "Comunicación", "Ciencia y Tec."]
+
+    nc = len(cursos)
+    dp = 3  # desempeños por competencia
+    cp = 4  # competencias por curso
+    cols_per_c = cp * dp
+
+    doc = DocxDoc()
+    section = doc.sections[0]
+    # Hoja A4 horizontal
+    section.page_width  = Cm(29.7)
+    section.page_height = Cm(21.0)
+    section.left_margin = section.right_margin = Cm(1.0)
+    section.top_margin  = section.bottom_margin = Cm(1.0)
+
+    # Título
+    titulo = doc.add_paragraph()
+    titulo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_t = titulo.add_run("I.E.P. ALTERNATIVO YACHAY — REGISTRO AUXILIAR DE EVALUACIÓN")
+    run_t.bold = True; run_t.font.size = Pt(10)
+    sub = doc.add_paragraph()
+    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sub.add_run(f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}").font.size = Pt(8)
+
+    # Preparar cabeceras
+    r0 = ["N°", "APELLIDOS Y NOMBRES"]
+    for curso in cursos:
+        r0.append(curso.upper())
+        r0.extend([""] * (cols_per_c - 1))
+    r1 = ["", ""]
+    for _ in range(nc):
+        for ci in range(1, cp + 1):
+            r1.append(f"C{ci}"); r1.extend([""] * (dp - 1))
+    r2 = ["", ""]
+    for _ in range(nc):
+        for _ in range(cp):
+            for di in range(1, dp + 1):
+                r2.append(f"D{di}")
+
+    if not estudiantes_df.empty:
+        est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
+    else:
+        est = pd.DataFrame()
+    ne = len(est) if not est.empty else 25
+
+    total_cols = 2 + nc * cols_per_c
+    table = doc.add_table(rows=3 + ne, cols=total_cols)
+    table.style = 'Table Grid'
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Anchos de columna (en twips, 1cm=567)
+    col_widths_cm = [0.7, 4.5] + [0.55] * (nc * cols_per_c)
+
+    def set_cell(cell, text, bold=False, size=5, bg_hex=None, align_center=True):
+        cell.text = ""
+        p = cell.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER if align_center else WD_ALIGN_PARAGRAPH.LEFT
+        run = p.add_run(str(text))
+        run.bold = bold; run.font.size = Pt(size)
+        cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+        if bg_hex:
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            shd = OxmlElement('w:shd')
+            shd.set(qn('w:val'), 'clear')
+            shd.set(qn('w:color'), 'auto')
+            shd.set(qn('w:fill'), bg_hex)
+            tcPr.append(shd)
+
+    COLORES_CURSOS = ['1A237E', '1B5E20', '7B1FA2']
+
+    # Fila 0 — cursos
+    row0 = table.rows[0]
+    set_cell(row0.cells[0], "N°", bold=True, size=5, bg_hex='1A1A5C')
+    set_cell(row0.cells[1], "APELLIDOS Y NOMBRES", bold=True, size=5, bg_hex='1A1A5C')
+    for ci, curso in enumerate(cursos):
+        cs = 2 + ci * cols_per_c
+        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
+        # Merge cells for curso header
+        cell_start = row0.cells[cs]
+        cell_end   = row0.cells[cs + cols_per_c - 1]
+        cell_start.merge(cell_end)
+        set_cell(cell_start, curso.upper(), bold=True, size=5, bg_hex=color_c)
+
+    # Fila 1 — competencias
+    row1 = table.rows[1]
+    set_cell(row1.cells[0], "", bg_hex='1A1A5C'); set_cell(row1.cells[1], "", bg_hex='1A1A5C')
+    for ci in range(nc):
+        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
+        cs = 2 + ci * cols_per_c
+        for ki in range(cp):
+            s = cs + ki * dp
+            cell_s = row1.cells[s]; cell_e = row1.cells[s + dp - 1]
+            cell_s.merge(cell_e)
+            set_cell(cell_s, f"C{ki+1}", bold=True, size=5, bg_hex=color_c)
+
+    # Fila 2 — desempeños
+    row2 = table.rows[2]
+    set_cell(row2.cells[0], "", bg_hex='1A1A5C'); set_cell(row2.cells[1], "", bg_hex='1A1A5C')
+    for ci in range(nc):
+        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
+        cs = 2 + ci * cols_per_c
+        for ki in range(cp):
+            for di in range(dp):
+                set_cell(row2.cells[cs + ki*dp + di], f"D{di+1}", bold=True, size=5, bg_hex=color_c)
+
+    # Filas de alumnos
+    for idx in range(ne):
+        rw = table.rows[3 + idx]
+        nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
+        if len(nm) > 30: nm = nm[:30] + "."
+        bg = 'FFFFFF' if idx % 2 == 0 else 'EEEEEE'
+        set_cell(rw.cells[0], str(idx+1), size=5, bg_hex=bg)
+        set_cell(rw.cells[1], nm, size=5, bg_hex=bg, align_center=False)
+        for col in range(2, total_cols):
+            set_cell(rw.cells[col], "", size=5, bg_hex=bg)
+
+    # Ancho de columnas
+    from docx.oxml import OxmlElement as OE
+    tbl = table._tbl
+    tblPr = tbl.find(qn('w:tblPr'))
+    if tblPr is None:
+        tblPr = OE('w:tblPr'); tbl.insert(0, tblPr)
+    tblW = OE('w:tblW'); tblW.set(qn('w:w'), '0'); tblW.set(qn('w:type'), 'auto')
+    tblPr.append(tblW)
+    for i, row in enumerate(table.rows):
+        for j, cell in enumerate(row.cells):
+            tcPr = cell._tc.get_or_add_tcPr()
+            tcW = OE('w:tcW')
+            w_val = int(col_widths_cm[j] * 567) if j < len(col_widths_cm) else int(0.55 * 567)
+            tcW.set(qn('w:w'), str(w_val)); tcW.set(qn('w:type'), 'dxa')
+            existing = tcPr.find(qn('w:tcW'))
+            if existing is not None: tcPr.remove(existing)
+            tcPr.insert(0, tcW)
+        trPr = row._tr.get_or_add_trPr()
+        trH = OE('w:trHeight'); trH.set(qn('w:val'), '200'); trH.set(qn('w:hRule'), 'atLeast')
+        existing_h = trPr.find(qn('w:trHeight'))
+        if existing_h is not None: trPr.remove(existing_h)
+        trPr.append(trH)
+
+    doc.add_paragraph().add_run(
+        f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) B(11-13) C(0-10) | {bimestre} | YACHAY PRO — {anio}"
+    ).font.size = Pt(6)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf
+
 
 def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
                                      meses_sel, docente=""):
@@ -4431,8 +4603,17 @@ def _seccion_registros_pdf(config):
                  use_container_width=True, key="gra"):
         sl = sp if sp != "Todas" else "Todas"
         pdf = generar_registro_auxiliar_pdf(gp, sl, config['anio'], bim, dg, cursos)
-        st.download_button("⬇️ Descargar Registro Auxiliar", pdf,
-                           f"RegAux_{gp}_{bim}.pdf", "application/pdf", key="dra")
+        c1a, c2a = st.columns(2)
+        with c1a:
+            st.download_button("⬇️ PDF Registro Auxiliar", pdf,
+                               f"RegAux_{gp}_{bim}.pdf", "application/pdf", key="dra")
+        with c2a:
+            docx_aux = generar_registro_auxiliar_docx(gp, sl, config['anio'], bim, dg, cursos)
+            if docx_aux:
+                st.download_button("⬇️ Word (.docx)", docx_aux,
+                                   f"RegAux_{gp}_{bim}.docx",
+                                   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                   key="dra_docx")
 
     st.markdown("---")
     st.markdown("**📋 Registro Asistencia (sin sáb/dom, sin feriados)**")
@@ -5078,6 +5259,14 @@ def nota_a_letra(nota):
     elif nota >= 14: return 'A'
     elif nota >= 11: return 'B'
     else: return 'C'
+
+# Escala de calificación MINEDU — global para uso en toda la app
+ESCALA_MINEDU = {
+    'AD': {'nombre': 'Logro Destacado',  'rango': '18-20', 'color': '#15803d', 'desc': 'El estudiante evidencia un nivel superior a lo esperado respecto a la competencia.'},
+    'A':  {'nombre': 'Logro Esperado',   'rango': '14-17', 'color': '#2563eb', 'desc': 'El estudiante evidencia el nivel esperado respecto a la competencia.'},
+    'B':  {'nombre': 'En Proceso',        'rango': '11-13', 'color': '#d97706', 'desc': 'El estudiante está próximo al nivel esperado, requiere acompañamiento.'},
+    'C':  {'nombre': 'En Inicio',         'rango': '0-10',  'color': '#dc2626', 'desc': 'El estudiante muestra un progreso mínimo. Requiere mayor tiempo e intervención.'},
+}
 
 def color_semaforo(letra):
     return ESCALA_MINEDU.get(letra, {}).get('color', '#888')
@@ -6683,9 +6872,18 @@ def _tab_registro_auxiliar_docente(grado, config):
             sl = sec if sec != "Todas" else "Todas"
             pdf = generar_registro_auxiliar_pdf(
                 lg, sl, config['anio'], bim, dg, cursos_d)
-            st.download_button("⬇️ PDF", pdf,
-                               f"RegAux_{lg}_{bim}.pdf",
-                               "application/pdf", key="ddra2")
+            cd1, cd2 = st.columns(2)
+            with cd1:
+                st.download_button("⬇️ PDF", pdf,
+                                   f"RegAux_{lg}_{bim}.pdf",
+                                   "application/pdf", key="ddra2")
+            with cd2:
+                docx_aux2 = generar_registro_auxiliar_docx(lg, sl, config['anio'], bim, dg, cursos_d)
+                if docx_aux2:
+                    st.download_button("⬇️ Word (.docx)", docx_aux2,
+                                       f"RegAux_{lg}_{bim}.docx",
+                                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                       key="ddra2_docx")
 
 
 def _tab_registro_pdf_docente(grado, config):
@@ -8731,6 +8929,235 @@ def _guardar_historial_evaluaciones(hist_data):
     except Exception:
         return False
 
+def generar_pdf_diagnostico(grado, anio, estudiantes_df, notas_diag, areas_diag, tipo="entrada", notas_salida=None, config=None):
+    """Genera PDF de diagnóstico — una hoja por estudiante con gráficos de barras.
+    tipo: 'entrada' o 'salida'. Si es salida, también compara con notas_diag (entrada)."""
+    if config is None:
+        config = {}
+    buf = io.BytesIO()
+    from reportlab.graphics.shapes import Drawing, Rect, String, Line
+    from reportlab.graphics import renderPDF
+
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+
+    colegio = config.get('colegio', 'I.E.P. ALTERNATIVO YACHAY')
+    anio_c  = config.get('anio', anio)
+    tipo_txt = "DIAGNÓSTICO DE ENTRADA" if tipo == "entrada" else "DIAGNÓSTICO DE SALIDA"
+
+    def draw_bar_chart(c, x, y, chart_w, chart_h, areas, notas, notas_prev=None):
+        """Dibuja gráfico de barras horizontales dentro del área dada."""
+        n = len(areas)
+        if n == 0:
+            return
+        bar_h   = min(22, (chart_h - 20) / n)
+        max_nota = 20
+
+        # Eje Y labels y barras
+        for i, (area, nota) in enumerate(zip(areas, notas)):
+            bar_y = y + chart_h - 20 - i * (bar_h + 3) - bar_h
+            nota_v = float(nota) if nota else 0
+            bar_len = (nota_v / max_nota) * chart_w * 0.7
+
+            # Color según escala
+            if nota_v >= 18:   col = colors.HexColor('#15803d')
+            elif nota_v >= 14: col = colors.HexColor('#2563eb')
+            elif nota_v >= 11: col = colors.HexColor('#d97706')
+            else:              col = colors.HexColor('#dc2626')
+
+            # Barra principal (entrada o actual)
+            c.setFillColor(col)
+            c.rect(x + chart_w * 0.3, bar_y, bar_len, bar_h * 0.55, fill=1, stroke=0)
+
+            # Si hay notas previas (comparación entrada vs salida)
+            if notas_prev and i < len(notas_prev):
+                prev_v = float(notas_prev[i]) if notas_prev[i] else 0
+                prev_len = (prev_v / max_nota) * chart_w * 0.7
+                c.setFillColor(colors.HexColor('#94a3b8'))
+                c.setFillAlpha(0.5)
+                c.rect(x + chart_w * 0.3, bar_y + bar_h * 0.55 + 1, prev_len, bar_h * 0.3, fill=1, stroke=0)
+                c.setFillAlpha(1.0)
+
+            # Etiqueta área
+            c.setFillColor(colors.HexColor('#1e293b'))
+            c.setFont('Helvetica', 6)
+            area_short = area[:22] + '.' if len(area) > 22 else area
+            c.drawRightString(x + chart_w * 0.29, bar_y + bar_h * 0.2, area_short)
+
+            # Nota al final de la barra
+            letra = nota_a_letra(nota_v)
+            c.setFillColor(col)
+            c.setFont('Helvetica-Bold', 7)
+            c.drawString(x + chart_w * 0.3 + bar_len + 4, bar_y + bar_h * 0.15,
+                         f"{nota_v:.0f} ({letra})")
+
+        # Eje X
+        c.setStrokeColor(colors.HexColor('#cbd5e1'))
+        c.setLineWidth(0.5)
+        c.line(x + chart_w * 0.3, y + chart_h - 20, x + chart_w * 0.3, y + 5)
+        for tick in [0, 5, 10, 14, 18, 20]:
+            tx = x + chart_w * 0.3 + (tick / max_nota) * chart_w * 0.7
+            c.line(tx, y + chart_h - 20, tx, y + 5)
+            c.setFillColor(colors.HexColor('#94a3b8'))
+            c.setFont('Helvetica', 5)
+            c.drawCentredString(tx, y + 2, str(tick))
+
+    if not estudiantes_df.empty:
+        est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
+    else:
+        est = pd.DataFrame()
+
+    for idx, (_, row) in enumerate(est.iterrows()):
+        nombre = str(row.get('Nombre', '')).strip()
+        dni    = str(row.get('DNI', '')).strip()
+        grade  = str(row.get('Grado', grado)).strip()
+
+        if idx > 0:
+            c.showPage()
+
+        # Fondo cabecera
+        c.setFillColor(colors.HexColor('#1e3a8a'))
+        c.rect(0, h - 70, w, 70, fill=1, stroke=0)
+
+        # Texto cabecera
+        c.setFillColor(colors.white)
+        c.setFont('Helvetica-Bold', 11)
+        c.drawCentredString(w / 2, h - 22, colegio.upper())
+        c.setFont('Helvetica-Bold', 13)
+        c.drawCentredString(w / 2, h - 40, f"PRUEBA DE {tipo_txt}")
+        c.setFont('Helvetica', 9)
+        c.drawCentredString(w / 2, h - 55, f"Año Escolar {anio_c}  |  Grado: {grade}")
+
+        # Datos del estudiante
+        c.setFillColor(colors.HexColor('#f0f9ff'))
+        c.rect(20, h - 110, w - 40, 35, fill=1, stroke=0)
+        c.setFillColor(colors.HexColor('#1e293b'))
+        c.setFont('Helvetica-Bold', 10)
+        c.drawString(30, h - 90, f"Estudiante: {nombre}")
+        c.setFont('Helvetica', 9)
+        c.drawString(30, h - 104, f"DNI: {dni}   |   N°: {idx + 1}")
+
+        # Notas de este estudiante
+        notas_est   = notas_diag.get(nombre, [None] * len(areas_diag))
+        notas_sal   = notas_salida.get(nombre, [None] * len(areas_diag)) if notas_salida else None
+
+        # Tabla de notas
+        ty = h - 125
+        col_widths_t = [190, 60, 55, 55, 55]
+        headers_t = ['ÁREA', 'NOTA', 'LITERAL', 'ESCALA', '']
+        if tipo == 'salida' and notas_salida:
+            headers_t = ['ÁREA', 'ENTRADA', 'SALIDA', 'LITERAL', 'AVANCE']
+            col_widths_t = [180, 55, 55, 55, 55]
+
+        # Cabecera tabla
+        tx = 20
+        c.setFillColor(colors.HexColor('#1e3a8a'))
+        c.rect(tx, ty - 16, sum(col_widths_t), 16, fill=1, stroke=0)
+        c.setFillColor(colors.white)
+        c.setFont('Helvetica-Bold', 7)
+        cx = tx
+        for hi, hw in zip(headers_t, col_widths_t):
+            c.drawCentredString(cx + hw / 2, ty - 11, hi)
+            cx += hw
+
+        prom_sum = 0; prom_n = 0
+        nota_fila_y = ty - 16
+        for ai, (area, nota) in enumerate(zip(areas_diag, notas_est)):
+            nota_v = float(nota) if nota is not None and str(nota) not in ('', 'None', 'nan') else 0
+            letra  = nota_a_letra(nota_v)
+            bg = colors.HexColor('#f8fafc') if ai % 2 == 0 else colors.white
+            c.setFillColor(bg)
+            c.rect(tx, nota_fila_y - 14, sum(col_widths_t), 14, fill=1, stroke=0)
+            c.setFillColor(colors.HexColor('#1e293b'))
+            c.setFont('Helvetica', 7)
+
+            if tipo == 'salida' and notas_salida:
+                notas_sal_est = notas_salida.get(nombre, [None] * len(areas_diag))
+                sal_v = float(notas_sal_est[ai]) if notas_sal_est[ai] is not None and str(notas_sal_est[ai]) not in ('', 'None', 'nan') else 0
+                sal_letra = nota_a_letra(sal_v)
+                avance = sal_v - nota_v
+                avance_txt = f"+{avance:.0f}" if avance > 0 else f"{avance:.0f}"
+                avance_color = '#15803d' if avance > 0 else ('#dc2626' if avance < 0 else '#6b7280')
+                vals = [area[:28], f"{nota_v:.0f}", f"{sal_v:.0f}", sal_letra, avance_txt]
+                val_colors = [None, None, None, color_semaforo(sal_letra), avance_color]
+                prom_sum += sal_v
+            else:
+                vals = [area[:28], f"{nota_v:.0f}", letra, f"({ESCALA_MINEDU[letra]['rango']})", ""]
+                val_colors = [None, None, color_semaforo(letra), '#6b7280', None]
+                prom_sum += nota_v
+            prom_n += 1
+
+            cx = tx
+            for vi, (val, cw_t) in enumerate(zip(vals, col_widths_t)):
+                vc = val_colors[vi] if val_colors[vi] else '#1e293b'
+                c.setFillColor(colors.HexColor(vc))
+                if vi == 0:
+                    c.drawString(cx + 3, nota_fila_y - 10, str(val))
+                else:
+                    c.drawCentredString(cx + cw_t / 2, nota_fila_y - 10, str(val))
+                cx += cw_t
+
+            nota_fila_y -= 14
+
+        # Promedio
+        prom = prom_sum / prom_n if prom_n > 0 else 0
+        prom_letra = nota_a_letra(prom)
+        c.setFillColor(colors.HexColor('#1e3a8a'))
+        c.rect(tx, nota_fila_y - 14, sum(col_widths_t), 14, fill=1, stroke=0)
+        c.setFillColor(colors.white)
+        c.setFont('Helvetica-Bold', 7)
+        c.drawString(tx + 3, nota_fila_y - 10, "PROMEDIO GENERAL")
+        c.drawCentredString(tx + sum(col_widths_t) * 0.7, nota_fila_y - 10,
+                            f"{prom:.1f}  ({prom_letra} — {ESCALA_MINEDU[prom_letra]['nombre']})")
+
+        # Gráfico de barras
+        chart_top = nota_fila_y - 30
+        chart_h_px = max(80, min(200, chart_top - 60))
+        chart_x = 20
+        chart_w_px = w - 40
+
+        c.setFont('Helvetica-Bold', 8)
+        c.setFillColor(colors.HexColor('#1e3a8a'))
+        if tipo == 'salida' and notas_salida:
+            c.drawString(chart_x, chart_top + 5, "📊 COMPARACIÓN ENTRADA vs SALIDA")
+        else:
+            c.drawString(chart_x, chart_top + 5, "📊 GRÁFICO DE RESULTADOS")
+
+        notas_vals = [float(n) if n is not None and str(n) not in ('', 'None', 'nan') else 0 for n in notas_est]
+        notas_sal_vals = None
+        if tipo == 'salida' and notas_salida:
+            notas_sal_lista = notas_salida.get(nombre, [None] * len(areas_diag))
+            notas_sal_vals = [float(n) if n is not None and str(n) not in ('', 'None', 'nan') else 0 for n in notas_sal_lista]
+
+        draw_bar_chart(c, chart_x, chart_top - chart_h_px - 5, chart_w_px, chart_h_px,
+                       areas_diag, notas_vals if tipo == 'entrada' else (notas_sal_vals or notas_vals),
+                       notas_prev=notas_vals if tipo == 'salida' else None)
+
+        # Leyenda si es salida
+        if tipo == 'salida' and notas_salida:
+            ly = chart_top - chart_h_px - 15
+            c.setFont('Helvetica', 6)
+            c.setFillColor(colors.HexColor('#1e3a8a'))
+            c.rect(chart_x, ly - 8, 10, 7, fill=1, stroke=0)
+            c.setFillColor(colors.HexColor('#1e293b'))
+            c.drawString(chart_x + 13, ly - 7, "Resultado Salida")
+            c.setFillColor(colors.HexColor('#94a3b8'))
+            c.setFillAlpha(0.6)
+            c.rect(chart_x + 100, ly - 8, 10, 7, fill=1, stroke=0)
+            c.setFillAlpha(1.0)
+            c.setFillColor(colors.HexColor('#1e293b'))
+            c.drawString(chart_x + 113, ly - 7, "Resultado Entrada")
+
+        # Pie
+        c.setFont('Helvetica-Oblique', 6)
+        c.setFillColor(colors.HexColor('#94a3b8'))
+        c.drawCentredString(w / 2, 20, f"YACHAY PRO — {tipo_txt} — {grade} — Año {anio_c}")
+
+    c.save()
+    buf.seek(0)
+    return buf
+
+
 def tab_registrar_notas(config):
     """Módulo para que docentes registren notas — multi-área, sesión limpia, historial"""
     st.header("📝 Registrar Notas")
@@ -8747,9 +9174,108 @@ def tab_registrar_notas(config):
         grado_doc = st.session_state.docente_info.get('grado', '')
         nivel_doc = st.session_state.docente_info.get('nivel', '')
 
-    # ─── PESTAÑA: Historial / Nueva Evaluación ────────────────────────────────
-    vista = st.radio("", ["📋 Nueva Evaluación", "📂 Historial de Evaluaciones"],
+    # ─── PESTAÑA: Historial / Nueva Evaluación / Diagnóstico ─────────────────
+    vista = st.radio("", ["📋 Nueva Evaluación", "📂 Historial de Evaluaciones",
+                          "🔬 Examen Diagnóstico"],
                      horizontal=True, key="rn_vista")
+
+    # ── DIAGNÓSTICO ───────────────────────────────────────────────────────────
+    if vista == "🔬 Examen Diagnóstico":
+        st.subheader("🔬 Examen Diagnóstico de Entrada / Salida")
+        st.info("Registre las notas del diagnóstico por estudiante. Luego genere el reporte PDF individual con gráficos.")
+
+        tipo_diag = st.radio("Tipo:", ["📥 Diagnóstico de Entrada", "📤 Diagnóstico de Salida"],
+                              horizontal=True, key="tipo_diag")
+        es_salida = "Salida" in tipo_diag
+
+        # Grado
+        if grado_doc and grado_doc not in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA', 'N/A', ''):
+            grado_diag = grado_doc
+            st.info(f"Grado: **{grado_diag}**")
+        else:
+            grado_diag = st.selectbox("Grado:", GRADOS_OPCIONES, key="grado_diag")
+
+        sec_diag = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="sec_diag")
+        df_diag = BaseDatos.obtener_estudiantes_grado(grado_diag, sec_diag if sec_diag != "Todas" else None)
+
+        if df_diag.empty:
+            st.warning("No hay estudiantes en este grado.")
+        else:
+            st.markdown("---")
+            # Áreas a evaluar
+            st.markdown("**Áreas a evaluar:**")
+            na_diag = st.number_input("Número de áreas:", 1, 10, 4, key="na_diag")
+            areas_diag = []
+            for ai in range(int(na_diag)):
+                area_n = st.text_input(f"Área {ai+1}:", key=f"area_diag_{ai}",
+                                        placeholder=["Comunicación","Matemática","Ciencia y Tec.","Historia"][ai] if ai < 4 else f"Área {ai+1}")
+                areas_diag.append(area_n if area_n.strip() else f"Área {ai+1}")
+
+            st.markdown("---")
+            st.markdown("**Notas de los estudiantes (0–20):**")
+
+            # Cargar notas guardadas previas (entrada) si es salida
+            clave_ent = f"diag_entrada_{grado_diag}_{sec_diag}"
+            notas_entrada_guardadas = st.session_state.get(clave_ent, {})
+
+            notas_ingresadas = {}
+            for _, row in df_diag.iterrows():
+                nombre_e = str(row.get('Nombre', '')).strip()
+                cols_notas = st.columns([3] + [1] * int(na_diag))
+                with cols_notas[0]:
+                    st.markdown(f"**{nombre_e}**")
+                notas_est_diag = []
+                for ai, area in enumerate(areas_diag):
+                    prev = notas_entrada_guardadas.get(nombre_e, [None]*int(na_diag))
+                    prev_v = prev[ai] if ai < len(prev) else None
+                    with cols_notas[ai + 1]:
+                        nota_d = st.number_input(
+                            area[:8], min_value=0.0, max_value=20.0,
+                            value=float(prev_v) if prev_v is not None else 0.0,
+                            step=0.5, key=f"nd_{nombre_e}_{ai}",
+                            label_visibility="collapsed" if _ is not df_diag.iloc[0] else "visible"
+                        )
+                    notas_est_diag.append(nota_d)
+                notas_ingresadas[nombre_e] = notas_est_diag
+
+            st.markdown("---")
+            cg1, cg2, cg3 = st.columns(3)
+
+            with cg1:
+                if st.button("💾 Guardar notas", type="primary", use_container_width=True, key="btn_save_diag"):
+                    clave_save = clave_ent if not es_salida else f"diag_salida_{grado_diag}_{sec_diag}"
+                    st.session_state[clave_save] = notas_ingresadas
+                    st.success("✅ Notas guardadas en sesión.")
+
+            with cg2:
+                if st.button(f"🖨️ Generar PDF {'Salida' if es_salida else 'Entrada'}", use_container_width=True, key="btn_gen_diag"):
+                    notas_sal_para_pdf = None
+                    notas_ent_para_pdf = notas_ingresadas
+                    if es_salida:
+                        notas_ent_para_pdf = notas_entrada_guardadas if notas_entrada_guardadas else notas_ingresadas
+                        notas_sal_para_pdf = notas_ingresadas
+                    with st.spinner("Generando PDF diagnóstico..."):
+                        pdf_diag = generar_pdf_diagnostico(
+                            grado_diag, config.get('anio', '2026'),
+                            df_diag, notas_ent_para_pdf, areas_diag,
+                            tipo="salida" if es_salida else "entrada",
+                            notas_salida=notas_sal_para_pdf,
+                            config=config
+                        )
+                    tipo_nombre = "Salida" if es_salida else "Entrada"
+                    st.download_button(
+                        f"⬇️ Descargar PDF Diagnóstico {tipo_nombre}",
+                        pdf_diag,
+                        f"Diagnostico_{tipo_nombre}_{grado_diag}.pdf",
+                        mime="application/pdf",
+                        key="dl_diag_pdf"
+                    )
+
+            with cg3:
+                if es_salida and notas_entrada_guardadas:
+                    st.metric("Estudiantes con entrada", len(notas_entrada_guardadas))
+                elif not es_salida:
+                    st.caption("💡 Guarde las notas de entrada antes de hacer el diagnóstico de salida")
 
     if vista == "📂 Historial de Evaluaciones":
         st.markdown("### 📂 Evaluaciones Guardadas")
