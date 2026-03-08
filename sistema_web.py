@@ -3879,6 +3879,8 @@ ARCHIVOS_BACKUP = [
     "materiales_docente.json",   # Aula Virtual
     "examenes_semanales.json",   # Exámenes Semanales
     "notas.json",                # Notas registradas
+    "diagnostico_data.json",      # Exámenes de diagnóstico
+    "historial_evaluaciones.json", # Historial evaluaciones
 ]
 
 
@@ -4599,21 +4601,32 @@ def _seccion_registros_pdf(config):
         curso3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="c3")
     cursos = [c for c in [curso1, curso2, curso3] if c.strip()]
     st.caption(f"{len(cursos)} cursos × 4 competencias × 3 desempeños")
-    if st.button("📝 Generar Registro Auxiliar PDF", type="primary",
-                 use_container_width=True, key="gra"):
-        sl = sp if sp != "Todas" else "Todas"
-        pdf = generar_registro_auxiliar_pdf(gp, sl, config['anio'], bim, dg, cursos)
-        c1a, c2a = st.columns(2)
-        with c1a:
-            st.download_button("⬇️ PDF Registro Auxiliar", pdf,
-                               f"RegAux_{gp}_{bim}.pdf", "application/pdf", key="dra")
-        with c2a:
-            docx_aux = generar_registro_auxiliar_docx(gp, sl, config['anio'], bim, dg, cursos)
+    c1a, c2a = st.columns(2)
+    with c1a:
+        if st.button("📝 Generar PDF Auxiliar", type="primary",
+                     use_container_width=True, key="gra"):
+            sl = sp if sp != "Todas" else "Todas"
+            with st.spinner("Generando PDF..."):
+                pdf = generar_registro_auxiliar_pdf(gp, sl, config['anio'], bim, dg, cursos)
+            st.session_state['_aux_pdf'] = pdf
+            st.session_state['_aux_key'] = f"RegAux_{gp}_{bim}"
+    with c2a:
+        if st.button("📄 Generar Word Auxiliar", use_container_width=True, key="gra_docx"):
+            sl = sp if sp != "Todas" else "Todas"
+            with st.spinner("Generando Word..."):
+                docx_aux = generar_registro_auxiliar_docx(gp, sl, config['anio'], bim, dg, cursos)
             if docx_aux:
-                st.download_button("⬇️ Word (.docx)", docx_aux,
-                                   f"RegAux_{gp}_{bim}.docx",
-                                   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                   key="dra_docx")
+                st.session_state['_aux_docx'] = docx_aux
+                st.session_state['_aux_key'] = f"RegAux_{gp}_{bim}"
+    if st.session_state.get('_aux_pdf'):
+        st.download_button("⬇️ Descargar PDF", st.session_state['_aux_pdf'],
+                           f"{st.session_state.get('_aux_key','RegAux')}.pdf",
+                           "application/pdf", key="dra")
+    if st.session_state.get('_aux_docx'):
+        st.download_button("⬇️ Descargar Word (.docx)", st.session_state['_aux_docx'],
+                           f"{st.session_state.get('_aux_key','RegAux')}.docx",
+                           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                           key="dra_docx")
 
     st.markdown("---")
     st.markdown("**📋 Registro Asistencia (sin sáb/dom, sin feriados)**")
@@ -6865,25 +6878,36 @@ def _tab_registro_auxiliar_docente(grado, config):
     if not dg.empty:
         st.dataframe(dg[['Nombre', 'DNI', 'Grado', 'Seccion']],
                      use_container_width=True, hide_index=True)
-    if st.button("📥 Descargar Registro Auxiliar PDF", type="primary",
-                 use_container_width=True, key="ddra"):
-        if not dg.empty:
-            lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
-            sl = sec if sec != "Todas" else "Todas"
-            pdf = generar_registro_auxiliar_pdf(
-                lg, sl, config['anio'], bim, dg, cursos_d)
-            cd1, cd2 = st.columns(2)
-            with cd1:
-                st.download_button("⬇️ PDF", pdf,
-                                   f"RegAux_{lg}_{bim}.pdf",
-                                   "application/pdf", key="ddra2")
-            with cd2:
-                docx_aux2 = generar_registro_auxiliar_docx(lg, sl, config['anio'], bim, dg, cursos_d)
+    cd1, cd2 = st.columns(2)
+    with cd1:
+        if st.button("📥 Generar PDF Auxiliar", type="primary",
+                     use_container_width=True, key="ddra"):
+            if not dg.empty:
+                lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
+                sl = sec if sec != "Todas" else "Todas"
+                with st.spinner("Generando PDF..."):
+                    pdf = generar_registro_auxiliar_pdf(lg, sl, config['anio'], bim, dg, cursos_d)
+                st.session_state['_aux_pdf_d'] = pdf
+                st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
+    with cd2:
+        if st.button("📄 Generar Word Auxiliar", use_container_width=True, key="ddra_docx_btn"):
+            if not dg.empty:
+                lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
+                sl = sec if sec != "Todas" else "Todas"
+                with st.spinner("Generando Word..."):
+                    docx_aux2 = generar_registro_auxiliar_docx(lg, sl, config['anio'], bim, dg, cursos_d)
                 if docx_aux2:
-                    st.download_button("⬇️ Word (.docx)", docx_aux2,
-                                       f"RegAux_{lg}_{bim}.docx",
-                                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                       key="ddra2_docx")
+                    st.session_state['_aux_docx_d'] = docx_aux2
+                    st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
+    if st.session_state.get('_aux_pdf_d'):
+        st.download_button("⬇️ Descargar PDF", st.session_state['_aux_pdf_d'],
+                           f"{st.session_state.get('_aux_key_d','RegAux')}.pdf",
+                           "application/pdf", key="ddra2")
+    if st.session_state.get('_aux_docx_d'):
+        st.download_button("⬇️ Descargar Word (.docx)", st.session_state['_aux_docx_d'],
+                           f"{st.session_state.get('_aux_key_d','RegAux')}.docx",
+                           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                           key="ddra2_docx")
 
 
 def _tab_registro_pdf_docente(grado, config):
@@ -8886,6 +8910,10 @@ def _restaurar_datos_desde_gs():
                     with open('config_horario.json', 'w', encoding='utf-8') as f:
                         f.write(val)
                     restaurados += 1
+                elif key == 'diagnostico_data' and not Path('diagnostico_data.json').exists():
+                    with open('diagnostico_data.json', 'w', encoding='utf-8') as f:
+                        f.write(val)
+                    restaurados += 1
             except Exception:
                 pass
         return restaurados
@@ -8928,6 +8956,63 @@ def _guardar_historial_evaluaciones(hist_data):
         return True
     except Exception:
         return False
+
+def _cargar_diagnostico():
+    """Carga diagnósticos guardados desde JSON local"""
+    try:
+        if Path('diagnostico_data.json').exists():
+            with open('diagnostico_data.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def _guardar_diagnostico(data):
+    """Guarda diagnósticos en JSON local + Google Sheets (igual que historial evaluaciones)"""
+    try:
+        with open('diagnostico_data.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+        try:
+            gs = _gs()
+            if gs:
+                ws = gs._get_hoja('config')
+                if ws:
+                    data_str = json.dumps(data, ensure_ascii=False, default=str)
+                    all_data = ws.get_all_values()
+                    found = False
+                    for idx, row in enumerate(all_data):
+                        if row and row[0] == 'diagnostico_data':
+                            ws.update_cell(idx + 1, 2, data_str)
+                            found = True
+                            break
+                    if not found:
+                        ws.append_row(['diagnostico_data', data_str])
+        except Exception:
+            pass
+        return True
+    except Exception:
+        return False
+
+def _restaurar_diagnostico_desde_gs():
+    """Restaura diagnósticos desde Google Sheets si el JSON local no existe"""
+    try:
+        if Path('diagnostico_data.json').exists():
+            return
+        gs = _gs()
+        if not gs:
+            return
+        ws = gs._get_hoja('config')
+        if not ws:
+            return
+        all_data = ws.get_all_values()
+        for row in all_data:
+            if row and row[0] == 'diagnostico_data' and len(row) > 1:
+                data = json.loads(row[1])
+                with open('diagnostico_data.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                break
+    except Exception:
+        pass
 
 def generar_pdf_diagnostico(grado, anio, estudiantes_df, notas_diag, areas_diag, tipo="entrada", notas_salida=None, config=None):
     """Genera PDF de diagnóstico — una hoja por estudiante con gráficos de barras.
@@ -9182,7 +9267,7 @@ def tab_registrar_notas(config):
     # ── DIAGNÓSTICO ───────────────────────────────────────────────────────────
     if vista == "🔬 Examen Diagnóstico":
         st.subheader("🔬 Examen Diagnóstico de Entrada / Salida")
-        st.info("Registre las notas del diagnóstico por estudiante. Luego genere el reporte PDF individual con gráficos.")
+        st.info("Registre las notas del diagnóstico por estudiante. Se guardan en Google Sheets automáticamente.")
 
         tipo_diag = st.radio("Tipo:", ["📥 Diagnóstico de Entrada", "📤 Diagnóstico de Salida"],
                               horizontal=True, key="tipo_diag")
@@ -9198,63 +9283,88 @@ def tab_registrar_notas(config):
         sec_diag = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="sec_diag")
         df_diag = BaseDatos.obtener_estudiantes_grado(grado_diag, sec_diag if sec_diag != "Todas" else None)
 
+        # Cargar datos guardados permanentes
+        _restaurar_diagnostico_desde_gs()
+        todos_diag = _cargar_diagnostico()
+        clave_ent = f"entrada_{grado_diag}_{sec_diag}"
+        clave_sal = f"salida_{grado_diag}_{sec_diag}"
+        datos_entrada_guardados = todos_diag.get(clave_ent, {})
+        datos_salida_guardados  = todos_diag.get(clave_sal, {})
+        areas_guardadas = todos_diag.get(f"areas_{grado_diag}_{sec_diag}", [])
+
         if df_diag.empty:
             st.warning("No hay estudiantes en este grado.")
         else:
             st.markdown("---")
-            # Áreas a evaluar
             st.markdown("**Áreas a evaluar:**")
-            na_diag = st.number_input("Número de áreas:", 1, 10, 4, key="na_diag")
+            na_diag = st.number_input("Número de áreas:", 1, 10,
+                                       value=len(areas_guardadas) if areas_guardadas else 4,
+                                       key="na_diag")
             areas_diag = []
+            defaults = ["Comunicación","Matemática","Ciencia y Tec.","Historia","Personal Social","Arte","Educación Física","Inglés","Religión","Tutoría"]
             for ai in range(int(na_diag)):
-                area_n = st.text_input(f"Área {ai+1}:", key=f"area_diag_{ai}",
-                                        placeholder=["Comunicación","Matemática","Ciencia y Tec.","Historia"][ai] if ai < 4 else f"Área {ai+1}")
-                areas_diag.append(area_n if area_n.strip() else f"Área {ai+1}")
+                saved_area = areas_guardadas[ai] if ai < len(areas_guardadas) else ""
+                placeholder = saved_area if saved_area else (defaults[ai] if ai < len(defaults) else f"Área {ai+1}")
+                area_n = st.text_input(f"Área {ai+1}:", value=saved_area, key=f"area_diag_{ai}",
+                                        placeholder=placeholder)
+                areas_diag.append(area_n.strip() if area_n.strip() else placeholder)
 
             st.markdown("---")
             st.markdown("**Notas de los estudiantes (0–20):**")
+            # Mostrar cabecera de áreas
+            hdr_cols = st.columns([3] + [1] * int(na_diag))
+            with hdr_cols[0]:
+                st.markdown("**Estudiante**")
+            for ai, area in enumerate(areas_diag):
+                with hdr_cols[ai + 1]:
+                    st.markdown(f"**{area[:10]}**")
 
-            # Cargar notas guardadas previas (entrada) si es salida
-            clave_ent = f"diag_entrada_{grado_diag}_{sec_diag}"
-            notas_entrada_guardadas = st.session_state.get(clave_ent, {})
+            # Datos a usar para prellenar según tipo
+            datos_prev = datos_salida_guardados if es_salida else datos_entrada_guardados
 
             notas_ingresadas = {}
             for _, row in df_diag.iterrows():
                 nombre_e = str(row.get('Nombre', '')).strip()
                 cols_notas = st.columns([3] + [1] * int(na_diag))
                 with cols_notas[0]:
-                    st.markdown(f"**{nombre_e}**")
+                    st.markdown(nombre_e)
                 notas_est_diag = []
-                for ai, area in enumerate(areas_diag):
-                    prev = notas_entrada_guardadas.get(nombre_e, [None]*int(na_diag))
-                    prev_v = prev[ai] if ai < len(prev) else None
+                prev_notas = datos_prev.get(nombre_e, [0.0] * int(na_diag))
+                for ai in range(int(na_diag)):
+                    prev_v = float(prev_notas[ai]) if ai < len(prev_notas) and prev_notas[ai] is not None else 0.0
                     with cols_notas[ai + 1]:
                         nota_d = st.number_input(
-                            area[:8], min_value=0.0, max_value=20.0,
-                            value=float(prev_v) if prev_v is not None else 0.0,
-                            step=0.5, key=f"nd_{nombre_e}_{ai}",
-                            label_visibility="collapsed" if _ is not df_diag.iloc[0] else "visible"
+                            f"n{ai}", min_value=0.0, max_value=20.0,
+                            value=prev_v, step=0.5,
+                            key=f"nd_{nombre_e}_{ai}_{es_salida}",
+                            label_visibility="collapsed"
                         )
                     notas_est_diag.append(nota_d)
                 notas_ingresadas[nombre_e] = notas_est_diag
 
             st.markdown("---")
-            cg1, cg2, cg3 = st.columns(3)
+            tipo_nombre = "Salida" if es_salida else "Entrada"
+            cg1, cg2 = st.columns(2)
 
             with cg1:
-                if st.button("💾 Guardar notas", type="primary", use_container_width=True, key="btn_save_diag"):
-                    clave_save = clave_ent if not es_salida else f"diag_salida_{grado_diag}_{sec_diag}"
-                    st.session_state[clave_save] = notas_ingresadas
-                    st.success("✅ Notas guardadas en sesión.")
+                if st.button(f"💾 Guardar {tipo_nombre} en Google Sheets", type="primary",
+                             use_container_width=True, key="btn_save_diag"):
+                    todos_diag[f"areas_{grado_diag}_{sec_diag}"] = areas_diag
+                    todos_diag[clave_sal if es_salida else clave_ent] = notas_ingresadas
+                    if _guardar_diagnostico(todos_diag):
+                        st.success(f"✅ Diagnóstico de {tipo_nombre} guardado en Google Sheets.")
+                    else:
+                        st.warning("⚠️ Guardado localmente (sin conexión a Google Sheets).")
 
             with cg2:
-                if st.button(f"🖨️ Generar PDF {'Salida' if es_salida else 'Entrada'}", use_container_width=True, key="btn_gen_diag"):
-                    notas_sal_para_pdf = None
+                if st.button(f"🖨️ Generar PDF Diagnóstico {tipo_nombre}", type="primary",
+                             use_container_width=True, key="btn_gen_diag"):
                     notas_ent_para_pdf = notas_ingresadas
+                    notas_sal_para_pdf = None
                     if es_salida:
-                        notas_ent_para_pdf = notas_entrada_guardadas if notas_entrada_guardadas else notas_ingresadas
+                        notas_ent_para_pdf = datos_entrada_guardados if datos_entrada_guardados else notas_ingresadas
                         notas_sal_para_pdf = notas_ingresadas
-                    with st.spinner("Generando PDF diagnóstico..."):
+                    with st.spinner("Generando PDF..."):
                         pdf_diag = generar_pdf_diagnostico(
                             grado_diag, config.get('anio', '2026'),
                             df_diag, notas_ent_para_pdf, areas_diag,
@@ -9262,20 +9372,28 @@ def tab_registrar_notas(config):
                             notas_salida=notas_sal_para_pdf,
                             config=config
                         )
-                    tipo_nombre = "Salida" if es_salida else "Entrada"
-                    st.download_button(
-                        f"⬇️ Descargar PDF Diagnóstico {tipo_nombre}",
-                        pdf_diag,
-                        f"Diagnostico_{tipo_nombre}_{grado_diag}.pdf",
-                        mime="application/pdf",
-                        key="dl_diag_pdf"
-                    )
+                    st.session_state['_diag_pdf'] = pdf_diag
+                    st.session_state['_diag_tipo'] = tipo_nombre
+                    st.session_state['_diag_grado'] = grado_diag
 
-            with cg3:
-                if es_salida and notas_entrada_guardadas:
-                    st.metric("Estudiantes con entrada", len(notas_entrada_guardadas))
-                elif not es_salida:
-                    st.caption("💡 Guarde las notas de entrada antes de hacer el diagnóstico de salida")
+            # Info de comparación
+            if es_salida:
+                if datos_entrada_guardados:
+                    st.caption(f"✅ Se compara con {len(datos_entrada_guardados)} registros de Entrada guardados")
+                else:
+                    st.caption("⚠️ No hay datos de Entrada guardados aún. Guarde primero el diagnóstico de Entrada.")
+
+            # Botón de descarga — siempre visible si hay PDF generado para este tipo
+            if st.session_state.get('_diag_pdf') and st.session_state.get('_diag_tipo') == tipo_nombre:
+                st.download_button(
+                    f"⬇️ Descargar PDF Diagnóstico {tipo_nombre}",
+                    st.session_state['_diag_pdf'],
+                    f"Diagnostico_{tipo_nombre}_{st.session_state.get('_diag_grado', grado_diag)}.pdf",
+                    mime="application/pdf",
+                    type="primary",
+                    use_container_width=True,
+                    key="dl_diag_pdf"
+                )
 
     if vista == "📂 Historial de Evaluaciones":
         st.markdown("### 📂 Evaluaciones Guardadas")
