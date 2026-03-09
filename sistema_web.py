@@ -14421,13 +14421,20 @@ def tab_pausa_activa(config):
             st.markdown(f"""<style>
             div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button {{
                 background: {bg_btn} !important;
+                background-color: {bg_btn} !important;
                 color: {fg_btn} !important;
+                -webkit-text-fill-color: {fg_btn} !important;
                 border: {brd} !important;
                 border-radius: 12px !important;
                 font-weight: 800 !important;
                 font-size: 0.88rem !important;
                 min-height: 50px !important;
                 width: 100% !important;
+            }}
+            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button p,
+            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button span {{
+                color: {fg_btn} !important;
+                -webkit-text-fill-color: {fg_btn} !important;
             }}
             div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button:hover {{
                 filter: brightness(1.15) !important;
@@ -14446,6 +14453,8 @@ def tab_pausa_activa(config):
     modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
 
     # CSS para botones Iniciar — uno por modelo usando su key único
+    # Nota: se agrega -webkit-text-fill-color para sobreescribir el CSS global
+    # que fuerza texto blanco en todos los botones (invisible en fondos claros)
     css_iniciar = "<style>"
     for m in PAUSA_MODELOS:
         ca = m['color_acento']
@@ -14453,12 +14462,19 @@ def tab_pausa_activa(config):
         css_iniciar += f"""
         div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button {{
             background: {ca} !important;
+            background-color: {ca} !important;
             color: {cf} !important;
-            border: none !important;
+            -webkit-text-fill-color: {cf} !important;
+            border: 2px solid {cf} !important;
             border-radius: 12px !important;
             font-weight: 800 !important;
             font-size: 1rem !important;
             min-height: 48px !important;
+        }}
+        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button p,
+        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button span {{
+            color: {cf} !important;
+            -webkit-text-fill-color: {cf} !important;
         }}
         div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button:hover {{
             filter: brightness(1.12) !important;
