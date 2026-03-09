@@ -3982,17 +3982,20 @@ def configurar_sidebar():
                 if uf:
                     with open("fondo.png", "wb") as f:
                         f.write(uf.getbuffer())
-                    st.success("🎉")
+                    _guardar_archivo_binario_gs("bin_fondo", "fondo.png")
+                    st.success("🎉 Fondo guardado y sincronizado")
                 ue = st.file_uploader("🛡️ Escudo Izquierda", type=["png"], key="ue")
                 if ue:
                     with open("escudo_upload.png", "wb") as f:
                         f.write(ue.getbuffer())
-                    st.success("🎉 Escudo izquierda guardado")
+                    _guardar_archivo_binario_gs("bin_escudo_izq", "escudo_upload.png")
+                    st.success("🎉 Escudo izquierda guardado y sincronizado")
                 ue2 = st.file_uploader("🛡️ Escudo Derecha", type=["png"], key="ue2")
                 if ue2:
                     with open("escudo2_upload.png", "wb") as f:
                         f.write(ue2.getbuffer())
-                    st.success("🎉 Escudo derecho guardado")
+                    _guardar_archivo_binario_gs("bin_escudo_der", "escudo2_upload.png")
+                    st.success("🎉 Escudo derecho guardado y sincronizado")
             with st.expander("👥 Autoridades"):
                 directora = st.text_input("Directora:", directora, key="di")
                 promotor = st.text_input("Promotor:", promotor, key="pi")
@@ -8882,6 +8885,96 @@ def _sync_horario_a_gs():
     except Exception:
         pass
 
+def _guardar_archivo_binario_gs(nombre_clave, filepath):
+    """Guarda un archivo binario (imagen, mp3) como base64 en Google Sheets hoja config"""
+    try:
+        if not Path(filepath).exists():
+            return False
+        import base64 as b64mod
+        with open(filepath, "rb") as fbin:
+            data_b64 = b64mod.b64encode(fbin.read()).decode('utf-8')
+        gs = _gs()
+        if not gs:
+            return False
+        ws = gs._get_hoja('config')
+        if not ws:
+            return False
+        all_vals = ws.get_all_values()
+        found = False
+        for idx, row in enumerate(all_vals):
+            if row and row[0] == nombre_clave:
+                ws.update_cell(idx + 1, 2, data_b64)
+                found = True
+                break
+        if not found:
+            ws.append_row([nombre_clave, data_b64])
+        return True
+    except Exception:
+        return False
+
+def _restaurar_archivo_binario_gs(nombre_clave, filepath):
+    """Restaura un archivo binario desde base64 en Google Sheets si no existe localmente"""
+    try:
+        if Path(filepath).exists():
+            return True  # ya existe, no sobreescribir
+        import base64 as b64mod
+        gs = _gs()
+        if not gs:
+            return False
+        ws = gs._get_hoja('config')
+        if not ws:
+            return False
+        all_vals = ws.get_all_values()
+        for row in all_vals:
+            if row and row[0] == nombre_clave and len(row) > 1 and row[1]:
+                data = b64mod.b64decode(row[1])
+                with open(filepath, "wb") as fbin:
+                    fbin.write(data)
+                return True
+        return False
+    except Exception:
+        return False
+
+def _pausa_guardar_mp3(modelo_id, audio_bytes, extension="mp3"):
+    """Guarda MP3 de pausa activa en disco + sincroniza a GSheets como base64"""
+    import base64 as b64mod
+    path = f"pausa_mp3_{modelo_id}.{extension}"
+    with open(path, "wb") as f:
+        f.write(audio_bytes)
+    try:
+        _guardar_archivo_binario_gs(f"bin_pausa_mp3_{modelo_id}", path)
+    except Exception:
+        pass
+    return path
+
+def _pausa_cargar_mp3_b64(modelo_id):
+    """Carga MP3 de pausa activa como base64 para reproduccion HTML"""
+    import base64 as b64mod
+    for ext in ["mp3", "ogg", "wav"]:
+        path = f"pausa_mp3_{modelo_id}.{ext}"
+        if Path(path).exists():
+            with open(path, "rb") as f:
+                return b64mod.b64encode(f.read()).decode("utf-8"), ext
+    return None, None
+
+def _restaurar_todos_archivos_binarios():
+    """Restaura todos los archivos binarios (escudos, fondo, mp3 pausas, mp3 qaway) desde GSheets"""
+    archivos_binarios = [
+        ("bin_escudo_izq",    "escudo_upload.png"),
+        ("bin_escudo_der",    "escudo2_upload.png"),
+        ("bin_fondo",         "fondo.png"),
+    ]
+    # MP3 de Pausa Activa (10 modelos)
+    for i in range(1, 11):
+        archivos_binarios.append((f"bin_pausa_mp3_{i}", f"pausa_mp3_{i}.mp3"))
+    # MP3 de YACHAY QAWAY
+    archivos_binarios.append(("bin_qaway_mp3", str(_plk_dir() / "musica_fondo.mp3")))
+    for nombre_clave, filepath in archivos_binarios:
+        try:
+            _restaurar_archivo_binario_gs(nombre_clave, filepath)
+        except Exception:
+            pass
+
 def _restaurar_datos_desde_gs():
     """Restaura archivos JSON locales desde Google Sheets al iniciar"""
     try:
@@ -13317,10 +13410,15 @@ def _plk_dir():
     return d
 
 def _qaway_guardar_musica(audio_bytes):
-    """Guarda MP3 subido por admin para musica de fondo"""
+    """Guarda MP3 subido por admin para musica de fondo + sincroniza a GSheets"""
     p = _plk_dir() / "musica_fondo.mp3"
     with open(p, 'wb') as f:
         f.write(audio_bytes)
+    # Persistir en Google Sheets como base64
+    try:
+        _guardar_archivo_binario_gs("bin_qaway_mp3", str(p))
+    except Exception:
+        pass
     return p
 
 def _qaway_cargar_musica():
@@ -14076,11 +14174,13 @@ def tab_pausa_activa(config):
                         label_visibility="collapsed"
                     )
                     if mp3_file is not None:
-                        with open(mp3_path, "wb") as fmp3:
-                            fmp3.write(mp3_file.read())
-                        pausa_cfg[str(m['id'])] = {'mp3': mp3_path}
+                        ext_up = mp3_file.name.split(".")[-1].lower()
+                        with st.spinner("☁️ Guardando y sincronizando..."):
+                            saved_path = _pausa_guardar_mp3(m['id'], mp3_file.read(), ext_up)
+                        pausa_cfg[str(m['id'])] = {'mp3': saved_path}
                         _guardar_pausa_config(pausa_cfg)
-                        st.success("✅ Guardado")
+                        st.success("✅ Audio guardado y sincronizado en Google Sheets")
+                        st.rerun()
                 with c3:
                     if Path(f"pausa_mp3_{m['id']}.mp3").exists():
                         if st.button("🗑️", key=f"del_mp3_{m['id']}", help="Eliminar MP3"):
@@ -14088,6 +14188,19 @@ def tab_pausa_activa(config):
                                 Path(f"pausa_mp3_{m['id']}.mp3").unlink()
                                 pausa_cfg[str(m['id'])] = {'mp3': ''}
                                 _guardar_pausa_config(pausa_cfg)
+                                # Limpiar en GSheets
+                                try:
+                                    gs = _gs()
+                                    if gs:
+                                        ws = gs._get_hoja('config')
+                                        if ws:
+                                            all_v = ws.get_all_values()
+                                            for ri, row in enumerate(all_v):
+                                                if row and row[0] == f"bin_pausa_mp3_{m['id']}":
+                                                    ws.update_cell(ri + 1, 2, '')
+                                                    break
+                                except Exception:
+                                    pass
                                 st.rerun()
                             except Exception:
                                 pass
@@ -14137,12 +14250,24 @@ def tab_pausa_activa(config):
         progreso = (paso_idx) / total_pasos
         st.progress(progreso, text=f"Paso {paso_idx + 1} de {total_pasos}")
 
-        # Música MP3 — reproductora nativa de Streamlit (funciona en toda la sesión)
-        mp3_path = f"pausa_mp3_{modelo['id']}.mp3"
-        if Path(mp3_path).exists():
-            st.markdown("🎵 **Música de fondo:**")
-            with open(mp3_path, "rb") as fmp3:
-                st.audio(fmp3.read(), format="audio/mp3", autoplay=(paso_idx == 0))
+        # Música MP3 — HTML base64 con autoplay y loop (mismo método que YACHAY QAWAY)
+        _b64_audio, _ext_audio = _pausa_cargar_mp3_b64(modelo['id'])
+        if _b64_audio:
+            import streamlit.components.v1 as _comp_pa
+            _mime = "audio/mpeg" if _ext_audio == "mp3" else f"audio/{_ext_audio}"
+            _audio_src = f"data:{_mime};base64,{_b64_audio}"
+            _comp_pa.html(
+                f'''<div style="text-align:center;padding:4px;">
+                <audio id="pausa_bgm" loop {"autoplay" if paso_idx == 0 else ""}>
+                    <source src="{_audio_src}" type="{_mime}">
+                </audio>
+                <button onclick="var a=document.getElementById('pausa_bgm');if(a.paused){{a.play();this.textContent='🔊 Pausar musica'}}else{{a.pause();this.textContent='▶ Reproducir musica'}}"
+                    style="background:{modelo["color_acento"]};color:{modelo["color_fondo"]};
+                           border:none;padding:6px 20px;border-radius:20px;cursor:pointer;
+                           font-weight:bold;font-size:0.9rem;">🔊 Pausar musica</button>
+                </div>''',
+                height=50
+            )
 
         # Pantalla grande del paso actual
         if paso_idx < total_pasos:
@@ -14273,6 +14398,19 @@ def tab_yachay_plickers(config):
                     p_mus = _plk_dir() / "musica_fondo.mp3"
                     if p_mus.exists():
                         p_mus.unlink()
+                    # Limpiar en GSheets
+                    try:
+                        gs = _gs()
+                        if gs:
+                            ws = gs._get_hoja('config')
+                            if ws:
+                                all_v = ws.get_all_values()
+                                for ri, row in enumerate(all_v):
+                                    if row and row[0] == "bin_qaway_mp3":
+                                        ws.update_cell(ri + 1, 2, '')
+                                        break
+                    except Exception:
+                        pass
                     st.success("Musica eliminada")
                     st.rerun()
             mp3_file = st.file_uploader("Subir MP3:", type=['mp3'], key="plik_mp3_up")
@@ -14954,6 +15092,7 @@ def main():
     if 'datos_restaurados' not in st.session_state:
         try:
             _restaurar_datos_desde_gs()
+            _restaurar_todos_archivos_binarios()  # escudos, fondo, mp3 pausas y qaway
             st.session_state.datos_restaurados = True
         except Exception:
             st.session_state.datos_restaurados = True
