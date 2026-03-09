@@ -8935,20 +8935,184 @@ def _restaurar_archivo_binario_gs(nombre_clave, filepath):
     except Exception:
         return False
 
+# ================================================================
+# GOOGLE DRIVE — helpers para MP3 de Pausa Activa
+# Guarda los archivos directamente en Drive (no como base64 en Sheets)
+# Evita el lag y el límite de 50k chars por celda de GSheets
+# ================================================================
+
+def _drive_service():
+    """Obtiene el cliente de Google Drive usando las mismas credenciales del sistema."""
+    try:
+        from googleapiclient.discovery import build
+        from google.oauth2 import service_account
+        import json as _json
+        # Intentar obtener creds desde google_sync si está disponible
+        gs = _gs()
+        if gs and hasattr(gs, 'gc') and gs.gc and hasattr(gs.gc, 'auth'):
+            creds_raw = gs.gc.auth
+            svc = build('drive', 'v3', credentials=creds_raw, cache_discovery=False)
+            return svc
+        # Respaldo: leer desde st.secrets o archivo local
+        creds_dict = None
+        try:
+            creds_dict = dict(st.secrets["gcp_service_account"])
+        except Exception:
+            pass
+        if not creds_dict:
+            for fname in ["credentials.json", "service_account.json", "google_credentials.json"]:
+                if Path(fname).exists():
+                    with open(fname, 'r') as _f:
+                        creds_dict = json.load(_f)
+                    break
+        if not creds_dict:
+            return None
+        SCOPES = ['https://www.googleapis.com/auth/drive']
+        creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+        return build('drive', 'v3', credentials=creds, cache_discovery=False)
+    except Exception:
+        return None
+
+def _drive_folder_pausa():
+    """Obtiene (o crea) la carpeta 'YACHAY_PAUSA_MP3' en Drive. Retorna folder_id."""
+    try:
+        svc = _drive_service()
+        if not svc:
+            return None
+        FOLDER_NAME = "YACHAY_PAUSA_MP3"
+        # Buscar si ya existe
+        res = svc.files().list(
+            q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            fields="files(id,name)", pageSize=1
+        ).execute()
+        files = res.get('files', [])
+        if files:
+            return files[0]['id']
+        # Crear carpeta
+        meta = {'name': FOLDER_NAME, 'mimeType': 'application/vnd.google-apps.folder'}
+        folder = svc.files().create(body=meta, fields='id').execute()
+        return folder.get('id')
+    except Exception:
+        return None
+
+def _drive_subir_mp3(modelo_id, audio_bytes, extension="mp3"):
+    """Sube MP3 a Google Drive y retorna el file_id. Elimina versión anterior si existe."""
+    try:
+        from googleapiclient.http import MediaIoBaseUpload
+        import io as _io
+        svc = _drive_service()
+        if not svc:
+            return None
+        folder_id = _drive_folder_pausa()
+        fname = f"pausa_mp3_{modelo_id}.{extension}"
+        mime = "audio/mpeg" if extension == "mp3" else f"audio/{extension}"
+        media = MediaIoBaseUpload(_io.BytesIO(audio_bytes), mimetype=mime, resumable=False)
+        # Buscar si ya existe un archivo con ese nombre en la carpeta
+        q = f"name='{fname}' and trashed=false"
+        if folder_id:
+            q += f" and '{folder_id}' in parents"
+        res = svc.files().list(q=q, fields="files(id)", pageSize=1).execute()
+        existing = res.get('files', [])
+        if existing:
+            # Actualizar en lugar de crear duplicado
+            file_id = existing[0]['id']
+            svc.files().update(fileId=file_id, media_body=media).execute()
+        else:
+            meta = {'name': fname}
+            if folder_id:
+                meta['parents'] = [folder_id]
+            f = svc.files().create(body=meta, media_body=media, fields='id').execute()
+            file_id = f.get('id')
+        # Hacer público para lectura (para el audio tag en HTML)
+        svc.permissions().create(fileId=file_id, body={'type': 'anyone', 'role': 'reader'}).execute()
+        return file_id
+    except Exception:
+        return None
+
+def _drive_borrar_mp3(file_id):
+    """Elimina MP3 de Google Drive por file_id."""
+    try:
+        svc = _drive_service()
+        if svc and file_id:
+            svc.files().delete(fileId=file_id).execute()
+        return True
+    except Exception:
+        return False
+
 def _pausa_guardar_mp3(modelo_id, audio_bytes, extension="mp3"):
-    """Guarda MP3 de pausa activa en disco + sincroniza a GSheets como base64"""
-    import base64 as b64mod
+    """
+    Guarda MP3 de pausa activa:
+    1. Guarda local (para acceso rápido en la misma sesión)
+    2. Sube a Google Drive (persistencia real entre reinicios)
+    3. Guarda el Drive file_id en GSheets (no el base64 — evita límite de celdas)
+    """
+    # 1. Guardar local
     path = f"pausa_mp3_{modelo_id}.{extension}"
     with open(path, "wb") as f:
         f.write(audio_bytes)
+    # 2. Subir a Drive
+    drive_file_id = None
     try:
-        _guardar_archivo_binario_gs(f"bin_pausa_mp3_{modelo_id}", path)
+        drive_file_id = _drive_subir_mp3(modelo_id, audio_bytes, extension)
     except Exception:
         pass
-    return path
+    # 3. Guardar solo el file_id en GSheets (no base64)
+    if drive_file_id:
+        try:
+            gs = _gs()
+            if gs:
+                ws = gs._get_hoja('config')
+                if ws:
+                    clave = f"drive_pausa_mp3_{modelo_id}"
+                    all_vals = ws.get_all_values()
+                    found = False
+                    for idx, row in enumerate(all_vals):
+                        if row and row[0] == clave:
+                            ws.update_cell(idx + 1, 2, drive_file_id)
+                            found = True
+                            break
+                    if not found:
+                        ws.append_row([clave, drive_file_id])
+                    # Limpiar entrada base64 antigua si existe (liberar espacio)
+                    clave_b64 = f"bin_pausa_mp3_{modelo_id}"
+                    for idx, row in enumerate(all_vals):
+                        if row and row[0] == clave_b64 and len(row) > 1 and row[1]:
+                            ws.update_cell(idx + 1, 2, '')
+                            break
+        except Exception:
+            pass
+    return path, drive_file_id
+
+def _pausa_drive_url(file_id):
+    """Retorna URL de streaming directo desde Google Drive."""
+    if not file_id:
+        return None
+    return f"https://drive.google.com/uc?export=download&id={file_id}"
+
+def _pausa_cargar_drive_file_id(modelo_id):
+    """Obtiene el Drive file_id guardado en GSheets para un modelo."""
+    try:
+        gs = _gs()
+        if not gs:
+            return None
+        ws = gs._get_hoja('config')
+        if not ws:
+            return None
+        all_vals = ws.get_all_values()
+        clave = f"drive_pausa_mp3_{modelo_id}"
+        for row in all_vals:
+            if row and row[0] == clave and len(row) > 1 and row[1]:
+                return row[1]
+    except Exception:
+        pass
+    return None
 
 def _pausa_cargar_mp3_b64(modelo_id):
-    """Carga MP3 de pausa activa como base64 para reproduccion HTML"""
+    """
+    Carga audio para reproducción HTML:
+    - Si existe local: usa base64 directo (más rápido)
+    - Si no: retorna None,None y el llamador usará la URL de Drive
+    """
     import base64 as b64mod
     for ext in ["mp3", "ogg", "wav"]:
         path = f"pausa_mp3_{modelo_id}.{ext}"
@@ -13410,19 +13574,91 @@ def _plk_dir():
     return d
 
 def _qaway_guardar_musica(audio_bytes):
-    """Guarda MP3 subido por admin para musica de fondo + sincroniza a GSheets"""
+    """
+    Guarda MP3 de YACHAY QAWAY:
+    1. Guarda local (acceso rápido en la sesión)
+    2. Sube a Google Drive (persistencia real — evita base64 en Sheets)
+    3. Guarda solo el file_id en GSheets
+    """
     p = _plk_dir() / "musica_fondo.mp3"
     with open(p, 'wb') as f:
         f.write(audio_bytes)
-    # Persistir en Google Sheets como base64
+    # Subir a Drive
+    drive_fid = None
     try:
-        _guardar_archivo_binario_gs("bin_qaway_mp3", str(p))
+        svc = _drive_service()
+        if svc:
+            from googleapiclient.http import MediaIoBaseUpload
+            import io as _io
+            folder_id = _drive_folder_pausa()  # reutiliza la misma carpeta YACHAY_PAUSA_MP3
+            fname = "qaway_musica_fondo.mp3"
+            media = MediaIoBaseUpload(_io.BytesIO(audio_bytes), mimetype="audio/mpeg", resumable=False)
+            # Buscar si ya existe
+            q = f"name='{fname}' and trashed=false"
+            if folder_id:
+                q += f" and '{folder_id}' in parents"
+            res = svc.files().list(q=q, fields="files(id)", pageSize=1).execute()
+            existing = res.get("files", [])
+            if existing:
+                drive_fid = existing[0]["id"]
+                svc.files().update(fileId=drive_fid, media_body=media).execute()
+            else:
+                meta = {"name": fname}
+                if folder_id:
+                    meta["parents"] = [folder_id]
+                fobj = svc.files().create(body=meta, media_body=media, fields="id").execute()
+                drive_fid = fobj.get("id")
+            if drive_fid:
+                svc.permissions().create(fileId=drive_fid, body={"type": "anyone", "role": "reader"}).execute()
     except Exception:
         pass
-    return p
+    # Guardar file_id en GSheets (no base64)
+    if drive_fid:
+        try:
+            gs = _gs()
+            if gs:
+                ws = gs._get_hoja("config")
+                if ws:
+                    all_v = ws.get_all_values()
+                    found = False
+                    for idx, row in enumerate(all_v):
+                        if row and row[0] == "drive_qaway_mp3":
+                            ws.update_cell(idx + 1, 2, drive_fid)
+                            found = True
+                            break
+                    if not found:
+                        ws.append_row(["drive_qaway_mp3", drive_fid])
+                    # Limpiar base64 antiguo si existe
+                    for idx, row in enumerate(all_v):
+                        if row and row[0] == "bin_qaway_mp3" and len(row) > 1 and row[1]:
+                            ws.update_cell(idx + 1, 2, "")
+                            break
+        except Exception:
+            pass
+    return p, drive_fid
+
+def _qaway_drive_file_id():
+    """Obtiene el Drive file_id del MP3 de QAWAY desde GSheets."""
+    try:
+        gs = _gs()
+        if not gs:
+            return None
+        ws = gs._get_hoja("config")
+        if not ws:
+            return None
+        for row in ws.get_all_values():
+            if row and row[0] == "drive_qaway_mp3" and len(row) > 1 and row[1]:
+                return row[1]
+    except Exception:
+        pass
+    return None
 
 def _qaway_cargar_musica():
-    """Carga MP3 guardado como base64"""
+    """
+    Carga audio de QAWAY:
+    - Si existe local: retorna base64 (rápido)
+    - Si no: retorna None (el llamador usará Drive URL)
+    """
     p = _plk_dir() / "musica_fondo.mp3"
     if p.exists():
         with open(p, 'rb') as f:
@@ -14333,8 +14569,15 @@ def tab_pausa_activa(config):
                 with c1:
                     st.markdown(f"**{m['nombre']}**")
                     mp3_path = f"pausa_mp3_{m['id']}.mp3"
-                    if Path(mp3_path).exists():
-                        st.caption("🎵 MP3 cargado ✅")
+                    _pcfg_m = pausa_cfg.get(str(m['id']), {})
+                    _has_local = Path(mp3_path).exists()
+                    _has_drive = bool(_pcfg_m.get('drive_id'))
+                    if _has_local and _has_drive:
+                        st.caption("🎵 MP3 local + ☁️ Drive ✅")
+                    elif _has_drive:
+                        st.caption("☁️ Drive ✅ (sin copia local)")
+                    elif _has_local:
+                        st.caption("🎵 Local ⚠️ (sin Drive)")
                     else:
                         st.caption("🔇 Sin música")
                 with c2:
@@ -14346,20 +14589,37 @@ def tab_pausa_activa(config):
                     )
                     if mp3_file is not None:
                         ext_up = mp3_file.name.split(".")[-1].lower()
-                        with st.spinner("☁️ Guardando y sincronizando..."):
-                            saved_path = _pausa_guardar_mp3(m['id'], mp3_file.read(), ext_up)
-                        pausa_cfg[str(m['id'])] = {'mp3': saved_path}
-                        _guardar_pausa_config(pausa_cfg)
-                        st.success("✅ Audio guardado y sincronizado en Google Sheets")
+                        audio_bytes = mp3_file.read()
+                        file_size_mb = len(audio_bytes) / (1024 * 1024)
+                        with st.spinner(f"☁️ Subiendo a Google Drive ({file_size_mb:.1f} MB)..."):
+                            saved_path, drive_fid = _pausa_guardar_mp3(m['id'], audio_bytes, ext_up)
+                        if drive_fid:
+                            pausa_cfg[str(m['id'])] = {'mp3': saved_path, 'drive_id': drive_fid}
+                            _guardar_pausa_config(pausa_cfg)
+                            st.success(f"✅ Audio subido a Google Drive ✅  (ID: {drive_fid[:12]}...)")
+                        else:
+                            pausa_cfg[str(m['id'])] = {'mp3': saved_path}
+                            _guardar_pausa_config(pausa_cfg)
+                            st.warning("⚠️ Guardado local OK, pero no se pudo subir a Drive. Verifica la conexión.")
                         st.rerun()
                 with c3:
-                    if Path(f"pausa_mp3_{m['id']}.mp3").exists():
-                        if st.button("🗑️", key=f"del_mp3_{m['id']}", help="Eliminar MP3"):
+                    _pcfg_del = pausa_cfg.get(str(m['id']), {})
+                    _has_algo = Path(f"pausa_mp3_{m['id']}.mp3").exists() or bool(_pcfg_del.get('drive_id'))
+                    if _has_algo:
+                        if st.button("🗑️", key=f"del_mp3_{m['id']}", help="Eliminar MP3 (local + Drive)"):
                             try:
-                                Path(f"pausa_mp3_{m['id']}.mp3").unlink()
-                                pausa_cfg[str(m['id'])] = {'mp3': ''}
+                                # Borrar local
+                                for _ext_d in ["mp3","ogg","wav"]:
+                                    _lp = Path(f"pausa_mp3_{m['id']}.{_ext_d}")
+                                    if _lp.exists():
+                                        _lp.unlink()
+                                # Borrar de Drive
+                                _drv_id = _pcfg_del.get('drive_id')
+                                if _drv_id:
+                                    _drive_borrar_mp3(_drv_id)
+                                pausa_cfg[str(m['id'])] = {'mp3': '', 'drive_id': ''}
                                 _guardar_pausa_config(pausa_cfg)
-                                # Limpiar en GSheets
+                                # Limpiar en GSheets (drive_id + base64 antiguo)
                                 try:
                                     gs = _gs()
                                     if gs:
@@ -14367,9 +14627,11 @@ def tab_pausa_activa(config):
                                         if ws:
                                             all_v = ws.get_all_values()
                                             for ri, row in enumerate(all_v):
-                                                if row and row[0] == f"bin_pausa_mp3_{m['id']}":
+                                                if row and row[0] in (
+                                                    f"drive_pausa_mp3_{m['id']}",
+                                                    f"bin_pausa_mp3_{m['id']}"
+                                                ):
                                                     ws.update_cell(ri + 1, 2, '')
-                                                    break
                                 except Exception:
                                     pass
                                 st.rerun()
@@ -14549,15 +14811,28 @@ def tab_pausa_activa(config):
             st.session_state['_pausa_paso_actual'] = 0
             st.rerun()
 
-        # Preparar datos para el iframe completo
+        # Preparar audio: primero buscar local, luego Drive URL
         _b64_audio, _ext_audio = _pausa_cargar_mp3_b64(modelo['id'])
         _mime = "audio/mpeg"
         _audio_tag = ""
         if _b64_audio:
+            # Audio local disponible — base64 directo (más rápido)
             _mime = "audio/mpeg" if _ext_audio == "mp3" else f"audio/{_ext_audio}"
             _audio_src = f"data:{_mime};base64,{_b64_audio}"
             _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                 <source src="{_audio_src}" type="{_mime}"></audio>'''
+        else:
+            # Sin archivo local: intentar cargar desde Google Drive
+            _drive_fid = _pausa_cargar_drive_file_id(modelo['id'])
+            if not _drive_fid:
+                # También revisar en pausa_cfg local
+                _pcfg = _cargar_pausa_config()
+                _drive_fid = _pcfg.get(str(modelo['id']), {}).get('drive_id')
+            if _drive_fid:
+                _drive_url = _pausa_drive_url(_drive_fid)
+                _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
+                    <source src="{_drive_url}" type="audio/mpeg"></audio>'''
+
 
         # Construir lista JSON de pasos para JS
         import json as _json_pa
@@ -15095,32 +15370,46 @@ def tab_yachay_plickers(config):
         st.markdown("---")
         with st.expander("🎵 Configurar musica de fondo"):
             st.caption("Suba un archivo MP3 para que suene durante las evaluaciones.")
-            musica_actual = _qaway_cargar_musica()
-            if musica_actual:
-                st.success("Ya hay musica cargada.")
-                if st.button("Eliminar musica", key="plik_del_mus"):
+            _qaway_local = (_plk_dir() / "musica_fondo.mp3").exists()
+            _qaway_drive_id = _qaway_drive_file_id()
+            if _qaway_local or _qaway_drive_id:
+                if _qaway_local and _qaway_drive_id:
+                    st.success(f"🎵 Local + ☁️ Drive ✅ (ID: {_qaway_drive_id[:12]}...)")
+                elif _qaway_drive_id:
+                    st.info(f"☁️ Solo en Drive ✅ (ID: {_qaway_drive_id[:12]}...)")
+                else:
+                    st.warning("🎵 Solo local ⚠️ (sin Drive)")
+                if st.button("🗑️ Eliminar música", key="plik_del_mus"):
                     p_mus = _plk_dir() / "musica_fondo.mp3"
                     if p_mus.exists():
                         p_mus.unlink()
+                    # Borrar de Drive
+                    if _qaway_drive_id:
+                        _drive_borrar_mp3(_qaway_drive_id)
                     # Limpiar en GSheets
                     try:
                         gs = _gs()
                         if gs:
-                            ws = gs._get_hoja('config')
+                            ws = gs._get_hoja("config")
                             if ws:
                                 all_v = ws.get_all_values()
                                 for ri, row in enumerate(all_v):
-                                    if row and row[0] == "bin_qaway_mp3":
-                                        ws.update_cell(ri + 1, 2, '')
-                                        break
+                                    if row and row[0] in ("drive_qaway_mp3", "bin_qaway_mp3"):
+                                        ws.update_cell(ri + 1, 2, "")
                     except Exception:
                         pass
-                    st.success("Musica eliminada")
+                    st.success("Música eliminada")
                     st.rerun()
             mp3_file = st.file_uploader("Subir MP3:", type=['mp3'], key="plik_mp3_up")
             if mp3_file:
-                _qaway_guardar_musica(mp3_file.read())
-                st.success(f"Musica guardada: {mp3_file.name}")
+                audio_bytes = mp3_file.read()
+                file_size_mb = len(audio_bytes) / (1024 * 1024)
+                with st.spinner(f"☁️ Subiendo a Google Drive ({file_size_mb:.1f} MB)..."):
+                    _p, _fid = _qaway_guardar_musica(audio_bytes)
+                if _fid:
+                    st.success(f"✅ Música subida a Drive: {mp3_file.name} (ID: {_fid[:12]}...)")
+                else:
+                    st.warning(f"⚠️ Guardado local OK: {mp3_file.name} — no se pudo subir a Drive")
                 st.rerun()
 
     # ================================================================
@@ -15268,9 +15557,15 @@ def tab_yachay_plickers(config):
                     import streamlit.components.v1 as comp_m
                     musica_b64 = _qaway_cargar_musica()
                     if musica_b64:
+                        # Audio local: base64 directo (rápido, misma sesión)
                         audio_src = 'data:audio/mpeg;base64,' + musica_b64
                     else:
-                        audio_src = 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3'
+                        # Sin local: intentar Drive URL (persistente entre reinicios)
+                        _q_fid = _qaway_drive_file_id()
+                        if _q_fid:
+                            audio_src = f'https://drive.google.com/uc?export=download&id={_q_fid}'
+                        else:
+                            audio_src = 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3'
                     comp_m.html('<div style="text-align:center;padding:4px;">'
                         '<audio id="bgm" loop autoplay><source src="' + audio_src + '" type="audio/mpeg"></audio>'
                         '<button onclick="var a=document.getElementById(\'bgm\');if(a.paused){a.play();this.textContent=\'🔊 Pausar\'}else{a.pause();this.textContent=\'🔈 Reproducir\'}"'
