@@ -10044,7 +10044,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
         c_pdf.setFont("Helvetica", 7)
         c_pdf.setFillColor(colors.HexColor("#64748b"))
         c_pdf.drawString(x_margin, PIE_H, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
-        c_pdf.drawString(x_margin, PIE_H - 10, "Documento referencial. El consolidado oficial lo registra el/la docente.")
+        c_pdf.drawString(x_margin, PIE_H - 10, "Doc. referencial. El consolidado oficial lo registra el/la docente.  |  SIGE - Sistema Integral de Gestion Educativa")
         c_pdf.drawRightString(w - x_margin, PIE_H, f"Pág. {pagina}  |  Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
 
     num_pagina = 1
@@ -13874,6 +13874,343 @@ def _generar_pdf_cuestionario_qaway(quiz_data):
     return buf
 
 
+# ================================================================
+# PAUSA ACTIVA — 10 MODELOS — Admin sube música, Docentes presentan
+# ================================================================
+
+PAUSA_MODELOS = [
+    {
+        "id": 1,
+        "nombre": "🌟 Estiramiento Solar",
+        "color_fondo": "#1e3a8a",
+        "color_acento": "#fbbf24",
+        "emoji_principal": "☀️",
+        "descripcion": "Activa tu energia con estiramientos de cuerpo completo",
+        "pasos": [
+            ("🙆", "Brazos arriba — respira hondo", 15),
+            ("🤸", "Inclinate hacia la derecha — 5 seg cada lado", 10),
+            ("🙆‍♂️", "Abre el pecho — brazos atras", 10),
+            ("🧘", "Gira el cuello suavemente — 3 veces", 12),
+            ("💃", "Sacude los brazos y relaja", 8),
+        ]
+    },
+    {
+        "id": 2,
+        "nombre": "🔥 Energia Rapida",
+        "color_fondo": "#dc2626",
+        "color_acento": "#fef08a",
+        "emoji_principal": "⚡",
+        "descripcion": "Movimientos rapidos para despertar la mente",
+        "pasos": [
+            ("👐", "Aplaude 10 veces rapido", 8),
+            ("🦵", "Levanta rodillas alternando — 15 veces", 12),
+            ("💪", "Puno arriba izquierda — derecha — 10 veces", 10),
+            ("🤜", "Boxeo en el aire — 20 golpes", 15),
+            ("🌬️", "Respira profundo 3 veces", 10),
+        ]
+    },
+    {
+        "id": 3,
+        "nombre": "🌊 Relajacion Cosmica",
+        "color_fondo": "#0e7490",
+        "color_acento": "#a5f3fc",
+        "emoji_principal": "🧘",
+        "descripcion": "Tecnicas de respiracion y mindfulness",
+        "pasos": [
+            ("😮‍💨", "Inhala por la nariz — 4 segundos", 8),
+            ("🫁", "Retiene el aire — 4 segundos", 6),
+            ("💨", "Exhala por la boca — 8 segundos", 10),
+            ("🧠", "Visualiza un lugar tranquilo", 15),
+            ("✨", "Abre los ojos — sonrie", 5),
+        ]
+    },
+    {
+        "id": 4,
+        "nombre": "🦁 Poder Animal",
+        "color_fondo": "#7c2d12",
+        "color_acento": "#fed7aa",
+        "emoji_principal": "🐾",
+        "descripcion": "Imita animales para mover todo el cuerpo",
+        "pasos": [
+            ("🦒", "El JIRAFA — estira el cuello al maximo", 10),
+            ("🦅", "El AGUILA — abre los brazos y vuela", 12),
+            ("🐊", "El COCODRILO — abre y cierra los brazos", 10),
+            ("🐻", "El OSO — balancea de lado a lado", 12),
+            ("🐱", "El GATO — estira como al despertar", 10),
+        ]
+    },
+    {
+        "id": 5,
+        "nombre": "🎯 Concentracion Max",
+        "color_fondo": "#4c1d95",
+        "color_acento": "#c4b5fd",
+        "emoji_principal": "🧩",
+        "descripcion": "Ejercicios para el cerebro y la concentracion",
+        "pasos": [
+            ("👁️", "Cierra los ojos — cuenta hasta 10", 12),
+            ("🤔", "Toca nariz con mano derecha — oreja con izquierda", 10),
+            ("🔄", "Ahora cambia — oreja con derecha — nariz con izquierda", 10),
+            ("✍️", "Escribe tu nombre en el aire con el codo", 12),
+            ("🧠", "Cuenta desde 20 hasta 1 rapidamente", 15),
+        ]
+    },
+    {
+        "id": 6,
+        "nombre": "🌈 Danza Libre",
+        "color_fondo": "#065f46",
+        "color_acento": "#6ee7b7",
+        "emoji_principal": "🕺",
+        "descripcion": "Muevete con musica y libertad total",
+        "pasos": [
+            ("💃", "Mueve los hombros al ritmo", 12),
+            ("🦶", "Pasos de baile — izquierda — derecha", 10),
+            ("🙌", "Manos arriba y muevelas", 10),
+            ("🫶", "Gira sobre tu lugar dos veces", 8),
+            ("🎉", "Celebra con un salto y aplauso", 5),
+        ]
+    },
+    {
+        "id": 7,
+        "nombre": "💧 Hidratacion Activa",
+        "color_fondo": "#1e40af",
+        "color_acento": "#bfdbfe",
+        "emoji_principal": "🫗",
+        "descripcion": "Pausas para hidratarse y moverse",
+        "pasos": [
+            ("💧", "Toma agua — minimo 3 sorbos", 8),
+            ("🙆", "Estira mientras tomas agua", 10),
+            ("👀", "Mira lejos — descansa los ojos 20 seg", 20),
+            ("🤲", "Masajea tus manos y dedos", 12),
+            ("😌", "Relaja los hombros — baja la tension", 10),
+        ]
+    },
+    {
+        "id": 8,
+        "nombre": "🏆 Desafio Fisico",
+        "color_fondo": "#713f12",
+        "color_acento": "#fef3c7",
+        "emoji_principal": "🏅",
+        "descripcion": "Pequeños retos fisicos divertidos",
+        "pasos": [
+            ("🦷", "Equilibrio — parate en un pie 10 seg cada uno", 20),
+            ("🤼", "Sentadilla — baja despacio 5 veces", 15),
+            ("🤸", "Salta en el lugar 10 veces", 12),
+            ("🧗", "Escala imaginaria — trepa con brazos y piernas", 15),
+            ("🎖️", "Pose de victoria — has lo mejor!", 8),
+        ]
+    },
+    {
+        "id": 9,
+        "nombre": "🌺 Yoga Express",
+        "color_fondo": "#831843",
+        "color_acento": "#fce7f3",
+        "emoji_principal": "🪷",
+        "descripcion": "Posturas de yoga adaptadas al aula",
+        "pasos": [
+            ("🌲", "Postura del ARBOL — un pie apoyado en tobillo", 15),
+            ("⚡", "Postura del GUERRERO — un paso al frente", 12),
+            ("🌉", "Postura del PUENTE — en silla inclina el torso", 12),
+            ("🦅", "Postura del AGUILA — brazos entrelazados arriba", 10),
+            ("🧘", "Postura del LOTO — sienta y cierra ojos", 15),
+        ]
+    },
+    {
+        "id": 10,
+        "nombre": "🎵 Ritmo y Musica",
+        "color_fondo": "#1e1b4b",
+        "color_acento": "#e0e7ff",
+        "emoji_principal": "🎶",
+        "descripcion": "Sigue el ritmo de la musica con todo el cuerpo",
+        "pasos": [
+            ("🥁", "Toca la bateria imaginaria al ritmo", 12),
+            ("🎸", "Toca la guitarra imaginaria", 10),
+            ("🎹", "Toca el piano en tu escritorio", 10),
+            ("🎤", "Canta la melodia — aunque sea mentalmente", 12),
+            ("🎊", "Gran final — mueve todo junto!", 10),
+        ]
+    },
+]
+
+ARCHIVO_PAUSA_MUSICA = "pausa_activa_musica.json"
+
+def _cargar_pausa_config():
+    try:
+        if Path(ARCHIVO_PAUSA_MUSICA).exists():
+            with open(ARCHIVO_PAUSA_MUSICA, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def _guardar_pausa_config(data):
+    try:
+        with open(ARCHIVO_PAUSA_MUSICA, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+def tab_pausa_activa(config):
+    st.header("🏃 PAUSA ACTIVA")
+    es_admin = st.session_state.get('rol', '') in ['admin', 'directivo']
+
+    # ── Admin: subir MP3 ─────────────────────────────────────────────────
+    if es_admin:
+        with st.expander("🎵 Cargar Música MP3 por Modelo (solo Admin/Directivo)", expanded=False):
+            pausa_cfg = _cargar_pausa_config()
+            st.caption("Sube un archivo MP3 para cada modelo. Se guardará en el servidor.")
+            for m in PAUSA_MODELOS:
+                c1, c2, c3 = st.columns([2, 2, 1])
+                with c1:
+                    st.markdown(f"**{m['nombre']}**")
+                    mp3_path = f"pausa_mp3_{m['id']}.mp3"
+                    if Path(mp3_path).exists():
+                        st.caption("🎵 MP3 cargado ✅")
+                    else:
+                        st.caption("🔇 Sin música")
+                with c2:
+                    mp3_file = st.file_uploader(
+                        f"MP3 para modelo {m['id']}",
+                        type=["mp3", "ogg", "wav"],
+                        key=f"pausa_mp3_{m['id']}",
+                        label_visibility="collapsed"
+                    )
+                    if mp3_file is not None:
+                        with open(mp3_path, "wb") as fmp3:
+                            fmp3.write(mp3_file.read())
+                        pausa_cfg[str(m['id'])] = {'mp3': mp3_path}
+                        _guardar_pausa_config(pausa_cfg)
+                        st.success("✅ Guardado")
+                with c3:
+                    if Path(f"pausa_mp3_{m['id']}.mp3").exists():
+                        if st.button("🗑️", key=f"del_mp3_{m['id']}", help="Eliminar MP3"):
+                            try:
+                                Path(f"pausa_mp3_{m['id']}.mp3").unlink()
+                                pausa_cfg[str(m['id'])] = {'mp3': ''}
+                                _guardar_pausa_config(pausa_cfg)
+                                st.rerun()
+                            except Exception:
+                                pass
+
+    pausa_cfg = _cargar_pausa_config()
+
+    # ── Selección de modelo ───────────────────────────────────────────────
+    st.markdown("### 🎯 Elige tu Pausa Activa")
+
+    cols = st.columns(2)
+    modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
+
+    for i, m in enumerate(PAUSA_MODELOS):
+        with cols[i % 2]:
+            tiene_musica = Path(f"pausa_mp3_{m['id']}.mp3").exists()
+            musica_badge = "🎵" if tiene_musica else "🔇"
+            seleccionado = modelo_seleccionado == m['id']
+            borde = "4px solid #fbbf24" if seleccionado else "2px solid #334155"
+            st.markdown(f"""
+            <div style='background:{m["color_fondo"]}; border:{borde};
+                        border-radius:14px; padding:18px 14px; margin-bottom:10px;
+                        text-align:center; cursor:pointer;'>
+                <div style='font-size:2.8rem;'>{m["emoji_principal"]}</div>
+                <div style='color:white; font-size:1.05rem; font-weight:bold; margin:6px 0;'>{m["nombre"]}</div>
+                <div style='color:{m["color_acento"]}; font-size:0.8rem;'>{m["descripcion"]}</div>
+                <div style='color:white; font-size:0.75rem; margin-top:6px;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button(f"▶ Iniciar", key=f"sel_pausa_{m['id']}", use_container_width=True, type="primary"):
+                st.session_state['_pausa_modelo_id'] = m['id']
+                st.session_state['_pausa_paso_actual'] = 0
+                st.session_state['_pausa_activa'] = True
+                st.rerun()
+
+    # ── Presentación en pantalla grande ──────────────────────────────────
+    if st.session_state.get('_pausa_activa') and modelo_seleccionado:
+        modelo = next((m for m in PAUSA_MODELOS if m['id'] == modelo_seleccionado), None)
+        if not modelo:
+            return
+
+        paso_idx = st.session_state.get('_pausa_paso_actual', 0)
+        pasos = modelo['pasos']
+        total_pasos = len(pasos)
+
+        st.markdown("---")
+        # Barra de progreso
+        progreso = (paso_idx) / total_pasos
+        st.progress(progreso, text=f"Paso {paso_idx + 1} de {total_pasos}")
+
+        # Música MP3 — reproductora nativa de Streamlit (funciona en toda la sesión)
+        mp3_path = f"pausa_mp3_{modelo['id']}.mp3"
+        if Path(mp3_path).exists():
+            st.markdown("🎵 **Música de fondo:**")
+            with open(mp3_path, "rb") as fmp3:
+                st.audio(fmp3.read(), format="audio/mp3", autoplay=(paso_idx == 0))
+
+        # Pantalla grande del paso actual
+        if paso_idx < total_pasos:
+            emoji_paso, instruccion, segundos = pasos[paso_idx]
+            st.markdown(f"""
+            <div style='background:{modelo["color_fondo"]}; border-radius:24px;
+                        padding:60px 40px; text-align:center; margin:10px 0;
+                        box-shadow: 0 8px 40px rgba(0,0,0,0.4);'>
+                <div style='font-size:6rem; margin-bottom:20px;'>{emoji_paso}</div>
+                <div style='color:{modelo["color_acento"]}; font-size:1.1rem; font-weight:bold;
+                            letter-spacing:3px; text-transform:uppercase; margin-bottom:16px;'>
+                    PASO {paso_idx + 1} / {total_pasos}
+                </div>
+                <div style='color:white; font-size:2.2rem; font-weight:bold; line-height:1.3;
+                            margin-bottom:24px;'>
+                    {instruccion}
+                </div>
+                <div style='display:inline-block; background:{modelo["color_acento"]};
+                            color:{modelo["color_fondo"]}; border-radius:50px;
+                            padding:10px 32px; font-size:1.4rem; font-weight:bold;'>
+                    ⏱️ {segundos} segundos
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Indicadores de pasos (bolitas)
+            dots_html = "<div style='text-align:center; margin:16px 0;'>"
+            for di in range(total_pasos):
+                if di == paso_idx:
+                    dots_html += f"<span style='font-size:1.5rem; margin:0 4px;'>⬤</span>"
+                else:
+                    dots_html += f"<span style='font-size:1rem; margin:0 4px; color:#64748b;'>◯</span>"
+            dots_html += "</div>"
+            st.markdown(dots_html, unsafe_allow_html=True)
+
+            # Navegación
+            nc1, nc2, nc3 = st.columns([1, 2, 1])
+            with nc1:
+                if paso_idx > 0:
+                    if st.button("⬅️ Anterior", use_container_width=True, key="pausa_prev"):
+                        st.session_state['_pausa_paso_actual'] -= 1
+                        st.rerun()
+            with nc2:
+                if st.button("🔲 Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
+                    st.session_state['_pausa_activa'] = False
+                    st.session_state['_pausa_modelo_id'] = None
+                    st.session_state['_pausa_paso_actual'] = 0
+                    st.rerun()
+            with nc3:
+                if paso_idx < total_pasos - 1:
+                    if st.button("Siguiente ➡️", use_container_width=True, key="pausa_next", type="primary"):
+                        st.session_state['_pausa_paso_actual'] += 1
+                        st.rerun()
+                else:
+                    if st.button("🎉 FINALIZAR", use_container_width=True, key="pausa_fin", type="primary"):
+                        st.balloons()
+                        st.session_state['_pausa_activa'] = False
+                        st.session_state['_pausa_modelo_id'] = None
+                        st.session_state['_pausa_paso_actual'] = 0
+                        st.rerun()
+        else:
+            st.balloons()
+            st.success("🎉 Pausa Activa completada. Excelente!")
+            if st.button("🔄 Reiniciar", type="primary", key="pausa_reiniciar"):
+                st.session_state['_pausa_paso_actual'] = 0
+                st.rerun()
+
+
 def tab_yachay_plickers(config):
     """YACHAY QAWAY v2 — sync PC + celular"""
     # Restaurar quizzes desde Google Sheets si no hay locales
@@ -14700,6 +15037,7 @@ def main():
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
+                ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
             ]
 
             # Grid de módulos
@@ -14762,6 +15100,8 @@ def main():
                 tab_examenes_semanales(config)
             elif mod == "plickers":
                 tab_yachay_plickers(config)
+            elif mod == "pausa_activa":
+                tab_pausa_activa(config)
             elif mod == "registros_pdf":
                 st.subheader("📋 Registros PDF — Asistencia")
                 _seccion_registros_pdf(config)
@@ -14807,6 +15147,7 @@ def main():
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
                 ("📋", "Registros PDF", "registros_pdf", "#0d9488"),
+                ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -14899,6 +15240,8 @@ def main():
                 tab_examenes_semanales(config)
             elif mod == "plickers":
                 tab_yachay_plickers(config)
+            elif mod == "pausa_activa":
+                tab_pausa_activa(config)
             elif mod == "registros_pdf":
                 st.subheader("📋 Registros PDF — Asistencia")
                 _seccion_registros_pdf(config)
