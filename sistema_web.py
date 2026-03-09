@@ -14242,98 +14242,483 @@ def tab_pausa_activa(config):
             return
 
         paso_idx = st.session_state.get('_pausa_paso_actual', 0)
-        pasos = modelo['pasos']
+        pasos    = modelo['pasos']
         total_pasos = len(pasos)
 
-        st.markdown("---")
-        # Barra de progreso
-        progreso = (paso_idx) / total_pasos
-        st.progress(progreso, text=f"Paso {paso_idx + 1} de {total_pasos}")
+        # Botón cerrar arriba
+        if st.button("✖ Cerrar Pausa Activa", key="pausa_cerrar_top"):
+            st.session_state['_pausa_activa']    = False
+            st.session_state['_pausa_modelo_id'] = None
+            st.session_state['_pausa_paso_actual'] = 0
+            st.rerun()
 
-        # Música MP3 — HTML base64 con autoplay y loop (mismo método que YACHAY QAWAY)
+        # Preparar datos para el iframe completo
         _b64_audio, _ext_audio = _pausa_cargar_mp3_b64(modelo['id'])
+        _mime = "audio/mpeg"
+        _audio_tag = ""
         if _b64_audio:
-            import streamlit.components.v1 as _comp_pa
             _mime = "audio/mpeg" if _ext_audio == "mp3" else f"audio/{_ext_audio}"
             _audio_src = f"data:{_mime};base64,{_b64_audio}"
-            _comp_pa.html(
-                f'''<div style="text-align:center;padding:4px;">
-                <audio id="pausa_bgm" loop {"autoplay" if paso_idx == 0 else ""}>
-                    <source src="{_audio_src}" type="{_mime}">
-                </audio>
-                <button onclick="var a=document.getElementById('pausa_bgm');if(a.paused){{a.play();this.textContent='🔊 Pausar musica'}}else{{a.pause();this.textContent='▶ Reproducir musica'}}"
-                    style="background:{modelo["color_acento"]};color:{modelo["color_fondo"]};
-                           border:none;padding:6px 20px;border-radius:20px;cursor:pointer;
-                           font-weight:bold;font-size:0.9rem;">🔊 Pausar musica</button>
-                </div>''',
-                height=50
-            )
+            _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
+                <source src="{_audio_src}" type="{_mime}"></audio>'''
 
-        # Pantalla grande del paso actual
-        if paso_idx < total_pasos:
-            emoji_paso, instruccion, segundos = pasos[paso_idx]
-            st.markdown(f"""
-            <div style='background:{modelo["color_fondo"]}; border-radius:24px;
-                        padding:60px 40px; text-align:center; margin:10px 0;
-                        box-shadow: 0 8px 40px rgba(0,0,0,0.4);'>
-                <div style='font-size:6rem; margin-bottom:20px;'>{emoji_paso}</div>
-                <div style='color:{modelo["color_acento"]}; font-size:1.1rem; font-weight:bold;
-                            letter-spacing:3px; text-transform:uppercase; margin-bottom:16px;'>
-                    PASO {paso_idx + 1} / {total_pasos}
-                </div>
-                <div style='color:white; font-size:2.2rem; font-weight:bold; line-height:1.3;
-                            margin-bottom:24px;'>
-                    {instruccion}
-                </div>
-                <div style='display:inline-block; background:{modelo["color_acento"]};
-                            color:{modelo["color_fondo"]}; border-radius:50px;
-                            padding:10px 32px; font-size:1.4rem; font-weight:bold;'>
-                    ⏱️ {segundos} segundos
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+        # Construir lista JSON de pasos para JS
+        import json as _json_pa
+        pasos_js = _json_pa.dumps([
+            {"emoji": p[0], "texto": p[1], "seg": p[2]} for p in pasos
+        ])
+        
+        _col_fondo  = modelo['color_fondo']
+        _col_acento = modelo['color_acento']
 
-            # Indicadores de pasos (bolitas)
-            dots_html = "<div style='text-align:center; margin:16px 0;'>"
-            for di in range(total_pasos):
-                if di == paso_idx:
-                    dots_html += f"<span style='font-size:1.5rem; margin:0 4px;'>⬤</span>"
-                else:
-                    dots_html += f"<span style='font-size:1rem; margin:0 4px; color:#64748b;'>◯</span>"
-            dots_html += "</div>"
-            st.markdown(dots_html, unsafe_allow_html=True)
+        import streamlit.components.v1 as _comp_pa
+        _comp_pa.html(f"""
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<style>
+  * {{ box-sizing:border-box; margin:0; padding:0; }}
+  body {{
+    background: {_col_fondo};
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 96vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }}
 
-            # Navegación
-            nc1, nc2, nc3 = st.columns([1, 2, 1])
-            with nc1:
-                if paso_idx > 0:
-                    if st.button("⬅️ Anterior", use_container_width=True, key="pausa_prev"):
-                        st.session_state['_pausa_paso_actual'] -= 1
-                        st.rerun()
-            with nc2:
-                if st.button("🔲 Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
-                    st.session_state['_pausa_activa'] = False
+  /* Fondo animado con partículas */
+  .bg-particles {{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:0; overflow:hidden;
+  }}
+  .particle {{
+    position:absolute; border-radius:50%;
+    background: {_col_acento};
+    opacity:0.12;
+    animation: float linear infinite;
+  }}
+  @keyframes float {{
+    0%   {{ transform: translateY(110vh) scale(0.5); opacity:0.15; }}
+    100% {{ transform: translateY(-10vh)  scale(1.2); opacity:0;    }}
+  }}
+
+  /* Barra de progreso */
+  .prog-bar-wrap {{
+    position:relative; z-index:2;
+    background:rgba(255,255,255,0.15);
+    height:8px; width:100%; border-radius:4px;
+  }}
+  .prog-bar {{
+    height:8px; border-radius:4px;
+    background:{_col_acento};
+    transition: width 0.5s ease;
+  }}
+
+  /* Header */
+  .header {{
+    position:relative; z-index:2;
+    padding:14px 24px 6px;
+    display:flex; justify-content:space-between; align-items:center;
+  }}
+  .header-title {{
+    color:{_col_acento}; font-size:0.95rem;
+    font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  }}
+  .step-badge {{
+    background:rgba(255,255,255,0.18);
+    color:white; padding:4px 14px;
+    border-radius:20px; font-size:0.85rem; font-weight:600;
+  }}
+
+  /* Contenido central */
+  .main-card {{
+    position:relative; z-index:2;
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:10px 30px 0;
+    text-align:center;
+  }}
+  .emoji-big {{
+    font-size:9rem; line-height:1;
+    animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both,
+               bounce 2.5s ease-in-out 0.5s infinite;
+    filter: drop-shadow(0 0 30px {_col_acento});
+  }}
+  @keyframes pop {{
+    0%   {{ transform: scale(0.2) rotate(-15deg); opacity:0; }}
+    100% {{ transform: scale(1)   rotate(0deg);   opacity:1; }}
+  }}
+  @keyframes bounce {{
+    0%,100% {{ transform: translateY(0);    }}
+    50%      {{ transform: translateY(-18px); }}
+  }}
+  .instruccion {{
+    color:white; font-size:2.4rem; font-weight:800;
+    line-height:1.25; margin:22px 0 18px;
+    text-shadow: 0 3px 12px rgba(0,0,0,0.4);
+    animation: slideUp 0.4s ease both;
+  }}
+  @keyframes slideUp {{
+    from {{ opacity:0; transform:translateY(30px); }}
+    to   {{ opacity:1; transform:translateY(0);    }}
+  }}
+
+  /* Timer ring */
+  .timer-wrap {{
+    position:relative; width:120px; height:120px;
+    margin:0 auto 16px;
+    animation: slideUp 0.4s 0.15s ease both;
+  }}
+  .timer-svg {{ transform:rotate(-90deg); }}
+  .timer-ring {{ transition: stroke-dashoffset 1s linear; }}
+  .timer-text {{
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    font-size:2rem; font-weight:900; color:white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }}
+  .timer-label {{
+    font-size:0.7rem; color:{_col_acento};
+    font-weight:700; letter-spacing:2px;
+    display:block; margin-top:2px;
+  }}
+
+  /* Dots */
+  .dots {{
+    display:flex; gap:8px; justify-content:center;
+    padding:8px 0; position:relative; z-index:2;
+  }}
+  .dot {{
+    width:10px; height:10px; border-radius:50%;
+    background:rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+  }}
+  .dot.active {{
+    background:{_col_acento};
+    width:28px; border-radius:5px;
+    box-shadow: 0 0 10px {_col_acento};
+  }}
+  .dot.done {{
+    background:rgba(255,255,255,0.55);
+  }}
+
+  /* Botones de navegación */
+  .nav-bar {{
+    position:relative; z-index:10;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 20px 16px;
+    gap:12px;
+  }}
+  .btn {{
+    border:none; cursor:pointer; border-radius:50px;
+    font-size:1rem; font-weight:800; padding:13px 28px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display:flex; align-items:center; gap:8px;
+  }}
+  .btn:hover {{ transform:scale(1.06); box-shadow:0 6px 20px rgba(0,0,0,0.4); }}
+  .btn:active {{ transform:scale(0.96); }}
+
+  .btn-prev {{
+    background:#1e293b; color:white;
+    min-width:120px;
+  }}
+  .btn-prev:disabled {{
+    background:#334155; color:#64748b; cursor:default;
+  }}
+  .btn-next {{
+    background:{_col_acento}; color:{_col_fondo};
+    min-width:140px; font-size:1.1rem;
+  }}
+  .btn-fin {{
+    background:#16a34a; color:white;
+    min-width:140px; font-size:1.1rem;
+    animation: pulse-green 1.5s ease-in-out infinite;
+  }}
+  @keyframes pulse-green {{
+    0%,100% {{ box-shadow:0 0 0 0 rgba(22,163,74,0.5); }}
+    50%      {{ box-shadow:0 0 0 12px rgba(22,163,74,0); }}
+  }}
+  .btn-music {{
+    background:rgba(255,255,255,0.15);
+    color:white; border:2px solid rgba(255,255,255,0.3);
+    padding:10px 18px; font-size:0.85rem;
+  }}
+  .btn-music.playing {{
+    background:rgba(255,255,255,0.25);
+    border-color:{_col_acento};
+    color:{_col_acento};
+  }}
+
+  /* Flecha parpadeante */
+  .arrow-hint {{
+    color:rgba(255,255,255,0.35);
+    font-size:2rem;
+    animation: blink 1.8s ease-in-out infinite;
+  }}
+  @keyframes blink {{
+    0%,100% {{ opacity:0.3; }} 50% {{ opacity:1; }}
+  }}
+
+  /* Pantalla completa hint */
+  .fs-btn {{
+    background:rgba(255,255,255,0.1);
+    color:white; border:1px solid rgba(255,255,255,0.2);
+    padding:7px 14px; font-size:0.78rem;
+    border-radius:20px; cursor:pointer;
+    transition:all 0.2s;
+  }}
+  .fs-btn:hover {{ background:rgba(255,255,255,0.2); }}
+</style>
+</head>
+<body>
+{_audio_tag}
+
+<!-- Partículas de fondo -->
+<div class="bg-particles" id="particles"></div>
+
+<!-- Barra de progreso superior -->
+<div class="prog-bar-wrap">
+  <div class="prog-bar" id="progbar" style="width:0%"></div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <span class="header-title">{modelo['nombre']}</span>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <span class="step-badge" id="step-badge">Paso 1 / {total_pasos}</span>
+    <button class="fs-btn" onclick="toggleFS()">⛶ Pantalla completa</button>
+  </div>
+</div>
+
+<!-- Contenido principal -->
+<div class="main-card">
+  <div class="emoji-big" id="emoji">⏳</div>
+  <div class="instruccion" id="instruccion">Cargando...</div>
+  <div class="timer-wrap">
+    <svg class="timer-svg" width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none"
+        stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
+      <circle id="timer-ring" class="timer-ring" cx="60" cy="60" r="52"
+        fill="none" stroke="{_col_acento}" stroke-width="8"
+        stroke-dasharray="326.7" stroke-dashoffset="326.7"
+        stroke-linecap="round"/>
+    </svg>
+    <div class="timer-text">
+      <span id="timer-num">0</span>
+      <span class="timer-label">SEG</span>
+    </div>
+  </div>
+</div>
+
+<!-- Dots de pasos -->
+<div class="dots" id="dots"></div>
+
+<!-- Barra de navegación -->
+<div class="nav-bar">
+  <button class="btn btn-prev" id="btn-prev" onclick="navegarPrev()">&#8592; Anterior</button>
+  <button class="btn btn-music" id="btn-music" onclick="toggleMusica()">&#9654; Musica</button>
+  <button class="btn btn-next" id="btn-next" onclick="navegarNext()">Siguiente &#8594;</button>
+</div>
+
+<script>
+const PASOS   = {pasos_js};
+const TOTAL   = PASOS.length;
+let   pasoActual = {paso_idx};
+let   timerInterval = null;
+let   tiempoRestante = 0;
+const CIRCUM = 326.7;
+
+function crearParticulas() {{
+  const cont = document.getElementById('particles');
+  for(let i=0;i<22;i++) {{
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sz = Math.random()*40+10;
+    p.style.cssText = `width:${{sz}}px;height:${{sz}}px;
+      left:${{Math.random()*100}}%;
+      animation-duration:${{Math.random()*8+6}}s;
+      animation-delay:${{Math.random()*8}}s;`;
+    cont.appendChild(p);
+  }}
+}}
+
+function construirDots() {{
+  const d = document.getElementById('dots');
+  d.innerHTML = '';
+  for(let i=0;i<TOTAL;i++) {{
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===pasoActual?' active':i<pasoActual?' done':'');
+    d.appendChild(dot);
+  }}
+}}
+
+function actualizarPaso() {{
+  if(pasoActual >= TOTAL) return;
+  const p = PASOS[pasoActual];
+
+  // Animar salida y entrada
+  const emoji = document.getElementById('emoji');
+  const inst  = document.getElementById('instruccion');
+  emoji.style.animation = 'none'; inst.style.animation = 'none';
+  void emoji.offsetWidth;
+  emoji.style.animation = 'pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both, bounce 2.5s ease-in-out 0.5s infinite';
+  inst.style.animation  = 'slideUp 0.4s ease both';
+
+  emoji.textContent = p.emoji;
+  inst.textContent  = p.texto;
+
+  // Badge
+  document.getElementById('step-badge').textContent = `Paso ${{pasoActual+1}} / ${{TOTAL}}`;
+
+  // Progreso
+  const pct = ((pasoActual+1)/TOTAL)*100;
+  document.getElementById('progbar').style.width = pct+'%';
+
+  // Dots
+  construirDots();
+
+  // Botones
+  document.getElementById('btn-prev').disabled = (pasoActual===0);
+  const btnNext = document.getElementById('btn-next');
+  if(pasoActual === TOTAL-1) {{
+    btnNext.textContent = '🎉 FINALIZAR';
+    btnNext.className   = 'btn btn-fin';
+  }} else {{
+    btnNext.textContent = 'Siguiente →';
+    btnNext.className   = 'btn btn-next';
+  }}
+
+  // Timer
+  iniciarTimer(p.seg);
+}}
+
+function iniciarTimer(seg) {{
+  if(timerInterval) clearInterval(timerInterval);
+  tiempoRestante = seg;
+  const ring = document.getElementById('timer-ring');
+  const num  = document.getElementById('timer-num');
+
+  function tick() {{
+    num.textContent = tiempoRestante;
+    const offset = CIRCUM * (1 - tiempoRestante/seg);
+    ring.style.strokeDashoffset = CIRCUM - offset;
+    if(tiempoRestante > 0) tiempoRestante--;
+    else {{ clearInterval(timerInterval); flashTimer(); }}
+  }}
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}}
+
+function flashTimer() {{
+  const wrap = document.querySelector('.timer-wrap');
+  let v = 0;
+  const f = setInterval(()=>{{
+    wrap.style.opacity = (v%2===0)?'0.3':'1'; v++;
+    if(v>8) {{ clearInterval(f); wrap.style.opacity='1'; }}
+  }},300);
+}}
+
+function navegarNext() {{
+  if(timerInterval) clearInterval(timerInterval);
+  if(pasoActual < TOTAL-1) {{
+    pasoActual++;
+    actualizarPaso();
+    notificarStreamlit('next');
+  }} else {{
+    notificarStreamlit('fin');
+  }}
+}}
+
+function navegarPrev() {{
+  if(timerInterval) clearInterval(timerInterval);
+  if(pasoActual > 0) {{
+    pasoActual--;
+    actualizarPaso();
+    notificarStreamlit('prev');
+  }}
+}}
+
+function notificarStreamlit(accion) {{
+  // Enviar mensaje al padre (Streamlit iframe)
+  try {{ window.parent.postMessage({{type:'pausa_nav', accion, paso:pasoActual}}, '*'); }} catch(e){{}}
+}}
+
+// Teclado — flechas izquierda/derecha
+document.addEventListener('keydown', e => {{
+  if(e.key==='ArrowRight'||e.key===' ') navegarNext();
+  if(e.key==='ArrowLeft')               navegarPrev();
+}});
+
+// Música
+let musicaActiva = true;
+function toggleMusica() {{
+  const bgm = document.getElementById('bgm');
+  const btn = document.getElementById('btn-music');
+  if(!bgm) return;
+  if(musicaActiva) {{ bgm.pause(); btn.textContent='▶ Musica'; btn.classList.remove('playing'); }}
+  else             {{ bgm.play();  btn.textContent='⏸ Musica'; btn.classList.add('playing');    }}
+  musicaActiva = !musicaActiva;
+}}
+
+// Pantalla completa
+function toggleFS() {{
+  if(!document.fullscreenElement) {{
+    document.documentElement.requestFullscreen().catch(()=>{{}});
+  }} else {{
+    document.exitFullscreen();
+  }}
+}}
+
+// Escuchar mensajes desde Streamlit para sincronizar paso
+window.addEventListener('message', e => {{
+  if(e.data && e.data.type==='pausa_set_paso') {{
+    pasoActual = e.data.paso;
+    actualizarPaso();
+  }}
+}});
+
+// Init
+crearParticulas();
+actualizarPaso();
+if(document.getElementById('bgm')) {{
+  document.getElementById('btn-music').textContent = '⏸ Musica';
+  document.getElementById('btn-music').classList.add('playing');
+}}
+</script>
+</body></html>
+""", height=680, scrolling=False)
+
+        # Botones de Streamlit para sincronizar estado real (flechas del iframe no cambian session_state)
+        st.markdown("""<style>
+        div[data-testid="stHorizontalBlock"] button {{
+            border-radius:50px !important; font-weight:700 !important;
+        }}
+        </style>""", unsafe_allow_html=True)
+        nc1, nc2, nc3 = st.columns([1, 2, 1])
+        with nc1:
+            if paso_idx > 0:
+                if st.button("◀ Anterior", use_container_width=True, key="pausa_prev",
+                             help="También usa ← en teclado dentro del panel"):
+                    st.session_state['_pausa_paso_actual'] -= 1
+                    st.rerun()
+        with nc2:
+            if st.button("✖ Cerrar", use_container_width=True, key="pausa_cerrar"):
+                st.session_state['_pausa_activa']    = False
+                st.session_state['_pausa_modelo_id'] = None
+                st.session_state['_pausa_paso_actual'] = 0
+                st.rerun()
+        with nc3:
+            if paso_idx < total_pasos - 1:
+                if st.button("Siguiente ▶", use_container_width=True, key="pausa_next",
+                             help="También usa → o Espacio dentro del panel"):
+                    st.session_state['_pausa_paso_actual'] += 1
+                    st.rerun()
+            else:
+                if st.button("🎉 FINALIZAR", use_container_width=True, key="pausa_fin", type="primary"):
+                    st.balloons()
+                    st.session_state['_pausa_activa']    = False
                     st.session_state['_pausa_modelo_id'] = None
                     st.session_state['_pausa_paso_actual'] = 0
                     st.rerun()
-            with nc3:
-                if paso_idx < total_pasos - 1:
-                    if st.button("Siguiente ➡️", use_container_width=True, key="pausa_next", type="primary"):
-                        st.session_state['_pausa_paso_actual'] += 1
-                        st.rerun()
-                else:
-                    if st.button("🎉 FINALIZAR", use_container_width=True, key="pausa_fin", type="primary"):
-                        st.balloons()
-                        st.session_state['_pausa_activa'] = False
-                        st.session_state['_pausa_modelo_id'] = None
-                        st.session_state['_pausa_paso_actual'] = 0
-                        st.rerun()
-        else:
-            st.balloons()
-            st.success("🎉 Pausa Activa completada. Excelente!")
-            if st.button("🔄 Reiniciar", type="primary", key="pausa_reiniciar"):
-                st.session_state['_pausa_paso_actual'] = 0
-                st.rerun()
 
 
 def tab_yachay_plickers(config):
