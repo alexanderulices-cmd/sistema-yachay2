@@ -8941,92 +8941,185 @@ def _restaurar_archivo_binario_gs(nombre_clave, filepath):
 # Evita el lag y el límite de 50k chars por celda de GSheets
 # ================================================================
 
-def _drive_service():
-    """Obtiene el cliente de Google Drive usando las mismas credenciales del sistema."""
+# ================================================================
+# GOOGLE DRIVE — token OAuth2 via requests (sin google-api-python-client)
+# Usa directamente st.secrets["gcp_service_account"] que ya está configurado
+# ================================================================
+
+def _drive_get_token():
+    """Obtiene un access token de Drive usando JWT firmado con la llave privada del service account."""
     try:
-        from googleapiclient.discovery import build
-        from google.oauth2 import service_account
-        import json as _json
-        # Intentar obtener creds desde google_sync si está disponible
-        gs = _gs()
-        if gs and hasattr(gs, 'gc') and gs.gc and hasattr(gs.gc, 'auth'):
-            creds_raw = gs.gc.auth
-            svc = build('drive', 'v3', credentials=creds_raw, cache_discovery=False)
-            return svc
-        # Respaldo: leer desde st.secrets o archivo local
-        creds_dict = None
+        import time, json as _j, base64 as _b64, hashlib, hmac
+        from urllib import request as _urllib_req, parse as _urllib_parse
+
+        creds = dict(st.secrets["gcp_service_account"])
+        private_key_pem = creds["private_key"]
+        client_email    = creds["client_email"]
+        token_uri       = creds.get("token_uri", "https://oauth2.googleapis.com/token")
+
+        # Construir JWT
+        now = int(time.time())
+        header  = _b64.urlsafe_b64encode(_j.dumps({"alg":"RS256","typ":"JWT"}).encode()).rstrip(b"=")
+        payload = _b64.urlsafe_b64encode(_j.dumps({
+            "iss": client_email,
+            "scope": "https://www.googleapis.com/auth/drive",
+            "aud": token_uri,
+            "iat": now,
+            "exp": now + 3600
+        }).encode()).rstrip(b"=")
+        signing_input = header + b"." + payload
+
+        # Firmar con RSA usando cryptography (disponible en streamlit cloud)
         try:
-            creds_dict = dict(st.secrets["gcp_service_account"])
-        except Exception:
-            pass
-        if not creds_dict:
-            for fname in ["credentials.json", "service_account.json", "google_credentials.json"]:
-                if Path(fname).exists():
-                    with open(fname, 'r') as _f:
-                        creds_dict = json.load(_f)
-                    break
-        if not creds_dict:
+            from cryptography.hazmat.primitives import hashes, serialization
+            from cryptography.hazmat.primitives.asymmetric import padding
+            private_key_obj = serialization.load_pem_private_key(private_key_pem.encode(), password=None)
+            signature = private_key_obj.sign(signing_input, padding.PKCS1v15(), hashes.SHA256())
+            sig_b64 = _b64.urlsafe_b64encode(signature).rstrip(b"=")
+        except Exception as _e_cry:
+            st.session_state["_drive_error"] = f"Error firmando JWT: {_e_cry}"
             return None
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-        creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
-        return build('drive', 'v3', credentials=creds, cache_discovery=False)
-    except Exception:
+
+        jwt_token = (signing_input + b"." + sig_b64).decode()
+
+        # Intercambiar JWT por access token
+        data = _urllib_parse.urlencode({
+            "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "assertion": jwt_token
+        }).encode()
+        req = _urllib_req.Request(token_uri, data=data,
+                                   headers={"Content-Type": "application/x-www-form-urlencoded"})
+        with _urllib_req.urlopen(req, timeout=15) as resp:
+            resp_data = _j.loads(resp.read())
+        token = resp_data.get("access_token")
+        if not token:
+            st.session_state["_drive_error"] = f"Sin access_token: {resp_data}"
+        return token
+    except Exception as _e:
+        st.session_state["_drive_error"] = f"_drive_get_token: {_e}"
         return None
 
+
+def _drive_service():
+    """Retorna un objeto liviano para llamadas a Drive API via requests."""
+    token = _drive_get_token()
+    if not token:
+        return None
+
+    class _DriveLite:
+        def __init__(self, tok):
+            self._tok = tok
+            self._headers = {"Authorization": f"Bearer {tok}"}
+
+        def list_files(self, q, fields="files(id,name)", page_size=5):
+            import urllib.request as _r, urllib.parse as _p, json as _j
+            params = _p.urlencode({"q": q, "fields": fields, "pageSize": page_size})
+            req = _r.Request(f"https://www.googleapis.com/drive/v3/files?{params}",
+                             headers=self._headers)
+            with _r.urlopen(req, timeout=15) as resp:
+                return _j.loads(resp.read()).get("files", [])
+
+        def create_folder(self, name):
+            import urllib.request as _r, json as _j
+            body = _j.dumps({"name": name, "mimeType": "application/vnd.google-apps.folder"}).encode()
+            req = _r.Request("https://www.googleapis.com/drive/v3/files?fields=id",
+                             data=body, headers={**self._headers, "Content-Type": "application/json"})
+            with _r.urlopen(req, timeout=15) as resp:
+                return _j.loads(resp.read()).get("id")
+
+        def upload(self, fname, data_bytes, mime, parent_id=None):
+            """Sube archivo usando multipart upload."""
+            import urllib.request as _r, json as _j
+            meta = {"name": fname}
+            if parent_id:
+                meta["parents"] = [parent_id]
+            meta_bytes = _j.dumps(meta).encode()
+            boundary = b"yachay_boundary_1234"
+            body = (b"--" + boundary + b"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" +
+                    meta_bytes + b"\r\n--" + boundary + b"\r\nContent-Type: " + mime.encode() +
+                    b"\r\n\r\n" + data_bytes + b"\r\n--" + boundary + b"--")
+            req = _r.Request(
+                "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",
+                data=body,
+                headers={**self._headers,
+                         "Content-Type": f"multipart/related; boundary={boundary.decode()}"})
+            with _r.urlopen(req, timeout=60) as resp:
+                return _j.loads(resp.read()).get("id")
+
+        def update(self, file_id, data_bytes, mime):
+            import urllib.request as _r, json as _j
+            req = _r.Request(
+                f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media",
+                data=data_bytes,
+                headers={**self._headers, "Content-Type": mime})
+            req.get_method = lambda: "PATCH"
+            with _r.urlopen(req, timeout=60) as resp:
+                return _j.loads(resp.read()).get("id", file_id)
+
+        def set_public(self, file_id):
+            import urllib.request as _r, json as _j
+            body = _j.dumps({"role": "reader", "type": "anyone"}).encode()
+            req = _r.Request(
+                f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions",
+                data=body,
+                headers={**self._headers, "Content-Type": "application/json"})
+            with _r.urlopen(req, timeout=15) as resp:
+                return resp.read()
+
+        def delete(self, file_id):
+            import urllib.request as _r
+            req = _r.Request(
+                f"https://www.googleapis.com/drive/v3/files/{file_id}",
+                headers=self._headers)
+            req.get_method = lambda: "DELETE"
+            try:
+                with _r.urlopen(req, timeout=15):
+                    pass
+            except Exception:
+                pass
+
+    return _DriveLite(token)
+
 def _drive_folder_pausa():
-    """Obtiene (o crea) la carpeta 'YACHAY_PAUSA_MP3' en Drive. Retorna folder_id."""
+    """Obtiene (o crea) la carpeta YACHAY_PAUSA_MP3 en Drive. Retorna folder_id."""
     try:
         svc = _drive_service()
         if not svc:
             return None
         FOLDER_NAME = "YACHAY_PAUSA_MP3"
-        # Buscar si ya existe
-        res = svc.files().list(
-            q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-            fields="files(id,name)", pageSize=1
-        ).execute()
-        files = res.get('files', [])
+        files = svc.list_files(
+            q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false")
         if files:
-            return files[0]['id']
-        # Crear carpeta
-        meta = {'name': FOLDER_NAME, 'mimeType': 'application/vnd.google-apps.folder'}
-        folder = svc.files().create(body=meta, fields='id').execute()
-        return folder.get('id')
-    except Exception:
+            return files[0]["id"]
+        return svc.create_folder(FOLDER_NAME)
+    except Exception as _e:
+        st.session_state["_drive_error"] = f"_drive_folder_pausa: {_e}"
         return None
 
 def _drive_subir_mp3(modelo_id, audio_bytes, extension="mp3"):
-    """Sube MP3 a Google Drive y retorna el file_id. Elimina versión anterior si existe."""
+    """Sube MP3 a Google Drive y retorna el file_id."""
     try:
-        from googleapiclient.http import MediaIoBaseUpload
-        import io as _io
         svc = _drive_service()
         if not svc:
             return None
         folder_id = _drive_folder_pausa()
         fname = f"pausa_mp3_{modelo_id}.{extension}"
-        mime = "audio/mpeg" if extension == "mp3" else f"audio/{extension}"
-        media = MediaIoBaseUpload(_io.BytesIO(audio_bytes), mimetype=mime, resumable=False)
-        # Buscar si ya existe un archivo con ese nombre en la carpeta
+        mime  = "audio/mpeg" if extension == "mp3" else f"audio/{extension}"
+        # Buscar si ya existe
         q = f"name='{fname}' and trashed=false"
         if folder_id:
             q += f" and '{folder_id}' in parents"
-        res = svc.files().list(q=q, fields="files(id)", pageSize=1).execute()
-        existing = res.get('files', [])
+        existing = svc.list_files(q=q)
         if existing:
-            # Actualizar en lugar de crear duplicado
-            file_id = existing[0]['id']
-            svc.files().update(fileId=file_id, media_body=media).execute()
+            file_id = existing[0]["id"]
+            svc.update(file_id, audio_bytes, mime)
         else:
-            meta = {'name': fname}
-            if folder_id:
-                meta['parents'] = [folder_id]
-            f = svc.files().create(body=meta, media_body=media, fields='id').execute()
-            file_id = f.get('id')
-        # Hacer público para lectura (para el audio tag en HTML)
-        svc.permissions().create(fileId=file_id, body={'type': 'anyone', 'role': 'reader'}).execute()
+            file_id = svc.upload(fname, audio_bytes, mime, parent_id=folder_id)
+        if file_id:
+            svc.set_public(file_id)
         return file_id
-    except Exception:
+    except Exception as _e:
+        st.session_state["_drive_error"] = f"_drive_subir_mp3: {_e}"
         return None
 
 def _drive_borrar_mp3(file_id):
@@ -9034,7 +9127,7 @@ def _drive_borrar_mp3(file_id):
     try:
         svc = _drive_service()
         if svc and file_id:
-            svc.files().delete(fileId=file_id).execute()
+            svc.delete(file_id)
         return True
     except Exception:
         return False
@@ -13583,35 +13676,24 @@ def _qaway_guardar_musica(audio_bytes):
     p = _plk_dir() / "musica_fondo.mp3"
     with open(p, 'wb') as f:
         f.write(audio_bytes)
-    # Subir a Drive
+    # Subir a Drive usando _drive_subir_mp3 (reutiliza misma lógica que pausas)
     drive_fid = None
     try:
         svc = _drive_service()
         if svc:
-            from googleapiclient.http import MediaIoBaseUpload
-            import io as _io
-            folder_id = _drive_folder_pausa()  # reutiliza la misma carpeta YACHAY_PAUSA_MP3
+            folder_id = _drive_folder_pausa()
             fname = "qaway_musica_fondo.mp3"
-            media = MediaIoBaseUpload(_io.BytesIO(audio_bytes), mimetype="audio/mpeg", resumable=False)
-            # Buscar si ya existe
-            q = f"name='{fname}' and trashed=false"
-            if folder_id:
-                q += f" and '{folder_id}' in parents"
-            res = svc.files().list(q=q, fields="files(id)", pageSize=1).execute()
-            existing = res.get("files", [])
+            existing = svc.list_files(q=f"name='{fname}' and trashed=false" +
+                                       (f" and '{folder_id}' in parents" if folder_id else ""))
             if existing:
                 drive_fid = existing[0]["id"]
-                svc.files().update(fileId=drive_fid, media_body=media).execute()
+                svc.update(drive_fid, audio_bytes, "audio/mpeg")
             else:
-                meta = {"name": fname}
-                if folder_id:
-                    meta["parents"] = [folder_id]
-                fobj = svc.files().create(body=meta, media_body=media, fields="id").execute()
-                drive_fid = fobj.get("id")
+                drive_fid = svc.upload(fname, audio_bytes, "audio/mpeg", parent_id=folder_id)
             if drive_fid:
-                svc.permissions().create(fileId=drive_fid, body={"type": "anyone", "role": "reader"}).execute()
-    except Exception:
-        pass
+                svc.set_public(drive_fid)
+    except Exception as _e:
+        st.session_state["_drive_error"] = f"qaway drive upload: {_e}"
     # Guardar file_id en GSheets (no base64)
     if drive_fid:
         try:
@@ -14600,7 +14682,16 @@ def tab_pausa_activa(config):
                         else:
                             pausa_cfg[str(m['id'])] = {'mp3': saved_path}
                             _guardar_pausa_config(pausa_cfg)
-                            st.warning("⚠️ Guardado local OK, pero no se pudo subir a Drive. Verifica la conexión.")
+                            _err = st.session_state.pop('_drive_error', None)
+                            st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido — ver diagnóstico abajo'}")
+                            with st.expander("🔍 Diagnóstico Drive"):
+                                st.code(_err or "Sin detalle de error")
+                                st.markdown("""**Posibles causas:**
+- La llave JSON no tiene **Google Drive API** activada en Google Cloud Console
+- El `secrets.toml` usa una clave distinta (ej: `connections.gsheets` en vez de `gcp_service_account`)
+- El service account no tiene permisos de Drive
+
+**Solución rápida:** En Google Cloud Console → APIs → habilita *Google Drive API* para el mismo proyecto.""")
                         st.rerun()
                 with c3:
                     _pcfg_del = pausa_cfg.get(str(m['id']), {})
@@ -15409,7 +15500,16 @@ def tab_yachay_plickers(config):
                 if _fid:
                     st.success(f"✅ Música subida a Drive: {mp3_file.name} (ID: {_fid[:12]}...)")
                 else:
-                    st.warning(f"⚠️ Guardado local OK: {mp3_file.name} — no se pudo subir a Drive")
+                    _err = st.session_state.pop('_drive_error', None)
+                    st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido'}")
+                    with st.expander("🔍 Diagnóstico Drive"):
+                        st.code(_err or "Sin detalle de error")
+                        st.markdown("""**Posibles causas:**
+- La llave JSON no tiene **Google Drive API** activada en Google Cloud Console
+- Clave de secrets distinta a `gcp_service_account`
+- Service account sin permisos de Drive
+
+**Solución:** Google Cloud Console → APIs → habilitar *Google Drive API*""")
                 st.rerun()
 
     # ================================================================
