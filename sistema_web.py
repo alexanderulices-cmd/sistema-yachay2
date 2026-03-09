@@ -14382,7 +14382,7 @@ def tab_pausa_activa(config):
     st.markdown("### 🎯 Elige tu Pausa Activa")
 
     NIVELES_PAUSA = ["TODOS", "INICIAL", "PRIMARIA", "SECUNDARIA"]
-    COLORES_NIVEL = {
+    CN = {
         "TODOS":      ("#0f172a", "#e2e8f0", "⭐"),
         "INICIAL":    ("#065f46", "#6ee7b7", "🌱"),
         "PRIMARIA":   ("#1e3a8a", "#93c5fd", "📚"),
@@ -14390,51 +14390,51 @@ def tab_pausa_activa(config):
     }
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
 
-    # CSS para botones de filtro con colores reales
-    btn_styles = ""
-    for nv, (bg, fg, _ic) in COLORES_NIVEL.items():
+    # ── CSS global único — estilos por key de botón ──────────────────────
+    css_btns = "<style>"
+    # Filtros de nivel
+    for nv, (bg, fg, _ic) in CN.items():
         activo = nivel_sel == nv
-        if activo:
-            btn_styles += f"""
-            div[data-testid="stHorizontalBlock"] button[kind="primary"]:has(p:contains("{nv}")) {{
-                background: {bg} !important;
-                color: {fg} !important;
-                border: 3px solid {fg} !important;
-                font-weight: 800 !important;
-            }}"""
-    
-    st.markdown(f"""<style>
-    /* Botones de filtro de nivel */
-    div[data-testid="column"] > div > div > div > button {{
-        border-radius: 12px !important;
-        font-weight: 700 !important;
-        font-size: 0.9rem !important;
-        padding: 10px 8px !important;
-        min-height: 52px !important;
-    }}
-    </style>""", unsafe_allow_html=True)
+        bg_btn = fg if activo else bg
+        fg_btn = bg if activo else fg
+        brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
+        css_btns += f"""
+        button[data-testid="baseButton-secondary"][key="nfilt_{nv}"],
+        div[data-testid="stButton"] > button[kind="secondary"]:has(div > p:contains("{nv}")) {{
+            background: {bg_btn} !important; color: {fg_btn} !important;
+            border: {brd} !important; border-radius: 12px !important;
+            font-weight: 800 !important; font-size: 0.9rem !important;
+            min-height: 50px !important;
+        }}"""
+    css_btns += "</style>"
+    st.markdown(css_btns, unsafe_allow_html=True)
 
+    # Filtros — radio visual con st.button
     nf_cols = st.columns(4)
     for ni, nv in enumerate(NIVELES_PAUSA):
-        bg, fg, ico = COLORES_NIVEL[nv]
+        bg, fg, ico = CN[nv]
         activo = nivel_sel == nv
         with nf_cols[ni]:
-            # Inyectar color real via CSS scoped al botón
-            btn_id = f"nfilt_{nv}"
+            bg_btn = fg if activo else bg
+            fg_btn = bg if activo else fg
+            brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
             st.markdown(f"""<style>
-            div[data-testid="column"]:nth-child({ni+1}) button {{
-                background: {bg if not activo else fg} !important;
-                color: {fg if not activo else bg} !important;
-                border: 2px solid {fg} !important;
+            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button {{
+                background: {bg_btn} !important;
+                color: {fg_btn} !important;
+                border: {brd} !important;
+                border-radius: 12px !important;
+                font-weight: 800 !important;
+                font-size: 0.88rem !important;
+                min-height: 50px !important;
+                width: 100% !important;
             }}
-            div[data-testid="column"]:nth-child({ni+1}) button:hover {{
-                background: {fg} !important;
-                color: {bg} !important;
-                transform: scale(1.03) !important;
+            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button:hover {{
+                filter: brightness(1.15) !important;
             }}
             </style>""", unsafe_allow_html=True)
             label = f"{'✅ ' if activo else ico+' '}{nv}"
-            if st.button(label, key=btn_id, use_container_width=True):
+            if st.button(label, key=f"nfilt_{nv}", use_container_width=True):
                 st.session_state['_pausa_nivel_filtro'] = nv
                 st.rerun()
 
@@ -14444,6 +14444,29 @@ def tab_pausa_activa(config):
     st.caption(f"📋 {len(modelos_filtrados)} pausas activas disponibles")
 
     modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
+
+    # CSS para botones Iniciar — uno por modelo usando su key único
+    css_iniciar = "<style>"
+    for m in PAUSA_MODELOS:
+        ca = m['color_acento']
+        cf = m['color_fondo']
+        css_iniciar += f"""
+        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button {{
+            background: {ca} !important;
+            color: {cf} !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-weight: 800 !important;
+            font-size: 1rem !important;
+            min-height: 48px !important;
+        }}
+        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button:hover {{
+            filter: brightness(1.12) !important;
+            transform: scale(1.02) !important;
+        }}"""
+    css_iniciar += "</style>"
+    st.markdown(css_iniciar, unsafe_allow_html=True)
+
     cols = st.columns(2)
     for i, m in enumerate(modelos_filtrados):
         with cols[i % 2]:
@@ -14453,34 +14476,22 @@ def tab_pausa_activa(config):
             seleccionado = modelo_seleccionado == m['id']
             niveles_m = m.get('nivel', ['TODOS'])
             nivel_badges = " ".join([
-                f"<span style='background:{COLORES_NIVEL.get(n,('',''))[0]};color:{COLORES_NIVEL.get(n,('','#fff'))[1]};padding:2px 7px;border-radius:10px;font-size:0.7rem;font-weight:700;'>{n}</span>"
+                f"<span style='background:{CN.get(n,('',''))[0]};color:{CN.get(n,('','#fff'))[1]};"
+                f"padding:3px 9px;border-radius:10px;font-size:0.7rem;font-weight:800;'>{n}</span>"
                 for n in niveles_m
             ])
-            borde = f"3px solid {m['color_acento']}" if seleccionado else "2px solid rgba(255,255,255,0.1)"
+            borde = f"3px solid {m['color_acento']}" if seleccionado else "2px solid rgba(255,255,255,0.15)"
             st.markdown(f"""
             <div style='background:{m["color_fondo"]}; border:{borde};
-                        border-radius:14px; padding:16px 12px; margin-bottom:8px;
-                        text-align:center;'>
-                <div style='font-size:2.5rem;'>{m["emoji_principal"]}</div>
-                <div style='color:white; font-size:0.95rem; font-weight:bold; margin:5px 0;'>{m["nombre"]}</div>
-                <div style='color:{m["color_acento"]}; font-size:0.75rem; margin-bottom:6px;'>{m["descripcion"]}</div>
-                <div style='margin-bottom:5px;'>{nivel_badges}</div>
-                <div style='color:rgba(255,255,255,0.7); font-size:0.7rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
+                        border-radius:16px; padding:20px 14px 12px; margin-bottom:4px;
+                        text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.25);'>
+                <div style='font-size:3rem; margin-bottom:8px;'>{m["emoji_principal"]}</div>
+                <div style='color:white; font-size:1rem; font-weight:bold; margin:4px 0 6px;'>{m["nombre"]}</div>
+                <div style='color:{m["color_acento"]}; font-size:0.78rem; margin-bottom:8px;'>{m["descripcion"]}</div>
+                <div style='margin-bottom:8px; display:flex; gap:5px; justify-content:center; flex-wrap:wrap;'>{nivel_badges}</div>
+                <div style='color:rgba(255,255,255,0.65); font-size:0.72rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
             </div>
             """, unsafe_allow_html=True)
-            # Botón Iniciar con color del modelo
-            col_acento = m['color_acento']
-            col_fondo  = m['color_fondo']
-            st.markdown(f"""<style>
-            div[data-testid="column"]:nth-child({(i%2)+1}) div[data-testid="stVerticalBlock"] > div:last-child button {{
-                background: {col_acento} !important;
-                color: {col_fondo} !important;
-                border: none !important;
-                font-weight: 800 !important;
-                font-size: 1rem !important;
-                border-radius: 12px !important;
-            }}
-            </style>""", unsafe_allow_html=True)
             if st.button(f"▶  Iniciar  {m['emoji_principal']}", key=f"sel_pausa_{m['id']}", use_container_width=True):
                 st.session_state['_pausa_modelo_id'] = m['id']
                 st.session_state['_pausa_paso_actual'] = 0
