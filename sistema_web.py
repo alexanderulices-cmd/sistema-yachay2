@@ -14950,64 +14950,60 @@ if(document.getElementById('bgm')) {{
 </body></html>
 """, height=680, scrolling=False)
 
-        # Botones de Streamlit para sincronizar estado real (flechas del iframe no cambian session_state)
+        # Botones de Streamlit para sincronizar estado — div wrapper ID
         _cf = modelo['color_fondo']
         _ca = modelo['color_acento']
         st.markdown(f"""<style>
-        /* Anterior */
-        div[data-testid="column"]:nth-child(1) button {
-            background: #1e293b !important; color: #f1f5f9 !important;
-            border: 2px solid #475569 !important; border-radius: 50px !important;
-            font-weight: 800 !important; font-size: 1rem !important;
-        }
-        div[data-testid="column"]:nth-child(1) button:hover {
-            background: #334155 !important;
-        }
-        /* Cerrar */
-        div[data-testid="column"]:nth-child(2) button {
-            background: #dc2626 !important; color: white !important;
-            border: none !important; border-radius: 50px !important;
-            font-weight: 800 !important;
-        }
-        div[data-testid="column"]:nth-child(2) button:hover {
-            background: #b91c1c !important;
-        }
-        /* Siguiente / Finalizar */
-        div[data-testid="column"]:nth-child(3) button {
-            background: {_ca} !important; color: {_cf} !important;
-            border: none !important; border-radius: 50px !important;
-            font-weight: 800 !important; font-size: 1rem !important;
-        }
-        div[data-testid="column"]:nth-child(3) button:hover {
-            opacity: 0.88 !important;
-        }
+        #nav_prev   button {{ background:#1e293b !important; color:#f1f5f9 !important;
+            border:2px solid #475569 !important; border-radius:50px !important;
+            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
+        #nav_prev   button:hover {{ background:#334155 !important; }}
+        #nav_cerrar button {{ background:#dc2626 !important; color:#fff !important;
+            border:none !important; border-radius:50px !important;
+            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
+        #nav_cerrar button:hover {{ background:#b91c1c !important; }}
+        #nav_sig    button {{ background:{_ca} !important; color:{_cf} !important;
+            border:none !important; border-radius:50px !important;
+            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
+        #nav_sig    button:hover {{ filter:brightness(1.12) !important; }}
+        #nav_fin    button {{ background:#16a34a !important; color:#fff !important;
+            border:none !important; border-radius:50px !important;
+            font-weight:900 !important; font-size:1.05rem !important; min-height:50px !important; width:100% !important; }}
+        #nav_fin    button:hover {{ background:#15803d !important; }}
         </style>""", unsafe_allow_html=True)
+
         nc1, nc2, nc3 = st.columns([1, 2, 1])
         with nc1:
             if paso_idx > 0:
+                st.markdown('<div id="nav_prev">', unsafe_allow_html=True)
                 if st.button("◀  Anterior", use_container_width=True, key="pausa_prev"):
                     st.session_state['_pausa_paso_actual'] -= 1
                     st.rerun()
-            else:
-                st.markdown("&nbsp;")
+                st.markdown('</div>', unsafe_allow_html=True)
         with nc2:
+            st.markdown('<div id="nav_cerrar">', unsafe_allow_html=True)
             if st.button("✖  Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
                 st.session_state['_pausa_activa']    = False
                 st.session_state['_pausa_modelo_id'] = None
                 st.session_state['_pausa_paso_actual'] = 0
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with nc3:
             if paso_idx < total_pasos - 1:
+                st.markdown('<div id="nav_sig">', unsafe_allow_html=True)
                 if st.button("Siguiente  ▶", use_container_width=True, key="pausa_next"):
                     st.session_state['_pausa_paso_actual'] += 1
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
+                st.markdown('<div id="nav_fin">', unsafe_allow_html=True)
                 if st.button("🎉  FINALIZAR", use_container_width=True, key="pausa_fin"):
                     st.balloons()
                     st.session_state['_pausa_activa']    = False
                     st.session_state['_pausa_modelo_id'] = None
                     st.session_state['_pausa_paso_actual'] = 0
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
 
 def tab_yachay_plickers(config):
