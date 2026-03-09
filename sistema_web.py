@@ -9937,7 +9937,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
 
     c_pdf.setFillColor(colors.white)
     c_pdf.setFont("Helvetica-Bold", 16)
-    c_pdf.drawCentredString(w / 2, h - 22, "** RANKING DE ESTUDIANTES **")
+    c_pdf.drawCentredString(w / 2, h - 22, "RANKING DE ESTUDIANTES")
     c_pdf.setFont("Helvetica-Bold", 10)
     c_pdf.drawCentredString(w / 2, h - 36, f"I.E.P. YACHAY  —  {grado}  —  {periodo}")
     c_pdf.setFont("Helvetica", 8)
@@ -10005,7 +10005,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
         cx += hw
     y -= HEADER_H2
 
-    PIE_H   = 32   # espacio reservado para el pie de página
+    PIE_H   = 42   # espacio reservado para el pie de página
     es_primera_pag = True   # para saber si hay que redibujar cabecera
 
     def _dibujar_cabecera_tabla(c_pdf, y_pos):
@@ -10089,11 +10089,20 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
 
         cx = x_margin
 
-        # Puesto / medalla
-        medallas = {0: "[1] 1.", 1: "[2] 2.", 2: "[3] 3."}
-        medalla_txt = medallas.get(idx, f"#{idx + 1}")
-        c_pdf.setFillColor(colors.HexColor("#1e293b"))
-        c_pdf.setFont("Helvetica-Bold", 10 if idx < 3 else 9)
+        # Puesto / medalla — texto limpio sin emojis
+        if idx == 0:
+            medalla_txt = "1. ORO"
+            c_pdf.setFillColor(colors.HexColor("#92400e"))
+        elif idx == 1:
+            medalla_txt = "2. PLATA"
+            c_pdf.setFillColor(colors.HexColor("#374151"))
+        elif idx == 2:
+            medalla_txt = "3. BRONCE"
+            c_pdf.setFillColor(colors.HexColor("#7c2d12"))
+        else:
+            medalla_txt = f"#{idx + 1}"
+            c_pdf.setFillColor(colors.HexColor("#1e293b"))
+        c_pdf.setFont("Helvetica-Bold", 8 if idx < 3 else 9)
         c_pdf.drawCentredString(cx + col_w_pos / 2, y - ROW_H + 5, medalla_txt)
         cx += col_w_pos
 
@@ -10175,7 +10184,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
         c_pdf.setFont("Helvetica-Bold", 9)
         c_pdf.drawString(x_margin + BOX_PAD,
                          box_y - BOX_PAD - 11,
-                         f"[!]  SIN NOTA / NO SE PRESENTARON  ({len(sin_nota)} estudiante{'s' if len(sin_nota) != 1 else ''})")
+                         f"SIN NOTA / NO SE PRESENTARON  ({len(sin_nota)} estudiante{'s' if len(sin_nota) != 1 else ''})")
 
         # Línea separadora dentro del cuadro
         c_pdf.setStrokeColor(colors.HexColor("#fca5a5"))
@@ -10200,19 +10209,35 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
             nombre_sn = nombre_sn[:max_ch_sn] + ("." if len(nombre_sn) > max_ch_sn else "")
             c_pdf.drawString(sx, sy, f"• {nombre_sn}")
 
+    # ── Marca de agua escudo centrada en zona de firma ───────────────────
+    if Path("escudo_upload.png").exists():
+        try:
+            from PIL import Image as PILImage
+            _img_f = PILImage.open("escudo_upload.png")
+            _iw_f, _ih_f = _img_f.size
+            _mw_f = 110; _mh_f = _mw_f / (_iw_f / _ih_f)
+            c_pdf.saveState()
+            c_pdf.setFillAlpha(0.10)
+            c_pdf.drawImage("escudo_upload.png",
+                            w / 2 - _mw_f / 2, PIE_H + 18,
+                            _mw_f, _mh_f, mask='auto')
+            c_pdf.restoreState()
+        except Exception:
+            pass
+
     # ── Línea de firma — Coordinador Académico PREU ──────────────────────
-    firma_y = PIE_H + 42
-    firma_w = 180
+    firma_y = PIE_H + 68          # más alto para más espacio de firma
+    firma_w = 220                  # línea más ancha
     firma_x = w / 2 - firma_w / 2
     c_pdf.setStrokeColor(colors.HexColor("#1e293b"))
-    c_pdf.setLineWidth(0.8)
+    c_pdf.setLineWidth(1.0)
     c_pdf.line(firma_x, firma_y, firma_x + firma_w, firma_y)
     c_pdf.setFillColor(colors.HexColor("#1e293b"))
-    c_pdf.setFont("Helvetica-Bold", 7)
-    c_pdf.drawCentredString(w / 2, firma_y - 9, "COORDINADOR ACADEMICO PREU")
-    c_pdf.setFont("Helvetica", 6)
+    c_pdf.setFont("Helvetica-Bold", 8)
+    c_pdf.drawCentredString(w / 2, firma_y - 11, "COORDINADOR ACADEMICO PREU")
+    c_pdf.setFont("Helvetica", 7)
     c_pdf.setFillColor(colors.HexColor("#64748b"))
-    c_pdf.drawCentredString(w / 2, firma_y - 18, "Firma y Sello")
+    c_pdf.drawCentredString(w / 2, firma_y - 21, "Firma y Sello")
 
     # ── Pie de última página ─────────────────────────────────────────────
     _pie_pagina(c_pdf, grado, periodo, num_pagina)
