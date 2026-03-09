@@ -8965,7 +8965,7 @@ def _restaurar_todos_archivos_binarios():
         ("bin_fondo",         "fondo.png"),
     ]
     # MP3 de Pausa Activa (10 modelos)
-    for i in range(1, 11):
+    for i in range(1, 21):  # 20 modelos de pausa activa
         archivos_binarios.append((f"bin_pausa_mp3_{i}", f"pausa_mp3_{i}.mp3"))
     # MP3 de YACHAY QAWAY
     archivos_binarios.append(("bin_qaway_mp3", str(_plk_dir() / "musica_fondo.mp3")))
@@ -13980,6 +13980,7 @@ PAUSA_MODELOS = [
     {
         "id": 1,
         "nombre": "🌟 Estiramiento Solar",
+        "nivel": ["TODOS"],
         "color_fondo": "#1e3a8a",
         "color_acento": "#fbbf24",
         "emoji_principal": "☀️",
@@ -13995,6 +13996,7 @@ PAUSA_MODELOS = [
     {
         "id": 2,
         "nombre": "🔥 Energia Rapida",
+        "nivel": ["PRIMARIA","SECUNDARIA"],
         "color_fondo": "#dc2626",
         "color_acento": "#fef08a",
         "emoji_principal": "⚡",
@@ -14010,6 +14012,7 @@ PAUSA_MODELOS = [
     {
         "id": 3,
         "nombre": "🌊 Relajacion Cosmica",
+        "nivel": ["SECUNDARIA"],
         "color_fondo": "#0e7490",
         "color_acento": "#a5f3fc",
         "emoji_principal": "🧘",
@@ -14025,6 +14028,7 @@ PAUSA_MODELOS = [
     {
         "id": 4,
         "nombre": "🦁 Poder Animal",
+        "nivel": ["INICIAL","PRIMARIA"],
         "color_fondo": "#7c2d12",
         "color_acento": "#fed7aa",
         "emoji_principal": "🐾",
@@ -14040,6 +14044,7 @@ PAUSA_MODELOS = [
     {
         "id": 5,
         "nombre": "🎯 Concentracion Max",
+        "nivel": ["PRIMARIA","SECUNDARIA"],
         "color_fondo": "#4c1d95",
         "color_acento": "#c4b5fd",
         "emoji_principal": "🧩",
@@ -14055,6 +14060,7 @@ PAUSA_MODELOS = [
     {
         "id": 6,
         "nombre": "🌈 Danza Libre",
+        "nivel": ["TODOS"],
         "color_fondo": "#065f46",
         "color_acento": "#6ee7b7",
         "emoji_principal": "🕺",
@@ -14070,6 +14076,7 @@ PAUSA_MODELOS = [
     {
         "id": 7,
         "nombre": "💧 Hidratacion Activa",
+        "nivel": ["TODOS"],
         "color_fondo": "#1e40af",
         "color_acento": "#bfdbfe",
         "emoji_principal": "🫗",
@@ -14085,6 +14092,7 @@ PAUSA_MODELOS = [
     {
         "id": 8,
         "nombre": "🏆 Desafio Fisico",
+        "nivel": ["PRIMARIA","SECUNDARIA"],
         "color_fondo": "#713f12",
         "color_acento": "#fef3c7",
         "emoji_principal": "🏅",
@@ -14100,6 +14108,7 @@ PAUSA_MODELOS = [
     {
         "id": 9,
         "nombre": "🌺 Yoga Express",
+        "nivel": ["SECUNDARIA"],
         "color_fondo": "#831843",
         "color_acento": "#fce7f3",
         "emoji_principal": "🪷",
@@ -14115,6 +14124,7 @@ PAUSA_MODELOS = [
     {
         "id": 10,
         "nombre": "🎵 Ritmo y Musica",
+        "nivel": ["TODOS"],
         "color_fondo": "#1e1b4b",
         "color_acento": "#e0e7ff",
         "emoji_principal": "🎶",
@@ -14125,6 +14135,167 @@ PAUSA_MODELOS = [
             ("🎹", "Toca el piano en tu escritorio", 10),
             ("🎤", "Canta la melodia — aunque sea mentalmente", 12),
             ("🎊", "Gran final — mueve todo junto!", 10),
+        ]
+    },
+    # ── NUEVOS: por nivel ──────────────────────────────────────────────
+    {
+        "id": 11,
+        "nombre": "🐸 Animales Locos",
+        "nivel": ["INICIAL"],
+        "color_fondo": "#065f46",
+        "color_acento": "#6ee7b7",
+        "emoji_principal": "🐸",
+        "descripcion": "Imita animales con todo tu cuerpo — para los mas pequeños",
+        "pasos": [
+            ("🐸", "Salta como RANA — 5 saltos con las dos piernas juntas!", 12),
+            ("🐘", "Camina como ELEFANTE — brazos colgando y balanceate", 10),
+            ("🦋", "Vuela como MARIPOSA — abre y cierra los brazos", 10),
+            ("🐍", "Muevete como SERPIENTE — ondula todo el cuerpo sentado", 12),
+            ("🦁", "RUGE como Leon — abre la boca y estira los brazos!", 8),
+        ]
+    },
+    {
+        "id": 12,
+        "nombre": "🌈 Colores y Cuerpo",
+        "nivel": ["INICIAL"],
+        "color_fondo": "#7c2d12",
+        "color_acento": "#fde68a",
+        "emoji_principal": "🎨",
+        "descripcion": "Aprender colores moviendose — especial para inicial",
+        "pasos": [
+            ("🔴", "ROJO — toca algo rojo en el salon sin moverte del lugar!", 12),
+            ("💛", "AMARILLO — levanta los brazos como el sol brillante", 8),
+            ("🔵", "AZUL — da 3 pasos lentos como el agua del mar", 10),
+            ("💚", "VERDE — agachate como un arbol en el viento", 10),
+            ("🌈", "ARCO IRIS — pinta el arco iris con tus dos brazos!", 10),
+        ]
+    },
+    {
+        "id": 13,
+        "nombre": "🤸 Simon Dice",
+        "nivel": ["INICIAL","PRIMARIA"],
+        "color_fondo": "#1e1b4b",
+        "color_acento": "#a5b4fc",
+        "emoji_principal": "🎭",
+        "descripcion": "Simon dice — el docente guia los movimientos",
+        "pasos": [
+            ("👆", "Simon dice: toca tu NARIZ con el dedo indice!", 8),
+            ("🦷", "Simon dice: toca tu OREJA IZQUIERDA con la mano derecha!", 8),
+            ("🦵", "Simon dice: levanta la RODILLA DERECHA 5 veces!", 10),
+            ("🙌", "Simon dice: aplaude 10 veces lo mas rapido que puedas!", 8),
+            ("🤐", "Simon dice: cierra los ojos y cuenta hasta 5 en silencio...", 8),
+        ]
+    },
+    {
+        "id": 14,
+        "nombre": "🥊 Karate Kids",
+        "nivel": ["PRIMARIA"],
+        "color_fondo": "#450a0a",
+        "color_acento": "#fca5a5",
+        "emoji_principal": "🥋",
+        "descripcion": "Movimientos de karate para descargar energia positiva",
+        "pasos": [
+            ("🥋", "Posicion de KARATE — pies separados, manos al frente!", 8),
+            ("🤜", "GOLPE DERECHO — extiende el brazo derecho lento x5", 12),
+            ("🤛", "GOLPE IZQUIERDO — alterna con el brazo izquierdo x5", 12),
+            ("🦵", "PATADA LATERAL — levanta la rodilla y extiende x3 cada lado", 15),
+            ("🙏", "REVERENCIA — inclinate hacia adelante en senal de respeto", 8),
+        ]
+    },
+    {
+        "id": 15,
+        "nombre": "🦸 Superheroes",
+        "nivel": ["PRIMARIA"],
+        "color_fondo": "#1e3a8a",
+        "color_acento": "#fbbf24",
+        "emoji_principal": "🦸",
+        "descripcion": "Poses de superheroes para activar la confianza",
+        "pasos": [
+            ("🦸", "Pose de SUPERMAN — un brazo arriba, corre en el lugar!", 10),
+            ("🕷️", "Pose de SPIDERMAN — trepa la pared imaginaria!", 12),
+            ("🦇", "Pose de BATMAN — abre el cape con los brazos bien abiertos", 8),
+            ("💪", "Pose de HULK — hincha los musculos y ruge fuerte!", 8),
+            ("⭐", "Eres un SUPERHEROE — tu pose especial inventada!", 12),
+        ]
+    },
+    {
+        "id": 16,
+        "nombre": "🎪 Circo Express",
+        "nivel": ["PRIMARIA","SECUNDARIA"],
+        "color_fondo": "#4c1d95",
+        "color_acento": "#f0abfc",
+        "emoji_principal": "🎡",
+        "descripcion": "Actos de circo imaginarios que activan coordinacion",
+        "pasos": [
+            ("🤹", "Malabarista — lanza y atrapa pelotas imaginarias x10", 12),
+            ("🎪", "Equilibrista — camina sobre la cuerda floja imaginaria", 10),
+            ("🦁", "Domador — da ordenes a los leones con la mano", 8),
+            ("🎠", "Acrobata — rueda imaginaria con los brazos extendidos", 12),
+            ("🎉", "Gran final de circo — todos aplauden al artista!", 8),
+        ]
+    },
+    {
+        "id": 17,
+        "nombre": "🧠 Brain Gym",
+        "nivel": ["PRIMARIA","SECUNDARIA"],
+        "color_fondo": "#134e4a",
+        "color_acento": "#99f6e4",
+        "emoji_principal": "🧩",
+        "descripcion": "Ejercicios de gimnasia cerebral para activar ambos hemisferios",
+        "pasos": [
+            ("✋", "Toca tu nariz DERECHA con mano IZQUIERDA — alterna 10x", 15),
+            ("🔄", "Dibuja un INFINITO en el aire con tu dedo — grande y lento", 12),
+            ("👣", "Marcha cruzada — rodilla izquierda con codo derecho x10", 15),
+            ("✍️", "Escribe tu nombre EN EL AIRE con el codo izquierdo", 12),
+            ("🧘", "Bosteza exagerado 3 veces — activa el cerebro!", 8),
+        ]
+    },
+    {
+        "id": 18,
+        "nombre": "🌬️ Respiracion Magica",
+        "nivel": ["TODOS"],
+        "color_fondo": "#0c4a6e",
+        "color_acento": "#bae6fd",
+        "emoji_principal": "🫧",
+        "descripcion": "Tecnicas de respiracion para calmarse y concentrarse",
+        "pasos": [
+            ("🫧", "Inhala por la nariz 4 segundos — hincha la barriga", 6),
+            ("✋", "Cuenta en tus 4 dedos — retiene el aire 4 segundos", 5),
+            ("💨", "Exhala soplando como apagar velas — 8 segundos", 10),
+            ("🌊", "Respira como las OLAS del mar — sube y baja los brazos", 15),
+            ("😌", "Sonrie y abre los ojos — listos para aprender!", 8),
+        ]
+    },
+    {
+        "id": 19,
+        "nombre": "💃 Macarena 2.0",
+        "nivel": ["TODOS"],
+        "color_fondo": "#7c2d12",
+        "color_acento": "#fed7aa",
+        "emoji_principal": "🕺",
+        "descripcion": "Secuencia de baile coordinado al ritmo — todos juntos",
+        "pasos": [
+            ("🤲", "Extiende el BRAZO DERECHO hacia adelante — palma abajo", 8),
+            ("🤲", "Extiende el BRAZO IZQUIERDO — palma abajo — al ritmo", 8),
+            ("🔄", "Gira las dos palmas — ahora miran hacia arriba!", 8),
+            ("🙌", "Brazos al pecho — derecho e izquierdo cruzados", 8),
+            ("💃", "Manos a la cintura y mueve las caderas — 8 tiempos!", 12),
+        ]
+    },
+    {
+        "id": 20,
+        "nombre": "🏕️ Naturaleza Viva",
+        "nivel": ["INICIAL","PRIMARIA"],
+        "color_fondo": "#14532d",
+        "color_acento": "#bbf7d0",
+        "emoji_principal": "🌿",
+        "descripcion": "Conectar con la naturaleza a traves del movimiento",
+        "pasos": [
+            ("🌱", "Eres una SEMILLA — enrroscate pequeno en tu silla", 8),
+            ("🌿", "CRECE lentamente — estira brazos y piernas al cielo", 12),
+            ("🌳", "Eres un ARBOL — balancea tus ramas con el viento", 12),
+            ("🌻", "El SOL te da energia — abre bien los brazos y sonrie", 10),
+            ("🍃", "Una BRISA te mueve — ondula todo el cuerpo suavemente", 10),
         ]
     },
 ]
@@ -14207,26 +14378,65 @@ def tab_pausa_activa(config):
 
     pausa_cfg = _cargar_pausa_config()
 
-    # ── Selección de modelo ───────────────────────────────────────────────
+    # ── Selección de modelo con filtro por nivel ─────────────────────────
     st.markdown("### 🎯 Elige tu Pausa Activa")
 
-    cols = st.columns(2)
-    modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
+    NIVELES_PAUSA = ["TODOS", "INICIAL", "PRIMARIA", "SECUNDARIA"]
+    COLORES_NIVEL = {
+        "TODOS":      ("#0f172a", "#e2e8f0"),
+        "INICIAL":    ("#065f46", "#6ee7b7"),
+        "PRIMARIA":   ("#1e3a8a", "#93c5fd"),
+        "SECUNDARIA": ("#7c2d12", "#fca5a5"),
+    }
+    nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
 
-    for i, m in enumerate(PAUSA_MODELOS):
+    # Botones de filtro por nivel
+    nf_cols = st.columns(4)
+    for ni, nv in enumerate(NIVELES_PAUSA):
+        with nf_cols[ni]:
+            bg, fg = COLORES_NIVEL[nv]
+            activo = nivel_sel == nv
+            st.markdown(f"""<div style='text-align:center;'>
+            <button style='background:{"white" if activo else bg};
+                color:{"#0f172a" if activo else fg};
+                border:2px solid {fg if activo else bg};
+                border-radius:20px;padding:6px 0;width:100%;
+                font-weight:700;font-size:0.9rem;cursor:pointer;'>
+                {"✅ " if activo else ""}{nv}
+            </button></div>""", unsafe_allow_html=True)
+            if st.button(nv, key=f"nfilt_{nv}", use_container_width=True,
+                         type="primary" if activo else "secondary"):
+                st.session_state['_pausa_nivel_filtro'] = nv
+                st.rerun()
+
+    nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
+    modelos_filtrados = [m for m in PAUSA_MODELOS
+                         if nivel_sel == 'TODOS' or nivel_sel in m.get('nivel', ['TODOS'])]
+    st.caption(f"📋 {len(modelos_filtrados)} pausas activas disponibles")
+
+    modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
+    cols = st.columns(2)
+    for i, m in enumerate(modelos_filtrados):
         with cols[i % 2]:
-            tiene_musica = Path(f"pausa_mp3_{m['id']}.mp3").exists()
+            tiene_musica = any(Path(f"pausa_mp3_{m['id']}.{ext}").exists()
+                               for ext in ["mp3","ogg","wav"])
             musica_badge = "🎵" if tiene_musica else "🔇"
             seleccionado = modelo_seleccionado == m['id']
-            borde = "4px solid #fbbf24" if seleccionado else "2px solid #334155"
+            niveles_m = m.get('nivel', ['TODOS'])
+            nivel_badges = " ".join([
+                f"<span style='background:{COLORES_NIVEL.get(n,('',''))[0]};color:{COLORES_NIVEL.get(n,('','#fff'))[1]};padding:2px 7px;border-radius:10px;font-size:0.7rem;font-weight:700;'>{n}</span>"
+                for n in niveles_m
+            ])
+            borde = f"3px solid {m['color_acento']}" if seleccionado else "2px solid rgba(255,255,255,0.1)"
             st.markdown(f"""
             <div style='background:{m["color_fondo"]}; border:{borde};
-                        border-radius:14px; padding:18px 14px; margin-bottom:10px;
-                        text-align:center; cursor:pointer;'>
-                <div style='font-size:2.8rem;'>{m["emoji_principal"]}</div>
-                <div style='color:white; font-size:1.05rem; font-weight:bold; margin:6px 0;'>{m["nombre"]}</div>
-                <div style='color:{m["color_acento"]}; font-size:0.8rem;'>{m["descripcion"]}</div>
-                <div style='color:white; font-size:0.75rem; margin-top:6px;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
+                        border-radius:14px; padding:16px 12px; margin-bottom:8px;
+                        text-align:center;'>
+                <div style='font-size:2.5rem;'>{m["emoji_principal"]}</div>
+                <div style='color:white; font-size:0.95rem; font-weight:bold; margin:5px 0;'>{m["nombre"]}</div>
+                <div style='color:{m["color_acento"]}; font-size:0.75rem; margin-bottom:6px;'>{m["descripcion"]}</div>
+                <div style='margin-bottom:5px;'>{nivel_badges}</div>
+                <div style='color:rgba(255,255,255,0.7); font-size:0.7rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button(f"▶ Iniciar", key=f"sel_pausa_{m['id']}", use_container_width=True, type="primary"):
