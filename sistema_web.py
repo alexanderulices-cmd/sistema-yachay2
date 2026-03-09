@@ -14390,60 +14390,64 @@ def tab_pausa_activa(config):
     }
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
 
-    # ── CSS global único — estilos por key de botón ──────────────────────
-    css_btns = "<style>"
-    # Filtros de nivel
-    for nv, (bg, fg, _ic) in CN.items():
-        activo = nivel_sel == nv
-        bg_btn = fg if activo else bg
-        fg_btn = bg if activo else fg
-        brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
-        css_btns += f"""
-        button[data-testid="baseButton-secondary"][key="nfilt_{nv}"],
-        div[data-testid="stButton"] > button[kind="secondary"]:has(div > p:contains("{nv}")) {{
-            background: {bg_btn} !important; color: {fg_btn} !important;
-            border: {brd} !important; border-radius: 12px !important;
-            font-weight: 800 !important; font-size: 0.9rem !important;
-            min-height: 50px !important;
-        }}"""
-    css_btns += "</style>"
-    st.markdown(css_btns, unsafe_allow_html=True)
-
     # Filtros — radio visual con st.button
     nf_cols = st.columns(4)
     for ni, nv in enumerate(NIVELES_PAUSA):
         bg, fg, ico = CN[nv]
         activo = nivel_sel == nv
         with nf_cols[ni]:
-            bg_btn = fg if activo else bg
-            fg_btn = bg if activo else fg
-            brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
-            st.markdown(f"""<style>
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button {{
-                background: {bg_btn} !important;
-                background-color: {bg_btn} !important;
-                color: {fg_btn} !important;
-                -webkit-text-fill-color: {fg_btn} !important;
-                border: {brd} !important;
-                border-radius: 12px !important;
-                font-weight: 800 !important;
-                font-size: 0.88rem !important;
-                min-height: 50px !important;
-                width: 100% !important;
-            }}
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button p,
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button span {{
-                color: {fg_btn} !important;
-                -webkit-text-fill-color: {fg_btn} !important;
-            }}
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button:hover {{
-                filter: brightness(1.15) !important;
-            }}
-            </style>""", unsafe_allow_html=True)
             label = f"{'✅ ' if activo else ico+' '}{nv}"
             if st.button(label, key=f"nfilt_{nv}", use_container_width=True):
                 st.session_state['_pausa_nivel_filtro'] = nv
                 st.rerun()
+
+    # ── JS: estilizar botones de nivel por texto (CSS key-selector no funciona en Streamlit) ──
+    import streamlit.components.v1 as _comp_nv
+    _js_nivel = """<script>
+(function applyNivelStyles() {
+    var colores = {
+        "TODOS":      {bg: "#0f172a", fg: "#e2e8f0"},
+        "INICIAL":    {bg: "#065f46", fg: "#6ee7b7"},
+        "PRIMARIA":   {bg: "#1e3a8a", fg: "#93c5fd"},
+        "SECUNDARIA": {bg: "#7c2d12", fg: "#fca5a5"}
+    };
+    var activo = \"""" + nivel_sel + """\";
+    function doStyle() {
+        try {
+            var btns = parent.document.querySelectorAll('button');
+            btns.forEach(function(btn) {
+                var txt = (btn.innerText || '').trim();
+                for (var key in colores) {
+                    if (txt.indexOf(key) !== -1) {
+                        var isAct = (key === activo);
+                        var bg = isAct ? colores[key].fg : colores[key].bg;
+                        var fg = isAct ? colores[key].bg : colores[key].fg;
+                        var brd = (isAct ? '3px' : '2px') + ' solid ' + colores[key].fg;
+                        btn.style.setProperty('background',               bg,  'important');
+                        btn.style.setProperty('background-color',         bg,  'important');
+                        btn.style.setProperty('color',                    fg,  'important');
+                        btn.style.setProperty('-webkit-text-fill-color',  fg,  'important');
+                        btn.style.setProperty('border',                   brd, 'important');
+                        btn.style.setProperty('border-radius',            '12px','important');
+                        btn.style.setProperty('font-weight',              '800', 'important');
+                        btn.style.setProperty('min-height',               '50px','important');
+                        var p = btn.querySelector('p');
+                        if (p) {
+                            p.style.setProperty('color',                   fg, 'important');
+                            p.style.setProperty('-webkit-text-fill-color', fg, 'important');
+                        }
+                        break;
+                    }
+                }
+            });
+        } catch(e) {}
+    }
+    doStyle();
+    setTimeout(doStyle, 150);
+    setTimeout(doStyle, 500);
+})();
+</script>"""
+    _comp_nv.html(_js_nivel, height=0)
 
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
     modelos_filtrados = [m for m in PAUSA_MODELOS
@@ -14452,36 +14456,50 @@ def tab_pausa_activa(config):
 
     modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
 
-    # CSS para botones Iniciar — uno por modelo usando su key único
-    # Nota: se agrega -webkit-text-fill-color para sobreescribir el CSS global
-    # que fuerza texto blanco en todos los botones (invisible en fondos claros)
-    css_iniciar = "<style>"
-    for m in PAUSA_MODELOS:
-        ca = m['color_acento']
-        cf = m['color_fondo']
-        css_iniciar += f"""
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button {{
-            background: {ca} !important;
-            background-color: {ca} !important;
-            color: {cf} !important;
-            -webkit-text-fill-color: {cf} !important;
-            border: 2px solid {cf} !important;
-            border-radius: 12px !important;
-            font-weight: 800 !important;
-            font-size: 1rem !important;
-            min-height: 48px !important;
-        }}
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button p,
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button span {{
-            color: {cf} !important;
-            -webkit-text-fill-color: {cf} !important;
-        }}
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button:hover {{
-            filter: brightness(1.12) !important;
-            transform: scale(1.02) !important;
-        }}"""
-    css_iniciar += "</style>"
-    st.markdown(css_iniciar, unsafe_allow_html=True)
+    # ── JS: estilizar botones Iniciar por texto del botón (CSS key-selector no funciona) ──
+    import streamlit.components.v1 as _comp_ini
+    _mapa_ini = {m['emoji_principal']: (m['color_acento'], m['color_fondo']) for m in PAUSA_MODELOS}
+    _js_ini_entries = []
+    for _emoji, (_ca, _cf) in _mapa_ini.items():
+        _js_ini_entries.append(f'    "{_emoji}": {{bg: "{_ca}", fg: "{_cf}"}}')
+    _js_ini_map = "{\n" + ",\n".join(_js_ini_entries) + "\n}"
+    _js_ini = """<script>
+(function applyIniciarStyles() {
+    var mapaEmoji = """ + _js_ini_map + """;
+    function doStyle() {
+        try {
+            parent.document.querySelectorAll('button').forEach(function(btn) {
+                var txt = btn.innerText || '';
+                if (txt.indexOf('Iniciar') === -1) return;
+                for (var emoji in mapaEmoji) {
+                    if (txt.indexOf(emoji) !== -1) {
+                        var bg = mapaEmoji[emoji].bg;
+                        var fg = mapaEmoji[emoji].fg;
+                        btn.style.setProperty('background',              bg,  'important');
+                        btn.style.setProperty('background-color',        bg,  'important');
+                        btn.style.setProperty('color',                   fg,  'important');
+                        btn.style.setProperty('-webkit-text-fill-color', fg,  'important');
+                        btn.style.setProperty('border', '2px solid ' + fg,   'important');
+                        btn.style.setProperty('border-radius',       '12px', 'important');
+                        btn.style.setProperty('font-weight',         '800',  'important');
+                        btn.style.setProperty('min-height',          '48px', 'important');
+                        var p = btn.querySelector('p');
+                        if (p) {
+                            p.style.setProperty('color',                   fg, 'important');
+                            p.style.setProperty('-webkit-text-fill-color', fg, 'important');
+                        }
+                        break;
+                    }
+                }
+            });
+        } catch(e) {}
+    }
+    doStyle();
+    setTimeout(doStyle, 150);
+    setTimeout(doStyle, 500);
+})();
+</script>"""
+    _comp_ini.html(_js_ini, height=0)
 
     cols = st.columns(2)
     for i, m in enumerate(modelos_filtrados):
