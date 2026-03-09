@@ -9696,9 +9696,10 @@ def tab_registrar_notas(config):
 
     areas_nombres = [a['nombre'] for a in areas]
     ranking_filas = []
+    sin_nota_filas = []   # alumnos sin nota o NSP
     for dni_r, data_r in notas_actuales.items():
-        # Excluir NSP del ranking
-        if data_r.get('nsp', False):
+        if data_r.get('nsp', False) or data_r['promedio'] == 0:
+            sin_nota_filas.append({'DNI': dni_r, 'Nombre': data_r['nombre']})
             continue
         if data_r['promedio'] > 0:
             fila = {'DNI': dni_r, 'Nombre': data_r['nombre']}
@@ -9706,6 +9707,7 @@ def tab_registrar_notas(config):
                 fila[a_name] = data_r['areas'].get(a_name, 0)
             fila['Promedio'] = data_r['promedio']
             ranking_filas.append(fila)
+    sin_nota_filas.sort(key=lambda x: x['Nombre'])
 
     ranking_filas.sort(key=lambda x: x['Promedio'], reverse=True)
     for i, f in enumerate(ranking_filas):
@@ -9828,7 +9830,7 @@ def tab_registrar_notas(config):
 
         with col_g2:
             if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval", type="primary"):
-                pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config)
+                pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config, sin_nota=sin_nota_filas)
                 st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
@@ -9838,8 +9840,9 @@ def tab_registrar_notas(config):
             st.markdown("### 📱 Enviar Notas por WhatsApp")
             for fila in ranking_filas:
                 alumno_wa = BaseDatos.buscar_por_dni(fila.get('DNI', ''))
-                cel = alumno_wa.get('Celular_Apoderado', '') if alumno_wa else ''
-                if cel:
+                cel = str(alumno_wa.get('Celular_Apoderado', '') or '') if alumno_wa else ''
+                cel = cel.strip() if cel.lower() not in ('nan', 'none', '') else ''
+                if cel and cel.strip():
                     # Mensaje con caracteres seguros
                     msg = f"🏫 *I.E.P. YACHAY - CHINCHERO*\n📊 *REPORTE DE NOTAS*\n\n"
                     msg += f"👤 Alumno: {fila['Nombre']}\n📚 Grado: {grado_sel}\n📅 Periodo: {bim_sel}\n"
@@ -9879,166 +9882,326 @@ def tab_registrar_notas(config):
         st.warning("⚠️ Ingresa al menos una nota para guardar")
 
 
-def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config):
-    """Genera PDF del ranking con colores y medallas — PÁGINA COMPLETA"""
+def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=None):
+    """Genera PDF del ranking — colores por área, nombres completos, separadores visuales"""
+    if sin_nota is None:
+        sin_nota = []
     buffer = io.BytesIO()
     c_pdf = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
 
-    # ── Marca de agua PRIMERO (detrás de todo) — más abajo para no tapar tabla ──
+    # Paleta de colores por área (fondo cabecera y franja de columna)
+    PALETA_AREAS = [
+        ("#1e3a8a", "#dbeafe"),  # azul
+        ("#14532d", "#dcfce7"),  # verde
+        ("#7c2d12", "#ffedd5"),  # naranja
+        ("#581c87", "#f3e8ff"),  # violeta
+        ("#164e63", "#cffafe"),  # cyan
+        ("#713f12", "#fef9c3"),  # amarillo oscuro
+        ("#1e1b4b", "#e0e7ff"),  # índigo
+        ("#831843", "#fce7f3"),  # rosa
+    ]
+
+    # ── Marca de agua ────────────────────────────────────────────────────
     if Path("escudo_upload.png").exists():
         try:
             from PIL import Image as PILImage
             img = PILImage.open("escudo_upload.png")
             iw, ih = img.size
-            mw = 220; mh = mw / (iw/ih)
+            mw = 200; mh = mw / (iw / ih)
             c_pdf.saveState()
-            c_pdf.setFillAlpha(0.20)
-            # Posicionar en zona inferior vacía (debajo de filas de datos)
-            c_pdf.drawImage("escudo_upload.png", w/2-mw/2, 40, mw, mh, mask='auto')
+            c_pdf.setFillAlpha(0.12)
+            c_pdf.drawImage("escudo_upload.png", w/2-mw/2, h/2-mh/2, mw, mh, mask='auto')
             c_pdf.restoreState()
         except Exception:
             pass
 
-    # ── Barra azul superior ──────────────────────────────────────────────
+    # ── Cabecera superior ────────────────────────────────────────────────
     c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.rect(0, h - 12, w, 12, fill=1, stroke=0)
+    c_pdf.rect(0, h - 55, w, 55, fill=1, stroke=0)
 
-    # ── Escudos — 45px, bien separados del centro ────────────────────────
+    # Escudos
     ALTO_ESC = 45
-    esc_izq = "escudo_upload.png"
-    esc_der = "escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png"
-    try:
-        from PIL import Image as PILImage
-        if Path(esc_izq).exists():
-            img = PILImage.open(esc_izq)
-            iw, ih = img.size
-            aw = ALTO_ESC * (iw/ih)
-            c_pdf.drawImage(esc_izq, 12, h-13-ALTO_ESC, aw, ALTO_ESC, mask='auto')
-        if Path(esc_der).exists():
-            img2 = PILImage.open(esc_der)
-            iw2, ih2 = img2.size
-            aw2 = ALTO_ESC * (iw2/ih2)
-            c_pdf.drawImage(esc_der, w-12-aw2, h-13-ALTO_ESC, aw2, ALTO_ESC, mask='auto')
-    except Exception:
-        pass
+    for path_e, lado in [("escudo_upload.png", "izq"),
+                          ("escudo2_upload.png" if Path("escudo2_upload.png").exists() else "escudo_upload.png", "der")]:
+        try:
+            if Path(path_e).exists():
+                from PIL import Image as PILImage
+                img = PILImage.open(path_e)
+                iw, ih = img.size
+                aw = ALTO_ESC * (iw / ih)
+                xp = 10 if lado == "izq" else w - 10 - aw
+                c_pdf.drawImage(path_e, xp, h - 52, aw, ALTO_ESC, mask='auto')
+        except Exception:
+            pass
 
-    # ── Textos centrados — título, institución y fecha en zona central ───
-    c_pdf.setFillColor(colors.HexColor("#001e7c"))
-    c_pdf.setFont("Helvetica-Bold", 18)
-    c_pdf.drawCentredString(w / 2, h - 30, "🏆 RANKING DE ESTUDIANTES")
-    c_pdf.setFont("Helvetica-Bold", 11)
-    c_pdf.drawCentredString(w / 2, h - 45, f"I.E.P. YACHAY — {grado} — {periodo}")
-    c_pdf.setFont("Helvetica", 8)
-    c_pdf.setFillColor(colors.HexColor("#6b7280"))
-    c_pdf.drawCentredString(w / 2, h - 58, hora_peru().strftime('%d/%m/%Y'))
-    c_pdf.setFillColor(colors.black)
-
-    # Tabla más grande — usa todo el ancho disponible
-    y_start = h - 70
-    x_margin = 15
-    table_width = w - 2 * x_margin
-    
-    # Columnas dinámicas según número de áreas
-    col_headers = ['#', 'Estudiante'] + [a[:15] for a in areas] + ['Promedio']
-    num_cols = len(col_headers)
-    
-    # Ancho dinámico: más espacio a Estudiante, resto proporcional
-    col_w_puesto = 40
-    col_w_nombre = min(200, table_width * 0.25)
-    col_w_prom = 70
-    remaining = table_width - col_w_puesto - col_w_nombre - col_w_prom
-    col_w_area = remaining / len(areas) if areas else 60
-    
-    col_widths = [col_w_puesto, col_w_nombre] + [col_w_area] * len(areas) + [col_w_prom]
-    
-    y = y_start
-
-    # Header row — más grande
-    c_pdf.setFillColor(colors.HexColor("#1e3a8a"))
-    c_pdf.rect(x_margin, y - 5, table_width, 22, fill=1, stroke=0)
     c_pdf.setFillColor(colors.white)
+    c_pdf.setFont("Helvetica-Bold", 16)
+    c_pdf.drawCentredString(w / 2, h - 22, "🏆  RANKING DE ESTUDIANTES")
     c_pdf.setFont("Helvetica-Bold", 10)
-    x = x_margin
-    for i, hdr in enumerate(col_headers):
-        c_pdf.drawString(x + 5, y + 3, hdr)
-        x += col_widths[i]
-    y -= 22
-
-    # Data rows — más grandes
-    row_height = 20
-    c_pdf.setFont("Helvetica", 10)
-    
-    for idx, fila in enumerate(ranking_filas):
-        if y < 40:
-            c_pdf.showPage()
-            y = h - 30
-
-        # Color de fondo según puesto
-        if idx == 0:
-            c_pdf.setFillColor(colors.HexColor("#fef3c7"))  # Oro
-        elif idx == 1:
-            c_pdf.setFillColor(colors.HexColor("#e5e7eb"))  # Plata
-        elif idx == 2:
-            c_pdf.setFillColor(colors.HexColor("#fed7aa"))  # Bronce
-        elif idx % 2 == 0:
-            c_pdf.setFillColor(colors.HexColor("#f9fafb"))
-        else:
-            c_pdf.setFillColor(colors.white)
-        c_pdf.rect(x_margin, y - 5, table_width, row_height, fill=1, stroke=0)
-
-        c_pdf.setFillColor(colors.black)
-        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 11 if idx < 3 else 10)
-        x = x_margin
-        
-        # Puesto con MEDALLA MUY VISIBLE
-        medalla_txt = fila.get('Medalla', f"#{idx + 1}")
-        if idx == 0:
-            medalla_txt = "🥇 1°"
-        elif idx == 1:
-            medalla_txt = "🥈 2°"
-        elif idx == 2:
-            medalla_txt = "🥉 3°"
-        else:
-            medalla_txt = f"#{idx + 1}"
-        
-        c_pdf.setFont("Helvetica-Bold", 12 if idx < 3 else 10)
-        c_pdf.drawString(x + 5, y + 3, medalla_txt)
-        x += col_widths[0]
-        
-        # Nombre - ajustar longitud para que no se salga
-        nombre_completo = str(fila['Nombre'])
-        max_nombre_chars = int(col_w_nombre / 6)  # ~6 pixels por char
-        nombre_display = nombre_completo[:max_nombre_chars] if len(nombre_completo) > max_nombre_chars else nombre_completo
-        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 10)
-        c_pdf.drawString(x + 5, y + 3, nombre_display)
-        x += col_widths[1]
-        
-        # Notas por área
-        c_pdf.setFont("Helvetica-Bold", 10)
-        for a in areas:
-            nota_v = fila.get(a, 0)
-            lit_v = nota_a_letra(nota_v) if nota_v > 0 else '-'
-            col_n = color_semaforo(lit_v)
-            c_pdf.setFillColor(colors.HexColor(col_n))
-            c_pdf.drawString(x + 5, y + 3, f"{nota_v} ({lit_v})" if nota_v > 0 else "-")
-            c_pdf.setFillColor(colors.black)
-            x += col_w_area
-        
-        # Promedio MÁS GRANDE Y DESTACADO
-        c_pdf.setFont("Helvetica-Bold", 13 if idx < 3 else 11)
-        prom_c = "#16a34a" if fila['Promedio'] >= 14 else "#dc2626" if fila['Promedio'] < 11 else "#f59e0b"
-        c_pdf.setFillColor(colors.HexColor(prom_c))
-        c_pdf.drawString(x + 5, y + 3, str(fila['Promedio']))
-        c_pdf.setFillColor(colors.black)
-        y -= row_height
-
-    # Pie
+    c_pdf.drawCentredString(w / 2, h - 36, f"I.E.P. YACHAY  —  {grado}  —  {periodo}")
     c_pdf.setFont("Helvetica", 8)
-    c_pdf.setFillColor(colors.HexColor("#6b7280"))
-    c_pdf.drawString(15, 22, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
-    c_pdf.drawString(15, 10, "Este es un documento referencial. El consolidado oficial lo registra el/la docente.")
-    c_pdf.drawRightString(w - 15, 22, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    c_pdf.setFillColor(colors.HexColor("#93c5fd"))
+    c_pdf.drawCentredString(w / 2, h - 49, hora_peru().strftime('%d/%m/%Y'))
+
+    # ── Layout de columnas ───────────────────────────────────────────────
+    x_margin   = 12
+    table_w    = w - 2 * x_margin
+    col_w_pos  = 38
+    col_w_nom  = min(175, table_w * 0.23)
+    col_w_prom = 62
+    remaining  = table_w - col_w_pos - col_w_nom - col_w_prom
+    col_w_area = max(55, remaining / max(len(areas), 1))
+
+    col_widths = [col_w_pos, col_w_nom] + [col_w_area] * len(areas) + [col_w_prom]
+
+    # ── Cabecera de tabla — dos filas: fila área (coloreada) + fila nombre área ──
+    y = h - 58
+    HEADER_H1 = 14   # franja de color del área
+    HEADER_H2 = 22   # nombre del área (puede ser 2 líneas)
+    ROW_H     = 18
+
+    # Fila superior: bloques de color por área + encabezados fijos
+    # Puesto
+    c_pdf.setFillColor(colors.HexColor("#0f172a"))
+    c_pdf.rect(x_margin, y - HEADER_H1, col_w_pos, HEADER_H1, fill=1, stroke=0)
+    # Nombre
+    c_pdf.rect(x_margin + col_w_pos, y - HEADER_H1, col_w_nom, HEADER_H1, fill=1, stroke=0)
+    # Promedio
+    x_prom = x_margin + col_w_pos + col_w_nom + col_w_area * len(areas)
+    c_pdf.setFillColor(colors.HexColor("#0f172a"))
+    c_pdf.rect(x_prom, y - HEADER_H1, col_w_prom, HEADER_H1, fill=1, stroke=0)
+
+    # Bloques de color por área en fila superior
+    x_area_start = x_margin + col_w_pos + col_w_nom
+    for ai, area in enumerate(areas):
+        col_hex, _ = PALETA_AREAS[ai % len(PALETA_AREAS)]
+        c_pdf.setFillColor(colors.HexColor(col_hex))
+        c_pdf.rect(x_area_start + ai * col_w_area, y - HEADER_H1,
+                   col_w_area, HEADER_H1, fill=1, stroke=0)
+        # Nombre del área centrado en esa franja — font pequeño
+        c_pdf.setFillColor(colors.white)
+        c_pdf.setFont("Helvetica-Bold", 6)
+        area_label = area if len(area) <= 18 else area[:17] + "."
+        c_pdf.drawCentredString(x_area_start + ai * col_w_area + col_w_area / 2,
+                                y - HEADER_H1 + 3, area_label)
+
+    y -= HEADER_H1
+
+    # Fila inferior de cabecera: "#", "APELLIDOS Y NOMBRES", "NOTA (LIT)", "PROM."
+    c_pdf.setFillColor(colors.HexColor("#1e293b"))
+    c_pdf.rect(x_margin, y - HEADER_H2, table_w, HEADER_H2, fill=1, stroke=0)
+    c_pdf.setFillColor(colors.white)
+    c_pdf.setFont("Helvetica-Bold", 8)
+    cx = x_margin
+    for hi, hw in zip(["#", "APELLIDOS Y NOMBRES"] + ["NOTA  (LIT)"] * len(areas) + ["PROMEDIO"],
+                       col_widths):
+        c_pdf.drawCentredString(cx + hw / 2, y - HEADER_H2 + 8, hi)
+        # Separador vertical entre áreas
+        if hi == "NOTA  (LIT)":
+            c_pdf.setStrokeColor(colors.HexColor("#475569"))
+            c_pdf.setLineWidth(0.4)
+            c_pdf.line(cx, y, cx, y - HEADER_H2)
+        cx += hw
+    y -= HEADER_H2
+
+    PIE_H   = 32   # espacio reservado para el pie de página
+    es_primera_pag = True   # para saber si hay que redibujar cabecera
+
+    def _dibujar_cabecera_tabla(c_pdf, y_pos):
+        """Redibuja la cabecera de la tabla en páginas adicionales"""
+        c_pdf.setFillColor(colors.HexColor("#1e293b"))
+        c_pdf.rect(x_margin, y_pos - HEADER_H1, table_w, HEADER_H1, fill=1, stroke=0)
+        cx2 = x_margin
+        for ai2, area2 in enumerate(areas):
+            col_hex2, _ = PALETA_AREAS[ai2 % len(PALETA_AREAS)]
+            c_pdf.setFillColor(colors.HexColor(col_hex2))
+            c_pdf.rect(x_margin + col_w_pos + col_w_nom + ai2 * col_w_area,
+                       y_pos - HEADER_H1, col_w_area, HEADER_H1, fill=1, stroke=0)
+            c_pdf.setFillColor(colors.white)
+            c_pdf.setFont("Helvetica-Bold", 6)
+            area_l2 = area2 if len(area2) <= 18 else area2[:17] + "."
+            c_pdf.drawCentredString(
+                x_margin + col_w_pos + col_w_nom + ai2 * col_w_area + col_w_area / 2,
+                y_pos - HEADER_H1 + 3, area_l2)
+        y2 = y_pos - HEADER_H1
+        c_pdf.setFillColor(colors.HexColor("#0f172a"))
+        c_pdf.rect(x_margin, y2 - HEADER_H2, table_w, HEADER_H2, fill=1, stroke=0)
+        c_pdf.setFillColor(colors.white)
+        c_pdf.setFont("Helvetica-Bold", 8)
+        cx3 = x_margin
+        for hi2, hw2 in zip(["#", "APELLIDOS Y NOMBRES"] + ["NOTA  (LIT)"] * len(areas) + ["PROMEDIO"],
+                             col_widths):
+            c_pdf.drawCentredString(cx3 + hw2 / 2, y2 - HEADER_H2 + 8, hi2)
+            cx3 += hw2
+        return y2 - HEADER_H2
+
+    def _pie_pagina(c_pdf, grado, periodo, pagina):
+        """Dibuja pie de página con línea separadora"""
+        c_pdf.setStrokeColor(colors.HexColor("#cbd5e1"))
+        c_pdf.setLineWidth(0.5)
+        c_pdf.line(x_margin, PIE_H + 12, w - x_margin, PIE_H + 12)
+        c_pdf.setFont("Helvetica", 7)
+        c_pdf.setFillColor(colors.HexColor("#64748b"))
+        c_pdf.drawString(x_margin, PIE_H, f"I.E.P. YACHAY — Ranking {grado} — {periodo}")
+        c_pdf.drawString(x_margin, PIE_H - 10, "Documento referencial. El consolidado oficial lo registra el/la docente.")
+        c_pdf.drawRightString(w - x_margin, PIE_H, f"Pág. {pagina}  |  Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+
+    num_pagina = 1
+
+    # ── Filas de datos ───────────────────────────────────────────────────
+    for idx, fila in enumerate(ranking_filas):
+        # Salto de página si no queda espacio (respetando pie)
+        if y < PIE_H + ROW_H + 15:
+            _pie_pagina(c_pdf, grado, periodo, num_pagina)
+            c_pdf.showPage()
+            num_pagina += 1
+            # Cabecera compacta en página nueva
+            c_pdf.setFillColor(colors.HexColor("#001e7c"))
+            c_pdf.rect(0, h - 28, w, 28, fill=1, stroke=0)
+            c_pdf.setFillColor(colors.white)
+            c_pdf.setFont("Helvetica-Bold", 10)
+            c_pdf.drawCentredString(w / 2, h - 12, f"🏆 RANKING — {grado} — {periodo}  (continuación)")
+            c_pdf.setFont("Helvetica", 7)
+            c_pdf.setFillColor(colors.HexColor("#93c5fd"))
+            c_pdf.drawCentredString(w / 2, h - 24, f"Página {num_pagina}")
+            y = h - 30
+            y = _dibujar_cabecera_tabla(c_pdf, y)
+
+        # Fondo de fila
+        if idx == 0:
+            bg = "#fef3c7"   # oro
+        elif idx == 1:
+            bg = "#e5e7eb"   # plata
+        elif idx == 2:
+            bg = "#fed7aa"   # bronce
+        elif idx % 2 == 0:
+            bg = "#f8fafc"
+        else:
+            bg = "#ffffff"
+        c_pdf.setFillColor(colors.HexColor(bg))
+        c_pdf.rect(x_margin, y - ROW_H, table_w, ROW_H, fill=1, stroke=0)
+
+        # Línea separadora horizontal sutil
+        c_pdf.setStrokeColor(colors.HexColor("#e2e8f0"))
+        c_pdf.setLineWidth(0.3)
+        c_pdf.line(x_margin, y - ROW_H, x_margin + table_w, y - ROW_H)
+
+        cx = x_margin
+
+        # Puesto / medalla
+        medallas = {0: "🥇 1°", 1: "🥈 2°", 2: "🥉 3°"}
+        medalla_txt = medallas.get(idx, f"#{idx + 1}")
+        c_pdf.setFillColor(colors.HexColor("#1e293b"))
+        c_pdf.setFont("Helvetica-Bold", 10 if idx < 3 else 9)
+        c_pdf.drawCentredString(cx + col_w_pos / 2, y - ROW_H + 5, medalla_txt)
+        cx += col_w_pos
+
+        # Nombre
+        nombre_full = str(fila.get('Nombre', ''))
+        max_ch = int(col_w_nom / 5.8)
+        nombre_display = nombre_full[:max_ch] + ("." if len(nombre_full) > max_ch else "")
+        c_pdf.setFont("Helvetica-Bold" if idx < 3 else "Helvetica", 9)
+        c_pdf.setFillColor(colors.HexColor("#0f172a"))
+        c_pdf.drawString(cx + 4, y - ROW_H + 5, nombre_display)
+        cx += col_w_nom
+
+        # Notas por área con fondo de color tenue y separador
+        for ai, area in enumerate(areas):
+            _, light_hex = PALETA_AREAS[ai % len(PALETA_AREAS)]
+            # Franja de color muy suave de fondo
+            c_pdf.setFillColor(colors.HexColor(light_hex))
+            c_pdf.setFillAlpha(0.35)
+            c_pdf.rect(cx, y - ROW_H, col_w_area, ROW_H, fill=1, stroke=0)
+            c_pdf.setFillAlpha(1.0)
+
+            nota_v = float(fila.get(area, 0) or 0)
+            lit_v  = nota_a_letra(nota_v) if nota_v > 0 else "-"
+            col_n  = color_semaforo(lit_v) if nota_v > 0 else "#94a3b8"
+            c_pdf.setFillColor(colors.HexColor(col_n))
+            c_pdf.setFont("Helvetica-Bold", 9)
+            nota_txt = f"{nota_v:.0f}  ({lit_v})" if nota_v > 0 else "—"
+            c_pdf.drawCentredString(cx + col_w_area / 2, y - ROW_H + 5, nota_txt)
+
+            # Separador vertical entre áreas
+            c_pdf.setStrokeColor(colors.HexColor("#94a3b8"))
+            c_pdf.setLineWidth(0.5)
+            c_pdf.line(cx, y, cx, y - ROW_H)
+
+            cx += col_w_area
+
+        # Separador antes de promedio
+        c_pdf.setStrokeColor(colors.HexColor("#475569"))
+        c_pdf.setLineWidth(0.8)
+        c_pdf.line(cx, y, cx, y - ROW_H)
+
+        # Promedio destacado
+        prom = float(fila.get('Promedio', 0) or 0)
+        prom_color = "#15803d" if prom >= 14 else "#dc2626" if prom < 11 else "#d97706"
+        c_pdf.setFillColor(colors.HexColor("#f0fdf4" if prom >= 14 else "#fff1f2" if prom < 11 else "#fffbeb"))
+        c_pdf.rect(cx, y - ROW_H, col_w_prom, ROW_H, fill=1, stroke=0)
+        c_pdf.setFillColor(colors.HexColor(prom_color))
+        c_pdf.setFont("Helvetica-Bold", 11 if idx < 3 else 10)
+        c_pdf.drawCentredString(cx + col_w_prom / 2, y - ROW_H + 5, f"{prom:.1f}")
+
+        y -= ROW_H
+
+    # ── Cuadro: estudiantes sin nota / no presentados ────────────────────
+    if sin_nota:
+        BOX_PAD   = 8
+        FILA_SN   = 14
+        BOX_H     = BOX_PAD * 2 + 18 + len(sin_nota) * FILA_SN + 4
+        # ¿Cabe en esta página?
+        if y - BOX_H < PIE_H + 15:
+            _pie_pagina(c_pdf, grado, periodo, num_pagina)
+            c_pdf.showPage()
+            num_pagina += 1
+            c_pdf.setFillColor(colors.HexColor("#001e7c"))
+            c_pdf.rect(0, h - 28, w, 28, fill=1, stroke=0)
+            c_pdf.setFillColor(colors.white)
+            c_pdf.setFont("Helvetica-Bold", 10)
+            c_pdf.drawCentredString(w / 2, h - 18, f"RANKING — {grado} — {periodo}  (continuación)")
+            y = h - 38
+
+        # Borde y fondo del cuadro
+        box_y = y - 10
+        c_pdf.setStrokeColor(colors.HexColor("#dc2626"))
+        c_pdf.setLineWidth(1.2)
+        c_pdf.setFillColor(colors.HexColor("#fff1f2"))
+        c_pdf.roundRect(x_margin, box_y - BOX_H, table_w, BOX_H, 6, fill=1, stroke=1)
+
+        # Título del cuadro
+        c_pdf.setFillColor(colors.HexColor("#dc2626"))
+        c_pdf.setFont("Helvetica-Bold", 9)
+        c_pdf.drawString(x_margin + BOX_PAD,
+                         box_y - BOX_PAD - 11,
+                         f"⚠️  SIN NOTA / NO SE PRESENTARON  ({len(sin_nota)} estudiante{'s' if len(sin_nota) != 1 else ''})")
+
+        # Línea separadora dentro del cuadro
+        c_pdf.setStrokeColor(colors.HexColor("#fca5a5"))
+        c_pdf.setLineWidth(0.6)
+        c_pdf.line(x_margin + BOX_PAD,
+                   box_y - BOX_PAD - 16,
+                   x_margin + table_w - BOX_PAD,
+                   box_y - BOX_PAD - 16)
+
+        # Lista de alumnos en columnas (3 columnas si hay muchos)
+        ncols_sn = 3 if len(sin_nota) > 10 else 2 if len(sin_nota) > 5 else 1
+        col_sn_w = (table_w - BOX_PAD * 2) / ncols_sn
+        c_pdf.setFillColor(colors.HexColor("#7f1d1d"))
+        c_pdf.setFont("Helvetica", 8)
+        for si, alumno_sn in enumerate(sin_nota):
+            col_idx = si % ncols_sn
+            row_idx = si // ncols_sn
+            sx = x_margin + BOX_PAD + col_idx * col_sn_w
+            sy = box_y - BOX_PAD - 22 - row_idx * FILA_SN
+            nombre_sn = str(alumno_sn.get('Nombre', ''))
+            max_ch_sn = int(col_sn_w / 5.5)
+            nombre_sn = nombre_sn[:max_ch_sn] + ("." if len(nombre_sn) > max_ch_sn else "")
+            c_pdf.drawString(sx, sy, f"• {nombre_sn}")
+
+    # ── Pie de última página ─────────────────────────────────────────────
+    _pie_pagina(c_pdf, grado, periodo, num_pagina)
 
     c_pdf.save()
     buffer.seek(0)
