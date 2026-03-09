@@ -10713,9 +10713,30 @@ def _semanas_del_mes(mes, anio=None):
 # Hora límite puntualidad docente: antes de 8:05 = puntual, después = tardanza
 # ── HORARIOS DE PUNTUALIDAD ──────────────────────────────────────
 HORARIOS = {
-    'normal': {'limite': '08:05', 'nombre': '☀️ Normal (8:05am)', 'minutos': 8*60+5},
+    'normal':   {'limite': '08:05', 'nombre': '☀️ Normal (8:05am)',   'minutos': 8*60+5},
     'invierno': {'limite': '08:15', 'nombre': '❄️ Invierno (8:15am)', 'minutos': 8*60+15},
 }
+
+# Horario turno tarde (fijo — no depende de config)
+HORARIO_TARDE = {
+    'entrada_inicio':  14*60+30,   # 14:30 — abre puerta
+    'entrada_limite':  15*60+20,   # 15:20 — después = tardanza
+    'salida_inicio':   18*60+50,   # 18:50 — ventana salida
+    'salida_fin':      19*60+15,   # 19:15 — fin ventana salida
+}
+
+def _es_turno_tarde(hora_str=None):
+    """True si la hora está en el rango del turno tarde (14:00-20:00)"""
+    try:
+        if hora_str:
+            h, m = hora_str.split(':')[:2]
+            mins = int(h)*60 + int(m)
+        else:
+            now = hora_peru()
+            mins = now.hour*60 + now.minute
+        return mins >= 14*60
+    except Exception:
+        return False
 
 
 def _horario_activo():
@@ -10747,11 +10768,16 @@ def _limite_minutos():
 
 
 def _es_tardanza(hora_str):
-    """Determina si la hora de entrada es tardanza según horario activo"""
+    """Determina si la hora de entrada es tardanza según turno (mañana/tarde)"""
     try:
         h, m = hora_str.split(':')[:2]
-        minutos = int(h) * 60 + int(m)
-        return minutos > _limite_minutos()
+        minutos = int(h)*60 + int(m)
+        if _es_turno_tarde(hora_str):
+            # Turno tarde: tardanza después de 15:20
+            return minutos > HORARIO_TARDE['entrada_limite']
+        else:
+            # Turno mañana: según horario configurado
+            return minutos > _limite_minutos()
     except Exception:
         return False
 
@@ -14390,53 +14416,75 @@ def tab_pausa_activa(config):
     }
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
 
-    # ── CSS global único — estilos por key de botón ──────────────────────
-    css_btns = "<style>"
-    # Filtros de nivel
+    # ── CSS global de Pausa Activa — wrapper div por clase ───────────────
+    css_pa = "<style>"
     for nv, (bg, fg, _ic) in CN.items():
         activo = nivel_sel == nv
-        bg_btn = fg if activo else bg
-        fg_btn = bg if activo else fg
-        brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
-        css_btns += f"""
-        button[data-testid="baseButton-secondary"][key="nfilt_{nv}"],
-        div[data-testid="stButton"] > button[kind="secondary"]:has(div > p:contains("{nv}")) {{
-            background: {bg_btn} !important; color: {fg_btn} !important;
+        bg_b = fg if activo else bg
+        fg_b = bg if activo else fg
+        brd  = f"3px solid {fg}" if activo else f"2px solid {fg}"
+        css_pa += f"""
+        .pa_filtro_{nv.lower()} button {{
+            background: {bg_b} !important; color: {fg_b} !important;
             border: {brd} !important; border-radius: 12px !important;
-            font-weight: 800 !important; font-size: 0.9rem !important;
-            min-height: 50px !important;
+            font-weight: 900 !important; font-size: 0.9rem !important;
+            min-height: 52px !important; width: 100% !important;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.35) !important;
+            transition: filter 0.15s !important;
+        }}
+        .pa_filtro_{nv.lower()} button:hover {{
+            filter: brightness(1.2) !important;
         }}"""
-    css_btns += "</style>"
-    st.markdown(css_btns, unsafe_allow_html=True)
+    # Botones Iniciar — uno por modelo
+    for m in PAUSA_MODELOS:
+        ca = m['color_acento']; cf = m['color_fondo']
+        css_pa += f"""
+        .pa_iniciar_{m['id']} button {{
+            background: {ca} !important; color: {cf} !important;
+            border: none !important; border-radius: 12px !important;
+            font-weight: 900 !important; font-size: 1rem !important;
+            min-height: 50px !important; width: 100% !important;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.35) !important;
+        }}
+        .pa_iniciar_{m['id']} button:hover {{ filter: brightness(1.15) !important; }}"""
+    # Botones de navegación de la presentación
+    css_pa += """
+        .pa_btn_ant button {
+            background: #1e293b !important; color: #f1f5f9 !important;
+            border: 2px solid #64748b !important; border-radius: 50px !important;
+            font-weight: 800 !important; min-height: 48px !important;
+        }
+        .pa_btn_cerrar button {
+            background: #dc2626 !important; color: white !important;
+            border: none !important; border-radius: 50px !important;
+            font-weight: 800 !important; min-height: 48px !important;
+        }
+        .pa_btn_sig button {
+            border-radius: 50px !important;
+            font-weight: 800 !important; min-height: 48px !important;
+        }
+        .pa_btn_cerrar_top button {
+            background: #7f1d1d !important; color: #fecaca !important;
+            border: 2px solid #dc2626 !important; border-radius: 8px !important;
+            font-weight: 700 !important;
+        }
+    """
+    css_pa += "</style>"
+    st.markdown(css_pa, unsafe_allow_html=True)
 
-    # Filtros — radio visual con st.button
+    # ── Botones filtro por nivel ──────────────────────────────────────────
+    st.markdown("### 🎯 Elige tu Pausa Activa")
     nf_cols = st.columns(4)
     for ni, nv in enumerate(NIVELES_PAUSA):
-        bg, fg, ico = CN[nv]
+        _bg, _fg, ico = CN[nv]
         activo = nivel_sel == nv
         with nf_cols[ni]:
-            bg_btn = fg if activo else bg
-            fg_btn = bg if activo else fg
-            brd    = f"3px solid {fg}" if activo else f"2px solid {fg}"
-            st.markdown(f"""<style>
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button {{
-                background: {bg_btn} !important;
-                color: {fg_btn} !important;
-                border: {brd} !important;
-                border-radius: 12px !important;
-                font-weight: 800 !important;
-                font-size: 0.88rem !important;
-                min-height: 50px !important;
-                width: 100% !important;
-            }}
-            div[data-testid="stButton"]:has(button[key="nfilt_{nv}"]) button:hover {{
-                filter: brightness(1.15) !important;
-            }}
-            </style>""", unsafe_allow_html=True)
+            st.markdown(f"<div class='pa_filtro_{nv.lower()}'>", unsafe_allow_html=True)
             label = f"{'✅ ' if activo else ico+' '}{nv}"
             if st.button(label, key=f"nfilt_{nv}", use_container_width=True):
                 st.session_state['_pausa_nivel_filtro'] = nv
                 st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
 
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
     modelos_filtrados = [m for m in PAUSA_MODELOS
@@ -14444,29 +14492,6 @@ def tab_pausa_activa(config):
     st.caption(f"📋 {len(modelos_filtrados)} pausas activas disponibles")
 
     modelo_seleccionado = st.session_state.get('_pausa_modelo_id', None)
-
-    # CSS para botones Iniciar — uno por modelo usando su key único
-    css_iniciar = "<style>"
-    for m in PAUSA_MODELOS:
-        ca = m['color_acento']
-        cf = m['color_fondo']
-        css_iniciar += f"""
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button {{
-            background: {ca} !important;
-            color: {cf} !important;
-            border: none !important;
-            border-radius: 12px !important;
-            font-weight: 800 !important;
-            font-size: 1rem !important;
-            min-height: 48px !important;
-        }}
-        div[data-testid="stButton"]:has(button[key="sel_pausa_{m['id']}"]) button:hover {{
-            filter: brightness(1.12) !important;
-            transform: scale(1.02) !important;
-        }}"""
-    css_iniciar += "</style>"
-    st.markdown(css_iniciar, unsafe_allow_html=True)
-
     cols = st.columns(2)
     for i, m in enumerate(modelos_filtrados):
         with cols[i % 2]:
@@ -14490,15 +14515,16 @@ def tab_pausa_activa(config):
                 <div style='color:{m["color_acento"]}; font-size:0.78rem; margin-bottom:8px;'>{m["descripcion"]}</div>
                 <div style='margin-bottom:8px; display:flex; gap:5px; justify-content:center; flex-wrap:wrap;'>{nivel_badges}</div>
                 <div style='color:rgba(255,255,255,0.65); font-size:0.72rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            </div>""", unsafe_allow_html=True)
+            st.markdown(f"<div class='pa_iniciar_{m['id']}'>", unsafe_allow_html=True)
             if st.button(f"▶  Iniciar  {m['emoji_principal']}", key=f"sel_pausa_{m['id']}", use_container_width=True):
                 st.session_state['_pausa_modelo_id'] = m['id']
                 st.session_state['_pausa_paso_actual'] = 0
                 st.session_state['_pausa_activa'] = True
                 st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Presentación en pantalla grande ──────────────────────────────────
+        # ── Presentación en pantalla grande ──────────────────────────────────
     if st.session_state.get('_pausa_activa') and modelo_seleccionado:
         modelo = next((m for m in PAUSA_MODELOS if m['id'] == modelo_seleccionado), None)
         if not modelo:
@@ -14950,60 +14976,60 @@ if(document.getElementById('bgm')) {{
 </body></html>
 """, height=680, scrolling=False)
 
-        # Botones de Streamlit para sincronizar estado — div wrapper ID
+        # Botones de navegación — style + div en mismo markdown (garantizado en Streamlit)
         _cf = modelo['color_fondo']
         _ca = modelo['color_acento']
-        st.markdown(f"""<style>
-        #nav_prev   button {{ background:#1e293b !important; color:#f1f5f9 !important;
-            border:2px solid #475569 !important; border-radius:50px !important;
-            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
-        #nav_prev   button:hover {{ background:#334155 !important; }}
-        #nav_cerrar button {{ background:#dc2626 !important; color:#fff !important;
-            border:none !important; border-radius:50px !important;
-            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
-        #nav_cerrar button:hover {{ background:#b91c1c !important; }}
-        #nav_sig    button {{ background:{_ca} !important; color:{_cf} !important;
-            border:none !important; border-radius:50px !important;
-            font-weight:900 !important; font-size:1rem !important; min-height:50px !important; width:100% !important; }}
-        #nav_sig    button:hover {{ filter:brightness(1.12) !important; }}
-        #nav_fin    button {{ background:#16a34a !important; color:#fff !important;
-            border:none !important; border-radius:50px !important;
-            font-weight:900 !important; font-size:1.05rem !important; min-height:50px !important; width:100% !important; }}
-        #nav_fin    button:hover {{ background:#15803d !important; }}
-        </style>""", unsafe_allow_html=True)
 
         nc1, nc2, nc3 = st.columns([1, 2, 1])
         with nc1:
             if paso_idx > 0:
-                st.markdown('<div id="nav_prev">', unsafe_allow_html=True)
+                st.markdown(f"""<style>.pnav_ant button{{background:#1e293b!important;color:#f1f5f9!important;
+                    border:2px solid #64748b!important;border-radius:50px!important;
+                    font-weight:900!important;min-height:50px!important;width:100%!important;}}
+                    .pnav_ant button:hover{{background:#334155!important;}}</style>
+                    <div class='pnav_ant'>""", unsafe_allow_html=True)
                 if st.button("◀  Anterior", use_container_width=True, key="pausa_prev"):
                     st.session_state['_pausa_paso_actual'] -= 1
                     st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
         with nc2:
-            st.markdown('<div id="nav_cerrar">', unsafe_allow_html=True)
+            st.markdown("""<style>.pnav_cer button{background:#dc2626!important;color:white!important;
+                border:none!important;border-radius:50px!important;
+                font-weight:900!important;min-height:50px!important;width:100%!important;}
+                .pnav_cer button:hover{background:#b91c1c!important;}</style>
+                <div class='pnav_cer'>""", unsafe_allow_html=True)
             if st.button("✖  Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
                 st.session_state['_pausa_activa']    = False
                 st.session_state['_pausa_modelo_id'] = None
                 st.session_state['_pausa_paso_actual'] = 0
                 st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
         with nc3:
             if paso_idx < total_pasos - 1:
-                st.markdown('<div id="nav_sig">', unsafe_allow_html=True)
+                st.markdown(f"""<style>.pnav_sig button{{background:{_ca}!important;color:{_cf}!important;
+                    border:none!important;border-radius:50px!important;
+                    font-weight:900!important;min-height:50px!important;width:100%!important;}}
+                    .pnav_sig button:hover{{filter:brightness(1.15)!important;}}</style>
+                    <div class='pnav_sig'>""", unsafe_allow_html=True)
                 if st.button("Siguiente  ▶", use_container_width=True, key="pausa_next"):
                     st.session_state['_pausa_paso_actual'] += 1
                     st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
             else:
-                st.markdown('<div id="nav_fin">', unsafe_allow_html=True)
+                st.markdown("""<style>.pnav_fin button{background:#16a34a!important;color:white!important;
+                    border:none!important;border-radius:50px!important;
+                    font-weight:900!important;min-height:50px!important;width:100%!important;
+                    animation:pulse-g 1.5s ease-in-out infinite;}
+                    @keyframes pulse-g{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}50%{box-shadow:0 0 0 10px rgba(22,163,74,0)}}
+                    .pnav_fin button:hover{background:#15803d!important;}</style>
+                    <div class='pnav_fin'>""", unsafe_allow_html=True)
                 if st.button("🎉  FINALIZAR", use_container_width=True, key="pausa_fin"):
                     st.balloons()
                     st.session_state['_pausa_activa']    = False
                     st.session_state['_pausa_modelo_id'] = None
                     st.session_state['_pausa_paso_actual'] = 0
                     st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
 
 
 def tab_yachay_plickers(config):
