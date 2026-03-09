@@ -14383,29 +14383,58 @@ def tab_pausa_activa(config):
 
     NIVELES_PAUSA = ["TODOS", "INICIAL", "PRIMARIA", "SECUNDARIA"]
     COLORES_NIVEL = {
-        "TODOS":      ("#0f172a", "#e2e8f0"),
-        "INICIAL":    ("#065f46", "#6ee7b7"),
-        "PRIMARIA":   ("#1e3a8a", "#93c5fd"),
-        "SECUNDARIA": ("#7c2d12", "#fca5a5"),
+        "TODOS":      ("#0f172a", "#e2e8f0", "⭐"),
+        "INICIAL":    ("#065f46", "#6ee7b7", "🌱"),
+        "PRIMARIA":   ("#1e3a8a", "#93c5fd", "📚"),
+        "SECUNDARIA": ("#7c2d12", "#fca5a5", "🎓"),
     }
     nivel_sel = st.session_state.get('_pausa_nivel_filtro', 'TODOS')
 
-    # Botones de filtro por nivel
+    # CSS para botones de filtro con colores reales
+    btn_styles = ""
+    for nv, (bg, fg, _ic) in COLORES_NIVEL.items():
+        activo = nivel_sel == nv
+        if activo:
+            btn_styles += f"""
+            div[data-testid="stHorizontalBlock"] button[kind="primary"]:has(p:contains("{nv}")) {{
+                background: {bg} !important;
+                color: {fg} !important;
+                border: 3px solid {fg} !important;
+                font-weight: 800 !important;
+            }}"""
+    
+    st.markdown(f"""<style>
+    /* Botones de filtro de nivel */
+    div[data-testid="column"] > div > div > div > button {{
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.9rem !important;
+        padding: 10px 8px !important;
+        min-height: 52px !important;
+    }}
+    </style>""", unsafe_allow_html=True)
+
     nf_cols = st.columns(4)
     for ni, nv in enumerate(NIVELES_PAUSA):
+        bg, fg, ico = COLORES_NIVEL[nv]
+        activo = nivel_sel == nv
         with nf_cols[ni]:
-            bg, fg = COLORES_NIVEL[nv]
-            activo = nivel_sel == nv
-            st.markdown(f"""<div style='text-align:center;'>
-            <button style='background:{"white" if activo else bg};
-                color:{"#0f172a" if activo else fg};
-                border:2px solid {fg if activo else bg};
-                border-radius:20px;padding:6px 0;width:100%;
-                font-weight:700;font-size:0.9rem;cursor:pointer;'>
-                {"✅ " if activo else ""}{nv}
-            </button></div>""", unsafe_allow_html=True)
-            if st.button(nv, key=f"nfilt_{nv}", use_container_width=True,
-                         type="primary" if activo else "secondary"):
+            # Inyectar color real via CSS scoped al botón
+            btn_id = f"nfilt_{nv}"
+            st.markdown(f"""<style>
+            div[data-testid="column"]:nth-child({ni+1}) button {{
+                background: {bg if not activo else fg} !important;
+                color: {fg if not activo else bg} !important;
+                border: 2px solid {fg} !important;
+            }}
+            div[data-testid="column"]:nth-child({ni+1}) button:hover {{
+                background: {fg} !important;
+                color: {bg} !important;
+                transform: scale(1.03) !important;
+            }}
+            </style>""", unsafe_allow_html=True)
+            label = f"{'✅ ' if activo else ico+' '}{nv}"
+            if st.button(label, key=btn_id, use_container_width=True):
                 st.session_state['_pausa_nivel_filtro'] = nv
                 st.rerun()
 
@@ -14439,7 +14468,20 @@ def tab_pausa_activa(config):
                 <div style='color:rgba(255,255,255,0.7); font-size:0.7rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"▶ Iniciar", key=f"sel_pausa_{m['id']}", use_container_width=True, type="primary"):
+            # Botón Iniciar con color del modelo
+            col_acento = m['color_acento']
+            col_fondo  = m['color_fondo']
+            st.markdown(f"""<style>
+            div[data-testid="column"]:nth-child({(i%2)+1}) div[data-testid="stVerticalBlock"] > div:last-child button {{
+                background: {col_acento} !important;
+                color: {col_fondo} !important;
+                border: none !important;
+                font-weight: 800 !important;
+                font-size: 1rem !important;
+                border-radius: 12px !important;
+            }}
+            </style>""", unsafe_allow_html=True)
+            if st.button(f"▶  Iniciar  {m['emoji_principal']}", key=f"sel_pausa_{m['id']}", use_container_width=True):
                 st.session_state['_pausa_modelo_id'] = m['id']
                 st.session_state['_pausa_paso_actual'] = 0
                 st.session_state['_pausa_activa'] = True
@@ -14898,32 +14940,58 @@ if(document.getElementById('bgm')) {{
 """, height=680, scrolling=False)
 
         # Botones de Streamlit para sincronizar estado real (flechas del iframe no cambian session_state)
-        st.markdown("""<style>
-        div[data-testid="stHorizontalBlock"] button {{
-            border-radius:50px !important; font-weight:700 !important;
-        }}
+        _cf = modelo['color_fondo']
+        _ca = modelo['color_acento']
+        st.markdown(f"""<style>
+        /* Anterior */
+        div[data-testid="column"]:nth-child(1) button {
+            background: #1e293b !important; color: #f1f5f9 !important;
+            border: 2px solid #475569 !important; border-radius: 50px !important;
+            font-weight: 800 !important; font-size: 1rem !important;
+        }
+        div[data-testid="column"]:nth-child(1) button:hover {
+            background: #334155 !important;
+        }
+        /* Cerrar */
+        div[data-testid="column"]:nth-child(2) button {
+            background: #dc2626 !important; color: white !important;
+            border: none !important; border-radius: 50px !important;
+            font-weight: 800 !important;
+        }
+        div[data-testid="column"]:nth-child(2) button:hover {
+            background: #b91c1c !important;
+        }
+        /* Siguiente / Finalizar */
+        div[data-testid="column"]:nth-child(3) button {
+            background: {_ca} !important; color: {_cf} !important;
+            border: none !important; border-radius: 50px !important;
+            font-weight: 800 !important; font-size: 1rem !important;
+        }
+        div[data-testid="column"]:nth-child(3) button:hover {
+            opacity: 0.88 !important;
+        }
         </style>""", unsafe_allow_html=True)
         nc1, nc2, nc3 = st.columns([1, 2, 1])
         with nc1:
             if paso_idx > 0:
-                if st.button("◀ Anterior", use_container_width=True, key="pausa_prev",
-                             help="También usa ← en teclado dentro del panel"):
+                if st.button("◀  Anterior", use_container_width=True, key="pausa_prev"):
                     st.session_state['_pausa_paso_actual'] -= 1
                     st.rerun()
+            else:
+                st.markdown("&nbsp;")
         with nc2:
-            if st.button("✖ Cerrar", use_container_width=True, key="pausa_cerrar"):
+            if st.button("✖  Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
                 st.session_state['_pausa_activa']    = False
                 st.session_state['_pausa_modelo_id'] = None
                 st.session_state['_pausa_paso_actual'] = 0
                 st.rerun()
         with nc3:
             if paso_idx < total_pasos - 1:
-                if st.button("Siguiente ▶", use_container_width=True, key="pausa_next",
-                             help="También usa → o Espacio dentro del panel"):
+                if st.button("Siguiente  ▶", use_container_width=True, key="pausa_next"):
                     st.session_state['_pausa_paso_actual'] += 1
                     st.rerun()
             else:
-                if st.button("🎉 FINALIZAR", use_container_width=True, key="pausa_fin", type="primary"):
+                if st.button("🎉  FINALIZAR", use_container_width=True, key="pausa_fin"):
                     st.balloons()
                     st.session_state['_pausa_activa']    = False
                     st.session_state['_pausa_modelo_id'] = None
