@@ -14683,15 +14683,7 @@ def tab_pausa_activa(config):
                             pausa_cfg[str(m['id'])] = {'mp3': saved_path}
                             _guardar_pausa_config(pausa_cfg)
                             _err = st.session_state.pop('_drive_error', None)
-                            st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido — ver diagnóstico abajo'}")
-                            with st.expander("🔍 Diagnóstico Drive"):
-                                st.code(_err or "Sin detalle de error")
-                                st.markdown("""**Posibles causas:**
-- La llave JSON no tiene **Google Drive API** activada en Google Cloud Console
-- El `secrets.toml` usa una clave distinta (ej: `connections.gsheets` en vez de `gcp_service_account`)
-- El service account no tiene permisos de Drive
-
-**Solución rápida:** En Google Cloud Console → APIs → habilita *Google Drive API* para el mismo proyecto.""")
+                            st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido'}")
                         st.rerun()
                 with c3:
                     _pcfg_del = pausa_cfg.get(str(m['id']), {})
@@ -15502,14 +15494,6 @@ def tab_yachay_plickers(config):
                 else:
                     _err = st.session_state.pop('_drive_error', None)
                     st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido'}")
-                    with st.expander("🔍 Diagnóstico Drive"):
-                        st.code(_err or "Sin detalle de error")
-                        st.markdown("""**Posibles causas:**
-- La llave JSON no tiene **Google Drive API** activada en Google Cloud Console
-- Clave de secrets distinta a `gcp_service_account`
-- Service account sin permisos de Drive
-
-**Solución:** Google Cloud Console → APIs → habilitar *Google Drive API*""")
                 st.rerun()
 
     # ================================================================
