@@ -9937,7 +9937,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
 
     c_pdf.setFillColor(colors.white)
     c_pdf.setFont("Helvetica-Bold", 16)
-    c_pdf.drawCentredString(w / 2, h - 22, "🏆  RANKING DE ESTUDIANTES")
+    c_pdf.drawCentredString(w / 2, h - 22, "** RANKING DE ESTUDIANTES **")
     c_pdf.setFont("Helvetica-Bold", 10)
     c_pdf.drawCentredString(w / 2, h - 36, f"I.E.P. YACHAY  —  {grado}  —  {periodo}")
     c_pdf.setFont("Helvetica", 8)
@@ -10061,7 +10061,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
             c_pdf.rect(0, h - 28, w, 28, fill=1, stroke=0)
             c_pdf.setFillColor(colors.white)
             c_pdf.setFont("Helvetica-Bold", 10)
-            c_pdf.drawCentredString(w / 2, h - 12, f"🏆 RANKING — {grado} — {periodo}  (continuación)")
+            c_pdf.drawCentredString(w / 2, h - 12, f"RANKING — {grado} — {periodo}  (continuacion)")
             c_pdf.setFont("Helvetica", 7)
             c_pdf.setFillColor(colors.HexColor("#93c5fd"))
             c_pdf.drawCentredString(w / 2, h - 24, f"Página {num_pagina}")
@@ -10090,7 +10090,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
         cx = x_margin
 
         # Puesto / medalla
-        medallas = {0: "🥇 1°", 1: "🥈 2°", 2: "🥉 3°"}
+        medallas = {0: "[1] 1.", 1: "[2] 2.", 2: "[3] 3."}
         medalla_txt = medallas.get(idx, f"#{idx + 1}")
         c_pdf.setFillColor(colors.HexColor("#1e293b"))
         c_pdf.setFont("Helvetica-Bold", 10 if idx < 3 else 9)
@@ -10150,7 +10150,7 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
     if sin_nota:
         BOX_PAD   = 8
         FILA_SN   = 14
-        BOX_H     = BOX_PAD * 2 + 18 + len(sin_nota) * FILA_SN + 4
+        BOX_H     = BOX_PAD * 2 + 28 + (len(sin_nota) // (3 if len(sin_nota) > 10 else 2 if len(sin_nota) > 5 else 1) + 1) * FILA_SN + 8
         # ¿Cabe en esta página?
         if y - BOX_H < PIE_H + 15:
             _pie_pagina(c_pdf, grado, periodo, num_pagina)
@@ -10175,15 +10175,15 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
         c_pdf.setFont("Helvetica-Bold", 9)
         c_pdf.drawString(x_margin + BOX_PAD,
                          box_y - BOX_PAD - 11,
-                         f"⚠️  SIN NOTA / NO SE PRESENTARON  ({len(sin_nota)} estudiante{'s' if len(sin_nota) != 1 else ''})")
+                         f"[!]  SIN NOTA / NO SE PRESENTARON  ({len(sin_nota)} estudiante{'s' if len(sin_nota) != 1 else ''})")
 
         # Línea separadora dentro del cuadro
         c_pdf.setStrokeColor(colors.HexColor("#fca5a5"))
         c_pdf.setLineWidth(0.6)
         c_pdf.line(x_margin + BOX_PAD,
-                   box_y - BOX_PAD - 16,
+                   box_y - BOX_PAD - 18,
                    x_margin + table_w - BOX_PAD,
-                   box_y - BOX_PAD - 16)
+                   box_y - BOX_PAD - 18)
 
         # Lista de alumnos en columnas (3 columnas si hay muchos)
         ncols_sn = 3 if len(sin_nota) > 10 else 2 if len(sin_nota) > 5 else 1
@@ -10194,11 +10194,25 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
             col_idx = si % ncols_sn
             row_idx = si // ncols_sn
             sx = x_margin + BOX_PAD + col_idx * col_sn_w
-            sy = box_y - BOX_PAD - 22 - row_idx * FILA_SN
+            sy = box_y - BOX_PAD - 30 - row_idx * FILA_SN
             nombre_sn = str(alumno_sn.get('Nombre', ''))
             max_ch_sn = int(col_sn_w / 5.5)
             nombre_sn = nombre_sn[:max_ch_sn] + ("." if len(nombre_sn) > max_ch_sn else "")
             c_pdf.drawString(sx, sy, f"• {nombre_sn}")
+
+    # ── Línea de firma — Coordinador Académico PREU ──────────────────────
+    firma_y = PIE_H + 42
+    firma_w = 180
+    firma_x = w / 2 - firma_w / 2
+    c_pdf.setStrokeColor(colors.HexColor("#1e293b"))
+    c_pdf.setLineWidth(0.8)
+    c_pdf.line(firma_x, firma_y, firma_x + firma_w, firma_y)
+    c_pdf.setFillColor(colors.HexColor("#1e293b"))
+    c_pdf.setFont("Helvetica-Bold", 7)
+    c_pdf.drawCentredString(w / 2, firma_y - 9, "COORDINADOR ACADEMICO PREU")
+    c_pdf.setFont("Helvetica", 6)
+    c_pdf.setFillColor(colors.HexColor("#64748b"))
+    c_pdf.drawCentredString(w / 2, firma_y - 18, "Firma y Sello")
 
     # ── Pie de última página ─────────────────────────────────────────────
     _pie_pagina(c_pdf, grado, periodo, num_pagina)
