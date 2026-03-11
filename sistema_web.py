@@ -2947,48 +2947,88 @@ class GeneradorCarnet:
             pass
 
     def _datos(self):
-        xt = 290
-        nm = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
+        # Área disponible: x=290 a x=650 (antes del QR), alto: 220 a 530
+        xt  = 295
+        # Ancho máximo disponible antes del QR
+        MAX_X = 645
+
+        nm  = self.datos.get('Nombre', self.datos.get('alumno', '')).upper()
         dni = str(self.datos.get('DNI', self.datos.get('dni', '')))
-        fn = RecursoManager.obtener_fuente("", 56 if len(nm) > 25 else 68, True)
-        fl = RecursoManager.obtener_fuente("", 42, True)
-        fd = RecursoManager.obtener_fuente("", 42)
-        yc = 240
-        if len(nm) > 28:
-            for l in textwrap.TextWrapper(width=28).wrap(nm)[:3]:
-                self.draw.text((xt, yc), l, font=fn, fill="black")
-                yc += 62
+
+        # ── Tamaños de fuente ajustados ──────────────────────────────
+        # Nombre: reducir si es largo para que no invada el QR
+        if len(nm) <= 18:
+            fs_nombre = 36
+        elif len(nm) <= 24:
+            fs_nombre = 30
+        elif len(nm) <= 32:
+            fs_nombre = 26
         else:
-            self.draw.text((xt, yc), nm, font=fn, fill="black")
-            yc += 70
+            fs_nombre = 22
+
+        fn  = RecursoManager.obtener_fuente("", fs_nombre, True)
+        fl  = RecursoManager.obtener_fuente("", 24, True)   # etiquetas
+        fd  = RecursoManager.obtener_fuente("", 24)         # valores
+        fd_dni = RecursoManager.obtener_fuente("", 28, True)
+
+        yc = 228
+
+        # ── Nombre (con wrap si es muy largo) ────────────────────────
+        linea_h = fs_nombre + 6
+        palabras = nm.split()
+        lineas_nm = []
+        linea_act = ""
+        for pal in palabras:
+            prueba = (linea_act + " " + pal).strip()
+            # Estimar ancho con fuente (aprox 0.6 × tamaño × chars)
+            if len(prueba) * fs_nombre * 0.58 < (MAX_X - xt):
+                linea_act = prueba
+            else:
+                if linea_act:
+                    lineas_nm.append(linea_act)
+                linea_act = pal
+        if linea_act:
+            lineas_nm.append(linea_act)
+
+        for linea_n in lineas_nm[:3]:
+            self.draw.text((xt, yc), linea_n, font=fn, fill="black")
+            yc += linea_h
+        yc += 10
+
+        # ── Línea separadora ─────────────────────────────────────────
+        self.draw.rectangle([(xt, yc), (MAX_X, yc + 2)], fill=self.DORADO)
         yc += 8
-        # DNI prominente
+
+        # ── DNI ──────────────────────────────────────────────────────
         self.draw.text((xt, yc), "DNI:", font=fl, fill=self.AZUL)
-        fd_dni = RecursoManager.obtener_fuente("", 52, True)
-        self.draw.text((xt + 100, yc), dni, font=fd_dni, fill="black")
-        yc += 56
+        self.draw.text((xt + 75, yc), dni, font=fd_dni, fill="black")
+        yc += 38
+
+        # ── Grado / Cargo ─────────────────────────────────────────────
         if self.es_docente:
             cg = self.datos.get('Cargo', 'DOCENTE').upper()
-            self.draw.text((xt, yc), "CARGO:", font=fl, fill="black")
-            self.draw.text((xt + 130, yc), cg, font=fd, fill="black")
-            yc += 50
+            self.draw.text((xt, yc), "CARGO:", font=fl, fill=self.AZUL)
+            self.draw.text((xt + 95, yc), cg[:20], font=fd, fill="black")
+            yc += 34
             esp = self.datos.get('Especialidad', '').upper()
             if esp:
-                self.draw.text((xt, yc), "ESPEC.:", font=fl, fill="black")
-                self.draw.text((xt + 140, yc), esp[:20], font=fd, fill="black")
-                yc += 50
+                self.draw.text((xt, yc), "ESPEC.:", font=fl, fill=self.AZUL)
+                self.draw.text((xt + 95, yc), esp[:22], font=fd, fill="black")
+                yc += 34
         else:
             gr = self.datos.get('Grado', self.datos.get('grado', '')).upper()
             sc = self.datos.get('Seccion', self.datos.get('seccion', ''))
-            self.draw.text((xt, yc), "GRADO:", font=fl, fill="black")
-            self.draw.text((xt + 130, yc), gr, font=fd, fill="black")
-            yc += 50
+            self.draw.text((xt, yc), "GRADO:", font=fl, fill=self.AZUL)
+            self.draw.text((xt + 95, yc), gr[:22], font=fd, fill="black")
+            yc += 34
             if sc:
-                self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill="black")
-                self.draw.text((xt + 155, yc), str(sc), font=fd, fill="black")
-                yc += 50
-        self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill="black")
-        self.draw.text((xt + 160, yc), str(self.anio), font=fd, fill="black")
+                self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill=self.AZUL)
+                self.draw.text((xt + 110, yc), str(sc)[:15], font=fd, fill="black")
+                yc += 34
+
+        # ── Vigencia ──────────────────────────────────────────────────
+        self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill=self.AZUL)
+        self.draw.text((xt + 120, yc), str(self.anio), font=fd, fill="black")
 
     def _qr(self):
         try:
