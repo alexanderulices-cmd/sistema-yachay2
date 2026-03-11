@@ -5524,7 +5524,7 @@ def generar_reporte_estudiante_pdf(nombre, dni, grado, resultados_hist, config):
         c.setFillColor(colors.HexColor(info['color']))
         c.circle(60, y+3, 4, fill=True)
         c.setFillColor(colors.black)
-        c.drawString(70, y, f"{sigla} ({info['min']}-{info['max']}): {info['nombre']}")
+        c.drawString(70, y, f"{sigla} ({info['rango']}): {info['nombre']}")
         y -= 12
     
     # Pie
@@ -10806,7 +10806,7 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
         c.setFillColor(colors.HexColor(info['color']))
         c.circle(60, y+3, 4, fill=True)
         c.setFillColor(colors.black)
-        c.drawString(70, y, f"{sigla} ({info['min']}-{info['max']}): {info['nombre']}")
+        c.drawString(70, y, f"{sigla} ({info['rango']}): {info['nombre']}")
         y -= 11
 
     # Pie de página
