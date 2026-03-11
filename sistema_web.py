@@ -3134,7 +3134,7 @@ def generar_carnets_lote_pdf(lista_datos, anio, es_docente=False):
     gy = 3 * mm
     cw2 = (w - 2 * mx - gx) / 2             # 2 columnas
     ch2 = cw2 * 638 / 1012                   # Mantener proporcion del carnet
-    pp = 6                                     # 6 por pagina (2x3)
+    pp = 8                                     # 8 por pagina (2x4)
     total = len(lista_datos)
     np2 = (total + pp - 1) // pp
     for pag in range(np2):
