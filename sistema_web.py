@@ -3008,27 +3008,47 @@ class GeneradorCarnet:
 
         yc = 228
 
-        # ── Nombre (con wrap si es muy largo) ────────────────────────
-        linea_h = fs_nombre + 6
+        # ── Separar APELLIDOS (2 primeras palabras) y NOMBRES (resto) ─
         palabras = nm.split()
-        lineas_nm = []
-        linea_act = ""
-        for pal in palabras:
-            prueba = (linea_act + " " + pal).strip()
-            # Estimar ancho con fuente (aprox 0.6 × tamaño × chars)
-            if len(prueba) * fs_nombre * 0.58 < (MAX_X - xt):
-                linea_act = prueba
-            else:
-                if linea_act:
-                    lineas_nm.append(linea_act)
-                linea_act = pal
-        if linea_act:
-            lineas_nm.append(linea_act)
+        if len(palabras) >= 3:
+            apellidos = " ".join(palabras[:2])
+            nombres   = " ".join(palabras[2:])
+        elif len(palabras) == 2:
+            apellidos = palabras[0]
+            nombres   = palabras[1]
+        else:
+            apellidos = nm
+            nombres   = ""
 
-        for linea_n in lineas_nm[:3]:
-            self.draw.text((xt, yc), linea_n, font=fn, fill="black")
-            yc += linea_h
-        yc += 10
+        # Fuente apellidos: un poco más grande (bold) → destaca
+        fs_ap = fs_nombre
+        fs_nm = max(fs_nombre - 4, 18)   # nombres ligeramente más pequeños
+        fn_ap = RecursoManager.obtener_fuente("", fs_ap, True)   # bold
+        fn_nm = RecursoManager.obtener_fuente("", fs_nm, False)  # normal
+
+        linea_h_ap = fs_ap + 6
+        linea_h_nm = fs_nm + 4
+
+        # ── Dibujar APELLIDOS (arriba, negrita) ───────────────────────
+        # Ajuste de tamaño si no caben en una línea
+        while len(apellidos) * fs_ap * 0.62 > (MAX_X - xt) and fs_ap > 18:
+            fs_ap -= 2
+            fn_ap = RecursoManager.obtener_fuente("", fs_ap, True)
+            linea_h_ap = fs_ap + 6
+
+        self.draw.text((xt, yc), apellidos, font=fn_ap, fill=self.AZUL)
+        yc += linea_h_ap
+
+        # ── Dibujar NOMBRES (abajo, normal) ───────────────────────────
+        if nombres:
+            while len(nombres) * fs_nm * 0.60 > (MAX_X - xt) and fs_nm > 16:
+                fs_nm -= 2
+                fn_nm = RecursoManager.obtener_fuente("", fs_nm, False)
+                linea_h_nm = fs_nm + 4
+            self.draw.text((xt, yc), nombres, font=fn_nm, fill="black")
+            yc += linea_h_nm
+
+        yc += 8
 
         # ── Línea separadora ─────────────────────────────────────────
         self.draw.rectangle([(xt, yc), (MAX_X, yc + 2)], fill=self.DORADO)
