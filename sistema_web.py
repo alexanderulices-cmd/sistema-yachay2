@@ -1018,53 +1018,88 @@ def reproducir_sonido_asistencia():
 
 
 def reproducir_beep_exitoso():
-    """Sonido agradable tipo chime para registros exitosos"""
-    st.markdown("""
+    """
+    Pitido de éxito (3 notas ascendentes: Do-Mi-Sol) — USA components.v1.html
+    para que el script se ejecute realmente en el navegador.
+    """
+    import streamlit.components.v1 as _c
+    _c.html("""
     <script>
     (function() {
         try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function nota(freq, inicio, dur) {
+            function nota(freq, inicio, dur, tipo) {
                 var o = ctx.createOscillator();
                 var g = ctx.createGain();
                 o.connect(g); g.connect(ctx.destination);
                 o.frequency.value = freq;
-                o.type = 'sine';
-                g.gain.setValueAtTime(0.25, ctx.currentTime + inicio);
+                o.type = tipo || 'sine';
+                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
+                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
                 g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
                 o.start(ctx.currentTime + inicio);
-                o.stop(ctx.currentTime + inicio + dur);
+                o.stop(ctx.currentTime + inicio + dur + 0.05);
             }
-            nota(523, 0, 0.15);
-            nota(659, 0.1, 0.15);
-            nota(784, 0.2, 0.3);
-        } catch(e) {}
+            // Do-Mi-Sol ascendente: entrada exitosa
+            nota(523, 0.00, 0.18);   // Do
+            nota(659, 0.14, 0.18);   // Mi
+            nota(784, 0.28, 0.30);   // Sol
+        } catch(e) { console.log('Beep error:', e); }
     })();
     </script>
-    """, unsafe_allow_html=True)
+    """, height=0)
 
 
-def reproducir_beep_error():
-    """Sonido de error"""
-    st.markdown("""
+def reproducir_beep_tardanza():
+    """Pitido de tardanza (2 notas descendentes: Sol-Re) — alerta suave"""
+    import streamlit.components.v1 as _c
+    _c.html("""
     <script>
     (function() {
         try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc = ctx.createOscillator();
+            function nota(freq, inicio, dur, tipo) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = freq;
+                o.type = tipo || 'sine';
+                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
+                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
+                o.start(ctx.currentTime + inicio);
+                o.stop(ctx.currentTime + inicio + dur + 0.05);
+            }
+            // Sol-Re descendente: tardanza
+            nota(784, 0.00, 0.20);
+            nota(294, 0.18, 0.35);
+        } catch(e) {}
+    })();
+    </script>
+    """, height=0)
+
+
+def reproducir_beep_error():
+    """Pitido de error (sonido grave corto)"""
+    import streamlit.components.v1 as _c
+    _c.html("""
+    <script>
+    (function() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc  = ctx.createOscillator();
             var gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 300;
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = 280;
             osc.type = 'square';
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.22, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.5);
         } catch(e) {}
     })();
     </script>
-    """, unsafe_allow_html=True)
+    """, height=0)
 
 
 # ================================================================
@@ -2999,36 +3034,39 @@ class GeneradorCarnet:
         self.draw.rectangle([(xt, yc), (MAX_X, yc + 2)], fill=self.DORADO)
         yc += 8
 
+        # Offset fijo para alinear todos los valores (etiqueta más larga: VIGENCIA: ~155px)
+        VAL_X = xt + 165
+
         # ── DNI ──────────────────────────────────────────────────────
         self.draw.text((xt, yc), "DNI:", font=fl, fill=self.AZUL)
-        self.draw.text((xt + 75, yc), dni, font=fd_dni, fill="black")
+        self.draw.text((xt + 90, yc), dni, font=fd_dni, fill="black")
         yc += 38
 
         # ── Grado / Cargo ─────────────────────────────────────────────
         if self.es_docente:
             cg = self.datos.get('Cargo', 'DOCENTE').upper()
             self.draw.text((xt, yc), "CARGO:", font=fl, fill=self.AZUL)
-            self.draw.text((xt + 95, yc), cg[:20], font=fd, fill="black")
+            self.draw.text((VAL_X, yc), cg[:18], font=fd, fill="black")
             yc += 34
             esp = self.datos.get('Especialidad', '').upper()
             if esp:
                 self.draw.text((xt, yc), "ESPEC.:", font=fl, fill=self.AZUL)
-                self.draw.text((xt + 95, yc), esp[:22], font=fd, fill="black")
+                self.draw.text((VAL_X, yc), esp[:18], font=fd, fill="black")
                 yc += 34
         else:
             gr = self.datos.get('Grado', self.datos.get('grado', '')).upper()
             sc = self.datos.get('Seccion', self.datos.get('seccion', ''))
             self.draw.text((xt, yc), "GRADO:", font=fl, fill=self.AZUL)
-            self.draw.text((xt + 95, yc), gr[:22], font=fd, fill="black")
+            self.draw.text((VAL_X, yc), gr[:20], font=fd, fill="black")
             yc += 34
             if sc:
-                self.draw.text((xt, yc), "SECCIÓN:", font=fl, fill=self.AZUL)
-                self.draw.text((xt + 110, yc), str(sc)[:15], font=fd, fill="black")
+                self.draw.text((xt, yc), "SECCION:", font=fl, fill=self.AZUL)
+                self.draw.text((VAL_X, yc), str(sc)[:14], font=fd, fill="black")
                 yc += 34
 
         # ── Vigencia ──────────────────────────────────────────────────
         self.draw.text((xt, yc), "VIGENCIA:", font=fl, fill=self.AZUL)
-        self.draw.text((xt + 120, yc), str(self.anio), font=fd, fill="black")
+        self.draw.text((VAL_X, yc), str(self.anio), font=fd, fill="black")
 
     def _qr(self):
         try:
@@ -4997,50 +5035,74 @@ def tab_asistencias():
     # ===== LISTA DE ASISTENCIA DE HOY =====
     st.markdown("---")
     st.subheader("📊 Registros de Hoy")
+
+    # Info de reglas de horario
+    _hor_act = _horario_activo()
+    _limite_txt = HORARIOS[_hor_act]['limite']
+    st.info(
+        f"📋 **Reglas activas** — "
+        f"{'☀️ Horario Normal' if _hor_act=='normal' else '❄️ Horario Invierno'}  |  "
+        f"🟢 Puntual: hasta **{_limite_txt}**  |  "
+        f"⏰ Tardanza: desde **{_limite_txt}** + 1 min  |  "
+        f"🌤️ Entrada tarde: desde **14:10**"
+    )
+
     asis = BaseDatos.obtener_asistencias_hoy()
     if asis:
-        # Separar alumnos y docentes
+        # Separar alumnos y docentes con los 4 registros bien etiquetados
         alumnos_h = []
         docentes_h = []
         for dk, v in asis.items():
-            reg = {'DNI': dk, 'Nombre': v['nombre'],
-                   'Entrada': v.get('entrada', '—'),
-                   'Tardanza': '⏰' if _es_tardanza(v.get('entrada', '') or v.get('tardanza', '')) and (v.get('entrada') or v.get('tardanza')) else '—',
-                   'Salida': v.get('salida', '—'),
-                   'Ent.Tarde': v.get('entrada_tarde', '—'),
-                   'Sal.Tarde': v.get('salida_tarde', '—'),
-                   'es_docente': v.get('es_docente', False)}
+            entrada_m = v.get('entrada') or v.get('tardanza') or ''
+            es_tard   = _es_tardanza(entrada_m) and bool(entrada_m)
+            reg = {
+                'DNI'              : dk,
+                'Nombre'           : v['nombre'],
+                '① Entrada Mañana' : entrada_m if entrada_m else '—',
+                'Puntual'          : '⏰ Tard.' if es_tard else ('✅' if entrada_m else '—'),
+                '② Salida Mañana'  : v.get('salida', '') or '—',
+                '③ Entrada Tarde'  : v.get('entrada_tarde', '') or '—',
+                '④ Salida Tarde'   : v.get('salida_tarde', '') or '—',
+                'es_docente'       : v.get('es_docente', False),
+            }
             if v.get('es_docente', False):
                 docentes_h.append(reg)
             else:
                 alumnos_h.append(reg)
 
         # Métricas rápidas
-        c1, c2, c3, c4, c5 = st.columns(5)
+        c1, c2, c3, c4, c5, c6 = st.columns(6)
         with c1:
             st.metric("📚 Alumnos", len(alumnos_h))
         with c2:
             st.metric("👨‍🏫 Docentes", len(docentes_h))
         with c3:
-            entradas = sum(1 for v in asis.values() if v.get('entrada'))
-            st.metric("🌅 Entradas", entradas)
+            _ent = sum(1 for v in asis.values() if v.get('entrada') or v.get('tardanza'))
+            st.metric("🌅 Ent. Mañana", _ent)
         with c4:
-            tardanzas = sum(1 for v in asis.values()
-                          if _es_tardanza(v.get('entrada', '') or v.get('tardanza', ''))
-                          and (v.get('entrada') or v.get('tardanza')))
-            st.metric("⏰ Tardanzas", tardanzas)
+            _tard = sum(1 for v in asis.values()
+                        if _es_tardanza(v.get('entrada','') or v.get('tardanza',''))
+                        and (v.get('entrada') or v.get('tardanza')))
+            st.metric("⏰ Tardanzas", _tard)
         with c5:
-            salidas = sum(1 for v in asis.values() if v.get('salida'))
-            st.metric("🌙 Salidas", salidas)
+            _et = sum(1 for v in asis.values() if v.get('entrada_tarde'))
+            st.metric("🌤️ Ent. Tarde", _et)
+        with c6:
+            _st2 = sum(1 for v in asis.values() if v.get('salida_tarde'))
+            st.metric("🌙 Sal. Tarde", _st2)
 
         if alumnos_h:
-            st.markdown("**📚 Alumnos registrados:**")
-            st.dataframe(pd.DataFrame(alumnos_h).drop(columns=['es_docente']),
-                         use_container_width=True, hide_index=True)
+            st.markdown("**📚 Alumnos registrados hoy:**")
+            st.dataframe(
+                pd.DataFrame(alumnos_h).drop(columns=['es_docente']),
+                use_container_width=True, hide_index=True
+            )
         if docentes_h:
-            st.markdown("**👨‍🏫 Docentes registrados:**")
-            st.dataframe(pd.DataFrame(docentes_h).drop(columns=['es_docente']),
-                         use_container_width=True, hide_index=True)
+            st.markdown("**👨‍🏫 Docentes registrados hoy:**")
+            st.dataframe(
+                pd.DataFrame(docentes_h).drop(columns=['es_docente']),
+                use_container_width=True, hide_index=True
+            )
 
         # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
@@ -5215,53 +5277,70 @@ def _registrar_asistencia_rapida(dni):
         asis_hoy = BaseDatos.obtener_asistencias_hoy()
         reg_hoy = asis_hoy.get(str(dni).strip(), {})
 
+        # ── Calcular minutos actuales para comparar ─────────────────
+        try:
+            _hh, _mm = hora.split(':')[:2]
+            _mins_ahora = int(_hh) * 60 + int(_mm)
+        except Exception:
+            _mins_ahora = 0
+
         if modo == "Entrada":
-            tiene_entrada = reg_hoy.get('entrada') or reg_hoy.get('tardanza')
-            tiene_salida = reg_hoy.get('salida')
+            tiene_entrada   = reg_hoy.get('entrada') or reg_hoy.get('tardanza')
+            tiene_salida    = reg_hoy.get('salida')
             tiene_ent_tarde = reg_hoy.get('entrada_tarde')
 
-            if tiene_entrada and tiene_salida and not tiene_ent_tarde:
-                # Mañana completa → auto ENTRADA TARDE
-                tipo = 'entrada_tarde'
+            # ── ¿Es turno tarde? → desde las 14:10 ──────────────────
+            es_turno_tarde = (_mins_ahora >= HORA_ENTRADA_TARDE_MIN)
+
+            if es_turno_tarde:
+                # Registro desde las 14:10 → siempre ENTRADA TARDE
+                if tiene_ent_tarde:
+                    st.warning(f"⚠️ **{nombre}** ya registró entrada tarde ({tiene_ent_tarde}).")
+                    return
+                tipo       = 'entrada_tarde'
                 emoji_tipo = "🌤️"
-                msg_extra = " 📌 TURNO TARDE (auto-detectado)"
+                msg_extra  = " 📌 ENTRADA TARDE — Turno tarde (desde 14:10)"
             elif tiene_entrada and not tiene_salida:
-                st.warning(f"⚠️ **{nombre}** ya registró entrada ({reg_hoy.get('entrada') or reg_hoy.get('tardanza')}). Registre salida primero.")
+                st.warning(f"⚠️ **{nombre}** ya registró entrada mañana ({reg_hoy.get('entrada') or reg_hoy.get('tardanza')}). Debe registrar salida primero.")
                 return
-            elif tiene_ent_tarde:
-                st.warning(f"⚠️ **{nombre}** ya tiene entrada tarde ({tiene_ent_tarde}). Ya registrado.")
+            elif tiene_entrada and tiene_salida:
+                st.info(f"ℹ️ **{nombre}** ya completó el turno mañana. La entrada tarde se registra desde las 14:10.")
                 return
             else:
-                # Primera entrada del día
+                # Primera entrada del día — turno mañana
                 if _es_tardanza(hora):
-                    tipo = 'tardanza'
+                    tipo       = 'tardanza'
                     emoji_tipo = "🟡"
-                    msg_extra = f" ⏰ TARDANZA (después de {limite_txt})"
+                    msg_extra  = f" ⏰ TARDANZA (llegó después de las {limite_txt})"
                 else:
-                    tipo = 'entrada'
+                    tipo       = 'entrada'
                     emoji_tipo = "🟢"
-                    msg_extra = " ✅ PUNTUAL"
+                    msg_extra  = " ✅ PUNTUAL — Turno mañana"
 
         elif modo == "Salida":
+            tiene_entrada   = reg_hoy.get('entrada') or reg_hoy.get('tardanza')
             tiene_ent_tarde = reg_hoy.get('entrada_tarde')
             tiene_sal_tarde = reg_hoy.get('salida_tarde')
-            tiene_salida = reg_hoy.get('salida')
+            tiene_salida    = reg_hoy.get('salida')
 
+            # ── ¿Es turno tarde? → si ya tiene entrada tarde abierta ──
             if tiene_ent_tarde and not tiene_sal_tarde:
-                # Tarde abierta → auto SALIDA TARDE
-                tipo = 'salida_tarde'
+                tipo       = 'salida_tarde'
                 emoji_tipo = "🌙"
-                msg_extra = " 📌 SALIDA TARDE (auto-detectado)"
+                msg_extra  = " 📌 SALIDA TARDE — Turno tarde"
             elif tiene_sal_tarde:
-                st.warning(f"⚠️ **{nombre}** ya completó ambos turnos hoy.")
+                st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
                 return
             elif tiene_salida and not tiene_ent_tarde:
-                st.info(f"ℹ️ **{nombre}** ya salió de mañana ({tiene_salida}). Presione Entrada para turno tarde.")
+                st.info(f"ℹ️ **{nombre}** ya registró salida mañana ({tiene_salida}). La entrada tarde es desde las 14:10.")
+                return
+            elif not tiene_entrada:
+                st.warning(f"⚠️ **{nombre}** no tiene entrada registrada hoy. Registre entrada primero.")
                 return
             else:
-                tipo = 'salida'
+                tipo       = 'salida'
                 emoji_tipo = "🔵"
-                msg_extra = ""
+                msg_extra  = " 🏁 SALIDA — Turno mañana"
         else:
             tipo = modo.lower()
             emoji_tipo = "⚪"
@@ -5294,7 +5373,11 @@ def _registrar_asistencia_rapida(dni):
         st.markdown(f"""<div class="asist-{color_div}">
             {emoji_tipo} <strong>[{tp}] {nombre}</strong> — {label}: <strong>{hora}</strong>{msg_extra}{horas_info}
         </div>""", unsafe_allow_html=True)
-        reproducir_beep_exitoso()
+        # Pitido diferenciado: tardanza → sol-re descendente, resto → do-mi-sol exitoso
+        if tipo == 'tardanza':
+            reproducir_beep_tardanza()
+        else:
+            reproducir_beep_exitoso()
     else:
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
         nombre_manual = st.text_input("Nombre completo:", key=f"nombre_manual_{dni}",
@@ -8746,105 +8829,177 @@ def generar_pdf_test_imprimible(test_id, config):
 
         y = ty - 4
 
-    # ── HOJA DE RESPUESTAS (nueva página) ────────────────────────────
+    # ══════════════════════════════════════════════════════════════════
+    # PÁGINA FINAL: 4 HOJAS DE RESPUESTAS RECORTABLES POR PÁGINA
+    # Layout: 2 columnas × 2 filas  (como en la imagen de referencia)
+    # ══════════════════════════════════════════════════════════════════
     c.showPage()
     pag += 1
     _header_test(pag)
     _footer_test()
-    y = h - 82
 
-    c.setFillColor(colors.HexColor("#0f172a"))
-    c.rect(30, y-20, w-60, 22, fill=True)
-    c.setFillColor(colors.white)
-    c.setFont("Helvetica-Bold", 11)
-    c.drawCentredString(w/2, y-14, "✏️  HOJA DE RESPUESTAS — MARCAR CON UNA (X) O RELLENAR")
-    y -= 30
-
-    # Datos alumno (repetir)
-    c.setFillColor(colors.HexColor("#f1f5f9"))
-    c.roundRect(30, y-30, w-60, 34, 4, fill=True)
-    c.setFillColor(colors.black)
-    c.setFont("Helvetica-Bold", 8)
-    c.drawString(40, y-8,  "Apellidos y Nombres: _____________________________________________")
-    c.drawString(40, y-20, "DNI: __________________    Grado: ________________    Fecha: _______________")
-    y -= 42
-
-    # Tabla de burbujas: 5 columnas por pregunta
-    c.setFont("Helvetica-Bold", 8)
-    c.setFillColor(colors.HexColor("#1e3a8a"))
-    c.drawString(36, y, "N°")
     letras_resp = ["A", "B", "C", "D", "E"]
-    col_offset = 26
-    for li, letra in enumerate(letras_resp):
-        c.drawCentredString(70 + li*col_offset, y, letra)
-    c.drawString(220, y, "N°")
-    for li, letra in enumerate(letras_resp):
-        c.drawCentredString(255 + li*col_offset, y, letra)
-    y -= 8
-    c.setStrokeColor(colors.HexColor("#cbd5e1"))
-    c.setLineWidth(0.5)
-    c.line(30, y, w-30, y)
-    y -= 2
 
-    # 2 columnas de burbujas
-    mitad_p = (n_pregs + 1) // 2
-    col1_pregs = list(range(1, mitad_p + 1))
-    col2_pregs = list(range(mitad_p + 1, n_pregs + 1))
+    def _dibujar_mini_hoja(ox, oy, ancho, alto, test_nombre_corto):
+        """
+        Dibuja una mini hoja de respuestas recortable.
+        ox, oy = esquina inferior izquierda del recuadro.
+        ancho, alto = tamaño del recuadro.
+        """
+        AZUL  = colors.HexColor("#1e3a8a")
+        ROJO  = colors.HexColor("#dc2626")
+        GRIS  = colors.HexColor("#475569")
+        GRIS_L= colors.HexColor("#e2e8f0")
+        BLANC = colors.white
 
-    c.setFont("Helvetica", 7)
-    for idx_fila in range(len(col1_pregs)):
-        y -= 14
-        if y < 60:
-            c.showPage(); pag += 1; _header_test(pag); _footer_test()
-            y = h - 80
-
-        # Columna izquierda
-        n1 = col1_pregs[idx_fila]
-        c.setFillColor(colors.HexColor("#1e3a8a"))
-        c.setFont("Helvetica-Bold", 7)
-        c.drawRightString(58, y+3, f"{n1}.")
-        c.setFillColor(colors.black)
-        for li in range(5):
-            cx = 70 + li*col_offset
-            c.setFillColor(colors.white)
-            c.setStrokeColor(colors.HexColor("#475569"))
-            c.setLineWidth(0.8)
-            c.circle(cx, y+3, 6, fill=True, stroke=True)
-            c.setFillColor(colors.HexColor("#334155"))
-            c.setFont("Helvetica", 6.5)
-            c.drawCentredString(cx, y+1, letras_resp[li])
-
-        # Columna derecha
-        if idx_fila < len(col2_pregs):
-            n2 = col2_pregs[idx_fila]
-            c.setFillColor(colors.HexColor("#1e3a8a"))
-            c.setFont("Helvetica-Bold", 7)
-            c.drawRightString(243, y+3, f"{n2}.")
-            c.setFillColor(colors.black)
-            for li in range(5):
-                cx2 = 255 + li*col_offset
-                c.setFillColor(colors.white)
-                c.setStrokeColor(colors.HexColor("#475569"))
-                c.setLineWidth(0.8)
-                c.circle(cx2, y+3, 6, fill=True, stroke=True)
-                c.setFillColor(colors.HexColor("#334155"))
-                c.setFont("Helvetica", 6.5)
-                c.drawCentredString(cx2, y+1, letras_resp[li])
-
-        c.setStrokeColor(colors.HexColor("#e2e8f0"))
-        c.setLineWidth(0.3)
-        c.line(30, y-6, w-30, y-6)
-        c.setStrokeColor(colors.black)
+        # Borde exterior recortable (línea punteada)
+        c.setStrokeColor(colors.HexColor("#94a3b8"))
+        c.setLineWidth(0.5)
+        c.setDash(3, 3)
+        c.rect(ox, oy, ancho, alto, fill=False)
+        c.setDash()   # reset
         c.setLineWidth(1)
-        c.setFont("Helvetica", 7)
-        c.setFillColor(colors.black)
 
-    # Nota final
-    y -= 20
-    c.setFont("Helvetica-Bold", 8)
-    c.setFillColor(colors.HexColor("#dc2626"))
-    c.drawCentredString(w/2, y, "⚠️  NO DOBLE NI MALTRATE ESTA HOJA — ENTREGUE AL TUTOR AL TERMINAR")
-    c.setFillColor(colors.black)
+        # ── Encabezado de la mini hoja ──────────────────────────────
+        c.setFillColor(AZUL)
+        c.rect(ox, oy + alto - 18, ancho, 18, fill=True)
+        c.setFillColor(colors.HexColor("#f59e0b"))
+        c.rect(ox, oy + alto - 20, ancho, 2, fill=True)
+        c.setFillColor(BLANC)
+        c.setFont("Helvetica-Bold", 6.5)
+        c.drawCentredString(ox + ancho/2, oy + alto - 12,
+                            f"✏  HOJA DE RESPUESTAS — {test_nombre_corto[:35].upper()}")
+
+        # ── Datos alumno ────────────────────────────────────────────
+        dy = oy + alto - 24
+        c.setFillColor(colors.HexColor("#f8fafc"))
+        c.rect(ox + 4, dy - 20, ancho - 8, 20, fill=True)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica-Bold", 5.5)
+        c.drawString(ox + 7, dy - 8,
+                     "Apellidos y Nombres: ________________________________")
+        c.drawString(ox + 7, dy - 17,
+                     "DNI: _______________   Grado: ____________   Fecha: __________")
+        dy -= 24
+
+        # ── Encabezado columnas (N° A B C D E) ──────────────────────
+        c.setFillColor(AZUL)
+        c.setFont("Helvetica-Bold", 5.5)
+        # Calcular posiciones
+        COL_GAP   = ancho / 2 - 4       # ancho de cada media hoja
+        BUB_R     = 4                    # radio burbuja
+        BUB_STEP  = 13                   # separación entre letras
+        N_X_OFF   = 8                    # offset del número desde ox
+        LETRAS_X0 = N_X_OFF + 16        # donde empieza la primera burbuja
+
+        for col_lado in range(2):       # 0=izq, 1=der
+            base_x = ox + col_lado * COL_GAP + 4
+            # encabezado N°
+            c.drawString(base_x + N_X_OFF - 2, dy, "N°")
+            for li, letra in enumerate(letras_resp):
+                cx_h = base_x + LETRAS_X0 + li * BUB_STEP
+                c.drawCentredString(cx_h, dy, letra)
+
+        dy -= 2
+        c.setStrokeColor(GRIS_L)
+        c.setLineWidth(0.4)
+        c.line(ox + 4, dy, ox + ancho - 4, dy)
+        c.setLineWidth(1)
+        dy -= 1
+
+        # ── Burbujas por pregunta ─────────────────────────────────────
+        mitad = (n_pregs + 1) // 2
+        col1 = list(range(1, mitad + 1))
+        col2 = list(range(mitad + 1, n_pregs + 1))
+        fila_h = 11   # altura por fila
+
+        for idx_f in range(len(col1)):
+            dy -= fila_h
+            if dy < oy + 18:
+                break   # no cabe más en este recuadro
+
+            for col_lado in range(2):
+                num_p = col1[idx_f] if col_lado == 0 else (col2[idx_f] if idx_f < len(col2) else None)
+                if num_p is None:
+                    continue
+                base_x = ox + col_lado * COL_GAP + 4
+
+                # Fondo alterno
+                if num_p % 2 == 0:
+                    c.setFillColor(colors.HexColor("#f1f5f9"))
+                    c.rect(base_x + 4, dy - 2, COL_GAP - 8, fila_h - 1, fill=True)
+
+                # Número pregunta
+                c.setFillColor(AZUL)
+                c.setFont("Helvetica-Bold", 5.5)
+                c.drawRightString(base_x + N_X_OFF + 12, dy + 3, f"{num_p}.")
+
+                # 5 burbujas
+                for li in range(5):
+                    cx_b = base_x + LETRAS_X0 + li * BUB_STEP
+                    c.setFillColor(BLANC)
+                    c.setStrokeColor(GRIS)
+                    c.setLineWidth(0.6)
+                    c.circle(cx_b, dy + 3, BUB_R, fill=True, stroke=True)
+                    c.setFillColor(GRIS)
+                    c.setFont("Helvetica", 4.5)
+                    c.drawCentredString(cx_b, dy + 1, letras_resp[li])
+
+            # Línea separadora entre filas
+            c.setStrokeColor(GRIS_L)
+            c.setLineWidth(0.2)
+            c.line(ox + 6, dy - 2, ox + ancho - 6, dy - 2)
+
+        # ── Pie: advertencia ────────────────────────────────────────
+        c.setFillColor(ROJO)
+        c.setFont("Helvetica-Bold", 5)
+        c.drawCentredString(ox + ancho/2, oy + 5,
+                            "⚠ NO DOBLE NI MALTRATE ESTA HOJA — ENTREGUE AL TUTOR AL TERMINAR")
+        c.setFillColor(colors.black)
+        c.setStrokeColor(colors.black)
+
+    # ── Layout: 4 hojas por página (2 cols × 2 filas) ────────────────
+    MARGEN   = 18
+    ESPACIO  = 6    # espacio entre hojas
+    ALTO_HDR = 30   # espacio reservado para encabezado de página
+
+    disponible_w = w - 2*MARGEN
+    disponible_h = h - 2*MARGEN - ALTO_HDR
+
+    HOJA_W = (disponible_w - ESPACIO) / 2
+    HOJA_H = (disponible_h - ESPACIO) / 2
+
+    nombre_corto_test = test_data.get("nombre","TEST VOCACIONAL")
+
+    # Posiciones (ox, oy) de las 4 hojas:
+    # Fila superior: oy = MARGEN + HOJA_H + ESPACIO
+    # Fila inferior: oy = MARGEN
+    posiciones = [
+        (MARGEN,               MARGEN + HOJA_H + ESPACIO),   # sup izq
+        (MARGEN + HOJA_W + ESPACIO, MARGEN + HOJA_H + ESPACIO),  # sup der
+        (MARGEN,               MARGEN),                       # inf izq
+        (MARGEN + HOJA_W + ESPACIO, MARGEN),                  # inf der
+    ]
+
+    for (ox_h, oy_h) in posiciones:
+        _dibujar_mini_hoja(ox_h, oy_h, HOJA_W, HOJA_H, nombre_corto_test)
+
+    # Líneas de corte cruzadas en el centro
+    cx_centro = w / 2
+    cy_centro = (h - ALTO_HDR) / 2 + MARGEN
+    c.setStrokeColor(colors.HexColor("#94a3b8"))
+    c.setLineWidth(0.5)
+    c.setDash(4, 4)
+    c.line(cx_centro, MARGEN, cx_centro, h - MARGEN - ALTO_HDR)
+    c.line(MARGEN, cy_centro, w - MARGEN, cy_centro)
+    c.setDash()
+    c.setLineWidth(1)
+
+    # Instrucción de corte
+    c.setFillColor(colors.HexColor("#64748b"))
+    c.setFont("Helvetica-Oblique", 6)
+    c.drawCentredString(cx_centro, MARGEN - 10,
+                        "✂  Recortar por las líneas punteadas  ✂")
 
     c.save()
     buf.seek(0)
@@ -12650,12 +12805,16 @@ def _semanas_del_mes(mes, anio=None):
     return resultado
 
 
-# Hora límite puntualidad docente: antes de 8:05 = puntual, después = tardanza
 # ── HORARIOS DE PUNTUALIDAD ──────────────────────────────────────
+# Horario Normal:   hasta 08:10 = puntual, desde 08:11 = TARDANZA
+# Horario Invierno: hasta 08:15 = puntual, desde 08:16 = TARDANZA
+# Turno tarde:      desde 14:10 = ENTRADA TARDE
 HORARIOS = {
-    'normal': {'limite': '08:05', 'nombre': '☀️ Normal (8:05am)', 'minutos': 8*60+5},
+    'normal':   {'limite': '08:10', 'nombre': '☀️ Normal (8:10am)',   'minutos': 8*60+10},
     'invierno': {'limite': '08:15', 'nombre': '❄️ Invierno (8:15am)', 'minutos': 8*60+15},
 }
+# Minuto exacto desde el cual una entrada se considera TURNO TARDE (14:10)
+HORA_ENTRADA_TARDE_MIN = 14 * 60 + 10
 
 
 def _horario_activo():
