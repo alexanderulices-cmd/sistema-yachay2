@@ -8562,132 +8562,486 @@ def generar_pdf_orientacion_vocacional(nombre, dni, grado, prom_gen, lit_gen,
     return buf
 
 
+
+def generar_pdf_test_imprimible(test_id, config):
+    """
+    Genera un PDF listo para imprimir del cuestionario vocacional.
+    Incluye: encabezado, instrucciones, preguntas con opciones A-E,
+    hoja de respuestas (burbuja) y espacio para datos del alumno.
+    """
+    test_data = TESTS_VOCACIONALES.get(test_id, {})
+    if not test_data:
+        return None
+    preguntas = test_data.get("preguntas", [])
+    n_pregs   = len(preguntas)
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+
+    def _header_test(pag=1):
+        # Fondo oscuro
+        c.setFillColor(colors.HexColor("#0f172a"))
+        c.rect(0, h-68, w, 68, fill=True)
+        c.setFillColor(colors.HexColor("#f59e0b"))
+        c.rect(0, h-71, w, 3, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 13)
+        c.drawCentredString(w/2, h-22, test_data.get("nombre","TEST VOCACIONAL").upper())
+        c.setFont("Helvetica", 8)
+        c.drawCentredString(w/2, h-36, f"I.E.P. ALTERNATIVO YACHAY — Chinchero, Cusco — {config.get('anio',2026)}")
+        c.drawCentredString(w/2, h-48, test_data.get("descripcion",""))
+        c.setFont("Helvetica", 7)
+        c.drawCentredString(w/2, h-60, f"Pág. {pag}")
+
+    def _footer_test():
+        c.setFont("Helvetica-Oblique", 6)
+        c.setFillColor(colors.HexColor("#94a3b8"))
+        c.drawCentredString(w/2, 15, "YACHAY PRO © — Orientación Vocacional UNSAAC — Uso exclusivo institucional")
+        c.setFillColor(colors.black)
+
+    pag = 1
+    _header_test(pag)
+    _footer_test()
+    y = h - 82
+
+    # ── DATOS DEL ESTUDIANTE ──────────────────────────────────────────
+    c.setFillColor(colors.HexColor("#f1f5f9"))
+    c.roundRect(30, y-48, w-60, 52, 6, fill=True)
+    c.setFillColor(colors.HexColor("#1e3a8a"))
+    c.roundRect(30, y-48, w-60, 52, 6, fill=False)
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(colors.black)
+    c.drawString(40, y-6,  "Apellidos y Nombres: _____________________________________________")
+    c.drawString(40, y-18, "DNI: __________________    Grado: ________________    Sección: ________")
+    c.drawString(40, y-30, "Fecha de aplicación: ___________________    Tutor/a: _______________________")
+    c.drawString(40, y-42, "Institución: I.E.P. ALTERNATIVO YACHAY — Chinchero, Cusco")
+    y -= 58
+
+    # ── INSTRUCCIONES ─────────────────────────────────────────────────
+    c.setFillColor(colors.HexColor("#fef3c7"))
+    c.roundRect(30, y-32, w-60, 36, 4, fill=True)
+    c.setFillColor(colors.HexColor("#d97706"))
+    c.setFont("Helvetica-Bold", 8)
+    c.drawString(38, y-8, "📌 INSTRUCCIONES:")
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica", 7.5)
+    instruccion = test_data.get("instruccion","Elige la alternativa que más te identifica en cada pregunta.")
+    c.drawString(38, y-19, instruccion)
+    c.drawString(38, y-29, f"Total de preguntas: {n_pregs}  |  Marca solo UNA alternativa por pregunta  |  No borrones")
+    y -= 42
+
+    # ── PREGUNTAS ─────────────────────────────────────────────────────
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(colors.HexColor("#1e3a8a"))
+    c.drawString(30, y, "CUESTIONARIO:")
+    c.setFillColor(colors.black)
+    y -= 12
+
+    for preg in preguntas:
+        pid = preg["id"]
+        texto_p = preg["pregunta"]
+        opciones = preg["opciones"]
+
+        # Altura estimada de la pregunta
+        n_lineas_p = (len(texto_p) // 85) + 1
+        n_opciones  = len(opciones)
+        alto_bloque = n_lineas_p * 9 + n_opciones * 9 + 10
+
+        if y - alto_bloque < 80:
+            c.showPage(); pag += 1; _header_test(pag); _footer_test()
+            y = h - 80
+
+        # Número + texto pregunta
+        bg = "#f8fafc" if pid % 2 == 0 else "#ffffff"
+        c.setFillColor(colors.HexColor(bg))
+        c.roundRect(30, y - alto_bloque + 4, w-60, alto_bloque, 4, fill=True)
+
+        c.setFillColor(colors.HexColor("#1e3a8a"))
+        c.circle(42, y - 3, 7, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 7)
+        c.drawCentredString(42, y - 6, str(pid))
+
+        # Texto pregunta (puede ser largo)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica-Bold", 8)
+        max_chars = 90
+        lineas_p = []
+        palabras = texto_p.split()
+        linea_actual = ""
+        for pal in palabras:
+            if len(linea_actual) + len(pal) + 1 <= max_chars:
+                linea_actual += (" " if linea_actual else "") + pal
+            else:
+                lineas_p.append(linea_actual)
+                linea_actual = pal
+        if linea_actual:
+            lineas_p.append(linea_actual)
+
+        ty = y - 1
+        for lp in lineas_p:
+            c.drawString(54, ty, lp)
+            ty -= 9
+
+        # Opciones en 1 columna con burbuja
+        c.setFont("Helvetica", 7.5)
+        for letra, (texto_op, _grupo) in opciones.items():
+            # Círculo burbuja para marcar
+            c.setFillColor(colors.white)
+            c.setStrokeColor(colors.HexColor("#475569"))
+            c.setLineWidth(0.8)
+            c.circle(58, ty + 2, 4, fill=True, stroke=True)
+            c.setStrokeColor(colors.black)
+            c.setLineWidth(1)
+            c.setFillColor(colors.HexColor("#1e3a8a"))
+            c.setFont("Helvetica-Bold", 7)
+            c.drawCentredString(58, ty, letra)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 7.5)
+            # Truncar opción si es muy larga
+            texto_op_corto = texto_op[:100] if len(texto_op) > 100 else texto_op
+            c.drawString(68, ty, texto_op_corto)
+            ty -= 9
+
+        y = ty - 4
+
+    # ── HOJA DE RESPUESTAS (nueva página) ────────────────────────────
+    c.showPage()
+    pag += 1
+    _header_test(pag)
+    _footer_test()
+    y = h - 82
+
+    c.setFillColor(colors.HexColor("#0f172a"))
+    c.rect(30, y-20, w-60, 22, fill=True)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(w/2, y-14, "✏️  HOJA DE RESPUESTAS — MARCAR CON UNA (X) O RELLENAR")
+    y -= 30
+
+    # Datos alumno (repetir)
+    c.setFillColor(colors.HexColor("#f1f5f9"))
+    c.roundRect(30, y-30, w-60, 34, 4, fill=True)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 8)
+    c.drawString(40, y-8,  "Apellidos y Nombres: _____________________________________________")
+    c.drawString(40, y-20, "DNI: __________________    Grado: ________________    Fecha: _______________")
+    y -= 42
+
+    # Tabla de burbujas: 5 columnas por pregunta
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(colors.HexColor("#1e3a8a"))
+    c.drawString(36, y, "N°")
+    letras_resp = ["A", "B", "C", "D", "E"]
+    col_offset = 26
+    for li, letra in enumerate(letras_resp):
+        c.drawCentredString(70 + li*col_offset, y, letra)
+    c.drawString(220, y, "N°")
+    for li, letra in enumerate(letras_resp):
+        c.drawCentredString(255 + li*col_offset, y, letra)
+    y -= 8
+    c.setStrokeColor(colors.HexColor("#cbd5e1"))
+    c.setLineWidth(0.5)
+    c.line(30, y, w-30, y)
+    y -= 2
+
+    # 2 columnas de burbujas
+    mitad_p = (n_pregs + 1) // 2
+    col1_pregs = list(range(1, mitad_p + 1))
+    col2_pregs = list(range(mitad_p + 1, n_pregs + 1))
+
+    c.setFont("Helvetica", 7)
+    for idx_fila in range(len(col1_pregs)):
+        y -= 14
+        if y < 60:
+            c.showPage(); pag += 1; _header_test(pag); _footer_test()
+            y = h - 80
+
+        # Columna izquierda
+        n1 = col1_pregs[idx_fila]
+        c.setFillColor(colors.HexColor("#1e3a8a"))
+        c.setFont("Helvetica-Bold", 7)
+        c.drawRightString(58, y+3, f"{n1}.")
+        c.setFillColor(colors.black)
+        for li in range(5):
+            cx = 70 + li*col_offset
+            c.setFillColor(colors.white)
+            c.setStrokeColor(colors.HexColor("#475569"))
+            c.setLineWidth(0.8)
+            c.circle(cx, y+3, 6, fill=True, stroke=True)
+            c.setFillColor(colors.HexColor("#334155"))
+            c.setFont("Helvetica", 6.5)
+            c.drawCentredString(cx, y+1, letras_resp[li])
+
+        # Columna derecha
+        if idx_fila < len(col2_pregs):
+            n2 = col2_pregs[idx_fila]
+            c.setFillColor(colors.HexColor("#1e3a8a"))
+            c.setFont("Helvetica-Bold", 7)
+            c.drawRightString(243, y+3, f"{n2}.")
+            c.setFillColor(colors.black)
+            for li in range(5):
+                cx2 = 255 + li*col_offset
+                c.setFillColor(colors.white)
+                c.setStrokeColor(colors.HexColor("#475569"))
+                c.setLineWidth(0.8)
+                c.circle(cx2, y+3, 6, fill=True, stroke=True)
+                c.setFillColor(colors.HexColor("#334155"))
+                c.setFont("Helvetica", 6.5)
+                c.drawCentredString(cx2, y+1, letras_resp[li])
+
+        c.setStrokeColor(colors.HexColor("#e2e8f0"))
+        c.setLineWidth(0.3)
+        c.line(30, y-6, w-30, y-6)
+        c.setStrokeColor(colors.black)
+        c.setLineWidth(1)
+        c.setFont("Helvetica", 7)
+        c.setFillColor(colors.black)
+
+    # Nota final
+    y -= 20
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(colors.HexColor("#dc2626"))
+    c.drawCentredString(w/2, y, "⚠️  NO DOBLE NI MALTRATE ESTA HOJA — ENTREGUE AL TUTOR AL TERMINAR")
+    c.setFillColor(colors.black)
+
+    c.save()
+    buf.seek(0)
+    return buf
+
+
 def _tab_test_vocacional_ui(config):
     """
-    Sub-pestaña: Test de Intereses Vocacionales — Admin/Directivo puede
-    registrar respuestas y generar PDFs individuales o en lote.
+    Pestaña: Orientación Vocacional UNSAAC
+    3 subtabs:
+      1. Descargar Tests en PDF (para imprimir y aplicar)
+      2. Ingresar Claves y generar Diagnóstico individual
+      3. Diagnósticos en Lote (ZIP por grado)
     """
-    st.markdown("### 🧠 Test de Intereses Vocacionales")
-    st.caption("Aplica el test a los estudiantes y registra sus respuestas. El sistema genera el diagnóstico PDF automáticamente.")
+    st.markdown("### 🎓 Orientación Vocacional — UNSAAC")
+    st.caption("Centro de Estudios Preuniversitarios — Universidad Nacional de San Antonio Abad del Cusco")
 
-    modo = st.radio("Modo:", ["📝 Registrar respuestas de un estudiante",
-                               "📦 Generar PDFs en lote (todos los estudiantes del grado)"],
-                    horizontal=True, key="tv_modo")
+    subtab_tv = st.radio("", [
+        "📄 Descargar Tests para imprimir",
+        "✏️ Ingresar Claves → Diagnóstico individual",
+        "📦 Diagnósticos en Lote (ZIP por grado)",
+    ], horizontal=True, key="tv_subtab")
 
-    df_alum = BaseDatos.cargar_matricula()
-    if df_alum is None or df_alum.empty:
-        st.warning("No hay alumnos cargados en la base de datos.")
-        return
+    test_ids     = list(TESTS_VOCACIONALES.keys())
+    test_nombres = [TESTS_VOCACIONALES[t]["nombre"] for t in test_ids]
 
-    grados_disp = sorted(df_alum["Grado"].dropna().unique().tolist())
+    # ═══════════════════════════════════════════════════════════════
+    # SUBTAB 1: Descargar tests para imprimir
+    # ═══════════════════════════════════════════════════════════════
+    if subtab_tv == "📄 Descargar Tests para imprimir":
+        st.markdown("#### 📄 Tests listos para imprimir y aplicar")
+        st.info("Imprime el test, aplícalo a los alumnos, recoge las hojas y luego ingresa las claves en la siguiente pestaña.")
 
-    if modo == "📝 Registrar respuestas de un estudiante":
-        col1, col2 = st.columns(2)
-        with col1:
-            grado_tv = st.selectbox("Grado:", grados_disp, key="tv_grado")
-        with col2:
-            df_g = df_alum[df_alum["Grado"] == grado_tv]
+        col_t1, col_t2 = st.columns([2,1])
+        with col_t1:
+            test_sel_imp = st.selectbox("Seleccionar test:", test_nombres, key="tv_imp_test")
+            test_id_imp  = test_ids[test_nombres.index(test_sel_imp)]
+            td           = TESTS_VOCACIONALES[test_id_imp]
+            st.markdown(f"**{td['nombre']}**")
+            st.caption(f"📌 {td['descripcion']}")
+            st.caption(f"📝 {len(td['preguntas'])} preguntas  |  Instrucción: {td['instruccion']}")
+        with col_t2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🖨️ Generar PDF del test", type="primary", key="tv_imp_btn"):
+                pdf_imp = generar_pdf_test_imprimible(test_id_imp, config)
+                if pdf_imp:
+                    nombre_archivo = f"TEST_{test_id_imp.upper()}_{config.get('anio',2026)}.pdf"
+                    st.download_button(
+                        "⬇️ Descargar PDF para imprimir",
+                        pdf_imp,
+                        nombre_archivo,
+                        "application/pdf",
+                        key="dl_tv_imp"
+                    )
+                    st.success("✅ PDF generado — incluye cuestionario + hoja de respuestas con burbujas")
+
+        # Vista previa de las preguntas
+        st.markdown("---")
+        st.markdown("##### 👁️ Vista previa del cuestionario:")
+        td2 = TESTS_VOCACIONALES[test_id_imp]
+        for preg in td2["preguntas"]:
+            with st.expander(f"**{preg['id']}.** {preg['pregunta']}"):
+                for letra, (texto_op, grupo) in preg["opciones"].items():
+                    etiq_grupo = UNSAAC_GRUPOS.get(grupo, {}).get("nombre", "Técnico/Otros") if grupo != "T" else "Técnico / PNP / Institutos"
+                    st.write(f"**{letra})** {texto_op}")
+
+    # ═══════════════════════════════════════════════════════════════
+    # SUBTAB 2: Ingresar Claves → Diagnóstico individual
+    # ═══════════════════════════════════════════════════════════════
+    elif subtab_tv == "✏️ Ingresar Claves → Diagnóstico individual":
+        st.markdown("#### ✏️ Ingreso de claves del test aplicado")
+        st.info("Selecciona el estudiante, el test aplicado, e ingresa la alternativa que marcó en cada pregunta (A, B, C, D o E). Luego genera el diagnóstico PDF.")
+
+        df_alum = BaseDatos.cargar_matricula()
+        if df_alum is None or df_alum.empty:
+            st.warning("No hay alumnos cargados en la base de datos.")
+            return
+
+        grados_disp = sorted(df_alum["Grado"].dropna().unique().tolist())
+
+        col_e1, col_e2, col_e3 = st.columns(3)
+        with col_e1:
+            grado_tv = st.selectbox("Grado:", grados_disp, key="tv_grado_cl")
+        with col_e2:
+            df_g     = df_alum[df_alum["Grado"] == grado_tv]
             nombres_tv = df_g["Nombre"].dropna().tolist()
-            nombre_tv = st.selectbox("Estudiante:", nombres_tv, key="tv_nombre")
+            nombre_tv  = st.selectbox("Estudiante:", nombres_tv, key="tv_nombre_cl")
+        with col_e3:
+            test_sel_nombre = st.selectbox("Test aplicado:", test_nombres, key="tv_tipo_cl")
+            test_sel_id     = test_ids[test_nombres.index(test_sel_nombre)]
+            test_data       = TESTS_VOCACIONALES[test_sel_id]
 
         if nombre_tv:
             fila_tv = df_g[df_g["Nombre"] == nombre_tv].iloc[0]
-            dni_tv = str(fila_tv.get("DNI", ""))
+            dni_tv  = str(fila_tv.get("DNI",""))
 
             st.markdown("---")
-            # ── Selector de test ──────────────────────────────────────
-            test_ids = list(TESTS_VOCACIONALES.keys())
-            test_nombres = [TESTS_VOCACIONALES[t]["nombre"] for t in test_ids]
-            test_sel_nombre = st.selectbox("📋 Seleccionar tipo de test:", test_nombres, key="tv_tipo_test")
-            test_sel_id = test_ids[test_nombres.index(test_sel_nombre)]
-            test_data = TESTS_VOCACIONALES[test_sel_id]
+            st.markdown(f"**Test:** {test_data['nombre']}  |  **Estudiante:** {nombre_tv}  |  **Grado:** {grado_tv}")
+            st.caption(f"Instrucción dada al estudiante: *{test_data['instruccion']}*")
 
-            st.markdown(f"**{test_data['nombre']}**")
-            st.caption(f"📌 {test_data['descripcion']}")
-            st.info(f"✏️ {test_data['instruccion']}")
+            # ── Tabla de ingreso de claves ────────────────────────────
+            st.markdown("##### 📋 Ingresa la alternativa marcada por el estudiante:")
+            st.caption("Selecciona A / B / C / D / E según lo que marcó el alumno en la hoja de respuestas.")
 
+            preguntas_test = test_data["preguntas"]
+            n_cols = 5  # preguntas por fila
             respuestas = {}
-            for preg in test_data["preguntas"]:
-                st.markdown(f"**{preg['id']}. {preg['pregunta']}**")
-                opciones_labels = [f"{k}) {v[0]}" for k, v in preg["opciones"].items()]
-                resp = st.radio("", opciones_labels,
-                                key=f"tv_preg_{test_sel_id}_{preg['id']}", label_visibility="collapsed")
-                letra_sel = resp[0] if resp else "A"
-                grupo_sel = preg["opciones"].get(letra_sel, ("", "A"))[1]
-                respuestas[preg["id"]] = grupo_sel
+
+            for fila_idx in range(0, len(preguntas_test), n_cols):
+                chunk = preguntas_test[fila_idx : fila_idx + n_cols]
+                cols  = st.columns(len(chunk))
+                for ci, preg in enumerate(chunk):
+                    with cols[ci]:
+                        texto_corto = preg["pregunta"][:45] + "…" if len(preg["pregunta"]) > 45 else preg["pregunta"]
+                        st.caption(f"**{preg['id']}.** {texto_corto}")
+                        letra_marcada = st.selectbox(
+                            f"Resp. {preg['id']}",
+                            list(preg["opciones"].keys()),
+                            key=f"tv_clave_{test_sel_id}_{preg['id']}",
+                            label_visibility="collapsed"
+                        )
+                        grupo_mapeado = preg["opciones"].get(letra_marcada, ("","A"))[1]
+                        respuestas[preg["id"]] = grupo_mapeado
+
+                        # Mostrar a qué grupo va esta respuesta
+                        nombre_grp = UNSAAC_GRUPOS.get(grupo_mapeado,{}).get("icono","🔧") if grupo_mapeado != "T" else "🔧"
+                        st.caption(f"→ {nombre_grp} {letra_marcada}")
 
             st.markdown("---")
-            if st.button("🎯 Generar Diagnóstico y PDF", type="primary", key="tv_generar"):
-                # Calcular notas del estudiante
+
+            # ── Resumen visual antes de generar ──────────────────────
+            conteo_prev = {"A":0,"B":0,"C":0,"D":0,"T":0}
+            for _, grp in respuestas.items():
+                conteo_prev[grp] = conteo_prev.get(grp,0) + 1
+            labels_prev = {"A":"⚙️ Ing/Ciencias","B":"🏥 Salud","C":"⚖️ Sociales","D":"🎓 Educación","T":"🔧 Técnico"}
+            st.markdown("**Distribución de respuestas:**")
+            cols_prev = st.columns(5)
+            for gi, (gk, glabel) in enumerate(labels_prev.items()):
+                with cols_prev[gi]:
+                    cnt = conteo_prev.get(gk,0)
+                    color_card = {"A":"#dbeafe","B":"#d1fae5","C":"#fee2e2","D":"#ede9fe","T":"#fef3c7"}[gk]
+                    st.markdown(
+                        f"<div style='background:{color_card};padding:8px;border-radius:8px;text-align:center'>"
+                        f"<b style='font-size:1.4em'>{cnt}</b><br><small>{glabel}</small></div>",
+                        unsafe_allow_html=True
+                    )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🎯 Generar Diagnóstico y Descargar PDF", type="primary", key="tv_generar_cl"):
+                # Cargar notas del estudiante
                 hist_eval = _cargar_historial_evaluaciones()
                 notas_est = []
                 for _, ev in hist_eval.items():
-                    for fila_h in ev.get("ranking", []):
+                    for fila_h in ev.get("ranking",[]):
                         if str(fila_h.get("DNI","")) == dni_tv:
-                            areas_h = ev.get("areas", [])
+                            areas_h = ev.get("areas",[])
                             names_h = [a["nombre"] for a in areas_h] if areas_h and isinstance(areas_h[0],dict) else list(areas_h)
                             for an in names_h:
-                                nv = fila_h.get(an, 0)
-                                if nv and float(nv) > 0:
-                                    notas_est.append({"area": an, "nota": float(nv)})
+                                nv = fila_h.get(an,0)
+                                if nv and float(nv)>0:
+                                    notas_est.append({"area":an,"nota":float(nv)})
 
                 promedios_area = {}
                 for n in notas_est:
-                    area = n["area"]
-                    if area not in promedios_area:
-                        promedios_area[area] = []
-                    promedios_area[area].append(n["nota"])
+                    promedios_area.setdefault(n["area"],[]).append(n["nota"])
                 promedios_area = {k: round(sum(v)/len(v),1) for k,v in promedios_area.items()}
-
-                prom_gen = round(sum(promedios_area.values())/len(promedios_area),1) if promedios_area else 0
-                lit_gen = nota_a_letra(prom_gen) if prom_gen > 0 else "C"
-                afinidad = _calcular_afinidad_academica(promedios_area)
+                prom_gen  = round(sum(promedios_area.values())/len(promedios_area),1) if promedios_area else 0
+                lit_gen   = nota_a_letra(prom_gen) if prom_gen>0 else "C"
+                afinidad  = _calcular_afinidad_academica(promedios_area)
                 resultado_test = _calcular_resultado_test(respuestas)
 
-                # Mostrar resumen
-                gp = afinidad["grupo_principal"]
-                gdata = UNSAAC_GRUPOS.get(gp, {})
-                st.success(f"✅ Diagnóstico generado — Grupo UNSAAC: **{gdata.get('nombre','—')}** {gdata.get('icono','')}")
-                st.info(f"Test vocacional: tendencia **{UNSAAC_GRUPOS.get(resultado_test['principal'],{}).get('nombre','Técnico')}**")
+                gp    = afinidad["grupo_principal"]
+                gdata = UNSAAC_GRUPOS.get(gp,{})
+                gp_t  = resultado_test["principal"]
+                gdata_t = UNSAAC_GRUPOS.get(gp_t,{})
 
-                pdf_tv = generar_pdf_orientacion_vocacional(
+                col_r1, col_r2 = st.columns(2)
+                with col_r1:
+                    st.success(f"✅ Por notas académicas → **{gdata.get('nombre','—')}** {gdata.get('icono','')}")
+                with col_r2:
+                    nombre_t = gdata_t.get("nombre","—") if gp_t!="T" else "Técnico / PNP / Institutos"
+                    st.info(f"🧠 Por test vocacional → **{nombre_t}**")
+
+                pdf_diag = generar_pdf_orientacion_vocacional(
                     nombre_tv, dni_tv, grado_tv,
                     prom_gen, lit_gen, promedios_area, afinidad, config,
                     resultado_test=resultado_test)
                 st.download_button(
-                    f"⬇️ Descargar PDF — {nombre_tv}",
-                    pdf_tv,
-                    f"Orientacion_Vocacional_{nombre_tv.replace(' ','_')}.pdf",
+                    f"⬇️ Diagnóstico Vocacional PDF — {nombre_tv}",
+                    pdf_diag,
+                    f"Diagnostico_Vocacional_{nombre_tv.replace(' ','_')}.pdf",
                     "application/pdf",
-                    key="dl_tv_ind")
+                    key="dl_tv_diag"
+                )
 
-    else:  # Lote
-        col1b, col2b = st.columns(2)
-        with col1b:
+    # ═══════════════════════════════════════════════════════════════
+    # SUBTAB 3: Diagnósticos en lote
+    # ═══════════════════════════════════════════════════════════════
+    else:
+        st.markdown("#### 📦 Diagnósticos en lote — Por grado")
+        st.info("Genera el PDF de diagnóstico vocacional para todos los estudiantes del grado (basado en notas académicas sin test individual).")
+
+        df_alum = BaseDatos.cargar_matricula()
+        if df_alum is None or df_alum.empty:
+            st.warning("No hay alumnos cargados en la base de datos.")
+            return
+        grados_disp = sorted(df_alum["Grado"].dropna().unique().tolist())
+
+        col_l1, col_l2 = st.columns(2)
+        with col_l1:
             grado_lote = st.selectbox("Grado:", grados_disp, key="tv_lote_grado")
-        with col2b:
-            incluir_test = st.checkbox("Incluir sección de test (sin respuestas — basado solo en notas)", value=True, key="tv_lote_test")
+        with col_l2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            incluir_tabla = st.checkbox("Incluir tabla de carreras UNSAAC completa", value=True, key="tv_lote_tabla")
 
         df_lote = df_alum[df_alum["Grado"] == grado_lote]
-        st.caption(f"📋 {len(df_lote)} estudiantes en {grado_lote}")
+        st.info(f"📋 {len(df_lote)} estudiantes en **{grado_lote}** — Cada uno recibirá su PDF de diagnóstico vocacional UNSAAC.")
 
-        if st.button("📦 Generar ZIP con PDFs del grado completo", type="primary", key="tv_lote_btn"):
+        if st.button("📦 Generar ZIP — Diagnósticos del grado completo", type="primary", key="tv_lote_btn"):
             hist_eval = _cargar_historial_evaluaciones()
-            zip_buf = io.BytesIO()
+            zip_buf   = io.BytesIO()
             generados = 0
+            barra     = st.progress(0)
+            total_est = len(df_lote)
+
             with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
-                for _, row_l in df_lote.iterrows():
+                for idx_est, (_, row_l) in enumerate(df_lote.iterrows()):
                     nombre_l = str(row_l.get("Nombre",""))
-                    dni_l = str(row_l.get("DNI",""))
+                    dni_l    = str(row_l.get("DNI",""))
                     if not nombre_l or not dni_l:
                         continue
-                    # Calcular notas
                     notas_l = []
                     for _, ev in hist_eval.items():
                         for fila_l in ev.get("ranking",[]):
                             if str(fila_l.get("DNI","")) == dni_l:
-                                areas_l = ev.get("areas",[])
-                                names_l = [a["nombre"] for a in areas_l] if areas_l and isinstance(areas_l[0],dict) else list(areas_l)
+                                areas_l  = ev.get("areas",[])
+                                names_l  = [a["nombre"] for a in areas_l] if areas_l and isinstance(areas_l[0],dict) else list(areas_l)
                                 for an in names_l:
                                     nv = fila_l.get(an,0)
                                     if nv and float(nv)>0:
@@ -8696,27 +9050,28 @@ def _tab_test_vocacional_ui(config):
                     for n in notas_l:
                         prom_area_l.setdefault(n["area"],[]).append(n["nota"])
                     prom_area_l = {k: round(sum(v)/len(v),1) for k,v in prom_area_l.items()}
-                    prom_l = round(sum(prom_area_l.values())/len(prom_area_l),1) if prom_area_l else 0
-                    lit_l = nota_a_letra(prom_l) if prom_l>0 else "C"
-                    afinidad_l = _calcular_afinidad_academica(prom_area_l)
+                    prom_l      = round(sum(prom_area_l.values())/len(prom_area_l),1) if prom_area_l else 0
+                    lit_l       = nota_a_letra(prom_l) if prom_l>0 else "C"
+                    afinidad_l  = _calcular_afinidad_academica(prom_area_l)
 
                     pdf_l = generar_pdf_orientacion_vocacional(
                         nombre_l, dni_l, grado_lote,
                         prom_l, lit_l, prom_area_l, afinidad_l, config,
                         resultado_test=None)
-                    fname_l = f"OV_{nombre_l.replace(' ','_')}.pdf"
-                    zf.writestr(fname_l, pdf_l.read())
+                    zf.writestr(f"Diagnostico_{nombre_l.replace(' ','_')}.pdf", pdf_l.read())
                     generados += 1
+                    barra.progress(int((idx_est+1)/total_est*100))
 
             zip_buf.seek(0)
-            st.success(f"✅ {generados} PDFs generados")
+            barra.empty()
+            st.success(f"✅ {generados} diagnósticos generados")
             st.download_button(
-                f"⬇️ Descargar ZIP — {grado_lote} ({generados} estudiantes)",
+                f"⬇️ Descargar ZIP — {grado_lote} ({generados} diagnósticos)",
                 zip_buf,
-                f"Orientacion_Vocacional_{grado_lote.replace(' ','_')}.zip",
+                f"Diagnosticos_Vocacionales_{grado_lote.replace(' ','_')}.zip",
                 "application/zip",
-                key="dl_tv_lote")
-
+                key="dl_tv_lote"
+            )
 
 
 def tab_reportes(config):
