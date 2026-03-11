@@ -7526,6 +7526,1200 @@ def generar_reporte_examen_zipgrade(resultado, config):
     return buf.getvalue()
 
 
+
+# ================================================================
+# MÓDULO: ORIENTACIÓN VOCACIONAL UNSAAC + PSICOPEDAGOGÍA
+# UNSAAC = Universidad Nacional de San Antonio Abad del Cusco
+# ================================================================
+
+# ================================================================
+# GRUPOS UNSAAC — Áreas reales del CEPRE-UNSAAC
+# Fuente: Prospecto UNSAAC / CEPRE-UNSAAC Cusco
+# Grupo AB → Ciencias (matemática, física, química, biología)
+# Grupo CD → Letras  (comunicación, historia, geografía, economía)
+# ================================================================
+
+UNSAAC_GRUPOS = {
+    # ─────────────────────────────────────────────────────────────────
+    # GRUPO A → CEPRE Grupo AB (Ciencias exactas)
+    # Examen: Aritmética, Álgebra, Geometría, Trigonometría,
+    #         Física, Química, Biología, Aptitud Verbal
+    # ─────────────────────────────────────────────────────────────────
+    "A": {
+        "nombre": "Grupo A — Ingeniería, Arquitectura y Ciencias",
+        "color": "#1e3a8a",
+        "color_claro": "#dbeafe",
+        "icono": "⚙️",
+        "areas_cepre": [
+            "Aritmética", "Álgebra", "Geometría", "Trigonometría",
+            "Física", "Química", "Biología", "Aptitud Verbal",
+        ],
+        "areas_clave": [
+            "Matemática", "Aritmética", "Álgebra", "Geometría",
+            "Trigonometría", "Física", "Química",
+            "Ciencia y Tecnología", "CTA",
+            "Razonamiento Matemático",
+        ],
+        # Carreras reales UNSAAC — Facultades de Ingeniería, Arquitectura y Ciencias
+        "carreras": [
+            # Fac. Ingeniería Civil
+            "Ingeniería Civil",
+            # Fac. Arquitectura y Artes
+            "Arquitectura y Urbanismo",
+            # Fac. Ing. Eléctrica, Electrónica, Informática y Mecánica
+            "Ingeniería Eléctrica",
+            "Ingeniería Electrónica",
+            "Ingeniería Informática y de Sistemas",
+            "Ingeniería Mecánica",
+            # Fac. Ing. Geológica, Minas y Metalurgia
+            "Ingeniería Geológica",
+            "Ingeniería de Minas",
+            "Ingeniería Metalúrgica",
+            # Fac. Ciencias Químicas, Físicas y Matemáticas
+            "Ingeniería Química",
+            "Química",
+            "Física",
+            "Matemática y Estadística",
+            # Fac. Ingeniería Agroindustrial
+            "Ingeniería Agroindustrial",
+            # Fac. Agronomía y Zootecnia
+            "Agronomía",
+            "Zootecnia",
+        ],
+        "facultades": [
+            "Fac. Ingeniería Civil",
+            "Fac. Arquitectura y Artes",
+            "Fac. Ing. Eléctrica, Electrónica, Informática y Mecánica",
+            "Fac. Ing. Geológica, Minas y Metalurgia",
+            "Fac. Ciencias Químicas, Físicas y Matemáticas",
+            "Fac. Ingeniería Agroindustrial",
+            "Fac. Agronomía y Zootecnia",
+        ],
+        "perfil": (
+            "Aptitud lógico-matemática sobresaliente. Habilidad para el "
+            "razonamiento abstracto, cálculo y resolución de problemas técnicos. "
+            "CEPRE-UNSAAC Grupo A evalúa: Aritmética, Álgebra, Geometría, "
+            "Trigonometría, Física, Química, Biología y Aptitud Verbal."
+        ),
+        "cepre_grupo": "AB",
+        "requisito_nota": 14,
+    },
+
+    # ─────────────────────────────────────────────────────────────────
+    # GRUPO B → CEPRE Grupo AB (Ciencias de la vida)
+    # Examen: Biología, Química, Física, Aritmética, Álgebra,
+    #         Aptitud Verbal
+    # ─────────────────────────────────────────────────────────────────
+    "B": {
+        "nombre": "Grupo B — Ciencias de la Salud y Biología",
+        "color": "#065f46",
+        "color_claro": "#d1fae5",
+        "icono": "🏥",
+        "areas_cepre": [
+            "Biología", "Química", "Física",
+            "Aritmética", "Álgebra", "Aptitud Verbal",
+        ],
+        "areas_clave": [
+            "Biología", "Química", "Física",
+            "Ciencia y Tecnología", "CTA",
+            "Ciencias Naturales", "Anatomía",
+            "Matemática", "Aritmética",
+        ],
+        # Carreras reales UNSAAC — Facultades de Ciencias de la Salud y Biología
+        "carreras": [
+            # Fac. Medicina Humana
+            "Medicina Humana",
+            # Fac. Enfermería
+            "Enfermería",
+            # Fac. Obstetricia
+            "Obstetricia",
+            # Fac. Odontología
+            "Odontología",
+            # Fac. Farmacia y Bioquímica
+            "Farmacia y Bioquímica",
+            # Fac. Ciencias de la Salud
+            "Nutrición Humana",
+            # Fac. Ciencias Biológicas
+            "Biología",
+            # Fac. Psicología
+            "Psicología",
+        ],
+        "facultades": [
+            "Fac. Medicina Humana",
+            "Fac. Enfermería",
+            "Fac. Obstetricia",
+            "Fac. Odontología",
+            "Fac. Farmacia y Bioquímica",
+            "Fac. Ciencias de la Salud",
+            "Fac. Ciencias Biológicas",
+            "Fac. Psicología",
+        ],
+        "perfil": (
+            "Vocación de servicio a la salud humana. Aptitud destacada en "
+            "ciencias biológicas y naturales. CEPRE-UNSAAC Grupo B evalúa: "
+            "Biología, Química, Física, Aritmética, Álgebra y Aptitud Verbal."
+        ),
+        "cepre_grupo": "AB",
+        "requisito_nota": 14,
+    },
+
+    # ─────────────────────────────────────────────────────────────────
+    # GRUPO C → CEPRE Grupo CD (Letras y Sociales)
+    # Examen: Aritmética, Álgebra, Historia Perú, Historia Universal,
+    #         Geografía, Ed. Cívica, Economía, Filosofía y Lógica, Aptitud Verbal
+    # ─────────────────────────────────────────────────────────────────
+    "C": {
+        "nombre": "Grupo C — Derecho, Sociales y Ciencias Económicas",
+        "color": "#7c2d12",
+        "color_claro": "#fee2e2",
+        "icono": "⚖️",
+        "areas_cepre": [
+            "Aritmética", "Álgebra",
+            "Historia del Perú", "Historia Universal",
+            "Geografía", "Educación Cívica",
+            "Economía", "Filosofía y Lógica", "Aptitud Verbal",
+        ],
+        "areas_clave": [
+            "Historia", "Geografía", "Educación Cívica",
+            "Economía", "Filosofía", "Filosofía y Lógica",
+            "Ciencias Sociales", "Personal Social",
+            "Historia del Perú", "Historia Universal",
+            "Comunicación", "Aritmética", "Álgebra",
+        ],
+        # Carreras reales UNSAAC — Facultades Sociales, Derecho y Económicas
+        "carreras": [
+            # Fac. Derecho y Ciencias Políticas
+            "Derecho",
+            # Fac. Ciencias Administrativas, Contables, Económicas y Turismo
+            "Administración",
+            "Contabilidad",
+            "Economía",
+            "Turismo",
+            # Fac. Ciencias Sociales
+            "Antropología Social",
+            "Arqueología",
+            "Historia",
+            "Sociología",
+            "Trabajo Social",
+            # Fac. Comunicación Social e Idiomas
+            "Ciencias de la Comunicación",
+            "Lingüística",
+        ],
+        "facultades": [
+            "Fac. Derecho y Ciencias Políticas",
+            "Fac. Ciencias Administrativas, Contables, Económicas y Turismo",
+            "Fac. Ciencias Sociales",
+            "Fac. Comunicación Social e Idiomas",
+        ],
+        "perfil": (
+            "Habilidad analítica social, jurídica y económica. Comprensión "
+            "del entorno histórico y sociocultural. CEPRE-UNSAAC Grupo C "
+            "evalúa: Aritmética, Álgebra, Historia Perú, Historia Universal, "
+            "Geografía, Ed. Cívica, Economía, Filosofía y Lógica, Aptitud Verbal."
+        ),
+        "cepre_grupo": "CD",
+        "requisito_nota": 13,
+    },
+
+    # ─────────────────────────────────────────────────────────────────
+    # GRUPO D → CEPRE Grupo CD (Educación y Humanidades)
+    # Examen: Aritmética, Álgebra, Historia Perú, Historia Universal,
+    #         Geografía, Ed. Cívica, Filosofía y Lógica, Aptitud Verbal
+    # ─────────────────────────────────────────────────────────────────
+    "D": {
+        "nombre": "Grupo D — Educación y Humanidades",
+        "color": "#4c1d95",
+        "color_claro": "#ede9fe",
+        "icono": "🎓",
+        "areas_cepre": [
+            "Aritmética", "Álgebra",
+            "Historia del Perú", "Historia Universal",
+            "Geografía", "Educación Cívica",
+            "Filosofía y Lógica", "Aptitud Verbal",
+        ],
+        "areas_clave": [
+            "Comunicación", "Arte", "Arte y Cultura",
+            "Educación Física", "Personal Social",
+            "Inglés", "Literatura",
+            "Historia", "Geografía", "Filosofía",
+            "Ciencias Sociales",
+        ],
+        # Carreras reales UNSAAC — Facultad de Educación
+        "carreras": [
+            # Fac. Educación — Nivel Inicial
+            "Educación Inicial",
+            # Fac. Educación — Nivel Primaria
+            "Educación Primaria",
+            # Fac. Educación — Nivel Secundaria (especialidades)
+            "Educ. Secundaria: Matemática, Física e Informática",
+            "Educ. Secundaria: Lenguaje y Literatura",
+            "Educ. Secundaria: Ciencias Sociales",
+            "Educ. Secundaria: Ciencias Naturales y Medio Ambiente",
+            "Educ. Secundaria: Inglés",
+            # Fac. Educación — Educación Física
+            "Educación Física",
+            # Fac. Comunicación Social e Idiomas
+            "Lingüística",
+        ],
+        "facultades": [
+            "Fac. Educación (Inicial, Primaria, Secundaria y Ed. Física)",
+            "Fac. Comunicación Social e Idiomas",
+        ],
+        "perfil": (
+            "Vocación formativa y humanística. Aptitud pedagógica, "
+            "comunicativa y cultural. CEPRE-UNSAAC Grupo D evalúa: "
+            "Aritmética, Álgebra, Historia Perú, Historia Universal, "
+            "Geografía, Ed. Cívica, Filosofía y Lógica, Aptitud Verbal."
+        ),
+        "cepre_grupo": "CD",
+        "requisito_nota": 12,
+    },
+}
+
+OTRAS_OPCIONES_CARRERA = {
+    "Fuerzas Armadas / PNP": {
+        "icono": "👮",
+        "color": "#1e3a5f",
+        "color_claro": "#e0f2fe",
+        "descripcion": "Escuela de Oficiales PNP, Escuela Militar, FAP, Marina de Guerra",
+        "requisitos": "Nota mínima aprobatoria, buena condición física, sin antecedentes.",
+        "areas_clave": ["Educación Física", "Matemática", "Comunicación"],
+    },
+    "Institutos Técnicos (SENATI / TECSUP / IST)": {
+        "icono": "🔧",
+        "color": "#92400e",
+        "color_claro": "#fef3c7",
+        "descripcion": "SENATI, TECSUP, IST, CETPRO — Carreras técnicas en 3 años",
+        "requisitos": "Secundaria completa. Aptitud práctica y técnica.",
+        "areas_clave": ["Matemática", "Física", "CTA", "Educación para el Trabajo"],
+    },
+    "CEPRE-UNSAAC": {
+        "icono": "📖",
+        "color": "#0f172a",
+        "color_claro": "#f1f5f9",
+        "descripcion": "Centro de Estudios Preuniversitarios UNSAAC — Cusco. Grupos AB (Ciencias) y CD (Letras/Sociales)",
+        "requisitos": "Secundaria completa. Postular según fortalezas: Grupo AB si destacas en Ciencias, CD si destacas en Letras.",
+        "areas_clave": ["Aritmética", "Álgebra", "Aptitud Verbal"],
+    },
+}
+
+# ================================================================
+# BANCO DE TESTS VOCACIONALES — Múltiples estilos
+# ================================================================
+
+TESTS_VOCACIONALES = {
+
+    "intereses": {
+        "nombre": "🎯 Test de Intereses Vocacionales",
+        "descripcion": "Identifica tus preferencias por tipo de actividad y entorno laboral",
+        "instruccion": "Elige la alternativa que MÁS te identifica en cada pregunta.",
+        "preguntas": [
+            {"id":1,"pregunta":"¿Cuál de estas actividades disfrutas más?",
+             "opciones":{"A":("Resolver problemas de matemáticas o armar circuitos","A"),
+                         "B":("Cuidar personas enfermas, plantas o animales","B"),
+                         "C":("Debatir temas de historia, política o economía","C"),
+                         "D":("Enseñar, pintar, crear o actuar","D"),
+                         "E":("Construir cosas con las manos o hacer deporte","T")}},
+            {"id":2,"pregunta":"En tu tiempo libre prefieres:",
+             "opciones":{"A":("Explorar cómo funcionan los aparatos o programar","A"),
+                         "B":("Ver documentales de medicina, naturaleza o salud","B"),
+                         "C":("Leer noticias, libros de historia o geografía","C"),
+                         "D":("Escuchar música, dibujar o ver arte y teatro","D"),
+                         "E":("Practicar deporte, trabajar en talleres","T")}},
+            {"id":3,"pregunta":"¿Qué tipo de trabajo te imaginas haciendo de adulto?",
+             "opciones":{"A":("Ingeniero/a, arquitecto/a o programador/a","A"),
+                         "B":("Médico/a, enfermero/a o farmacéutico/a","B"),
+                         "C":("Abogado/a, economista o periodista","C"),
+                         "D":("Profesor/a, artista o psicólogo/a","D"),
+                         "E":("Técnico, policía o militar","T")}},
+            {"id":4,"pregunta":"¿Qué curso del CEPRE-UNSAAC te resultaría más fácil?",
+             "opciones":{"A":("Álgebra, Trigonometría o Física","A"),
+                         "B":("Biología, Química o Anatomía","B"),
+                         "C":("Historia, Geografía o Economía","C"),
+                         "D":("Filosofía, Literatura o Aptitud Verbal","D"),
+                         "E":("Ninguno — prefiero un instituto técnico","T")}},
+            {"id":5,"pregunta":"Si tuvieras que resolver un problema importante, lo harías:",
+             "opciones":{"A":("Analizando datos y usando lógica matemática","A"),
+                         "B":("Estudiando el caso clínico o natural con detalle","B"),
+                         "C":("Investigando leyes, estadísticas o hechos históricos","C"),
+                         "D":("Dialogando, escuchando y buscando consenso","D"),
+                         "E":("Actuando de forma práctica e inmediata","T")}},
+            {"id":6,"pregunta":"¿Cuál de estas habilidades crees que tienes más desarrollada?",
+             "opciones":{"A":("Razonamiento lógico y cálculo","A"),
+                         "B":("Observación y paciencia con seres vivos","B"),
+                         "C":("Expresión escrita y comprensión lectora","C"),
+                         "D":("Creatividad y empatía con los demás","D"),
+                         "E":("Destreza manual y resistencia física","T")}},
+            {"id":7,"pregunta":"¿Qué proyecto escolar harías si pudieras elegir?",
+             "opciones":{"A":("Construir un robot, app o experimento de física","A"),
+                         "B":("Investigar enfermedades o plantas medicinales","B"),
+                         "C":("Analizar problemas económicos de tu comunidad","C"),
+                         "D":("Crear un cortometraje, mural o revista escolar","D"),
+                         "E":("Organizar un torneo deportivo o taller técnico","T")}},
+            {"id":8,"pregunta":"¿Con qué tipo de personas te gustaría trabajar?",
+             "opciones":{"A":("Ingenieros, científicos y tecnólogos","A"),
+                         "B":("Médicos, biólogos y personal de salud","B"),
+                         "C":("Abogados, economistas y periodistas","C"),
+                         "D":("Artistas, educadores y psicólogos","D"),
+                         "E":("Técnicos, policías o militares","T")}},
+            {"id":9,"pregunta":"¿Cuál de estos logros te haría sentir más orgulloso/a?",
+             "opciones":{"A":("Inventar algo que mejore la tecnología","A"),
+                         "B":("Salvar una vida o curar una enfermedad","B"),
+                         "C":("Ganar un juicio importante o cambiar una ley","C"),
+                         "D":("Inspirar a un estudiante o crear una obra de arte","D"),
+                         "E":("Ser parte de las fuerzas del orden o construir algo con mis manos","T")}},
+            {"id":10,"pregunta":"¿Qué materia del CEPRE-UNSAAC estudiarías primero?",
+             "opciones":{"A":("Geometría, Trigonometría o Física","A"),
+                         "B":("Biología o Química","B"),
+                         "C":("Historia del Perú, Historia Universal o Economía","C"),
+                         "D":("Filosofía y Lógica o Aptitud Verbal","D"),
+                         "E":("Prefiero un carrera técnica, no la universidad","T")}},
+        ]
+    },
+
+    "aptitudes": {
+        "nombre": "🧩 Test de Aptitudes Académicas",
+        "descripcion": "Evalúa en qué áreas del conocimiento tienes mayor facilidad natural",
+        "instruccion": "Responde con honestidad. No hay respuestas correctas ni incorrectas.",
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando estudias, ¿qué tipo de tareas resuelves con más facilidad?",
+             "opciones":{"A":("Ejercicios de cálculo, ecuaciones o geometría","A"),
+                         "B":("Clasificar organismos, analizar células o reacciones químicas","B"),
+                         "C":("Resumir textos históricos o comprender mapas","C"),
+                         "D":("Redactar textos, comprender poesía o expresarme verbalmente","D"),
+                         "E":("Trabajos manuales, armado de piezas o actividad física","T")}},
+            {"id":2,"pregunta":"¿En qué tipo de examen sacas mejores notas normalmente?",
+             "opciones":{"A":("Razonamiento matemático o física","A"),
+                         "B":("Biología o ciencias naturales","B"),
+                         "C":("Historia, geografía o educación cívica","C"),
+                         "D":("Comprensión lectora o comunicación","D"),
+                         "E":("Educación física o trabajos de taller","T")}},
+            {"id":3,"pregunta":"Cuando juegas o compites, prefieres:",
+             "opciones":{"A":("Juegos de estrategia, ajedrez o rompecabezas lógicos","A"),
+                         "B":("Cuidar plantas, mascotas o investigar la naturaleza","B"),
+                         "C":("Juegos de trivia, historia o cultura general","C"),
+                         "D":("Juegos creativos, teatro, música o dibujo","D"),
+                         "E":("Deportes, competencias físicas o videojuegos de acción","T")}},
+            {"id":4,"pregunta":"¿Cómo aprendes mejor?",
+             "opciones":{"A":("Resolviendo ejercicios y fórmulas paso a paso","A"),
+                         "B":("Observando, experimentando y tocando muestras reales","B"),
+                         "C":("Leyendo y analizando textos o documentales","C"),
+                         "D":("Escuchando, debatiendo o creando contenido","D"),
+                         "E":("Haciendo, construyendo y practicando físicamente","T")}},
+            {"id":5,"pregunta":"Si te pidieran exponer en público, elegirías hablar sobre:",
+             "opciones":{"A":("Un descubrimiento matemático o tecnológico","A"),
+                         "B":("Una enfermedad, ecosistema o proceso biológico","B"),
+                         "C":("Un hecho histórico, problema social o ley","C"),
+                         "D":("Un libro, una película o un artista","D"),
+                         "E":("Un deporte, técnica de construcción o carrera policial","T")}},
+            {"id":6,"pregunta":"¿Cuál de estas frases te describe mejor?",
+             "opciones":{"A":("Me gustan los problemas con una sola respuesta correcta","A"),
+                         "B":("Me fascina entender cómo funciona el cuerpo humano y la naturaleza","B"),
+                         "C":("Me interesa por qué la sociedad es como es y cómo mejorarla","C"),
+                         "D":("Disfruto crear, imaginar y expresar lo que siento","D"),
+                         "E":("Prefiero la acción, el trabajo en campo y los resultados concretos","T")}},
+            {"id":7,"pregunta":"Si tuvieras que estudiar 4 horas seguidas, elegiría:",
+             "opciones":{"A":("Álgebra, trigonometría y física del CEPRE","A"),
+                         "B":("Biología y química para medicina","B"),
+                         "C":("Historia universal y geografía","C"),
+                         "D":("Comunicación, filosofía y aptitud verbal","D"),
+                         "E":("Mecánica, soldadura, electricidad o deporte","T")}},
+            {"id":8,"pregunta":"¿En qué área del conocimiento te sentirías más cómodo/a trabajando toda tu vida?",
+             "opciones":{"A":("Ingeniería, tecnología o ciencias exactas","A"),
+                         "B":("Salud, biología o ciencias de la vida","B"),
+                         "C":("Derecho, economía, política o periodismo","C"),
+                         "D":("Educación, artes o psicología","D"),
+                         "E":("Técnico, seguridad, deporte o construcción","T")}},
+        ]
+    },
+
+    "personalidad": {
+        "nombre": "🧠 Test de Perfil de Personalidad Vocacional",
+        "descripcion": "Basado en el modelo RIASEC (Holland): Realista, Investigador, Artístico, Social, Emprendedor, Convencional",
+        "instruccion": "Elige la alternativa que mejor describe tu forma de ser o actuar habitualmente.",
+        "preguntas": [
+            {"id":1,"pregunta":"¿Cómo te describirían tus amigos o compañeros?",
+             "opciones":{"A":("Analítico, preciso y bueno en matemáticas","A"),
+                         "B":("Curioso, observador y amante de la ciencia","B"),
+                         "C":("Lider, persuasivo y con facilidad para hablar","C"),
+                         "D":("Creativo, empático y sensible al arte","D"),
+                         "E":("Práctico, disciplinado y activo físicamente","T")}},
+            {"id":2,"pregunta":"En situaciones de conflicto, tú normalmente:",
+             "opciones":{"A":("Buscas la solución más lógica y eficiente","A"),
+                         "B":("Analizas todas las causas antes de actuar","B"),
+                         "C":("Negocias y convences a los demás","C"),
+                         "D":("Escuchas y buscas la solución más empática","D"),
+                         "E":("Actúas directamente sin dudar demasiado","T")}},
+            {"id":3,"pregunta":"¿Cómo prefieres pasar un día libre ideal?",
+             "opciones":{"A":("Resolviendo acertijos, programando o estudiando matemáticas","A"),
+                         "B":("Visitando museos de ciencias, jardines botánicos o laboratorios","B"),
+                         "C":("Organizando actividades, debatiendo o haciendo amigos nuevos","C"),
+                         "D":("Pintando, escribiendo, haciendo música o viendo cine de arte","D"),
+                         "E":("Haciendo deporte, caminando en la naturaleza o talleres manuales","T")}},
+            {"id":4,"pregunta":"¿Cuál de estas situaciones te genera más satisfacción?",
+             "opciones":{"A":("Resolver un problema matemático difícil correctamente","A"),
+                         "B":("Entender un proceso biológico o químico complejo","B"),
+                         "C":("Convencer a alguien con tus argumentos","C"),
+                         "D":("Crear algo que toca el corazón de las personas","D"),
+                         "E":("Terminar una tarea física desafiante con éxito","T")}},
+            {"id":5,"pregunta":"¿Qué tipo de ambiente de trabajo prefieres?",
+             "opciones":{"A":("Laboratorio, oficina técnica o sala de computadoras","A"),
+                         "B":("Hospital, clínica, campo o laboratorio de ciencias","B"),
+                         "C":("Tribunal, sala de reuniones, empresa o medios","C"),
+                         "D":("Aula, estudio de arte, escenario o consultorio","D"),
+                         "E":("Campo, fábrica, cuartel, comisaría o pista deportiva","T")}},
+            {"id":6,"pregunta":"¿Cuál es tu mayor fortaleza personal?",
+             "opciones":{"A":("La lógica y la capacidad de análisis numérico","A"),
+                         "B":("La curiosidad científica y la paciencia para investigar","B"),
+                         "C":("El liderazgo y la capacidad de persuasión","C"),
+                         "D":("La empatía y la creatividad para expresarme","D"),
+                         "E":("La disciplina, la fuerza y la habilidad práctica","T")}},
+            {"id":7,"pregunta":"¿Qué te motiva más al estudiar?",
+             "opciones":{"A":("Entender la lógica detrás de los problemas y resolverlos","A"),
+                         "B":("Descubrir cómo funciona el cuerpo humano o la naturaleza","B"),
+                         "C":("Comprender la sociedad y aprender a transformarla","C"),
+                         "D":("Expresarme, crear y dejar huella en los demás","D"),
+                         "E":("Aprender habilidades prácticas que pueda usar ya","T")}},
+            {"id":8,"pregunta":"Si pudieras elegir tu vida ideal, serías:",
+             "opciones":{"A":("Un científico o ingeniero que cambia la tecnología","A"),
+                         "B":("Un médico o biólogo que salva vidas","B"),
+                         "C":("Un abogado, político o empresario influyente","C"),
+                         "D":("Un artista, maestro o psicólogo que inspira","D"),
+                         "E":("Un policía, militar, deportista o técnico experto","T")}},
+        ]
+    },
+
+    "valores": {
+        "nombre": "💡 Test de Valores y Motivaciones",
+        "descripcion": "Descubre qué es lo más importante para ti en una carrera profesional",
+        "instruccion": "Elige la opción que MÁS importa para ti al elegir una carrera.",
+        "preguntas": [
+            {"id":1,"pregunta":"Al elegir una carrera, lo más importante para mí es:",
+             "opciones":{"A":("Que sea técnicamente desafiante y bien pagada","A"),
+                         "B":("Que me permita ayudar a mejorar la salud de las personas","B"),
+                         "C":("Que me dé poder, influencia y reconocimiento social","C"),
+                         "D":("Que me permita crear, enseñar o transformar vidas","D"),
+                         "E":("Que sea estable, con horario fijo y trabajo en campo","T")}},
+            {"id":2,"pregunta":"En mi futuro profesional, priorizo:",
+             "opciones":{"A":("Innovar, inventar y resolver problemas técnicos complejos","A"),
+                         "B":("Cuidar la vida humana y prevenir enfermedades","B"),
+                         "C":("Defender la justicia y contribuir al bien común","C"),
+                         "D":("Formar personas y dejar un legado cultural","D"),
+                         "E":("Tener seguridad laboral y un trabajo concreto","T")}},
+            {"id":3,"pregunta":"¿Qué tipo de impacto quieres tener en la sociedad?",
+             "opciones":{"A":("Desarrollar tecnología que facilite la vida cotidiana","A"),
+                         "B":("Reducir la mortalidad y mejorar la calidad de vida","B"),
+                         "C":("Contribuir a una sociedad más justa y equitativa","C"),
+                         "D":("Inspirar, educar y enriquecer la cultura","D"),
+                         "E":("Mantener el orden, la seguridad o la infraestructura","T")}},
+            {"id":4,"pregunta":"¿Cuántos años estás dispuesto/a a estudiar para tu carrera?",
+             "opciones":{"A":("5 años — Ingeniería o Arquitectura","A"),
+                         "B":("6-7 años — Medicina o Farmacia","B"),
+                         "C":("5 años — Derecho, Economía o Contabilidad","C"),
+                         "D":("5 años — Educación o Psicología","D"),
+                         "E":("3 años — Instituto técnico o carrera corta","T")}},
+            {"id":5,"pregunta":"¿Qué tipo de recompensa valoras más en tu trabajo?",
+             "opciones":{"A":("El reconocimiento por resolver algo difícil","A"),
+                         "B":("La gratitud de un paciente o persona que ayudé","B"),
+                         "C":("El éxito económico y la influencia en decisiones","C"),
+                         "D":("Ver crecer y mejorar a quienes acompañé","D"),
+                         "E":("La estabilidad, el uniforme y el orgullo del servicio","T")}},
+            {"id":6,"pregunta":"¿Qué tipo de riesgo estás dispuesto/a a asumir?",
+             "opciones":{"A":("Riesgo calculado con base en datos y análisis","A"),
+                         "B":("Riesgo emocional — enfrentar enfermedades y sufrimiento","B"),
+                         "C":("Riesgo legal o político — defender causas difíciles","C"),
+                         "D":("Riesgo creativo — que mis ideas sean rechazadas","D"),
+                         "E":("Riesgo físico — trabajo en campo, patrullaje o construcción","T")}},
+        ]
+    },
+
+    "multiplesintelg": {
+        "nombre": "🌟 Test de Inteligencias Múltiples (Gardner)",
+        "descripcion": "Basado en la Teoría de Inteligencias Múltiples de Howard Gardner. Identifica tu tipo de inteligencia dominante y su relación con las carreras UNSAAC.",
+        "instruccion": "Elige la actividad que realizas mejor o con mayor facilidad.",
+        "preguntas": [
+            {"id":1,"pregunta":"¿En qué actividad te destacas más sin esforzarte mucho?",
+             "opciones":{"A":("Resolver cálculos mentales, acertijos o problemas de lógica","A"),
+                         "B":("Observar y clasificar plantas, animales o fenómenos naturales","B"),
+                         "C":("Convencer, negociar o liderar grupos de personas","C"),
+                         "D":("Expresarme con palabras, escribir historias o recitar","D"),
+                         "E":("Coordinar movimientos, practicar deportes o trabajar con herramientas","T")}},
+            {"id":2,"pregunta":"¿Cuál de estos talentos describiría tu inteligencia dominante?",
+             "opciones":{"A":("Lógico-matemática: patrones, secuencias y razonamiento","A"),
+                         "B":("Naturalista: clasificación, ecosistemas y ciencias vivas","B"),
+                         "C":("Interpersonal: entender y relacionarme con los demás","C"),
+                         "D":("Lingüística o musical: palabras, ritmo, melodía, poesía","D"),
+                         "E":("Kinestésica o espacial: cuerpo, movimiento, manos y espacio","T")}},
+            {"id":3,"pregunta":"¿Qué tipo de problema resuelves mejor?",
+             "opciones":{"A":("Problemas abstractos con fórmulas y ecuaciones","A"),
+                         "B":("Problemas de la naturaleza o de la salud humana","B"),
+                         "C":("Problemas sociales que requieren mediación y diálogo","C"),
+                         "D":("Problemas de comunicación, narración o expresión artística","D"),
+                         "E":("Problemas físicos o técnicos que requieren acción directa","T")}},
+            {"id":4,"pregunta":"¿Qué recuerdas con mayor facilidad?",
+             "opciones":{"A":("Fórmulas matemáticas, patrones numéricos y datos exactos","A"),
+                         "B":("Nombres de organismos, procesos biológicos y funciones","B"),
+                         "C":("Nombres de personas, relaciones y datos biográficos","C"),
+                         "D":("Palabras poéticas, letras de canciones y citas textuales","D"),
+                         "E":("Rutas, movimientos físicos o procedimientos de armado","T")}},
+            {"id":5,"pregunta":"¿Qué carrera crees que aprovecharía mejor tu talento natural?",
+             "opciones":{"A":("Ingeniería, matemática pura o informática","A"),
+                         "B":("Medicina, biología o ciencias de la salud","B"),
+                         "C":("Psicología, trabajo social, comunicación o política","C"),
+                         "D":("Educación, arte, literatura o lingüística","D"),
+                         "E":("Educación física, técnica, PNP, militar o construcción","T")}},
+            {"id":6,"pregunta":"Cuando aprendes algo nuevo, prefieres:",
+             "opciones":{"A":("Esquemas lógicos, diagramas y fórmulas","A"),
+                         "B":("Laboratorio, muestras reales y experimentos","B"),
+                         "C":("Trabajar en equipo, debatir y escuchar historias","C"),
+                         "D":("Leer, escuchar música o ver películas relacionadas","D"),
+                         "E":("Practicar físicamente y tocar los materiales","T")}},
+        ]
+    },
+}
+
+
+def _calcular_afinidad_academica(promedios_area):
+    """
+    Calcula afinidad a grupos UNSAAC basándose en promedios por área escolar.
+    Usa las areas_clave reales de cada grupo UNSAAC (Grupo A/B = Ciencias, C/D = Letras).
+    """
+    puntajes = {"A": 0, "B": 0, "C": 0, "D": 0, "T": 0}
+    conteo_areas = {"A": 0, "B": 0, "C": 0, "D": 0, "T": 0}
+    areas_destacadas = []
+    areas_debiles = []
+
+    # Construir mapa area → grupo con coincidencia parcial
+    area_grupo = {}
+    for grupo_id, gdata in UNSAAC_GRUPOS.items():
+        for area in gdata["areas_clave"]:
+            area_grupo[area.lower().strip()] = grupo_id
+
+    for area, prom in promedios_area.items():
+        area_lower = area.lower().strip()
+        grupo_id = None
+        # Buscar coincidencia exacta primero, luego parcial
+        if area_lower in area_grupo:
+            grupo_id = area_grupo[area_lower]
+        else:
+            for ak, gk in area_grupo.items():
+                if ak in area_lower or area_lower in ak or any(
+                    w in area_lower for w in ak.split() if len(w) > 4):
+                    grupo_id = gk
+                    break
+
+        if grupo_id:
+            peso = (prom / 20) * 10
+            puntajes[grupo_id] += peso
+            conteo_areas[grupo_id] += 1
+            if prom >= 14:
+                areas_destacadas.append((area, prom, grupo_id))
+            elif prom < 11:
+                areas_debiles.append((area, prom))
+        else:
+            # Área sin grupo asignado: distribuir proporcionalmente
+            for gk in ["A","B","C","D"]:
+                puntajes[gk] += (prom / 20) * 2.5
+
+    # Si no hubo áreas mapeadas, dar puntaje base igual a todos
+    total = sum(puntajes.values()) or 1
+    pct = {k: round((v/total)*100, 1) for k, v in puntajes.items()}
+
+    orden = sorted(puntajes, key=lambda k: puntajes[k], reverse=True)
+    grupo_principal  = orden[0]
+    grupo_secundario = orden[1]
+
+    return {
+        "puntajes": puntajes,
+        "porcentajes": pct,
+        "grupo_principal": grupo_principal,
+        "grupo_secundario": grupo_secundario,
+        "areas_destacadas": sorted(areas_destacadas, key=lambda x: x[1], reverse=True),
+        "areas_debiles": areas_debiles,
+        "cepre_recomendado": UNSAAC_GRUPOS.get(grupo_principal,{}).get("cepre_grupo","AB"),
+    }
+
+def _calcular_resultado_test(respuestas):
+    """Calcula resultado de un test vocacional. respuestas = dict {id: grupo}"""
+    conteo = {"A": 0, "B": 0, "C": 0, "D": 0, "T": 0}
+    for _, grupo in respuestas.items():
+        if grupo in conteo:
+            conteo[grupo] += 1
+    total = len(respuestas) or 1
+    pct = {k: round((v/total)*100, 1) for k, v in conteo.items()}
+    principal = max(conteo, key=lambda k: conteo[k])
+    return {"conteo": conteo, "porcentajes": pct, "principal": principal}
+
+def _texto_diagnostico_psicopedagogico(nombre, prom_gen, lit_gen, promedios_area, afinidad):
+    """Genera texto de diagnóstico psicopedagógico detallado."""
+    gp = afinidad["grupo_principal"]
+    gs_sec = afinidad["grupo_secundario"]
+    gdata = UNSAAC_GRUPOS.get(gp, {})
+
+    lineas = []
+    lineas.append(f"DIAGNÓSTICO PSICOPEDAGÓGICO — {nombre.upper()}")
+    lineas.append(f"Promedio General: {prom_gen}/20 — Nivel {lit_gen} ({ESCALA_MINEDU.get(lit_gen,{}).get('nombre','')})")
+    lineas.append("")
+    lineas.append("I. PERFIL ACADÉMICO:")
+
+    if lit_gen == "AD":
+        lineas.append("   El/la estudiante evidencia un desempeño académico sobresaliente, superando")
+        lineas.append("   consistentemente las expectativas del grado. Demuestra autonomía intelectual,")
+        lineas.append("   pensamiento crítico y hábitos de estudio consolidados.")
+    elif lit_gen == "A":
+        lineas.append("   El/la estudiante alcanza los aprendizajes esperados para su grado con")
+        lineas.append("   regularidad. Muestra capacidad de comprensión y aplicación de conceptos.")
+        lineas.append("   Con mayor exigencia puede acceder al nivel destacado.")
+    elif lit_gen == "B":
+        lineas.append("   El/la estudiante se encuentra en proceso de alcanzar los aprendizajes esperados.")
+        lineas.append("   Requiere acompañamiento pedagógico continuo y estrategias de refuerzo")
+        lineas.append("   diferenciado en las áreas con menor rendimiento.")
+    else:
+        lineas.append("   El/la estudiante muestra dificultades significativas para alcanzar los")
+        lineas.append("   aprendizajes del grado. Se recomienda evaluación psicopedagógica especializada,")
+        lineas.append("   plan de intervención individual y coordinación urgente con la familia.")
+
+    lineas.append("")
+    lineas.append("II. FORTALEZAS IDENTIFICADAS:")
+    for area, prom, grp in afinidad["areas_destacadas"][:4]:
+        lineas.append(f"   ✓ {area}: {prom}/20 — {ESCALA_MINEDU.get(nota_a_letra(prom),{}).get('nombre','')}")
+    if not afinidad["areas_destacadas"]:
+        lineas.append("   No se identifican áreas con logro destacado en el período.")
+
+    lineas.append("")
+    lineas.append("III. ÁREAS A REFORZAR:")
+    for area, prom in afinidad["areas_debiles"][:4]:
+        lineas.append(f"   △ {area}: {prom}/20 — Requiere intervención pedagógica")
+    if not afinidad["areas_debiles"]:
+        lineas.append("   No se identifican áreas críticas en el período evaluado.")
+
+    lineas.append("")
+    lineas.append("IV. AFINIDAD VOCACIONAL — UNSAAC:")
+    lineas.append(f"   Grupo principal: {gdata.get('nombre','—')} {gdata.get('icono','')}")
+    cepre_grp = gdata.get("cepre_grupo","AB")
+    lineas.append(f"   CEPRE-UNSAAC recomendado: Grupo {cepre_grp} ({'Ciencias' if cepre_grp=='AB' else 'Letras/Sociales'})")
+    lineas.append(f"   {gdata.get('perfil','')[:120]}")
+    lineas.append(f"   Grupo complementario: {UNSAAC_GRUPOS.get(gs_sec,{}).get('nombre','—')}")
+    lineas.append("   Áreas del CEPRE que debe reforzar:")
+    for area_c in gdata.get("areas_cepre",[])[:5]:
+        lineas.append(f"     • {area_c}")
+
+    lineas.append("")
+    lineas.append("V. RECOMENDACIONES PSICOPEDAGÓGICAS:")
+    if lit_gen in ("AD", "A"):
+        lineas.append("   • Participar en el CEPRE-UNSAAC Grupo " + ("AB" if gp in ("A","B") else "CD"))
+        lineas.append(f"   • Explorar carreras del {gdata.get('nombre','—')}")
+        lineas.append("   • Mantener hábitos de lectura y resolución de problemas")
+        lineas.append("   • Participar en olimpiadas académicas según área de fortaleza")
+    elif lit_gen == "B":
+        lineas.append("   • Refuerzo en áreas identificadas como débiles (2h/semana mínimo)")
+        lineas.append("   • Tutoría personalizada docente-estudiante mensual")
+        lineas.append("   • Explorar opciones de institutos técnicos afines a sus fortalezas")
+        lineas.append("   • Talleres de hábitos de estudio y técnicas de aprendizaje")
+    else:
+        lineas.append("   • Plan de recuperación pedagógica urgente e individual")
+        lineas.append("   • Evaluación de factores externos (familia, salud, socioemocional)")
+        lineas.append("   • Sesiones de tutoría semanal con registro de avances")
+        lineas.append("   • Coordinación con APAFA para compromisos de apoyo en casa")
+        lineas.append("   • Considerar orientación vocacional hacia carreras técnicas")
+
+    return lineas
+
+
+def generar_pdf_orientacion_vocacional(nombre, dni, grado, prom_gen, lit_gen,
+                                        promedios_area, afinidad, config,
+                                        resultado_test=None):
+    """
+    Genera PDF completo de orientación vocacional y diagnóstico psicopedagógico.
+    Incluye: análisis académico, afinidad UNSAAC, carreras recomendadas,
+    resultado del test vocacional (si existe) y plan de acción.
+    """
+    from reportlab.platypus import Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    from reportlab.lib.units import mm
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+
+    def _encabezado(pagina=1):
+        # Fondo header
+        c.setFillColor(colors.HexColor("#0f172a"))
+        c.rect(0, h-75, w, 75, fill=True)
+        # Franja dorada
+        c.setFillColor(colors.HexColor("#f59e0b"))
+        c.rect(0, h-78, w, 3, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 14)
+        c.drawCentredString(w/2, h-25, "ORIENTACIÓN VOCACIONAL Y DIAGNÓSTICO PSICOPEDAGÓGICO")
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(w/2, h-40, f"I.E.P. ALTERNATIVO YACHAY — Chinchero, Cusco — {config.get('anio',2026)}")
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(w/2, h-55, f"Estudiante: {nombre}  |  DNI: {dni}  |  Grado: {grado}")
+        c.setFont("Helvetica", 7)
+        c.drawCentredString(w/2, h-67, f"Generado: {fecha_peru_str()}  |  Pág. {pagina}")
+
+    def _pie():
+        c.setFont("Helvetica-Oblique", 6)
+        c.setFillColor(colors.HexColor("#64748b"))
+        c.drawCentredString(w/2, 18, "YACHAY PRO © — Documento orientativo. No reemplaza evaluación profesional especializada.")
+        c.drawCentredString(w/2, 10, "UNSAAC — Universidad Nacional de San Antonio Abad del Cusco | Cusco, Perú")
+        c.setFillColor(colors.black)
+
+    pag = 1
+    _encabezado(pag)
+    _pie()
+    y = h - 95
+
+    # ── SECCIÓN 1: Perfil Académico ──────────────────────────────────
+    col_h = colors.HexColor("#1e3a8a")
+    c.setFillColor(col_h)
+    c.rect(40, y-4, w-80, 18, fill=True)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(48, y+1, "I. PERFIL ACADÉMICO")
+    y -= 22
+    c.setFillColor(colors.black)
+
+    # Promedio general con semáforo
+    col_gen = color_semaforo(lit_gen)
+    c.setFillColor(colors.HexColor(col_gen))
+    c.roundRect(40, y-8, 120, 22, 6, fill=True)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 16)
+    c.drawCentredString(100, y+1, f"{prom_gen}/20  {lit_gen}")
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica", 8)
+    c.drawString(175, y+6, ESCALA_MINEDU.get(lit_gen,{}).get("nombre",""))
+    c.drawString(175, y-4, ESCALA_MINEDU.get(lit_gen,{}).get("desc","")[:70])
+    y -= 28
+
+    # Tabla de promedios por área (máx 12 áreas)
+    if promedios_area:
+        areas_mostrar = sorted(promedios_area.items(), key=lambda x: x[1], reverse=True)[:12]
+        c.setFont("Helvetica-Bold", 8)
+        # Header
+        c.setFillColor(colors.HexColor("#334155"))
+        c.rect(40, y-2, w-80, 14, fill=True)
+        c.setFillColor(colors.white)
+        c.drawString(44, y+1, "Área Curricular")
+        c.drawString(300, y+1, "Promedio")
+        c.drawString(360, y+1, "Nivel")
+        c.drawString(400, y+1, "Barra de Progreso")
+        y -= 16
+        c.setFont("Helvetica", 7)
+        for idx, (area, prom) in enumerate(areas_mostrar):
+            lit = nota_a_letra(prom)
+            col = color_semaforo(lit)
+            bg = "#f8fafc" if idx % 2 == 0 else "#ffffff"
+            c.setFillColor(colors.HexColor(bg))
+            c.rect(40, y-3, w-80, 13, fill=True)
+            c.setFillColor(colors.black)
+            c.drawString(44, y+1, area[:40])
+            c.drawString(300, y+1, f"{prom:.1f}")
+            c.setFillColor(colors.HexColor(col))
+            c.circle(358, y+3, 5, fill=True)
+            c.setFillColor(colors.white)
+            c.setFont("Helvetica-Bold", 6)
+            c.drawCentredString(358, y+1, lit)
+            # Barra
+            c.setFillColor(colors.HexColor("#e2e8f0"))
+            c.rect(400, y, 120, 9, fill=True)
+            c.setFillColor(colors.HexColor(col))
+            c.rect(400, y, max(2, (prom/20)*120), 9, fill=True)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 7)
+            y -= 13
+            if y < 120:
+                c.showPage()
+                pag += 1
+                _encabezado(pag)
+                _pie()
+                y = h - 95
+
+    # ── SECCIÓN 2: Afinidad UNSAAC ───────────────────────────────────
+    y -= 8
+    if y < 180:
+        c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+    c.setFillColor(col_h)
+    c.rect(40, y-4, w-80, 18, fill=True)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(48, y+1, "II. AFINIDAD VOCACIONAL — UNSAAC (Universidad Nacional San Antonio Abad del Cusco)")
+    y -= 24
+    c.setFillColor(colors.black)
+
+    # Gráfico de barras de afinidad
+    c.setFont("Helvetica-Bold", 8)
+    c.drawString(44, y, "Afinidad por área de conocimiento:")
+    y -= 14
+    pcts = afinidad.get("porcentajes", {})
+    grupos_order = [("A","⚙️ Ing. y Ciencias"), ("B","🏥 Salud"), ("C","📚 Cs. Sociales"), ("D","🎓 Educación"), ("T","🔧 Técnico")]
+    colores_grupos = {"A":"#1e3a8a","B":"#065f46","C":"#7c2d12","D":"#4c1d95","T":"#92400e"}
+    for gk, glabel in grupos_order:
+        pct_val = pcts.get(gk, 0)
+        col_g = colores_grupos.get(gk, "#334155")
+        c.setFillColor(colors.HexColor("#e2e8f0"))
+        c.rect(44, y, 220, 10, fill=True)
+        c.setFillColor(colors.HexColor(col_g))
+        c.rect(44, y, max(2, (pct_val/100)*220), 10, fill=True)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 7)
+        c.drawString(270, y+2, f"{glabel}: {pct_val:.0f}%")
+        # Estrella si es el principal
+        if gk == afinidad.get("grupo_principal"):
+            c.setFillColor(colors.HexColor("#f59e0b"))
+            c.drawString(44 + max(2, (pct_val/100)*220) + 3, y+2, "◀ PRINCIPAL")
+            c.setFillColor(colors.black)
+        y -= 13
+
+    y -= 6
+    # Detalle del grupo principal
+    gp = afinidad.get("grupo_principal", "A")
+    gdata_p = UNSAAC_GRUPOS.get(gp, {})
+    gs_id = afinidad.get("grupo_secundario", "C")
+    gdata_s = UNSAAC_GRUPOS.get(gs_id, {})
+
+    if y < 200:
+        c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+    # ── Caja grupo PRINCIPAL — ancho completo con TODAS las carreras ──
+    carreras_p  = gdata_p.get("carreras", [])
+    facultades_p = gdata_p.get("facultades", [])
+    cepre_p     = gdata_p.get("cepre_grupo", "AB")
+    alto_p      = 28 + len(carreras_p) * 9 + len(facultades_p) * 8 + 16
+    c.setFillColor(colors.HexColor(gdata_p.get("color_claro","#dbeafe")))
+    c.roundRect(40, y - alto_p, w - 80, alto_p + 8, 8, fill=True)
+    c.setFillColor(colors.HexColor(gdata_p.get("color","#1e3a8a")))
+    c.roundRect(40, y - alto_p, w - 80, alto_p + 8, 8, fill=False)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(50, y - 4, f"★ GRUPO PRINCIPAL — {gdata_p.get('icono','')} {gdata_p.get('nombre','')}")
+    c.setFont("Helvetica-Bold", 7)
+    c.setFillColor(colors.HexColor(gdata_p.get("color","#1e3a8a")))
+    c.drawString(50, y - 15, f"CEPRE-UNSAAC Grupo {cepre_p} | Perfil: {gdata_p.get('perfil','')[:80]}")
+    c.setFillColor(colors.black)
+    # Facultades
+    c.setFont("Helvetica-Bold", 7)
+    ty = y - 27
+    c.drawString(52, ty, "Facultades UNSAAC:")
+    ty -= 9
+    c.setFont("Helvetica-Oblique", 6.5)
+    for fac in facultades_p:
+        c.drawString(58, ty, f"› {fac}")
+        ty -= 8
+    # Carreras en 2 columnas
+    c.setFont("Helvetica-Bold", 7)
+    ty -= 4
+    c.drawString(52, ty, f"Carreras profesionales ({len(carreras_p)} en total):")
+    ty -= 10
+    c.setFont("Helvetica", 7)
+    mitad = (len(carreras_p) + 1) // 2
+    col1_c = carreras_p[:mitad]
+    col2_c = carreras_p[mitad:]
+    for idx_c in range(max(len(col1_c), len(col2_c))):
+        if idx_c < len(col1_c):
+            c.drawString(52, ty, f"• {col1_c[idx_c]}")
+        if idx_c < len(col2_c):
+            c.drawString(310, ty, f"• {col2_c[idx_c]}")
+        ty -= 9
+    y = ty - 10
+
+    # ── Caja grupo SECUNDARIO ──
+    if y < 160:
+        c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+    carreras_s  = gdata_s.get("carreras", [])
+    facultades_s = gdata_s.get("facultades", [])
+    cepre_s     = gdata_s.get("cepre_grupo", "CD")
+    alto_s      = 28 + len(carreras_s) * 9 + len(facultades_s) * 8 + 16
+    c.setFillColor(colors.HexColor(gdata_s.get("color_claro","#d1fae5")))
+    c.roundRect(40, y - alto_s, w - 80, alto_s + 8, 8, fill=True)
+    c.setFillColor(colors.HexColor(gdata_s.get("color","#065f46")))
+    c.roundRect(40, y - alto_s, w - 80, alto_s + 8, 8, fill=False)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(50, y - 4, f"◆ GRUPO COMPLEMENTARIO — {gdata_s.get('icono','')} {gdata_s.get('nombre','')}")
+    c.setFont("Helvetica-Bold", 7)
+    c.setFillColor(colors.HexColor(gdata_s.get("color","#065f46")))
+    c.drawString(50, y - 15, f"CEPRE-UNSAAC Grupo {cepre_s}")
+    c.setFillColor(colors.black)
+    ty2 = y - 27
+    c.setFont("Helvetica-Oblique", 6.5)
+    for fac in facultades_s[:3]:
+        c.drawString(58, ty2, f"› {fac}")
+        ty2 -= 8
+    c.setFont("Helvetica", 7)
+    ty2 -= 2
+    mitad2 = (len(carreras_s) + 1) // 2
+    col1_s = carreras_s[:mitad2]
+    col2_s = carreras_s[mitad2:]
+    for idx_s in range(max(len(col1_s), len(col2_s))):
+        if idx_s < len(col1_s):
+            c.drawString(52, ty2, f"• {col1_s[idx_s]}")
+        if idx_s < len(col2_s):
+            c.drawString(310, ty2, f"• {col2_s[idx_s]}")
+        ty2 -= 9
+    y = ty2 - 10
+
+    # ── Otras opciones vocacionales ──
+    y -= 8
+    c.setFont("Helvetica-Bold", 8)
+    c.drawString(44, y, "Otras trayectorias vocacionales:")
+    y -= 12
+    c.setFont("Helvetica", 7)
+    for opc_nombre, odata in OTRAS_OPCIONES_CARRERA.items():
+        c.setFillColor(colors.HexColor(odata["color_claro"]))
+        c.roundRect(44, y-16, w-88, 22, 4, fill=True)
+        c.setFillColor(colors.HexColor(odata["color"]))
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(52, y, f"{odata['icono']} {opc_nombre}:")
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 7)
+        c.drawString(52, y-10, odata["descripcion"])
+        y -= 26
+        if y < 100:
+            c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+    # ── SECCIÓN 3: Test vocacional (si existe) ───────────────────────
+    if resultado_test:
+        y -= 8
+        if y < 200:
+            c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+        c.setFillColor(col_h)
+        c.rect(40, y-4, w-80, 18, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(48, y+1, "III. RESULTADO DEL TEST DE INTERESES VOCACIONALES")
+        y -= 24
+        c.setFillColor(colors.black)
+
+        principal_t = resultado_test.get("principal", "A")
+        gdata_t = UNSAAC_GRUPOS.get(principal_t, OTRAS_OPCIONES_CARRERA.get("Institutos Técnicos", {}))
+
+        c.setFont("Helvetica-Bold", 9)
+        nombre_grp = gdata_t.get("nombre", "Técnico-Práctico") if principal_t != "T" else "🔧 Técnico-Práctico / PNP"
+        c.drawString(44, y, f"Tendencia dominante: {nombre_grp}")
+        y -= 14
+
+        c.setFont("Helvetica", 8)
+        conteo_t = resultado_test.get("conteo", {})
+        pct_t = resultado_test.get("porcentajes", {})
+        etiquetas_t = {"A":"Ing/Ciencias","B":"Salud","C":"Cs.Sociales","D":"Educación","T":"Técnico"}
+        for gk, glabel in etiquetas_t.items():
+            val = pct_t.get(gk, 0)
+            col_t = colores_grupos.get(gk, "#334155")
+            c.setFillColor(colors.HexColor("#e2e8f0"))
+            c.rect(44, y, 180, 9, fill=True)
+            c.setFillColor(colors.HexColor(col_t))
+            c.rect(44, y, max(2,(val/100)*180), 9, fill=True)
+            c.setFillColor(colors.black)
+            c.drawString(230, y+2, f"{glabel}: {conteo_t.get(gk,0)} resp. ({val:.0f}%)")
+            y -= 12
+        y -= 6
+
+    # ── SECCIÓN 4: Diagnóstico psicopedagógico ───────────────────────
+    if y < 200:
+        c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+    seccion_num = "IV" if resultado_test else "III"
+    c.setFillColor(col_h)
+    c.rect(40, y-4, w-80, 18, fill=True)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(48, y+1, f"{seccion_num}. DIAGNÓSTICO PSICOPEDAGÓGICO Y PLAN DE ACCIÓN")
+    y -= 22
+    c.setFillColor(colors.black)
+
+    lineas_diag = _texto_diagnostico_psicopedagogico(nombre, prom_gen, lit_gen, promedios_area, afinidad)
+    c.setFont("Helvetica", 7)
+    for linea in lineas_diag:
+        if linea.startswith("I.") or linea.startswith("II.") or linea.startswith("III.") or linea.startswith("IV.") or linea.startswith("V."):
+            c.setFont("Helvetica-Bold", 8)
+        else:
+            c.setFont("Helvetica", 7)
+        c.drawString(44, y, linea[:105])
+        y -= 10
+        if y < 80:
+            c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+    # ── Firma / sello ────────────────────────────────────────────────
+    y -= 20
+    if y < 120:
+        c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+    c.setStrokeColor(colors.HexColor("#94a3b8"))
+    c.setLineWidth(0.5)
+    c.line(44, y, 250, y)
+    c.line(310, y, 520, y)
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(147, y-10, "Firma del Tutor/a")
+    c.drawCentredString(415, y-10, "V°B° Dirección")
+    c.setFont("Helvetica-Oblique", 6)
+    c.setFillColor(colors.HexColor("#64748b"))
+    c.drawCentredString(w/2, y-24, "Este informe es de carácter orientativo y complementa el proceso de tutoría escolar.")
+
+    c.save()
+    buf.seek(0)
+    return buf
+
+
+def _tab_test_vocacional_ui(config):
+    """
+    Sub-pestaña: Test de Intereses Vocacionales — Admin/Directivo puede
+    registrar respuestas y generar PDFs individuales o en lote.
+    """
+    st.markdown("### 🧠 Test de Intereses Vocacionales")
+    st.caption("Aplica el test a los estudiantes y registra sus respuestas. El sistema genera el diagnóstico PDF automáticamente.")
+
+    modo = st.radio("Modo:", ["📝 Registrar respuestas de un estudiante",
+                               "📦 Generar PDFs en lote (todos los estudiantes del grado)"],
+                    horizontal=True, key="tv_modo")
+
+    BaseDatos.cargar()
+    df_alum = BaseDatos.df_alumnos
+    if df_alum is None or df_alum.empty:
+        st.warning("No hay alumnos cargados en la base de datos.")
+        return
+
+    grados_disp = sorted(df_alum["Grado"].dropna().unique().tolist())
+
+    if modo == "📝 Registrar respuestas de un estudiante":
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_tv = st.selectbox("Grado:", grados_disp, key="tv_grado")
+        with col2:
+            df_g = df_alum[df_alum["Grado"] == grado_tv]
+            nombres_tv = df_g["Nombre"].dropna().tolist()
+            nombre_tv = st.selectbox("Estudiante:", nombres_tv, key="tv_nombre")
+
+        if nombre_tv:
+            fila_tv = df_g[df_g["Nombre"] == nombre_tv].iloc[0]
+            dni_tv = str(fila_tv.get("DNI", ""))
+
+            st.markdown("---")
+            # ── Selector de test ──────────────────────────────────────
+            test_ids = list(TESTS_VOCACIONALES.keys())
+            test_nombres = [TESTS_VOCACIONALES[t]["nombre"] for t in test_ids]
+            test_sel_nombre = st.selectbox("📋 Seleccionar tipo de test:", test_nombres, key="tv_tipo_test")
+            test_sel_id = test_ids[test_nombres.index(test_sel_nombre)]
+            test_data = TESTS_VOCACIONALES[test_sel_id]
+
+            st.markdown(f"**{test_data['nombre']}**")
+            st.caption(f"📌 {test_data['descripcion']}")
+            st.info(f"✏️ {test_data['instruccion']}")
+
+            respuestas = {}
+            for preg in test_data["preguntas"]:
+                st.markdown(f"**{preg['id']}. {preg['pregunta']}**")
+                opciones_labels = [f"{k}) {v[0]}" for k, v in preg["opciones"].items()]
+                resp = st.radio("", opciones_labels,
+                                key=f"tv_preg_{test_sel_id}_{preg['id']}", label_visibility="collapsed")
+                letra_sel = resp[0] if resp else "A"
+                grupo_sel = preg["opciones"].get(letra_sel, ("", "A"))[1]
+                respuestas[preg["id"]] = grupo_sel
+
+            st.markdown("---")
+            if st.button("🎯 Generar Diagnóstico y PDF", type="primary", key="tv_generar"):
+                # Calcular notas del estudiante
+                hist_eval = _cargar_historial_evaluaciones()
+                notas_est = []
+                for _, ev in hist_eval.items():
+                    for fila_h in ev.get("ranking", []):
+                        if str(fila_h.get("DNI","")) == dni_tv:
+                            areas_h = ev.get("areas", [])
+                            names_h = [a["nombre"] for a in areas_h] if areas_h and isinstance(areas_h[0],dict) else list(areas_h)
+                            for an in names_h:
+                                nv = fila_h.get(an, 0)
+                                if nv and float(nv) > 0:
+                                    notas_est.append({"area": an, "nota": float(nv)})
+
+                promedios_area = {}
+                for n in notas_est:
+                    area = n["area"]
+                    if area not in promedios_area:
+                        promedios_area[area] = []
+                    promedios_area[area].append(n["nota"])
+                promedios_area = {k: round(sum(v)/len(v),1) for k,v in promedios_area.items()}
+
+                prom_gen = round(sum(promedios_area.values())/len(promedios_area),1) if promedios_area else 0
+                lit_gen = nota_a_letra(prom_gen) if prom_gen > 0 else "C"
+                afinidad = _calcular_afinidad_academica(promedios_area)
+                resultado_test = _calcular_resultado_test(respuestas)
+
+                # Mostrar resumen
+                gp = afinidad["grupo_principal"]
+                gdata = UNSAAC_GRUPOS.get(gp, {})
+                st.success(f"✅ Diagnóstico generado — Grupo UNSAAC: **{gdata.get('nombre','—')}** {gdata.get('icono','')}")
+                st.info(f"Test vocacional: tendencia **{UNSAAC_GRUPOS.get(resultado_test['principal'],{}).get('nombre','Técnico')}**")
+
+                pdf_tv = generar_pdf_orientacion_vocacional(
+                    nombre_tv, dni_tv, grado_tv,
+                    prom_gen, lit_gen, promedios_area, afinidad, config,
+                    resultado_test=resultado_test)
+                st.download_button(
+                    f"⬇️ Descargar PDF — {nombre_tv}",
+                    pdf_tv,
+                    f"Orientacion_Vocacional_{nombre_tv.replace(' ','_')}.pdf",
+                    "application/pdf",
+                    key="dl_tv_ind")
+
+    else:  # Lote
+        col1b, col2b = st.columns(2)
+        with col1b:
+            grado_lote = st.selectbox("Grado:", grados_disp, key="tv_lote_grado")
+        with col2b:
+            incluir_test = st.checkbox("Incluir sección de test (sin respuestas — basado solo en notas)", value=True, key="tv_lote_test")
+
+        df_lote = df_alum[df_alum["Grado"] == grado_lote]
+        st.caption(f"📋 {len(df_lote)} estudiantes en {grado_lote}")
+
+        if st.button("📦 Generar ZIP con PDFs del grado completo", type="primary", key="tv_lote_btn"):
+            hist_eval = _cargar_historial_evaluaciones()
+            zip_buf = io.BytesIO()
+            generados = 0
+            with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
+                for _, row_l in df_lote.iterrows():
+                    nombre_l = str(row_l.get("Nombre",""))
+                    dni_l = str(row_l.get("DNI",""))
+                    if not nombre_l or not dni_l:
+                        continue
+                    # Calcular notas
+                    notas_l = []
+                    for _, ev in hist_eval.items():
+                        for fila_l in ev.get("ranking",[]):
+                            if str(fila_l.get("DNI","")) == dni_l:
+                                areas_l = ev.get("areas",[])
+                                names_l = [a["nombre"] for a in areas_l] if areas_l and isinstance(areas_l[0],dict) else list(areas_l)
+                                for an in names_l:
+                                    nv = fila_l.get(an,0)
+                                    if nv and float(nv)>0:
+                                        notas_l.append({"area":an,"nota":float(nv)})
+                    prom_area_l = {}
+                    for n in notas_l:
+                        prom_area_l.setdefault(n["area"],[]).append(n["nota"])
+                    prom_area_l = {k: round(sum(v)/len(v),1) for k,v in prom_area_l.items()}
+                    prom_l = round(sum(prom_area_l.values())/len(prom_area_l),1) if prom_area_l else 0
+                    lit_l = nota_a_letra(prom_l) if prom_l>0 else "C"
+                    afinidad_l = _calcular_afinidad_academica(prom_area_l)
+
+                    pdf_l = generar_pdf_orientacion_vocacional(
+                        nombre_l, dni_l, grado_lote,
+                        prom_l, lit_l, prom_area_l, afinidad_l, config,
+                        resultado_test=None)
+                    fname_l = f"OV_{nombre_l.replace(' ','_')}.pdf"
+                    zf.writestr(fname_l, pdf_l.read())
+                    generados += 1
+
+            zip_buf.seek(0)
+            st.success(f"✅ {generados} PDFs generados")
+            st.download_button(
+                f"⬇️ Descargar ZIP — {grado_lote} ({generados} estudiantes)",
+                zip_buf,
+                f"Orientacion_Vocacional_{grado_lote.replace(' ','_')}.zip",
+                "application/zip",
+                key="dl_tv_lote")
+
+
+
 def tab_reportes(config):
     """Tab de reportes y historial — COMPLETO"""
     st.subheader("📊 Reportes e Historial")
@@ -7534,7 +8728,8 @@ def tab_reportes(config):
         "📋 Asistencia Mensual", "👨‍🏫 Asistencia Docentes",
         "📊 Reporte Integral",
         "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones",
-        "📁 Fichas Docentes"
+        "📁 Fichas Docentes",
+        "🎓 Orientación Vocacional UNSAAC",
     ], horizontal=True, key="rep_tipo")
 
     gs = _gs()
@@ -8336,10 +9531,33 @@ def tab_reportes(config):
 
                     pdf = generar_reporte_integral_pdf(
                         nombre_ri, dni_ri, grado_est, notas_est, asist_est, config)
-                    st.download_button("⬇️ Descargar PDF", pdf,
-                                       f"Reporte_{nombre_ri.replace(' ', '_')}.pdf",
-                                       "application/pdf", key="dl_ri")
-                    st.success(f"✅ Reporte de {nombre_ri} generado")
+
+                    # ── Calcular afinidad para PDF vocacional ──
+                    prom_area_ri = {}
+                    for n_ri_v in notas_est:
+                        a_ri_v = str(n_ri_v.get("area",""))
+                        v_ri_v = float(n_ri_v.get("nota",0))
+                        if a_ri_v:
+                            prom_area_ri.setdefault(a_ri_v,[]).append(v_ri_v)
+                    prom_area_ri = {k: round(sum(v)/len(v),1) for k,v in prom_area_ri.items()}
+                    prom_gen_ri = round(sum(prom_area_ri.values())/len(prom_area_ri),1) if prom_area_ri else 0
+                    lit_gen_ri = nota_a_letra(prom_gen_ri) if prom_gen_ri>0 else "C"
+                    afinidad_ri_ind = _calcular_afinidad_academica(prom_area_ri)
+
+                    pdf_voc = generar_pdf_orientacion_vocacional(
+                        nombre_ri, dni_ri, grado_est,
+                        prom_gen_ri, lit_gen_ri, prom_area_ri, afinidad_ri_ind, config)
+
+                    col_dl1, col_dl2 = st.columns(2)
+                    with col_dl1:
+                        st.download_button("⬇️ Reporte Integral PDF", pdf,
+                                           f"Reporte_{nombre_ri.replace(' ','_')}.pdf",
+                                           "application/pdf", key="dl_ri")
+                    with col_dl2:
+                        st.download_button("🎓 Orientación Vocacional PDF", pdf_voc,
+                                           f"Vocacional_{nombre_ri.replace(' ','_')}.pdf",
+                                           "application/pdf", key="dl_ri_voc")
+                    st.success(f"✅ Reporte de {nombre_ri} generado — Grupo UNSAAC: {UNSAAC_GRUPOS.get(afinidad_ri_ind.get('grupo_principal','A'),{}).get('nombre','—')}")
 
                 else:
                     # Todo el grado - un PDF multi-página
@@ -8556,6 +9774,9 @@ def tab_reportes(config):
                             st.caption("📁 Solo en servidor")
         else:
             st.info("No hay fichas que coincidan con los filtros seleccionados.")
+
+    elif subtab == "🎓 Orientación Vocacional UNSAAC":
+        _tab_test_vocacional_ui(config)
 
 
 # ================================================================
@@ -10808,6 +12029,74 @@ def generar_reporte_integral_pdf(nombre, dni, grado, notas, asistencia, config):
         c.setFillColor(colors.black)
         c.drawString(70, y, f"{sigla} ({info['rango']}): {info['nombre']}")
         y -= 11
+
+    # ── SECCIÓN: Afinidad UNSAAC (si hay notas) ──────────────────────
+    if notas and total_all:
+        y -= 18
+        if y < 180:
+            c.showPage()
+            y = h - 50
+        c.setFillColor(colors.HexColor("#0f172a"))
+        c.rect(45, y-4, w-90, 18, fill=True)
+        c.setFillColor(colors.white)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(52, y+1, "🎓 AFINIDAD VOCACIONAL — UNSAAC")
+        y -= 22
+        c.setFillColor(colors.black)
+
+        promedios_ri = {}
+        for n_ri in notas:
+            a_ri = str(n_ri.get("area",""))
+            v_ri = float(n_ri.get("nota",0))
+            if a_ri:
+                promedios_ri.setdefault(a_ri,[]).append(v_ri)
+        promedios_ri = {k: round(sum(v)/len(v),1) for k,v in promedios_ri.items()}
+        afinidad_ri = _calcular_afinidad_academica(promedios_ri)
+        gp_ri = afinidad_ri["grupo_principal"]
+        gdata_ri = UNSAAC_GRUPOS.get(gp_ri, {})
+        colores_grp = {"A":"#1e3a8a","B":"#065f46","C":"#7c2d12","D":"#4c1d95","T":"#92400e"}
+
+        c.setFont("Helvetica-Bold", 9)
+        c.setFillColor(colors.HexColor(colores_grp.get(gp_ri,"#334155")))
+        c.drawString(52, y, f"Grupo Principal: {gdata_ri.get('nombre','—')} {gdata_ri.get('icono','')}")
+        c.setFillColor(colors.black)
+        y -= 13
+        c.setFont("Helvetica", 7)
+        c.drawString(55, y, f"Perfil: {gdata_ri.get('perfil','')[:100]}")
+        y -= 12
+        c.drawString(55, y, "Carreras afines en UNSAAC:")
+        y -= 10
+        carreras_ri = gdata_ri.get("carreras",[])[:6]
+        for i, car_ri in enumerate(carreras_ri):
+            col_x_car = 60 if i % 2 == 0 else 310
+            if i % 2 == 0 and i > 0:
+                y -= 10
+            c.drawString(col_x_car, y, f"• {car_ri}")
+        y -= 15
+
+        # Barras de afinidad compactas
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(55, y, "Distribución de afinidad:")
+        y -= 10
+        pcts_ri = afinidad_ri.get("porcentajes",{})
+        labels_ri = {"A":"Ing/Cs","B":"Salud","C":"Social","D":"Educac","T":"Técnico"}
+        for gk_ri, glabel_ri in labels_ri.items():
+            pct_ri = pcts_ri.get(gk_ri,0)
+            col_ri = colores_grp.get(gk_ri,"#334155")
+            c.setFillColor(colors.HexColor("#e2e8f0"))
+            c.rect(55, y, 100, 7, fill=True)
+            c.setFillColor(colors.HexColor(col_ri))
+            c.rect(55, y, max(1,(pct_ri/100)*100), 7, fill=True)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 6)
+            c.drawString(160, y+1, f"{glabel_ri} {pct_ri:.0f}%")
+            y -= 9
+
+        c.setFont("Helvetica", 6)
+        c.setFillColor(colors.HexColor("#64748b"))
+        y -= 4
+        c.drawString(52, y, "Para diagnóstico completo descargue el PDF de Orientación Vocacional UNSAAC desde: Reportes > Orientación Vocacional")
+        c.setFillColor(colors.black)
 
     # Pie de página
     c.setFont("Helvetica-Oblique", 7)
