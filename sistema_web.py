@@ -8574,8 +8574,7 @@ def _tab_test_vocacional_ui(config):
                                "📦 Generar PDFs en lote (todos los estudiantes del grado)"],
                     horizontal=True, key="tv_modo")
 
-    BaseDatos.cargar()
-    df_alum = BaseDatos.df_alumnos
+    df_alum = BaseDatos.cargar_matricula()
     if df_alum is None or df_alum.empty:
         st.warning("No hay alumnos cargados en la base de datos.")
         return
