@@ -1017,64 +1017,89 @@ def reproducir_sonido_asistencia():
     """, unsafe_allow_html=True)
 
 
-def _beep_html(script_body):
-    """Helper: ejecuta JS de audio via components.v1.html a volumen MÁXIMO."""
+def reproducir_beep_exitoso():
+    """
+    Pitido de éxito (3 notas ascendentes: Do-Mi-Sol) — USA components.v1.html
+    para que el script se ejecute realmente en el navegador.
+    """
     import streamlit.components.v1 as _c
-    _c.html(f"""
+    _c.html("""
     <script>
-    (function() {{
-        try {{
+    (function() {
+        try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            // Compresor al máximo para asegurar volumen alto
-            var comp = ctx.createDynamicsCompressor();
-            comp.threshold.value = -6;
-            comp.knee.value = 0;
-            comp.ratio.value = 20;
-            comp.attack.value = 0;
-            comp.release.value = 0.1;
-            comp.connect(ctx.destination);
-            function nota(freq, inicio, dur, tipo) {{
+            function nota(freq, inicio, dur, tipo) {
                 var o = ctx.createOscillator();
                 var g = ctx.createGain();
-                o.connect(g); g.connect(comp);
+                o.connect(g); g.connect(ctx.destination);
                 o.frequency.value = freq;
                 o.type = tipo || 'sine';
-                // Volumen al MÁXIMO: 1.0
                 g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(1.0, ctx.currentTime + inicio + 0.01);
+                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
                 g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
                 o.start(ctx.currentTime + inicio);
                 o.stop(ctx.currentTime + inicio + dur + 0.05);
-            }}
-            {script_body}
-        }} catch(e) {{ console.log('Beep error:', e); }}
-    }})();
+            }
+            // Do-Mi-Sol ascendente: entrada exitosa
+            nota(523, 0.00, 0.18);   // Do
+            nota(659, 0.14, 0.18);   // Mi
+            nota(784, 0.28, 0.30);   // Sol
+        } catch(e) { console.log('Beep error:', e); }
+    })();
     </script>
     """, height=0)
 
 
-def reproducir_beep_exitoso():
-    """Pitido de éxito — Do-Mi-Sol ascendente, volumen máximo"""
-    _beep_html("""
-        nota(523, 0.00, 0.20);   // Do
-        nota(659, 0.16, 0.20);   // Mi
-        nota(784, 0.32, 0.35);   // Sol
-    """)
-
-
 def reproducir_beep_tardanza():
-    """Pitido de tardanza — Sol-Re descendente, volumen máximo"""
-    _beep_html("""
-        nota(784, 0.00, 0.22);   // Sol
-        nota(294, 0.20, 0.40);   // Re grave
-    """)
+    """Pitido de tardanza (2 notas descendentes: Sol-Re) — alerta suave"""
+    import streamlit.components.v1 as _c
+    _c.html("""
+    <script>
+    (function() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            function nota(freq, inicio, dur, tipo) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = freq;
+                o.type = tipo || 'sine';
+                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
+                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
+                o.start(ctx.currentTime + inicio);
+                o.stop(ctx.currentTime + inicio + dur + 0.05);
+            }
+            // Sol-Re descendente: tardanza
+            nota(784, 0.00, 0.20);
+            nota(294, 0.18, 0.35);
+        } catch(e) {}
+    })();
+    </script>
+    """, height=0)
 
 
 def reproducir_beep_error():
-    """Pitido de error — grave corto, volumen máximo"""
-    _beep_html("""
-        nota(220, 0.00, 0.50, 'square');  // La grave en square
-    """)
+    """Pitido de error (sonido grave corto)"""
+    import streamlit.components.v1 as _c
+    _c.html("""
+    <script>
+    (function() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc  = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = 280;
+            osc.type = 'square';
+            gain.gain.setValueAtTime(0.22, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
+    })();
+    </script>
+    """, height=0)
 
 
 # ================================================================
@@ -1147,14 +1172,6 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
-        # ── CACHÉ en session_state (TTL 90 seg) para no llamar GS en cada render ──
-        import time as _time
-        _now = _time.time()
-        _cached = st.session_state.get('_cache_mat_df')
-        _ts     = st.session_state.get('_cache_mat_ts', 0)
-        if _cached is not None and not st.session_state.get('_forzar_local', False) and (_now - _ts) < 90:
-            return _cached
-
         # Después de escribir, forzar lectura local para evitar datos viejos de GS
         forzar_local = st.session_state.get('_forzar_local', False)
         if forzar_local:
@@ -1192,8 +1209,6 @@ class BaseDatos:
                                     df_gs = pd.concat([df_gs, df_solo_local], ignore_index=True)
                     except Exception:
                         pass
-                    st.session_state['_cache_mat_df'] = df_gs
-                    st.session_state['_cache_mat_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1202,8 +1217,6 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
-                st.session_state['_cache_mat_df'] = df
-                st.session_state['_cache_mat_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1221,7 +1234,6 @@ class BaseDatos:
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
         st.session_state['_forzar_local'] = True
-        st.session_state.pop('_cache_mat_df', None)  # invalidar caché
         # Invalidar índice DNI para que se reconstruya con datos nuevos
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1454,14 +1466,6 @@ class BaseDatos:
 
     @staticmethod
     def cargar_docentes():
-        # ── CACHÉ en session_state (TTL 90 seg) ──
-        import time as _time
-        _now = _time.time()
-        _cached = st.session_state.get('_cache_doc_df')
-        _ts     = st.session_state.get('_cache_doc_ts', 0)
-        if _cached is not None and not st.session_state.get('_forzar_local_doc', False) and (_now - _ts) < 90:
-            return _cached
-
         # Después de escribir, forzar lectura local
         forzar_local = st.session_state.get('_forzar_local_doc', False)
         if forzar_local:
@@ -1485,8 +1489,6 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
-                    st.session_state['_cache_doc_df'] = df_gs
-                    st.session_state['_cache_doc_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1494,8 +1496,6 @@ class BaseDatos:
             if Path(ARCHIVO_DOCENTES).exists():
                 df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
-                st.session_state['_cache_doc_df'] = df
-                st.session_state['_cache_doc_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1511,7 +1511,6 @@ class BaseDatos:
             df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar
         st.session_state['_forzar_local_doc'] = True
-        st.session_state.pop('_cache_doc_df', None)
         # Invalidar índice DNI
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1610,26 +1609,11 @@ class BaseDatos:
 
     @staticmethod
     def obtener_asistencias_hoy():
-        # ── CACHÉ 15 seg — asistencia cambia frecuentemente ──
-        import time as _time
-        _now  = _time.time()
-        _key_df  = '_cache_asis_hoy'
-        _key_ts  = '_cache_asis_ts'
-        _key_inv = '_asis_invalidar'
-        if (not st.session_state.get(_key_inv, False)
-                and st.session_state.get(_key_df) is not None
-                and (_now - st.session_state.get(_key_ts, 0)) < 15):
-            return st.session_state[_key_df]
-        st.session_state[_key_inv] = False
-
         fecha_hoy = fecha_peru_str()
-        resultado = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                resultado = json.load(f).get(fecha_hoy, {})
-        st.session_state[_key_df] = resultado
-        st.session_state[_key_ts] = _now
-        return resultado
+                return json.load(f).get(fecha_hoy, {})
+        return {}
 
     @staticmethod
     def borrar_asistencias_hoy():
@@ -5145,10 +5129,7 @@ def tab_asistencias():
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        tab_ent, tab_tard, tab_sal, tab_ent_tarde, tab_sal_tarde = st.tabs([
-            "🌅 Entrada Mañana", "⏰ Tardanza", "🏁 Salida Mañana",
-            "🌤️ Entrada Tarde", "🌙 Salida Tarde"
-        ])
+        tab_ent, tab_tard, tab_sal = st.tabs(["🌅 Entrada", "⏰ Tardanza", "🌙 Salida"])
 
         def _render_wa_tab(tipo_tab):
             asis_fresh = BaseDatos.obtener_asistencias_hoy()
@@ -5224,24 +5205,33 @@ def tab_asistencias():
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
+                links_pendientes.append({'link': link, 'clave': clave_envio, 'nombre': nombre, 'hora': hora_reg, 'cel': cel, 'icon': tipo_icon})
 
-                # Un solo botón: abre WA + desaparece automáticamente
-                col_wa, col_info = st.columns([5, 2])
-                with col_wa:
-                    btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
-                    if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
-                                 use_container_width=True, type="primary"):
-                        # Abrir WhatsApp en nueva pestaña via JS
-                        import streamlit.components.v1 as _cwav
-                        _cwav.html(
-                            f'<script>window.open("{link}","_blank");</script>',
-                            height=0
-                        )
-                        # Marcar como enviado → desaparece en próximo render
+                col_btn, col_check = st.columns([4, 1])
+                with col_btn:
+                    st.markdown(
+                        f'<a href="{link}" target="_blank" class="wa-btn">'
+                        f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
+                        unsafe_allow_html=True)
+                with col_check:
+                    if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
+                                 help="Marcar como enviado y quitar de lista", type="primary"):
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
-                with col_info:
-                    st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
+
+            if links_pendientes:
+                for item in links_pendientes:
+                    col_btn, col_check = st.columns([4, 1])
+                    with col_btn:
+                        st.markdown(
+                            f'<a href="{item["link"]}" target="_blank" class="wa-btn">'
+                            f'📱 {item["icon"]} {item["nombre"]} — 🕒 {item["hora"]} → {item["cel"]}</a>',
+                            unsafe_allow_html=True)
+                    with col_check:
+                        if st.button("✅", key=f"next_wa_{tipo_tab}_{item['clave']}", type="primary",
+                                     help="Enviado — quitar de lista"):
+                            st.session_state.wa_enviados.add(item['clave'])
+                            st.rerun()
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
@@ -5260,10 +5250,6 @@ def tab_asistencias():
             _render_wa_tab("tardanza")
         with tab_sal:
             _render_wa_tab("salida")
-        with tab_ent_tarde:
-            _render_wa_tab("entrada_tarde")
-        with tab_sal_tarde:
-            _render_wa_tab("salida_tarde")
 
         # Botón para resetear marcas de enviado
         if st.session_state.wa_enviados:
@@ -5397,7 +5383,6 @@ def _registrar_asistencia_rapida(dni):
 
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
-            st.session_state['_asis_invalidar'] = True  # invalidar caché
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
             return
@@ -11076,30 +11061,17 @@ def _restaurar_datos_desde_gs():
         return 0
 
 def _cargar_historial_evaluaciones():
-    """Carga historial — CACHÉ en session_state (TTL 60 seg, archivo local)"""
-    import time as _time
-    _now = _time.time()
-    _cached = st.session_state.get('_cache_hist_eval')
-    _ts     = st.session_state.get('_cache_hist_ts', 0)
-    if (_cached is not None
-            and not st.session_state.get('_hist_invalidar', False)
-            and (_now - _ts) < 60):
-        return _cached
-    st.session_state['_hist_invalidar'] = False
+    """Carga el historial de evaluaciones desde archivo JSON"""
     try:
         if Path('historial_evaluaciones.json').exists():
             with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            st.session_state['_cache_hist_eval'] = data
-            st.session_state['_cache_hist_ts']   = _now
-            return data
+                return json.load(f)
     except Exception:
         pass
     return {}
 
 def _guardar_historial_evaluaciones(hist_data):
     """Guarda el historial de evaluaciones en archivo JSON + Google Sheets"""
-    st.session_state['_hist_invalidar'] = True   # invalidar caché
     try:
         with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
             json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
@@ -11574,11 +11546,7 @@ def tab_registrar_notas(config):
             return
         for clave, ev in sorted(hist.items(), reverse=True):
             titulo_h = ev.get('titulo', '') or ''
-            tipo_h = ev.get('tipo_evaluacion', '')
-            label_h = f"📝 {ev['grado']} | {ev['periodo']}"
-            if tipo_h:
-                label_h += f" | {tipo_h}"
-            label_h += f" | {ev['fecha']}"
+            label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
             if titulo_h:
                 label_h += f" — {titulo_h}"
             with st.expander(label_h):
@@ -11612,27 +11580,12 @@ def tab_registrar_notas(config):
         if not grado_cfg:
             return
 
-        # Período, tipo y título
-        c1, c2, c3 = st.columns(3)
+        # Período y título
+        c1, c2 = st.columns(2)
         with c1:
             bim_cfg = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_cfg_bim")
         with c2:
-            tipo_eval_cfg = st.selectbox("📋 Tipo de evaluación:", [
-                "Evaluación Semanal",
-                "Práctica Calificada",
-                "Evaluación Mensual",
-                "Examen Parcial",
-                "Examen Final",
-                "Control de Lectura",
-                "Evaluación Bimestral",
-                "Examen de Recuperación",
-                "Examen de Nivelación",
-                "Trabajo en Grupo",
-                "Exposición",
-                "Otro",
-            ], key="rn_cfg_tipo_eval")
-        with c3:
-            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Práctica N° 3", key="rn_cfg_titulo")
+            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3", key="rn_cfg_titulo")
 
         # Número de áreas — aplica a TODOS los niveles
         st.markdown("---")
@@ -11692,7 +11645,6 @@ def tab_registrar_notas(config):
                         'id': str(uuid.uuid4())[:8],
                         'grado': grado_cfg,
                         'periodo': bim_cfg,
-                        'tipo_evaluacion': st.session_state.get('rn_cfg_tipo_eval', 'Evaluación Semanal'),
                         'titulo': titulo_cfg,
                         'areas': areas_cfg,
                         'fecha': fecha_peru_str(),
@@ -11713,8 +11665,7 @@ def tab_registrar_notas(config):
     titulo_ev = ev.get('titulo', '')
 
     # Encabezado de la evaluación activa
-    tipo_ev = ev.get('tipo_evaluacion', 'Evaluación')
-    titulo_mostrar = f"{grado_sel} | {bim_sel} | {tipo_ev}"
+    titulo_mostrar = f"{grado_sel} | {bim_sel}"
     if titulo_ev:
         titulo_mostrar += f" — {titulo_ev}"
     st.success(f"✅ Evaluación activa: **{titulo_mostrar}**")
@@ -13700,8 +13651,8 @@ def tab_material_docente(config):
         with col2:
             grado_f1 = _grados_para_selector("ficha_dis")
         with col3:
-            semana_f1 = st.number_input("📅 Semana N°:", 1, 40,
-                                         max(1, _semana_escolar_actual()), key="ficha_semana_dis")
+            semana_f1 = st.number_input("📅 Semana N°:", 1, 52,
+                                         int(hora_peru().strftime('%V')), key="ficha_semana_dis")
 
         col4, col5 = st.columns(2)
         with col4:
@@ -13764,8 +13715,8 @@ def tab_material_docente(config):
         with col2:
             grado_ficha = _grados_para_selector("ficha")
         with col3:
-            semana_ficha = st.number_input("📅 Semana N°:", 1, 40,
-                                           max(1, _semana_escolar_actual()), key="ficha_semana")
+            semana_ficha = st.number_input("📅 Semana N°:", 1, 52,
+                                           int(hora_peru().strftime('%V')), key="ficha_semana")
 
         col4, col5, col6 = st.columns(3)
         with col4:
@@ -14348,8 +14299,7 @@ def _vista_directivo_material(config, semana_actual):
         if not materiales:
             st.info("📭 Sin datos de materiales aún")
             return
-        # Mostrar todas las semanas con contenido, no solo las últimas 4
-        semanas_rango = range(1, 41)
+        semanas_rango = range(max(1, semana_actual - 4), semana_actual + 1)
         docentes_activos = set()
         for m in materiales:
             docentes_activos.add(m.get('docente_nombre', m.get('docente', '')))
