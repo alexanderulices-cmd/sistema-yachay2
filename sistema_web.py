@@ -1017,89 +1017,64 @@ def reproducir_sonido_asistencia():
     """, unsafe_allow_html=True)
 
 
-def reproducir_beep_exitoso():
-    """
-    Pitido de éxito (3 notas ascendentes: Do-Mi-Sol) — USA components.v1.html
-    para que el script se ejecute realmente en el navegador.
-    """
+def _beep_html(script_body):
+    """Helper: ejecuta JS de audio via components.v1.html a volumen MÁXIMO."""
     import streamlit.components.v1 as _c
-    _c.html("""
+    _c.html(f"""
     <script>
-    (function() {
-        try {
+    (function() {{
+        try {{
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function nota(freq, inicio, dur, tipo) {
+            // Compresor al máximo para asegurar volumen alto
+            var comp = ctx.createDynamicsCompressor();
+            comp.threshold.value = -6;
+            comp.knee.value = 0;
+            comp.ratio.value = 20;
+            comp.attack.value = 0;
+            comp.release.value = 0.1;
+            comp.connect(ctx.destination);
+            function nota(freq, inicio, dur, tipo) {{
                 var o = ctx.createOscillator();
                 var g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
+                o.connect(g); g.connect(comp);
                 o.frequency.value = freq;
                 o.type = tipo || 'sine';
+                // Volumen al MÁXIMO: 1.0
                 g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
+                g.gain.linearRampToValueAtTime(1.0, ctx.currentTime + inicio + 0.01);
                 g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
                 o.start(ctx.currentTime + inicio);
                 o.stop(ctx.currentTime + inicio + dur + 0.05);
-            }
-            // Do-Mi-Sol ascendente: entrada exitosa
-            nota(523, 0.00, 0.18);   // Do
-            nota(659, 0.14, 0.18);   // Mi
-            nota(784, 0.28, 0.30);   // Sol
-        } catch(e) { console.log('Beep error:', e); }
-    })();
+            }}
+            {script_body}
+        }} catch(e) {{ console.log('Beep error:', e); }}
+    }})();
     </script>
     """, height=0)
+
+
+def reproducir_beep_exitoso():
+    """Pitido de éxito — Do-Mi-Sol ascendente, volumen máximo"""
+    _beep_html("""
+        nota(523, 0.00, 0.20);   // Do
+        nota(659, 0.16, 0.20);   // Mi
+        nota(784, 0.32, 0.35);   // Sol
+    """)
 
 
 def reproducir_beep_tardanza():
-    """Pitido de tardanza (2 notas descendentes: Sol-Re) — alerta suave"""
-    import streamlit.components.v1 as _c
-    _c.html("""
-    <script>
-    (function() {
-        try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function nota(freq, inicio, dur, tipo) {
-                var o = ctx.createOscillator();
-                var g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
-                o.frequency.value = freq;
-                o.type = tipo || 'sine';
-                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
-                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
-                o.start(ctx.currentTime + inicio);
-                o.stop(ctx.currentTime + inicio + dur + 0.05);
-            }
-            // Sol-Re descendente: tardanza
-            nota(784, 0.00, 0.20);
-            nota(294, 0.18, 0.35);
-        } catch(e) {}
-    })();
-    </script>
-    """, height=0)
+    """Pitido de tardanza — Sol-Re descendente, volumen máximo"""
+    _beep_html("""
+        nota(784, 0.00, 0.22);   // Sol
+        nota(294, 0.20, 0.40);   // Re grave
+    """)
 
 
 def reproducir_beep_error():
-    """Pitido de error (sonido grave corto)"""
-    import streamlit.components.v1 as _c
-    _c.html("""
-    <script>
-    (function() {
-        try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc  = ctx.createOscillator();
-            var gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.frequency.value = 280;
-            osc.type = 'square';
-            gain.gain.setValueAtTime(0.22, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.5);
-        } catch(e) {}
-    })();
-    </script>
-    """, height=0)
+    """Pitido de error — grave corto, volumen máximo"""
+    _beep_html("""
+        nota(220, 0.00, 0.50, 'square');  // La grave en square
+    """)
 
 
 # ================================================================
@@ -5129,7 +5104,10 @@ def tab_asistencias():
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        tab_ent, tab_tard, tab_sal = st.tabs(["🌅 Entrada", "⏰ Tardanza", "🌙 Salida"])
+        tab_ent, tab_tard, tab_sal, tab_ent_tarde, tab_sal_tarde = st.tabs([
+            "🌅 Entrada Mañana", "⏰ Tardanza", "🏁 Salida Mañana",
+            "🌤️ Entrada Tarde", "🌙 Salida Tarde"
+        ])
 
         def _render_wa_tab(tipo_tab):
             asis_fresh = BaseDatos.obtener_asistencias_hoy()
@@ -5205,33 +5183,24 @@ def tab_asistencias():
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
-                links_pendientes.append({'link': link, 'clave': clave_envio, 'nombre': nombre, 'hora': hora_reg, 'cel': cel, 'icon': tipo_icon})
 
-                col_btn, col_check = st.columns([4, 1])
-                with col_btn:
-                    st.markdown(
-                        f'<a href="{link}" target="_blank" class="wa-btn">'
-                        f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
-                        unsafe_allow_html=True)
-                with col_check:
-                    if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
-                                 help="Marcar como enviado y quitar de lista", type="primary"):
+                # Un solo botón: abre WA + desaparece automáticamente
+                col_wa, col_info = st.columns([5, 2])
+                with col_wa:
+                    btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
+                    if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
+                                 use_container_width=True, type="primary"):
+                        # Abrir WhatsApp en nueva pestaña via JS
+                        import streamlit.components.v1 as _cwav
+                        _cwav.html(
+                            f'<script>window.open("{link}","_blank");</script>',
+                            height=0
+                        )
+                        # Marcar como enviado → desaparece en próximo render
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
-
-            if links_pendientes:
-                for item in links_pendientes:
-                    col_btn, col_check = st.columns([4, 1])
-                    with col_btn:
-                        st.markdown(
-                            f'<a href="{item["link"]}" target="_blank" class="wa-btn">'
-                            f'📱 {item["icon"]} {item["nombre"]} — 🕒 {item["hora"]} → {item["cel"]}</a>',
-                            unsafe_allow_html=True)
-                    with col_check:
-                        if st.button("✅", key=f"next_wa_{tipo_tab}_{item['clave']}", type="primary",
-                                     help="Enviado — quitar de lista"):
-                            st.session_state.wa_enviados.add(item['clave'])
-                            st.rerun()
+                with col_info:
+                    st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
@@ -5250,6 +5219,10 @@ def tab_asistencias():
             _render_wa_tab("tardanza")
         with tab_sal:
             _render_wa_tab("salida")
+        with tab_ent_tarde:
+            _render_wa_tab("entrada_tarde")
+        with tab_sal_tarde:
+            _render_wa_tab("salida_tarde")
 
         # Botón para resetear marcas de enviado
         if st.session_state.wa_enviados:
@@ -11546,7 +11519,11 @@ def tab_registrar_notas(config):
             return
         for clave, ev in sorted(hist.items(), reverse=True):
             titulo_h = ev.get('titulo', '') or ''
-            label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
+            tipo_h = ev.get('tipo_evaluacion', '')
+            label_h = f"📝 {ev['grado']} | {ev['periodo']}"
+            if tipo_h:
+                label_h += f" | {tipo_h}"
+            label_h += f" | {ev['fecha']}"
             if titulo_h:
                 label_h += f" — {titulo_h}"
             with st.expander(label_h):
@@ -11580,12 +11557,27 @@ def tab_registrar_notas(config):
         if not grado_cfg:
             return
 
-        # Período y título
-        c1, c2 = st.columns(2)
+        # Período, tipo y título
+        c1, c2, c3 = st.columns(3)
         with c1:
             bim_cfg = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_cfg_bim")
         with c2:
-            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3", key="rn_cfg_titulo")
+            tipo_eval_cfg = st.selectbox("📋 Tipo de evaluación:", [
+                "Evaluación Semanal",
+                "Práctica Calificada",
+                "Evaluación Mensual",
+                "Examen Parcial",
+                "Examen Final",
+                "Control de Lectura",
+                "Evaluación Bimestral",
+                "Examen de Recuperación",
+                "Examen de Nivelación",
+                "Trabajo en Grupo",
+                "Exposición",
+                "Otro",
+            ], key="rn_cfg_tipo_eval")
+        with c3:
+            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Práctica N° 3", key="rn_cfg_titulo")
 
         # Número de áreas — aplica a TODOS los niveles
         st.markdown("---")
@@ -11645,6 +11637,7 @@ def tab_registrar_notas(config):
                         'id': str(uuid.uuid4())[:8],
                         'grado': grado_cfg,
                         'periodo': bim_cfg,
+                        'tipo_evaluacion': st.session_state.get('rn_cfg_tipo_eval', 'Evaluación Semanal'),
                         'titulo': titulo_cfg,
                         'areas': areas_cfg,
                         'fecha': fecha_peru_str(),
@@ -11665,7 +11658,8 @@ def tab_registrar_notas(config):
     titulo_ev = ev.get('titulo', '')
 
     # Encabezado de la evaluación activa
-    titulo_mostrar = f"{grado_sel} | {bim_sel}"
+    tipo_ev = ev.get('tipo_evaluacion', 'Evaluación')
+    titulo_mostrar = f"{grado_sel} | {bim_sel} | {tipo_ev}"
     if titulo_ev:
         titulo_mostrar += f" — {titulo_ev}"
     st.success(f"✅ Evaluación activa: **{titulo_mostrar}**")
