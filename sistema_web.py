@@ -1147,6 +1147,14 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
+        # ── CACHÉ en session_state (TTL 90 seg) para no llamar GS en cada render ──
+        import time as _time
+        _now = _time.time()
+        _cached = st.session_state.get('_cache_mat_df')
+        _ts     = st.session_state.get('_cache_mat_ts', 0)
+        if _cached is not None and not st.session_state.get('_forzar_local', False) and (_now - _ts) < 90:
+            return _cached
+
         # Después de escribir, forzar lectura local para evitar datos viejos de GS
         forzar_local = st.session_state.get('_forzar_local', False)
         if forzar_local:
@@ -1184,6 +1192,8 @@ class BaseDatos:
                                     df_gs = pd.concat([df_gs, df_solo_local], ignore_index=True)
                     except Exception:
                         pass
+                    st.session_state['_cache_mat_df'] = df_gs
+                    st.session_state['_cache_mat_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1192,6 +1202,8 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                st.session_state['_cache_mat_df'] = df
+                st.session_state['_cache_mat_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1209,6 +1221,7 @@ class BaseDatos:
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
         st.session_state['_forzar_local'] = True
+        st.session_state.pop('_cache_mat_df', None)  # invalidar caché
         # Invalidar índice DNI para que se reconstruya con datos nuevos
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1441,6 +1454,14 @@ class BaseDatos:
 
     @staticmethod
     def cargar_docentes():
+        # ── CACHÉ en session_state (TTL 90 seg) ──
+        import time as _time
+        _now = _time.time()
+        _cached = st.session_state.get('_cache_doc_df')
+        _ts     = st.session_state.get('_cache_doc_ts', 0)
+        if _cached is not None and not st.session_state.get('_forzar_local_doc', False) and (_now - _ts) < 90:
+            return _cached
+
         # Después de escribir, forzar lectura local
         forzar_local = st.session_state.get('_forzar_local_doc', False)
         if forzar_local:
@@ -1464,6 +1485,8 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    st.session_state['_cache_doc_df'] = df_gs
+                    st.session_state['_cache_doc_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1471,6 +1494,8 @@ class BaseDatos:
             if Path(ARCHIVO_DOCENTES).exists():
                 df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                st.session_state['_cache_doc_df'] = df
+                st.session_state['_cache_doc_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1486,6 +1511,7 @@ class BaseDatos:
             df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar
         st.session_state['_forzar_local_doc'] = True
+        st.session_state.pop('_cache_doc_df', None)
         # Invalidar índice DNI
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1584,11 +1610,26 @@ class BaseDatos:
 
     @staticmethod
     def obtener_asistencias_hoy():
+        # ── CACHÉ 15 seg — asistencia cambia frecuentemente ──
+        import time as _time
+        _now  = _time.time()
+        _key_df  = '_cache_asis_hoy'
+        _key_ts  = '_cache_asis_ts'
+        _key_inv = '_asis_invalidar'
+        if (not st.session_state.get(_key_inv, False)
+                and st.session_state.get(_key_df) is not None
+                and (_now - st.session_state.get(_key_ts, 0)) < 15):
+            return st.session_state[_key_df]
+        st.session_state[_key_inv] = False
+
         fecha_hoy = fecha_peru_str()
+        resultado = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                return json.load(f).get(fecha_hoy, {})
-        return {}
+                resultado = json.load(f).get(fecha_hoy, {})
+        st.session_state[_key_df] = resultado
+        st.session_state[_key_ts] = _now
+        return resultado
 
     @staticmethod
     def borrar_asistencias_hoy():
@@ -5356,6 +5397,7 @@ def _registrar_asistencia_rapida(dni):
 
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
+            st.session_state['_asis_invalidar'] = True  # invalidar caché
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
             return
@@ -11034,17 +11076,30 @@ def _restaurar_datos_desde_gs():
         return 0
 
 def _cargar_historial_evaluaciones():
-    """Carga el historial de evaluaciones desde archivo JSON"""
+    """Carga historial — CACHÉ en session_state (TTL 60 seg, archivo local)"""
+    import time as _time
+    _now = _time.time()
+    _cached = st.session_state.get('_cache_hist_eval')
+    _ts     = st.session_state.get('_cache_hist_ts', 0)
+    if (_cached is not None
+            and not st.session_state.get('_hist_invalidar', False)
+            and (_now - _ts) < 60):
+        return _cached
+    st.session_state['_hist_invalidar'] = False
     try:
         if Path('historial_evaluaciones.json').exists():
             with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+            st.session_state['_cache_hist_eval'] = data
+            st.session_state['_cache_hist_ts']   = _now
+            return data
     except Exception:
         pass
     return {}
 
 def _guardar_historial_evaluaciones(hist_data):
     """Guarda el historial de evaluaciones en archivo JSON + Google Sheets"""
+    st.session_state['_hist_invalidar'] = True   # invalidar caché
     try:
         with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
             json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
@@ -13645,8 +13700,8 @@ def tab_material_docente(config):
         with col2:
             grado_f1 = _grados_para_selector("ficha_dis")
         with col3:
-            semana_f1 = st.number_input("📅 Semana N°:", 1, 52,
-                                         int(hora_peru().strftime('%V')), key="ficha_semana_dis")
+            semana_f1 = st.number_input("📅 Semana N°:", 1, 40,
+                                         max(1, _semana_escolar_actual()), key="ficha_semana_dis")
 
         col4, col5 = st.columns(2)
         with col4:
@@ -13709,8 +13764,8 @@ def tab_material_docente(config):
         with col2:
             grado_ficha = _grados_para_selector("ficha")
         with col3:
-            semana_ficha = st.number_input("📅 Semana N°:", 1, 52,
-                                           int(hora_peru().strftime('%V')), key="ficha_semana")
+            semana_ficha = st.number_input("📅 Semana N°:", 1, 40,
+                                           max(1, _semana_escolar_actual()), key="ficha_semana")
 
         col4, col5, col6 = st.columns(3)
         with col4:
@@ -14293,7 +14348,8 @@ def _vista_directivo_material(config, semana_actual):
         if not materiales:
             st.info("📭 Sin datos de materiales aún")
             return
-        semanas_rango = range(max(1, semana_actual - 4), semana_actual + 1)
+        # Mostrar todas las semanas con contenido, no solo las últimas 4
+        semanas_rango = range(1, 41)
         docentes_activos = set()
         for m in materiales:
             docentes_activos.add(m.get('docente_nombre', m.get('docente', '')))
