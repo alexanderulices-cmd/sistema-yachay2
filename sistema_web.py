@@ -1017,89 +1017,64 @@ def reproducir_sonido_asistencia():
     """, unsafe_allow_html=True)
 
 
-def reproducir_beep_exitoso():
-    """
-    Pitido de éxito (3 notas ascendentes: Do-Mi-Sol) — USA components.v1.html
-    para que el script se ejecute realmente en el navegador.
-    """
+def _beep_html(script_body):
+    """Helper: ejecuta JS de audio via components.v1.html a volumen MÁXIMO."""
     import streamlit.components.v1 as _c
-    _c.html("""
+    _c.html(f"""
     <script>
-    (function() {
-        try {
+    (function() {{
+        try {{
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function nota(freq, inicio, dur, tipo) {
+            // Compresor al máximo para asegurar volumen alto
+            var comp = ctx.createDynamicsCompressor();
+            comp.threshold.value = -6;
+            comp.knee.value = 0;
+            comp.ratio.value = 20;
+            comp.attack.value = 0;
+            comp.release.value = 0.1;
+            comp.connect(ctx.destination);
+            function nota(freq, inicio, dur, tipo) {{
                 var o = ctx.createOscillator();
                 var g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
+                o.connect(g); g.connect(comp);
                 o.frequency.value = freq;
                 o.type = tipo || 'sine';
+                // Volumen al MÁXIMO: 1.0
                 g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
+                g.gain.linearRampToValueAtTime(1.0, ctx.currentTime + inicio + 0.01);
                 g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
                 o.start(ctx.currentTime + inicio);
                 o.stop(ctx.currentTime + inicio + dur + 0.05);
-            }
-            // Do-Mi-Sol ascendente: entrada exitosa
-            nota(523, 0.00, 0.18);   // Do
-            nota(659, 0.14, 0.18);   // Mi
-            nota(784, 0.28, 0.30);   // Sol
-        } catch(e) { console.log('Beep error:', e); }
-    })();
+            }}
+            {script_body}
+        }} catch(e) {{ console.log('Beep error:', e); }}
+    }})();
     </script>
     """, height=0)
+
+
+def reproducir_beep_exitoso():
+    """Pitido de éxito — Do-Mi-Sol ascendente, volumen máximo"""
+    _beep_html("""
+        nota(523, 0.00, 0.20);   // Do
+        nota(659, 0.16, 0.20);   // Mi
+        nota(784, 0.32, 0.35);   // Sol
+    """)
 
 
 def reproducir_beep_tardanza():
-    """Pitido de tardanza (2 notas descendentes: Sol-Re) — alerta suave"""
-    import streamlit.components.v1 as _c
-    _c.html("""
-    <script>
-    (function() {
-        try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function nota(freq, inicio, dur, tipo) {
-                var o = ctx.createOscillator();
-                var g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
-                o.frequency.value = freq;
-                o.type = tipo || 'sine';
-                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(0.28, ctx.currentTime + inicio + 0.02);
-                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
-                o.start(ctx.currentTime + inicio);
-                o.stop(ctx.currentTime + inicio + dur + 0.05);
-            }
-            // Sol-Re descendente: tardanza
-            nota(784, 0.00, 0.20);
-            nota(294, 0.18, 0.35);
-        } catch(e) {}
-    })();
-    </script>
-    """, height=0)
+    """Pitido de tardanza — Sol-Re descendente, volumen máximo"""
+    _beep_html("""
+        nota(784, 0.00, 0.22);   // Sol
+        nota(294, 0.20, 0.40);   // Re grave
+    """)
 
 
 def reproducir_beep_error():
-    """Pitido de error (sonido grave corto)"""
-    import streamlit.components.v1 as _c
-    _c.html("""
-    <script>
-    (function() {
-        try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc  = ctx.createOscillator();
-            var gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.frequency.value = 280;
-            osc.type = 'square';
-            gain.gain.setValueAtTime(0.22, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.5);
-        } catch(e) {}
-    })();
-    </script>
-    """, height=0)
+    """Pitido de error — grave corto, volumen máximo"""
+    _beep_html("""
+        nota(220, 0.00, 0.50, 'square');  // La grave en square
+    """)
 
 
 # ================================================================
@@ -1172,6 +1147,14 @@ class BaseDatos:
 
     @staticmethod
     def cargar_matricula():
+        # ── CACHÉ en session_state (TTL 90 seg) para no llamar GS en cada render ──
+        import time as _time
+        _now = _time.time()
+        _cached = st.session_state.get('_cache_mat_df')
+        _ts     = st.session_state.get('_cache_mat_ts', 0)
+        if _cached is not None and not st.session_state.get('_forzar_local', False) and (_now - _ts) < 90:
+            return _cached
+
         # Después de escribir, forzar lectura local para evitar datos viejos de GS
         forzar_local = st.session_state.get('_forzar_local', False)
         if forzar_local:
@@ -1209,6 +1192,8 @@ class BaseDatos:
                                     df_gs = pd.concat([df_gs, df_solo_local], ignore_index=True)
                     except Exception:
                         pass
+                    st.session_state['_cache_mat_df'] = df_gs
+                    st.session_state['_cache_mat_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1217,6 +1202,8 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                st.session_state['_cache_mat_df'] = df
+                st.session_state['_cache_mat_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1234,6 +1221,7 @@ class BaseDatos:
             df.to_csv(ARCHIVO_MATRICULA.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar (GS puede tener datos viejos)
         st.session_state['_forzar_local'] = True
+        st.session_state.pop('_cache_mat_df', None)  # invalidar caché
         # Invalidar índice DNI para que se reconstruya con datos nuevos
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1466,6 +1454,14 @@ class BaseDatos:
 
     @staticmethod
     def cargar_docentes():
+        # ── CACHÉ en session_state (TTL 90 seg) ──
+        import time as _time
+        _now = _time.time()
+        _cached = st.session_state.get('_cache_doc_df')
+        _ts     = st.session_state.get('_cache_doc_ts', 0)
+        if _cached is not None and not st.session_state.get('_forzar_local_doc', False) and (_now - _ts) < 90:
+            return _cached
+
         # Después de escribir, forzar lectura local
         forzar_local = st.session_state.get('_forzar_local_doc', False)
         if forzar_local:
@@ -1489,6 +1485,8 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    st.session_state['_cache_doc_df'] = df_gs
+                    st.session_state['_cache_doc_ts'] = _now
                     return df_gs
             except Exception:
                 pass
@@ -1496,6 +1494,8 @@ class BaseDatos:
             if Path(ARCHIVO_DOCENTES).exists():
                 df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                st.session_state['_cache_doc_df'] = df
+                st.session_state['_cache_doc_ts'] = _now
                 return df
         except Exception:
             pass
@@ -1511,6 +1511,7 @@ class BaseDatos:
             df.to_csv(ARCHIVO_DOCENTES.replace('.xlsx', '.csv'), index=False)
         # Forzar lectura local en el próximo cargar
         st.session_state['_forzar_local_doc'] = True
+        st.session_state.pop('_cache_doc_df', None)
         # Invalidar índice DNI
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
@@ -1609,11 +1610,26 @@ class BaseDatos:
 
     @staticmethod
     def obtener_asistencias_hoy():
+        # ── CACHÉ 15 seg — asistencia cambia frecuentemente ──
+        import time as _time
+        _now  = _time.time()
+        _key_df  = '_cache_asis_hoy'
+        _key_ts  = '_cache_asis_ts'
+        _key_inv = '_asis_invalidar'
+        if (not st.session_state.get(_key_inv, False)
+                and st.session_state.get(_key_df) is not None
+                and (_now - st.session_state.get(_key_ts, 0)) < 15):
+            return st.session_state[_key_df]
+        st.session_state[_key_inv] = False
+
         fecha_hoy = fecha_peru_str()
+        resultado = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                return json.load(f).get(fecha_hoy, {})
-        return {}
+                resultado = json.load(f).get(fecha_hoy, {})
+        st.session_state[_key_df] = resultado
+        st.session_state[_key_ts] = _now
+        return resultado
 
     @staticmethod
     def borrar_asistencias_hoy():
@@ -5124,12 +5140,139 @@ def tab_asistencias():
                 use_container_width=True, hide_index=True
             )
 
+        # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
+        st.markdown("---")
+        st.subheader("📊 Analytics de Asistencia")
+
+        _asis_hist = {}
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _f:
+                _asis_hist = json.load(_f)
+
+        _dias_anal = [(hora_peru().date() - timedelta(days=_d)).strftime('%d/%m/%Y') for _d in range(13, -1, -1)]
+
+        col_an1, col_an2, col_an3 = st.columns(3)
+
+        with col_an1:
+            _total_mat = len(BaseDatos.cargar_matricula())
+            _pct = round(_ent / _total_mat * 100) if _total_mat > 0 else 0
+            _cc = "#16a34a" if _pct >= 90 else ("#f59e0b" if _pct >= 75 else "#dc2626")
+            st.markdown(
+                f'<div style="background:white;border:2px solid {_cc};border-radius:12px;padding:14px;text-align:center;">'
+                f'<div style="font-size:2.2rem;font-weight:900;color:{_cc};">{_pct}%</div>'
+                f'<div style="font-size:0.85rem;color:#666;">Asistencia hoy</div>'
+                f'<div style="background:#f1f5f9;border-radius:8px;height:10px;margin-top:8px;">'
+                f'<div style="background:{_cc};border-radius:8px;height:10px;width:{_pct}%;"></div></div>'
+                f'<div style="font-size:0.75rem;color:#999;margin-top:4px;">{_ent} de {_total_mat} matriculados</div>'
+                f'</div>', unsafe_allow_html=True)
+
+        with col_an2:
+            _trend = []
+            for _fd in _dias_anal:
+                _d = _asis_hist.get(_fd, {})
+                _trend.append(sum(1 for v in _d.values() if (v.get('entrada') or v.get('tardanza')) and not v.get('es_docente', False)))
+            _tmax = max(_trend) if any(_trend) else 1
+            _bars = "".join([
+                f'<div style="background:{"#16a34a" if v==max(_trend) else "#3b82f6"};'
+                f'width:14px;height:{max(4,int(v/_tmax*50))}px;border-radius:2px 2px 0 0;'
+                f'display:inline-block;margin:0 1px;vertical-align:bottom;"></div>'
+                for v in _trend
+            ])
+            st.markdown(
+                f'<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">'
+                f'<div style="font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:8px;">📈 Tendencia 14 días</div>'
+                f'<div style="height:60px;display:flex;align-items:flex-end;">{_bars}</div>'
+                f'<div style="font-size:0.7rem;color:#94a3b8;margin-top:4px;">← {_dias_anal[0]} hasta hoy →</div>'
+                f'</div>', unsafe_allow_html=True)
+
+        with col_an3:
+            _tard_c = {}
+            for _fd in _dias_anal:
+                for _dk, _dv in _asis_hist.get(_fd, {}).items():
+                    if not _dv.get('es_docente', False):
+                        _eh = _dv.get('entrada','') or _dv.get('tardanza','')
+                        if _es_tardanza(_eh):
+                            _tard_c[_dv['nombre']] = _tard_c.get(_dv['nombre'], 0) + 1
+            _top5 = sorted(_tard_c.items(), key=lambda x: -x[1])[:5]
+            if _top5:
+                _rows = "".join([
+                    f'<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f1f5f9;">'
+                    f'<span style="font-size:0.78rem;color:#334155;">{n[:22]}</span>'
+                    f'<span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;font-size:0.75rem;font-weight:700;">{c}x</span>'
+                    f'</div>' for n, c in _top5
+                ])
+                st.markdown(
+                    f'<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">'
+                    f'<div style="font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:8px;">⏰ Más tardanzas (14 días)</div>'
+                    f'{_rows}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(
+                    '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px;text-align:center;">'
+                    '<div style="font-size:1.5rem;">🏆</div>'
+                    '<div style="font-size:0.85rem;color:#16a34a;font-weight:700;">¡Sin tardanzas los últimos 14 días!</div>'
+                    '</div>', unsafe_allow_html=True)
+
+        st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+        # Alertas de inasistencias
+        _ausencias = {}
+        for _fd in _dias_anal:
+            for _dk, _dv in _asis_hist.get(_fd, {}).items():
+                if not _dv.get('es_docente', False):
+                    if not any(_dv.get(k) for k in ('entrada','tardanza','salida','entrada_tarde','salida_tarde')):
+                        _ausencias[_dv['nombre']] = _ausencias.get(_dv['nombre'], 0) + 1
+        _alertas = sorted([(n,c) for n,c in _ausencias.items() if c >= 3], key=lambda x: -x[1])
+        if _alertas:
+            _chips = " ".join([
+                f'<span style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;'
+                f'padding:3px 10px;border-radius:20px;font-size:0.78rem;margin:2px;display:inline-block;">'
+                f'🚨 {n[:18]} ({c} días)</span>' for n,c in _alertas[:8]
+            ])
+            st.markdown(
+                f'<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;">'
+                f'<strong style="color:#c2410c;">⚠️ Alumnos con 3+ inasistencias en 14 días:</strong>'
+                f'<div style="margin-top:6px;">{_chips}</div></div>', unsafe_allow_html=True)
+
+        # Ranking puntualidad por grado
+        with st.expander("🏅 Ranking de Puntualidad por Grado (14 días)", expanded=False):
+            _gstats = {}
+            _dfm = BaseDatos.cargar_matricula()
+            for _fd in _dias_anal:
+                for _dk, _dv in _asis_hist.get(_fd, {}).items():
+                    if _dv.get('es_docente', False): continue
+                    _ev = _dv.get('entrada','') or _dv.get('tardanza','')
+                    if not _ev: continue
+                    _fg = _dfm[_dfm['DNI'].astype(str).str.strip()==str(_dk).strip()] if not _dfm.empty and 'DNI' in _dfm.columns else pd.DataFrame()
+                    _gv = _fg.iloc[0]['Grado'] if not _fg.empty and 'Grado' in _fg.columns else 'Sin grado'
+                    if _gv not in _gstats: _gstats[_gv] = {'t':0,'p':0}
+                    _gstats[_gv]['t'] += 1
+                    if not _es_tardanza(_ev): _gstats[_gv]['p'] += 1
+            if _gstats:
+                _rkg = sorted([(g, round(s['p']/s['t']*100) if s['t']>0 else 0) for g,s in _gstats.items()], key=lambda x:-x[1])
+                _meds = ['🥇','🥈','🥉']+['🏅']*(len(_rkg)-3)
+                _cols_g = st.columns(min(len(_rkg), 5))
+                for ci,((_g,_pg),_m) in enumerate(zip(_rkg,_meds)):
+                    with _cols_g[ci % len(_cols_g)]:
+                        _cg = "#16a34a" if _pg>=90 else ("#f59e0b" if _pg>=75 else "#dc2626")
+                        st.markdown(
+                            f'<div style="background:white;border:2px solid {_cg};border-radius:10px;padding:10px;text-align:center;margin:4px 0;">'
+                            f'<div style="font-size:1.4rem;">{_m}</div>'
+                            f'<div style="font-weight:700;font-size:0.8rem;color:#1e293b;">{_g}</div>'
+                            f'<div style="font-size:1.3rem;font-weight:900;color:{_cg};">{_pg}%</div>'
+                            f'<div style="font-size:0.7rem;color:#94a3b8;">puntualidad</div>'
+                            f'</div>', unsafe_allow_html=True)
+            else:
+                st.info("Aún no hay suficientes datos.")
+
         # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
         st.caption("Toque cada botón para enviar. Al marcar ✅ desaparece de la lista.")
 
-        tab_ent, tab_tard, tab_sal = st.tabs(["🌅 Entrada", "⏰ Tardanza", "🌙 Salida"])
+        tab_ent, tab_tard, tab_sal, tab_ent_tarde, tab_sal_tarde = st.tabs([
+            "🌅 Entrada Mañana", "⏰ Tardanza", "🏁 Salida Mañana",
+            "🌤️ Entrada Tarde", "🌙 Salida Tarde"
+        ])
 
         def _render_wa_tab(tipo_tab):
             asis_fresh = BaseDatos.obtener_asistencias_hoy()
@@ -5205,33 +5348,24 @@ def tab_asistencias():
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 link = generar_link_whatsapp(cel, msg)
-                links_pendientes.append({'link': link, 'clave': clave_envio, 'nombre': nombre, 'hora': hora_reg, 'cel': cel, 'icon': tipo_icon})
 
-                col_btn, col_check = st.columns([4, 1])
-                with col_btn:
-                    st.markdown(
-                        f'<a href="{link}" target="_blank" class="wa-btn">'
-                        f'📱 {tipo_icon} {nombre} — 🕒 {hora_reg} → {cel}</a>',
-                        unsafe_allow_html=True)
-                with col_check:
-                    if st.button("✅", key=f"wa_{dk}_{tipo_tab}",
-                                 help="Marcar como enviado y quitar de lista", type="primary"):
+                # Un solo botón: abre WA + desaparece automáticamente
+                col_wa, col_info = st.columns([5, 2])
+                with col_wa:
+                    btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
+                    if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
+                                 use_container_width=True, type="primary"):
+                        # Abrir WhatsApp en nueva pestaña via JS
+                        import streamlit.components.v1 as _cwav
+                        _cwav.html(
+                            f'<script>window.open("{link}","_blank");</script>',
+                            height=0
+                        )
+                        # Marcar como enviado → desaparece en próximo render
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
-
-            if links_pendientes:
-                for item in links_pendientes:
-                    col_btn, col_check = st.columns([4, 1])
-                    with col_btn:
-                        st.markdown(
-                            f'<a href="{item["link"]}" target="_blank" class="wa-btn">'
-                            f'📱 {item["icon"]} {item["nombre"]} — 🕒 {item["hora"]} → {item["cel"]}</a>',
-                            unsafe_allow_html=True)
-                    with col_check:
-                        if st.button("✅", key=f"next_wa_{tipo_tab}_{item['clave']}", type="primary",
-                                     help="Enviado — quitar de lista"):
-                            st.session_state.wa_enviados.add(item['clave'])
-                            st.rerun()
+                with col_info:
+                    st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
@@ -5250,6 +5384,10 @@ def tab_asistencias():
             _render_wa_tab("tardanza")
         with tab_sal:
             _render_wa_tab("salida")
+        with tab_ent_tarde:
+            _render_wa_tab("entrada_tarde")
+        with tab_sal_tarde:
+            _render_wa_tab("salida_tarde")
 
         # Botón para resetear marcas de enviado
         if st.session_state.wa_enviados:
@@ -5343,24 +5481,27 @@ def _registrar_asistencia_rapida(dni):
             tiene_sal_tarde = reg_hoy.get('salida_tarde')
             tiene_salida    = reg_hoy.get('salida')
 
-            # ── ¿Es turno tarde? → si ya tiene entrada tarde abierta ──
-            if tiene_ent_tarde and not tiene_sal_tarde:
+            # ── ¿Es turno tarde? → si tiene entrada tarde O hora actual ≥ 14:10 ──
+            es_turno_tarde_sal = tiene_ent_tarde or (_mins_ahora >= HORA_ENTRADA_TARDE_MIN)
+            if es_turno_tarde_sal and not tiene_sal_tarde and not (tiene_salida and not tiene_ent_tarde and _mins_ahora < HORA_ENTRADA_TARDE_MIN):
+                if tiene_sal_tarde:
+                    st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
+                    return
                 tipo       = 'salida_tarde'
                 emoji_tipo = "🌙"
                 msg_extra  = " 📌 SALIDA TARDE — Turno tarde"
+                if not tiene_ent_tarde:
+                    msg_extra += " (sin entrada tarde registrada)"
             elif tiene_sal_tarde:
                 st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
                 return
-            elif tiene_salida and not tiene_ent_tarde:
-                st.info(f"ℹ️ **{nombre}** ya registró salida mañana ({tiene_salida}). La entrada tarde es desde las 14:10.")
-                return
-            elif not tiene_entrada:
-                st.warning(f"⚠️ **{nombre}** no tiene entrada registrada hoy. Registre entrada primero.")
-                return
             else:
+                # Salida sin entrada registrada — se permite siempre
                 tipo       = 'salida'
                 emoji_tipo = "🔵"
                 msg_extra  = " 🏁 SALIDA — Turno mañana"
+                if not tiene_entrada:
+                    msg_extra += " (sin entrada registrada)"
         else:
             tipo = modo.lower()
             emoji_tipo = "⚪"
@@ -5383,6 +5524,7 @@ def _registrar_asistencia_rapida(dni):
 
         try:
             BaseDatos.guardar_asistencia(dni, nombre, tipo, hora, es_docente=es_d)
+            st.session_state['_asis_invalidar'] = True  # invalidar caché
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
             return
@@ -7953,6 +8095,7 @@ OTRAS_OPCIONES_CARRERA = {
 TESTS_VOCACIONALES = {
 
     "intereses": {
+        "nivel": ["secundaria", "preuniversitario"],
         "nombre": "🎯 Test de Intereses Vocacionales",
         "descripcion": "Identifica tus preferencias por tipo de actividad y entorno laboral",
         "instruccion": "Elige la alternativa que MÁS te identifica en cada pregunta.",
@@ -8021,6 +8164,7 @@ TESTS_VOCACIONALES = {
     },
 
     "aptitudes": {
+        "nivel": ["secundaria", "preuniversitario"],
         "nombre": "🧩 Test de Aptitudes Académicas",
         "descripcion": "Evalúa en qué áreas del conocimiento tienes mayor facilidad natural",
         "instruccion": "Responde con honestidad. No hay respuestas correctas ni incorrectas.",
@@ -8077,6 +8221,7 @@ TESTS_VOCACIONALES = {
     },
 
     "personalidad": {
+        "nivel": ["secundaria", "preuniversitario"],
         "nombre": "🧠 Test de Perfil de Personalidad Vocacional",
         "descripcion": "Basado en el modelo RIASEC (Holland): Realista, Investigador, Artístico, Social, Emprendedor, Convencional",
         "instruccion": "Elige la alternativa que mejor describe tu forma de ser o actuar habitualmente.",
@@ -8133,6 +8278,7 @@ TESTS_VOCACIONALES = {
     },
 
     "valores": {
+        "nivel": ["secundaria", "preuniversitario"],
         "nombre": "💡 Test de Valores y Motivaciones",
         "descripcion": "Descubre qué es lo más importante para ti en una carrera profesional",
         "instruccion": "Elige la opción que MÁS importa para ti al elegir una carrera.",
@@ -8219,6 +8365,289 @@ TESTS_VOCACIONALES = {
                          "E":("Practicar físicamente y tocar los materiales","T")}},
         ]
     },
+
+    # ═══════════════════════════════════════════════════════
+    # TEST DE INTELIGENCIAS MÚLTIPLES (Howard Gardner)
+    # Estilo finlandés — basado en fortalezas, no debilidades
+    # ═══════════════════════════════════════════════════════
+    "inteligencias": {
+        "nivel": ["primaria", "secundaria", "preuniversitario"],
+        "nombre": "🧠 Test de Inteligencias Múltiples (Gardner)",
+        "descripcion": "Descubre tus 8 tipos de inteligencia según Howard Gardner — usado en Finlandia y Corea",
+        "instruccion": "Elige la alternativa que MEJOR describe cómo eres tú normalmente.",
+        "grupos_resultado": {
+            "LG": "Lingüística-Verbal",
+            "LM": "Lógico-Matemática",
+            "ES": "Espacial-Visual",
+            "MU": "Musical",
+            "CN": "Corporal-Kinestésica",
+            "NA": "Naturalista",
+            "IN": "Intrapersonal",
+            "IE": "Interpersonal",
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando estudias, te resulta más fácil:",
+             "opciones":{"A":("Escribir resúmenes y subrayar textos","LG"),
+                         "B":("Hacer esquemas, tablas o usar números","LM"),
+                         "C":("Dibujar mapas mentales o usar colores","ES"),
+                         "D":("Escuchar música o poner ritmo al contenido","MU"),
+                         "E":("Caminar, gesticular o actuar lo que estudias","CN")}},
+            {"id":2,"pregunta":"En tu tiempo libre prefieres:",
+             "opciones":{"A":("Leer libros, escribir o contar historias","LG"),
+                         "B":("Resolver acertijos, problemas o juegos de lógica","LM"),
+                         "C":("Dibujar, armar legos o jugar videojuegos visuales","ES"),
+                         "D":("Tocar instrumentos, cantar o escuchar música","MU"),
+                         "E":("Hacer deporte, bailar o trabajar con tus manos","CN")}},
+            {"id":3,"pregunta":"¿Cuál es tu mayor fortaleza en el colegio?",
+             "opciones":{"A":("Comunicarme bien, redactar y debatir","LG"),
+                         "B":("Entender matemáticas, física o química","LM"),
+                         "C":("Arte, diseño o visualizar cosas en 3D","ES"),
+                         "D":("Ritmo, canto, música o recordar melodías","MU"),
+                         "E":("Educación física, manualidades o talleres","CN")}},
+            {"id":4,"pregunta":"Cuando tienes un problema, tiendes a:",
+             "opciones":{"A":("Hablar con alguien y expresarlo con palabras","LG"),
+                         "B":("Analizarlo paso a paso con lógica y datos","LM"),
+                         "C":("Visualizarlo o dibujarlo para entenderlo mejor","ES"),
+                         "D":("Buscar una canción o ritmo que te calme y ayude a pensar","MU"),
+                         "E":("Salir a caminar o hacer algo físico para despejarte","CN")}},
+            {"id":5,"pregunta":"¿Qué actividad disfrutarías más en clase?",
+             "opciones":{"A":("Presentar un discurso o escribir un cuento","LG"),
+                         "B":("Resolver un problema matemático complejo","LM"),
+                         "C":("Crear una maqueta, mapa o infografía visual","ES"),
+                         "D":("Componer una canción o identificar ritmos","MU"),
+                         "E":("Hacer una demostración física o experimento","CN")}},
+            {"id":6,"pregunta":"¿Cómo recuerdas mejor las cosas?",
+             "opciones":{"A":("Con palabras clave, rimas o narraciones","LG"),
+                         "B":("Con fórmulas, patrones y reglas lógicas","LM"),
+                         "C":("Con imágenes, colores y ubicaciones espaciales","ES"),
+                         "D":("Con melodías, ritmos o sonidos asociados","MU"),
+                         "E":("Haciéndolo físicamente o con movimiento corporal","CN")}},
+            {"id":7,"pregunta":"¿Qué te describe mejor en grupos?",
+             "opciones":{"A":("Soy el que convence y explica bien a los demás","LG"),
+                         "B":("Soy el que organiza, planifica y resuelve problemas","LM"),
+                         "C":("Soy el que diseña las presentaciones y da ideas visuales","ES"),
+                         "D":("Soy el que pone ambiente, ritmo o música al equipo","MU"),
+                         "E":("Soy el que hace las cosas, construye y actúa","CN")}},
+            {"id":8,"pregunta":"Sobre ti mismo, lo más cierto es:",
+             "opciones":{"A":("Me conozco bien, reflexiono mucho y prefiero trabajar solo a veces","IN"),
+                         "B":("Entiendo fácilmente cómo se sienten los demás","IE"),
+                         "C":("Me fascina la naturaleza, los animales y el medio ambiente","NA"),
+                         "D":("Tengo fuerte sentido del ritmo y la armonía musical","MU"),
+                         "E":("Prefiero la acción, el movimiento y el trabajo físico","CN")}},
+        ]
+    },
+
+    # ═══════════════════════════════════════════════════════
+    # TEST DE ESTILOS DE APRENDIZAJE (VAK + Kolb)
+    # Modelo usado en sistemas educativos de alto rendimiento
+    # ═══════════════════════════════════════════════════════
+    "estilos_aprendizaje": {
+        "nivel": ["primaria", "secundaria", "preuniversitario"],
+        "nombre": "🎓 Test de Estilos de Aprendizaje (VAK)",
+        "descripcion": "Descubre si eres Visual, Auditivo o Kinestésico — clave para estudiar mejor",
+        "instruccion": "Elige cómo TE PASA A TI en la realidad, no lo que crees que debería ser.",
+        "grupos_resultado": {
+            "VIS": "Visual",
+            "AUD": "Auditivo",
+            "KIN": "Kinestésico",
+            "REF": "Reflexivo",
+            "ACT": "Activo",
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando el profesor explica algo nuevo, aprendes mejor si:",
+             "opciones":{"A":("Ves esquemas, diagramas o escribe en la pizarra","VIS"),
+                         "B":("Lo escuchas explicar con ejemplos y anécdotas","AUD"),
+                         "C":("Puedes tocarlo, practicarlo o simularlo tú mismo","KIN"),
+                         "D":("Lees el libro primero y luego reflexionas solo","REF"),
+                         "E":("Lo experimentas de inmediato aunque no entiendas bien","ACT")}},
+            {"id":2,"pregunta":"Para recordar algo importante, prefieres:",
+             "opciones":{"A":("Hacer un mapa mental, diagrama o subrayar con colores","VIS"),
+                         "B":("Repetirlo en voz alta o grabarte explicándolo","AUD"),
+                         "C":("Escribirlo a mano varias veces o actuar el concepto","KIN"),
+                         "D":("Pensar profundamente y relacionarlo con lo que ya sabes","REF"),
+                         "E":("Probarlo en un ejercicio de inmediato sin esperar","ACT")}},
+            {"id":3,"pregunta":"Cuando te explican cómo llegar a un lugar:",
+             "opciones":{"A":("Necesitas ver un mapa o que te lo dibujen","VIS"),
+                         "B":("Escuchar las instrucciones paso a paso es suficiente","AUD"),
+                         "C":("Tienes que caminar una vez por ahí para recordarlo","KIN"),
+                         "D":("Prefieres analizar el mapa con calma antes de salir","REF"),
+                         "E":("Sales y preguntas en el camino si te pierdes","ACT")}},
+            {"id":4,"pregunta":"En un examen oral, te va mejor cuando:",
+             "opciones":{"A":("Visualizas las páginas del libro en tu mente","VIS"),
+                         "B":("Escuchas la pregunta y respondes fluidamente","AUD"),
+                         "C":("Recuerdas haberlo practicado o escrito muchas veces","KIN"),
+                         "D":("Has tenido tiempo para analizar y organizar tus ideas","REF"),
+                         "E":("Respondes rápido con lo primero que se te viene","ACT")}},
+            {"id":5,"pregunta":"Cuando algo no funciona (artefacto, problema), lo primero que haces es:",
+             "opciones":{"A":("Buscar instrucciones visuales o un video en YouTube","VIS"),
+                         "B":("Llamar a alguien que sepa y pedirle que te explique","AUD"),
+                         "C":("Probarlo tú mismo y ver qué pasa con las piezas","KIN"),
+                         "D":("Pensar con calma y analizar qué pudo haber fallado","REF"),
+                         "E":("Intentar todo de inmediato sin leer instrucciones","ACT")}},
+            {"id":6,"pregunta":"Tu cuaderno de notas es:",
+             "opciones":{"A":("Muy organizado, con colores, flechas y dibujos","VIS"),
+                         "B":("Tiene poco escrito, pero tú recuerdas lo que dijeron","AUD"),
+                         "C":("Lleno de notas escritas a mano y subrayados","KIN"),
+                         "D":("Detallado y analítico, con tus propias reflexiones","REF"),
+                         "E":("Un poco caótico pero con ideas clave marcadas","ACT")}},
+        ]
+    },
+
+    # ═══════════════════════════════════════════════════════
+    # TESTS PARA INICIAL (3-6 años) — administrados por docente
+    # Simple, con emojis, observación directa
+    # ═══════════════════════════════════════════════════════
+    "inicial_intereses": {
+        "nivel": ["inicial"],
+        "nombre": "🌈 ¿Qué me gusta hacer? (Inicial 3-6 años)",
+        "descripcion": "El docente observa y marca lo que más le gusta al niño/a",
+        "instruccion": "El docente marca la actividad que el niño/a prefiere o realiza con más entusiasmo.",
+        "grupos_resultado": {
+            "ART": "🎨 Artístico-Creativo",
+            "MOV": "🏃 Movimiento-Deportivo",
+            "NAT": "🌿 Naturaleza-Explorador",
+            "SOC": "🤝 Social-Comunicativo",
+            "CON": "🔢 Lógico-Constructor",
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando tiene tiempo libre, el niño/a prefiere:",
+             "opciones":{"A":("🎨 Dibujar, pintar o hacer manualidades","ART"),
+                         "B":("🏃 Correr, saltar o jugar con su cuerpo","MOV"),
+                         "C":("🌿 Explorar plantas, insectos o animales","NAT"),
+                         "D":("🗣️ Hablar, contar cuentos o jugar con amigos","SOC"),
+                         "E":("🧩 Armar rompecabezas, bloques o contar cosas","CON")}},
+            {"id":2,"pregunta":"En el aula, el niño/a se destaca en:",
+             "opciones":{"A":("🖌️ Actividades de arte, color y creatividad","ART"),
+                         "B":("⚽ Educación física y juegos de movimiento","MOV"),
+                         "C":("🔍 Observar y hacer preguntas sobre la naturaleza","NAT"),
+                         "D":("📢 Expresarse, participar y relacionarse bien","SOC"),
+                         "E":("🔢 Contar, ordenar y resolver problemas simples","CON")}},
+            {"id":3,"pregunta":"¿Qué rincón del aula visita más?",
+             "opciones":{"A":("🖍️ Rincón de arte y expresión plástica","ART"),
+                         "B":("🎯 Rincón de movimiento y psicomotricidad","MOV"),
+                         "C":("🌱 Rincón de ciencias o naturaleza","NAT"),
+                         "D":("📚 Rincón de biblioteca y cuentos","SOC"),
+                         "E":("🧱 Rincón de construcción y lógica","CON")}},
+            {"id":4,"pregunta":"Cuando trabaja en grupo, el niño/a:",
+             "opciones":{"A":("✂️ Lidera las decoraciones y los materiales visuales","ART"),
+                         "B":("🤸 Propone juegos activos y se mueve constantemente","MOV"),
+                         "C":("🐛 Trae elementos de la naturaleza y hace preguntas","NAT"),
+                         "D":("🤗 Organiza al grupo, habla y escucha a todos","SOC"),
+                         "E":("📐 Organiza materiales, cuenta y planifica","CON")}},
+            {"id":5,"pregunta":"¿Cómo aprende mejor este niño/a?",
+             "opciones":{"A":("🎭 Con colores, imágenes y expresión artística","ART"),
+                         "B":("🏋️ Con movimiento, baile y actividad física","MOV"),
+                         "C":("🔭 Explorando, tocando y descubriendo en el entorno","NAT"),
+                         "D":("👫 Conversando, escuchando cuentos y en equipo","SOC"),
+                         "E":("🧮 Con materiales concretos para contar y ordenar","CON")}},
+        ]
+    },
+
+    "inicial_desarrollo": {
+        "nivel": ["inicial"],
+        "nombre": "🌟 Perfil de Desarrollo (Inicial 3-6 años)",
+        "descripcion": "Evaluación de áreas del desarrollo infantil — observación docente",
+        "instruccion": "Marca la opción que MEJOR describe al niño/a según tu observación directa.",
+        "grupos_resultado": {
+            "COG": "🧠 Desarrollo Cognitivo",
+            "LEN": "💬 Lenguaje y Comunicación",
+            "MOT": "🖐️ Motricidad y Coordinación",
+            "EMO": "❤️ Socio-Emocional",
+            "CRE": "🎨 Expresión Creativa",
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"En cuanto al lenguaje, el niño/a:",
+             "opciones":{"A":("💬 Se expresa muy bien, usa frases largas y claras","LEN"),
+                         "B":("📖 Le encanta escuchar cuentos y repite las historias","LEN"),
+                         "C":("🤐 Es más callado pero comprende todo lo que se dice","LEN"),
+                         "D":("🎵 Canta, hace rimas y juega con las palabras","LEN"),
+                         "E":("🤝 Se comunica bien con gestos y palabras juntos","LEN")}},
+            {"id":2,"pregunta":"En actividades de pensamiento y lógica:",
+             "opciones":{"A":("🔢 Cuenta objetos y comprende el número con facilidad","COG"),
+                         "B":("🧩 Clasifica, ordena y agrupa objetos por atributos","COG"),
+                         "C":("❓ Hace muchas preguntas, quiere saber el porqué","COG"),
+                         "D":("🗺️ Recuerda rutas, espacios y ubica objetos bien","COG"),
+                         "E":("⏰ Comprende secuencias de tiempo (antes/después)","COG")}},
+            {"id":3,"pregunta":"En el aspecto motor (movimiento y coordinación):",
+             "opciones":{"A":("✏️ Tiene excelente motricidad fina — dibuja, recorta bien","MOT"),
+                         "B":("🏃 Tiene excelente motricidad gruesa — corre, salta, trepa","MOT"),
+                         "C":("⚖️ Buen equilibrio y coordinación general","MOT"),
+                         "D":("🖐️ Le gusta tocar, manipular y explorar con las manos","MOT"),
+                         "E":("🎯 Buena coordinación ojo-mano (lanzar, atrapar)","MOT")}},
+            {"id":4,"pregunta":"En el aspecto socio-emocional, el niño/a:",
+             "opciones":{"A":("😊 Es muy alegre, sociable y hace amigos con facilidad","EMO"),
+                         "B":("🤝 Muestra empatía — consuela a otros y comparte bien","EMO"),
+                         "C":("🧘 Es tranquilo, seguro de sí mismo y maneja frustraciones","EMO"),
+                         "D":("👑 Le gusta liderar juegos y organizar a sus compañeros","EMO"),
+                         "E":("🌸 Es sensible, cariñoso y necesita apoyo emocional cercano","EMO")}},
+            {"id":5,"pregunta":"En expresión creativa y arte:",
+             "opciones":{"A":("🎨 Sus dibujos son detallados y llenos de color","CRE"),
+                         "B":("🎭 Disfruta el juego simbólico y dramatizar historias","CRE"),
+                         "C":("🎵 Le encanta cantar, bailar y hacer música","CRE"),
+                         "D":("🏗️ Construye estructuras originales con bloques o material","CRE"),
+                         "E":("📖 Inventa cuentos y tiene mucha imaginación verbal","CRE")}},
+        ]
+    },
+
+    # ═══════════════════════════════════════════════════════
+    # TEST DE VALORES PERSONALES (Estilo Finlandés)
+    # Identifica valores que guían decisiones de carrera
+    # ═══════════════════════════════════════════════════════
+    "valores": {
+        "nivel": ["secundaria", "preuniversitario"],
+        "nombre": "💎 Test de Valores Personales (Estilo Finlandés)",
+        "descripcion": "¿Qué valores guían tus decisiones? Conocerlos orienta tu elección de carrera",
+        "instruccion": "Elige la opción que MÁS coincide con lo que valoras en tu vida y futuro.",
+        "grupos_resultado": {
+            "SOC": "Servicio Social",
+            "LOG": "Logro y Excelencia",
+            "CRE": "Creatividad e Innovación",
+            "LIB": "Libertad y Autonomía",
+            "STA": "Estabilidad y Seguridad",
+            "NAT": "Conexión con la Naturaleza",
+            "CON": "Conocimiento y Verdad",
+            "PER": "Liderazgo y Poder Positivo",
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"Lo más importante para ti en el trabajo futuro es:",
+             "opciones":{"A":("Ayudar a personas y hacer el bien a la comunidad","SOC"),
+                         "B":("Ser reconocido por mis logros y ser el mejor en lo que hago","LOG"),
+                         "C":("Crear cosas nuevas, innovar y expresarme libremente","CRE"),
+                         "D":("Tener libertad de horarios y trabajar a mi manera","LIB"),
+                         "E":("Tener un empleo estable y una vida económica segura","STA")}},
+            {"id":2,"pregunta":"Si pudieras cambiar algo del mundo, sería:",
+             "opciones":{"A":("La pobreza, la desigualdad y el acceso a salud y educación","SOC"),
+                         "B":("La falta de meritocracia y reconocimiento al esfuerzo","LOG"),
+                         "C":("La falta de arte, creatividad y pensamiento original","CRE"),
+                         "D":("Las reglas excesivas que limitan la libertad personal","LIB"),
+                         "E":("La inestabilidad económica y la incertidumbre del futuro","STA")}},
+            {"id":3,"pregunta":"¿Qué tipo de legado quieres dejar?",
+             "opciones":{"A":("Haber cambiado vidas y contribuido a mi comunidad","SOC"),
+                         "B":("Haber alcanzado metas difíciles y ser referente en mi campo","LOG"),
+                         "C":("Haber creado algo original que perdure en el tiempo","CRE"),
+                         "D":("Haber vivido en mis propios términos, fiel a mí mismo","LIB"),
+                         "E":("Haber construido seguridad y bienestar para mi familia","STA")}},
+            {"id":4,"pregunta":"Cuando eliges una carrera, el factor decisivo para ti es:",
+             "opciones":{"A":("El impacto positivo que tendrá en la sociedad","SOC"),
+                         "B":("El prestigio y nivel de exigencia profesional","LOG"),
+                         "C":("La posibilidad de innovar, crear y hacer algo diferente","CRE"),
+                         "D":("La autonomía y flexibilidad que te dará en el futuro","LIB"),
+                         "E":("La demanda laboral y el sueldo estable que ofrece","STA")}},
+            {"id":5,"pregunta":"En tu vida cotidiana, lo que más te motiva es:",
+             "opciones":{"A":("Escuchar los problemas de otros y ayudar a resolverlos","SOC"),
+                         "B":("Superar mis propios récords y mejorar día a día","LOG"),
+                         "C":("Descubrir algo nuevo, explorar ideas originales","CRE"),
+                         "D":("Hacer las cosas a mi ritmo, sin que me impongan cómo","LIB"),
+                         "E":("Saber que mañana estará todo bajo control y planificado","STA")}},
+            {"id":6,"pregunta":"Si tuvieras que escoger solo uno de estos dones, sería:",
+             "opciones":{"A":("Empatía profunda para entender y sanar a las personas","SOC"),
+                         "B":("Disciplina y ambición para alcanzar cualquier meta","LOG"),
+                         "C":("Imaginación desbordante para crear lo que no existe aún","CRE"),
+                         "D":("Sabiduría para conocer la verdad y enseñarla a otros","CON"),
+                         "E":("Liderazgo natural para guiar equipos hacia el bien común","PER")}},
+        ]
+    },
+
 }
 
 
@@ -9039,6 +9468,7 @@ def _tab_test_vocacional_ui(config):
 
     subtab_tv = st.radio("", [
         "📄 Descargar Tests para imprimir",
+        "💻 Modo Digital — Alumno responde en pantalla",
         "✏️ Ingresar Claves → Diagnóstico individual",
         "📦 Diagnósticos en Lote (ZIP por grado)",
     ], horizontal=True, key="tv_subtab")
@@ -9089,6 +9519,238 @@ def _tab_test_vocacional_ui(config):
     # ═══════════════════════════════════════════════════════════════
     # SUBTAB 2: Ingresar Claves → Diagnóstico individual
     # ═══════════════════════════════════════════════════════════════
+    elif subtab_tv == "💻 Modo Digital — Alumno responde en pantalla":
+        st.markdown("#### 💻 Modo Digital — El alumno responde el test en pantalla")
+
+        # ── MODO DE ACCESO ────────────────────────────────────────────────────
+        modo_acceso = st.radio("¿Quién ingresa?", [
+            "👨‍🏫 Docente selecciona al alumno",
+            "🎓 Alumno ingresa su DNI",
+        ], horizontal=True, key="dig_acceso_modo")
+
+        df_alum_dig = BaseDatos.cargar_matricula()
+
+        if modo_acceso == "🎓 Alumno ingresa su DNI":
+            st.markdown("---")
+            st.markdown("##### 🎓 Ingreso del Estudiante")
+            st.info("El alumno escribe su DNI — el sistema lo identifica automáticamente. No necesita contraseña.")
+            col_dni1, col_dni2 = st.columns([2, 3])
+            with col_dni1:
+                dni_ingresado = st.text_input("📋 Escribe tu DNI:", max_chars=8,
+                                              placeholder="Ej: 76543210", key="dig_dni_input")
+            alumno_encontrado = None
+            grado_dig = ""
+            nombre_dig = ""
+            if dni_ingresado and len(dni_ingresado.strip()) >= 7:
+                _fila_dni = df_alum_dig[df_alum_dig["DNI"].astype(str).str.strip() == dni_ingresado.strip()] if not df_alum_dig.empty and "DNI" in df_alum_dig.columns else pd.DataFrame()
+                if not _fila_dni.empty:
+                    alumno_encontrado = _fila_dni.iloc[0]
+                    nombre_dig = str(alumno_encontrado.get("Nombre", ""))
+                    grado_dig  = str(alumno_encontrado.get("Grado", ""))
+                    st.success(f"✅ Bienvenido/a **{nombre_dig}** — {grado_dig}")
+                else:
+                    st.error("❌ DNI no encontrado. Verifica el número o pide ayuda al docente.")
+            if not alumno_encontrado:
+                st.stop()
+            df_g_dig = _fila_dni
+        else:
+            # Docente selecciona
+            col_dig1, col_dig2 = st.columns(2)
+            with col_dig1:
+                grados_dig = sorted(df_alum_dig["Grado"].dropna().unique().tolist()) if not df_alum_dig.empty else []
+                grado_dig = st.selectbox("Grado:", grados_dig, key="dig_grado")
+            with col_dig2:
+                df_g_dig = df_alum_dig[df_alum_dig["Grado"] == grado_dig] if not df_alum_dig.empty else pd.DataFrame()
+                nombres_dig = df_g_dig["Nombre"].dropna().tolist() if not df_g_dig.empty else []
+                nombre_dig = st.selectbox("Estudiante:", nombres_dig, key="dig_nombre")
+            df_g_dig = df_alum_dig[df_alum_dig["Nombre"] == nombre_dig] if not df_alum_dig.empty else pd.DataFrame()
+
+        # ── Filtrar tests por nivel del grado ────────────────────────────────
+        def _nivel_grado(grado_str):
+            g = str(grado_str).lower()
+            if any(x in g for x in ['inicial','jardin','kinder']): return 'inicial'
+            if any(x in g for x in ['primaria','1° p','2° p','3° p','4° p','5° p','6° p']): return 'primaria'
+            if any(x in g for x in ['sec','secundaria','1° s','2° s','3° s','4° s','5° s']): return 'secundaria'
+            if any(x in g for x in ['grupo','preu','ciclo','cepre']): return 'preuniversitario'
+            return 'secundaria'
+
+        _nivel_actual = _nivel_grado(grado_dig)
+        _nivel_badge = {"inicial":"🌱 Inicial","primaria":"📚 Primaria","secundaria":"🎓 Secundaria","preuniversitario":"🏫 Preuniversitario"}.get(_nivel_actual, _nivel_actual)
+
+        # Filtrar tests apropiados para el nivel
+        _test_ids_filtrados   = [t for t in test_ids if _nivel_actual in TESTS_VOCACIONALES[t].get("nivel", ["secundaria","preuniversitario"])]
+        _test_nombres_filtrados = [TESTS_VOCACIONALES[t]["nombre"] for t in _test_ids_filtrados]
+
+        if not _test_ids_filtrados:
+            st.warning(f"⚠️ No hay tests disponibles para el nivel {_nivel_badge} aún.")
+            st.stop()
+
+        st.caption(f"Nivel detectado: **{_nivel_badge}** — mostrando {len(_test_ids_filtrados)} test(s) apropiado(s)")
+        test_sel_dig = st.selectbox("🧪 Seleccionar Test:", _test_nombres_filtrados, key="dig_test")
+        test_id_dig  = _test_ids_filtrados[_test_nombres_filtrados.index(test_sel_dig)]
+
+        td_dig = TESTS_VOCACIONALES[test_id_dig]
+        preguntas_dig = td_dig["preguntas"]
+        total_preg_dig = len(preguntas_dig)
+
+        # Inicializar respuestas digitales en session_state
+        key_resp = f"dig_resp_{test_id_dig}"
+        if key_resp not in st.session_state:
+            st.session_state[key_resp] = {}
+
+        st.markdown("---")
+        st.markdown(f"### 📝 {td_dig['nombre']}")
+        st.caption(f"*{td_dig['instruccion']}*")
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+        # Mostrar preguntas con botones de opción estilo tarjeta
+        respuestas_dig = st.session_state[key_resp].copy()
+        todas_resp = True
+
+        for preg in preguntas_dig:
+            pid = preg["id"]
+            opciones = preg["opciones"]
+            resp_actual = respuestas_dig.get(str(pid), "")
+
+            # Card de pregunta
+            st.markdown(
+                f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;'
+                f'padding:14px 16px;margin-bottom:8px;">'
+                f'<div style="font-weight:700;color:#1e293b;margin-bottom:8px;">'
+                f'{pid}. {preg["pregunta"]}</div></div>',
+                unsafe_allow_html=True)
+
+            # Opciones como botones radio con color
+            letras = list(opciones.keys())
+            _cols = st.columns(len(letras))
+            for ci, letra in enumerate(letras):
+                texto_op, _ = opciones[letra]
+                is_sel = (resp_actual == letra)
+                bg = "#2563eb" if is_sel else "#f1f5f9"
+                fg = "white" if is_sel else "#334155"
+                brd = "#2563eb" if is_sel else "#e2e8f0"
+                with _cols[ci]:
+                    # Mostrar como texto clicable (Streamlit no soporta botones con estado visual nativo en columnas)
+                    st.markdown(
+                        f'<div style="background:{bg};color:{fg};border:2px solid {brd};'
+                        f'border-radius:8px;padding:8px 6px;text-align:center;font-size:0.8rem;'
+                        f'cursor:pointer;min-height:60px;display:flex;align-items:center;justify-content:center;">'
+                        f'<strong>{letra}</strong><br><span style="font-size:0.72rem;">{texto_op[:40]}</span>'
+                        f'</div>', unsafe_allow_html=True)
+                    if st.button(f"{letra}", key=f"dig_{test_id_dig}_{pid}_{letra}",
+                                 use_container_width=True,
+                                 type="primary" if is_sel else "secondary"):
+                        st.session_state[key_resp][str(pid)] = letra
+                        st.rerun()
+
+            if not resp_actual:
+                todas_resp = False
+
+        # Progreso
+        respondidas = sum(1 for p in preguntas_dig if str(p["id"]) in respuestas_dig)
+        pct_prog = int(respondidas / total_preg_dig * 100)
+        color_prog = "#16a34a" if pct_prog == 100 else "#3b82f6"
+        st.markdown(
+            f'<div style="margin:16px 0 8px 0;">'
+            f'<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#64748b;margin-bottom:4px;">'
+            f'<span>Progreso</span><span>{respondidas}/{total_preg_dig} respondidas</span></div>'
+            f'<div style="background:#e2e8f0;border-radius:8px;height:8px;">'
+            f'<div style="background:{color_prog};border-radius:8px;height:8px;width:{pct_prog}%;transition:width 0.4s;"></div>'
+            f'</div></div>', unsafe_allow_html=True)
+
+        st.markdown("---")
+        if todas_resp:
+            st.success("✅ ¡Test completado! Genera tu diagnóstico PDF.")
+            _gen_pdf = st.button("🎯 GENERAR DIAGNÓSTICO PDF", type="primary",
+                         use_container_width=True, key="dig_gen_pdf")
+            # Si ya se generó antes en esta sesión, mostrar de nuevo automáticamente
+            if _gen_pdf or st.session_state.get(f"dig_pdf_listo_{test_id_dig}_{nombre_dig}"):
+                _gen_pdf = True
+            if _gen_pdf:
+                # Calcular resultado del test
+                conteo = {}
+                for preg in preguntas_dig:
+                    letra_r = respuestas_dig.get(str(preg["id"]), "")
+                    if letra_r and letra_r in preg["opciones"]:
+                        grupo = preg["opciones"][letra_r][1]
+                        conteo[grupo] = conteo.get(grupo, 0) + 1
+
+                resultado_test_dig = {
+                    "test_id": test_id_dig,
+                    "test_nombre": td_dig["nombre"],
+                    "respuestas": respuestas_dig,
+                    "conteo": conteo,
+                    "grupo_dominante": max(conteo, key=conteo.get) if conteo else "A",
+                    "descripcion_grupo": td_dig.get("grupos_resultado", UNSAAC_GRUPOS).get(
+                        max(conteo, key=conteo.get) if conteo else "A", {}
+                    ) if isinstance(list(td_dig.get("grupos_resultado",{}).values() or [""])[0], str)
+                      else UNSAAC_GRUPOS.get(max(conteo, key=conteo.get) if conteo else "A", {}),
+                }
+
+                # Buscar datos del alumno
+                fila_dig = df_g_dig[df_g_dig["Nombre"] == nombre_dig] if not df_g_dig.empty else pd.DataFrame()
+                dni_dig  = str(fila_dig.iloc[0].get("DNI","")) if not fila_dig.empty else ""
+                prom_areas_dig = {}
+                hist_dig = _cargar_historial_evaluaciones()
+                for _, ev_d in hist_dig.items():
+                    if ev_d.get("grado","") == grado_dig:
+                        for frd in ev_d.get("ranking",[]):
+                            if str(frd.get("DNI","")) == dni_dig or frd.get("Nombre","") == nombre_dig:
+                                for an in [a["nombre"] for a in ev_d.get("areas",[]) if isinstance(a, dict)]:
+                                    nv = frd.get(an, 0)
+                                    if nv and float(nv) > 0:
+                                        prom_areas_dig.setdefault(an, []).append(float(nv))
+                prom_areas_dig = {k: round(sum(v)/len(v),1) for k,v in prom_areas_dig.items()}
+                prom_dig = round(sum(prom_areas_dig.values())/len(prom_areas_dig),1) if prom_areas_dig else 0
+                lit_dig  = nota_a_letra(prom_dig) if prom_dig > 0 else "C"
+                afin_dig = _calcular_afinidad_academica(prom_areas_dig)
+
+                _pdf_key       = f"dig_pdf_listo_{test_id_dig}_{nombre_dig}"
+                _pdf_bytes_key = f"dig_pdf_bytes_{test_id_dig}_{nombre_dig}"
+                # Usar PDF cacheado si ya fue generado antes
+                if st.session_state.get(_pdf_bytes_key):
+                    pdf_dig = st.session_state[_pdf_bytes_key]
+                else:
+                    with st.spinner("Generando diagnóstico..."):
+                        pdf_dig = generar_pdf_orientacion_vocacional(
+                            nombre_dig, dni_dig, grado_dig,
+                            prom_dig, lit_dig, prom_areas_dig, afin_dig, config,
+                            resultado_test=resultado_test_dig)
+                    st.session_state[_pdf_key]       = True
+                    st.session_state[_pdf_bytes_key] = pdf_dig
+                st.success("✅ Diagnóstico listo — descárgalo ahora")
+                # Botón de descarga SIEMPRE visible al completar
+                st.download_button(
+                    "⬇️ 📄 Descargar PDF Diagnóstico",
+                    pdf_dig, f"Diagnostico_{nombre_dig.replace(' ','_')}_{test_id_dig}.pdf",
+                    "application/pdf", key="dl_dig_pdf",
+                    use_container_width=True, type="primary")
+
+                # Mostrar resumen visual del resultado
+                st.markdown("---")
+                st.markdown("### 📊 Resultado del test")
+                if conteo:
+                    grupos_res = td_dig.get("grupos_resultado", {})
+                    _sorted_c = sorted(conteo.items(), key=lambda x: -x[1])
+                    cols_res = st.columns(min(len(_sorted_c), 4))
+                    for ci, (gr, cnt) in enumerate(_sorted_c[:4]):
+                        with cols_res[ci]:
+                            gr_nombre = grupos_res.get(gr, gr) if grupos_res else UNSAAC_GRUPOS.get(gr, {}).get("nombre", gr)
+                            _pct_r = round(cnt / total_preg_dig * 100)
+                            _cc_r = ["#2563eb","#16a34a","#f59e0b","#dc2626"][ci]
+                            st.markdown(
+                                f'<div style="background:white;border:2px solid {_cc_r};border-radius:10px;'
+                                f'padding:12px;text-align:center;">'
+                                f'<div style="font-size:1.6rem;font-weight:900;color:{_cc_r};">{_pct_r}%</div>'
+                                f'<div style="font-size:0.8rem;font-weight:700;color:#334155;">{gr_nombre}</div>'
+                                f'<div style="font-size:0.72rem;color:#94a3b8;">{cnt} respuestas</div>'
+                                f'</div>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Faltan {total_preg_dig - respondidas} preguntas por responder.")
+            if st.button("🔄 Reiniciar test", key="dig_reset", type="secondary"):
+                st.session_state[key_resp] = {}
+                st.rerun()
+
     elif subtab_tv == "✏️ Ingresar Claves → Diagnóstico individual":
         st.markdown("#### ✏️ Ingreso de claves del test aplicado")
         st.info("Selecciona el estudiante, el test aplicado, e ingresa la alternativa que marcó en cada pregunta (A, B, C, D o E). Luego genera el diagnóstico PDF.")
@@ -11061,17 +11723,30 @@ def _restaurar_datos_desde_gs():
         return 0
 
 def _cargar_historial_evaluaciones():
-    """Carga el historial de evaluaciones desde archivo JSON"""
+    """Carga historial — CACHÉ en session_state (TTL 60 seg, archivo local)"""
+    import time as _time
+    _now = _time.time()
+    _cached = st.session_state.get('_cache_hist_eval')
+    _ts     = st.session_state.get('_cache_hist_ts', 0)
+    if (_cached is not None
+            and not st.session_state.get('_hist_invalidar', False)
+            and (_now - _ts) < 60):
+        return _cached
+    st.session_state['_hist_invalidar'] = False
     try:
         if Path('historial_evaluaciones.json').exists():
             with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+            st.session_state['_cache_hist_eval'] = data
+            st.session_state['_cache_hist_ts']   = _now
+            return data
     except Exception:
         pass
     return {}
 
 def _guardar_historial_evaluaciones(hist_data):
     """Guarda el historial de evaluaciones en archivo JSON + Google Sheets"""
+    st.session_state['_hist_invalidar'] = True   # invalidar caché
     try:
         with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
             json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
@@ -11383,6 +12058,165 @@ def generar_pdf_diagnostico(grado, anio, estudiantes_df, notas_diag, areas_diag,
     return buf
 
 
+def _generar_pdf_diagnostico_grado(grado, seccion, anio, filas_semaf, areas_diag,
+                                    conteo_nivel, promedios_area_gen, tipo_nombre, config):
+    """PDF resumen del grado — semáforo general + tabla de todos los alumnos."""
+    buf = io.BytesIO()
+    c   = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
+    colegio = config.get('colegio', 'I.E.P. ALTERNATIVO YACHAY')
+    anio_c  = config.get('anio', anio)
+    SEMAF = {"AD": "#15803d","A": "#2563eb","B": "#d97706","C": "#dc2626"}
+    NIVEL_NOMBRE = {
+        "AD": "Logro Destacado","A": "Logro Esperado",
+        "B": "En Proceso","C": "En Inicio"
+    }
+
+    def _hex(h): return colors.HexColor(h)
+
+    # ── PÁGINA 1: RESUMEN GENERAL ────────────────────────────────────────
+    # Encabezado
+    c.setFillColor(_hex('#1e3a8a')); c.rect(0, h-70, w, 70, fill=1, stroke=0)
+    c.setFillColor(colors.white)
+    c.setFont('Helvetica-Bold', 11)
+    c.drawCentredString(w/2, h-22, colegio.upper())
+    c.setFont('Helvetica-Bold', 14)
+    c.drawCentredString(w/2, h-40, f"DIAGNÓSTICO DE {tipo_nombre.upper()} — RESUMEN DE GRADO")
+    c.setFont('Helvetica', 9)
+    sec_txt = f" — Sección: {seccion}" if seccion and seccion != "Todas" else ""
+    c.drawCentredString(w/2, h-56, f"Año Escolar {anio_c}  |  Grado: {grado}{sec_txt}")
+
+    total_est = len(filas_semaf)
+
+    # ── Tarjetas de semáforo ─────────────────────────────────────────────
+    ty = h - 95
+    card_w = (w - 50) / 4
+    for ci, (lv, lbl, col) in enumerate([
+        ("AD","Logro Destacado","#15803d"),("A","Logro Esperado","#2563eb"),
+        ("B","En Proceso","#d97706"),("C","En Inicio","#dc2626"),
+    ]):
+        cx = 20 + ci * (card_w + 4)
+        cnt = conteo_nivel.get(lv, 0)
+        pct = round(cnt/total_est*100) if total_est > 0 else 0
+        c.setFillColor(_hex(col))
+        c.roundRect(cx, ty-52, card_w, 52, 6, fill=1, stroke=0)
+        c.setFillColor(colors.white)
+        c.setFont('Helvetica-Bold', 22)
+        c.drawCentredString(cx+card_w/2, ty-22, str(cnt))
+        c.setFont('Helvetica-Bold', 8)
+        c.drawCentredString(cx+card_w/2, ty-34, f"{lv} — {lbl}")
+        c.setFont('Helvetica', 8)
+        c.drawCentredString(cx+card_w/2, ty-46, f"{pct}% del salón")
+
+    # ── Promedios por área ───────────────────────────────────────────────
+    ay = ty - 70
+    c.setFont('Helvetica-Bold', 9); c.setFillColor(_hex('#1e3a8a'))
+    c.drawString(20, ay, "PROMEDIO POR ÁREA (todo el salón):")
+    ay -= 14
+    n_areas = len(areas_diag)
+    if n_areas > 0:
+        acard_w = min(80, (w - 40) / n_areas)
+        for ai, ar in enumerate(areas_diag):
+            ap = round(sum(promedios_area_gen[ai])/len(promedios_area_gen[ai]),1) if promedios_area_gen[ai] else 0
+            al = nota_a_letra(ap)
+            ac = SEMAF.get(al, "#6b7280")
+            axc = 20 + ai * (acard_w + 3)
+            c.setFillColor(_hex(ac))
+            c.roundRect(axc, ay-32, acard_w, 32, 4, fill=1, stroke=0)
+            c.setFillColor(colors.white)
+            c.setFont('Helvetica-Bold', 12)
+            c.drawCentredString(axc+acard_w/2, ay-15, str(ap))
+            c.setFont('Helvetica', 5.5)
+            ar_short = ar[:14] + '.' if len(ar) > 14 else ar
+            c.drawCentredString(axc+acard_w/2, ay-24, ar_short)
+            c.drawCentredString(axc+acard_w/2, ay-30, al)
+
+    # ── TABLA DE ALUMNOS CON SEMÁFORO ───────────────────────────────────
+    table_y = ay - 50
+    c.setFont('Helvetica-Bold', 9); c.setFillColor(_hex('#1e3a8a'))
+    c.drawString(20, table_y, f"TABLA DE RESULTADOS — {total_est} ESTUDIANTES")
+    table_y -= 4
+
+    # Calcular ancho de columnas
+    name_w  = 140
+    rest_w  = w - 40 - name_w
+    nota_cw = min(40, rest_w / (n_areas + 2)) if n_areas > 0 else 30
+    prom_cw = nota_cw + 5
+    lit_cw  = nota_cw
+
+    # Encabezado tabla
+    table_y -= 14
+    c.setFillColor(_hex('#1e3a8a')); c.rect(20, table_y, w-40, 14, fill=1, stroke=0)
+    c.setFillColor(colors.white); c.setFont('Helvetica-Bold', 6.5)
+    c.drawString(23, table_y+4, "ESTUDIANTE")
+    hx = 20 + name_w
+    for ar in areas_diag:
+        c.drawCentredString(hx + nota_cw/2, table_y+4, ar[:9])
+        hx += nota_cw
+    c.drawCentredString(hx + prom_cw/2, table_y+4, "PROM.")
+    c.drawCentredString(hx + prom_cw + lit_cw/2, table_y+4, "NIVEL")
+
+    ROW_H = 12
+    for ri, frow in enumerate(filas_semaf):
+        row_y = table_y - (ri+1)*ROW_H
+        if row_y < 30:
+            c.showPage()
+            # mini encabezado
+            c.setFillColor(_hex('#1e3a8a')); c.rect(0, h-30, w, 30, fill=1, stroke=0)
+            c.setFillColor(colors.white); c.setFont('Helvetica-Bold', 8)
+            c.drawCentredString(w/2, h-18, f"{grado}{sec_txt} — {tipo_nombre} — continuación")
+            table_y = h - 50
+            # reencabezar tabla
+            c.setFillColor(_hex('#1e3a8a')); c.rect(20, table_y, w-40, 14, fill=1, stroke=0)
+            c.setFillColor(colors.white); c.setFont('Helvetica-Bold', 6.5)
+            c.drawString(23, table_y+4, "ESTUDIANTE")
+            hx2 = 20 + name_w
+            for ar in areas_diag:
+                c.drawCentredString(hx2 + nota_cw/2, table_y+4, ar[:9]); hx2 += nota_cw
+            c.drawCentredString(hx2 + prom_cw/2, table_y+4, "PROM.")
+            c.drawCentredString(hx2 + prom_cw + lit_cw/2, table_y+4, "NIVEL")
+            ri2 = 0
+            row_y = table_y - ROW_H
+
+        # Fondo alterno
+        bg = _hex('#f8fafc') if ri % 2 == 0 else colors.white
+        c.setFillColor(bg); c.rect(20, row_y, w-40, ROW_H, fill=1, stroke=0)
+
+        # Nombre
+        c.setFillColor(_hex('#1e293b')); c.setFont('Helvetica', 6.5)
+        nom_s = frow['nom'][:28]
+        c.drawString(23, row_y+3, f"{ri+1}. {nom_s}")
+
+        # Notas coloreadas
+        nx = 20 + name_w
+        for nv in frow['notas']:
+            nl = nota_a_letra(nv)
+            nc = SEMAF.get(nl, "#6b7280")
+            c.setFillColor(_hex(nc))
+            c.roundRect(nx+1, row_y+1, nota_cw-2, ROW_H-2, 2, fill=1, stroke=0)
+            c.setFillColor(colors.white); c.setFont('Helvetica-Bold', 6)
+            c.drawCentredString(nx+nota_cw/2, row_y+4, f"{nv:.0f}")
+            nx += nota_cw
+
+        # Promedio
+        pl = nota_a_letra(frow['prom'])
+        pc = SEMAF.get(pl, "#6b7280")
+        c.setFillColor(_hex(pc)); c.roundRect(nx+1, row_y+1, prom_cw-2, ROW_H-2, 2, fill=1, stroke=0)
+        c.setFillColor(colors.white); c.setFont('Helvetica-Bold', 6.5)
+        c.drawCentredString(nx+prom_cw/2, row_y+4, f"{frow['prom']:.1f}")
+        nx += prom_cw
+
+        # Literal
+        c.setFillColor(_hex(pc)); c.setFont('Helvetica-Bold', 7)
+        c.drawCentredString(nx+lit_cw/2, row_y+4, pl)
+
+    # Pie
+    c.setFont('Helvetica-Oblique', 6); c.setFillColor(_hex('#94a3b8'))
+    c.drawCentredString(w/2, 15, f"YACHAY PRO — Diagnóstico {tipo_nombre} — {grado} — Año {anio_c}")
+    c.save(); buf.seek(0)
+    return buf
+
+
 def tab_registrar_notas(config):
     """Módulo para que docentes registren notas — multi-área, sesión limpia, historial"""
     st.header("📝 Registrar Notas")
@@ -11484,27 +12318,146 @@ def tab_registrar_notas(config):
 
             st.markdown("---")
             tipo_nombre = "Salida" if es_salida else "Entrada"
-            cg1, cg2 = st.columns(2)
+
+            # ── SEMÁFORO POR ESTUDIANTE ──────────────────────────────────────
+            st.markdown("### 🚦 Resultados con Semáforo")
+
+            # Leyenda
+            lcols = st.columns(5)
+            for lc, (rng, lbl, col) in zip(lcols, [
+                ("18-20","AD — Logro Destacado","#15803d"),
+                ("14-17","A — Logro Esperado","#2563eb"),
+                ("11-13","B — En Proceso","#d97706"),
+                ("00-10","C — En Inicio","#dc2626"),
+                ("NSP","No se presentó","#6b7280"),
+            ]):
+                lc.markdown(
+                    f'<div style="background:{col};color:white;border-radius:6px;'
+                    f'padding:5px 8px;text-align:center;font-size:0.72rem;font-weight:700;">'
+                    f'{rng}<br><span style="font-weight:400;">{lbl}</span></div>',
+                    unsafe_allow_html=True)
+
+            st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+            # Tabla semáforo por alumno
+            notas_para_semaforo = datos_salida_guardados if (es_salida and datos_salida_guardados) else notas_ingresadas
+            if not notas_para_semaforo:
+                notas_para_semaforo = notas_ingresadas
+
+            # Construir tabla con promedios y semáforo
+            _col_semaf = [f"{'📊' if i==0 else '  '} Estudiante"] + [a[:12] for a in areas_diag] + ["Promedio", "Nivel"]
+            _fila_semaf = []
+            _conteo_nivel = {"AD":0,"A":0,"B":0,"C":0}
+            _promedios_area_gen = [[] for _ in areas_diag]
+
+            for _, rowe in df_diag.sort_values('Nombre').iterrows():
+                nom_e = str(rowe.get('Nombre','')).strip()
+                notas_e = notas_para_semaforo.get(nom_e, [0]*len(areas_diag))
+                notas_e_f = []
+                for ni in range(len(areas_diag)):
+                    v = notas_e[ni] if ni < len(notas_e) else 0
+                    notas_e_f.append(float(v) if v is not None and str(v) not in ('','nan','None') else 0.0)
+                    _promedios_area_gen[ni].append(notas_e_f[-1])
+                prom_e = round(sum(notas_e_f)/len(notas_e_f),1) if notas_e_f else 0
+                lit_e  = nota_a_letra(prom_e)
+                _conteo_nivel[lit_e] = _conteo_nivel.get(lit_e, 0) + 1
+                _fila_semaf.append({
+                    'nom': nom_e,
+                    'notas': notas_e_f,
+                    'prom': prom_e,
+                    'lit': lit_e,
+                })
+
+            # Render tabla semáforo
+            _col_anchors = [3.5] + [1.0]*len(areas_diag) + [1.0, 0.8]
+            _hdr_cols = st.columns(_col_anchors)
+            _hdr_cols[0].markdown("**Estudiante**")
+            for ai, ar in enumerate(areas_diag):
+                _hdr_cols[ai+1].markdown(f"**{ar[:10]}**")
+            _hdr_cols[-2].markdown("**Prom.**")
+            _hdr_cols[-1].markdown("**Nivel**")
+
+            _SEMAF_COLORS = {"AD":"#15803d","A":"#2563eb","B":"#d97706","C":"#dc2626"}
+            for frow in _fila_semaf:
+                _row_cols = st.columns(_col_anchors)
+                _row_cols[0].write(frow['nom'])
+                for ai, nv in enumerate(frow['notas']):
+                    _lv = nota_a_letra(nv)
+                    _cv = _SEMAF_COLORS.get(_lv, "#6b7280")
+                    _row_cols[ai+1].markdown(
+                        f'<div style="background:{_cv};color:white;border-radius:4px;'
+                        f'padding:2px 4px;text-align:center;font-size:0.82rem;font-weight:700;">'
+                        f'{nv:.0f}</div>', unsafe_allow_html=True)
+                _cp = _SEMAF_COLORS.get(frow['lit'], "#6b7280")
+                _row_cols[-2].markdown(
+                    f'<div style="background:{_cp};color:white;border-radius:4px;'
+                    f'padding:2px 4px;text-align:center;font-size:0.82rem;font-weight:700;">'
+                    f'{frow["prom"]:.1f}</div>', unsafe_allow_html=True)
+                _row_cols[-1].markdown(
+                    f'<span style="color:{_cp};font-weight:700;">{frow["lit"]}</span>',
+                    unsafe_allow_html=True)
+
+            # ── RESUMEN GENERAL DEL SALÓN ────────────────────────────────────
+            st.markdown("---")
+            st.markdown("### 📊 Resumen General del Salón")
+            _total_est = len(_fila_semaf)
+
+            res_cols = st.columns(4)
+            for ci, (lv, lbl, col) in enumerate([
+                ("AD","Logro Destacado","#15803d"),
+                ("A","Logro Esperado","#2563eb"),
+                ("B","En Proceso","#d97706"),
+                ("C","En Inicio","#dc2626"),
+            ]):
+                _cnt = _conteo_nivel.get(lv, 0)
+                _pct = round(_cnt/_total_est*100) if _total_est > 0 else 0
+                res_cols[ci].markdown(
+                    f'<div style="background:{col};color:white;border-radius:10px;'
+                    f'padding:12px;text-align:center;">'
+                    f'<div style="font-size:1.8rem;font-weight:900;">{_cnt}</div>'
+                    f'<div style="font-size:0.75rem;">{lv} — {lbl}</div>'
+                    f'<div style="font-size:1rem;font-weight:700;">{_pct}%</div>'
+                    f'</div>', unsafe_allow_html=True)
+
+            # Promedio general por área
+            st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+            st.markdown("**Promedios por área (todo el salón):**")
+            _area_prom_cols = st.columns(len(areas_diag))
+            for ai, ar in enumerate(areas_diag):
+                _ap = round(sum(_promedios_area_gen[ai])/len(_promedios_area_gen[ai]),1) if _promedios_area_gen[ai] else 0
+                _al = nota_a_letra(_ap)
+                _ac = _SEMAF_COLORS.get(_al, "#6b7280")
+                _area_prom_cols[ai].markdown(
+                    f'<div style="background:{_ac};color:white;border-radius:8px;'
+                    f'padding:8px;text-align:center;">'
+                    f'<div style="font-size:0.72rem;">{ar[:14]}</div>'
+                    f'<div style="font-size:1.3rem;font-weight:900;">{_ap}</div>'
+                    f'<div style="font-size:0.7rem;">{_al}</div>'
+                    f'</div>', unsafe_allow_html=True)
+
+            # ── BOTONES PDF ──────────────────────────────────────────────────
+            st.markdown("---")
+            cg1, cg2, cg3 = st.columns(3)
 
             with cg1:
-                if st.button(f"💾 Guardar {tipo_nombre} en Google Sheets", type="primary",
+                if st.button(f"💾 Guardar {tipo_nombre}", type="primary",
                              use_container_width=True, key="btn_save_diag"):
                     todos_diag[f"areas_{grado_diag}_{sec_diag}"] = areas_diag
                     todos_diag[clave_sal if es_salida else clave_ent] = notas_ingresadas
                     if _guardar_diagnostico(todos_diag):
-                        st.success(f"✅ Diagnóstico de {tipo_nombre} guardado en Google Sheets.")
+                        st.success(f"✅ Diagnóstico de {tipo_nombre} guardado.")
                     else:
-                        st.warning("⚠️ Guardado localmente (sin conexión a Google Sheets).")
+                        st.warning("⚠️ Guardado localmente.")
 
             with cg2:
-                if st.button(f"🖨️ Generar PDF Diagnóstico {tipo_nombre}", type="primary",
+                if st.button(f"👤 PDF por Alumno (individual)", type="primary",
                              use_container_width=True, key="btn_gen_diag"):
                     notas_ent_para_pdf = notas_ingresadas
                     notas_sal_para_pdf = None
                     if es_salida:
                         notas_ent_para_pdf = datos_entrada_guardados if datos_entrada_guardados else notas_ingresadas
                         notas_sal_para_pdf = notas_ingresadas
-                    with st.spinner("Generando PDF..."):
+                    with st.spinner("Generando PDF individual..."):
                         pdf_diag = generar_pdf_diagnostico(
                             grado_diag, config.get('anio', '2026'),
                             df_diag, notas_ent_para_pdf, areas_diag,
@@ -11516,23 +12469,40 @@ def tab_registrar_notas(config):
                     st.session_state['_diag_tipo'] = tipo_nombre
                     st.session_state['_diag_grado'] = grado_diag
 
-            # Info de comparación
-            if es_salida:
-                if datos_entrada_guardados:
-                    st.caption(f"✅ Se compara con {len(datos_entrada_guardados)} registros de Entrada guardados")
-                else:
-                    st.caption("⚠️ No hay datos de Entrada guardados aún. Guarde primero el diagnóstico de Entrada.")
+            with cg3:
+                if st.button(f"🏫 PDF Resumen del Grado", type="primary",
+                             use_container_width=True, key="btn_gen_diag_grado"):
+                    with st.spinner("Generando PDF del grado..."):
+                        pdf_grado = _generar_pdf_diagnostico_grado(
+                            grado_diag, sec_diag, config.get('anio','2026'),
+                            _fila_semaf, areas_diag, _conteo_nivel,
+                            _promedios_area_gen, tipo_nombre, config
+                        )
+                    st.session_state['_diag_pdf_grado'] = pdf_grado
+                    st.session_state['_diag_grado_g']   = grado_diag
 
-            # Botón de descarga — siempre visible si hay PDF generado para este tipo
+            # Info de comparación
+            if es_salida and datos_entrada_guardados:
+                st.caption(f"✅ Comparando con {len(datos_entrada_guardados)} registros de Entrada guardados")
+            elif es_salida:
+                st.caption("⚠️ Guarda primero el Diagnóstico de Entrada para comparar.")
+
+            # Descargas
             if st.session_state.get('_diag_pdf') and st.session_state.get('_diag_tipo') == tipo_nombre:
                 st.download_button(
-                    f"⬇️ Descargar PDF Diagnóstico {tipo_nombre}",
+                    f"⬇️ Descargar PDF Individual — {tipo_nombre}",
                     st.session_state['_diag_pdf'],
                     f"Diagnostico_{tipo_nombre}_{st.session_state.get('_diag_grado', grado_diag)}.pdf",
-                    mime="application/pdf",
-                    type="primary",
-                    use_container_width=True,
-                    key="dl_diag_pdf"
+                    mime="application/pdf", type="primary",
+                    use_container_width=True, key="dl_diag_pdf"
+                )
+            if st.session_state.get('_diag_pdf_grado'):
+                st.download_button(
+                    f"⬇️ Descargar PDF Resumen del Grado",
+                    st.session_state['_diag_pdf_grado'],
+                    f"Diagnostico_Grado_{st.session_state.get('_diag_grado_g', grado_diag)}.pdf",
+                    mime="application/pdf", type="primary",
+                    use_container_width=True, key="dl_diag_pdf_grado"
                 )
 
     if vista == "📂 Historial de Evaluaciones":
@@ -11546,7 +12516,11 @@ def tab_registrar_notas(config):
             return
         for clave, ev in sorted(hist.items(), reverse=True):
             titulo_h = ev.get('titulo', '') or ''
-            label_h = f"📝 {ev['grado']} | {ev['periodo']} | {ev['fecha']}"
+            tipo_h = ev.get('tipo_evaluacion', '')
+            label_h = f"📝 {ev['grado']} | {ev['periodo']}"
+            if tipo_h:
+                label_h += f" | {tipo_h}"
+            label_h += f" | {ev['fecha']}"
             if titulo_h:
                 label_h += f" — {titulo_h}"
             with st.expander(label_h):
@@ -11580,12 +12554,27 @@ def tab_registrar_notas(config):
         if not grado_cfg:
             return
 
-        # Período y título
-        c1, c2 = st.columns(2)
+        # Período, tipo y título
+        c1, c2, c3 = st.columns(3)
         with c1:
             bim_cfg = st.selectbox("📅 Período:", PERIODOS_EVALUACION, key="rn_cfg_bim")
         with c2:
-            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Evaluación Semanal 3", key="rn_cfg_titulo")
+            tipo_eval_cfg = st.selectbox("📋 Tipo de evaluación:", [
+                "Evaluación Semanal",
+                "Práctica Calificada",
+                "Evaluación Mensual",
+                "Examen Parcial",
+                "Examen Final",
+                "Control de Lectura",
+                "Evaluación Bimestral",
+                "Examen de Recuperación",
+                "Examen de Nivelación",
+                "Trabajo en Grupo",
+                "Exposición",
+                "Otro",
+            ], key="rn_cfg_tipo_eval")
+        with c3:
+            titulo_cfg = st.text_input("📝 Título (opcional):", placeholder="Ej: Práctica N° 3", key="rn_cfg_titulo")
 
         # Número de áreas — aplica a TODOS los niveles
         st.markdown("---")
@@ -11645,6 +12634,7 @@ def tab_registrar_notas(config):
                         'id': str(uuid.uuid4())[:8],
                         'grado': grado_cfg,
                         'periodo': bim_cfg,
+                        'tipo_evaluacion': st.session_state.get('rn_cfg_tipo_eval', 'Evaluación Semanal'),
                         'titulo': titulo_cfg,
                         'areas': areas_cfg,
                         'fecha': fecha_peru_str(),
@@ -11665,7 +12655,8 @@ def tab_registrar_notas(config):
     titulo_ev = ev.get('titulo', '')
 
     # Encabezado de la evaluación activa
-    titulo_mostrar = f"{grado_sel} | {bim_sel}"
+    tipo_ev = ev.get('tipo_evaluacion', 'Evaluación')
+    titulo_mostrar = f"{grado_sel} | {bim_sel} | {tipo_ev}"
     if titulo_ev:
         titulo_mostrar += f" — {titulo_ev}"
     st.success(f"✅ Evaluación activa: **{titulo_mostrar}**")
@@ -11712,125 +12703,137 @@ def tab_registrar_notas(config):
         return
 
     st.markdown(f"### 📋 {len(dg)} estudiantes")
+    st.caption("💡 Ingresa todas las notas y presiona **💾 Calcular y Guardar** al final.")
 
     # Inicializar notas_sesion si no existe
     if 'notas_sesion' not in st.session_state:
         st.session_state.notas_sesion = {}
 
-    # Encabezado tabla — dinámico según número de áreas
-    # Layout: [Estudiante, NSP] + [Nota/20 × num_areas] + [Promedio, Lit]
-    if num_areas == 1:
-        hcols = st.columns([3, 0.7, 1.5, 1, 1])
-        headers = ["Estudiante", "NSP", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
-    else:
-        # Para 2-6 áreas: mostrar nota directa por cada área
-        col_widths = [2.5, 0.7]  # Estudiante + NSP
-        headers_list = ["Estudiante", "NSP"]
-        for i in range(num_areas):
-            col_widths.append(1.3)  # Solo nota, sin separador
-            headers_list.append(f"{areas[i]['nombre'][:8]}/20")
-        col_widths.extend([1, 0.8])  # Promedio + Lit
-        headers_list.extend(["Prom.", "Lit."])
-        hcols = st.columns(col_widths)
-        headers = headers_list
+    # ── Formulario: evita rerun por cada number_input ─────────────────────────
+    with st.form(key=f"form_notas_{ev['id']}", border=False):
 
-    for hc, hdr in zip(hcols, headers):
-        with hc:
-            if hdr:  # No mostrar header vacío para separadores
-                st.markdown(f"**{hdr}**")
-
-    notas_actuales = {}
-
-
-    for idx, row in dg.iterrows():
-        nombre = str(row.get('Nombre', ''))
-        dni = str(row.get('DNI', ''))
-        sesion_id = ev['id']
-
-        # ── Crear columnas dinámicas ─────────────────────────────────────────
+        # Encabezado tabla — dinámico según número de áreas
+        # Layout: [Estudiante, NSP] + [Nota/20 × num_areas] + [Promedio, Lit]
         if num_areas == 1:
-            col_widths = [3, 0.7, 1.5, 1, 1]
+            hcols = st.columns([3, 0.7, 1.5, 1, 1])
+            headers = ["Estudiante", "NSP", f"{areas[0]['nombre'][:12]}/20", "Lit.", "Estado"]
         else:
-            col_widths = [2.5, 0.7]  # Nombre + NSP
-            for _ in range(num_areas):
-                col_widths.append(1.3)  # Solo nota
+            # Para 2-6 áreas: mostrar nota directa por cada área
+            col_widths = [2.5, 0.7]  # Estudiante + NSP
+            headers_list = ["Estudiante", "NSP"]
+            for i in range(num_areas):
+                col_widths.append(1.3)  # Solo nota, sin separador
+                headers_list.append(f"{areas[i]['nombre'][:8]}/20")
             col_widths.extend([1, 0.8])  # Promedio + Lit
-
-        nc = st.columns(col_widths)
-
-        # Columna 0: Nombre
-        with nc[0]:
-            st.write(f"👤 {nombre}")
-
-        # Columna 1: NSP checkbox
-        with nc[1]:
-            nsp = st.checkbox("", key=f"nsp_{sesion_id}_{dni}",
-                             value=st.session_state.notas_sesion.get(dni, {}).get('nsp', False),
-                             label_visibility="collapsed")
-
-        if nsp:
-            # Si NSP está marcado, no pedir inputs de notas
-            notas_actuales[dni] = {
-                'nombre': nombre,
-                'nsp': True,
-                'areas': {},
-                'promedio': 0
-            }
-            # Mostrar "NSP" en el resto de columnas
-            for i in range(2, len(nc)):
-                with nc[i]:
-                    st.caption("—")
-        else:
-            # Ingresar correctas y calcular notas por cada área
-            correctas_vals = []
-            notas_vals = []
-            col_idx = 2  # Empieza después de Nombre y NSP
-
-            for i, area in enumerate(areas):
-                # NOTA DIRECTA sobre 20 (con decimales)
-                with nc[col_idx]:
-                    nota_actual = st.session_state.notas_sesion.get(dni, {}).get(f'nota_{i}', 0.0)
-                    nota_i = st.number_input("", min_value=0.0, max_value=20.0, value=float(nota_actual),
-                                            step=0.5,  # Incrementos de 0.5
-                                            key=f"nota_{i}_{sesion_id}_{dni}",
-                                            label_visibility="collapsed")
-                    notas_vals.append(nota_i)
-                col_idx += 1
-
-            # Promedio y literal (solo si hay más de 1 área)
+            headers_list.extend(["Prom.", "Lit."])
+            hcols = st.columns(col_widths)
+            headers = headers_list
+    
+        for hc, hdr in zip(hcols, headers):
+            with hc:
+                if hdr:  # No mostrar header vacío para separadores
+                    st.markdown(f"**{hdr}**")
+    
+        notas_actuales = {}
+    
+    
+        for idx, row in dg.iterrows():
+            nombre = str(row.get('Nombre', ''))
+            dni = str(row.get('DNI', ''))
+            sesion_id = ev['id']
+    
+            # ── Crear columnas dinámicas ─────────────────────────────────────────
             if num_areas == 1:
-                promedio = notas_vals[0]
-                lit = nota_a_letra(promedio)
-                with nc[col_idx]:
-                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
-                               unsafe_allow_html=True)
-                col_idx += 1
-                with nc[col_idx]:
-                    st.caption(ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:10])
+                col_widths = [3, 0.7, 1.5, 1, 1]
             else:
-                promedio = round(sum(notas_vals) / num_areas, 1) if notas_vals else 0
-                lit = nota_a_letra(promedio)
-                with nc[col_idx]:
-                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{promedio}</span>",
-                               unsafe_allow_html=True)
-                col_idx += 1
-                with nc[col_idx]:
-                    st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
-                               unsafe_allow_html=True)
+                col_widths = [2.5, 0.7]  # Nombre + NSP
+                for _ in range(num_areas):
+                    col_widths.append(1.3)  # Solo nota
+                col_widths.extend([1, 0.8])  # Promedio + Lit
+    
+            nc = st.columns(col_widths)
+    
+            # Columna 0: Nombre
+            with nc[0]:
+                st.write(f"👤 {nombre}")
+    
+            # Columna 1: NSP checkbox
+            with nc[1]:
+                nsp = st.checkbox("", key=f"nsp_{sesion_id}_{dni}",
+                                 value=st.session_state.notas_sesion.get(dni, {}).get('nsp', False),
+                                 label_visibility="collapsed")
+    
+            if nsp:
+                # Si NSP está marcado, no pedir inputs de notas
+                notas_actuales[dni] = {
+                    'nombre': nombre,
+                    'nsp': True,
+                    'areas': {},
+                    'promedio': 0
+                }
+                # Mostrar "NSP" en el resto de columnas
+                for i in range(2, len(nc)):
+                    with nc[i]:
+                        st.caption("—")
+            else:
+                # Ingresar correctas y calcular notas por cada área
+                correctas_vals = []
+                notas_vals = []
+                col_idx = 2  # Empieza después de Nombre y NSP
+    
+                for i, area in enumerate(areas):
+                    # NOTA DIRECTA sobre 20 (con decimales)
+                    with nc[col_idx]:
+                        nota_actual = st.session_state.notas_sesion.get(dni, {}).get(f'nota_{i}', 0.0)
+                        nota_i = st.number_input("", min_value=0.0, max_value=20.0, value=float(nota_actual),
+                                                step=0.5,  # Incrementos de 0.5
+                                                key=f"nota_{i}_{sesion_id}_{dni}",
+                                                label_visibility="collapsed")
+                        notas_vals.append(nota_i)
+                    col_idx += 1
+    
+                # Promedio y literal (solo si hay más de 1 área)
+                if num_areas == 1:
+                    promedio = notas_vals[0]
+                    lit = nota_a_letra(promedio)
+                    with nc[col_idx]:
+                        st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
+                                   unsafe_allow_html=True)
+                    col_idx += 1
+                    with nc[col_idx]:
+                        st.caption(ESCALA_MINEDU.get(lit, {}).get('nombre', '')[:10])
+                else:
+                    promedio = round(sum(notas_vals) / num_areas, 1) if notas_vals else 0
+                    lit = nota_a_letra(promedio)
+                    with nc[col_idx]:
+                        st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{promedio}</span>",
+                                   unsafe_allow_html=True)
+                    col_idx += 1
+                    with nc[col_idx]:
+                        st.markdown(f"<span style='color:{color_semaforo(lit)};font-weight:bold;'>{lit}</span>",
+                                   unsafe_allow_html=True)
+    
+                # Guardar en diccionario - ahora con notas directas
+                notas_actuales[dni] = {
+                    'nombre': nombre,
+                    'nsp': False,
+                    'areas': {areas[i]['nombre']: notas_vals[i] for i in range(num_areas)},
+                    'promedio': promedio,
+                    **{f'nota_{i}': notas_vals[i] for i in range(num_areas)}
+                }
+    
+            # ── Botón submit dentro del form ──────────────────────────────────────
+        submitted = st.form_submit_button(
+            "💾 Calcular y Guardar notas",
+            type="primary",
+            use_container_width=True
+        )
 
-            # Guardar en diccionario - ahora con notas directas
-            notas_actuales[dni] = {
-                'nombre': nombre,
-                'nsp': False,
-                'areas': {areas[i]['nombre']: notas_vals[i] for i in range(num_areas)},
-                'promedio': promedio,
-                **{f'nota_{i}': notas_vals[i] for i in range(num_areas)}
-            }
+    # Actualizar sesión con lo ingresado (solo si se presionó submit o primera vez)
+    if submitted or not st.session_state.notas_sesion:
+        st.session_state.notas_sesion = notas_actuales
 
-    # Actualizar sesión con lo ingresado
-    st.session_state.notas_sesion = notas_actuales
-
-    # ─── RANKING EN TIEMPO REAL ───────────────────────────────────────────────
+    # ─── RANKING (solo si ya hay notas) ───────────────────────────────────────
     st.markdown("---")
     st.subheader("🏆 Ranking (evaluación actual)")
 
@@ -13651,8 +14654,8 @@ def tab_material_docente(config):
         with col2:
             grado_f1 = _grados_para_selector("ficha_dis")
         with col3:
-            semana_f1 = st.number_input("📅 Semana N°:", 1, 52,
-                                         int(hora_peru().strftime('%V')), key="ficha_semana_dis")
+            semana_f1 = st.number_input("📅 Semana N°:", 1, 40,
+                                         max(1, _semana_escolar_actual()), key="ficha_semana_dis")
 
         col4, col5 = st.columns(2)
         with col4:
@@ -13715,8 +14718,8 @@ def tab_material_docente(config):
         with col2:
             grado_ficha = _grados_para_selector("ficha")
         with col3:
-            semana_ficha = st.number_input("📅 Semana N°:", 1, 52,
-                                           int(hora_peru().strftime('%V')), key="ficha_semana")
+            semana_ficha = st.number_input("📅 Semana N°:", 1, 40,
+                                           max(1, _semana_escolar_actual()), key="ficha_semana")
 
         col4, col5, col6 = st.columns(3)
         with col4:
@@ -14299,7 +15302,8 @@ def _vista_directivo_material(config, semana_actual):
         if not materiales:
             st.info("📭 Sin datos de materiales aún")
             return
-        semanas_rango = range(max(1, semana_actual - 4), semana_actual + 1)
+        # Mostrar todas las semanas con contenido, no solo las últimas 4
+        semanas_rango = range(1, 41)
         docentes_activos = set()
         for m in materiales:
             docentes_activos.add(m.get('docente_nombre', m.get('docente', '')))
