@@ -18897,11 +18897,19 @@ def tab_pausa_activa(config):
 </script>"""
     _comp_ini.html(_js_ini, height=0)
 
+    # Cargar config de música UNA sola vez por renderizado (fresco, sin caché)
+    _cfg_musica_actual = _cargar_pausa_config()
+    # Limpiar caché viejo para que la presentación use datos frescos
+    st.session_state.pop('_pausa_cfg_cache', None)
+    st.session_state['_pausa_cfg_cache'] = _cfg_musica_actual
+
     cols = st.columns(2)
     for i, m in enumerate(modelos_filtrados):
         with cols[i % 2]:
-            tiene_musica = any(Path(f"pausa_mp3_{m['id']}.{ext}").exists()
+            tiene_musica_local = any(Path(f"pausa_mp3_{m['id']}.{ext}").exists()
                                for ext in ["mp3","ogg","wav"])
+            tiene_musica_url = bool(_cfg_musica_actual.get(str(m['id']), {}).get('drive_url'))
+            tiene_musica = tiene_musica_local or tiene_musica_url
             musica_badge = "🎵" if tiene_musica else "🔇"
             seleccionado = modelo_seleccionado == m['id']
             niveles_m = m.get('nivel', ['TODOS'])
