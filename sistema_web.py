@@ -76,34 +76,42 @@ st.markdown("""
     /* Capturar TODO con máxima especificidad */
     html body div.stApp button,
     html body div.stApp [role="button"],
-    html body .stButton > button,
-    html body div[data-testid="stButton"] > button,
-    html body div[data-testid="column"] button,
-    html body div[data-testid="stBaseButton-primary"] > button,
-    html body div[data-testid="stBaseButton-secondary"] > button {
+    /* ── BOTONES SIEMPRE VISIBLES — cubre todos los selectores de Streamlit ── */
+    button,
+    .stButton > button,
+    div[data-testid="stButton"] > button,
+    div[data-testid="column"] button,
+    div[data-testid="stBaseButton-primary"] > button,
+    div[data-testid="stBaseButton-secondary"] > button,
+    div[class*="stButton"] button,
+    div[class*="stBaseButton"] button {
         background-color: #2563eb !important;
-        background: #2563eb !important;
+        background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
         color: white !important;
+        -webkit-text-fill-color: white !important;
         border: none !important;
         border-radius: 8px !important;
-        font-weight: bold !important;
+        font-weight: 700 !important;
         opacity: 1 !important;
-        box-shadow: none !important;
-        transition: background-color 0.1s !important;
+        visibility: visible !important;
+        box-shadow: 0 2px 8px rgba(37,99,235,0.35) !important;
+        transition: all 0.18s ease !important;
         transform: none !important;
-        -webkit-text-fill-color: white !important;
+        min-height: 38px !important;
+        padding: 0.35rem 0.85rem !important;
     }
 
-    html body div.stApp button:hover,
-    html body .stButton > button:hover,
-    html body div[data-testid="stBaseButton-secondary"] > button:hover,
-    html body div[data-testid="stBaseButton-primary"] > button:hover {
+    button:hover,
+    .stButton > button:hover,
+    div[data-testid="stBaseButton-secondary"] > button:hover,
+    div[data-testid="stBaseButton-primary"] > button:hover,
+    div[class*="stBaseButton"] button:hover {
+        background: linear-gradient(135deg,#1d4ed8,#1e40af) !important;
         background-color: #1d4ed8 !important;
-        background: #1d4ed8 !important;
         color: white !important;
         -webkit-text-fill-color: white !important;
-        transform: none !important;
-        box-shadow: none !important;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.45) !important;
+        transform: translateY(-1px) !important;
     }
 
     /* Tabs — morado */
@@ -1582,6 +1590,9 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
+        # Backup silencioso en Drive
+        try: _drive_backup_json("asistencias.json", asistencias)
+        except Exception: pass
         # Sincronizar con Google Sheets en silencio
         try:
             gs = _gs()
@@ -9586,20 +9597,46 @@ def generar_pdf_test_imprimible(test_id, config):
     c = canvas.Canvas(buf, pagesize=A4)
     w, h = A4
 
+    # Paleta de colores por pregunta (cíclica)
+    PALETA_PREGS = [
+        ("#eff6ff","#2563eb"),  # azul suave
+        ("#f0fdf4","#16a34a"),  # verde suave
+        ("#fef3c7","#d97706"),  # amarillo suave
+        ("#fdf4ff","#9333ea"),  # morado suave
+        ("#fff1f2","#e11d48"),  # rosa suave
+        ("#ecfdf5","#059669"),  # esmeralda
+    ]
+    COLORES_OPCION = {
+        "A": ("#dcfce7","#16a34a"),  # verde
+        "B": ("#dbeafe","#2563eb"),  # azul
+        "C": ("#fef9c3","#ca8a04"),  # amarillo
+        "D": ("#fce7f3","#db2777"),  # rosa
+        "E": ("#f3e8ff","#9333ea"),  # morado
+    }
+
     def _header_test(pag=1):
-        # Fondo oscuro
+        # Degradado de fondo
         c.setFillColor(colors.HexColor("#0f172a"))
-        c.rect(0, h-68, w, 68, fill=True)
-        c.setFillColor(colors.HexColor("#f59e0b"))
-        c.rect(0, h-71, w, 3, fill=True)
+        c.rect(0, h-72, w, 72, fill=True)
+        # Barra arcoiris decorativa
+        barra_cols = ["#ef4444","#f59e0b","#22c55e","#3b82f6","#8b5cf6","#ec4899"]
+        seg_w = w / len(barra_cols)
+        for bi, bc in enumerate(barra_cols):
+            c.setFillColor(colors.HexColor(bc))
+            c.rect(bi*seg_w, h-75, seg_w+1, 3, fill=True, stroke=False)
         c.setFillColor(colors.white)
-        c.setFont("Helvetica-Bold", 13)
-        c.drawCentredString(w/2, h-22, test_data.get("nombre","TEST VOCACIONAL").upper())
-        c.setFont("Helvetica", 8)
-        c.drawCentredString(w/2, h-36, f"I.E.P. ALTERNATIVO YACHAY — Chinchero, Cusco — {config.get('anio',2026)}")
-        c.drawCentredString(w/2, h-48, test_data.get("descripcion",""))
+        c.setFont("Helvetica-Bold", 14)
+        nombre_test = test_data.get("nombre","TEST VOCACIONAL")
+        c.drawCentredString(w/2, h-22, nombre_test.upper())
+        c.setFont("Helvetica", 8.5)
+        c.drawCentredString(w/2, h-38, f"I.E.P. ALTERNATIVO YACHAY — Chinchero, Cusco — {config.get('anio',2026)}")
+        desc = test_data.get("descripcion","")
+        c.setFont("Helvetica-Oblique", 7.5)
+        c.setFillColor(colors.HexColor("#a5b4fc"))
+        c.drawCentredString(w/2, h-52, desc[:90])
+        c.setFillColor(colors.HexColor("#94a3b8"))
         c.setFont("Helvetica", 7)
-        c.drawCentredString(w/2, h-60, f"Pág. {pag}")
+        c.drawCentredString(w/2, h-64, f"Pág. {pag}")
 
     def _footer_test():
         c.setFont("Helvetica-Oblique", 6)
@@ -9645,73 +9682,72 @@ def generar_pdf_test_imprimible(test_id, config):
     c.setFillColor(colors.black)
     y -= 12
 
-    for preg in preguntas:
-        pid = preg["id"]
-        texto_p = preg["pregunta"]
-        opciones = preg["opciones"]
+    def _wrap_text(txt, max_c=88):
+        words = txt.split(); lines = []; line = ""
+        for w2 in words:
+            if len(line)+len(w2)+1 <= max_c: line = (line+" "+w2).strip()
+            else: lines.append(line); line=w2
+        if line: lines.append(line)
+        return lines
 
-        # Altura estimada de la pregunta
-        n_lineas_p = (len(texto_p) // 85) + 1
-        n_opciones  = len(opciones)
-        alto_bloque = n_lineas_p * 9 + n_opciones * 9 + 10
+    for preg in preguntas:
+        pid      = preg["id"]
+        texto_p  = preg["pregunta"]
+        opciones = preg["opciones"]
+        pal_idx  = (pid - 1) % len(PALETA_PREGS)
+        bg_preg, col_preg = PALETA_PREGS[pal_idx]
+
+        lineas_p   = _wrap_text(texto_p)
+        n_opciones = len(opciones)
+        alto_bloque = len(lineas_p)*9 + n_opciones*11 + 18
 
         if y - alto_bloque < 80:
             c.showPage(); pag += 1; _header_test(pag); _footer_test()
             y = h - 80
 
-        # Número + texto pregunta
-        bg = "#f8fafc" if pid % 2 == 0 else "#ffffff"
-        c.setFillColor(colors.HexColor(bg))
-        c.roundRect(30, y - alto_bloque + 4, w-60, alto_bloque, 4, fill=True)
+        # Caja de pregunta con color de fondo
+        c.setFillColor(colors.HexColor(bg_preg))
+        c.roundRect(28, y - alto_bloque + 6, w-56, alto_bloque, 8, fill=True, stroke=False)
+        # Barra lateral de color
+        c.setFillColor(colors.HexColor(col_preg))
+        c.roundRect(28, y - alto_bloque + 6, 6, alto_bloque, 3, fill=True, stroke=False)
 
-        c.setFillColor(colors.HexColor("#1e3a8a"))
-        c.circle(42, y - 3, 7, fill=True)
+        # Círculo numerado
+        c.setFillColor(colors.HexColor(col_preg))
+        c.circle(48, y - 4, 8, fill=True, stroke=False)
         c.setFillColor(colors.white)
-        c.setFont("Helvetica-Bold", 7)
-        c.drawCentredString(42, y - 6, str(pid))
-
-        # Texto pregunta (puede ser largo)
-        c.setFillColor(colors.black)
         c.setFont("Helvetica-Bold", 8)
-        max_chars = 90
-        lineas_p = []
-        palabras = texto_p.split()
-        linea_actual = ""
-        for pal in palabras:
-            if len(linea_actual) + len(pal) + 1 <= max_chars:
-                linea_actual += (" " if linea_actual else "") + pal
-            else:
-                lineas_p.append(linea_actual)
-                linea_actual = pal
-        if linea_actual:
-            lineas_p.append(linea_actual)
+        c.drawCentredString(48, y - 7, str(pid))
 
+        # Texto pregunta
+        c.setFillColor(colors.HexColor("#0f172a"))
+        c.setFont("Helvetica-Bold", 8.5)
         ty = y - 1
         for lp in lineas_p:
-            c.drawString(54, ty, lp)
+            c.drawString(62, ty, lp)
             ty -= 9
+        ty -= 2
 
-        # Opciones en 1 columna con burbuja
-        c.setFont("Helvetica", 7.5)
+        # Opciones con chip de color
         for letra, (texto_op, _grupo) in opciones.items():
-            # Círculo burbuja para marcar
+            bg_op, col_op = COLORES_OPCION.get(letra, ("#f1f5f9","#475569"))
+            # Chip colored background
+            c.setFillColor(colors.HexColor(bg_op))
+            c.roundRect(40, ty - 1, w - 76, 10, 3, fill=True, stroke=False)
+            # Letra badge
+            c.setFillColor(colors.HexColor(col_op))
+            c.roundRect(42, ty, 12, 9, 2, fill=True, stroke=False)
             c.setFillColor(colors.white)
-            c.setStrokeColor(colors.HexColor("#475569"))
-            c.setLineWidth(0.8)
-            c.circle(58, ty + 2, 4, fill=True, stroke=True)
-            c.setStrokeColor(colors.black)
-            c.setLineWidth(1)
-            c.setFillColor(colors.HexColor("#1e3a8a"))
             c.setFont("Helvetica-Bold", 7)
-            c.drawCentredString(58, ty, letra)
-            c.setFillColor(colors.black)
+            c.drawCentredString(48, ty + 2, letra)
+            # Texto opción
+            c.setFillColor(colors.HexColor("#1e293b"))
             c.setFont("Helvetica", 7.5)
-            # Truncar opción si es muy larga
-            texto_op_corto = texto_op[:100] if len(texto_op) > 100 else texto_op
-            c.drawString(68, ty, texto_op_corto)
-            ty -= 9
+            txt_op = texto_op[:95] if len(texto_op) > 95 else texto_op
+            c.drawString(58, ty + 2, txt_op)
+            ty -= 11
 
-        y = ty - 4
+        y = ty - 6
 
     # ══════════════════════════════════════════════════════════════════
     # PÁGINA FINAL: 4 HOJAS DE RESPUESTAS RECORTABLES POR PÁGINA
@@ -9842,53 +9878,51 @@ def generar_pdf_test_imprimible(test_id, config):
         c.setFillColor(colors.black)
         c.setStrokeColor(colors.black)
 
-    # ── Layout: 6 hojas por página (3 cols × 2 filas) ────────────────
-    MARGEN    = 12
-    ESPACIO_H = 5   # espacio horizontal entre hojas
-    ESPACIO_V = 5   # espacio vertical entre filas
-    COLS      = 3
-    FILAS     = 2
+    # ── Layout: 4 hojas por página (2 cols × 2 filas) bien distribuidas ─
+    HDR_H     = 72    # altura del encabezado ya dibujado
+    PIE_H     = 22    # espacio pie de página
+    MARGEN_L  = 16    # márgenes laterales
+    MARGEN_V  = 8     # márgenes verticales entre hojas y borde
+    ESPACIO_H = 10    # separación horizontal entre hojas
+    ESPACIO_V = 10    # separación vertical entre hojas
 
-    disponible_w = w - 2*MARGEN
-    disponible_h = h - 2*MARGEN
+    area_x = MARGEN_L
+    area_y = PIE_H + MARGEN_V
+    area_w = w  - 2 * MARGEN_L
+    area_h = h  - HDR_H - PIE_H - 2 * MARGEN_V
 
-    HOJA_W = (disponible_w - (COLS-1)*ESPACIO_H) / COLS
-    HOJA_H = (disponible_h - (FILAS-1)*ESPACIO_V) / FILAS
+    HOJA_W = (area_w - ESPACIO_H) / 2
+    HOJA_H = (area_h - ESPACIO_V) / 2
 
     nombre_corto_test = test_data.get("nombre","TEST VOCACIONAL")
 
-    # Generar posiciones 3×2 (de arriba a abajo, izquierda a derecha)
-    posiciones = []
-    for fila in range(FILAS):
-        oy_h = MARGEN + (FILAS-1-fila) * (HOJA_H + ESPACIO_V)
-        for col in range(COLS):
-            ox_h = MARGEN + col * (HOJA_W + ESPACIO_H)
-            posiciones.append((ox_h, oy_h))
+    # 4 posiciones: fila superior (oy más alto) e inferior
+    posiciones = [
+        (area_x,              area_y + HOJA_H + ESPACIO_V),   # sup izq
+        (area_x + HOJA_W + ESPACIO_H, area_y + HOJA_H + ESPACIO_V),  # sup der
+        (area_x,              area_y),                          # inf izq
+        (area_x + HOJA_W + ESPACIO_H, area_y),                 # inf der
+    ]
 
     for (ox_h, oy_h) in posiciones:
         _dibujar_mini_hoja(ox_h, oy_h, HOJA_W, HOJA_H, nombre_corto_test)
 
-    # Líneas de corte: 2 verticales + 1 horizontal
-    c.setStrokeColor(colors.HexColor("#94a3b8"))
-    c.setLineWidth(0.5)
-    c.setDash(4, 4)
-    # Línea vertical entre col 1 y 2
-    cx1 = MARGEN + HOJA_W + ESPACIO_H/2
-    c.line(cx1, MARGEN, cx1, h - MARGEN)
-    # Línea vertical entre col 2 y 3
-    cx2 = MARGEN + 2*(HOJA_W + ESPACIO_H) - ESPACIO_H/2
-    c.line(cx2, MARGEN, cx2, h - MARGEN)
-    # Línea horizontal entre fila 1 y 2
-    cy1 = MARGEN + HOJA_H + ESPACIO_V/2
-    c.line(MARGEN, cy1, w - MARGEN, cy1)
+    # ── Líneas de corte punteadas ─────────────────────────────────────
+    c.setStrokeColor(colors.HexColor("#7c3aed"))
+    c.setLineWidth(0.7)
+    c.setDash(5, 4)
+    cx_c = area_x + HOJA_W + ESPACIO_H / 2
+    cy_c = area_y + HOJA_H + ESPACIO_V / 2
+    c.line(cx_c, area_y, cx_c, area_y + area_h)           # vertical
+    c.line(area_x, cy_c, area_x + area_w, cy_c)            # horizontal
     c.setDash()
     c.setLineWidth(1)
 
     # Instrucción de corte
-    c.setFillColor(colors.HexColor("#64748b"))
-    c.setFont("Helvetica-Oblique", 5.5)
-    c.drawCentredString(w/2, MARGEN - 8,
-                        "✂  Recortar por las lineas punteadas — 6 hojas por pagina  ✂")
+    c.setFillColor(colors.HexColor("#7c3aed"))
+    c.setFont("Helvetica-Bold", 7)
+    c.drawCentredString(w/2, PIE_H - 4,
+                        "✂  Recortar por las líneas punteadas — 4 hojas por página  ✂")
 
     c.save()
     buf.seek(0)
@@ -11972,20 +12006,68 @@ def _drive_service():
 
     return _DriveLite(token)
 
-def _drive_folder_pausa():
-    """Obtiene (o crea) la carpeta YACHAY_PAUSA_MP3 en Drive. Retorna folder_id."""
+def _drive_get_folder(folder_name):
+    """Obtiene (o crea) una carpeta en Drive por nombre. Retorna folder_id."""
     try:
         svc = _drive_service()
         if not svc:
             return None
-        FOLDER_NAME = "YACHAY_PAUSA_MP3"
         files = svc.list_files(
-            q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false")
+            q=f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false")
         if files:
             return files[0]["id"]
-        return svc.create_folder(FOLDER_NAME)
+        return svc.create_folder(folder_name)
     except Exception as _e:
-        st.session_state["_drive_error"] = f"_drive_folder_pausa: {_e}"
+        st.session_state["_drive_error"] = f"_drive_get_folder: {_e}"
+        return None
+
+def _drive_folder_pausa():
+    """Obtiene (o crea) la carpeta YACHAY_PAUSA_MP3 en Drive. Retorna folder_id."""
+    return _drive_get_folder("YACHAY_PAUSA_MP3")
+
+def _drive_backup_json(nombre_archivo, datos_dict):
+    """Sube un archivo JSON como backup a la carpeta YACHAY_BACKUP en Drive."""
+    try:
+        import json as _jb
+        svc = _drive_service()
+        if not svc:
+            return None
+        folder_id = _drive_get_folder("YACHAY_BACKUP")
+        fname = nombre_archivo
+        data_bytes = _jb.dumps(datos_dict, ensure_ascii=False, indent=2, default=str).encode('utf-8')
+        existing = svc.list_files(
+            q=f"name='{fname}' and trashed=false" + (f" and '{folder_id}' in parents" if folder_id else ""))
+        if existing:
+            file_id = existing[0]["id"]
+            svc.update(file_id, data_bytes, "application/json")
+        else:
+            file_id = svc.upload(fname, data_bytes, "application/json", parent_id=folder_id)
+        return file_id
+    except Exception as _e:
+        return None
+
+def _drive_restaurar_json(nombre_archivo):
+    """Descarga y retorna dict desde backup en Drive. None si no existe."""
+    try:
+        import json as _jb
+        import urllib.request as _ur
+        svc = _drive_service()
+        if not svc:
+            return None
+        folder_id = _drive_get_folder("YACHAY_BACKUP")
+        q = f"name='{nombre_archivo}' and trashed=false"
+        if folder_id:
+            q += f" and '{folder_id}' in parents"
+        files = svc.list_files(q=q, fields="files(id,name,modifiedTime)")
+        if not files:
+            return None
+        file_id = files[0]["id"]
+        req = _ur.Request(
+            f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media",
+            headers={"Authorization": f"Bearer {_drive_get_token()}"})
+        with _ur.urlopen(req, timeout=30) as resp:
+            return _jb.loads(resp.read())
+    except Exception:
         return None
 
 def _drive_subir_mp3(modelo_id, audio_bytes, extension="mp3"):
@@ -12118,6 +12200,27 @@ def _restaurar_todos_archivos_binarios():
         except Exception:
             pass
 
+def _restaurar_desde_drive_backups():
+    """Restaura archivos JSON desde Drive si no existen localmente.
+    Se ejecuta al inicio — backup silencioso como segunda capa de seguridad."""
+    archivos = [
+        ("historial_evaluaciones.json", "historial_evaluaciones.json"),
+        ("asistencias.json", "asistencias.json"),
+        ("diagnostico.json", "diagnostico.json"),
+        ("resultados.json", "resultados.json"),
+    ]
+    for nombre_drive, nombre_local in archivos:
+        try:
+            if Path(nombre_local).exists():
+                continue  # ya existe localmente, no sobreescribir
+            data = _drive_restaurar_json(nombre_drive)
+            if data:
+                with open(nombre_local, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+
 def _restaurar_datos_desde_gs():
     """Restaura archivos JSON locales desde Google Sheets al iniciar"""
     try:
@@ -12179,11 +12282,14 @@ def _cargar_historial_evaluaciones():
     return {}
 
 def _guardar_historial_evaluaciones(hist_data):
-    """Guarda el historial de evaluaciones en archivo JSON + Google Sheets"""
+    """Guarda el historial de evaluaciones en archivo JSON + Google Sheets + Drive"""
     st.session_state['_hist_invalidar'] = True   # invalidar caché
     try:
         with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
             json.dump(hist_data, f, ensure_ascii=False, indent=2, default=str)
+        # Backup en Drive (en segundo plano, no bloquea)
+        try: _drive_backup_json("historial_evaluaciones.json", hist_data)
+        except Exception: pass
         # Sync a Google Sheets
         try:
             gs = _gs()
@@ -12238,6 +12344,9 @@ def _guardar_diagnostico(data):
                         ws.append_row(['diagnostico_data', data_str])
         except Exception:
             pass
+        # Backup en Drive
+        try: _drive_backup_json("diagnostico_data.json", data)
+        except Exception: pass
         return True
     except Exception:
         return False
@@ -18701,9 +18810,56 @@ window.addEventListener('message', e => {{
   }}
 }});
 
+// ── Countdown 3-2-1 antes de empezar ─────────────────────────
+function mostrarCountdown(cb) {{
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.82);z-index:999;display:flex;align-items:center;
+    justify-content:center;flex-direction:column;`;
+  const num = document.createElement('div');
+  num.style.cssText = `font-size:9rem;font-weight:900;color:white;
+    text-shadow:0 0 40px {_col_acento};
+    animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;`;
+  const txt = document.createElement('div');
+  txt.style.cssText = `color:rgba(255,255,255,0.7);font-size:1.4rem;margin-top:10px;`;
+  txt.textContent = '¡Prepárense!';
+  overlay.appendChild(num); overlay.appendChild(txt);
+  document.body.appendChild(overlay);
+  const style = document.createElement('style');
+  style.textContent = `@keyframes popIn{{0%{{transform:scale(0.3);opacity:0}}100%{{transform:scale(1);opacity:1}}}}`;
+  document.head.appendChild(style);
+  let c = 3;
+  const tick = setInterval(() => {{
+    num.style.animation = 'none'; void num.offsetWidth;
+    num.style.animation = 'popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both';
+    num.textContent = c > 0 ? c : '🚀';
+    if(c === 0) {{
+      clearInterval(tick);
+      setTimeout(() => {{ overlay.remove(); cb(); }}, 600);
+    }}
+    c--;
+  }}, 800);
+  num.textContent = c; c--;
+}}
+
 // Init
 crearParticulas();
-actualizarPaso();
+// Cargar primer paso SIN iniciar timer
+(function() {{
+  if(pasoActual >= PASOS.length) return;
+  const p = PASOS[pasoActual];
+  document.getElementById('emoji').textContent = p.emoji;
+  document.getElementById('instruccion').textContent = p.texto;
+  document.getElementById('step-badge').textContent = `Paso ${{pasoActual+1}} / ${{TOTAL}}`;
+  document.getElementById('progbar').style.width = (((pasoActual+1)/TOTAL)*100)+'%';
+  document.getElementById('timer-num').textContent = p.seg;
+  construirDots();
+  document.getElementById('btn-prev').disabled = (pasoActual===0);
+  const btnNext = document.getElementById('btn-next');
+  if(pasoActual===TOTAL-1){{ btnNext.textContent='🎉 FINALIZAR'; btnNext.className='btn btn-fin'; }}
+}})();
+// Mostrar countdown y solo DESPUÉS iniciar el timer
+mostrarCountdown(() => {{ actualizarPaso(); }});
 if(document.getElementById('bgm')) {{
   document.getElementById('btn-music').textContent = '⏸ Musica';
   document.getElementById('btn-music').classList.add('playing');
@@ -19048,36 +19204,119 @@ def tab_yachay_plickers(config):
                     except Exception:
                         pass
 
-                # PANTALLA GIGANTE (overlay completo)
+                # PANTALLA GIGANTE DINAMICA — estilo Kahoot
                 if fs_on:
                     import streamlit.components.v1 as comp_giant
-                    img_html = ''
-                    if preg.get('imagen'):
-                        img_html = '<img src="data:image/png;base64,' + preg['imagen'] + '" style="max-width:500px;max-height:250px;border-radius:12px;margin:10px auto;display:block;">'
-                    opts = preg['opciones']
-                    giant_html = '''
-                    <style>
-                    * { margin:0; padding:0; box-sizing:border-box; }
-                    body { background:#0f0a2e; color:white; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
-                    .q-num { color:#a5b4fc; font-size:1.5rem; margin-bottom:10px; }
-                    .q-text { font-size:2.5rem; font-weight:bold; text-align:center; margin-bottom:20px; line-height:1.3; }
-                    .opts { display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:900px; width:100%; }
-                    .opt { padding:22px 30px; border-radius:14px; font-size:1.5rem; font-weight:bold; text-align:center; }
-                    .opt-a { background:#16a34a; } .opt-b { background:#2563eb; } .opt-c { background:#d97706; } .opt-d { background:#db2777; }
-                    </style>
-                    '''
-                    giant_body = f'''
-                    <div class='q-num'>Pregunta {pidx+1} de {total_p}</div>
-                    <div class='q-text'>{preg['pregunta']}</div>
-                    ''' + img_html + f'''
-                    <div class='opts'>
-                        <div class='opt opt-a'>A) {opts.get('A','')}</div>
-                        <div class='opt opt-b'>B) {opts.get('B','')}</div>
-                        <div class='opt opt-c'>C) {opts.get('C','')}</div>
-                        <div class='opt opt-d'>D) {opts.get('D','')}</div>
-                    </div>
-                    '''
-                    comp_giant.html(giant_html + giant_body + '<div style="margin-top:15px;text-align:center;"><button onclick="document.documentElement.requestFullscreen().catch(e=>{})" style="background:#7c3aed;color:white;border:none;padding:10px 25px;border-radius:10px;font-size:1.1rem;cursor:pointer;">⛶ Click aqui para pantalla completa</button></div>', height=750, scrolling=False)
+                    img_b64   = preg.get('imagen','')
+                    opts_g    = preg['opciones']
+                    t_seg_g   = int(quiz.get('tiempo_por_pregunta', 30))
+                    circ_g    = int(2*3.14159*38)
+                    pct_prog  = int((pidx+1)/total_p*100)
+                    img_tag_g = (f'<img src="data:image/png;base64,{img_b64}" '
+                                 'style="max-height:160px;border-radius:12px;'
+                                 'margin:6px auto;display:block;">'
+                                 if img_b64 else '')
+                    opt_cfg = [('A','#16a34a','▲'),('B','#2563eb','◆'),
+                               ('C','#d97706','●'),('D','#db2777','■')]
+                    cards_g = ''.join([
+                        (f'<div style="background:{cl};border-radius:14px;padding:16px 20px;'
+                         f'font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:10px;'
+                         f'transform:scale(0);animation:popOpt 0.5s cubic-bezier(0.34,1.56,0.64,1) '
+                         f'{0.1*(i+1):.1f}s forwards;box-shadow:0 6px 20px rgba(0,0,0,0.4);">'
+                         f'<span style="font-size:1.6rem;">{sh}</span>'
+                         f'<span>{lb}) {opts_g.get(lb,"")}</span></div>')
+                        for i,(lb,cl,sh) in enumerate(opt_cfg) if opts_g.get(lb)
+                    ])
+                    html_g = (
+                        '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
+                        '*{margin:0;padding:0;box-sizing:border-box}'
+                        'body{background:#0f0a2e;color:white;font-family:"Segoe UI",sans-serif;'
+                        'display:flex;flex-direction:column;min-height:100vh;overflow:hidden}'
+                        '.star{position:absolute;border-radius:50%;background:white;'
+                        'animation:twinkle linear infinite}'
+                        '@keyframes twinkle{0%,100%{opacity:0}50%{opacity:.7}}'
+                        '@keyframes popOpt{0%{transform:scale(0);opacity:0}80%{transform:scale(1.04)}'
+                        '100%{transform:scale(1);opacity:1}}'
+                        '@keyframes slideD{0%{transform:translateY(-20px);opacity:0}'
+                        '100%{transform:translateY(0);opacity:1}}'
+                        '</style></head><body>'
+                        '<div id="sc" style="position:fixed;top:0;left:0;width:100%;'
+                        'height:100%;pointer-events:none;z-index:0"></div>'
+                        # FS button
+                        '<button onclick="document.documentElement.requestFullscreen().catch(e=>{})" '
+                        'style="position:fixed;top:12px;right:12px;z-index:20;background:rgba(255,255,255,.15);'
+                        'color:white;border:1px solid rgba(255,255,255,.3);padding:6px 14px;'
+                        'border-radius:20px;cursor:pointer;font-size:.8rem;">⛶ Completa</button>'
+                        # Header
+                        '<div style="position:relative;z-index:2;display:flex;align-items:center;'
+                        'justify-content:space-between;padding:12px 20px;'
+                        'background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.12);">'
+                        '<span style="color:#a5b4fc;font-weight:700;">🎮 YACHAY QAWAY</span>'
+                        '<div style="display:flex;align-items:center;gap:10px;">'
+                        f'<span style="color:#a5b4fc;font-size:.85rem;">P.{pidx+1}/{total_p}</span>'
+                        '<div style="background:rgba(255,255,255,.15);border-radius:10px;height:7px;width:140px;">'
+                        f'<div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);'
+                        f'height:7px;border-radius:10px;width:{pct_prog}%"></div></div>'
+                        '</div></div>'
+                        # Timer
+                        '<div style="position:relative;z-index:2;display:flex;justify-content:center;'
+                        'margin:8px 0;">'
+                        f'<svg width="88" height="88" viewBox="0 0 88 88" '
+                        'style="filter:drop-shadow(0 0 10px rgba(167,139,250,.5))">'
+                        '<circle cx="44" cy="44" r="38" fill="none" '
+                        'stroke="rgba(255,255,255,.1)" stroke-width="7"/>'
+                        f'<circle id="tr" cx="44" cy="44" r="38" fill="none" '
+                        f'stroke="#a78bfa" stroke-width="7" stroke-linecap="round" '
+                        f'stroke-dasharray="{circ_g}" stroke-dashoffset="0" '
+                        'transform="rotate(-90 44 44)"/>'
+                        '</svg>'
+                        '<div id="tn" style="position:absolute;top:50%;left:50%;'
+                        f'transform:translate(-50%,-50%);font-size:1.9rem;font-weight:900;">'
+                        f'{t_seg_g}</div></div>'
+                        # Pregunta
+                        '<div style="position:relative;z-index:2;text-align:center;padding:6px 20px;">'
+                        f'<div style="color:#a5b4fc;font-size:.95rem;margin-bottom:4px;">Pregunta {pidx+1} de {total_p}</div>'
+                        f'<div style="font-size:1.9rem;font-weight:900;line-height:1.25;'
+                        'animation:slideD .5s ease both;">'
+                        + f'{preg["pregunta"]}</div>'
+                        + img_tag_g +
+                        '</div>'
+                        # Opciones
+                        '<div style="position:relative;z-index:2;display:grid;'
+                        'grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px;'
+                        f'max-width:980px;margin:0 auto;width:100%;">{cards_g}</div>'
+                        # Barra tiempo
+                        '<div style="position:fixed;bottom:0;left:0;width:100%;height:6px;'
+                        'background:rgba(255,255,255,.1);z-index:10;">'
+                        f'<div id="tf" style="height:6px;background:linear-gradient(90deg,#7c3aed,#ec4899);'
+                        'width:100%;transition:width .9s linear;"></div></div>'
+                        # Script
+                        f'<script>'
+                        f'var seg={t_seg_g},circ={circ_g};'
+                        'var tr=document.getElementById("tr");'
+                        'var tn=document.getElementById("tn");'
+                        'var tf=document.getElementById("tf");'
+                        # Stars
+                        'var sc=document.getElementById("sc");'
+                        'for(var i=0;i<50;i++){var s=document.createElement("div");'
+                        'var sz=(Math.random()*3+1);'
+                        's.className="star";'
+                        's.style.cssText="width:"+sz+"px;height:"+sz+"px;top:"+(Math.random()*100)+'
+                        '"%;left:"+(Math.random()*100)+"%;animation-duration:"+(Math.random()*4+2)+'
+                        '"s;animation-delay:"+(Math.random()*4)+"s;";sc.appendChild(s);}'
+                        # Timer tick
+                        f'function tick(){{tn.textContent=seg;'
+                        'var pct=seg/' + str(t_seg_g) + ';'
+                        'tr.style.strokeDashoffset=(circ*(1-pct));'
+                        'tf.style.width=(pct*100)+"%";'
+                        'if(pct>.5){tr.setAttribute("stroke","#a78bfa");}'
+                        'else if(pct>.25){tr.setAttribute("stroke","#f59e0b");}'
+                        'else{tr.setAttribute("stroke","#ef4444");}'
+                        'if(seg>0)seg--;else clearInterval(iv);}'
+                        'tick();var iv=setInterval(tick,1000);'
+                        '</script></body></html>'
+                    )
+                    comp_giant.html(html_g, height=720, scrolling=False)
 
                 # PANEL LATERAL: nombres que respondieron (en vivo)
                 resp_all = _plk_cargar_respuestas(sesion_id)
@@ -19440,6 +19679,80 @@ def tab_yachay_plickers(config):
                 puestos = {0: '1ro', 1: '2do', 2: '3ro'}
                 for i_r, r_item in enumerate(res):
                     r_item['Puesto'] = puestos.get(i_r, f'{i_r+1}to')
+                # ── PODIO ANIMADO TOP 3 ──────────────────────────────────
+                import streamlit.components.v1 as _comp_pod
+                top3 = res[:3]
+                while len(top3) < 3:
+                    top3.append({'Nombre':'—','Nota':0,'Correctas':0,'Total':tpr})
+                p1,p2,p3 = top3[0],top3[1],top3[2]
+                def _sn(n): return n.get('Nombre','').split()[-1][:14] if ' ' in n.get('Nombre','') else n.get('Nombre','')[:14]
+                podio_html = (
+                    '<style>'
+                    '*{margin:0;padding:0;box-sizing:border-box}'
+                    'body{background:linear-gradient(135deg,#0f0a2e,#1e1b4b);'
+                    'font-family:"Segoe UI",sans-serif;min-height:340px;display:flex;'
+                    'flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}'
+                    '.titulo{color:#a78bfa;font-size:1.5rem;font-weight:900;margin-bottom:18px;'
+                    'text-align:center;animation:fadeIn .8s ease both;}'
+                    '.podio{display:flex;align-items:flex-end;gap:12px;margin-bottom:16px;}'
+                    '.bloque{display:flex;flex-direction:column;align-items:center;}'
+                    '.medalla{font-size:2.2rem;margin-bottom:6px;'
+                    'animation:popIn .6s cubic-bezier(0.34,1.56,0.64,1) both;}'
+                    '.nombre{color:white;font-size:.85rem;font-weight:700;text-align:center;'
+                    'margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.5);}'
+                    '.nota{font-size:.8rem;color:rgba(255,255,255,.7);margin-bottom:4px;}'
+                    '.barra{border-radius:8px 8px 0 0;width:80px;display:flex;'
+                    'align-items:center;justify-content:center;font-size:1.1rem;'
+                    'font-weight:900;color:white;animation:growUp .8s ease both;}'
+                    '@keyframes growUp{0%{height:0!important;opacity:0}100%{opacity:1}}'
+                    '@keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}'
+                    '@keyframes fadeIn{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:none}}'
+                    '.confeti{position:absolute;width:8px;height:8px;border-radius:2px;'
+                    'animation:fall 2.5s ease-out forwards;}'
+                    '@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}'
+                    '100%{transform:translateY(340px) rotate(720deg);opacity:0}}'
+                    '#cn{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}'
+                    '</style>'
+                    '<div id="cn"></div>'
+                    '<div class="titulo">🏆 RANKING FINAL</div>'
+                    '<div class="podio">'
+                    # 2do lugar
+                    f'<div class="bloque">'
+                    f'<div class="medalla" style="animation-delay:.3s">🥈</div>'
+                    f'<div class="nombre">{_sn(p2)}</div>'
+                    f'<div class="nota">{p2["Nota"]}/20</div>'
+                    f'<div class="barra" style="height:100px;background:linear-gradient(180deg,#64748b,#475569);'
+                    f'animation-delay:.3s;">2°</div></div>'
+                    # 1er lugar
+                    f'<div class="bloque">'
+                    f'<div class="medalla" style="animation-delay:0s;font-size:2.8rem;">🥇</div>'
+                    f'<div class="nombre" style="font-size:1rem;">{_sn(p1)}</div>'
+                    f'<div class="nota" style="color:#fbbf24;font-weight:700;">{p1["Nota"]}/20</div>'
+                    f'<div class="barra" style="height:140px;background:linear-gradient(180deg,#f59e0b,#d97706);'
+                    f'animation-delay:0s;">1°</div></div>'
+                    # 3er lugar
+                    f'<div class="bloque">'
+                    f'<div class="medalla" style="animation-delay:.5s">🥉</div>'
+                    f'<div class="nombre">{_sn(p3)}</div>'
+                    f'<div class="nota">{p3["Nota"]}/20</div>'
+                    f'<div class="barra" style="height:75px;background:linear-gradient(180deg,#b45309,#92400e);'
+                    f'animation-delay:.5s;">3°</div></div>'
+                    '</div>'
+                    '<script>'
+                    'var cols=["#f59e0b","#ec4899","#3b82f6","#10b981","#8b5cf6","#ef4444"];'
+                    'var cn=document.getElementById("cn");'
+                    'for(var i=0;i<80;i++){'
+                    'var c=document.createElement("div");c.className="confeti";'
+                    'c.style.left=(Math.random()*100)+"%";'
+                    'c.style.background=cols[Math.floor(Math.random()*cols.length)];'
+                    'c.style.animationDelay=(Math.random()*2)+"s";'
+                    'c.style.animationDuration=(1.5+Math.random()*2)+"s";'
+                    'cn.appendChild(c);}'
+                    '</script>'
+                )
+                _comp_pod.html(podio_html, height=340, scrolling=False)
+                st.markdown("---")
+
                 dfr = pd.DataFrame(res)
                 cols_r = ['Puesto', 'Nombre', 'Correctas', 'Total', 'Nota', 'Detalle']
                 cols_r = [c for c in cols_r if c in dfr.columns]
@@ -19541,11 +19854,13 @@ def main():
         pantalla_login()
         st.stop()
 
-    # Restaurar datos desde Google Sheets si archivos locales no existen
+    # Restaurar datos desde Google Sheets + Drive si archivos locales no existen
     if 'datos_restaurados' not in st.session_state:
         try:
             _restaurar_datos_desde_gs()
             _restaurar_todos_archivos_binarios()  # escudos, fondo, mp3 pausas y qaway
+            # Restaurar desde Drive backups si GSheets no tenía los datos
+            _restaurar_desde_drive_backups()
             st.session_state.datos_restaurados = True
         except Exception:
             st.session_state.datos_restaurados = True
