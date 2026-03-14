@@ -18263,81 +18263,75 @@ def tab_pausa_activa(config):
                         st.warning("Pega el ID primero.")
 
             st.markdown("---")
-            st.caption("Sube un archivo MP3 para cada modelo. Se guardara en la carpeta de Drive configurada.")
+            st.info(
+                "**Cómo agregar música:**\n\n"
+                "1. Sube tu MP3 a Google Drive manualmente\n"
+                "2. Clic derecho → Compartir → 'Cualquiera con el enlace' → Copiar enlace\n"
+                "3. Pega el enlace abajo para cada modelo"
+            )
             for m in PAUSA_MODELOS:
-                c1, c2, c3 = st.columns([2, 2, 1])
-                with c1:
-                    st.markdown(f"**{m['nombre']}**")
-                    mp3_path = f"pausa_mp3_{m['id']}.mp3"
-                    _pcfg_m = pausa_cfg.get(str(m['id']), {})
-                    _has_local = Path(mp3_path).exists()
-                    _has_drive = bool(_pcfg_m.get('drive_id'))
-                    if _has_local and _has_drive:
-                        st.caption("🎵 MP3 local + ☁️ Drive ✅")
-                    elif _has_drive:
-                        st.caption("☁️ Drive ✅ (sin copia local)")
-                    elif _has_local:
-                        st.caption("🎵 Local ⚠️ (sin Drive)")
-                    else:
-                        st.caption("🔇 Sin música")
-                with c2:
-                    mp3_file = st.file_uploader(
-                        f"MP3 para modelo {m['id']}",
-                        type=["mp3", "ogg", "wav"],
-                        key=f"pausa_mp3_{m['id']}",
+                st.markdown(f"**{m['emoji_principal']} {m['nombre']}**")
+                _pcfg_m = pausa_cfg.get(str(m['id']), {})
+                _drive_url_guardada = _pcfg_m.get('drive_url', '')
+
+                # Mostrar estado
+                if _drive_url_guardada:
+                    st.success(f"🎵 URL configurada ✅")
+                else:
+                    st.caption("🔇 Sin música configurada")
+
+                c_url, c_btn, c_del = st.columns([5, 1, 1])
+                with c_url:
+                    _url_inp = st.text_input(
+                        "Link de Google Drive:",
+                        value=_drive_url_guardada,
+                        placeholder="https://drive.google.com/file/d/ID.../view",
+                        key=f"url_mp3_{m['id']}",
                         label_visibility="collapsed"
                     )
-                    if mp3_file is not None:
-                        ext_up = mp3_file.name.split(".")[-1].lower()
-                        audio_bytes = mp3_file.read()
-                        file_size_mb = len(audio_bytes) / (1024 * 1024)
-                        with st.spinner(f"☁️ Subiendo a Google Drive ({file_size_mb:.1f} MB)..."):
-                            saved_path, drive_fid = _pausa_guardar_mp3(m['id'], audio_bytes, ext_up)
-                        if drive_fid:
-                            pausa_cfg[str(m['id'])] = {'mp3': saved_path, 'drive_id': drive_fid}
-                            _guardar_pausa_config(pausa_cfg)
-                            st.success(f"✅ Audio subido a Google Drive ✅  (ID: {drive_fid[:12]}...)")
-                        else:
-                            pausa_cfg[str(m['id'])] = {'mp3': saved_path}
-                            _guardar_pausa_config(pausa_cfg)
-                            _err = st.session_state.pop('_drive_error', None)
-                            st.warning(f"⚠️ Guardado local OK. Drive falló: {_err or 'Error desconocido'}")
-                        st.rerun()
-                with c3:
-                    _pcfg_del = pausa_cfg.get(str(m['id']), {})
-                    _has_algo = Path(f"pausa_mp3_{m['id']}.mp3").exists() or bool(_pcfg_del.get('drive_id'))
-                    if _has_algo:
-                        if st.button("🗑️", key=f"del_mp3_{m['id']}", help="Eliminar MP3 (local + Drive)"):
+                with c_btn:
+                    if st.button("💾", key=f"save_url_{m['id']}", help="Guardar URL"):
+                        _url_clean = _url_inp.strip()
+                        # Convertir link de vista a link de descarga directa
+                        if "drive.google.com/file/d/" in _url_clean:
                             try:
-                                # Borrar local
-                                for _ext_d in ["mp3","ogg","wav"]:
-                                    _lp = Path(f"pausa_mp3_{m['id']}.{_ext_d}")
-                                    if _lp.exists():
-                                        _lp.unlink()
-                                # Borrar de Drive
-                                _drv_id = _pcfg_del.get('drive_id')
-                                if _drv_id:
-                                    _drive_borrar_mp3(_drv_id)
-                                pausa_cfg[str(m['id'])] = {'mp3': '', 'drive_id': ''}
-                                _guardar_pausa_config(pausa_cfg)
-                                # Limpiar en GSheets (drive_id + base64 antiguo)
-                                try:
-                                    gs = _gs()
-                                    if gs:
-                                        ws = gs._get_hoja('config')
-                                        if ws:
-                                            all_v = ws.get_all_values()
-                                            for ri, row in enumerate(all_v):
-                                                if row and row[0] in (
-                                                    f"drive_pausa_mp3_{m['id']}",
-                                                    f"bin_pausa_mp3_{m['id']}"
-                                                ):
-                                                    ws.update_cell(ri + 1, 2, '')
-                                except Exception:
-                                    pass
-                                st.rerun()
+                                _fid_url = _url_clean.split("/file/d/")[1].split("/")[0]
+                                _url_final = f"https://drive.google.com/uc?export=download&id={_fid_url}"
                             except Exception:
-                                pass
+                                _url_final = _url_clean
+                        elif "drive.google.com/open?id=" in _url_clean:
+                            _fid_url = _url_clean.split("id=")[1].split("&")[0]
+                            _url_final = f"https://drive.google.com/uc?export=download&id={_fid_url}"
+                        else:
+                            _url_final = _url_clean
+                        pausa_cfg[str(m['id'])] = {'drive_url': _url_final}
+                        _guardar_pausa_config(pausa_cfg)
+                        # Guardar también en GSheets para persistencia
+                        try:
+                            gs2 = _gs()
+                            if gs2:
+                                ws2 = gs2._get_hoja('config')
+                                if ws2:
+                                    _key2 = f"drive_url_pausa_{m['id']}"
+                                    _all2 = ws2.get_all_values()
+                                    _found2 = False
+                                    for _ri2, _row2 in enumerate(_all2):
+                                        if _row2 and _row2[0] == _key2:
+                                            ws2.update_cell(_ri2+1, 2, _url_final)
+                                            _found2 = True; break
+                                    if not _found2:
+                                        ws2.append_row([_key2, _url_final])
+                        except Exception:
+                            pass
+                        st.success("✅ URL guardada")
+                        st.rerun()
+                with c_del:
+                    if _drive_url_guardada:
+                        if st.button("🗑️", key=f"del_url_{m['id']}", help="Quitar URL"):
+                            pausa_cfg[str(m['id'])] = {'drive_url': ''}
+                            _guardar_pausa_config(pausa_cfg)
+                            st.rerun()
+                st.markdown("---" if m['id'] < len(PAUSA_MODELOS) else "")
 
     pausa_cfg = _cargar_pausa_config()
 
@@ -18523,16 +18517,20 @@ def tab_pausa_activa(config):
             _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                 <source src="{_audio_src}" type="{_mime}"></audio>'''
         else:
-            # Sin archivo local: intentar cargar desde Google Drive
-            _drive_fid = _pausa_cargar_drive_file_id(modelo['id'])
-            if not _drive_fid:
-                # También revisar en pausa_cfg local
-                _pcfg = _cargar_pausa_config()
-                _drive_fid = _pcfg.get(str(modelo['id']), {}).get('drive_id')
-            if _drive_fid:
-                _drive_url = _pausa_drive_url(_drive_fid)
+            # Sin archivo local: usar drive_url configurado manualmente
+            _pcfg_aud = _cargar_pausa_config()
+            _drive_url_conf = _pcfg_aud.get(str(modelo['id']), {}).get('drive_url', '')
+            if not _drive_url_conf:
+                # Fallback: intentar drive_id legacy
+                _drive_fid = _pausa_cargar_drive_file_id(modelo['id'])
+                if not _drive_fid:
+                    _pcfg2 = _cargar_pausa_config()
+                    _drive_fid = _pcfg2.get(str(modelo['id']), {}).get('drive_id')
+                if _drive_fid:
+                    _drive_url_conf = _pausa_drive_url(_drive_fid)
+            if _drive_url_conf:
                 _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
-                    <source src="{_drive_url}" type="audio/mpeg"></audio>'''
+                    <source src="{_drive_url_conf}" type="audio/mpeg"></audio>'''
 
 
         # Construir lista JSON de pasos para JS
