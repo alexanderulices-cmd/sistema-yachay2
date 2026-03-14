@@ -18155,23 +18155,30 @@ def tab_pausa_activa(config):
                                 _pasos.append("❌ Drive service retornó None")
                         except Exception as _e4:
                             _pasos.append(f"❌ Drive lectura error: {_e4}")
-                        # Paso 5: ESCRITURA Drive (prueba real con archivo pequeño)
+                        # Paso 5: ESCRITURA Drive — usando la carpeta configurada
                         try:
                             _svc2 = _drive_service()
+                            _folder_test = _drive_get_carpeta_raiz()
                             if _svc2:
                                 _fid_test = _svc2.upload(
                                     "yachay_test_write.txt",
-                                    b"YACHAY_TEST_OK", "text/plain")
+                                    b"YACHAY_TEST_OK", "text/plain",
+                                    parent_id=_folder_test)  # IMPORTANTE: usar carpeta compartida
                                 if _fid_test:
                                     _pasos.append("✅ Drive ESCRITURA OK — puede subir archivos")
                                     try: _svc2.delete(_fid_test)
                                     except Exception: pass
                                 else:
                                     _pasos.append("❌ Drive ESCRITURA FALLÓ — retornó None")
+                            else:
+                                if not _folder_test:
+                                    _pasos.append("⚠️ Carpeta no configurada — configura el ID abajo primero")
+                                else:
+                                    _pasos.append("❌ Drive service no disponible")
                         except Exception as _e5:
                             _cod5 = str(_e5)
                             if "403" in _cod5:
-                                _pasos.append("❌ Drive ESCRITURA: ERROR 403 — Drive API NO HABILITADA en Google Cloud Console")
+                                _pasos.append("❌ Drive ESCRITURA 403 — verifica que la carpeta esté compartida con: yachay-sync@yachay-pro.iam.gserviceaccount.com (permiso Editor)")
                             else:
                                 _pasos.append(f"❌ Drive escritura error: {_e5}")
                         st.session_state["_diag_drive"] = _pasos
