@@ -18098,21 +18098,58 @@ PAUSA_MODELOS = [
 ARCHIVO_PAUSA_MUSICA = "pausa_activa_musica.json"
 
 def _cargar_pausa_config():
+    """Carga config de música. Primero local, si no existe busca en GSheets."""
+    # 1. Intentar local
     try:
         if Path(ARCHIVO_PAUSA_MUSICA).exists():
             with open(ARCHIVO_PAUSA_MUSICA, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+                if data:
+                    return data
+    except Exception:
+        pass
+    # 2. Restaurar desde GSheets si no hay local
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja('config')
+            if ws:
+                for row in ws.get_all_values():
+                    if row and row[0] == 'pausa_musica_config' and len(row) > 1 and row[1]:
+                        data = json.loads(row[1])
+                        # Guardar localmente para próximas cargas
+                        with open(ARCHIVO_PAUSA_MUSICA, 'w', encoding='utf-8') as f:
+                            json.dump(data, f, ensure_ascii=False)
+                        return data
     except Exception:
         pass
     return {}
 
 def _guardar_pausa_config(data):
+    """Guarda config de música local + GSheets."""
     try:
         with open(ARCHIVO_PAUSA_MUSICA, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False)
-        return True
     except Exception:
-        return False
+        pass
+    # Sincronizar a GSheets para persistencia
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja('config')
+            if ws:
+                data_str = json.dumps(data, ensure_ascii=False)
+                all_v = ws.get_all_values()
+                found = False
+                for idx, row in enumerate(all_v):
+                    if row and row[0] == 'pausa_musica_config':
+                        ws.update_cell(idx + 1, 2, data_str)
+                        found = True; break
+                if not found:
+                    ws.append_row(['pausa_musica_config', data_str])
+    except Exception:
+        pass
+    return True
 
 def tab_pausa_activa(config):
     st.header("🏃 PAUSA ACTIVA")
