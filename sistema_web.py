@@ -11939,22 +11939,30 @@ def _drive_service():
 
         def list_files(self, q, fields="files(id,name)", page_size=5):
             import urllib.request as _r, urllib.parse as _p, json as _j
-            params = _p.urlencode({"q": q, "fields": fields, "pageSize": page_size})
+            params = _p.urlencode({"q": q, "fields": fields, "pageSize": page_size,
+                                   "supportsAllDrives": "true",
+                                   "includeItemsFromAllDrives": "true"})
             req = _r.Request(f"https://www.googleapis.com/drive/v3/files?{params}",
                              headers=self._headers)
             with _r.urlopen(req, timeout=15) as resp:
                 return _j.loads(resp.read()).get("files", [])
 
-        def create_folder(self, name):
+        def create_folder(self, name, parent_id=None):
             import urllib.request as _r, json as _j
-            body = _j.dumps({"name": name, "mimeType": "application/vnd.google-apps.folder"}).encode()
-            req = _r.Request("https://www.googleapis.com/drive/v3/files?fields=id",
-                             data=body, headers={**self._headers, "Content-Type": "application/json"})
+            meta = {"name": name, "mimeType": "application/vnd.google-apps.folder"}
+            if parent_id:
+                meta["parents"] = [parent_id]
+            body = _j.dumps(meta).encode()
+            req = _r.Request(
+                "https://www.googleapis.com/drive/v3/files"
+                "?fields=id&supportsAllDrives=true",
+                data=body,
+                headers={**self._headers, "Content-Type": "application/json"})
             with _r.urlopen(req, timeout=15) as resp:
                 return _j.loads(resp.read()).get("id")
 
         def upload(self, fname, data_bytes, mime, parent_id=None):
-            """Sube archivo usando multipart upload."""
+            """Sube archivo usando multipart upload con supportsAllDrives."""
             import urllib.request as _r, json as _j
             meta = {"name": fname}
             if parent_id:
@@ -11965,7 +11973,8 @@ def _drive_service():
                     meta_bytes + b"\r\n--" + boundary + b"\r\nContent-Type: " + mime.encode() +
                     b"\r\n\r\n" + data_bytes + b"\r\n--" + boundary + b"--")
             req = _r.Request(
-                "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",
+                "https://www.googleapis.com/upload/drive/v3/files"
+                "?uploadType=multipart&fields=id&supportsAllDrives=true",
                 data=body,
                 headers={**self._headers,
                          "Content-Type": f"multipart/related; boundary={boundary.decode()}"})
@@ -11975,7 +11984,8 @@ def _drive_service():
         def update(self, file_id, data_bytes, mime):
             import urllib.request as _r, json as _j
             req = _r.Request(
-                f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media",
+                f"https://www.googleapis.com/upload/drive/v3/files/{file_id}"
+                f"?uploadType=media&supportsAllDrives=true",
                 data=data_bytes,
                 headers={**self._headers, "Content-Type": mime})
             req.get_method = lambda: "PATCH"
