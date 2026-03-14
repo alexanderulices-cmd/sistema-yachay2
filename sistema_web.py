@@ -18694,6 +18694,13 @@ def tab_pausa_activa(config):
                         st.warning("Pega el ID primero.")
 
             st.markdown("---")
+            # DEBUG: mostrar lo que está realmente guardado en config
+            _cfg_debug = _cargar_pausa_config()
+            _modelos_con_url = [str(k) for k,v in _cfg_debug.items() if v.get('drive_url')]
+            if _cfg_debug:
+                st.caption(f"📊 Config guardada: {len(_cfg_debug)} entradas — IDs con URL: {_modelos_con_url}")
+            else:
+                st.caption("⚠️ Config vacía — las URLs no están llegando a GSheets")
             st.info(
                 "**Cómo agregar música:**\n\n"
                 "1. Sube tu MP3 a Google Drive manualmente\n"
@@ -18737,6 +18744,7 @@ def tab_pausa_activa(config):
                             _url_final = _url_clean
                         pausa_cfg[str(m['id'])] = {'drive_url': _url_final}
                         _guardar_pausa_config(pausa_cfg)
+                        st.session_state.pop('_pausa_cfg_cache', None)  # invalidar cache
                         # Guardar también en GSheets para persistencia
                         try:
                             gs2 = _gs()
@@ -18942,23 +18950,16 @@ def tab_pausa_activa(config):
         _mime = "audio/mpeg"
         _audio_tag = ""
         if _b64_audio:
-            # Audio local disponible — base64 directo (más rápido)
             _mime = "audio/mpeg" if _ext_audio == "mp3" else f"audio/{_ext_audio}"
             _audio_src = f"data:{_mime};base64,{_b64_audio}"
             _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                 <source src="{_audio_src}" type="{_mime}"></audio>'''
         else:
-            # Sin archivo local: usar drive_url configurado manualmente
-            _pcfg_aud = _cargar_pausa_config()
+            # Usar drive_url — cargar desde session_state cache (evita llamar GSheets cada vez)
+            if '_pausa_cfg_cache' not in st.session_state:
+                st.session_state['_pausa_cfg_cache'] = _cargar_pausa_config()
+            _pcfg_aud = st.session_state['_pausa_cfg_cache']
             _drive_url_conf = _pcfg_aud.get(str(modelo['id']), {}).get('drive_url', '')
-            if not _drive_url_conf:
-                # Fallback: intentar drive_id legacy
-                _drive_fid = _pausa_cargar_drive_file_id(modelo['id'])
-                if not _drive_fid:
-                    _pcfg2 = _cargar_pausa_config()
-                    _drive_fid = _pcfg2.get(str(modelo['id']), {}).get('drive_id')
-                if _drive_fid:
-                    _drive_url_conf = _pausa_drive_url(_drive_fid)
             if _drive_url_conf:
                 _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                     <source src="{_drive_url_conf}" type="audio/mpeg"></audio>'''
