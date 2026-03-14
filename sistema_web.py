@@ -12043,8 +12043,23 @@ def _drive_get_folder(folder_name):
     return _drive_get_carpeta_raiz()
 
 def _drive_folder_pausa():
-    """Retorna el ID de la carpeta configurada directamente — sin crear subcarpetas."""
-    return _drive_get_carpeta_raiz()
+    """Usa la subcarpeta YACHAY_PAUSA_MP3 si existe, si no usa la raíz directamente."""
+    raiz = _drive_get_carpeta_raiz()
+    if not raiz:
+        return None
+    # Buscar si ya existe la subcarpeta (puede haberla creado antes)
+    try:
+        svc = _drive_service()
+        if svc:
+            q = (f"name='YACHAY_PAUSA_MP3' and "
+                 f"mimeType='application/vnd.google-apps.folder' and "
+                 f"trashed=false and '{raiz}' in parents")
+            files = svc.list_files(q=q)
+            if files:
+                return files[0]["id"]
+    except Exception:
+        pass
+    return raiz  # Usar carpeta raíz si no hay subcarpeta
 
 def _drive_backup_json(nombre_archivo, datos_dict):
     """Sube un archivo JSON como backup a la carpeta YACHAY_BACKUP en Drive."""
@@ -12107,11 +12122,23 @@ def _drive_subir_mp3(modelo_id, audio_bytes, extension="mp3"):
         existing = svc.list_files(q=q)
         if existing:
             file_id = existing[0]["id"]
-            svc.update(file_id, audio_bytes, mime)
+            try:
+                svc.update(file_id, audio_bytes, mime)
+            except Exception as _eu:
+                st.session_state["_drive_error"] = f"update falló: {_eu}"
+                return None
         else:
-            file_id = svc.upload(fname, audio_bytes, mime, parent_id=folder_id)
+            try:
+                file_id = svc.upload(fname, audio_bytes, mime, parent_id=folder_id)
+            except Exception as _eup:
+                st.session_state["_drive_error"] = f"upload falló: {_eup}"
+                return None
         if file_id:
-            svc.set_public(file_id)
+            # set_public es opcional — si falla no bloquea el guardado
+            try:
+                svc.set_public(file_id)
+            except Exception:
+                pass  # El archivo se guardó igual, solo no será público
         return file_id
     except Exception as _e:
         st.session_state["_drive_error"] = f"_drive_subir_mp3: {_e}"
