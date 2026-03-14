@@ -3260,13 +3260,16 @@ import random as _random
 
 
 def generar_mensaje_asistencia(nombre, tipo, hora):
-    saludo = "Buenos días" if int(hora.split(':')[0]) < 12 else "Buenas tardes"
-    if tipo == "entrada":
-        em = "✅ ENTRADA"
-    elif tipo == "tardanza":
-        em = "⏰ TARDANZA"
-    else:
-        em = "🏁 SALIDA"
+    h = int(hora.split(':')[0]) if hora else 12
+    saludo = "Buenos días" if h < 12 else ("Buenas tardes" if h < 19 else "Buenas noches")
+    _TIPOS = {
+        "entrada":       "✅ ENTRADA MAÑANA",
+        "tardanza":      "⏰ TARDANZA",
+        "salida":        "🏁 SALIDA MAÑANA",
+        "entrada_tarde": "🌤️ ENTRADA TARDE",
+        "salida_tarde":  "🌙 SALIDA TARDE",
+    }
+    em = _TIPOS.get(tipo, f"📋 {tipo.replace('_',' ').upper()}")
     frase = _random.choice(FRASES_MOTIVACIONALES)
     return (f"{saludo}\n🏫 I.E. ALTERNATIVO YACHAY informa:\n"
             f"{em} registrada\n👤 {nombre}\n🕒 Hora: {hora}\n\n"
@@ -4533,9 +4536,17 @@ def tab_matricula(config):
                     st.caption("Grados: " + ", ".join(TODOS_LOS_GRADOS))
                     dn_areas_sel = ""
                 elif dn_nivel in ["INICIAL", "PRIMARIA"]:
-                    dn_g = st.selectbox("🎓 Grado Asignado:",
-                                         ["N/A"] + NIVELES_GRADOS.get(dn_nivel, []),
-                                         key="dn_grado")
+                    _grados_niv = ["N/A"] + NIVELES_GRADOS.get(dn_nivel, [])
+                    dn_g_base = st.selectbox("🎓 Grado Asignado:",
+                                         _grados_niv, key="dn_grado")
+                    if dn_g_base and dn_g_base != "N/A":
+                        dn_sec = st.selectbox("🔤 Sección:",
+                                         ["Única", "A", "B", "C", "D"],
+                                         key="dn_seccion_reg")
+                        dn_g = f"{dn_g_base} — Sección {dn_sec}" if dn_sec != "Única" else dn_g_base
+                        st.caption(f"✅ Asignado a: **{dn_g}**")
+                    else:
+                        dn_g = dn_g_base
                 else:
                     # SECUNDARIA y PREUNIVERSITARIO: acceso a TODOS los grados de ambos niveles
                     dn_g = "ALL_SEC_PREU"
@@ -4996,7 +5007,14 @@ def tab_asistencias():
     _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb"}
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
     modo_label = _modo.replace('_', ' ')
-    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>📌 Modo: {modo_label} | Horario: {HORARIOS[horario_sel]['nombre']} — Tardanza auto después de {limite}</div>", unsafe_allow_html=True)
+    import datetime as _dt_asis
+    _dia_semana = hora_peru().weekday()  # 5=sábado, 6=domingo
+    _es_sabado  = (_dia_semana == 5)
+    _info_horario = (
+        f"📌 Modo: {modo_label} | {HORARIOS[horario_sel]['nombre']} — Tardanza después de {limite} | "
+        f"{'📅 SÁBADO — Solo Entrada Mañana y Salida Tarde (sin hora fija)' if _es_sabado else '⏰ Lunes–Viernes: E.Mañana 7:30–8:05 | S.Mañana 13:00–14:20 | E.Tarde 14:30–15:10 | S.Tarde 18:40–19:30'}"
+    )
+    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>{_info_horario}</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -5368,9 +5386,10 @@ def tab_asistencias():
                     st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
 
             if sin_celular:
-                with st.expander(f"⚠️ {len(sin_celular)} sin celular registrado"):
+                with st.expander(f"⚠️ {len(sin_celular)} sin celular — verificar en matrícula/docentes"):
+                    st.caption("💡 Para que aparezca el botón WA, el alumno debe tener 'Celular_Apoderado' en matrícula o el docente 'Celular' en su ficha.")
                     for s in sin_celular:
-                        st.caption(f"• {s}")
+                        st.write(f"• {s}")
 
             _total_enviados = len(st.session_state.wa_enviados)
             if pendientes == 0 and _total_enviados > 0:
@@ -5447,8 +5466,12 @@ def _registrar_asistencia_rapida(dni):
             tiene_salida    = reg_hoy.get('salida')
             tiene_ent_tarde = reg_hoy.get('entrada_tarde')
 
-            # ── ¿Es turno tarde? → desde las 14:10 ──────────────────
+            # ── ¿Es turno tarde? → desde las 14:30 ──────────────────
             es_turno_tarde = (_mins_ahora >= HORA_ENTRADA_TARDE_MIN)
+            # Sábado: no hay turno tarde fijo (solo entrada mañana + salida)
+            _hoy_sabado = (hora_peru().weekday() == 5)
+            if _hoy_sabado:
+                es_turno_tarde = False
 
             if es_turno_tarde:
                 # Registro desde las 14:10 → siempre ENTRADA TARDE
@@ -13833,11 +13856,21 @@ def _semanas_del_mes(mes, anio=None):
 # Horario Invierno: hasta 08:15 = puntual, desde 08:16 = TARDANZA
 # Turno tarde:      desde 14:10 = ENTRADA TARDE
 HORARIOS = {
-    'normal':   {'limite': '08:10', 'nombre': '☀️ Normal (8:10am)',   'minutos': 8*60+10},
-    'invierno': {'limite': '08:15', 'nombre': '❄️ Invierno (8:15am)', 'minutos': 8*60+15},
+    'normal':   {'limite': '08:05', 'nombre': '☀️ Normal (8:05am)',   'minutos': 8*60+5},
+    'invierno': {'limite': '08:10', 'nombre': '❄️ Invierno (8:10am)', 'minutos': 8*60+10},
 }
-# Minuto exacto desde el cual una entrada se considera TURNO TARDE (14:10)
-HORA_ENTRADA_TARDE_MIN = 14 * 60 + 10
+# ── Ventanas de tiempo reales del colegio ────────────────────────────────
+# Entrada mañana:  07:30 – 08:05  (después de 08:05 = tardanza)
+# Salida mañana:   13:00 – 14:20
+# Entrada tarde:   14:30 – 15:10
+# Salida tarde:    18:40 – 19:30
+# Sábados: solo entrada mañana y salida (sin hora fija)
+HORA_INICIO_MANANA_MIN  = 7  * 60 + 30   # 07:30
+HORA_FIN_MANANA_MIN     = 14 * 60 + 20   # 14:20 (fin salida mañana)
+HORA_ENTRADA_TARDE_MIN  = 14 * 60 + 30   # 14:30 → inicio turno tarde
+HORA_FIN_ENTRADA_TARDE  = 15 * 60 + 10   # 15:10
+HORA_INICIO_SALIDA_TARDE= 18 * 60 + 40   # 18:40
+HORA_FIN_SALIDA_TARDE   = 19 * 60 + 30   # 19:30
 
 
 def _horario_activo():
