@@ -18730,16 +18730,26 @@ def tab_pausa_activa(config):
                 with c_btn:
                     if st.button("💾", key=f"save_url_{m['id']}", help="Guardar URL"):
                         _url_clean = _url_inp.strip()
-                        # Convertir link de vista a link de descarga directa
+                        # Extraer file ID y construir URL de streaming directa
+                        _fid_url = None
                         if "drive.google.com/file/d/" in _url_clean:
                             try:
                                 _fid_url = _url_clean.split("/file/d/")[1].split("/")[0]
-                                _url_final = f"https://drive.google.com/uc?export=download&id={_fid_url}"
                             except Exception:
-                                _url_final = _url_clean
-                        elif "drive.google.com/open?id=" in _url_clean:
-                            _fid_url = _url_clean.split("id=")[1].split("&")[0]
-                            _url_final = f"https://drive.google.com/uc?export=download&id={_fid_url}"
+                                pass
+                        elif "drive.google.com/open?id=" in _url_clean or "id=" in _url_clean:
+                            try:
+                                _fid_url = _url_clean.split("id=")[1].split("&")[0]
+                            except Exception:
+                                pass
+                        elif "drive.google.com/uc" in _url_clean and "id=" in _url_clean:
+                            try:
+                                _fid_url = _url_clean.split("id=")[1].split("&")[0]
+                            except Exception:
+                                pass
+                        if _fid_url:
+                            # confirm=t evita la página de "no se puede analizar" de Drive
+                            _url_final = f"https://drive.google.com/uc?export=download&confirm=t&id={_fid_url}"
                         else:
                             _url_final = _url_clean
                         pausa_cfg[str(m['id'])] = {'drive_url': _url_final}
@@ -18963,14 +18973,17 @@ def tab_pausa_activa(config):
             _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                 <source src="{_audio_src}" type="{_mime}"></audio>'''
         else:
-            # Usar drive_url — cargar desde session_state cache (evita llamar GSheets cada vez)
-            if '_pausa_cfg_cache' not in st.session_state:
-                st.session_state['_pausa_cfg_cache'] = _cargar_pausa_config()
-            _pcfg_aud = st.session_state['_pausa_cfg_cache']
+            # Usar drive_url del caché
+            _pcfg_aud = st.session_state.get('_pausa_cfg_cache') or _cargar_pausa_config()
             _drive_url_conf = _pcfg_aud.get(str(modelo['id']), {}).get('drive_url', '')
             if _drive_url_conf:
+                # Asegurar formato correcto para streaming — añadir confirm=t
+                if 'drive.google.com/uc' in _drive_url_conf and 'confirm' not in _drive_url_conf:
+                    _drive_url_conf += '&confirm=t'
                 _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
-                    <source src="{_drive_url_conf}" type="audio/mpeg"></audio>'''
+                    <source src="{_drive_url_conf}" type="audio/mpeg">
+                    <source src="{_drive_url_conf}" type="audio/ogg">
+                    </audio>'''
 
 
         # Construir lista JSON de pasos para JS
