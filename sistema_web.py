@@ -992,6 +992,23 @@ section[data-testid="stSidebar"] .stMarkdown h1 {
     box-shadow: 0 6px 20px rgba(5,150,105,0.3) !important;
 }
 
+/* === BOTONES PELIGROSOS (BORRAR, CERRAR) — ROJO SIEMPRE VISIBLE === */
+button[data-testid="baseButton-primary"][kind="primary"] {
+    background: linear-gradient(135deg,#1a56db,#2563eb) !important;
+    color: white !important; -webkit-text-fill-color: white !important;
+}
+/* Forzar rojo en botones específicos por su key interno */
+[data-testid="stButton"]:has(> button[aria-label*="BORRAR"]) > button,
+[data-testid="stButton"]:has(> button[aria-label*="Cerrar"]) > button {
+    background: linear-gradient(135deg,#dc2626,#b91c1c) !important;
+    color: white !important; -webkit-text-fill-color: white !important;
+    border: 2px solid #991b1b !important;
+    font-weight: 900 !important;
+    min-height: 52px !important;
+    font-size: 1rem !important;
+}
+/* Detectar por texto del botón vía JS en el HTML */
+
 /* === RADIO BUTTONS === */
 .stRadio > div { gap: 8px; }
 .stRadio [role="radiogroup"] > label {
@@ -3254,8 +3271,8 @@ def generar_link_whatsapp(tel, msg):
     elif not t.startswith("51"):
         t = "51" + t
     msg_encoded = urllib.parse.quote(msg.encode('utf-8'), safe=b'')
-    # whatsapp:// abre directamente la app de escritorio
-    return f"whatsapp://send?phone={t}&text={msg_encoded}"
+    # wa.me funciona en escritorio (abre WA Web) y en celular (abre la app)
+    return f"https://wa.me/{t}?text={msg_encoded}"
 
 
 FRASES_MOTIVACIONALES = [
@@ -5390,21 +5407,23 @@ def tab_asistencias():
 
                 pendientes += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
-                link = generar_link_whatsapp(cel, msg)
+                t_cel = ''.join(c for c in cel if c.isdigit())
+                if len(t_cel) == 9: t_cel = "51" + t_cel
+                elif not t_cel.startswith("51"): t_cel = "51" + t_cel
+                msg_enc = urllib.parse.quote(msg.encode('utf-8'), safe=b'')
+                link_wa = f"https://wa.me/{t_cel}?text={msg_enc}"
 
-                # Un solo botón: abre WA + desaparece automáticamente
                 col_wa, col_info = st.columns([5, 2])
                 with col_wa:
                     btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
                     if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
                                  use_container_width=True, type="primary"):
-                        # Abrir WhatsApp en nueva pestaña via JS
+                        # window.parent.open salta el iframe — no bloqueado por browser
                         import streamlit.components.v1 as _cwav
                         _cwav.html(
-                            f'<script>window.open("{link}","_blank");</script>',
+                            f'<script>window.parent.open("{link_wa}","_blank");</script>',
                             height=0
                         )
-                        # Marcar como enviado → desaparece en próximo render
                         st.session_state.wa_enviados.add(clave_envio)
                         st.rerun()
                 with col_info:
@@ -5442,7 +5461,16 @@ def tab_asistencias():
         st.markdown("---")
         # Solo admin puede borrar
         if puede_borrar():
-            if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="secondary",
+            st.markdown("""<style>
+            div[data-testid="stButton"]:has(button[kind="secondary"][data-testid="baseButton-secondary"]) button,
+            button[key="borrar_asist"] {
+                background: #dc2626 !important; background-color: #dc2626 !important;
+                color: white !important; -webkit-text-fill-color: white !important;
+                border: 2px solid #b91c1c !important; font-weight: 800 !important;
+            }
+            </style>""", unsafe_allow_html=True)
+            st.markdown('<style>#borrar_asist_wrap button{background:#dc2626!important;color:white!important;-webkit-text-fill-color:white!important;border:2px solid #b91c1c!important;font-weight:800!important;}</style>', unsafe_allow_html=True)
+            if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="primary",
                          use_container_width=True, key="borrar_asist"):
                 BaseDatos.borrar_asistencias_hoy()
                 st.session_state.wa_enviados = set()
@@ -18491,6 +18519,97 @@ PAUSA_MODELOS = [
 
 ARCHIVO_PAUSA_MUSICA = "pausa_activa_musica.json"
 
+def _gs_guardar_mp3_chunks(modelo_id, audio_b64, extension="mp3"):
+    """Guarda MP3 en GSheets por chunks — escritura en batch para mayor velocidad."""
+    try:
+        gs = _gs()
+        if not gs: return False
+        ws = gs._get_hoja('config')
+        if not ws: return False
+        CHUNK = 45000
+        chunks = [audio_b64[i:i+CHUNK] for i in range(0, len(audio_b64), CHUNK)]
+        meta_val = f"{len(chunks)}|{extension}|{len(audio_b64)}"
+
+        # Leer todas las filas una sola vez
+        all_v = ws.get_all_values()
+        rows_idx = {row[0]: idx for idx, row in enumerate(all_v) if row}
+
+        # Construir lista de filas a actualizar y nuevas filas a agregar
+        updates = []   # (row_idx, value)
+        new_rows = []  # [key, value]
+
+        meta_key = f"mp3_meta_{modelo_id}"
+        if meta_key in rows_idx:
+            updates.append((rows_idx[meta_key]+1, meta_val))
+        else:
+            new_rows.append([meta_key, meta_val])
+
+        for ci, chunk in enumerate(chunks):
+            ck = f"mp3_chunk_{modelo_id}_{ci}"
+            if ck in rows_idx:
+                updates.append((rows_idx[ck]+1, chunk))
+            else:
+                new_rows.append([ck, chunk])
+
+        # Aplicar updates en batch
+        if updates:
+            cell_list = []
+            for row_n, val in updates:
+                cell = ws.cell(row_n, 2)
+                cell.value = val
+                cell_list.append(cell)
+            ws.update_cells(cell_list)
+
+        # Agregar filas nuevas en un solo append
+        if new_rows:
+            ws.append_rows(new_rows)
+
+        return True
+    except Exception as _e:
+        st.session_state['_mp3_save_error'] = str(_e)
+        return False
+
+def _gs_cargar_mp3_chunks(modelo_id):
+    """Restaura MP3 desde chunks en GSheets. Retorna (b64, extension) o (None, None)."""
+    try:
+        gs = _gs()
+        if not gs: return None, None
+        ws = gs._get_hoja('config')
+        if not ws: return None, None
+        all_v = ws.get_all_values()
+        rows = {row[0]: row[1] for row in all_v if row and len(row)>1}
+        meta_key = f"mp3_meta_{modelo_id}"
+        if meta_key not in rows: return None, None
+        parts = rows[meta_key].split("|")
+        n_chunks = int(parts[0])
+        extension = parts[1] if len(parts)>1 else "mp3"
+        chunks = []
+        for ci in range(n_chunks):
+            ck = f"mp3_chunk_{modelo_id}_{ci}"
+            if ck not in rows: return None, None
+            chunks.append(rows[ck])
+        return "".join(chunks), extension
+    except Exception:
+        return None, None
+
+def _restaurar_mp3_desde_gs(modelo_id):
+    """Restaura MP3 local desde GSheets si no existe. Retorna True si se restauró."""
+    for ext in ["mp3","ogg","wav"]:
+        if Path(f"pausa_mp3_{modelo_id}.{ext}").exists():
+            return True  # ya existe
+    b64, ext = _gs_cargar_mp3_chunks(modelo_id)
+    if b64 and ext:
+        try:
+            import base64 as _b64m
+            audio_bytes = _b64m.b64decode(b64)
+            path = f"pausa_mp3_{modelo_id}.{ext}"
+            with open(path, "wb") as f:
+                f.write(audio_bytes)
+            return True
+        except Exception:
+            pass
+    return False
+
 def _cargar_pausa_config():
     """Carga config de música. Primero local, si no existe busca en GSheets."""
     # 1. Intentar local
@@ -18707,80 +18826,68 @@ def tab_pausa_activa(config):
                 "2. Clic derecho → Compartir → 'Cualquiera con el enlace' → Copiar enlace\n"
                 "3. Pega el enlace abajo para cada modelo"
             )
+            # Restaurar MP3s desde GSheets al abrir
+            for _mid in range(1, len(PAUSA_MODELOS)+1):
+                _restaurar_mp3_desde_gs(_mid)
+
             for m in PAUSA_MODELOS:
-                st.markdown(f"**{m['emoji_principal']} {m['nombre']}**")
-                _pcfg_m = pausa_cfg.get(str(m['id']), {})
-                _drive_url_guardada = _pcfg_m.get('drive_url', '')
-
-                # Mostrar estado
-                if _drive_url_guardada:
-                    st.success(f"🎵 URL configurada ✅")
-                else:
-                    st.caption("🔇 Sin música configurada")
-
-                c_url, c_btn, c_del = st.columns([5, 1, 1])
-                with c_url:
-                    _url_inp = st.text_input(
-                        "Link de Google Drive:",
-                        value=_drive_url_guardada,
-                        placeholder="https://drive.google.com/file/d/ID.../view",
-                        key=f"url_mp3_{m['id']}",
+                c_info, c_up, c_del = st.columns([2, 3, 1])
+                with c_info:
+                    _tiene_local = any(Path(f"pausa_mp3_{m['id']}.{ext}").exists()
+                                      for ext in ["mp3","ogg","wav"])
+                    st.markdown(f"**{m['emoji_principal']} {m['nombre']}**")
+                    if _tiene_local:
+                        st.success("🎵 MP3 listo ✅")
+                    else:
+                        st.caption("🔇 Sin música")
+                with c_up:
+                    _mp3_up = st.file_uploader(
+                        f"MP3", type=["mp3","ogg","wav"],
+                        key=f"mp3up_{m['id']}",
                         label_visibility="collapsed"
                     )
-                with c_btn:
-                    if st.button("💾", key=f"save_url_{m['id']}", help="Guardar URL"):
-                        _url_clean = _url_inp.strip()
-                        # Extraer file ID y construir URL de streaming directa
-                        _fid_url = None
-                        if "drive.google.com/file/d/" in _url_clean:
-                            try:
-                                _fid_url = _url_clean.split("/file/d/")[1].split("/")[0]
-                            except Exception:
-                                pass
-                        elif "drive.google.com/open?id=" in _url_clean or "id=" in _url_clean:
-                            try:
-                                _fid_url = _url_clean.split("id=")[1].split("&")[0]
-                            except Exception:
-                                pass
-                        elif "drive.google.com/uc" in _url_clean and "id=" in _url_clean:
-                            try:
-                                _fid_url = _url_clean.split("id=")[1].split("&")[0]
-                            except Exception:
-                                pass
-                        if _fid_url:
-                            # confirm=t evita la página de "no se puede analizar" de Drive
-                            _url_final = f"https://drive.google.com/uc?export=download&confirm=t&id={_fid_url}"
+                    if _mp3_up is not None:
+                        import base64 as _b64m2
+                        _audio_bytes_up = _mp3_up.read()
+                        _ext_up = _mp3_up.name.split(".")[-1].lower()
+                        _sz_mb = len(_audio_bytes_up)/(1024*1024)
+                        # 1. Guardar local
+                        _path_up = f"pausa_mp3_{m['id']}.{_ext_up}"
+                        with open(_path_up, "wb") as _f_up:
+                            _f_up.write(_audio_bytes_up)
+                        # 2. Guardar en GSheets por chunks (persiste entre reinicios)
+                        with st.spinner(f"Guardando {_sz_mb:.1f}MB en Google Sheets..."):
+                            _b64_up = _b64m2.b64encode(_audio_bytes_up).decode("utf-8")
+                            _ok_gs = _gs_guardar_mp3_chunks(m['id'], _b64_up, _ext_up)
+                        if _ok_gs:
+                            st.success(f"✅ Guardado en GSheets ({_sz_mb:.1f}MB)")
                         else:
-                            _url_final = _url_clean
-                        pausa_cfg[str(m['id'])] = {'drive_url': _url_final}
-                        _guardar_pausa_config(pausa_cfg)
-                        st.session_state.pop('_pausa_cfg_cache', None)  # invalidar cache
-                        # Guardar también en GSheets para persistencia
-                        try:
-                            gs2 = _gs()
-                            if gs2:
-                                ws2 = gs2._get_hoja('config')
-                                if ws2:
-                                    _key2 = f"drive_url_pausa_{m['id']}"
-                                    _all2 = ws2.get_all_values()
-                                    _found2 = False
-                                    for _ri2, _row2 in enumerate(_all2):
-                                        if _row2 and _row2[0] == _key2:
-                                            ws2.update_cell(_ri2+1, 2, _url_final)
-                                            _found2 = True; break
-                                    if not _found2:
-                                        ws2.append_row([_key2, _url_final])
-                        except Exception:
-                            pass
-                        st.success("✅ URL guardada")
+                            st.warning("⚠️ Solo local — GSheets falló")
+                        st.session_state.pop('_pausa_cfg_cache', None)
                         st.rerun()
                 with c_del:
-                    if _drive_url_guardada:
-                        if st.button("🗑️", key=f"del_url_{m['id']}", help="Quitar URL"):
-                            pausa_cfg[str(m['id'])] = {'drive_url': ''}
-                            _guardar_pausa_config(pausa_cfg)
+                    if any(Path(f"pausa_mp3_{m['id']}.{ext}").exists()
+                           for ext in ["mp3","ogg","wav"]):
+                        if st.button("🗑️", key=f"del_mp3u_{m['id']}", help="Eliminar"):
+                            for _ext_d in ["mp3","ogg","wav"]:
+                                _lp = Path(f"pausa_mp3_{m['id']}.{_ext_d}")
+                                if _lp.exists(): _lp.unlink()
+                            # También borrar de GSheets
+                            try:
+                                _gs_inst = _gs()
+                                if _gs_inst:
+                                    _ws_del = _gs_inst._get_hoja('config')
+                                    if _ws_del:
+                                        _all_del = _ws_del.get_all_values()
+                                        for _ri_d, _row_d in enumerate(_all_del):
+                                            if _row_d and (
+                                                _row_d[0] == f"mp3_meta_{m['id']}" or
+                                                _row_d[0].startswith(f"mp3_chunk_{m['id']}_")
+                                            ):
+                                                _ws_del.update_cell(_ri_d+1, 2, '')
+                            except Exception:
+                                pass
                             st.rerun()
-                st.markdown("---" if m['id'] < len(PAUSA_MODELOS) else "")
 
     pausa_cfg = _cargar_pausa_config()
 
@@ -18957,13 +19064,15 @@ def tab_pausa_activa(config):
         total_pasos = len(pasos)
 
         # Botón cerrar arriba
-        if st.button("✖ Cerrar Pausa Activa", key="pausa_cerrar_top"):
+        st.markdown('<style>div:has(button[data-testid="baseButton-secondary"]) button{background:#dc2626!important;color:white!important;-webkit-text-fill-color:white!important;font-weight:800!important;}</style>', unsafe_allow_html=True)
+        if st.button("✖ Cerrar Pausa Activa", key="pausa_cerrar_top", type="primary"):
             st.session_state['_pausa_activa']    = False
             st.session_state['_pausa_modelo_id'] = None
             st.session_state['_pausa_paso_actual'] = 0
             st.rerun()
 
-        # Preparar audio: primero buscar local, luego Drive URL
+        # Preparar audio — restaurar desde GSheets si no existe local
+        _restaurar_mp3_desde_gs(modelo['id'])
         _b64_audio, _ext_audio = _pausa_cargar_mp3_b64(modelo['id'])
         _mime = "audio/mpeg"
         _audio_tag = ""
@@ -18972,18 +19081,6 @@ def tab_pausa_activa(config):
             _audio_src = f"data:{_mime};base64,{_b64_audio}"
             _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
                 <source src="{_audio_src}" type="{_mime}"></audio>'''
-        else:
-            # Usar drive_url del caché
-            _pcfg_aud = st.session_state.get('_pausa_cfg_cache') or _cargar_pausa_config()
-            _drive_url_conf = _pcfg_aud.get(str(modelo['id']), {}).get('drive_url', '')
-            if _drive_url_conf:
-                # Asegurar formato correcto para streaming — añadir confirm=t
-                if 'drive.google.com/uc' in _drive_url_conf and 'confirm' not in _drive_url_conf:
-                    _drive_url_conf += '&confirm=t'
-                _audio_tag = f'''<audio id="bgm" loop autoplay style="display:none">
-                    <source src="{_drive_url_conf}" type="audio/mpeg">
-                    <source src="{_drive_url_conf}" type="audio/ogg">
-                    </audio>'''
 
 
         # Construir lista JSON de pasos para JS
@@ -19490,7 +19587,7 @@ if(document.getElementById('bgm')) {{
                 st.markdown('</div>', unsafe_allow_html=True)
         with nc2:
             st.markdown('<div id="nav_cerrar">', unsafe_allow_html=True)
-            if st.button("✖  Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar"):
+            if st.button("✖ Cerrar Pausa Activa", use_container_width=True, key="pausa_cerrar", type="primary"):
                 st.session_state['_pausa_activa']    = False
                 st.session_state['_pausa_modelo_id'] = None
                 st.session_state['_pausa_paso_actual'] = 0
@@ -20492,6 +20589,50 @@ def main():
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
+
+    # JS global — pinta rojo los botones de peligro por texto
+    import streamlit.components.v1 as _comp_gjs
+    _comp_gjs.html("""<script>
+    (function fixDangerButtons() {
+        var ROJO = {
+            bg: 'linear-gradient(135deg,#dc2626,#b91c1c)',
+            bgColor: '#dc2626',
+            border: '2px solid #991b1b',
+            color: 'white'
+        };
+        var KEYWORDS = ['BORRAR','Cerrar Pausa','CERRAR'];
+        function apply() {
+            try {
+                var btns = window.parent.document.querySelectorAll('button');
+                btns.forEach(function(btn) {
+                    var txt = btn.innerText || '';
+                    for (var i=0; i<KEYWORDS.length; i++) {
+                        if (txt.indexOf(KEYWORDS[i]) !== -1) {
+                            btn.style.setProperty('background', ROJO.bg, 'important');
+                            btn.style.setProperty('background-color', ROJO.bgColor, 'important');
+                            btn.style.setProperty('color', ROJO.color, 'important');
+                            btn.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
+                            btn.style.setProperty('border', ROJO.border, 'important');
+                            btn.style.setProperty('font-weight', '900', 'important');
+                            btn.style.setProperty('min-height', '52px', 'important');
+                            btn.style.setProperty('font-size', '1rem', 'important');
+                            var p = btn.querySelector('p');
+                            if (p) {
+                                p.style.setProperty('color', ROJO.color, 'important');
+                                p.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
+                            }
+                            break;
+                        }
+                    }
+                });
+            } catch(e) {}
+        }
+        apply();
+        [100, 300, 600, 1200, 2500].forEach(function(t){ setTimeout(apply, t); });
+        var obs = new MutationObserver(function(){ setTimeout(apply, 100); });
+        try { obs.observe(window.parent.document.body, {childList:true, subtree:true}); } catch(e){}
+    })();
+    </script>""", height=0)
 
     # Restaurar datos desde Google Sheets + Drive si archivos locales no existen
     if 'datos_restaurados' not in st.session_state:
