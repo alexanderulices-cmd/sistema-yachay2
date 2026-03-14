@@ -12039,39 +12039,12 @@ def _drive_guardar_carpeta_raiz(folder_id):
     return False
 
 def _drive_get_folder(folder_name):
-    """Obtiene o crea una subcarpeta dentro de la carpeta raiz configurada."""
-    try:
-        svc = _drive_service()
-        if not svc:
-            return None
-        parent_id = _drive_get_carpeta_raiz()
-        q = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
-        if parent_id:
-            q += f" and '{parent_id}' in parents"
-        files = svc.list_files(q=q)
-        if files:
-            return files[0]["id"]
-        import urllib.request as _r2, json as _j2
-        meta = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
-        if parent_id:
-            meta["parents"] = [parent_id]
-        tok = _drive_get_token()
-        req = _r2.Request(
-            "https://www.googleapis.com/drive/v3/files?fields=id",
-            data=_j2.dumps(meta).encode(),
-            headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
-        with _r2.urlopen(req, timeout=15) as resp:
-            return _j2.loads(resp.read()).get("id")
-    except Exception as _e:
-        st.session_state["_drive_error"] = f"_drive_get_folder: {_e}"
-        return None
+    """Retorna la carpeta raiz configurada — no crea subcarpetas para evitar 403."""
+    return _drive_get_carpeta_raiz()
 
 def _drive_folder_pausa():
-    """Subcarpeta YACHAY_PAUSA_MP3 dentro de la carpeta configurada."""
-    carpeta_raiz = _drive_get_carpeta_raiz()
-    if not carpeta_raiz:
-        return None  # Sin carpeta raiz no se puede subir
-    return _drive_get_folder("YACHAY_PAUSA_MP3")
+    """Retorna el ID de la carpeta configurada directamente — sin crear subcarpetas."""
+    return _drive_get_carpeta_raiz()
 
 def _drive_backup_json(nombre_archivo, datos_dict):
     """Sube un archivo JSON como backup a la carpeta YACHAY_BACKUP en Drive."""
