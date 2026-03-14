@@ -1018,33 +1018,47 @@ def reproducir_sonido_asistencia():
 
 
 def _beep_html(script_body):
-    """Helper: ejecuta JS de audio via components.v1.html a volumen MÁXIMO."""
+    """Sonido MÁXIMO: 3 osciladores en paralelo + compresor + master gain."""
     import streamlit.components.v1 as _c
     _c.html(f"""
     <script>
     (function() {{
         try {{
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            // Compresor al máximo para asegurar volumen alto
+            var AudioCtx = window.AudioContext || window.webkitAudioContext;
+            var ctx = new AudioCtx();
+            // Desbloquear contexto en móviles
+            if (ctx.state === 'suspended') {{ ctx.resume(); }}
+
+            // Cadena: osciladores → gain individual → master gain → compresor → destino
+            var master = ctx.createGain();
+            master.gain.value = 1.0;
+
             var comp = ctx.createDynamicsCompressor();
-            comp.threshold.value = -6;
+            comp.threshold.value = -3;
             comp.knee.value = 0;
             comp.ratio.value = 20;
-            comp.attack.value = 0;
-            comp.release.value = 0.1;
+            comp.attack.value = 0.001;
+            comp.release.value = 0.05;
+
+            master.connect(comp);
             comp.connect(ctx.destination);
+
+            // Crea nota con 3 osciladores en paralelo (más volumen percibido)
             function nota(freq, inicio, dur, tipo) {{
-                var o = ctx.createOscillator();
-                var g = ctx.createGain();
-                o.connect(g); g.connect(comp);
-                o.frequency.value = freq;
-                o.type = tipo || 'sine';
-                // Volumen al MÁXIMO: 1.0
-                g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
-                g.gain.linearRampToValueAtTime(1.0, ctx.currentTime + inicio + 0.01);
-                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
-                o.start(ctx.currentTime + inicio);
-                o.stop(ctx.currentTime + inicio + dur + 0.05);
+                var tipos = [tipo||'sine', 'triangle', 'sine'];
+                var ganas = [1.0, 0.6, 0.4];
+                for (var i=0; i<3; i++) {{
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g); g.connect(master);
+                    o.frequency.value = freq + (i * 0.5); // micro-detune para riqueza
+                    o.type = tipos[i];
+                    g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
+                    g.gain.linearRampToValueAtTime(ganas[i], ctx.currentTime + inicio + 0.008);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + inicio + dur);
+                    o.start(ctx.currentTime + inicio);
+                    o.stop(ctx.currentTime + inicio + dur + 0.06);
+                }}
             }}
             {script_body}
         }} catch(e) {{ console.log('Beep error:', e); }}
@@ -8613,6 +8627,308 @@ TESTS_VOCACIONALES = {
     },
 
     # ═══════════════════════════════════════════════════════
+    # TESTS PARA PRIMARIA (adaptados 7-12 años)
+    # ═══════════════════════════════════════════════════════
+    "primaria_intereses": {
+        "nivel": ["primaria"],
+        "nombre": "🌟 ¿Qué se me da bien? (Primaria 1°-6°)",
+        "descripcion": "Descubre tus talentos y lo que más disfrutas aprender",
+        "instruccion": "Lee cada pregunta y elige LA RESPUESTA que más se parece a ti.",
+        "grupos_resultado": {
+            "ART": "🎨 Artístico y Creativo",
+            "CIE": "🔬 Científico y Curioso",
+            "SOC": "🤝 Social y Comunicador",
+            "MOV": "⚽ Activo y Deportista",
+            "LOG": "🔢 Lógico y Matemático",
+            "NAT": "🌿 Naturalista y Explorador",
+        },
+        "explicaciones": {
+            "ART": {
+                "titulo": "🎨 Eres Artístico y Creativo",
+                "desc": "Te expresas muy bien a través del dibujo, la música, los colores y la creación. Tienes mucha imaginación y sensibilidad para las artes.",
+                "fortalezas": ["Dibujo, pintura y manualidades", "Música y expresión corporal", "Creatividad e imaginación", "Aprendes mejor con colores e imágenes"],
+                "carreras": ["Arte y Diseño", "Música", "Comunicación", "Educación Artística", "Arquitectura"],
+                "consejo": "Practica dibujar, cantar o bailar todos los días. Tu creatividad es un regalo muy especial.",
+                "color": "#7c3aed"
+            },
+            "CIE": {
+                "titulo": "🔬 Eres Científico y Curioso",
+                "desc": "Haces muchas preguntas, te gusta explorar y descubrir cómo funcionan las cosas. Tienes mente científica.",
+                "fortalezas": ["Experimentos y observación", "Hacer preguntas y buscar respuestas", "Ciencias naturales", "Investigar y descubrir"],
+                "carreras": ["Medicina", "Biología", "Ingeniería", "Química", "Astronomía"],
+                "consejo": "Lee libros de ciencia, haz experimentos en casa y nunca dejes de preguntar por qué.",
+                "color": "#0891b2"
+            },
+            "SOC": {
+                "titulo": "🤝 Eres Social y Comunicador",
+                "desc": "Te llevas bien con todos, explicas las cosas muy bien y te gusta ayudar a tus compañeros. Eres un gran comunicador.",
+                "fortalezas": ["Hablar y expresarte", "Trabajo en equipo", "Escuchar y ayudar", "Liderazgo natural"],
+                "carreras": ["Docencia", "Psicología", "Comunicación", "Derecho", "Trabajo Social"],
+                "consejo": "Practica hablar en público, cuenta historias y siempre ayuda a quien lo necesite.",
+                "color": "#16a34a"
+            },
+            "MOV": {
+                "titulo": "⚽ Eres Activo y Deportista",
+                "desc": "Aprendes mejor cuando te mueves, tienes mucha energía y coordinas muy bien tu cuerpo. El deporte es tu lenguaje.",
+                "fortalezas": ["Deportes y actividad física", "Coordinación y equilibrio", "Energía y perseverancia", "Trabajo con las manos"],
+                "carreras": ["Educación Física", "Medicina Deportiva", "Fisioterapia", "Ingeniería Civil", "Policía / Militar"],
+                "consejo": "Practica un deporte que te apasione. La disciplina del deporte te ayudará en todo en la vida.",
+                "color": "#dc2626"
+            },
+            "LOG": {
+                "titulo": "🔢 Eres Lógico y Matemático",
+                "desc": "Te gustan los números, los patrones y los problemas con respuesta exacta. Piensas de forma ordenada y precisa.",
+                "fortalezas": ["Matemáticas y cálculo", "Resolver problemas", "Razonamiento lógico", "Organización y planificación"],
+                "carreras": ["Ingeniería", "Matemáticas", "Economía", "Programación", "Física"],
+                "consejo": "Juega ajedrez, resuelve acertijos y practica matemáticas con juegos. Tu mente lógica es muy poderosa.",
+                "color": "#2563eb"
+            },
+            "NAT": {
+                "titulo": "🌿 Eres Naturalista y Explorador",
+                "desc": "Te fascina la naturaleza, los animales, las plantas y el medio ambiente. Tienes una conexión especial con el mundo natural.",
+                "fortalezas": ["Conocimiento de plantas y animales", "Cuidado del medio ambiente", "Observación en la naturaleza", "Ecología y conservación"],
+                "carreras": ["Biología", "Veterinaria", "Ecología", "Agronomía", "Geografía"],
+                "consejo": "Cuida una planta, observa los animales y aprende sobre la naturaleza de tu región Cusco.",
+                "color": "#059669"
+            },
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"En el recreo, ¿qué te gusta más hacer?",
+             "opciones":{"A":("🎨 Dibujar, colorear o hacer algo con mis manos","ART"),
+                         "B":("🔍 Buscar bichos, plantas o cosas curiosas","NAT"),
+                         "C":("🗣️ Hablar con amigos y jugar en grupo","SOC"),
+                         "D":("⚽ Correr, saltar o jugar deportes","MOV"),
+                         "E":("🔢 Jugar juegos de lógica, cartas o ajedrez","LOG")}},
+            {"id":2,"pregunta":"¿En qué curso del colegio eres mejor?",
+             "opciones":{"A":("🖍️ Arte o música","ART"),
+                         "B":("🌱 Ciencia y Tecnología o Personal Social","CIE"),
+                         "C":("📖 Comunicación o inglés","SOC"),
+                         "D":("🏃 Educación Física","MOV"),
+                         "E":("🔢 Matemática","LOG")}},
+            {"id":3,"pregunta":"Si pudieras elegir un trabajo de mayor, ¿cuál elegiría?",
+             "opciones":{"A":("🎭 Artista, diseñador/a o músico/a","ART"),
+                         "B":("🔬 Científico/a o médico/a","CIE"),
+                         "C":("👩‍🏫 Profesor/a o comunicador/a","SOC"),
+                         "D":("🏅 Deportista o entrenador/a","MOV"),
+                         "E":("💻 Ingeniero/a o programador/a","LOG")}},
+            {"id":4,"pregunta":"¿Cómo prefieres aprender algo nuevo?",
+             "opciones":{"A":("🖌️ Dibujándolo o haciéndolo con mis manos","ART"),
+                         "B":("🔭 Explorando y experimentando","CIE"),
+                         "C":("👥 Hablando con otros y trabajando en grupo","SOC"),
+                         "D":("🏃 Moviéndome y practicando físicamente","MOV"),
+                         "E":("📐 Con ejercicios y problemas para resolver","LOG")}},
+            {"id":5,"pregunta":"¿Cuál de estas actividades disfrutarías más?",
+             "opciones":{"A":("🎨 Pintar un cuadro o crear una canción","ART"),
+                         "B":("🌿 Cuidar animales o sembrar plantas","NAT"),
+                         "C":("🤝 Ayudar a un compañero con sus tareas","SOC"),
+                         "D":("⛹️ Ganar un torneo deportivo","MOV"),
+                         "E":("🧩 Resolver un acertijo muy difícil","LOG")}},
+            {"id":6,"pregunta":"Tus amigos dicen que tú eres:",
+             "opciones":{"A":("✨ Creativo/a y con mucha imaginación","ART"),
+                         "B":("🤔 Curioso/a y que siempre pregunta el porqué","CIE"),
+                         "C":("😊 Simpático/a y que cae bien a todos","SOC"),
+                         "D":("💪 Muy activo/a y lleno/a de energía","MOV"),
+                         "E":("🎯 Inteligente y bueno/a para los números","LOG")}},
+        ]
+    },
+
+    # ══════════════════════════════════════════════════════════
+    # TEST MODELO SINGAPORE — Pensamiento Crítico y Resolución
+    # Adaptado del framework de competencias del siglo XXI
+    # ══════════════════════════════════════════════════════════
+    "pensamiento_critico": {
+        "nivel": ["primaria", "secundaria", "preuniversitario"],
+        "nombre": "💡 Pensamiento Crítico y Resolución (Modelo Singapur)",
+        "descripcion": "Identifica tu estilo de pensar y resolver problemas — basado en el currículo de Singapur",
+        "instruccion": "Elige cómo REALMENTE actúas tú cuando enfrentas un problema o reto nuevo.",
+        "grupos_resultado": {
+            "ANA": "🔍 Analítico-Sistemático",
+            "CRE": "💡 Creativo-Innovador",
+            "PRA": "🛠️ Práctico-Ejecutor",
+            "COL": "🤝 Colaborativo-Comunicador",
+            "REF": "📖 Reflexivo-Investigador",
+        },
+        "explicaciones": {
+            "ANA": {
+                "titulo": "🔍 Eres Analítico-Sistemático",
+                "desc": "Descompones los problemas en partes, buscas patrones y trabajas con datos y hechos concretos. Piensas antes de actuar y lo haces con precisión. El currículo de Singapur valora enormemente este perfil en matemáticas y ciencias.",
+                "fortalezas": ["Análisis de datos y estadísticas", "Planificación paso a paso", "Detección de errores y mejoras", "Pensamiento lógico-deductivo"],
+                "carreras": ["Ingeniería", "Economía", "Ciencias de datos", "Medicina diagnóstica", "Arquitectura"],
+                "consejo": "Practica el método de Polya: Entender→Planificar→Ejecutar→Revisar. Úsalo en todos tus problemas.",
+                "color": "#2563eb"
+            },
+            "CRE": {
+                "titulo": "💡 Eres Creativo-Innovador",
+                "desc": "Generas ideas originales, conectas conceptos distantes y propones soluciones que nadie más ve. Finlandia e Israel construyeron economías innovadoras basadas en personas como tú.",
+                "fortalezas": ["Generación de ideas originales", "Diseño y prototipado", "Pensamiento lateral", "Arte, tecnología y emprendimiento"],
+                "carreras": ["Diseño", "Ingeniería de software", "Marketing", "Arquitectura", "Emprendimiento"],
+                "consejo": "Practica el Design Thinking: observa problemas reales y diseña soluciones creativas para tu comunidad.",
+                "color": "#7c3aed"
+            },
+            "PRA": {
+                "titulo": "🛠️ Eres Práctico-Ejecutor",
+                "desc": "Aprendes haciendo. Mientras otros planifican, tú ya estás ejecutando. Transformas ideas en resultados concretos. Alemania y Suiza valoran este perfil en su educación técnica.",
+                "fortalezas": ["Habilidades técnicas y manuales", "Capacidad de ejecución rápida", "Trabajo en proyectos reales", "Aprendizaje práctico"],
+                "carreras": ["Ingeniería técnica", "Medicina", "Construcción", "Tecnología", "Gastronomía"],
+                "consejo": "Busca siempre proyectos reales. El aprendizaje basado en proyectos (PBL) es tu método ideal.",
+                "color": "#d97706"
+            },
+            "COL": {
+                "titulo": "🤝 Eres Colaborativo-Comunicador",
+                "desc": "Multiplicas el talento de los equipos. Sabes escuchar, motivar y hacer que todos trabajen hacia un mismo objetivo. El modelo finlandés pone el trabajo colaborativo en el centro.",
+                "fortalezas": ["Liderazgo de equipos", "Comunicación efectiva", "Resolución de conflictos", "Empatía y escucha activa"],
+                "carreras": ["Docencia", "Psicología", "Administración", "Recursos Humanos", "Comunicación"],
+                "consejo": "Practica escuchar sin interrumpir. El liderazgo real se construye con empatía, no con autoridad.",
+                "color": "#16a34a"
+            },
+            "REF": {
+                "titulo": "📖 Eres Reflexivo-Investigador",
+                "desc": "Antes de actuar, observas, lees, analizas y buscas el conocimiento más profundo. Finlandia y Japón forman a sus mejores investigadores con este perfil.",
+                "fortalezas": ["Investigación profunda", "Aprendizaje autónomo", "Lectura y síntesis", "Pensamiento crítico"],
+                "carreras": ["Investigación científica", "Filosofía", "Historia", "Literatura", "Jurisprudencia"],
+                "consejo": "Lleva un diario de aprendizaje. Escribe qué aprendiste cada día y qué preguntas nuevas te surgieron.",
+                "color": "#0891b2"
+            },
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando recibes un problema difícil, lo primero que haces es:",
+             "opciones":{"A":("📊 Buscar datos, organizarlos y analizarlos con calma","ANA"),
+                         "B":("💡 Generar muchas ideas rápido y elegir la más creativa","CRE"),
+                         "C":("🛠️ Empezar a intentar soluciones de inmediato","PRA"),
+                         "D":("🤝 Buscar compañeros para resolverlo juntos","COL"),
+                         "E":("📚 Investigar, leer y entender bien antes de actuar","REF")}},
+            {"id":2,"pregunta":"En un proyecto escolar, tu rol natural es:",
+             "opciones":{"A":("📐 Organizar el plan, los pasos y los tiempos","ANA"),
+                         "B":("🎨 Diseñar cómo se verá y proponer lo original","CRE"),
+                         "C":("🔧 Construir, hacer y ejecutar el trabajo real","PRA"),
+                         "D":("📢 Coordinar al equipo y presentar el resultado","COL"),
+                         "E":("🔍 Investigar a fondo el tema y documentar todo","REF")}},
+            {"id":3,"pregunta":"Cuando algo no funciona como esperabas:",
+             "opciones":{"A":("🔎 Analizo paso a paso qué falló y por qué","ANA"),
+                         "B":("💭 Pienso en una solución completamente diferente","CRE"),
+                         "C":("⚡ Lo intento de otra forma de inmediato","PRA"),
+                         "D":("👥 Pregunto a otros qué harían en mi lugar","COL"),
+                         "E":("📖 Busco información sobre casos similares","REF")}},
+            {"id":4,"pregunta":"Tu punto fuerte en matemáticas es:",
+             "opciones":{"A":("📊 Álgebra, estadística y problemas lógicos","ANA"),
+                         "B":("🔺 Geometría, patrones y pensamiento espacial","CRE"),
+                         "C":("🧮 Aritmética práctica y aplicada a la vida real","PRA"),
+                         "D":("📝 Explicar cómo resolví el problema a otros","COL"),
+                         "E":("📚 Entender la teoría y el origen de los conceptos","REF")}},
+            {"id":5,"pregunta":"¿Qué tipo de tarea disfrutas más?",
+             "opciones":{"A":("📈 Analizar datos y sacar conclusiones","ANA"),
+                         "B":("🖌️ Crear algo nuevo y original desde cero","CRE"),
+                         "C":("🏗️ Construir, armar o fabricar algo real","PRA"),
+                         "D":("🎤 Exponer en grupo y debatir ideas","COL"),
+                         "E":("🔬 Investigar un tema en profundidad","REF")}},
+            {"id":6,"pregunta":"Cuando aprendes algo nuevo, lo entiendes mejor:",
+             "opciones":{"A":("📊 Con esquemas, tablas y diagramas ordenados","ANA"),
+                         "B":("🎭 Con metáforas creativas y conexiones inesperadas","CRE"),
+                         "C":("✋ Practicándolo físicamente o haciéndolo tú mismo","PRA"),
+                         "D":("💬 Discutiéndolo con otros y enseñándoselo a alguien","COL"),
+                         "E":("📖 Leyendo en profundidad y reflexionando solo","REF")}},
+        ]
+    },
+
+    # ══════════════════════════════════════════════════════════
+    # TEST MODELO FINLANDIA — Bienestar y Motivación (PISA)
+    # Basado en los factores de bienestar escolar finlandés
+    # ══════════════════════════════════════════════════════════
+    "bienestar_motivacion": {
+        "nivel": ["primaria", "secundaria", "preuniversitario"],
+        "nombre": "🌱 Bienestar y Motivación Escolar (Modelo Finlandia)",
+        "descripcion": "Descubre qué te motiva, cómo te sientes en el colegio y qué necesitas para aprender mejor",
+        "instruccion": "Responde con HONESTIDAD — no hay respuestas correctas ni incorrectas. Solo cómo te sientes TÚ.",
+        "grupos_resultado": {
+            "INT": "🔥 Alta Motivación Intrínseca",
+            "SOC": "🤝 Motivación Social y de Pertenencia",
+            "LOG": "🏆 Motivación por el Logro y el Reto",
+            "BIE": "🌿 Necesita Fortalecer el Bienestar",
+            "EXT": "⭐ Motivación Externa (reconocimiento)",
+        },
+        "explicaciones": {
+            "INT": {
+                "titulo": "🔥 Alta Motivación Intrínseca",
+                "desc": "Estudias porque genuinamente disfrutas aprender. No necesitas premios externos para esforzarte. Este es el perfil de los mejores estudiantes de Finlandia — aprenden porque quieren, no porque los obligan.",
+                "fortalezas": ["Autonomía y autogestión del aprendizaje", "Curiosidad genuina y amor por el conocimiento", "Perseverancia sin necesitar recompensas", "Aprendizaje profundo y duradero"],
+                "carreras": ["Cualquier carrera que elijas con pasión", "Investigación", "Ciencias", "Humanidades"],
+                "consejo": "Finlandia llama a esto 'sisut' — la fortaleza interior. Cuídala. Busca siempre aprender por el placer de aprender.",
+                "color": "#dc2626"
+            },
+            "SOC": {
+                "titulo": "🤝 Motivación Social y de Pertenencia",
+                "desc": "Tu motor es el equipo, los amigos y sentirte parte de algo. Aprendes mejor en grupos y te esfuerzas más cuando sientes que perteneces. El modelo finlandés valora mucho el aprendizaje comunitario.",
+                "fortalezas": ["Trabajo en equipo y colaboración", "Empatía y conexión con otros", "Aprendizaje cooperativo", "Ambiente de aula positivo"],
+                "carreras": ["Docencia", "Trabajo Social", "Psicología", "Comunicación", "Enfermería"],
+                "consejo": "Forma grupos de estudio. Enseñar lo que sabes a otros es la mejor forma de aprenderlo tú también.",
+                "color": "#16a34a"
+            },
+            "LOG": {
+                "titulo": "🏆 Motivación por el Logro y el Reto",
+                "desc": "Los retos difíciles te emocionan. Quieres superarte, ganar y demostrar de lo que eres capaz. Singapur y Corea tienen muchos estudiantes con este perfil — son muy competitivos y logran grandes metas.",
+                "fortalezas": ["Alta exigencia personal", "Capacidad para asumir retos difíciles", "Resiliencia ante el fracaso", "Metas claras y ambiciosas"],
+                "carreras": ["Medicina", "Ingeniería", "Derecho", "Ciencias", "Emprendimiento"],
+                "consejo": "El reto es bueno, pero también descansa. Corea aprendió que el bienestar es tan importante como el logro.",
+                "color": "#f59e0b"
+            },
+            "BIE": {
+                "titulo": "🌿 Necesitas Fortalecer tu Bienestar",
+                "desc": "El colegio puede sentirse pesado a veces. Es importante hablarlo con alguien de confianza. En Finlandia, el bienestar del estudiante es la prioridad número 1 — antes que las notas.",
+                "fortalezas": ["Sensibilidad y profundidad emocional", "Conciencia de sí mismo", "Capacidad de pedir ayuda", "Autenticidad"],
+                "carreras": ["Arte", "Psicología", "Trabajo Social", "Música"],
+                "consejo": "Habla con tu tutor o un adulto de confianza. Tu bienestar es más importante que cualquier nota. En Finlandia dicen: 'Un niño feliz aprende mejor.'",
+                "color": "#059669"
+            },
+            "EXT": {
+                "titulo": "⭐ Motivación Externa",
+                "desc": "Te esfuerzas cuando hay un premio, un reconocimiento o evitar un castigo. Es muy humano. El desafío es ir descubriendo poco a poco qué materias te gustan de verdad, más allá de las notas.",
+                "fortalezas": ["Respuesta positiva al reconocimiento", "Capacidad de esfuerzo cuando hay metas claras", "Sensibilidad al entorno"],
+                "carreras": ["Las que descubras que te apasionan con el tiempo"],
+                "consejo": "Prueba esta semana hacer algo solo porque te da curiosidad, sin que nadie te lo pida. Así empieza la motivación real.",
+                "color": "#7c3aed"
+            },
+        },
+        "preguntas": [
+            {"id":1,"pregunta":"¿Por qué estudias y haces tus tareas?",
+             "opciones":{"A":("🔥 Porque me gusta aprender cosas nuevas","INT"),
+                         "B":("🤝 Para estar bien con mis amigos y profesores","SOC"),
+                         "C":("🏆 Para sacar buenas notas y ser el mejor","LOG"),
+                         "D":("😔 Porque si no me meto en problemas","BIE"),
+                         "E":("⭐ Para que mis papás estén orgullosos de mí","EXT")}},
+            {"id":2,"pregunta":"Cuando terminas algo difícil y te sale bien, sientes:",
+             "opciones":{"A":("🌟 Mucha satisfacción por haber aprendido algo","INT"),
+                         "B":("🤗 Alegría de compartirlo con mis compañeros","SOC"),
+                         "C":("🥇 Orgullo de haber ganado o superado el reto","LOG"),
+                         "D":("😮‍💨 Alivio de que ya terminó","BIE"),
+                         "E":("😊 Ganas de que el profesor o mis papás lo vean","EXT")}},
+            {"id":3,"pregunta":"¿Cómo te sientes en el colegio la mayoría de días?",
+             "opciones":{"A":("😄 Me encanta, aprendo cosas interesantes","INT"),
+                         "B":("😊 Bien, sobre todo cuando estoy con mis amigos","SOC"),
+                         "C":("💪 Motivado/a cuando hay competencia o reto","LOG"),
+                         "D":("😐 A veces me siento cansado/a o desmotivado/a","BIE"),
+                         "E":("🙂 Bien cuando me felicitan o me va bien en notas","EXT")}},
+            {"id":4,"pregunta":"Si una materia es muy difícil, tú:",
+             "opciones":{"A":("📚 La estudio más porque me parece un reto interesante","INT"),
+                         "B":("🤝 Pido ayuda a un amigo o estudio en grupo","SOC"),
+                         "C":("🎯 Me esfuerzo más para no quedarme atrás","LOG"),
+                         "D":("😞 Me estreso o me dan ganas de rendirme","BIE"),
+                         "E":("📞 Espero que el profe me ayude o que bajen las notas","EXT")}},
+            {"id":5,"pregunta":"¿Qué es lo que más disfrutas del colegio?",
+             "opciones":{"A":("🔍 Cuando aprendo algo que me abre la mente","INT"),
+                         "B":("👫 Estar con mis amigos y trabajar en equipo","SOC"),
+                         "C":("🏅 Cuando gano una competencia o saco la mejor nota","LOG"),
+                         "D":("🌅 Cuando el día termina y puedo descansar","BIE"),
+                         "E":("📣 Cuando el profesor me felicita delante de todos","EXT")}},
+            {"id":6,"pregunta":"Si no hubiera notas ni exámenes, ¿estudiarías igual?",
+             "opciones":{"A":("✅ Sí, porque me gusta aprender de todas formas","INT"),
+                         "B":("🤝 Sí, si hay proyectos con mis compañeros","SOC"),
+                         "C":("🤔 Quizás, si hubiera otra forma de demostrar que soy bueno","LOG"),
+                         "D":("😅 Probablemente no tanto, la verdad","BIE"),
+                         "E":("❌ No, sin notas no tendría razón para esforzarme","EXT")}},
+        ]
+    },
+
+    # ═══════════════════════════════════════════════════════
     # TEST DE VALORES PERSONALES (Estilo Finlandés)
     # Identifica valores que guían decisiones de carrera
     # ═══════════════════════════════════════════════════════
@@ -9075,41 +9391,137 @@ def generar_pdf_orientacion_vocacional(nombre, dni, grado, prom_gen, lit_gen,
         if y < 100:
             c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
 
-    # ── SECCIÓN 3: Test vocacional (si existe) ───────────────────────
+    # ── SECCIÓN 3: Resultado del test (con explicaciones completas) ──
     if resultado_test:
         y -= 8
         if y < 200:
             c.showPage(); pag += 1; _encabezado(pag); _pie(); y = h - 95
+
+        test_id_r    = resultado_test.get("test_id", "intereses")
+        test_nom_r   = resultado_test.get("test_nombre", "Test Vocacional")
+        conteo_r     = resultado_test.get("conteo", {})
+        grupo_dom    = resultado_test.get("grupo_dominante", "") or (max(conteo_r, key=conteo_r.get) if conteo_r else "A")
+        test_data_r  = TESTS_VOCACIONALES.get(test_id_r, {})
+        explicaciones_r = test_data_r.get("explicaciones", {})
+        grupos_res_r    = test_data_r.get("grupos_resultado", {})
+        total_r      = sum(conteo_r.values()) or 1
+
+        # Encabezado sección
         c.setFillColor(col_h)
         c.rect(40, y-4, w-80, 18, fill=True)
         c.setFillColor(colors.white)
         c.setFont("Helvetica-Bold", 10)
-        c.drawString(48, y+1, "III. RESULTADO DEL TEST DE INTERESES VOCACIONALES")
-        y -= 24
-        c.setFillColor(colors.black)
+        titulo_sec = test_nom_r.encode('ascii','replace').decode()
+        c.drawString(48, y+1, f"III. RESULTADO: {titulo_sec[:60]}")
+        y -= 26
 
-        principal_t = resultado_test.get("principal", "A")
-        gdata_t = UNSAAC_GRUPOS.get(principal_t, OTRAS_OPCIONES_CARRERA.get("Institutos Técnicos", {}))
-
-        c.setFont("Helvetica-Bold", 9)
-        nombre_grp = gdata_t.get("nombre", "Técnico-Práctico") if principal_t != "T" else "🔧 Técnico-Práctico / PNP"
-        c.drawString(44, y, f"Tendencia dominante: {nombre_grp}")
-        y -= 14
-
-        c.setFont("Helvetica", 8)
-        conteo_t = resultado_test.get("conteo", {})
-        pct_t = resultado_test.get("porcentajes", {})
-        etiquetas_t = {"A":"Ing/Ciencias","B":"Salud","C":"Cs.Sociales","D":"Educación","T":"Técnico"}
-        for gk, glabel in etiquetas_t.items():
-            val = pct_t.get(gk, 0)
-            col_t = colores_grupos.get(gk, "#334155")
+        # ── Barras de resultado por grupo ──────────────────────────────
+        PALETA = ["#2563eb","#16a34a","#7c3aed","#dc2626","#d97706","#0891b2","#059669","#be185d"]
+        grupos_ordenados = sorted(conteo_r.items(), key=lambda x: -x[1])
+        for gi, (gk, cnt) in enumerate(grupos_ordenados):
+            if y < 80: c.showPage(); pag+=1; _encabezado(pag); _pie(); y=h-95
+            pct_v = round(cnt/total_r*100)
+            bar_w = max(4, int((cnt/total_r)*200))
+            gc = PALETA[gi % len(PALETA)]
+            expl = explicaciones_r.get(gk, {})
+            label = expl.get("titulo", grupos_res_r.get(gk, gk))
+            label_clean = label.encode('ascii','replace').decode()
+            # Barra
             c.setFillColor(colors.HexColor("#e2e8f0"))
-            c.rect(44, y, 180, 9, fill=True)
-            c.setFillColor(colors.HexColor(col_t))
-            c.rect(44, y, max(2,(val/100)*180), 9, fill=True)
+            c.rect(44, y, 200, 10, fill=True, stroke=0)
+            c.setFillColor(colors.HexColor(gc))
+            c.rect(44, y, bar_w, 10, fill=True, stroke=0)
             c.setFillColor(colors.black)
-            c.drawString(230, y+2, f"{glabel}: {conteo_t.get(gk,0)} resp. ({val:.0f}%)")
-            y -= 12
+            c.setFont("Helvetica-Bold" if gk==grupo_dom else "Helvetica", 7.5)
+            c.drawString(252, y+2, f"{label_clean[:45]}: {cnt} resp. ({pct_v}%)")
+            if gk == grupo_dom:
+                c.setFillColor(colors.HexColor(gc))
+                c.setFont("Helvetica-Bold", 6)
+                c.drawString(44, y+12, "◀ DOMINANTE")
+                c.setFillColor(colors.black)
+            y -= 14
+
+        # ── Explicación detallada del resultado dominante ──────────────
+        y -= 6
+        if y < 180: c.showPage(); pag+=1; _encabezado(pag); _pie(); y=h-95
+
+        expl_dom = explicaciones_r.get(grupo_dom, {})
+        if expl_dom:
+            col_dom = expl_dom.get("color","#2563eb")
+            titulo_dom = expl_dom.get("titulo","Resultado")
+            desc_dom   = expl_dom.get("desc","")
+            fortalezas = expl_dom.get("fortalezas",[])
+            carreras   = expl_dom.get("carreras",[])
+            consejo    = expl_dom.get("consejo","")
+
+            # Caja de resultado principal
+            c.setFillColor(colors.HexColor(col_dom))
+            c.roundRect(40, y-38, w-80, 42, 6, fill=True, stroke=0)
+            c.setFillColor(colors.white)
+            c.setFont("Helvetica-Bold", 11)
+            titulo_clean = titulo_dom.encode('ascii','replace').decode()
+            c.drawCentredString(w/2, y-10, titulo_clean)
+            c.setFont("Helvetica", 7.5)
+            # Descripción en 2 líneas
+            desc_clean = desc_dom.encode('ascii','replace').decode()
+            words = desc_clean.split()
+            lines_desc = []
+            line = ""
+            for wd in words:
+                if len(line)+len(wd)+1 <= 100:
+                    line = (line+" "+wd).strip()
+                else:
+                    lines_desc.append(line); line=wd
+            if line: lines_desc.append(line)
+            for li, ld in enumerate(lines_desc[:2]):
+                c.drawCentredString(w/2, y-22-(li*10), ld)
+            y -= 50
+
+            # Fortalezas y Carreras lado a lado
+            if y < 120: c.showPage(); pag+=1; _encabezado(pag); _pie(); y=h-95
+            mid = w/2
+            c.setFillColor(colors.HexColor("#f0f9ff"))
+            c.roundRect(40, y-14-len(fortalezas)*11, (mid-50), 18+len(fortalezas)*11, 4, fill=True, stroke=0)
+            c.setFillColor(colors.HexColor("#fff7ed"))
+            c.roundRect(mid+10, y-14-len(carreras)*11, (mid-50), 18+len(carreras)*11, 4, fill=True, stroke=0)
+
+            c.setFillColor(colors.HexColor(col_dom))
+            c.setFont("Helvetica-Bold", 8)
+            c.drawString(46, y-4, "FORTALEZAS:")
+            c.drawString(mid+16, y-4, "CARRERAS SUGERIDAS:")
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 7.5)
+            for fi, ft in enumerate(fortalezas[:5]):
+                ft_c = ft.encode('ascii','replace').decode()
+                c.drawString(48, y-16-(fi*11), f"• {ft_c[:45]}")
+            for ci2, ca in enumerate(carreras[:5]):
+                ca_c = ca.encode('ascii','replace').decode()
+                c.drawString(mid+18, y-16-(ci2*11), f"• {ca_c[:38]}")
+            y -= 20 + max(len(fortalezas),len(carreras))*11
+
+            # Consejo
+            if consejo and y > 80:
+                if y < 100: c.showPage(); pag+=1; _encabezado(pag); _pie(); y=h-95
+                c.setFillColor(colors.HexColor("#fefce8"))
+                cons_clean = consejo.encode('ascii','replace').decode()
+                # wrap consejo
+                cwords = cons_clean.split()
+                clines = []
+                cl = ""
+                for cw in cwords:
+                    if len(cl)+len(cw)+1 <= 95: cl=(cl+" "+cw).strip()
+                    else: clines.append(cl); cl=cw
+                if cl: clines.append(cl)
+                box_h = 18 + len(clines)*11
+                c.roundRect(40, y-box_h, w-80, box_h, 4, fill=True, stroke=0)
+                c.setFillColor(colors.HexColor("#92400e"))
+                c.setFont("Helvetica-Bold", 8)
+                c.drawString(46, y-12, "CONSEJO PERSONALIZADO:")
+                c.setFillColor(colors.black)
+                c.setFont("Helvetica", 7.5)
+                for cli, cl2 in enumerate(clines):
+                    c.drawString(48, y-24-(cli*11), cl2)
+                y -= box_h + 8
         y -= 6
 
     # ── SECCIÓN 4: Diagnóstico psicopedagógico ───────────────────────
@@ -9430,48 +9842,53 @@ def generar_pdf_test_imprimible(test_id, config):
         c.setFillColor(colors.black)
         c.setStrokeColor(colors.black)
 
-    # ── Layout: 4 hojas por página (2 cols × 2 filas) ────────────────
-    MARGEN   = 18
-    ESPACIO  = 6    # espacio entre hojas
-    ALTO_HDR = 30   # espacio reservado para encabezado de página
+    # ── Layout: 6 hojas por página (3 cols × 2 filas) ────────────────
+    MARGEN    = 12
+    ESPACIO_H = 5   # espacio horizontal entre hojas
+    ESPACIO_V = 5   # espacio vertical entre filas
+    COLS      = 3
+    FILAS     = 2
 
     disponible_w = w - 2*MARGEN
-    disponible_h = h - 2*MARGEN - ALTO_HDR
+    disponible_h = h - 2*MARGEN
 
-    HOJA_W = (disponible_w - ESPACIO) / 2
-    HOJA_H = (disponible_h - ESPACIO) / 2
+    HOJA_W = (disponible_w - (COLS-1)*ESPACIO_H) / COLS
+    HOJA_H = (disponible_h - (FILAS-1)*ESPACIO_V) / FILAS
 
     nombre_corto_test = test_data.get("nombre","TEST VOCACIONAL")
 
-    # Posiciones (ox, oy) de las 4 hojas:
-    # Fila superior: oy = MARGEN + HOJA_H + ESPACIO
-    # Fila inferior: oy = MARGEN
-    posiciones = [
-        (MARGEN,               MARGEN + HOJA_H + ESPACIO),   # sup izq
-        (MARGEN + HOJA_W + ESPACIO, MARGEN + HOJA_H + ESPACIO),  # sup der
-        (MARGEN,               MARGEN),                       # inf izq
-        (MARGEN + HOJA_W + ESPACIO, MARGEN),                  # inf der
-    ]
+    # Generar posiciones 3×2 (de arriba a abajo, izquierda a derecha)
+    posiciones = []
+    for fila in range(FILAS):
+        oy_h = MARGEN + (FILAS-1-fila) * (HOJA_H + ESPACIO_V)
+        for col in range(COLS):
+            ox_h = MARGEN + col * (HOJA_W + ESPACIO_H)
+            posiciones.append((ox_h, oy_h))
 
     for (ox_h, oy_h) in posiciones:
         _dibujar_mini_hoja(ox_h, oy_h, HOJA_W, HOJA_H, nombre_corto_test)
 
-    # Líneas de corte cruzadas en el centro
-    cx_centro = w / 2
-    cy_centro = (h - ALTO_HDR) / 2 + MARGEN
+    # Líneas de corte: 2 verticales + 1 horizontal
     c.setStrokeColor(colors.HexColor("#94a3b8"))
     c.setLineWidth(0.5)
     c.setDash(4, 4)
-    c.line(cx_centro, MARGEN, cx_centro, h - MARGEN - ALTO_HDR)
-    c.line(MARGEN, cy_centro, w - MARGEN, cy_centro)
+    # Línea vertical entre col 1 y 2
+    cx1 = MARGEN + HOJA_W + ESPACIO_H/2
+    c.line(cx1, MARGEN, cx1, h - MARGEN)
+    # Línea vertical entre col 2 y 3
+    cx2 = MARGEN + 2*(HOJA_W + ESPACIO_H) - ESPACIO_H/2
+    c.line(cx2, MARGEN, cx2, h - MARGEN)
+    # Línea horizontal entre fila 1 y 2
+    cy1 = MARGEN + HOJA_H + ESPACIO_V/2
+    c.line(MARGEN, cy1, w - MARGEN, cy1)
     c.setDash()
     c.setLineWidth(1)
 
     # Instrucción de corte
     c.setFillColor(colors.HexColor("#64748b"))
-    c.setFont("Helvetica-Oblique", 6)
-    c.drawCentredString(cx_centro, MARGEN - 10,
-                        "✂  Recortar por las líneas punteadas  ✂")
+    c.setFont("Helvetica-Oblique", 5.5)
+    c.drawCentredString(w/2, MARGEN - 8,
+                        "✂  Recortar por las lineas punteadas — 6 hojas por pagina  ✂")
 
     c.save()
     buf.seek(0)
@@ -11610,23 +12027,23 @@ def _drive_borrar_mp3(file_id):
 def _pausa_guardar_mp3(modelo_id, audio_bytes, extension="mp3"):
     """
     Guarda MP3 de pausa activa:
-    1. Guarda local (para acceso rápido en la misma sesión)
-    2. Sube a Google Drive (persistencia real entre reinicios)
-    3. Guarda el Drive file_id en GSheets (no el base64 — evita límite de celdas)
+    1. Guarda local (sesión actual)
+    2. Sube a Google Drive y guarda el file_id en GSheets
+    NOTA: base64 en GSheets NO funciona para MP3 (límite 50k chars por celda)
     """
     # 1. Guardar local
     path = f"pausa_mp3_{modelo_id}.{extension}"
-    with open(path, "wb") as f:
-        f.write(audio_bytes)
-    # 2. Subir a Drive
+    try:
+        with open(path, "wb") as f:
+            f.write(audio_bytes)
+    except Exception:
+        pass
+
+    # 2. Subir a Drive y guardar file_id en GSheets
     drive_file_id = None
     try:
         drive_file_id = _drive_subir_mp3(modelo_id, audio_bytes, extension)
-    except Exception:
-        pass
-    # 3. Guardar solo el file_id en GSheets (no base64)
-    if drive_file_id:
-        try:
+        if drive_file_id:
             gs = _gs()
             if gs:
                 ws = gs._get_hoja('config')
@@ -11637,18 +12054,12 @@ def _pausa_guardar_mp3(modelo_id, audio_bytes, extension="mp3"):
                     for idx, row in enumerate(all_vals):
                         if row and row[0] == clave:
                             ws.update_cell(idx + 1, 2, drive_file_id)
-                            found = True
-                            break
+                            found = True; break
                     if not found:
                         ws.append_row([clave, drive_file_id])
-                    # Limpiar entrada base64 antigua si existe (liberar espacio)
-                    clave_b64 = f"bin_pausa_mp3_{modelo_id}"
-                    for idx, row in enumerate(all_vals):
-                        if row and row[0] == clave_b64 and len(row) > 1 and row[1]:
-                            ws.update_cell(idx + 1, 2, '')
-                            break
-        except Exception:
-            pass
+    except Exception as _e:
+        st.session_state["_drive_error"] = str(_e)
+
     return path, drive_file_id
 
 def _pausa_drive_url(file_id):
@@ -17544,7 +17955,67 @@ def tab_pausa_activa(config):
     if es_admin:
         with st.expander("🎵 Cargar Música MP3 por Modelo (solo Admin/Directivo)", expanded=False):
             pausa_cfg = _cargar_pausa_config()
-            st.caption("Sube un archivo MP3 para cada modelo. Se guardará en el servidor.")
+
+            # ── Diagnóstico Drive ──────────────────────────────────────────
+            st.markdown("**☁️ Estado de conexión con Google Drive:**")
+            col_d1, col_d2 = st.columns([1, 3])
+            with col_d1:
+                if st.button("🔍 Probar conexión Drive", key="test_drive_btn", type="primary"):
+                    with st.spinner("Probando..."):
+                        import traceback as _tb
+                        _pasos = []
+                        # Paso 1: secrets
+                        try:
+                            _creds = dict(st.secrets["gcp_service_account"])
+                            _pasos.append(f"✅ Secrets OK — cuenta: {_creds.get('client_email','?')[:40]}")
+                        except Exception as _e1:
+                            _pasos.append(f"❌ Secrets ERROR: {_e1}")
+                            st.session_state["_diag_drive"] = _pasos; st.rerun()
+                        # Paso 2: cryptography
+                        try:
+                            from cryptography.hazmat.primitives import hashes, serialization
+                            from cryptography.hazmat.primitives.asymmetric import padding
+                            _pasos.append("✅ Librería cryptography disponible")
+                        except Exception as _e2:
+                            _pasos.append(f"❌ cryptography NO disponible: {_e2}")
+                        # Paso 3: obtener token
+                        try:
+                            _tok = _drive_get_token()
+                            if _tok:
+                                _pasos.append(f"✅ Token OAuth OK — {_tok[:20]}...")
+                            else:
+                                _err = st.session_state.get("_drive_error","?")
+                                _pasos.append(f"❌ Token FALLÓ: {_err}")
+                        except Exception as _e3:
+                            _pasos.append(f"❌ Token excepción: {_e3}")
+                        # Paso 4: listar archivos Drive (prueba real)
+                        try:
+                            _svc = _drive_service()
+                            if _svc:
+                                _files = _svc.list_files(q="trashed=false", page_size=1)
+                                _pasos.append(f"✅ Drive API OK — acceso confirmado")
+                            else:
+                                _pasos.append("❌ Drive service retornó None")
+                        except Exception as _e4:
+                            _pasos.append(f"❌ Drive API error: {_e4}")
+                        st.session_state["_diag_drive"] = _pasos
+
+            with col_d2:
+                for paso in st.session_state.get("_diag_drive", []):
+                    if paso.startswith("✅"):
+                        st.success(paso)
+                    else:
+                        st.error(paso)
+
+            if not st.session_state.get("_diag_drive"):
+                _last_err = st.session_state.get("_drive_error")
+                if _last_err:
+                    st.error(f"⚠️ Último error Drive: {_last_err}")
+                else:
+                    st.info("💡 Presiona 'Probar conexión Drive' para verificar que el audio MP3 se puede guardar en la nube.")
+
+            st.markdown("---")
+            st.caption("Sube un archivo MP3 para cada modelo. Se guardará en Google Drive automáticamente.")
             for m in PAUSA_MODELOS:
                 c1, c2, c3 = st.columns([2, 2, 1])
                 with c1:
@@ -19158,6 +19629,7 @@ def main():
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
+                ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
             ]
 
@@ -19223,6 +19695,8 @@ def main():
                 tab_yachay_plickers(config)
             elif mod == "pausa_activa":
                 tab_pausa_activa(config)
+            elif mod == "tests_vocacionales":
+                _tab_test_vocacional_ui(config)
             elif mod == "registros_pdf":
                 st.subheader("📋 Registros PDF — Asistencia")
                 _seccion_registros_pdf(config)
@@ -19234,6 +19708,8 @@ def main():
                 info_d = st.session_state.get('docente_info', {}) or {}
                 grado_d = info_d.get('grado', '')
                 _tab_registro_pdf_docente(grado_d, config)
+            elif mod == "tests_vocacionales":
+                _tab_test_vocacional_ui(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -19268,6 +19744,7 @@ def main():
                 ("📝", "Exámenes Sem.", "examenes_sem", "#b91c1c"),
                 ("📝", "YACHAY QAWAY", "plickers", "#7c3aed"),
                 ("📋", "Registros PDF", "registros_pdf", "#0d9488"),
+                ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
             ]
             if st.session_state.rol == "admin":
@@ -19363,6 +19840,8 @@ def main():
                 tab_yachay_plickers(config)
             elif mod == "pausa_activa":
                 tab_pausa_activa(config)
+            elif mod == "tests_vocacionales":
+                _tab_test_vocacional_ui(config)
             elif mod == "registros_pdf":
                 st.subheader("📋 Registros PDF — Asistencia")
                 _seccion_registros_pdf(config)
