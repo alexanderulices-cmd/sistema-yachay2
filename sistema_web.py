@@ -18219,35 +18219,31 @@ def tab_pausa_activa(config):
             else:
                 st.error("Sin carpeta configurada — los MP3 no se pueden subir a Drive.")
 
-            with st.expander("Configurar carpeta compartida (necesario una sola vez)", expanded=not bool(_carpeta_actual)):
-                st.markdown(
-                    "**El service account necesita una carpeta de TU Google Drive compartida con el:**\n\n"
-                    "`yachay-sync@yachay-pro.iam.gserviceaccount.com`\n\n"
-                    "**Pasos:**\n\n"
-                    "1. Abre [drive.google.com](https://drive.google.com) y crea carpeta **YACHAY_MP3**\n\n"
-                    "2. Clic derecho en la carpeta → **Compartir** → pega el correo de arriba → "
-                    "permiso **Editor** → Enviar\n\n"
-                    "3. Abre la carpeta y copia el ID de la URL:\n"
-                    "   `https://drive.google.com/drive/folders/` **AQUI_ESTA_EL_ID**\n\n"
-                    "4. Pega el ID abajo y guarda:"
+            # Configurar carpeta — sin st.expander (no se puede anidar)
+            if st.toggle("⚙️ Configurar carpeta compartida", value=not bool(_carpeta_actual), key="tog_folder_cfg"):
+                st.info(
+                    "El service account necesita acceso a una carpeta de TU Drive.\n\n"
+                    "Correo a compartir: `yachay-sync@yachay-pro.iam.gserviceaccount.com` (permiso Editor)\n\n"
+                    "Luego copia el ID de la URL de la carpeta: "
+                    "`drive.google.com/drive/folders/` **ESTE_ID**"
                 )
                 _fid_inp = st.text_input(
                     "ID de la carpeta compartida:",
                     value=_carpeta_actual or "",
-                    placeholder="Ej: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74",
+                    placeholder="Ej: 1VJFJpvGoZBUGKEGxq1gVsW6cKfKVztcr",
                     key="drive_folder_id_input"
                 )
-                if st.button("Guardar ID de carpeta", key="btn_save_folder", type="primary"):
+                if st.button("💾 Guardar ID de carpeta", key="btn_save_folder", type="primary"):
                     fid_clean = _fid_inp.strip()
                     if fid_clean:
                         if _drive_guardar_carpeta_raiz(fid_clean):
-                            st.success(f"Carpeta guardada: {fid_clean}")
+                            st.success(f"✅ Carpeta guardada: {fid_clean}")
                             st.session_state["_diag_drive"] = []
                             st.rerun()
                         else:
-                            st.error("No se pudo guardar. Verifica conexion a Google Sheets.")
+                            st.error("No se pudo guardar. Verifica Google Sheets.")
                     else:
-                        st.warning("Pega el ID de la carpeta primero.")
+                        st.warning("Pega el ID primero.")
 
             st.markdown("---")
             st.caption("Sube un archivo MP3 para cada modelo. Se guardara en la carpeta de Drive configurada.")
@@ -19282,31 +19278,43 @@ def tab_yachay_plickers(config):
                 quiz['pregunta_actual'] = pidx
                 _plk_guardar_sesion(sesion_id, quiz)
 
-                # Modo pantalla completa + musica de fondo
-                col_fs, col_mus = st.columns([1, 1])
-                with col_fs:
-                    fs_on = st.checkbox("🖥️ PANTALLA GIGANTE", key="plik_fs_chk")
-                with col_mus:
-                    musica_on = st.checkbox("🎵 Musica de fondo", key="plik_musica", value=st.session_state.get("plik_musica_v", False))
-                    st.session_state.plik_musica_v = musica_on
-                if musica_on:
-                    import streamlit.components.v1 as comp_m
-                    musica_b64 = _qaway_cargar_musica()
-                    if musica_b64:
-                        # Audio local: base64 directo (rápido, misma sesión)
-                        audio_src = 'data:audio/mpeg;base64,' + musica_b64
-                    else:
-                        # Sin local: intentar Drive URL (persistente entre reinicios)
-                        _q_fid = _qaway_drive_file_id()
-                        if _q_fid:
-                            audio_src = f'https://drive.google.com/uc?export=download&id={_q_fid}'
-                        else:
-                            audio_src = 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3'
-                    comp_m.html('<div style="text-align:center;padding:4px;">'
-                        '<audio id="bgm" loop autoplay><source src="' + audio_src + '" type="audio/mpeg"></audio>'
-                        '<button onclick="var a=document.getElementById(\'bgm\');if(a.paused){a.play();this.textContent=\'🔊 Pausar\'}else{a.pause();this.textContent=\'🔈 Reproducir\'}"'
-                        ' style="background:#7c3aed;color:white;border:none;padding:6px 16px;border-radius:8px;cursor:pointer">🔊 Pausar</button>'
-                        '</div>', height=50)
+            # ── CONTROLES MEJORADOS ─────────────────────────────────────
+            ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([1, 1, 1, 1])
+            with ctrl1:
+                fs_on = st.checkbox("🖥️ PANTALLA GIGANTE", key="plik_fs_chk")
+            with ctrl2:
+                musica_on = st.checkbox("🎵 Música", key="plik_musica",
+                                        value=st.session_state.get("plik_musica_v", False))
+                st.session_state.plik_musica_v = musica_on
+            with ctrl3:
+                t_conf = st.selectbox("⏱️ Tiempo:", [30, 45, 60, 90, 120, 180],
+                                       index=1, key="plik_t_seg",
+                                       format_func=lambda x: f"{x}s ({x//60}m {x%60}s)" if x >= 60 else f"{x}s")
+            with ctrl4:
+                auto_ref = st.checkbox("🔄 Auto (5s)", key="plik_auto_ref", value=False)
+
+            # Actualizar tiempo en quiz
+            if quiz.get('tiempo_por_pregunta') != t_conf:
+                quiz['tiempo_por_pregunta'] = t_conf
+                _plk_guardar_sesion(sesion_id, quiz)
+
+            if musica_on:
+                import streamlit.components.v1 as comp_m
+                musica_b64 = _qaway_cargar_musica()
+                if musica_b64:
+                    audio_src = 'data:audio/mpeg;base64,' + musica_b64
+                else:
+                    _q_fid = _qaway_drive_file_id()
+                    audio_src = (f'https://drive.google.com/uc?export=download&id={_q_fid}'
+                                 if _q_fid else
+                                 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3')
+                comp_m.html(
+                    '<div style="text-align:center;padding:4px;">'
+                    '<audio id="bgm" loop autoplay><source src="' + audio_src + '" type="audio/mpeg"></audio>'
+                    '<button onclick="var a=document.getElementById(\'bgm\');if(a.paused){a.play();'
+                    'this.textContent=\'🔊 Pausar\'}else{a.pause();this.textContent=\'▶️ Reproducir\'}"'
+                    ' style="background:#7c3aed;color:white;border:none;padding:6px 16px;'
+                    'border-radius:8px;cursor:pointer">🔊 Pausar</button></div>', height=50)
 
                 # PANTALLA DE PROYECCION (grande, para proyector)
                 st.markdown(f"""<div style='background:#1e1b4b;color:white;padding:30px;
@@ -19452,37 +19460,66 @@ def tab_yachay_plickers(config):
                     if r_item:
                         resp_preg[dni_r] = {'nombre': datos_r['nombre'], **r_item}
 
+                # ── RESUMEN DE RESPUESTAS DE ESTA PREGUNTA ───────────────
                 st.markdown("---")
                 n_resp = len(resp_preg)
                 correctos = sum(1 for r in resp_preg.values() if r.get('ok'))
                 incorrectos = n_resp - correctos
-
-                cr1, cr2, cr3 = st.columns(3)
-                cr1.metric("Respondieron", n_resp)
-                cr2.metric("Correctas", correctos)
-                cr3.metric("Incorrectas", incorrectos)
+                st.markdown(
+                    f'<div style="display:flex;gap:10px;margin-bottom:8px;">'
+                    f'<div style="background:#3b82f6;color:white;border-radius:10px;padding:10px 16px;'
+                    f'font-weight:700;text-align:center;flex:1;">👥 {n_resp}<br><small>Respondieron</small></div>'
+                    f'<div style="background:#16a34a;color:white;border-radius:10px;padding:10px 16px;'
+                    f'font-weight:700;text-align:center;flex:1;">✅ {correctos}<br><small>Correctas</small></div>'
+                    f'<div style="background:#dc2626;color:white;border-radius:10px;padding:10px 16px;'
+                    f'font-weight:700;text-align:center;flex:1;">❌ {incorrectos}<br><small>Incorrectas</small></div>'
+                    f'</div>', unsafe_allow_html=True)
 
                 if resp_preg:
                     st.progress(correctos / max(n_resp, 1))
-                    # Mostrar nombres con color
                     cols_nombres = st.columns(4)
                     for idx_r, (dni_r, r_data) in enumerate(resp_preg.items()):
                         col_i = idx_r % 4
                         color = '#16a34a' if r_data.get('ok') else '#dc2626'
-                        emoji = 'OK' if r_data.get('ok') else 'X'
+                        emoji = '✅' if r_data.get('ok') else '❌'
                         nombre_corto = r_data['nombre'].split()[-1] if ' ' in r_data['nombre'] else r_data['nombre']
                         cols_nombres[col_i].markdown(
-                            f"<div style='background:{color};color:white;padding:5px 8px;border-radius:6px;margin:2px;font-size:0.85rem;text-align:center;'>"
-                            f"{emoji} {nombre_corto} = {r_data['resp']}</div>", unsafe_allow_html=True)
+                            f"<div style='background:{color};color:white;padding:5px 8px;"
+                            f"border-radius:6px;margin:2px;font-size:0.82rem;text-align:center;'>"
+                            f"{emoji} {nombre_corto}</div>", unsafe_allow_html=True)
 
-                # Boton refrescar (para ver nuevas respuestas)
+                # ── NAVEGACIÓN CON FLECHAS GRANDES + TECLADO ─────────────
                 st.markdown("---")
-                col_ref, col_prev, col_next = st.columns([1, 1, 1])
+
+                # JavaScript para teclas de flecha
+                import streamlit.components.v1 as _comp_keys
+                _comp_keys.html("""
+                <script>
+                window.addEventListener('keydown', function(e) {
+                    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                        var btns = window.parent.document.querySelectorAll('button');
+                        for(var b of btns) {
+                            if(b.innerText.includes('SIGUIENTE') || b.innerText.includes('FINALIZAR')) {
+                                b.click(); break;
+                            }
+                        }
+                    }
+                    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        var btns = window.parent.document.querySelectorAll('button');
+                        for(var b of btns) {
+                            if(b.innerText.includes('ANTERIOR')) {
+                                b.click(); break;
+                            }
+                        }
+                    }
+                });
+                </script>""", height=0)
+
+                col_ref, col_prev, col_info, col_next = st.columns([1, 2, 1, 2])
                 with col_ref:
-                    if st.button("🔄 REFRESCAR", use_container_width=True, key="plik_refresh", type="primary"):
+                    if st.button("🔄", use_container_width=True, key="plik_refresh",
+                                 help="Refrescar respuestas"):
                         st.rerun()
-                    # Auto-refresh cada 5 seg via time
-                    auto_ref = st.checkbox("Auto-refrescar (5s)", key="plik_auto_ref", value=False)
                     if auto_ref:
                         import time as _t_ref
                         if 'plik_last_ref' not in st.session_state:
@@ -19490,18 +19527,26 @@ def tab_yachay_plickers(config):
                         if _t_ref.time() - st.session_state.plik_last_ref > 5:
                             st.session_state.plik_last_ref = _t_ref.time()
                             st.rerun()
-
                 with col_prev:
-                    if pidx > 0 and st.button("ANTERIOR", use_container_width=True, type="primary", key="plik_prev"):
-                        st.session_state.plik_pidx -= 1
-                        st.rerun()
+                    if pidx > 0:
+                        if st.button("◀ ANTERIOR", use_container_width=True,
+                                     type="primary", key="plik_prev"):
+                            st.session_state.plik_pidx -= 1
+                            st.rerun()
+                with col_info:
+                    st.markdown(
+                        f'<div style="text-align:center;padding:8px;background:#1e1b4b;'
+                        f'color:white;border-radius:8px;font-weight:700;">'
+                        f'{pidx+1}/{total_p}</div>', unsafe_allow_html=True)
                 with col_next:
                     if pidx < total_p - 1:
-                        if st.button("SIGUIENTE", type="primary", use_container_width=True, key="plik_next"):
+                        if st.button("SIGUIENTE ▶", type="primary",
+                                     use_container_width=True, key="plik_next"):
                             st.session_state.plik_pidx += 1
                             st.rerun()
                     else:
-                        if st.button("FINALIZAR", type="primary", use_container_width=True, key="plik_fin"):
+                        if st.button("🏁 FINALIZAR", type="primary",
+                                     use_container_width=True, key="plik_fin"):
                             st.session_state.plik_pidx = total_p
                             st.rerun()
             else:
