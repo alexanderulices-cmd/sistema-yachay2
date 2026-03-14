@@ -12006,23 +12006,71 @@ def _drive_service():
 
     return _DriveLite(token)
 
+def _drive_get_carpeta_raiz():
+    """Retorna el folder_id configurado manualmente (carpeta compartida con el service account)."""
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja("config")
+            if ws:
+                for row in ws.get_all_values():
+                    if row and row[0] == "drive_folder_raiz" and len(row) > 1 and row[1]:
+                        return row[1].strip()
+    except Exception:
+        pass
+    return None
+
+def _drive_guardar_carpeta_raiz(folder_id):
+    """Guarda el folder_id configurado en GSheets."""
+    try:
+        gs = _gs()
+        if gs:
+            ws = gs._get_hoja("config")
+            if ws:
+                all_v = ws.get_all_values()
+                for idx, row in enumerate(all_v):
+                    if row and row[0] == "drive_folder_raiz":
+                        ws.update_cell(idx + 1, 2, folder_id)
+                        return True
+                ws.append_row(["drive_folder_raiz", folder_id])
+                return True
+    except Exception:
+        pass
+    return False
+
 def _drive_get_folder(folder_name):
-    """Obtiene (o crea) una carpeta en Drive por nombre. Retorna folder_id."""
+    """Obtiene o crea una subcarpeta dentro de la carpeta raiz configurada."""
     try:
         svc = _drive_service()
         if not svc:
             return None
-        files = svc.list_files(
-            q=f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false")
+        parent_id = _drive_get_carpeta_raiz()
+        q = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        if parent_id:
+            q += f" and '{parent_id}' in parents"
+        files = svc.list_files(q=q)
         if files:
             return files[0]["id"]
-        return svc.create_folder(folder_name)
+        import urllib.request as _r2, json as _j2
+        meta = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
+        if parent_id:
+            meta["parents"] = [parent_id]
+        tok = _drive_get_token()
+        req = _r2.Request(
+            "https://www.googleapis.com/drive/v3/files?fields=id",
+            data=_j2.dumps(meta).encode(),
+            headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
+        with _r2.urlopen(req, timeout=15) as resp:
+            return _j2.loads(resp.read()).get("id")
     except Exception as _e:
         st.session_state["_drive_error"] = f"_drive_get_folder: {_e}"
         return None
 
 def _drive_folder_pausa():
-    """Obtiene (o crea) la carpeta YACHAY_PAUSA_MP3 en Drive. Retorna folder_id."""
+    """Subcarpeta YACHAY_PAUSA_MP3 dentro de la carpeta configurada."""
+    carpeta_raiz = _drive_get_carpeta_raiz()
+    if not carpeta_raiz:
+        return None  # Sin carpeta raiz no se puede subir
     return _drive_get_folder("YACHAY_PAUSA_MP3")
 
 def _drive_backup_json(nombre_archivo, datos_dict):
@@ -18097,34 +18145,112 @@ def tab_pausa_activa(config):
                                 _pasos.append(f"❌ Token FALLÓ: {_err}")
                         except Exception as _e3:
                             _pasos.append(f"❌ Token excepción: {_e3}")
-                        # Paso 4: listar archivos Drive (prueba real)
+                        # Paso 4: LECTURA Drive
                         try:
                             _svc = _drive_service()
                             if _svc:
-                                _files = _svc.list_files(q="trashed=false", page_size=1)
-                                _pasos.append(f"✅ Drive API OK — acceso confirmado")
+                                _svc.list_files(q="trashed=false", page_size=1)
+                                _pasos.append("✅ Drive LECTURA OK")
                             else:
                                 _pasos.append("❌ Drive service retornó None")
                         except Exception as _e4:
-                            _pasos.append(f"❌ Drive API error: {_e4}")
+                            _pasos.append(f"❌ Drive lectura error: {_e4}")
+                        # Paso 5: ESCRITURA Drive (prueba real con archivo pequeño)
+                        try:
+                            _svc2 = _drive_service()
+                            if _svc2:
+                                _fid_test = _svc2.upload(
+                                    "yachay_test_write.txt",
+                                    b"YACHAY_TEST_OK", "text/plain")
+                                if _fid_test:
+                                    _pasos.append("✅ Drive ESCRITURA OK — puede subir archivos")
+                                    try: _svc2.delete(_fid_test)
+                                    except Exception: pass
+                                else:
+                                    _pasos.append("❌ Drive ESCRITURA FALLÓ — retornó None")
+                        except Exception as _e5:
+                            _cod5 = str(_e5)
+                            if "403" in _cod5:
+                                _pasos.append("❌ Drive ESCRITURA: ERROR 403 — Drive API NO HABILITADA en Google Cloud Console")
+                            else:
+                                _pasos.append(f"❌ Drive escritura error: {_e5}")
                         st.session_state["_diag_drive"] = _pasos
 
             with col_d2:
-                for paso in st.session_state.get("_diag_drive", []):
-                    if paso.startswith("✅"):
-                        st.success(paso)
+                _hay_403 = False
+                for _paso in st.session_state.get("_diag_drive", []):
+                    if _paso.startswith("✅"):
+                        st.success(_paso)
                     else:
-                        st.error(paso)
+                        st.error(_paso)
+                        if "403" in _paso:
+                            _hay_403 = True
+
+            if _hay_403:
+                instrucciones = (
+                    '<div style="background:#fef3c7;border:2px solid #f59e0b;'
+                    'border-radius:10px;padding:14px;margin-top:8px;">'
+                    '<b>🔧 Solución — 3 pasos en Google Cloud Console:</b><br><br>'
+                    '<b>Paso 1:</b> Entra a '
+                    '<a href="https://console.cloud.google.com/apis/library/'
+                    'drive.googleapis.com?project=yachay-pro" target="_blank">'
+                    'console.cloud.google.com</a>'
+                    ' → APIs y Servicios → Biblioteca → busca <b>Google Drive API</b> → '
+                    'clic en <b>HABILITAR</b><br><br>'
+                    '<b>Paso 2:</b> Espera 2 minutos<br><br>'
+                    '<b>Paso 3:</b> Vuelve aquí y presiona "🔍 Probar conexión Drive"'
+                    '</div>'
+                )
+                st.markdown(instrucciones, unsafe_allow_html=True)
 
             if not st.session_state.get("_diag_drive"):
                 _last_err = st.session_state.get("_drive_error")
                 if _last_err:
-                    st.error(f"⚠️ Último error Drive: {_last_err}")
+                    st.error(f"Ultimo error Drive: {_last_err}")
                 else:
-                    st.info("💡 Presiona 'Probar conexión Drive' para verificar que el audio MP3 se puede guardar en la nube.")
+                    st.info("Presiona Probar conexion Drive para verificar.")
+
+            # ── CONFIGURAR CARPETA COMPARTIDA ─────────────────────────────
+            st.markdown("---")
+            st.markdown("**📁 Carpeta de Google Drive para los MP3:**")
+            _carpeta_actual = _drive_get_carpeta_raiz()
+            if _carpeta_actual:
+                st.success(f"Carpeta configurada: `{_carpeta_actual}`")
+            else:
+                st.error("Sin carpeta configurada — los MP3 no se pueden subir a Drive.")
+
+            with st.expander("Configurar carpeta compartida (necesario una sola vez)", expanded=not bool(_carpeta_actual)):
+                st.markdown(
+                    "**El service account necesita una carpeta de TU Google Drive compartida con el:**\n\n"
+                    "`yachay-sync@yachay-pro.iam.gserviceaccount.com`\n\n"
+                    "**Pasos:**\n\n"
+                    "1. Abre [drive.google.com](https://drive.google.com) y crea carpeta **YACHAY_MP3**\n\n"
+                    "2. Clic derecho en la carpeta → **Compartir** → pega el correo de arriba → "
+                    "permiso **Editor** → Enviar\n\n"
+                    "3. Abre la carpeta y copia el ID de la URL:\n"
+                    "   `https://drive.google.com/drive/folders/` **AQUI_ESTA_EL_ID**\n\n"
+                    "4. Pega el ID abajo y guarda:"
+                )
+                _fid_inp = st.text_input(
+                    "ID de la carpeta compartida:",
+                    value=_carpeta_actual or "",
+                    placeholder="Ej: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74",
+                    key="drive_folder_id_input"
+                )
+                if st.button("Guardar ID de carpeta", key="btn_save_folder", type="primary"):
+                    fid_clean = _fid_inp.strip()
+                    if fid_clean:
+                        if _drive_guardar_carpeta_raiz(fid_clean):
+                            st.success(f"Carpeta guardada: {fid_clean}")
+                            st.session_state["_diag_drive"] = []
+                            st.rerun()
+                        else:
+                            st.error("No se pudo guardar. Verifica conexion a Google Sheets.")
+                    else:
+                        st.warning("Pega el ID de la carpeta primero.")
 
             st.markdown("---")
-            st.caption("Sube un archivo MP3 para cada modelo. Se guardará en Google Drive automáticamente.")
+            st.caption("Sube un archivo MP3 para cada modelo. Se guardara en la carpeta de Drive configurada.")
             for m in PAUSA_MODELOS:
                 c1, c2, c3 = st.columns([2, 2, 1])
                 with c1:
