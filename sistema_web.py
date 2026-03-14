@@ -3270,8 +3270,8 @@ def generar_link_whatsapp(tel, msg):
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
-    msg_encoded = urllib.parse.quote(msg.encode('utf-8'), safe=b'')
-    # wa.me funciona en escritorio (abre WA Web) y en celular (abre la app)
+    # Codificación correcta para emojis — usar quote sin safe bytes
+    msg_encoded = urllib.parse.quote(msg, safe='')
     return f"https://wa.me/{t}?text={msg_encoded}"
 
 
@@ -5410,7 +5410,7 @@ def tab_asistencias():
                 t_cel = ''.join(c for c in cel if c.isdigit())
                 if len(t_cel) == 9: t_cel = "51" + t_cel
                 elif not t_cel.startswith("51"): t_cel = "51" + t_cel
-                msg_enc = urllib.parse.quote(msg.encode('utf-8'), safe=b'')
+                msg_enc = urllib.parse.quote(msg, safe='')
                 link_wa = f"https://wa.me/{t_cel}?text={msg_enc}"
 
                 col_wa, col_info = st.columns([5, 2])
