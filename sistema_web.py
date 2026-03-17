@@ -5253,68 +5253,76 @@ def _seccion_registros_pdf(config):
 
 def tab_documentos(config):
     st.header("📄 Documentos")
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        td = st.selectbox("📑 Tipo:", [
-            "CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR",
-            "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA",
-            "CARTA COMPROMISO", "RESOLUCIÓN DE TRASLADO"
-        ], key="td")
-        st.markdown("---")
-        db = st.text_input("🔍 Buscar DNI:", key="db")
-        if st.button("🔎 Buscar", use_container_width=True, key="bb", type="primary"):
-            r = BaseDatos.buscar_por_dni(db)
-            if r:
-                st.session_state.alumno = r.get('Nombre', '')
-                st.session_state.dni = r.get('DNI', '')
-                st.session_state.grado = r.get('Grado', '')
-                st.session_state.apoderado = r.get('Apoderado', '')
-                st.session_state.dni_apo = r.get('DNI_Apoderado', '')
-                st.success("🎉 Datos cargados")
-                st.rerun()
-            else:
-                st.error("❌ No encontrado")
-    with c2:
-        with st.container(border=True):
-            nm = st.text_input("👤 Estudiante:", key="alumno")
-            dn = st.text_input("🆔 DNI Estudiante:", key="dni")
-            gr = st.text_input("📚 Grado:", key="grado")
-            ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
-            da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
-            nc = {}
-            if td == "CONSTANCIA DE CONDUCTA":
-                cols = st.columns(5)
-                for i, col in enumerate(cols):
-                    with col:
-                        nc[f'nota_conducta_{i+1}'] = st.selectbox(
-                            f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}")
-            ex = {}
-            if td == "RESOLUCIÓN DE TRASLADO":
-                ex['num_resolucion'] = st.text_input("N° Resolución:", key="nr")
-                ex['fecha_resolucion'] = st.text_input("Fecha:", key="fr2")
-                ex['nivel'] = st.selectbox("Nivel:",
-                                           ["INICIAL", "PRIMARIA", "SECUNDARIA"],
-                                           key="nl")
-                ex['ie_destino'] = st.text_input("IE Destino:", key="ie")
-        if st.button("✨ GENERAR DOCUMENTO", type="primary",
-                     use_container_width=True, key="gd"):
-            if nm and dn:
-                d = {'alumno': nm, 'dni': dn, 'grado': gr,
-                     'apoderado': ap, 'dni_apo': da, **nc, **ex}
-                g = GeneradorPDF(config)
-                metodos = {
-                    "CONSTANCIA DE VACANTE": g.generar_constancia_vacante,
-                    "CONSTANCIA DE NO DEUDOR": g.generar_constancia_no_deudor,
-                    "CONSTANCIA DE ESTUDIOS": g.generar_constancia_estudios,
-                    "CONSTANCIA DE CONDUCTA": g.generar_constancia_conducta,
-                    "CARTA COMPROMISO": g.generar_carta_compromiso,
-                    "RESOLUCIÓN DE TRASLADO": g.generar_resolucion_traslado,
-                }
-                pdf = metodos[td](d)
-                st.success("🎉 Documento generado")
-                st.download_button("⬇️ Descargar PDF", pdf,
-                                   f"{nm}_{td}.pdf", "application/pdf",
-                                   use_container_width=True, key="dd2")
+
+    doc_main_tab1, doc_main_tab2 = st.tabs([
+        "📃 Constancias y Certificados", "🏫 Documentos Institucionales"])
+
+    with doc_main_tab1:
+        c1, c2 = st.columns([1, 2])
+        with c1:
+            td = st.selectbox("📑 Tipo:", [
+                "CONSTANCIA DE VACANTE", "CONSTANCIA DE NO DEUDOR",
+                "CONSTANCIA DE ESTUDIOS", "CONSTANCIA DE CONDUCTA",
+                "CARTA COMPROMISO", "RESOLUCIÓN DE TRASLADO"
+            ], key="td")
+            st.markdown("---")
+            db = st.text_input("🔍 Buscar DNI:", key="db")
+            if st.button("🔎 Buscar", use_container_width=True, key="bb", type="primary"):
+                r = BaseDatos.buscar_por_dni(db)
+                if r:
+                    st.session_state.alumno = r.get('Nombre', '')
+                    st.session_state.dni = r.get('DNI', '')
+                    st.session_state.grado = r.get('Grado', '')
+                    st.session_state.apoderado = r.get('Apoderado', '')
+                    st.session_state.dni_apo = r.get('DNI_Apoderado', '')
+                    st.success("🎉 Datos cargados")
+                    st.rerun()
+                else:
+                    st.error("❌ No encontrado")
+        with c2:
+            with st.container(border=True):
+                nm = st.text_input("👤 Estudiante:", key="alumno")
+                dn = st.text_input("🆔 DNI Estudiante:", key="dni")
+                gr = st.text_input("📚 Grado:", key="grado")
+                ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
+                da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
+                nc = {}
+                if td == "CONSTANCIA DE CONDUCTA":
+                    cols = st.columns(5)
+                    for i, col in enumerate(cols):
+                        with col:
+                            nc[f'nota_conducta_{i+1}'] = st.selectbox(
+                                f"{i+1}°", ["AD", "A", "B", "C"], key=f"n{i}")
+                ex = {}
+                if td == "RESOLUCIÓN DE TRASLADO":
+                    ex['num_resolucion'] = st.text_input("N° Resolución:", key="nr")
+                    ex['fecha_resolucion'] = st.text_input("Fecha:", key="fr2")
+                    ex['nivel'] = st.selectbox("Nivel:",
+                                               ["INICIAL", "PRIMARIA", "SECUNDARIA"],
+                                               key="nl")
+                    ex['ie_destino'] = st.text_input("IE Destino:", key="ie")
+            if st.button("✨ GENERAR DOCUMENTO", type="primary",
+                         use_container_width=True, key="gd"):
+                if nm and dn:
+                    d = {'alumno': nm, 'dni': dn, 'grado': gr,
+                         'apoderado': ap, 'dni_apo': da, **nc, **ex}
+                    g = GeneradorPDF(config)
+                    metodos = {
+                        "CONSTANCIA DE VACANTE": g.generar_constancia_vacante,
+                        "CONSTANCIA DE NO DEUDOR": g.generar_constancia_no_deudor,
+                        "CONSTANCIA DE ESTUDIOS": g.generar_constancia_estudios,
+                        "CONSTANCIA DE CONDUCTA": g.generar_constancia_conducta,
+                        "CARTA COMPROMISO": g.generar_carta_compromiso,
+                        "RESOLUCIÓN DE TRASLADO": g.generar_resolucion_traslado,
+                    }
+                    pdf = metodos[td](d)
+                    st.success("🎉 Documento generado")
+                    st.download_button("⬇️ Descargar PDF", pdf,
+                                       f"{nm}_{td}.pdf", "application/pdf",
+                                       use_container_width=True, key="dd2")
+
+    with doc_main_tab2:
+        _seccion_documentos_auxiliar(config)
 
 
 # ================================================================
