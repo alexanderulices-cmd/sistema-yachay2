@@ -21286,18 +21286,6 @@ def _generar_hoja_organizador(tipo, grado, tema, config):
             t_cat = Table([[cat_row[0], cat_row[1]],
                            ["", ""]],
                           colWidths=[8*cm, 8*cm], rowHeights=[0.7*cm, 4.5*cm])
-
-
-
-
-", "
-
-
-
-
-
-"]],
-                          colWidths=[8*cm, 8*cm], rowHeights=[0.7*cm, 4.5*cm])
             t_cat.setStyle(TableStyle([
                 ('GRID',(0,0),(-1,-1),0.8,colors.black),
                 ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
