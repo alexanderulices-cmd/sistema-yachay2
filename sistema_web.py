@@ -20788,6 +20788,16 @@ def _tab_temporizador(config):
     MODOS = {
         "⚖️ Debate estructurado": {
             "desc": "Turnos de habla cronometrados para debates formales",
+            "guia": {
+                "que_es": "Un debate es una discusión organizada donde dos equipos defienden posiciones opuestas sobre un tema. No se trata de ganar — se trata de pensar, argumentar y escuchar.",
+                "como_funciona": [
+                    "Se forman 2 equipos: Equipo A y Equipo B, cada uno defiende una posición.",
+                    "Cada equipo tiene turnos fijos: Apertura (presentan su posición), Argumentos (desarrollan sus razones), Réplica (responden al otro equipo) y Cierre (resumen final).",
+                    "El temporizador controla el tiempo — cuando suena, se cede el turno SIN EXCEPCIÓN.",
+                    "El moderador (docente o alumno) da y quita la palabra.",
+                ],
+                "clave": "Un buen argumento tiene 3 partes: AFIRMACIÓN (qué defiendes) + RAZÓN (por qué) + EVIDENCIA (prueba o ejemplo concreto).",
+            },
             "fases": [
                 ("Apertura Equipo A", 120, "#dc2626"),
                 ("Apertura Equipo B", 120, "#2563eb"),
@@ -20807,6 +20817,16 @@ def _tab_temporizador(config):
         },
         "👥 Trabajo grupal": {
             "desc": "Gestión del tiempo para actividades colaborativas",
+            "guia": {
+                "que_es": "El trabajo grupal es una actividad donde un equipo de personas colabora para lograr un objetivo común. Cada integrante tiene una responsabilidad específica — el éxito depende de TODOS.",
+                "como_funciona": [
+                    "Primero: leen las instrucciones JUNTOS para asegurarse de que todos entienden la tarea.",
+                    "Segundo: trabajan en equipo — un coordinador organiza, un secretario anota, un vocero presentará.",
+                    "Tercero: preparan cómo van a presentar su trabajo al resto del salón.",
+                    "Cuarto: cada grupo expone su resultado — el resto escucha y puede preguntar.",
+                ],
+                "clave": "El trabajo grupal no es que uno trabaje y los demás copien. Si alguien no participa, el grupo lo menciona al docente. Todos aprenden cuando todos aportan.",
+            },
             "fases": [
                 ("Leer instrucciones", 60, "#7c3aed"),
                 ("Trabajo grupal", 600, "#059669"),
@@ -20822,6 +20842,16 @@ def _tab_temporizador(config):
         },
         "🎤 Exposición oral": {
             "desc": "Control de tiempo para presentaciones de alumnos",
+            "guia": {
+                "que_es": "Una exposición oral es la presentación de un tema ante un público. Es una habilidad fundamental en la vida — en la universidad, en el trabajo y en la ciudadanía hablarás en público constantemente.",
+                "como_funciona": [
+                    "Primero: tienes un tiempo breve para revisar tus apuntes y preparar tu presentación.",
+                    "Segundo: expones el tema frente a la clase — usa material de apoyo si tienes.",
+                    "Tercero: el público (tus compañeros) puede hacerte preguntas — responde con seguridad.",
+                    "Cuarto: el docente te da retroalimentación — qué hiciste bien y qué puedes mejorar.",
+                ],
+                "clave": "La clave de una buena exposición: MIRAR a tu audiencia (no al papel), hablar con voz CLARA y PAUSAS (no muy rápido), y conocer tu tema (no leer textualmente).",
+            },
             "fases": [
                 ("Preparación final", 120, "#7c3aed"),
                 ("Exposición", 300, "#059669"),
@@ -20837,6 +20867,16 @@ def _tab_temporizador(config):
         },
         "💡 Lluvia de ideas": {
             "desc": "Ideación libre y organización de propuestas",
+            "guia": {
+                "que_es": "La lluvia de ideas (brainstorming) es una técnica para generar la mayor cantidad posible de ideas en poco tiempo, SIN juzgarlas. Después se seleccionan las mejores. Fue creada por Alex Osborn en 1939 y se usa en empresas, ciencia y arte.",
+                "como_funciona": [
+                    "Fase 1 — GENERACIÓN: todos dicen ideas libremente. Ninguna idea se critica ni descarta. La cantidad es lo que importa.",
+                    "Fase 2 — SELECCIÓN: el grupo evalúa las ideas y elige las más útiles o creativas.",
+                    "Fase 3 — DESARROLLO: profundizan la idea elegida, le agregan detalles y la hacen viable.",
+                    "Fase 4 — PRESENTACIÓN: exponen la idea desarrollada al resto del salón.",
+                ],
+                "clave": "La regla de oro de la lluvia de ideas: NO HAY IDEAS MALAS en la fase de generación. Las ideas más locas a veces son las más creativas. Juzgar demasiado pronto mata la creatividad.",
+            },
             "fases": [
                 ("Generación de ideas (sin juzgar)", 180, "#f59e0b"),
                 ("Selección de mejores ideas", 120, "#059669"),
@@ -20852,6 +20892,16 @@ def _tab_temporizador(config):
         },
         "🔄 Rotación de estaciones": {
             "desc": "Aprendizaje por estaciones con rotación cronometrada",
+            "guia": {
+                "que_es": "La rotación de estaciones divide el salón en 4 zonas (estaciones), cada una con una actividad diferente sobre el mismo tema. Los grupos rotan para completar todas las estaciones.",
+                "como_funciona": [
+                    "El salón se divide en 4 grupos y 4 estaciones. Cada estación tiene materiales e instrucciones.",
+                    "Cuando el temporizador suena, TODOS los grupos se levantan y rotan a la siguiente estación.",
+                    "Al finalizar, cada grupo habrá pasado por las 4 estaciones y completado las 4 actividades.",
+                    "Puesta en común: el docente guía una reflexión sobre lo trabajado en todas las estaciones.",
+                ],
+                "clave": "La rotación es INMEDIATA cuando el temporizador suena. No importa si terminaste o no — toma tu trabajo y muévete. El compañero que llega continúa donde dejaste.",
+            },
             "fases": [
                 ("Estación 1", 300, "#dc2626"),
                 ("Rotación", 20, "#0f172a"),
@@ -20871,6 +20921,15 @@ def _tab_temporizador(config):
         },
         "📝 Examen / Evaluación": {
             "desc": "Control de tiempo para pruebas escritas",
+            "guia": {
+                "que_es": "El examen es una evaluación individual donde demuestras lo que aprendiste. No es para castigarte — es para que el docente vea cómo está tu aprendizaje y pueda ayudarte mejor.",
+                "como_funciona": [
+                    "Fase 1: lee TODAS las instrucciones antes de empezar a responder. Entender la pregunta es la mitad del trabajo.",
+                    "Fase 2: desarrolla el examen — empieza por lo que sabes bien para ganar confianza.",
+                    "Fase 3: usa los últimos minutos para REVISAR tus respuestas — busca errores de ortografía, preguntas sin responder, o ideas incompletas.",
+                ],
+                "clave": "Gestión del tiempo en el examen: calcula cuántos minutos tienes por pregunta. Si una pregunta te toma demasiado, pasa a la siguiente y vuelve al final.",
+            },
             "fases": [
                 ("Lectura de instrucciones", 120, "#0891b2"),
                 ("Desarrollo del examen", 2400, "#1e293b"),
@@ -20885,6 +20944,15 @@ def _tab_temporizador(config):
         },
         "⚙️ Personalizado": {
             "desc": "Crea tu propio temporizador con fases y tiempos a medida",
+            "guia": {
+                "que_es": "Modo personalizado: el docente configura las fases, tiempos y reglas específicas para la actividad del día.",
+                "como_funciona": [
+                    "El docente define el nombre y duración de cada fase.",
+                    "Escribe las reglas específicas para esta actividad.",
+                    "Los alumnos siguen las instrucciones que aparecen en pantalla.",
+                ],
+                "clave": "Presta atención a las reglas que aparecen en el panel — el docente las configuró específicamente para esta actividad.",
+            },
             "fases": [],
             "reglas": []
         },
@@ -20915,6 +20983,17 @@ def _tab_temporizador(config):
             fases = modo["fases"]
             reglas = modo["reglas"]
 
+        # Guía para los estudiantes
+        guia = modo.get("guia", {}) if modo_sel != "⚙️ Personalizado" else {}
+        if guia:
+            with st.expander("📖 Guía para estudiantes — ¿Qué es y cómo funciona?", expanded=False):
+                st.markdown(f"**¿Qué es?** {guia.get('que_es','')}")
+                st.markdown("**¿Cómo funciona?**")
+                for paso in guia.get("como_funciona", []):
+                    st.markdown(f"- {paso}")
+                if guia.get("clave"):
+                    st.info(f"**Clave:** {guia['clave']}")
+
         if reglas:
             st.markdown("**Reglas activas:**")
             for r in reglas:
@@ -20926,22 +21005,24 @@ def _tab_temporizador(config):
             {"nombre": f[0], "seg": f[1], "color": f[2]} for f in fases
         ])
         reglas_js = _json_tmr.dumps(reglas)
+        guia_data = modo.get("guia", {}) if modo_sel != "⚙️ Personalizado" else {}
+        guia_js = _json_tmr.dumps(guia_data)
 
         _comp_tmr.html(f"""<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{background:#0f172a;color:white;font-family:'Segoe UI',sans-serif;
-  padding:16px;min-height:520px;display:flex;flex-direction:column;gap:12px;}}
+  padding:16px;min-height:680px;display:flex;flex-direction:column;gap:12px;}}
 .fase-titulo{{font-size:1.1rem;color:#94a3b8;text-align:center;font-weight:600;}}
-.fase-nombre{{font-size:2rem;font-weight:900;text-align:center;margin:4px 0;
+.fase-nombre{{font-size:2.8rem;font-weight:900;text-align:center;margin:4px 0;
   text-shadow:0 2px 12px rgba(0,0,0,0.5);}}
 .timer-display{{text-align:center;margin:8px 0;position:relative;}}
 .timer-svg{{filter:drop-shadow(0 0 20px var(--col));}}
 .timer-num{{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-size:3.5rem;font-weight:900;}}
-.timer-label{{position:absolute;top:62%;left:50%;transform:translateX(-50%);
-  font-size:0.8rem;color:rgba(255,255,255,0.6);}}
+  font-size:5.5rem;font-weight:900;}}
+.timer-label{{position:absolute;top:68%;left:50%;transform:translateX(-50%);
+  font-size:1rem;color:rgba(255,255,255,0.6);}}
 .barra-abajo{{height:8px;border-radius:4px;background:rgba(255,255,255,0.1);margin:0 8px;}}
 .barra-fill{{height:8px;border-radius:4px;transition:width 0.9s linear;}}
 .btns{{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}}
@@ -20966,13 +21047,13 @@ body{{background:#0f172a;color:white;font-family:'Segoe UI',sans-serif;
 <div class="fase-titulo" id="titulo-fase">— Listo para comenzar —</div>
 <div class="fase-nombre" id="nombre-fase" style="color:#f59e0b;">Selecciona un modo y presiona INICIAR</div>
 <div class="timer-display">
-  <svg class="timer-svg" width="180" height="180" viewBox="0 0 180 180"
+  <svg class="timer-svg" width="260" height="260" viewBox="0 0 260 260"
        style="--col:#7c3aed">
-    <circle cx="90" cy="90" r="78" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>
-    <circle id="tring" cx="90" cy="90" r="78" fill="none"
-      stroke="#7c3aed" stroke-width="10" stroke-linecap="round"
-      stroke-dasharray="490" stroke-dashoffset="490"
-      transform="rotate(-90 90 90)"/>
+    <circle cx="130" cy="130" r="114" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+    <circle id="tring" cx="130" cy="130" r="114" fill="none"
+      stroke="#7c3aed" stroke-width="12" stroke-linecap="round"
+      stroke-dasharray="716" stroke-dashoffset="716"
+      transform="rotate(-90 130 130)"/>
   </svg>
   <div class="timer-num" id="tnum">--:--</div>
   <div class="timer-label" id="tlabel">SEG</div>
@@ -20986,11 +21067,14 @@ body{{background:#0f172a;color:white;font-family:'Segoe UI',sans-serif;
 </div>
 <div class="fases-lista" id="fases-lista"></div>
 <div class="reglas-box" id="reglas-box" style="display:none"></div>
+<div id="guia-box" style="display:none;background:rgba(255,255,255,0.05);border-radius:10px;
+  padding:10px 14px;font-size:0.78rem;color:#94a3b8;line-height:1.6;margin-top:4px;"></div>
 
 <script>
 const FASES = {fases_js};
 const REGLAS = {reglas_js};
-const CIRCUM = 490;
+const GUIA = {guia_js};
+const CIRCUM = 716;
 let faseIdx = 0, seg = 0, maxSeg = 0, iv = null, corriendo = false;
 
 function fmt(s) {{
@@ -21007,16 +21091,34 @@ function renderFases() {{
     d.style.background = f.color + '44';
     d.style.color = f.color;
     d.style.border = '1.5px solid ' + f.color;
-    d.textContent = (i<faseIdx?'✓ ':i===faseIdx?'▶ ':'') + f.nombre;
+    d.textContent = (i<faseIdx?'\u2713 ':i===faseIdx?'\u25b6 ':'') + f.nombre;
     c.appendChild(d);
   }});
 }}
 
-function renderReglas() {{
+function renderGuiaYReglas() {{
   const rb = document.getElementById('reglas-box');
+  const gb = document.getElementById('guia-box');
   if(REGLAS.length > 0) {{
     rb.style.display = 'block';
-    rb.innerHTML = '<b style="color:white">Reglas:</b><br>' + REGLAS.map(r=>'• '+r).join('<br>');
+    rb.innerHTML = '<b style="color:white;font-size:0.82rem;">Reglas:</b><br>' + REGLAS.map(r=>'&#x2022; '+r).join('<br>');
+  }}
+  if(GUIA && GUIA.que_es) {{
+    gb.style.display = 'block';
+    let html = '<details style="cursor:pointer;">';
+    html += '<summary style="color:#a5b4fc;font-weight:700;font-size:0.8rem;">&#x1F4D6; &#191;Qu&#233; es esta actividad? (clic para ver)</summary>';
+    html += '<div style="margin-top:8px;">';
+    html += '<p style="color:#e2e8f0;margin-bottom:6px;">' + GUIA.que_es + '</p>';
+    if(GUIA.como_funciona && GUIA.como_funciona.length > 0) {{
+      html += '<b style="color:#a5b4fc;">&#191;C&#243;mo funciona?</b><br>';
+      GUIA.como_funciona.forEach((p,i) => {{ html += '<span style="color:#cbd5e1;">&#x2192; ' + p + '</span><br>'; }});
+    }}
+    if(GUIA.clave) {{
+      html += '<div style="margin-top:8px;padding:6px 10px;background:rgba(245,158,11,0.15);border-left:3px solid #f59e0b;border-radius:4px;">';
+      html += '<b style="color:#fbbf24;">Clave:</b> <span style="color:#e2e8f0;">' + GUIA.clave + '</span></div>';
+    }}
+    html += '</div></details>';
+    gb.innerHTML = html;
   }}
 }}
 
@@ -21100,13 +21202,13 @@ function finTodo() {{
 }}
 
 // Init
-if(FASES.length>0){{ cargarFase(); renderReglas(); }}
+if(FASES.length>0){{ cargarFase(); renderGuiaYReglas(); }}
 else{{
   document.getElementById('titulo-fase').textContent='Sin fases configuradas';
   document.getElementById('nombre-fase').textContent='Configura el modo en el panel';
 }}
 </script>
-</body></html>""", height=560, scrolling=False)
+</body></html>""", height=700, scrolling=False)
 
 
 def tab_yachay_plickers(config):
