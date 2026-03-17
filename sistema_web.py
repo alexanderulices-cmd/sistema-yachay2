@@ -20979,9 +20979,10 @@ body{{background:#0f172a;color:white;font-family:'Segoe UI',sans-serif;
 </div>
 <div class="barra-abajo"><div class="barra-fill" id="bfill" style="width:0%;background:#7c3aed;"></div></div>
 <div class="btns">
-  <button class="btn btn-play" id="btn-play" onclick="togglePlay()">▶ INICIAR</button>
-  <button class="btn btn-next" onclick="siguienteFase()">⏭ SIGUIENTE</button>
-  <button class="btn btn-reset" onclick="resetTimer()">↺ REINICIAR</button>
+  <button class="btn btn-play" id="btn-play" onclick="togglePlay()">&#9654; INICIAR</button>
+  <button class="btn btn-next" onclick="siguienteFase()">&#9197; SIGUIENTE</button>
+  <button class="btn btn-reset" onclick="resetTimer()">&#8634; REINICIAR</button>
+  <button class="btn" onclick="toggleFS()" style="background:#475569;color:white;">&#x26F6; PANTALLA COMPLETA</button>
 </div>
 <div class="fases-lista" id="fases-lista"></div>
 <div class="reglas-box" id="reglas-box" style="display:none"></div>
@@ -21079,7 +21080,15 @@ function siguienteFase() {{
 function resetTimer() {{
   corriendo=false; clearInterval(iv); iv=null;
   faseIdx=0; cargarFase();
-  document.getElementById('btn-play').textContent='▶ INICIAR';
+  document.getElementById('btn-play').textContent='\u25b6 INICIAR';
+}}
+
+function toggleFS() {{
+  if(!document.fullscreenElement) {{
+    document.documentElement.requestFullscreen().catch(()=>{{}});
+  }} else {{
+    document.exitFullscreen();
+  }}
 }}
 
 function finTodo() {{
