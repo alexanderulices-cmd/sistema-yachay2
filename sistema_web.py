@@ -980,16 +980,25 @@ section[data-testid="stSidebar"] .stMarkdown h1 {
 }
 
 /* === DOWNLOAD BUTTON === */
-.stDownloadButton > button {
+.stDownloadButton > button,
+div[data-testid="stDownloadButton"] > button,
+div[class*="stDownloadButton"] button {
     background: linear-gradient(135deg, #059669, #10b981) !important;
+    background-color: #059669 !important;
     color: white !important;
+    -webkit-text-fill-color: white !important;
     border: none !important;
     border-radius: 10px !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
     transition: all 0.3s ease !important;
 }
-.stDownloadButton > button:hover {
+.stDownloadButton > button:hover,
+div[data-testid="stDownloadButton"] > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(5,150,105,0.3) !important;
+    box-shadow: 0 6px 20px rgba(5,150,105,0.4) !important;
+    background: linear-gradient(135deg, #047857, #059669) !important;
 }
 
 /* === BOTONES PELIGROSOS (BORRAR, CERRAR) — ROJO SIEMPRE VISIBLE === */
@@ -2471,8 +2480,10 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
             sl.append(('BACKGROUND', (s, 2), (e, 2), bg2))
             sl.append(('TEXTCOLOR', (s, 2), (e, 2), colors.white))
     tabla.setStyle(TableStyle(sl))
-    tw, th = tabla.wrap(w - 20, h - 70)
-    tabla.drawOn(c, 10, ESPACIO_PIE_AUX)
+    tw, th = tabla.wrap(w - 20, h - ESPACIO_HEADER_AUX - ESPACIO_PIE_AUX)
+    # Siempre posicionar desde el encabezado hacia abajo
+    tabla_y_aux = h - ESPACIO_HEADER_AUX - th
+    tabla.drawOn(c, 10, tabla_y_aux)
     c.setFont("Helvetica", 5)
     c.drawString(10, 12,
                  f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) "
@@ -2772,8 +2783,10 @@ def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
 
         t.setStyle(TableStyle(estilos))
         tw, th2 = t.wrap(w - 20, h - 60)
-        # Siempre dibujar la tabla justo encima de la leyenda (30pt desde abajo)
-        tabla_y = ESPACIO_LEYENDA
+        # Posicionar tabla justo debajo del encabezado (desde arriba)
+        tabla_y = h - ESPACIO_HEADER - th2
+        if tabla_y < ESPACIO_LEYENDA:
+            tabla_y = ESPACIO_LEYENDA  # fallback: no pisar la leyenda
         t.drawOn(c, 10, tabla_y)
 
         # Leyenda de semanas
@@ -3270,9 +3283,11 @@ def generar_link_whatsapp(tel, msg):
         t = "51" + t
     elif not t.startswith("51"):
         t = "51" + t
-    # Codificación correcta para emojis — usar quote sin safe bytes
-    msg_encoded = urllib.parse.quote(msg, safe='')
-    return f"https://wa.me/{t}?text={msg_encoded}"
+    # Codificar preservando emojis correctamente
+    import urllib.parse as _up
+    msg_encoded = _up.quote(msg, safe='', encoding='utf-8')
+    # web.whatsapp.com abre WhatsApp Web de escritorio directamente (sin app móvil)
+    return f"https://web.whatsapp.com/send?phone={t}&text={msg_encoded}"
 
 
 FRASES_MOTIVACIONALES = [
@@ -4744,6 +4759,419 @@ def tab_matricula(config):
         _seccion_registros_pdf(config)
 
 
+
+def _generar_pdf_acta_entrega_salon(config, docente_nombre, grado, seccion, anio):
+    """Acta de entrega de salón — firmada por directora y docente."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=2*cm, bottomMargin=2*cm,
+                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+    styles = getSampleStyleSheet()
+    st_title = ParagraphStyle('T', parent=styles['Heading1'],
+                               fontSize=13, alignment=TA_CENTER, spaceAfter=4)
+    st_sub   = ParagraphStyle('S', parent=styles['Normal'],
+                               fontSize=10, alignment=TA_CENTER, spaceAfter=8)
+    st_body  = ParagraphStyle('B', parent=styles['Normal'],
+                               fontSize=10, alignment=TA_JUSTIFY,
+                               leading=16, spaceAfter=8)
+    st_bold  = ParagraphStyle('BB', parent=st_body, fontName='Helvetica-Bold')
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY", st_title),
+        Paragraph("Chinchero, Cusco — Pioneros en la Educación de Calidad", st_sub),
+        Spacer(1, 0.3*cm),
+        Paragraph("ACTA DE ENTREGA DE SALÓN DE CLASES", st_title),
+        Spacer(1, 0.5*cm),
+        Paragraph(f"En la ciudad de Chinchero, a los ____ días del mes de ____________ del año {anio}, "
+                  f"siendo las ____:____ horas, en las instalaciones de la I.E.P. ALTERNATIVO YACHAY, "
+                  f"la Directora de la institución hace entrega formal del salón de clases al/la docente "
+                  f"responsable del presente año escolar.", st_body),
+        Spacer(1, 0.3*cm),
+        Paragraph("<b>DATOS DEL SALÓN:</b>", st_bold),
+    ]
+    data_salon = [
+        ["Grado y Sección:", f"{grado} — Sección {seccion}"],
+        ["Docente responsable:", docente_nombre or "___________________________________"],
+        ["Año escolar:", str(anio)],
+        ["Aula N°:", "___________"],
+        ["Número de carpetas:", "___________"],
+        ["Número de sillas:", "___________"],
+        ["Pizarrón:", "□ Bueno  □ Regular  □ Malo"],
+        ["Estado general del aula:", "□ Bueno  □ Regular  □ Necesita mantenimiento"],
+    ]
+    t_salon = Table(data_salon, colWidths=[6*cm, 10*cm])
+    t_salon.setStyle(TableStyle([
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('BACKGROUND', (0,0), (0,-1), colors.Color(0.9,0.9,1)),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.white, colors.Color(0.97,0.97,1)]),
+    ]))
+    story += [t_salon, Spacer(1, 0.4*cm)]
+    story.append(Paragraph("<b>INVENTARIO BÁSICO DEL AULA:</b>", st_bold))
+    inv_data = [
+        ["Ítem", "Descripción", "Cantidad", "Estado"],
+        ["01", "Pizarrón / pizarra", "_____", "□B □R □M"],
+        ["02", "Carpetas / mesas unipersonales", "_____", "□B □R □M"],
+        ["03", "Sillas del docente", "_____", "□B □R □M"],
+        ["04", "Escritorio del docente", "_____", "□B □R □M"],
+        ["05", "Armario / estante", "_____", "□B □R □M"],
+        ["06", "Extintor", "_____", "□Sí □No"],
+        ["07", "Botiquín básico", "_____", "□Sí □No"],
+        ["08", "Ventanas operativas", "_____", "□B □R □M"],
+        ["09", "Puerta con llave", "_____", "□Sí □No"],
+        ["10", "Otros:", "_______________", "___________"],
+    ]
+    t_inv = Table(inv_data, colWidths=[1.2*cm, 7*cm, 3*cm, 4.3*cm])
+    t_inv.setStyle(TableStyle([
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 8.5),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (1,1), (1,-1), 'LEFT'),
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
+    ]))
+    story += [t_inv, Spacer(1, 0.5*cm)]
+    story.append(Paragraph(
+        "Ambas partes declaran conformes con el inventario descrito. El/la docente se compromete "
+        "a devolver el salón en el mismo estado o mejor al finalizar el año escolar.", st_body))
+    story.append(Spacer(1, 1.2*cm))
+    firma_data = [
+        ["_______________________________", "    ", "_______________________________"],
+        ["DIRECTORA", "    ", "DOCENTE RESPONSABLE"],
+        [config.get('directora','Lic. ___________________'), "    ", docente_nombre or "___________________"],
+        ["Directora I.E.P. ALTERNATIVO YACHAY", "    ", f"{grado} — Sección {seccion}"],
+        ["Sello y firma", "    ", "Firma"],
+    ]
+    t_firma = Table(firma_data, colWidths=[7*cm, 1.5*cm, 7*cm])
+    t_firma.setStyle(TableStyle([
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,1), (0,1), 'Helvetica-Bold'),
+        ('FONTNAME', (2,1), (2,1), 'Helvetica-Bold'),
+    ]))
+    story += [t_firma, Spacer(1, 0.5*cm)]
+    story.append(Paragraph(
+        f"<i>Documento generado por YACHAY PRO — {fecha_hoy}</i>",
+        ParagraphStyle('F', parent=styles['Normal'], fontSize=7, alignment=TA_CENTER,
+                       textColor=colors.grey)))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_constancia_reglamento(config, solicitante, cargo, grado=""):
+    """Constancia de solicitud / entrega del Reglamento Interno y Normas de Convivencia."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=2*cm, bottomMargin=2*cm,
+                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+    styles = getSampleStyleSheet()
+    st_c = ParagraphStyle('C', parent=styles['Normal'], fontSize=12, alignment=TA_CENTER,
+                           fontName='Helvetica-Bold', spaceAfter=6)
+    st_b = ParagraphStyle('B', parent=styles['Normal'], fontSize=10,
+                           alignment=TA_JUSTIFY, leading=16, spaceAfter=10)
+    anio = config.get('anio', 2026)
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY", st_c),
+        Paragraph("Chinchero — Cusco", ParagraphStyle('s',parent=styles['Normal'],
+                                                       fontSize=10,alignment=TA_CENTER,spaceAfter=4)),
+        Spacer(1, 0.4*cm),
+        Paragraph("CONSTANCIA DE RECEPCIÓN DEL REGLAMENTO INTERNO", st_c),
+        Paragraph("Y NORMAS DE CONVIVENCIA ESCOLAR", st_c),
+        Spacer(1, 0.6*cm),
+        Paragraph(
+            f"La Dirección de la I.E.P. ALTERNATIVO YACHAY de Chinchero, Cusco, "
+            f"hace constar que el/la señor(a) <b>{solicitante or '___________________________________'}</b>, "
+            f"con cargo de <b>{cargo or '___________________'}</b>"
+            + (f" del grado <b>{grado}</b>" if grado else "") +
+            f", ha recibido copia del <b>Reglamento Interno</b> y las "
+            f"<b>Normas de Convivencia Escolar</b> vigentes para el año lectivo <b>{anio}</b>, "
+            f"comprometiéndose a su cumplimiento y difusión en el ámbito correspondiente.", st_b),
+        Spacer(1, 0.3*cm),
+        Paragraph("<b>DOCUMENTOS ENTREGADOS:</b>",
+                  ParagraphStyle('h', parent=styles['Normal'], fontSize=10,
+                                 fontName='Helvetica-Bold')),
+        Spacer(1, 0.2*cm),
+    ]
+    docs_data = [
+        ["✓", "Reglamento Interno I.E.P. ALTERNATIVO YACHAY — Año " + str(anio)],
+        ["✓", "Normas de Convivencia Escolar — Aprobadas en Asamblea General"],
+        ["✓", "Protocolo de Atención a Estudiantes y Familias"],
+        ["✓", "Calendario de Actividades y Compromisos del Año Escolar"],
+        ["□", "Otro: _______________________________________________"],
+    ]
+    t_docs = Table(docs_data, colWidths=[0.8*cm, 14*cm])
+    t_docs.setStyle(TableStyle([
+        ('FONTSIZE', (0,0), (-1,-1), 9.5),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.white, colors.Color(0.96,0.96,1)]),
+    ]))
+    story += [t_docs, Spacer(1, 0.8*cm)]
+    story.append(Paragraph(
+        f"Se expide la presente constancia a solicitud del interesado(a), "
+        f"en Chinchero a los ____ días del mes de ____________ del {anio}.", st_b))
+    story.append(Spacer(1, 1.5*cm))
+    firma2 = [
+        ["_______________________________", "    ", "_______________________________"],
+        ["FIRMA DEL RECEPTOR/A", "    ", "Vo.Bo. DIRECTORA"],
+        [solicitante or "___________________", "    ", config.get('directora','Directora')],
+        [cargo or "___________________", "    ", "I.E.P. ALTERNATIVO YACHAY"],
+    ]
+    t_f2 = Table(firma2, colWidths=[7*cm, 1.5*cm, 7*cm])
+    t_f2.setStyle(TableStyle([
+        ('FONTSIZE', (0,0), (-1,-1), 9), ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,1), (0,1), 'Helvetica-Bold'),
+        ('FONTNAME', (2,1), (2,1), 'Helvetica-Bold'),
+    ]))
+    story += [t_f2, Spacer(1, 0.5*cm)]
+    story.append(Paragraph(
+        f"<i>YACHAY PRO — {fecha_hoy}</i>",
+        ParagraphStyle('fi', parent=styles['Normal'], fontSize=7,
+                       alignment=TA_CENTER, textColor=colors.grey)))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
+    """Acta de conformación de la Junta Directiva del Comité de Aula (MINEDU)."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=2*cm, bottomMargin=2*cm,
+                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', parent=styles['Heading1'], fontSize=12,
+                           alignment=TA_CENTER, spaceAfter=6)
+    st_b = ParagraphStyle('B', parent=styles['Normal'], fontSize=10,
+                           alignment=TA_JUSTIFY, leading=16, spaceAfter=8)
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY — CHINCHERO, CUSCO", st_t),
+        Paragraph(f"ACTA DE CONFORMACIÓN DE LA JUNTA DIRECTIVA DEL COMITÉ DE AULA", st_t),
+        Paragraph(f"GRADO: {grado}  |  SECCIÓN: {seccion}  |  AÑO: {anio}",
+                  ParagraphStyle('s', parent=styles['Normal'], fontSize=10,
+                                 alignment=TA_CENTER, spaceAfter=8)),
+        Spacer(1, 0.4*cm),
+        Paragraph(
+            f"Siendo las ____:____ horas del día ____ de ____________ del {anio}, "
+            f"reunidos los padres de familia del {grado} — Sección {seccion} de la I.E.P. "
+            f"ALTERNATIVO YACHAY, bajo la conducción del/la docente de aula, se procede "
+            f"a la elección democrática de la Junta Directiva del Comité de Aula conforme "
+            f"lo establece la R.M. N° 627-2016-MINEDU y normas vigentes.", st_b),
+        Spacer(1, 0.3*cm),
+        Paragraph("<b>JUNTA DIRECTIVA ELEGIDA:</b>",
+                  ParagraphStyle('h', parent=styles['Normal'], fontName='Helvetica-Bold',
+                                 fontSize=10, spaceAfter=6)),
+    ]
+    cargos_data = [
+        ["CARGO", "APELLIDOS Y NOMBRES", "DNI", "FIRMA"],
+        ["Presidente/a", "", "", ""],
+        ["Vicepresidente/a", "", "", ""],
+        ["Secretario/a", "", "", ""],
+        ["Tesorero/a", "", "", ""],
+        ["Vocal 1", "", "", ""],
+        ["Vocal 2", "", "", ""],
+    ]
+    t_c = Table(cargos_data, colWidths=[4*cm, 6.5*cm, 2.5*cm, 2.5*cm])
+    t_c.setStyle(TableStyle([
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
+        ('MINROWHEIGHT', (0,1), (-1,-1), 1*cm),
+    ]))
+    story += [t_c, Spacer(1, 0.4*cm)]
+    story.append(Paragraph(
+        "La Junta Directiva elegida se compromete a representar los intereses del aula, "
+        "colaborar con la institución educativa y velar por la calidad educativa de los "
+        "estudiantes del presente grado y sección. Se firma la presente acta en señal "
+        "de conformidad.", st_b))
+    story.append(Spacer(1, 0.8*cm))
+    story.append(Paragraph("_______________________________",
+                            ParagraphStyle('c', parent=styles['Normal'],
+                                           alignment=TA_CENTER, fontSize=10)))
+    story.append(Paragraph(f"Docente de Aula — {grado} Sección {seccion}",
+                            ParagraphStyle('c2', parent=styles['Normal'],
+                                           alignment=TA_CENTER, fontSize=9)))
+    story.append(Spacer(1, 0.3*cm))
+    story.append(Paragraph(
+        f"<i>Conforme R.M. N° 627-2016-MINEDU | YACHAY PRO — {fecha_hoy}</i>",
+        ParagraphStyle('fi', parent=styles['Normal'], fontSize=7,
+                       alignment=TA_CENTER, textColor=colors.grey)))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _seccion_documentos_auxiliar(config):
+    """Módulo de documentos administrativos para auxiliar / directivos."""
+    st.subheader("📄 Documentos Administrativos")
+    st.caption("Genera documentos oficiales listos para imprimir, firmar y archivar.")
+
+    anio = config.get('anio', 2026)
+    df_mat = BaseDatos.cargar_matricula()
+    df_doc = BaseDatos.cargar_docentes() if hasattr(BaseDatos, 'cargar_docentes') else pd.DataFrame()
+
+    grados_lista = []
+    if not df_mat.empty and 'Grado' in df_mat.columns:
+        grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
+
+    doc_tab1, doc_tab2, doc_tab3, doc_tab4 = st.tabs([
+        "📦 Acta Entrega Salón",
+        "📜 Constancia Reglamento",
+        "👥 Junta Directiva Aula",
+        "📋 Más Documentos MINEDU",
+    ])
+
+    # ── TAB 1: ACTA ENTREGA DE SALÓN ──────────────────────────────────
+    with doc_tab1:
+        st.markdown("#### Acta de Entrega de Salón de Clases")
+        st.info(
+            "Documento oficial firmado por la **Directora** y el/la **docente** "
+            "al inicio del año escolar. Incluye inventario del aula. "
+            "Requerido por MINEDU como parte del acervo documentario institucional."
+        )
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            grado_ent = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_ent")
+        with col2:
+            seccion_ent = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_ent")
+        with col3:
+            docente_ent = st.text_input("Nombre del docente:", key="doc_doc_ent",
+                                        placeholder="Lic. Apellidos Nombres")
+        if st.button("📄 Generar Acta de Entrega", type="primary",
+                     use_container_width=True, key="btn_acta_entrega"):
+            try:
+                buf_ae = _generar_pdf_acta_entrega_salon(
+                    config, docente_ent, grado_ent, seccion_ent, anio)
+                st.download_button(
+                    "⬇️ Descargar Acta de Entrega",
+                    buf_ae,
+                    f"Acta_Entrega_Salon_{grado_ent}_{seccion_ent}_{anio}.pdf",
+                    "application/pdf", type="primary", key="dl_acta_entrega")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+    # ── TAB 2: CONSTANCIA REGLAMENTO ─────────────────────────────────
+    with doc_tab2:
+        st.markdown("#### Constancia de Recepción del Reglamento Interno")
+        st.info(
+            "Constancia de que el padre/madre de familia, docente o personal "
+            "recibió el **Reglamento Interno** y las **Normas de Convivencia**. "
+            "Exigida por MINEDU para demostrar socialización del reglamento."
+        )
+        col_a, col_b = st.columns(2)
+        with col_a:
+            sol_nom = st.text_input("Nombre del receptor:", key="doc_sol_nom",
+                                    placeholder="Apellidos y Nombres")
+            sol_cargo = st.selectbox("Cargo:", [
+                "Padre/Madre de familia",
+                "Docente",
+                "Personal administrativo",
+                "Personal auxiliar",
+                "Otro"
+            ], key="doc_sol_cargo")
+        with col_b:
+            sol_grado = st.selectbox("Grado (si aplica):",
+                                     ["—"] + (grados_lista or []), key="doc_sol_grado")
+        if st.button("📄 Generar Constancia", type="primary",
+                     use_container_width=True, key="btn_const_reg"):
+            try:
+                grado_c = sol_grado if sol_grado != "—" else ""
+                buf_cr = _generar_pdf_constancia_reglamento(
+                    config, sol_nom, sol_cargo, grado_c)
+                st.download_button(
+                    "⬇️ Descargar Constancia",
+                    buf_cr,
+                    f"Constancia_Reglamento_{sol_nom.replace(' ','_')[:20]}.pdf",
+                    "application/pdf", type="primary", key="dl_const_reg")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+    # ── TAB 3: JUNTA DIRECTIVA COMITÉ DE AULA ────────────────────────
+    with doc_tab3:
+        st.markdown("#### Acta de Conformación — Junta Directiva del Comité de Aula")
+        st.info(
+            "Obligatorio por **R.M. N° 627-2016-MINEDU**. Cada aula debe elegir "
+            "su Junta Directiva: Presidente/a, Vicepresidente/a, Secretario/a, "
+            "Tesorero/a y Vocales. Se archiva en dirección."
+        )
+        col_j1, col_j2 = st.columns(2)
+        with col_j1:
+            grado_jd = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_jd")
+        with col_j2:
+            sec_jd = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_jd")
+        if st.button("📄 Generar Acta Junta Directiva", type="primary",
+                     use_container_width=True, key="btn_junta_dir"):
+            try:
+                buf_jd = _generar_pdf_junta_directiva_aula(config, grado_jd, sec_jd, anio)
+                st.download_button(
+                    "⬇️ Descargar Acta Junta Directiva",
+                    buf_jd,
+                    f"Acta_Junta_Directiva_{grado_jd}_{sec_jd}_{anio}.pdf",
+                    "application/pdf", type="primary", key="dl_junta_dir")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+    # ── TAB 4: MÁS DOCUMENTOS ──────────────────────────────────────────
+    with doc_tab4:
+        st.markdown("#### Otros documentos exigidos por MINEDU a colegios privados")
+        st.markdown("""
+**Documentos del acervo documentario que MINEDU/UGEL puede solicitar en supervisión:**
+
+| Documento | Base legal | Estado |
+|-----------|-----------|--------|
+| Proyecto Educativo Institucional (PEI) | R.M. 657-2017 | Dirección |
+| Plan Anual de Trabajo (PAT) | R.M. 657-2017 | Dirección |
+| Reglamento Interno | D.S. 011-2012-ED | Dirección |
+| Normas de Convivencia por aula | R.M. 627-2016 | Por aula |
+| Acta de elección de Comité de Aula | R.M. 627-2016 | Por aula |
+| Acta de entrega de salón | Resolución institucional | Por aula |
+| Registro de asistencia docente | D.L. 276 | YACHAY PRO ✅ |
+| Registro de asistencia alumnos | D.S. 011-2012 | YACHAY PRO ✅ |
+| Registro auxiliar de evaluación | DCN | YACHAY PRO ✅ |
+| Libro de visitas UGEL | R.D. UGEL | Dirección |
+| Constancias de entrega de boletas | Norma institucional | Dirección |
+| Padrón de familias por aula | R.M. 627-2016 | Matrícula YACHAY PRO ✅ |
+
+        """)
+        st.success("✅ Los documentos marcados con YACHAY PRO ya están cubiertos por el sistema.")
+        st.info(
+            "💡 Próximamente: Generación automática del Padrón de Familias por aula "
+            "y las boletas de notas firmadas digitalmente."
+        )
+
+
+
 def _seccion_registros_pdf(config):
     df = BaseDatos.cargar_matricula()
     if df.empty:
@@ -5410,24 +5838,27 @@ def tab_asistencias():
                 t_cel = ''.join(c for c in cel if c.isdigit())
                 if len(t_cel) == 9: t_cel = "51" + t_cel
                 elif not t_cel.startswith("51"): t_cel = "51" + t_cel
-                msg_enc = urllib.parse.quote(msg, safe='')
-                link_wa = f"https://wa.me/{t_cel}?text={msg_enc}"
+                msg_enc = urllib.parse.quote(msg, safe='', encoding='utf-8')
+                link_wa = f"https://web.whatsapp.com/send?phone={t_cel}&text={msg_enc}"
 
                 col_wa, col_info = st.columns([5, 2])
                 with col_wa:
                     btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
                     if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
                                  use_container_width=True, type="primary"):
-                        # window.parent.open salta el iframe — no bloqueado por browser
-                        import streamlit.components.v1 as _cwav
-                        _cwav.html(
-                            f'<script>window.parent.open("{link_wa}","_blank");</script>',
-                            height=0
-                        )
                         st.session_state.wa_enviados.add(clave_envio)
+                        st.session_state['_wa_link_pendiente'] = link_wa
                         st.rerun()
                 with col_info:
                     st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
+
+            # Abrir WA — reutiliza SIEMPRE la misma pestaña "_wa_yachay"
+            if '_wa_link_pendiente' in st.session_state:
+                _link_abrir = st.session_state.pop('_wa_link_pendiente')
+                import streamlit.components.v1 as _cwav2
+                _cwav2.html(
+                    f'<script>window.parent.open("{_link_abrir}","_wa_yachay","width=1200,height=800");</script>',
+                    height=0)
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular — verificar en matrícula/docentes"):
@@ -9023,6 +9454,120 @@ TESTS_VOCACIONALES = {
                          "C":("Imaginación desbordante para crear lo que no existe aún","CRE"),
                          "D":("Sabiduría para conocer la verdad y enseñarla a otros","CON"),
                          "E":("Liderazgo natural para guiar equipos hacia el bien común","PER")}},
+        ]
+    },
+
+    # ── TESTS INTERNACIONALES ──────────────────────────────────────────────
+
+    "grit": {
+        "nivel": ["secundaria", "preuniversitario", "docentes"],
+        "nombre": "💪 GRIT — Perseverancia (Angela Duckworth, USA)",
+        "descripcion": "Mide tu perseverancia y pasion por metas a largo plazo",
+        "leyenda": "Desarrollado por Angela Duckworth (U. Pennsylvania). Estudió a militares de West Point y descubrió que el GRIT (perseverancia + pasión) predice el éxito mejor que el talento. Puntuación: A=5pts B=4pts C=3pts D=2pts E=1pt. Resultado 35-40: GRIT Alto | 20-34: Moderado | <20: Bajo",
+        "instruccion": "Elige la alternativa que mejor te describe (A=Totalmente hasta E=Para nada).",
+        "preguntas": [
+            {"id":1,"pregunta":"Las ideas y proyectos nuevos me distraen de los anteriores (invertido).",
+             "opciones":{"A":("Totalmente me describe","NEG"),"B":("Bastante","NEG"),"C":("Algo","NEU"),"D":("Poco","POS"),"E":("No me describe","POS")}},
+            {"id":2,"pregunta":"Los contratiempos no me desaniman — supero los obstáculos.",
+             "opciones":{"A":("Totalmente","POS"),"B":("Bastante","POS"),"C":("Algo","NEU"),"D":("Poco","NEG"),"E":("Nada","NEG")}},
+            {"id":3,"pregunta":"He tenido obsesiones que luego perdí en semanas (invertido).",
+             "opciones":{"A":("Siempre","NEG"),"B":("Frecuente","NEG"),"C":("A veces","NEU"),"D":("Rara vez","POS"),"E":("Nunca","POS")}},
+            {"id":4,"pregunta":"Soy muy trabajador/a — no me rindo fácilmente.",
+             "opciones":{"A":("Totalmente","POS"),"B":("Bastante","POS"),"C":("Algo","NEU"),"D":("Poco","NEG"),"E":("Nada","NEG")}},
+            {"id":5,"pregunta":"Me propongo metas pero luego elijo otras diferentes (invertido).",
+             "opciones":{"A":("Siempre","NEG"),"B":("Frecuente","NEG"),"C":("A veces","NEU"),"D":("Rara vez","POS"),"E":("Nunca","POS")}},
+            {"id":6,"pregunta":"Me esfuerzo mucho en todo lo que hago.",
+             "opciones":{"A":("Totalmente","POS"),"B":("Bastante","POS"),"C":("Algo","NEU"),"D":("Poco","NEG"),"E":("Nada","NEG")}},
+            {"id":7,"pregunta":"Termino lo que empiezo sin importar el tiempo que tome.",
+             "opciones":{"A":("Siempre","POS"),"B":("Frecuente","POS"),"C":("A veces","NEU"),"D":("Rara vez","NEG"),"E":("Nunca","NEG")}},
+            {"id":8,"pregunta":"Tengo dificultad para mantener foco en proyectos largos (invertido).",
+             "opciones":{"A":("Siempre","NEG"),"B":("Frecuente","NEG"),"C":("A veces","NEU"),"D":("Rara vez","POS"),"E":("Nunca","POS")}},
+        ]
+    },
+
+    "growth_mindset": {
+        "nivel": ["primaria", "secundaria", "preuniversitario", "docentes"],
+        "nombre": "🧠 Mentalidad de Crecimiento (Carol Dweck — Stanford)",
+        "descripcion": "¿Crees que puedes mejorar con esfuerzo? ¿Mentalidad fija o de crecimiento?",
+        "leyenda": "Carol Dweck (Stanford) descubrió dos mentalidades: FIJA (la inteligencia no cambia) y CRECIMIENTO (cualquier habilidad mejora con esfuerzo). Estudiantes con Growth Mindset logran mejores notas, son más resilientes y disfrutan más aprender. Resultado: mayoría CREC = Mentalidad de Crecimiento | mayoría FIJA = Mentalidad Fija",
+        "instruccion": "¿Cuánto estás de acuerdo con cada afirmación?",
+        "preguntas": [
+            {"id":1,"pregunta":"La inteligencia es algo que no se puede cambiar mucho.",
+             "opciones":{"A":("Muy de acuerdo","FIJA"),"B":("De acuerdo","FIJA"),"C":("Neutral","NEU"),"D":("En desacuerdo","CREC"),"E":("Muy en desacuerdo","CREC")}},
+            {"id":2,"pregunta":"Con suficiente esfuerzo, puedes mejorar tu inteligencia.",
+             "opciones":{"A":("Muy de acuerdo","CREC"),"B":("De acuerdo","CREC"),"C":("Neutral","NEU"),"D":("En desacuerdo","FIJA"),"E":("Muy en desacuerdo","FIJA")}},
+            {"id":3,"pregunta":"Cuando algo se me da mal, pienso que no soy bueno en eso.",
+             "opciones":{"A":("Siempre","FIJA"),"B":("Frecuente","FIJA"),"C":("A veces","NEU"),"D":("Rara vez","CREC"),"E":("Nunca","CREC")}},
+            {"id":4,"pregunta":"Los errores son oportunidades para aprender y crecer.",
+             "opciones":{"A":("Totalmente","CREC"),"B":("Bastante","CREC"),"C":("A veces","NEU"),"D":("Poco","FIJA"),"E":("Nada","FIJA")}},
+            {"id":5,"pregunta":"Prefiero tareas difíciles aunque pueda cometer errores.",
+             "opciones":{"A":("Siempre","CREC"),"B":("Frecuente","CREC"),"C":("A veces","NEU"),"D":("Rara vez","FIJA"),"E":("Nunca","FIJA")}},
+            {"id":6,"pregunta":"Creo que mis talentos son fijos desde que nací.",
+             "opciones":{"A":("Totalmente","FIJA"),"B":("Bastante","FIJA"),"C":("A veces","NEU"),"D":("Poco","CREC"),"E":("Nada","CREC")}},
+        ]
+    },
+
+    "casel_socioemocional": {
+        "nivel": ["primaria", "secundaria", "docentes"],
+        "nombre": "❤️ Competencias Socioemocionales CASEL (USA)",
+        "descripcion": "Las 5 competencias socioemocionales clave para la vida",
+        "leyenda": "El modelo CASEL (Chicago) evalúa: AUTOCONCIENCIA, AUTOGESTIÓN, CONCIENCIA SOCIAL, HABILIDADES RELACIONALES y TOMA DE DECISIONES. Demostrado en +3000 escuelas de EEUU: mejora notas en 11%, reduce bullying 25% y mejora bienestar general. Predice mejor el éxito en la vida que el CI.",
+        "instruccion": "¿Con qué frecuencia haces esto en tu vida diaria?",
+        "preguntas": [
+            {"id":1,"pregunta":"Identifico mis emociones y entiendo por qué las siento.",
+             "opciones":{"A":("Siempre","AUT"),"B":("Frecuente","AUT"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+            {"id":2,"pregunta":"Cuando me enojo, sé calmarme antes de actuar.",
+             "opciones":{"A":("Siempre","GES"),"B":("Frecuente","GES"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+            {"id":3,"pregunta":"Entiendo cómo se sienten los demás aunque no lo digan.",
+             "opciones":{"A":("Siempre","SOC"),"B":("Frecuente","SOC"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+            {"id":4,"pregunta":"Trabajo bien en equipo y resuelvo conflictos con respeto.",
+             "opciones":{"A":("Siempre","REL"),"B":("Frecuente","REL"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+            {"id":5,"pregunta":"Pienso en las consecuencias antes de tomar decisiones.",
+             "opciones":{"A":("Siempre","DEC"),"B":("Frecuente","DEC"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+            {"id":6,"pregunta":"Me siento seguro/a expresando mis opiniones.",
+             "opciones":{"A":("Siempre","AUT"),"B":("Frecuente","AUT"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","NEU")}},
+        ]
+    },
+
+    "inteligencia_emocional": {
+        "nivel": ["secundaria", "preuniversitario", "docentes"],
+        "nombre": "💛 Inteligencia Emocional (Daniel Goleman — Harvard)",
+        "descripcion": "Mide tus 5 competencias emocionales según Goleman",
+        "leyenda": "Daniel Goleman (Harvard, 1995) demostró que el IE predice el 80% del éxito profesional vs 20% del CI. Sus 5 dimensiones: AUTOCONCIENCIA (reconocer emociones), AUTORREGULACIÓN (controlarlas), MOTIVACIÓN (impulso interno), EMPATÍA (comprender a otros) y HABILIDADES SOCIALES (gestionar relaciones).",
+        "instruccion": "Elige la opción que mejor describe cómo eres habitualmente.",
+        "preguntas": [
+            {"id":1,"pregunta":"Cuando estoy nervioso o ansioso, ¿qué haces normalmente?",
+             "opciones":{"A":("Identifico la causa y busco solución","AR"),"B":("Respiro y me calmo antes de actuar","AR"),"C":("A veces me dejo llevar","NEU"),"D":("Casi siempre pierdo el control","NEU"),"E":("No sé manejar esas situaciones","NEU")}},
+            {"id":2,"pregunta":"Cuando un amigo está triste, ¿cómo reaccionas?",
+             "opciones":{"A":("Pregunto cómo se siente y escucho","EMP"),"B":("Intento entender su perspectiva","EMP"),"C":("Le doy espacio pero estoy disponible","NEU"),"D":("No sé qué decir y me alejo","NEU"),"E":("Prefiero no meterme","NEU")}},
+            {"id":3,"pregunta":"¿Qué te motiva cuando algo es muy difícil?",
+             "opciones":{"A":("El deseo de mejorar y aprender","MOT"),"B":("Mis metas a largo plazo","MOT"),"C":("El reconocimiento de los demás","NEU"),"D":("No siempre encuentro motivación","NEU"),"E":("Me cuesta mucho seguir","NEU")}},
+            {"id":4,"pregunta":"En un conflicto, ¿cómo actúas?",
+             "opciones":{"A":("Entiendo su punto de vista primero","SOC"),"B":("Propongo soluciones para ambos","SOC"),"C":("Espero que el tiempo lo resuelva","NEU"),"D":("Me defiendo sin escuchar","NEU"),"E":("Evito el conflicto aunque quede sin resolver","NEU")}},
+            {"id":5,"pregunta":"¿Con qué frecuencia reflexionas sobre tus propias emociones?",
+             "opciones":{"A":("Diariamente — es mi rutina","AUT"),"B":("Frecuente cuando algo me afecta","AUT"),"C":("Solo cuando algo fuerte me impacta","NEU"),"D":("Rara vez","NEU"),"E":("Casi nunca","NEU")}},
+        ]
+    },
+
+    "burnout_docente": {
+        "nivel": ["docentes"],
+        "nombre": "🔥 Burnout Docente (Maslach — UC Berkeley)",
+        "descripcion": "Detecta señales de agotamiento profesional — solo para docentes",
+        "leyenda": "Christina Maslach (UC Berkeley) identificó el Síndrome de Burnout en docentes. Afecta al 30-40% según la OMS. 3 dimensiones: AGOTAMIENTO EMOCIONAL (sentirse vaciado), DESPERSONALIZACIÓN (tratar alumnos con frialdad) y BAJA REALIZACIÓN PERSONAL. Detección temprana permite intervención oportuna. CONFIDENCIAL.",
+        "instruccion": "¿Con qué frecuencia experimentas esto en el trabajo?",
+        "preguntas": [
+            {"id":1,"pregunta":"Me siento emocionalmente agotado/a por mi trabajo.",
+             "opciones":{"A":("Nunca o muy rara vez","BAJO"),"B":("Pocas veces al año","BAJO"),"C":("Una vez al mes","MED"),"D":("Pocas veces al mes","MED"),"E":("Frecuente o cada día","ALTO")}},
+            {"id":2,"pregunta":"Me siento cansado/a al final de la jornada laboral.",
+             "opciones":{"A":("Nunca","BAJO"),"B":("Rara vez","BAJO"),"C":("A veces","MED"),"D":("Frecuente","MED"),"E":("Siempre","ALTO")}},
+            {"id":3,"pregunta":"Puedo crear un ambiente positivo en mi aula.",
+             "opciones":{"A":("Siempre","BIEN"),"B":("Frecuente","BIEN"),"C":("A veces","NEU"),"D":("Rara vez","BAJO"),"E":("Nunca","BAJO")}},
+            {"id":4,"pregunta":"Me preocupo genuinamente por mis estudiantes.",
+             "opciones":{"A":("Siempre","BIEN"),"B":("Frecuente","BIEN"),"C":("A veces","NEU"),"D":("Rara vez","DESP"),"E":("Nunca","DESP")}},
+            {"id":5,"pregunta":"Siento que mi trabajo tiene impacto positivo.",
+             "opciones":{"A":("Siempre","REAL"),"B":("Frecuente","REAL"),"C":("A veces","NEU"),"D":("Rara vez","NEU"),"E":("Nunca","BAJO")}},
+            {"id":6,"pregunta":"He perdido el interés en mi trabajo.",
+             "opciones":{"A":("Nunca","BIEN"),"B":("Rara vez","BIEN"),"C":("A veces","NEU"),"D":("Frecuente","BURN"),"E":("Siempre","BURN")}},
         ]
     },
 
@@ -18515,6 +19060,90 @@ PAUSA_MODELOS = [
             ("🎊", "GRAN OLA FINAL — todo el salon junto — explosion de energia!", 10),
         ]
     },
+    {
+        "id": 37,
+        "nombre": "🎓 Desestres Express PRE",
+        "nivel": ["PREUNIVERSITARIO"],
+        "color_fondo": "#312e81",
+        "color_acento": "#a5b4fc",
+        "emoji_principal": "🎓",
+        "descripcion": "Libera la tension de estudiar — especial para preuniversitarios",
+        "pasos": [
+            ("😤", "EXHALACION TOTAL — suelta todo el aire — vaciarte completamente", 8),
+            ("🙆", "CUELLO — inclina la cabeza a cada lado 5 seg — siente el estiramiento", 12),
+            ("👁️", "OJOS — cierra 5 seg — abre y mira lejos 20 seg — descansa la vista", 25),
+            ("✋", "MUNECAS — 10 rotaciones cada mano — suelta la tension del lapiz", 12),
+            ("💪", "SACUDE los brazos — como si quitaras agua — 8 segundos", 8),
+            ("🧠", "RESPIRACION 4-7-8 — inhala 4seg — retiene 7seg — exhala 8seg", 20),
+            ("🦵", "De pie — 10 sentadillas lentas — activa la circulacion del cerebro", 15),
+            ("🤸", "ROTACION de hombros — 5 adelante — 5 atras", 12),
+            ("😌", "Cierra los ojos — visualiza que ya APROBASTE el examen", 15),
+            ("🌟", "POSTURA DE PODER — espalda recta — respira profundo — PUEDES", 10),
+        ]
+    },
+    {
+        "id": 38,
+        "nombre": "⚡ Activacion Mental PRE",
+        "nivel": ["PREUNIVERSITARIO"],
+        "color_fondo": "#7c2d12",
+        "color_acento": "#fed7aa",
+        "emoji_principal": "⚡",
+        "descripcion": "Activa el cerebro para estudiar mejor — tecnicas de neurociencia",
+        "pasos": [
+            ("🧠", "CROSS CRAWL — rodilla derecha con codo izquierdo x10 — activa el cerebro", 12),
+            ("🤜", "CROSS CRAWL invertido — rodilla izquierda con codo derecho x10", 12),
+            ("👁️", "MOVIMIENTO DE OJOS — sigue el dedo de izquierda a derecha — 5 veces", 10),
+            ("🖐️", "DIGITOPUNTURA — masajea entre pulgar e indice 10 seg cada mano", 20),
+            ("💨", "RESPIRACION ALTERNA — tapa fosa nasal derecha — inhala izquierda x5", 20),
+            ("🤔", "CUENTA desde 100 de 3 en 3 — 100-97-94... — corteza prefrontal activa", 20),
+            ("✍️", "Escribe tu nombre con la mano NO dominante — 3 veces", 15),
+            ("🔄", "INFINITO en el aire — dibujalo con brazo extendido x5 — hemisferios", 12),
+            ("🧘", "COHERENCIA CARDIACA — inhala 5seg — exhala 5seg — 3 ciclos", 30),
+            ("🎯", "VISUALIZA — imaginate entendiendo perfectamente el siguiente tema", 10),
+        ]
+    },
+    {
+        "id": 39,
+        "nombre": "🌿 Bienestar Docente",
+        "nivel": ["DOCENTES"],
+        "color_fondo": "#064e3b",
+        "color_acento": "#6ee7b7",
+        "emoji_principal": "👩‍🏫",
+        "descripcion": "Pausa especial para docentes — recarga entre clases",
+        "pasos": [
+            ("🌬️", "RESPIRACION 4-4-4-4 — inhala 4 — retiene 4 — exhala 4 — retiene 4", 20),
+            ("💆", "MASAJE DE CUELLO — circulos con ambas manos — 20 segundos", 20),
+            ("👁️", "REGLA 20-20-20 — mira algo a 6 metros por 20 segundos — descansa ojos", 25),
+            ("🤲", "MASAJE DE MANOS — palmas — dedos — dorso — 15 seg cada mano", 30),
+            ("🦶", "ROTACION DE TOBILLOS — 5 veces cada uno — mejora circulacion", 15),
+            ("🙆", "ESTIRAMIENTO — entrelaza dedos — estira hacia el techo — 10 seg", 12),
+            ("💪", "APERTURA DE PECHO — codos atras — abre el pecho — 5 veces", 12),
+            ("😊", "TECNICA SMILE — sonrie aunque no tengas ganas — activa endorfinas", 10),
+            ("🧘", "3-2-1 — nombra 3 cosas que ves — 2 que oyes — 1 que sientes", 20),
+            ("✨", "Di en voz baja: Hago un trabajo importante — gracias por estar aqui", 10),
+        ]
+    },
+    {
+        "id": 40,
+        "nombre": "🕯️ Mindfulness Docente",
+        "nivel": ["DOCENTES"],
+        "color_fondo": "#1e1b4b",
+        "color_acento": "#c4b5fd",
+        "emoji_principal": "🕯️",
+        "descripcion": "Meditacion guiada express — 5 minutos que transforman el dia",
+        "pasos": [
+            ("🪑", "POSTURA — siéntate comodo — espalda recta — pies en el piso", 10),
+            ("🌬️", "RESPIRA — inhala lento por la nariz — siente el aire entrar — 4 seg", 6),
+            ("🫁", "RETIENE el aire 4 segundos — siente la quietud interior", 5),
+            ("💨", "EXHALA — suelta por la boca en 6 segundos — suelta la tension", 7),
+            ("🔄", "REPITE 3 veces — cada ciclo mas profundo — mas tranquilo/a", 40),
+            ("🧠", "ESCANEO CORPORAL — recorre de la cabeza a los pies — relaja cada zona", 20),
+            ("💭", "OBSERVA pensamientos — como nubes que pasan — sin juzgar", 20),
+            ("🌊", "VUELVE a la respiracion cada vez que la mente se vaya", 20),
+            ("🌟", "INTENCION — que quieres lograr en tu proxima clase — visualizalo", 20),
+            ("😊", "GRATITUD — piensa en un alumno/a que te motivo esta semana", 15),
+        ]
+    },
 ]
 
 ARCHIVO_PAUSA_MUSICA = "pausa_activa_musica.json"
@@ -20603,9 +21232,10 @@ def main():
         var KEYWORDS = ['BORRAR','Cerrar Pausa','CERRAR'];
         function apply() {
             try {
-                var btns = window.parent.document.querySelectorAll('button');
+                var btns = window.parent.document.querySelectorAll('button, a[download], a[data-testid="stDownloadButton"]');
                 btns.forEach(function(btn) {
-                    var txt = btn.innerText || '';
+                    var txt = btn.innerText || btn.textContent || '';
+                    // Botones ROJOS
                     for (var i=0; i<KEYWORDS.length; i++) {
                         if (txt.indexOf(KEYWORDS[i]) !== -1) {
                             btn.style.setProperty('background', ROJO.bg, 'important');
@@ -20621,8 +21251,19 @@ def main():
                                 p.style.setProperty('color', ROJO.color, 'important');
                                 p.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
                             }
-                            break;
+                            return;
                         }
+                    }
+                    // Botones WORD/DOCX — verde oscuro
+                    if (txt.indexOf('Word') !== -1 || txt.indexOf('docx') !== -1 || txt.indexOf('.docx') !== -1) {
+                        btn.style.setProperty('background', 'linear-gradient(135deg,#1d4ed8,#2563eb)', 'important');
+                        btn.style.setProperty('background-color', '#1d4ed8', 'important');
+                        btn.style.setProperty('color', 'white', 'important');
+                        btn.style.setProperty('-webkit-text-fill-color', 'white', 'important');
+                        btn.style.setProperty('font-weight', '700', 'important');
+                        btn.style.setProperty('opacity', '1', 'important');
+                        var p2 = btn.querySelector('p');
+                        if (p2) { p2.style.setProperty('color', 'white', 'important'); p2.style.setProperty('-webkit-text-fill-color', 'white', 'important'); }
                     }
                 });
             } catch(e) {}
@@ -20672,7 +21313,7 @@ def main():
     if st.session_state.rol == "auxiliar":
         st.markdown(f"### {saludo}, **{nombre_usuario}** 👋")
         st.markdown("*¿Qué vamos a hacer hoy?*")
-        ca1, ca2, ca3, ca4 = st.columns(4)
+        ca1, ca2, ca3, ca4, ca5 = st.columns(5)
         with ca1:
             if st.button("📋\n\n**Asistencia**", use_container_width=True, key="aux_asist", type="primary"):
                 st.session_state.modulo_activo = "asistencia"
@@ -20685,6 +21326,9 @@ def main():
         with ca4:
             if st.button("📋\n\n**Registros PDF**", use_container_width=True, key="aux_regpdf", type="primary"):
                 st.session_state.modulo_activo = "registros_pdf"
+        with ca5:
+            if st.button("📄\n\n**Documentos**", use_container_width=True, key="aux_docs", type="primary"):
+                st.session_state.modulo_activo = "documentos_aux"
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
@@ -20697,6 +21341,8 @@ def main():
         elif mod == "registros_pdf":
             st.subheader("📋 Registros PDF — Asistencia y Auxiliar")
             _seccion_registros_pdf(config)
+        elif mod == "documentos_aux":
+            _seccion_documentos_auxiliar(config)
 
     # ========================================
     # DOCENTE — Su grado solamente
