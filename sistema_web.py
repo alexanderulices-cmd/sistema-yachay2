@@ -4760,6 +4760,190 @@ def tab_matricula(config):
 
 
 
+
+def _generar_pdf_acta_libros(config, grado, seccion, anio, tipo_texto, df_mat):
+    """Acta de recepción de textos/libros con lista de alumnos y firmas."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, alignment=TA_CENTER,
+                           fontName='Helvetica-Bold', spaceAfter=4,
+                           parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=9, alignment=TA_JUSTIFY,
+                           leading=13, spaceAfter=6, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    # Obtener alumnos del grado
+    alumnos = []
+    if not df_mat.empty:
+        fil = df_mat[df_mat.get('Grado', pd.Series(dtype=str)) == grado] if 'Grado' in df_mat.columns else df_mat
+        if seccion != 'Todas' and 'Seccion' in fil.columns:
+            fil = fil[fil['Seccion'] == seccion]
+        for _, row in fil.iterrows():
+            alumnos.append(str(row.get('Nombre', '')))
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY — CHINCHERO, CUSCO", st_t),
+        Paragraph("ACTA DE RECEPCIÓN DE TEXTOS ESCOLARES", st_t),
+        Paragraph(f"GRADO: {grado}  |  SECCIÓN: {seccion}  |  AÑO: {anio}",
+                  ParagraphStyle('s', fontSize=9, alignment=TA_CENTER,
+                                 parent=styles['Normal'], spaceAfter=6)),
+        Spacer(1, 0.3*cm),
+        Paragraph(
+            f"Siendo las ____:____ del día ____ de ____________ de {anio}, el/la docente "
+            f"del {grado} — Sección {seccion} hace entrega de <b>{tipo_texto}</b> "
+            f"a los padres/madres de familia, quienes firman en señal de recepción conforme.", st_b),
+        Spacer(1, 0.2*cm),
+        Paragraph("<b>RELACIÓN DE ALUMNOS Y RECEPCIÓN:</b>",
+                  ParagraphStyle('h', fontName='Helvetica-Bold', fontSize=9,
+                                 parent=styles['Normal'], spaceAfter=4)),
+    ]
+    header = [["N°", "APELLIDOS Y NOMBRES DEL ALUMNO/A", "TEXTO RECIBIDO", "ESTADO", "FIRMA PADRE/MADRE"]]
+    rows = []
+    for i, alu in enumerate(alumnos[:30], 1):
+        rows.append([str(i), alu[:45], "□ Completo  □ Incompleto", "□B □R □M", ""])
+    if not rows:
+        for i in range(1, 26):
+            rows.append([str(i), "", "□ Completo  □ Incompleto", "□B □R □M", ""])
+    t = Table(header + rows, colWidths=[0.7*cm, 5.8*cm, 4*cm, 2*cm, 4*cm])
+    t.setStyle(TableStyle([
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 7.5),
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (1,1), (1,-1), 'LEFT'),
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.97,0.97,1)]),
+        ('MINROWHEIGHT', (0,1), (-1,-1), 0.65*cm),
+    ]))
+    story += [t, Spacer(1, 0.3*cm)]
+    story.append(KeepTogether([
+        Paragraph("Se firma la presente acta en señal de conformidad con la entrega.", st_b),
+        Spacer(1, 0.6*cm),
+        Table([
+            ["_______________________________", "  ", "_______________________________"],
+            ["Docente de Aula", "  ", "Directora"],
+            [f"{grado} — Sección {seccion}", "  ", "I.E.P. ALTERNATIVO YACHAY"],
+        ], colWidths=[7*cm, 0.5*cm, 7*cm],
+        style=TableStyle([
+            ('FONTSIZE',(0,0),(-1,-1),9),('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>YACHAY PRO — {fecha_hoy}</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_carta_compromiso_padre(config, alumno, padre, grado, motivo, anio):
+    """Carta de compromiso del padre/madre de familia."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=2.5*cm, bottomMargin=2.5*cm,
+                            leftMargin=3*cm, rightMargin=3*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=13, alignment=TA_CENTER,
+                           fontName='Helvetica-Bold', spaceAfter=8,
+                           parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=10.5, alignment=TA_JUSTIFY,
+                           leading=18, spaceAfter=12, parent=styles['Normal'])
+    st_l = ParagraphStyle('L', fontSize=10.5, alignment=TA_LEFT,
+                           leading=16, spaceAfter=8, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    compromisos = {
+        "Bajo rendimiento académico": [
+            "Revisar diariamente el cuaderno de tareas y firma de control.",
+            "Asegurar un espacio y tiempo adecuado para el estudio en casa.",
+            "Asistir a las reuniones de padres convocadas por el docente.",
+            "Buscar apoyo académico adicional si fuera necesario.",
+            "Mantener comunicación permanente con el/la docente del aula.",
+        ],
+        "Inasistencias reiteradas": [
+            "Garantizar la asistencia puntual y regular de mi hijo/a a clases.",
+            "Comunicar oportunamente las ausencias justificadas a la institución.",
+            "Asegurar que mi hijo/a recupere los contenidos de las clases perdidas.",
+            "Presentar justificaciones médicas u otras en los plazos establecidos.",
+        ],
+        "Problemas de conducta": [
+            "Establecer normas claras de comportamiento en el hogar.",
+            "Coordinar permanentemente con el/la docente y auxiliar.",
+            "Asistir a las citaciones de tutoría sin excepción.",
+            "Apoyar las acciones correctivas establecidas por la institución.",
+            "No justificar conductas inapropiadas de mi hijo/a.",
+        ],
+        "Compromiso general de apoyo": [
+            "Apoyar activamente el proceso educativo de mi hijo/a.",
+            "Participar en las actividades escolares convocadas.",
+            "Mantener comunicación fluida con el equipo docente.",
+            "Velar por el bienestar integral de mi hijo/a.",
+        ],
+        "Deudas pendientes": [
+            "Regularizar los pagos pendientes en el plazo acordado.",
+            "Cumplir con el cronograma de pagos establecido.",
+            "Comunicar oportunamente cualquier dificultad económica.",
+        ],
+    }
+    lista = compromisos.get(motivo, compromisos["Compromiso general de apoyo"])
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY", st_t),
+        Paragraph("CARTA DE COMPROMISO DEL PADRE / MADRE DE FAMILIA", st_t),
+        Spacer(1, 0.5*cm),
+        Paragraph(f"Chinchero, {fecha_hoy}", ParagraphStyle('d', fontSize=10,
+                   alignment=TA_LEFT, parent=styles['Normal'], spaceAfter=16)),
+        Paragraph(
+            f"Yo, <b>{padre or '___________________________________'}</b>, "
+            f"identificado/a con DNI N° _________________________, padre/madre del/la "
+            f"estudiante <b>{alumno or '___________________________________'}</b>, "
+            f"del grado <b>{grado}</b>, año {anio}, me comprometo ante la I.E.P. ALTERNATIVO YACHAY "
+            f"a cumplir los siguientes acuerdos en relación a: <b>{motivo}</b>:", st_b),
+        Spacer(1, 0.2*cm),
+    ]
+    for i, comp in enumerate(lista, 1):
+        story.append(Paragraph(f"<b>{i}.</b> {comp}", st_l))
+    story += [
+        Spacer(1, 0.4*cm),
+        Paragraph(
+            "Declaro haber recibido orientación sobre la situación de mi hijo/a y me comprometo "
+            "a cumplir lo acordado, entendiendo que el incumplimiento reiterado podrá derivar "
+            "en las acciones que la institución considere pertinentes.", st_b),
+        Spacer(1, 1.2*cm),
+        Table([
+            ["_______________________________", "  ", "_______________________________"],
+            [padre or "________________________", "  ", "Tutor/a del Aula"],
+            ["Padre / Madre de Familia", "  ", f"{grado}"],
+            ["DNI: ____________________", "  ", "I.E.P. ALTERNATIVO YACHAY"],
+        ], colWidths=[7*cm, 0.5*cm, 7*cm],
+        style=TableStyle([
+            ('FONTSIZE',(0,0),(-1,-1),9), ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ])),
+        Spacer(1, 0.5*cm),
+        Paragraph(f"<i>YACHAY PRO — {fecha_hoy}</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
 def _generar_pdf_acta_entrega_salon(config, docente_nombre, grado, seccion, anio):
     """Acta de entrega de salón — firmada por directora y docente."""
     from reportlab.lib.pagesizes import A4
@@ -4824,11 +5008,16 @@ def _generar_pdf_acta_entrega_salon(config, docente_nombre, grado, seccion, anio
         ["03", "Sillas del docente", "_____", "□B □R □M"],
         ["04", "Escritorio del docente", "_____", "□B □R □M"],
         ["05", "Armario / estante", "_____", "□B □R □M"],
-        ["06", "Extintor", "_____", "□Sí □No"],
-        ["07", "Botiquín básico", "_____", "□Sí □No"],
-        ["08", "Ventanas operativas", "_____", "□B □R □M"],
-        ["09", "Puerta con llave", "_____", "□Sí □No"],
-        ["10", "Otros:", "_______________", "___________"],
+        ["06", "Televisor / Smart TV", "_____", "□B □R □M  □No hay"],
+        ["07", "Proyector / cañón", "_____", "□B □R □M  □No hay"],
+        ["08", "Equipo de sonido / parlante", "_____", "□B □R □M  □No hay"],
+        ["09", "Computadora / laptop", "_____", "□B □R □M  □No hay"],
+        ["10", "Extintor", "_____", "□Sí □No"],
+        ["11", "Botiquín básico", "_____", "□Sí □No"],
+        ["12", "Ventanas operativas", "_____", "□B □R □M"],
+        ["13", "Puerta con llave", "_____", "□Sí □No"],
+        ["14", "Tomacorrientes operativos", "_____", "□B □R □M"],
+        ["15", "Otros:", "_______________", "___________"],
     ]
     t_inv = Table(inv_data, colWidths=[1.2*cm, 7*cm, 3*cm, 4.3*cm])
     t_inv.setStyle(TableStyle([
@@ -4841,11 +5030,10 @@ def _generar_pdf_acta_entrega_salon(config, docente_nombre, grado, seccion, anio
         ('ALIGN', (1,1), (1,-1), 'LEFT'),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
     ]))
-    story += [t_inv, Spacer(1, 0.5*cm)]
-    story.append(Paragraph(
-        "Ambas partes declaran conformes con el inventario descrito. El/la docente se compromete "
-        "a devolver el salón en el mismo estado o mejor al finalizar el año escolar.", st_body))
-    story.append(Spacer(1, 1.2*cm))
+    story += [t_inv, Spacer(1, 0.3*cm)]
+
+    # Firmas en el mismo bloque (KeepTogether evita que salten de página)
+    from reportlab.platypus import KeepTogether
     firma_data = [
         ["_______________________________", "    ", "_______________________________"],
         ["DIRECTORA", "    ", "DOCENTE RESPONSABLE"],
@@ -4860,11 +5048,19 @@ def _generar_pdf_acta_entrega_salon(config, docente_nombre, grado, seccion, anio
         ('FONTNAME', (0,1), (0,1), 'Helvetica-Bold'),
         ('FONTNAME', (2,1), (2,1), 'Helvetica-Bold'),
     ]))
-    story += [t_firma, Spacer(1, 0.5*cm)]
-    story.append(Paragraph(
+    pie = Paragraph(
         f"<i>Documento generado por YACHAY PRO — {fecha_hoy}</i>",
         ParagraphStyle('F', parent=styles['Normal'], fontSize=7, alignment=TA_CENTER,
-                       textColor=colors.grey)))
+                       textColor=colors.grey))
+    story.append(KeepTogether([
+        Paragraph("Ambas partes declaran conformes con el inventario descrito. "
+                  "El/la docente se compromete a devolver el salón en el mismo estado "
+                  "o mejor al finalizar el año escolar.", st_body),
+        Spacer(1, 1.0*cm),
+        t_firma,
+        Spacer(1, 0.4*cm),
+        pie,
+    ]))
     doc.build(story)
     buf.seek(0)
     return buf
@@ -4963,34 +5159,34 @@ def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
     import io as _io
     buf = _io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=2*cm, bottomMargin=2*cm,
-                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
     styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('T', parent=styles['Heading1'], fontSize=12,
-                           alignment=TA_CENTER, spaceAfter=6)
-    st_b = ParagraphStyle('B', parent=styles['Normal'], fontSize=10,
-                           alignment=TA_JUSTIFY, leading=16, spaceAfter=8)
+    st_t = ParagraphStyle('T', parent=styles['Heading1'], fontSize=11,
+                           alignment=TA_CENTER, spaceAfter=4)
+    st_b = ParagraphStyle('B', parent=styles['Normal'], fontSize=9,
+                           alignment=TA_JUSTIFY, leading=14, spaceAfter=6)
     fecha_hoy = fecha_peru_str()
     story = [
         Paragraph("I.E.P. ALTERNATIVO YACHAY — CHINCHERO, CUSCO", st_t),
-        Paragraph(f"ACTA DE CONFORMACIÓN DE LA JUNTA DIRECTIVA DEL COMITÉ DE AULA", st_t),
+        Paragraph("ACTA DE CONFORMACIÓN DE LA JUNTA DIRECTIVA DEL COMITÉ DE AULA", st_t),
         Paragraph(f"GRADO: {grado}  |  SECCIÓN: {seccion}  |  AÑO: {anio}",
-                  ParagraphStyle('s', parent=styles['Normal'], fontSize=10,
-                                 alignment=TA_CENTER, spaceAfter=8)),
-        Spacer(1, 0.4*cm),
+                  ParagraphStyle('s', parent=styles['Normal'], fontSize=9,
+                                 alignment=TA_CENTER, spaceAfter=6)),
+        Spacer(1, 0.3*cm),
         Paragraph(
             f"Siendo las ____:____ horas del día ____ de ____________ del {anio}, "
             f"reunidos los padres de familia del {grado} — Sección {seccion} de la I.E.P. "
             f"ALTERNATIVO YACHAY, bajo la conducción del/la docente de aula, se procede "
             f"a la elección democrática de la Junta Directiva del Comité de Aula conforme "
             f"lo establece la R.M. N° 627-2016-MINEDU y normas vigentes.", st_b),
-        Spacer(1, 0.3*cm),
+        Spacer(1, 0.2*cm),
         Paragraph("<b>JUNTA DIRECTIVA ELEGIDA:</b>",
                   ParagraphStyle('h', parent=styles['Normal'], fontName='Helvetica-Bold',
-                                 fontSize=10, spaceAfter=6)),
+                                 fontSize=9, spaceAfter=4)),
     ]
     cargos_data = [
-        ["CARGO", "APELLIDOS Y NOMBRES", "DNI", "FIRMA"],
+        ["CARGO", "APELLIDOS Y NOMBRES COMPLETOS", "DNI", "FIRMA"],
         ["Presidente/a", "", "", ""],
         ["Vicepresidente/a", "", "", ""],
         ["Secretario/a", "", "", ""],
@@ -4998,38 +5194,66 @@ def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
         ["Vocal 1", "", "", ""],
         ["Vocal 2", "", "", ""],
     ]
-    t_c = Table(cargos_data, colWidths=[4*cm, 6.5*cm, 2.5*cm, 2.5*cm])
+    t_c = Table(cargos_data, colWidths=[3.8*cm, 7*cm, 2.5*cm, 3.2*cm])
     t_c.setStyle(TableStyle([
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('FONTSIZE', (0,0), (-1,-1), 8.5),
         ('GRID', (0,0), (-1,-1), 0.5, colors.black),
         ('BACKGROUND', (0,0), (-1,0), colors.Color(0.1,0.1,0.4)),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
-        ('MINROWHEIGHT', (0,1), (-1,-1), 1*cm),
+        ('MINROWHEIGHT', (0,1), (-1,-1), 0.9*cm),
     ]))
-    story += [t_c, Spacer(1, 0.4*cm)]
-    story.append(Paragraph(
-        "La Junta Directiva elegida se compromete a representar los intereses del aula, "
-        "colaborar con la institución educativa y velar por la calidad educativa de los "
-        "estudiantes del presente grado y sección. Se firma la presente acta en señal "
-        "de conformidad.", st_b))
-    story.append(Spacer(1, 0.8*cm))
-    story.append(Paragraph("_______________________________",
-                            ParagraphStyle('c', parent=styles['Normal'],
-                                           alignment=TA_CENTER, fontSize=10)))
-    story.append(Paragraph(f"Docente de Aula — {grado} Sección {seccion}",
-                            ParagraphStyle('c2', parent=styles['Normal'],
-                                           alignment=TA_CENTER, fontSize=9)))
-    story.append(Spacer(1, 0.3*cm))
-    story.append(Paragraph(
-        f"<i>Conforme R.M. N° 627-2016-MINEDU | YACHAY PRO — {fecha_hoy}</i>",
-        ParagraphStyle('fi', parent=styles['Normal'], fontSize=7,
-                       alignment=TA_CENTER, textColor=colors.grey)))
+    story += [t_c, Spacer(1, 0.3*cm)]
+
+    # Lista de padres presentes con firma
+    story.append(Paragraph("<b>PADRES/MADRES DE FAMILIA PRESENTES EN LA REUNIÓN:</b>",
+                  ParagraphStyle('h2', parent=styles['Normal'], fontName='Helvetica-Bold',
+                                 fontSize=9, spaceAfter=4)))
+    asist_header = [["N°", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "DNI", "HIJO/A (ALUMNO/A)", "FIRMA"]]
+    asist_rows = [[str(i), "", "", "", ""] for i in range(1, 21)]
+    t_asist = Table(asist_header + asist_rows,
+                    colWidths=[0.7*cm, 5.5*cm, 2.3*cm, 5*cm, 3*cm])
+    t_asist.setStyle(TableStyle([
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 7.5),
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.Color(0.2,0.2,0.5)),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (1,1), (1,-1), 'LEFT'),
+        ('ALIGN', (3,1), (3,-1), 'LEFT'),
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.97,0.97,1)]),
+        ('MINROWHEIGHT', (0,1), (-1,-1), 0.65*cm),
+    ]))
+    story += [t_asist, Spacer(1, 0.3*cm)]
+
+    from reportlab.platypus import KeepTogether
+    story.append(KeepTogether([
+        Paragraph(
+            "La Junta Directiva elegida se compromete a representar los intereses del aula, "
+            "colaborar con la institución educativa y velar por la calidad educativa de los "
+            "estudiantes. Se firma la presente acta en señal de conformidad.", st_b),
+        Spacer(1, 0.6*cm),
+        Table([
+            ["_______________________________", "  ", "_______________________________"],
+            ["Docente de Aula", "  ", "Directora I.E.P. ALTERNATIVO YACHAY"],
+            [f"{grado} — Sección {seccion}", "  ", config.get('directora','')],
+        ], colWidths=[7*cm, 0.5*cm, 7*cm],
+        style=TableStyle([
+            ('FONTSIZE',(0,0),(-1,-1),9),('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('FONTNAME',(0,1),(-1,1),'Helvetica-Bold'),
+        ])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>Conforme R.M. N° 627-2016-MINEDU | YACHAY PRO — {fecha_hoy}</i>",
+                  ParagraphStyle('fi', parent=styles['Normal'], fontSize=7,
+                                 alignment=TA_CENTER, textColor=colors.grey)),
+    ]))
     doc.build(story)
     buf.seek(0)
     return buf
+
 
 
 def _seccion_documentos_auxiliar(config):
@@ -5045,11 +5269,13 @@ def _seccion_documentos_auxiliar(config):
     if not df_mat.empty and 'Grado' in df_mat.columns:
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
-    doc_tab1, doc_tab2, doc_tab3, doc_tab4 = st.tabs([
+    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6 = st.tabs([
         "📦 Acta Entrega Salón",
         "📜 Constancia Reglamento",
         "👥 Junta Directiva Aula",
-        "📋 Más Documentos MINEDU",
+        "📚 Acta Entrega Libros",
+        "📋 Compromiso de Padres",
+        "🗂️ Más Documentos",
     ])
 
     # ── TAB 1: ACTA ENTREGA DE SALÓN ──────────────────────────────────
@@ -5165,10 +5391,94 @@ def _seccion_documentos_auxiliar(config):
 
         """)
         st.success("✅ Los documentos marcados con YACHAY PRO ya están cubiertos por el sistema.")
+
+    # ── TAB 4: ACTA ENTREGA DE LIBROS ─────────────────────────────────
+    with doc_tab4:
+        st.markdown("#### Acta de Entrega de Textos Escolares")
         st.info(
-            "💡 Próximamente: Generación automática del Padrón de Familias por aula "
-            "y las boletas de notas firmadas digitalmente."
+            "Requerida cuando el MINEDU o la institución entrega libros/textos "
+            "a los estudiantes. Cada padre/madre firma la recepción."
         )
+        col_l1, col_l2, col_l3 = st.columns(3)
+        with col_l1:
+            grado_lib = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_lib")
+        with col_l2:
+            seccion_lib = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_lib")
+        with col_l3:
+            tipo_texto = st.selectbox("Tipo de texto:", [
+                "Textos escolares MINEDU",
+                "Cuadernos de trabajo MINEDU",
+                "Materiales educativos",
+                "Libros de la institución",
+            ], key="doc_tipo_lib")
+        if st.button("📄 Generar Acta de Libros", type="primary",
+                     use_container_width=True, key="btn_acta_lib"):
+            try:
+                buf_lib = _generar_pdf_acta_libros(config, grado_lib, seccion_lib, anio, tipo_texto, df_mat)
+                st.download_button(
+                    "⬇️ Descargar Acta de Libros",
+                    buf_lib,
+                    f"Acta_Libros_{grado_lib}_{seccion_lib}_{anio}.pdf",
+                    "application/pdf", type="primary", key="dl_acta_lib")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+    # ── TAB 5: COMPROMISO DE PADRES ────────────────────────────────────
+    with doc_tab5:
+        st.markdown("#### Carta de Compromiso del Padre/Madre de Familia")
+        st.info(
+            "Documento donde el padre/madre se compromete a apoyar la educación "
+            "de su hijo/a. Muy útil para casos de bajo rendimiento o inasistencias."
+        )
+        col_p1, col_p2 = st.columns(2)
+        with col_p1:
+            alumno_comp = st.text_input("Nombre del alumno/a:", key="doc_alu_comp",
+                                        placeholder="Apellidos y Nombres")
+            grado_comp = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_gr_comp")
+        with col_p2:
+            padre_comp = st.text_input("Nombre del padre/madre:", key="doc_pad_comp",
+                                       placeholder="Apellidos y Nombres")
+            motivo_comp = st.selectbox("Motivo:", [
+                "Bajo rendimiento académico",
+                "Inasistencias reiteradas",
+                "Problemas de conducta",
+                "Compromiso general de apoyo",
+                "Deudas pendientes",
+            ], key="doc_mot_comp")
+        if st.button("📄 Generar Carta Compromiso", type="primary",
+                     use_container_width=True, key="btn_comp"):
+            try:
+                buf_comp = _generar_pdf_carta_compromiso_padre(
+                    config, alumno_comp, padre_comp, grado_comp, motivo_comp, anio)
+                st.download_button(
+                    "⬇️ Descargar Carta Compromiso",
+                    buf_comp,
+                    f"Compromiso_{alumno_comp.replace(' ','_')[:20]}_{anio}.pdf",
+                    "application/pdf", type="primary", key="dl_comp")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+    # ── TAB 6: MÁS DOCUMENTOS ──────────────────────────────────────────
+    with doc_tab6:
+        st.markdown("#### Documentos del acervo institucional — MINEDU/UGEL")
+        st.markdown("""
+| Documento | Base legal | Disponible |
+|-----------|-----------|-----------|
+| Acta de Entrega de Salón | Norma institucional | ✅ Tab 1 |
+| Constancia Reglamento Interno | R.M. 657-2017 | ✅ Tab 2 |
+| Acta Junta Directiva Comité Aula | R.M. 627-2016 | ✅ Tab 3 |
+| Acta Entrega Textos/Libros | R.M. MINEDU | ✅ Tab 4 |
+| Carta Compromiso Padres | D.S. 011-2012 | ✅ Tab 5 |
+| Registro de asistencia alumnos | D.S. 011-2012 | ✅ YACHAY PRO |
+| Registro auxiliar evaluación | DCN | ✅ YACHAY PRO |
+| Constancias de estudios/conducta | Norma institucional | ✅ Documentos |
+| Carnets estudiantiles | Norma institucional | ✅ YACHAY PRO |
+| Padrón de familias por aula | R.M. 627-2016 | ✅ Matrícula |
+| Libro de visitas UGEL | R.D. UGEL | 📝 Manual |
+| PEI / PAT / RI / PCI | R.M. 657-2017 | 📝 Ya los tienes |
+        """)
+        st.success("✅ La mayoría de documentos exigibles ya están cubiertos por YACHAY PRO.")
+        st.info("📌 PEI, PAT, RI, PCI ya los tienes elaborados. Los demás documentos del día a día los genera este módulo.")
 
 
 
@@ -19152,6 +19462,221 @@ PAUSA_MODELOS = [
             ("😊", "GRATITUD — piensa en un alumno/a que te motivo esta semana", 15),
         ]
     },
+
+    # ══════════════════════════════════════════════════════════════════
+    # INNOVACIONES EDUCATIVAS — Finlandia, Singapur, Japón, USA
+    # Actividades para trabajar en el salón, no solo físicas
+    # ══════════════════════════════════════════════════════════════════
+    {
+        "id": 41,
+        "nombre": "Momento de Gratitud (Finlandia)",
+        "nivel": ["TODOS"],
+        "color_fondo": "#1a4a2e",
+        "color_acento": "#86efac",
+        "emoji_principal": "🌿",
+        "descripcion": "Practica finlandesa de bienestar — reconocer lo positivo del dia",
+        "pasos": [
+            ("", "Cierra los ojos. Respira profundo tres veces lentamente.", 12),
+            ("", "Piensa en UNA cosa buena que ocurrio hoy en el colegio.", 15),
+            ("", "Piensa en UNA persona que te ayudo o apoyo hoy. Agradecela mentalmente.", 15),
+            ("", "Piensa en algo que aprendiste hoy, por pequeño que sea.", 12),
+            ("", "Abre los ojos. Escribe en tu cuaderno: Hoy aprendi... / Hoy agradezco...", 30),
+            ("", "Comparte con tu companero del costado lo que escribiste, si quieres.", 20),
+            ("", "El docente pregunta voluntariamente: quien quiere compartir con la clase?", 20),
+            ("", "Escuchen con respeto lo que comparte cada companero.", 20),
+            ("", "Ronda de aplausos silenciosos: agitar las manos en el aire al terminar.", 8),
+            ("", "Para finalizar: digan juntos en voz alta GRACIAS por este dia.", 8),
+        ]
+    },
+    {
+        "id": 42,
+        "nombre": "Pensamiento Visible (Rutinas Harvard)",
+        "nivel": ["PRIMARIA", "SECUNDARIA"],
+        "color_fondo": "#1e3a5f",
+        "color_acento": "#93c5fd",
+        "emoji_principal": "💭",
+        "descripcion": "Rutina de pensamiento del Project Zero de Harvard — Ver-Pensar-Preguntar",
+        "pasos": [
+            ("", "El docente coloca una imagen, objeto o fenomeno al frente del salon.", 10),
+            ("", "VEO: Que observas exactamente? Solo lo que ves, sin interpretar. Anota.", 25),
+            ("", "Comparte con la clase: Yo veo... (observaciones concretas).", 15),
+            ("", "PIENSO: Que te hace pensar esto? Que inferencias o ideas te genera?", 25),
+            ("", "Comparte: Yo pienso que... (interpretaciones, hipotesis).", 15),
+            ("", "ME PREGUNTO: Que preguntas te surgen? Que quisieras saber mas?", 20),
+            ("", "Comparte: Me pregunto si... / Me pregunto por que... / Me pregunto que pasaria si...", 15),
+            ("", "El docente anota en la pizarra las preguntas mas interesantes del grupo.", 20),
+            ("", "Voten: Cual es la pregunta mas interesante? La investigaremos juntos.", 15),
+            ("", "Comprometerse: Quien buscara la respuesta para la proxima clase?", 10),
+        ]
+    },
+    {
+        "id": 43,
+        "nombre": "Numero Abierto (Singapur)",
+        "nivel": ["PRIMARIA", "SECUNDARIA"],
+        "color_fondo": "#7c1d1d",
+        "color_acento": "#fca5a5",
+        "emoji_principal": "🔢",
+        "descripcion": "Tecnica de matematica mental de Singapur — numero del dia",
+        "pasos": [
+            ("", "El docente escribe UN numero en la pizarra. Ejemplo: 24", 8),
+            ("", "Individual: escribe TODAS las formas de llegar a ese numero en 2 minutos.", 120),
+            ("", "Ejemplo: 24 = 20+4 = 6x4 = 48/2 = 25-1 = 12+12 = 3x8 = raiz de 576...", 15),
+            ("", "Compara con tu companero: cuantas formas encontraste cada uno?", 15),
+            ("", "En grupos de 4: junten todas sus formas. Eliminan duplicados.", 20),
+            ("", "Cada grupo comparte su forma MAS CREATIVA o rara de llegar al numero.", 20),
+            ("", "Votar: cual es la forma mas elegante? la mas ingeniosa? la mas larga?", 15),
+            ("", "Reflexion: cuantas formas DISTINTAS tiene un solo numero? El pensamiento flexible es clave.", 15),
+            ("", "Reto extra: pueden encontrar una forma que nadie mas haya pensado?", 20),
+            ("", "El docente revela: en matematicas casi nunca hay un solo camino correcto.", 10),
+        ]
+    },
+    {
+        "id": 44,
+        "nombre": "Circulo de Dialogo (Finlandia)",
+        "nivel": ["TODOS"],
+        "color_fondo": "#312e81",
+        "color_acento": "#c4b5fd",
+        "emoji_principal": "⭕",
+        "descripcion": "Conversacion estructurada inspirada en la pedagogia finlandesa",
+        "pasos": [
+            ("", "Reorganicen las sillas en circulo. Todos se pueden ver las caras.", 20),
+            ("", "Regla 1: Solo habla quien tiene el objeto (lapiz, borrador, etc.).", 10),
+            ("", "Regla 2: Se escucha sin interrumpir. Se respeta toda opinion.", 10),
+            ("", "Regla 3: No hay respuestas correctas o incorrectas en este momento.", 8),
+            ("", "El docente lanza la pregunta del dia. Puede ser de cualquier tema.", 10),
+            ("", "Ronda 1: Cada uno responde brevemente. El objeto pasa en orden.", 60),
+            ("", "Ronda 2: Quien quiere ampliar o responder a lo que dijo alguien?", 40),
+            ("", "El docente hace un RESUMEN de lo escuchado — sin juzgar ni corregir.", 20),
+            ("", "Reflexion: que escuchaste que no esperabas? Que te sorprendio?", 20),
+            ("", "Cierre: vuelven a su lugar. El dialogo termina cuando el circulo se rompe.", 10),
+        ]
+    },
+    {
+        "id": 45,
+        "nombre": "Protocolo 4 Esquinas (USA - PBL)",
+        "nivel": ["SECUNDARIA", "PREUNIVERSITARIO"],
+        "color_fondo": "#064e3b",
+        "color_acento": "#6ee7b7",
+        "emoji_principal": "📐",
+        "descripcion": "Tecnica de aprendizaje activo del Project-Based Learning de EEUU",
+        "pasos": [
+            ("", "El docente pega en cada esquina del salon un cartel con una posicion diferente.", 15),
+            ("", "Ejemplo: Esquina A=Muy de acuerdo / B=De acuerdo / C=En desacuerdo / D=Neutro", 12),
+            ("", "El docente lanza una afirmacion polémica relacionada al tema del dia.", 10),
+            ("", "TODOS se levantan y se mueven a la esquina que representa su posicion.", 15),
+            ("", "Grupos formados. Tienen 2 minutos para preparar sus argumentos.", 120),
+            ("", "Cada grupo elige un vocero y presenta sus razones al salon.", 30),
+            ("", "Pueden cambiar de esquina si alguien los convenció con sus argumentos.", 10),
+            ("", "Segunda afirmacion: el docente cambia el tema. Todos se reuibican.", 60),
+            ("", "Reflexion: fue facil o dificil defender tu posicion? Por que?", 20),
+            ("", "Cierre: en esta clase no hay verdades absolutas — hay perspectivas.", 10),
+        ]
+    },
+    {
+        "id": 46,
+        "nombre": "Brain Break Cognitivo (Neurociencia)",
+        "nivel": ["TODOS"],
+        "color_fondo": "#4c1d95",
+        "color_acento": "#ddd6fe",
+        "emoji_principal": "🧬",
+        "descripcion": "Descanso cognitivo basado en neurociencia — resetea la atencion",
+        "pasos": [
+            ("", "Dejen los lapices. Cierren los cuadernos. Solo escuchen y hagan.", 8),
+            ("", "CAMBIO DE FOCO: busquen con la vista 5 objetos de color AZUL en el salon.", 15),
+            ("", "Ahora 4 objetos de color ROJO. Rapidamente sin levantarse.", 12),
+            ("", "Ahora 3 objetos que sean REDONDOS. Primero en nominarlos gana.", 12),
+            ("", "TAREA DOBLE: cuenten mentalmente de 3 en 3 hasta 30 Y a la vez aplaudan.", 20),
+            ("", "CAMBIO: cuenten de 4 en 4 hasta 40 Y a la vez golpeen el escritorio.", 20),
+            ("", "PALABRA INVERSA: el docente dice una palabra y todos la dicen al reves.", 20),
+            ("", "Ejemplo: CASA = ASAC / LIBRO = ORBIL / PERU = UREP. Tres rondas.", 30),
+            ("", "SILENCIO TOTAL: 30 segundos de silencio absoluto. Solo respirar.", 30),
+            ("", "Vuelven al trabajo. El cerebro acaba de hacer un reinicio completo.", 8),
+        ]
+    },
+    {
+        "id": 47,
+        "nombre": "Aprendizaje Cooperativo Jigsaw (USA)",
+        "nivel": ["PRIMARIA", "SECUNDARIA"],
+        "color_fondo": "#7c2d12",
+        "color_acento": "#fed7aa",
+        "emoji_principal": "🧩",
+        "descripcion": "Tecnica Jigsaw de Elliot Aronson (USA) — todos ensenan y aprenden",
+        "pasos": [
+            ("", "El tema del dia se divide en 4 partes iguales. El docente lo anuncia.", 10),
+            ("", "Forman grupos de 4. Cada integrante es experto de UNA parte.", 10),
+            ("", "GRUPOS DE EXPERTOS: todos los expertos del Tema 1 se juntan a estudiar.", 90),
+            ("", "Cada grupo de expertos discute, toma notas, prepara como enseñar su parte.", 60),
+            ("", "REGRESAN a sus grupos originales. Ahora cada experto enseña al grupo.", 90),
+            ("", "Mientras uno enseña, los demas toman notas y pueden preguntar.", 30),
+            ("", "Al terminar: cada integrante sabe las 4 partes gracias a sus compañeros.", 15),
+            ("", "Evaluacion rapida: el docente pregunta algo de cada parte a diferentes alumnos.", 30),
+            ("", "Reflexion: fue mas facil aprender de tu companero que del libro? Por que?", 15),
+            ("", "Mensaje clave: todos somos maestros y todos somos estudiantes a la vez.", 10),
+        ]
+    },
+    {
+        "id": 48,
+        "nombre": "Filosofia para Ninos P4C (Reino Unido)",
+        "nivel": ["PRIMARIA", "SECUNDARIA"],
+        "color_fondo": "#1e1b4b",
+        "color_acento": "#a5b4fc",
+        "emoji_principal": "🦉",
+        "descripcion": "Philosophy for Children — desarrolla pensamiento critico y profundo",
+        "pasos": [
+            ("", "El docente lee en voz alta una historia corta, fabula o dilema moral.", 30),
+            ("", "Silencio de 1 minuto. Cada uno piensa individualmente sobre lo leido.", 60),
+            ("", "Cada alumno escribe UNA pregunta filosofica sobre la historia.", 30),
+            ("", "Se leen todas las preguntas en voz alta. Sin juzgar ninguna.", 30),
+            ("", "El grupo vota: cual es la pregunta MAS profunda e interesante?", 15),
+            ("", "INDAGACION: el grupo explora la pregunta elegida juntos.", 60),
+            ("", "Reglas: solo se habla si se tiene algo nuevo que agregar al pensamiento.", 15),
+            ("", "Se puede preguntar: por que piensas eso? tienes evidencia? como lo sabes?", 30),
+            ("", "El docente NO da la respuesta. Solo hace preguntas que profundizan.", 30),
+            ("", "Cierre: no buscamos UNA respuesta — buscamos MEJORES preguntas.", 10),
+        ]
+    },
+    {
+        "id": 49,
+        "nombre": "Movimiento Consciente Japonés — Recess",
+        "nivel": ["INICIAL", "PRIMARIA"],
+        "color_fondo": "#0f172a",
+        "color_acento": "#f8fafc",
+        "emoji_principal": "🎌",
+        "descripcion": "Inspirado en el recreo estructurado japones — movimiento con proposito",
+        "pasos": [
+            ("", "De pie, sin hablar. Solo escuchan las instrucciones.", 10),
+            ("", "CAMINAR: caminen lentamente por el salon sin chocar a nadie. 30 segundos.", 30),
+            ("", "Cuando escuchen un aplauso: se detienen y saludan al mas cercano con una reverencia.", 15),
+            ("", "CAMINAR MAS RAPIDO. Cuando escuchen dos aplausos: forman parejas y se saludan.", 30),
+            ("", "Caminen de puntillas. Tres aplausos: forman grupos de 4 sin hablar.", 30),
+            ("", "En su grupo: cada uno muestra una emocion con el cuerpo, sin palabras.", 20),
+            ("", "El grupo debe adivinar que emocion es cada uno.", 20),
+            ("", "SINCRONIZACION: los 4 hacen el mismo movimiento a la vez, sin hablar.", 25),
+            ("", "Regresan a sus lugares en silencio, con calma, sin apuros.", 15),
+            ("", "El movimiento consiente nos conecta con nosotros mismos y los demas.", 10),
+        ]
+    },
+    {
+        "id": 50,
+        "nombre": "Teoria U — Reflexion Profunda (Europa)",
+        "nivel": ["SECUNDARIA", "PREUNIVERSITARIO", "DOCENTES"],
+        "color_fondo": "#0c4a6e",
+        "color_acento": "#7dd3fc",
+        "emoji_principal": "🌊",
+        "descripcion": "Tecnica europea de reflexion para innovar y resolver problemas complejos",
+        "pasos": [
+            ("", "BAJAR: dejen de lado lo que saben. Abran la mente a ver diferente.", 15),
+            ("", "Observen el salon, a sus companeros, el espacio. Como si fuera la primera vez.", 20),
+            ("", "Escriban: Que noto que antes no notaba? Que me sorprende ahora?", 25),
+            ("", "SENTIR: Conéctense con lo que de verdad importa. Que les preocupa del futuro?", 20),
+            ("", "Escriban honestamente: Que cambio necesita este salon / esta clase / este mundo?", 25),
+            ("", "PRESENCIAR: Cierren los ojos. Imaginen el futuro que quieren para su salon.", 20),
+            ("", "Que rol juegan ustedes en ese futuro? Como contribuyen?", 15),
+            ("", "SUBIR: Que podrian hacer ESTA SEMANA para acercarse a ese futuro?", 20),
+            ("", "Escriban una accion concreta y pequeña que comenzaran manana.", 20),
+            ("", "Compartan en parejas: Mi accion sera... Porque me importa...", 20),
+        ]
+    },
 ]
 
 ARCHIVO_PAUSA_MUSICA = "pausa_activa_musica.json"
@@ -20246,6 +20771,575 @@ if(document.getElementById('bgm')) {{
                     st.session_state['_pausa_paso_actual'] = 0
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
+
+
+
+# ════════════════════════════════════════════════════════════════════════
+# MÓDULO: HERRAMIENTAS CIENCIAS SOCIALES — Secundaria
+# Líneas de tiempo | Debates | Análisis de fuentes | Banco de preguntas
+# ════════════════════════════════════════════════════════════════════════
+
+CCSS_TEMAS = {
+    "Historia Universal": {
+        "1ro": ["Prehistoria y primeras civilizaciones", "Mesopotamia y Egipto", "Grecia antigua", "Roma antigua"],
+        "2do": ["Edad Media", "Islam y Bizancio", "Feudalismo", "Cruzadas y comercio medieval"],
+        "3ro": ["Renacimiento y Reforma", "Era de los descubrimientos", "Absolutismo", "Ilustración y Revolución Francesa"],
+        "4to": ["Revolución Industrial", "Imperialismo", "Primera Guerra Mundial", "Segunda Guerra Mundial"],
+        "5to": ["Guerra Fría", "Descolonización", "Globalización", "Mundo contemporáneo"],
+    },
+    "Historia del Perú": {
+        "1ro": ["Culturas preincas", "El Tahuantinsuyo", "Organización inca"],
+        "2do": ["Conquista española", "Virreinato del Perú", "Sociedad colonial"],
+        "3ro": ["Independencia del Perú", "República aristocrática", "Guerra con Chile"],
+        "4to": ["Oncenio de Leguía", "Dictaduras y democracias s.XX", "Terrorismo y CVR"],
+        "5to": ["Perú contemporáneo", "Política actual", "Identidad nacional"],
+    },
+    "Geografía": {
+        "1ro": ["Representaciones del espacio geográfico", "El relieve peruano", "Hidrografía del Perú"],
+        "2do": ["Clima y biodiversidad", "Regiones naturales del Perú", "Riesgo y vulnerabilidad"],
+        "3ro": ["Población y migraciones", "Urbanización", "Problemática ambiental"],
+        "4to": ["Economía y recursos naturales", "Integración regional", "Geopolítica"],
+        "5to": ["Desarrollo sostenible", "Cambio climático", "Geopolítica mundial"],
+    },
+    "Economía y Ciudadanía": {
+        "4to": ["Sistema económico", "Oferta y demanda", "Rol del Estado", "Presupuesto familiar"],
+        "5to": ["Economía global", "Trabajo y empleo", "Ciudadanía digital", "Derechos humanos"],
+    },
+}
+
+CCSS_PREGUNTAS_BANCO = {
+    "Tahuantinsuyo": [
+        {"p": "¿Cuál era la lengua oficial del Tahuantinsuyo?", "a": ["Quechua", "Aymara", "Puquina", "Mochica"], "c": 0},
+        {"p": "¿Qué sistema de registro de información usaban los incas?", "a": ["Escritura cuneiforme", "Quipus", "Jeroglíficos", "Pictogramas"], "c": 1},
+        {"p": "¿Cómo se llamaba el trabajo colectivo obligatorio en el incanato?", "a": ["Ayni", "Minka", "Mit'a", "Camac"], "c": 2},
+        {"p": "¿Quién fue el primer inca según la tradición?", "a": ["Pachacútec", "Túpac Yupanqui", "Manco Cápac", "Sinchi Roca"], "c": 2},
+        {"p": "¿Cómo se llamaba la panaca del inca?", "a": ["Ayllu real", "Acllahuasi", "Panaca", "Hatun ayllu"], "c": 2},
+        {"p": "¿Qué significaba la reciprocidad en el Tahuantinsuyo?", "a": ["Intercambio de productos", "Obligación de dar y recibir entre el Estado y el pueblo", "Sistema de impuestos", "Mercado organizado"], "c": 1},
+    ],
+    "Independencia del Perú": [
+        {"p": "¿En qué año se proclamó la Independencia del Perú?", "a": ["1819", "1821", "1824", "1820"], "c": 1},
+        {"p": "¿Quién proclamó la Independencia del Perú?", "a": ["Simón Bolívar", "Antonio José de Sucre", "José de San Martín", "Ramón Castilla"], "c": 2},
+        {"p": "¿En qué batalla se selló definitivamente la Independencia?", "a": ["Batalla de Junín", "Batalla de Ayacucho", "Batalla de Chacabuco", "Batalla de Pichincha"], "c": 1},
+        {"p": "¿Qué fue la Conspiración de los Marqueses?", "a": ["Un movimiento criollo a favor de la independencia", "Una rebelión de esclavos", "Un levantamiento indígena", "Una conspiración española"], "c": 0},
+        {"p": "¿Cuál fue el primer periódico independentista del Perú?", "a": ["El Peruano", "El Mercurio Peruano", "La Gaceta", "El Inca"], "c": 1},
+    ],
+    "Primera Guerra Mundial": [
+        {"p": "¿En qué año comenzó la Primera Guerra Mundial?", "a": ["1912", "1914", "1916", "1918"], "c": 1},
+        {"p": "¿Qué evento detonó la Primera Guerra Mundial?", "a": ["Invasión de Polonia", "Asesinato del Archiduque Francisco Fernando", "Crisis de los misiles", "Ataque a Pearl Harbor"], "c": 1},
+        {"p": "¿Cuáles fueron los dos bloques de la Primera Guerra?", "a": ["OTAN vs Pacto de Varsovia", "Triple Alianza vs Triple Entente", "Aliados vs Eje", "Imperialistas vs Comunistas"], "c": 1},
+        {"p": "¿Qué tratado puso fin a la Primera Guerra Mundial?", "a": ["Tratado de Versalles", "Tratado de París", "Tratado de Berlín", "Tratado de Yalta"], "c": 0},
+        {"p": "¿Qué nueva arma se usó por primera vez masivamente en la Primera Guerra?", "a": ["Bomba atómica", "Misiles balísticos", "Gas venenoso y tanques", "Aviones de combate"], "c": 2},
+    ],
+    "Revolución Industrial": [
+        {"p": "¿En qué país comenzó la Revolución Industrial?", "a": ["Francia", "Alemania", "Inglaterra", "Estados Unidos"], "c": 2},
+        {"p": "¿Qué inventó James Watt que impulsó la Revolución Industrial?", "a": ["La locomotora", "La máquina de vapor mejorada", "El telar mecánico", "El ferrocarril"], "c": 1},
+        {"p": "¿Qué nueva clase social surgió con la Revolución Industrial?", "a": ["La burguesía", "El proletariado", "La nobleza", "El clero"], "c": 1},
+        {"p": "¿Qué sistema económico se consolidó con la Revolución Industrial?", "a": ["Feudalismo", "Mercantilismo", "Capitalismo", "Socialismo"], "c": 2},
+    ],
+}
+
+FUENTES_HISTORICAS = {
+    "Fuente primaria — Acta de Independencia del Perú (1821)": {
+        "texto": (
+            '"Nosotros los representantes del Perú [...] creyendo ser la voluntad general '
+            'la de constituirse en nación libre e independiente del gobierno español [...]'
+            ' declaramos solemnemente a la faz de todo el mundo que el Perú es desde este '
+            'momento nación libre e independiente por la voluntad general de los pueblos '
+            'y por la justicia de su causa que Dios defiende."'
+        ),
+        "preguntas": [
+            "¿Quiénes son los autores de este documento? ¿Qué cargo tenían?",
+            "¿Cuál es el propósito principal del documento?",
+            "¿Qué argumentos usan para justificar la independencia?",
+            "¿Qué referencias a Dios y a la justicia encuentras? ¿Por qué las incluyen?",
+            "¿Cómo describirías el tono del documento: formal, emocional, neutral?",
+        ],
+        "contexto": "Lima, 28 de julio de 1821. José de San Martín proclamó la independencia desde la Plaza Mayor."
+    },
+    "Fuente secundaria — Sobre el Feudalismo medieval": {
+        "texto": (
+            '"El feudalismo fue un sistema político, económico y social que dominó Europa '
+            'occidental entre los siglos IX y XV. Se basaba en relaciones de vasallaje: '
+            'el señor feudal otorgaba tierras (feudos) a cambio de lealtad y servicio militar. '
+            'Los campesinos (siervos) trabajaban las tierras a cambio de protección. '
+            'La Iglesia jugó un papel central como poder espiritual y temporal."'
+        ),
+        "preguntas": [
+            "¿Es esta una fuente primaria o secundaria? ¿Cómo lo sabes?",
+            "¿Qué relaciones de poder describe el texto?",
+            "¿Quiénes se beneficiaban más del feudalismo? ¿Quiénes menos?",
+            "¿Qué semejanzas y diferencias encuentras con la sociedad actual?",
+            "¿Qué preguntas harías al autor para entender mejor el tema?",
+        ],
+        "contexto": "Fragmento de manual escolar universitario, siglo XXI."
+    },
+}
+
+DEBATES_TEMAS = [
+    {
+        "titulo": "¿La conquista española fue más destructiva que beneficiosa para el Perú?",
+        "posicion_a": "SÍ fue más destructiva",
+        "posicion_b": "NO, hubo intercambio cultural valioso",
+        "argumentos_a": [
+            "Destrucción de culturas y conocimientos milenarios andinos",
+            "Exterminio masivo de población indígena por enfermedades y violencia",
+            "Sistema de explotación (mita, encomienda) que empobreció a los pueblos",
+            "Destrucción de monumentos, quipus y sistemas de organización propios",
+        ],
+        "argumentos_b": [
+            "Introdujo nuevas tecnologías: rueda, animales de carga, escritura alfabética",
+            "Generó mestizaje cultural que es la base de la identidad peruana actual",
+            "Integró al Perú en redes comerciales mundiales",
+            "Las instituciones coloniales sentaron bases del Estado peruano",
+        ],
+        "fuente_reflexion": "¿Es posible hablar de 'beneficios' cuando hubo violación de derechos humanos?",
+    },
+    {
+        "titulo": "¿Las redes sociales son más perjudiciales que beneficiosas para los jóvenes?",
+        "posicion_a": "SÍ, son más perjudiciales",
+        "posicion_b": "NO, tienen más beneficios",
+        "argumentos_a": [
+            "Generan dependencia y afectan la salud mental (ansiedad, depresión)",
+            "Propagan desinformación y noticias falsas a gran velocidad",
+            "Favorecen el sedentarismo y reducen relaciones presenciales",
+            "Exponen a los jóvenes a acoso, grooming y contenidos dañinos",
+        ],
+        "argumentos_b": [
+            "Conectan a comunidades y permiten organización social y política",
+            "Son herramientas de aprendizaje y acceso al conocimiento",
+            "Permiten a jóvenes expresarse y encontrar comunidades de apoyo",
+            "Han sido clave en movimientos sociales que cambiaron la historia reciente",
+        ],
+        "fuente_reflexion": "¿Depende del uso que se les dé? ¿Quién es responsable: el usuario, la empresa o el Estado?",
+    },
+    {
+        "titulo": "¿El Perú debe priorizar el crecimiento económico o la protección ambiental?",
+        "posicion_a": "Priorizar crecimiento económico",
+        "posicion_b": "Priorizar protección ambiental",
+        "argumentos_a": [
+            "Sin crecimiento económico no se puede financiar servicios sociales básicos",
+            "La pobreza es el mayor problema ambiental — los pobres destruyen ecosistemas por necesidad",
+            "La tecnología del futuro resolverá los problemas ambientales actuales",
+            "Otros países contaminaron primero para desarrollarse — ¿por qué el Perú no puede?",
+        ],
+        "argumentos_b": [
+            "Sin ecosistemas sanos no hay economía sostenible a largo plazo",
+            "El Perú es uno de los 17 países megadiversos — tiene responsabilidad global",
+            "El turismo y la bioeconomía generan más empleo que la minería invasiva",
+            "Las comunidades indígenas tienen derecho a sus territorios ancestrales",
+        ],
+        "fuente_reflexion": "¿Es posible el 'desarrollo sostenible' o siempre hay que elegir entre los dos?",
+    },
+]
+
+LINEAS_TIEMPO = {
+    "Tahuantinsuyo (1438-1532)": [
+        ("1438", "Pachacútec inicia la expansión del Tahuantinsuyo"),
+        ("1463", "Conquista del reino Chimú por Túpac Yupanqui"),
+        ("1471", "Túpac Inca Yupanqui sube al poder — expansión al norte"),
+        ("1493", "Reinado de Huayna Cápac — máxima expansión territorial"),
+        ("1527", "Muerte de Huayna Cápac — guerra civil entre Huáscar y Atahualpa"),
+        ("1532", "Captura de Atahualpa en Cajamarca — inicio de la conquista"),
+    ],
+    "Independencia del Perú (1780-1824)": [
+        ("1780", "Rebelión de Túpac Amaru II — primera gran rebelión anticolonial"),
+        ("1808", "Invasión napoleónica a España — crisis del poder colonial"),
+        ("1814", "Rebelión del Cusco — último gran levantamiento colonial"),
+        ("1820", "Expedición Libertadora de San Martín llega al Perú"),
+        ("1821", "Proclamación de la Independencia — 28 de julio"),
+        ("1824", "Batalla de Ayacucho — consolidación definitiva de la independencia"),
+    ],
+    "Primera Guerra Mundial (1914-1918)": [
+        ("Jun 1914", "Asesinato del Archiduque Francisco Fernando en Sarajevo"),
+        ("Jul 1914", "Austria-Hungría declara guerra a Serbia — efecto dominó"),
+        ("Ago 1914", "Alemania invade Bélgica — Gran Bretaña entra a la guerra"),
+        ("1915", "Campaña de Gallípoli — masacre de tropas aliadas"),
+        ("1916", "Batalla del Somme — 1 millón de bajas en 5 meses"),
+        ("1917", "EEUU entra a la guerra — Revolución Rusa — Rusia sale"),
+        ("Nov 1918", "Armisticio — fin de la guerra"),
+        ("1919", "Tratado de Versalles — humillación de Alemania"),
+    ],
+}
+
+
+def _tab_ciencias_sociales(config):
+    """Módulo de herramientas para docentes de Ciencias Sociales — Secundaria."""
+    st.header("🌍 Herramientas — Ciencias Sociales")
+    st.caption("Líneas de tiempo | Análisis de fuentes | Debates | Banco de preguntas | Mapas conceptuales")
+
+    ccss_t1, ccss_t2, ccss_t3, ccss_t4, ccss_t5 = st.tabs([
+        "📅 Líneas de Tiempo",
+        "📜 Análisis de Fuentes",
+        "⚖️ Debates Estructurados",
+        "❓ Banco de Preguntas",
+        "🗺️ Organizadores Visuales",
+    ])
+
+    # ── TAB 1: LÍNEAS DE TIEMPO ───────────────────────────────────────
+    with ccss_t1:
+        st.markdown("#### Líneas de Tiempo Interactivas")
+        lt_sel = st.selectbox("Elige el tema:", list(LINEAS_TIEMPO.keys()), key="lt_sel")
+        eventos = LINEAS_TIEMPO[lt_sel]
+
+        import streamlit.components.v1 as _comp_lt
+        html_lt = """<style>
+        body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:white;padding:20px;}
+        .timeline{position:relative;padding:10px 0;}
+        .timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;
+            width:3px;background:linear-gradient(180deg,#7c3aed,#2563eb);transform:translateX(-50%);}
+        .evento{display:flex;margin-bottom:20px;position:relative;}
+        .evento:nth-child(odd){flex-direction:row;}
+        .evento:nth-child(even){flex-direction:row-reverse;}
+        .fecha-box{background:#7c3aed;color:white;border-radius:20px;padding:6px 14px;
+            font-weight:700;font-size:0.85rem;white-space:nowrap;align-self:center;
+            min-width:90px;text-align:center;box-shadow:0 0 12px rgba(124,58,237,0.5);}
+        .desc-box{background:#1e293b;border-radius:10px;padding:10px 14px;
+            font-size:0.9rem;max-width:220px;margin:0 16px;border-left:3px solid #7c3aed;}
+        .evento:nth-child(even) .desc-box{border-left:none;border-right:3px solid #2563eb;}
+        .punto{position:absolute;left:50%;top:50%;width:14px;height:14px;
+            background:#f59e0b;border-radius:50%;transform:translate(-50%,-50%);
+            box-shadow:0 0 10px rgba(245,158,11,0.7);z-index:1;}
+        </style><div class="timeline">"""
+        for fecha, desc in eventos:
+            html_lt += f"""<div class="evento">
+                <div class="fecha-box">{fecha}</div>
+                <div class="punto"></div>
+                <div class="desc-box">{desc}</div>
+            </div>"""
+        html_lt += "</div>"
+        _comp_lt.html(html_lt, height=max(400, len(eventos)*90), scrolling=True)
+
+        # Actividad
+        st.markdown("---")
+        st.markdown("**Actividad para el aula:**")
+        act_lt = st.radio("Tipo de actividad:", [
+            "Ordenar eventos (los alumnos reciben tarjetas desordenadas)",
+            "Completar la línea (algunos eventos con espacios en blanco)",
+            "Ampliar la línea (¿qué pasó antes? ¿qué pasó después?)",
+            "Comparar dos líneas de tiempo simultáneamente",
+        ], key="act_lt")
+        if act_lt:
+            instrucciones = {
+                "Ordenar eventos (los alumnos reciben tarjetas desordenadas)":
+                    f"Imprime los {len(eventos)} eventos del tema en tarjetas separadas. "
+                    "Repártelas en grupos. Tienen 5 minutos para ordenarlas cronológicamente. "
+                    "El grupo que termina primero compara con el resto.",
+                "Completar la línea (algunos eventos con espacios en blanco)":
+                    f"Muestra la línea de tiempo con {len(eventos)//2} eventos ocultos. "
+                    "Los alumnos completan los espacios usando sus apuntes o el libro de texto.",
+                "Ampliar la línea (¿qué pasó antes? ¿qué pasó después?)":
+                    "Pregunta: ¿qué estaba pasando en el MUNDO mientras ocurría esto en el Perú/Historia? "
+                    "Los alumnos investigan y agregan eventos paralelos de otros países.",
+                "Comparar dos líneas de tiempo simultáneamente":
+                    "Pon dos líneas de tiempo una al lado de la otra. "
+                    "Ejemplo: historia del Perú y del mundo en el mismo período. "
+                    "¿Qué coincidencias o relaciones encuentran?",
+            }
+            st.info(f"**Instrucción:** {instrucciones[act_lt]}")
+
+    # ── TAB 2: ANÁLISIS DE FUENTES HISTÓRICAS ─────────────────────────
+    with ccss_t2:
+        st.markdown("#### Análisis de Fuentes Históricas")
+        st.caption("Competencia CNEB: Interpreta críticamente fuentes diversas")
+
+        fuente_sel = st.selectbox("Fuente:", list(FUENTES_HISTORICAS.keys()), key="fs_sel")
+        fuente = FUENTES_HISTORICAS[fuente_sel]
+
+        st.markdown(f"**Contexto:** *{fuente['contexto']}*")
+        st.markdown("---")
+        st.markdown("**Texto de la fuente:**")
+        st.markdown(
+            f'<div style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:10px;'
+            f'border-left:4px solid #f59e0b;font-style:italic;line-height:1.7;">'
+            f'{fuente["texto"]}</div>',
+            unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("**Preguntas para el análisis:**")
+        for i, preg in enumerate(fuente["preguntas"], 1):
+            st.markdown(f"**{i}.** {preg}")
+        st.markdown("---")
+        nivel_analisis = st.selectbox("Nivel de análisis a trabajar:", [
+            "Comprensión literal — ¿Qué dice el texto?",
+            "Contextualización — ¿Cuándo y dónde fue escrito?",
+            "Corroboración — ¿Coincide con otras fuentes?",
+            "Evaluación de confiabilidad — ¿Podemos confiar en esta fuente?",
+            "Análisis crítico completo (todos los niveles)",
+        ], key="niv_analisis")
+
+        ficha = {
+            "Comprensión literal — ¿Qué dice el texto?":
+                "1. Subraya las ideas principales. "
+                "2. Resume en una oración qué dice. "
+                "3. Define las palabras que no entiendes.",
+            "Contextualización — ¿Cuándo y dónde fue escrito?":
+                "1. ¿Quién escribió esto? ¿Qué cargo tenía? "
+                "2. ¿Cuándo fue escrito? ¿Qué pasaba en ese momento? "
+                "3. ¿Para quién fue escrito?",
+            "Corroboración — ¿Coincide con otras fuentes?":
+                "1. ¿Qué otras fuentes conoces sobre este tema? "
+                "2. ¿Coinciden o hay contradicciones? "
+                "3. ¿Por qué fuentes distintas dicen cosas diferentes?",
+            "Evaluación de confiabilidad — ¿Podemos confiar en esta fuente?":
+                "1. ¿Tiene el autor interés en presentar el tema de cierta forma? "
+                "2. ¿Es la fuente contemporánea a los hechos o posterior? "
+                "3. ¿Qué información podría estar omitiendo?",
+            "Análisis crítico completo (todos los niveles)":
+                "Responde las preguntas del panel. Luego escribe un párrafo de 5-8 líneas con tu análisis personal.",
+        }
+        st.info(f"**Guía de trabajo:** {ficha[nivel_analisis]}")
+
+    # ── TAB 3: DEBATES ESTRUCTURADOS ─────────────────────────────────
+    with ccss_t3:
+        st.markdown("#### Debates Estructurados — Argumentación Histórica")
+        st.caption("Competencia: Construye interpretaciones históricas y ejerce ciudadanía democráticamente")
+
+        debate_sel = st.selectbox("Elige el tema:", [d["titulo"] for d in DEBATES_TEMAS], key="deb_sel")
+        debate = next(d for d in DEBATES_TEMAS if d["titulo"] == debate_sel)
+
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown(f"""<div style='background:#dc2626;color:white;padding:14px;
+                border-radius:10px;margin-bottom:8px;font-weight:700;text-align:center;'>
+                POSICION A<br>{debate["posicion_a"]}</div>""", unsafe_allow_html=True)
+            for arg in debate["argumentos_a"]:
+                st.markdown(f"• {arg}")
+        with col_b:
+            st.markdown(f"""<div style='background:#2563eb;color:white;padding:14px;
+                border-radius:10px;margin-bottom:8px;font-weight:700;text-align:center;'>
+                POSICION B<br>{debate["posicion_b"]}</div>""", unsafe_allow_html=True)
+            for arg in debate["argumentos_b"]:
+                st.markdown(f"• {arg}")
+
+        st.markdown("---")
+        st.warning(f"**Pregunta de reflexión final:** {debate['fuente_reflexion']}")
+
+        st.markdown("**Estructura del debate (20-30 minutos):**")
+        formato = st.radio("Formato:", [
+            "Debate clásico (2 equipos)",
+            "Plenaria — todos participan",
+            "Silla caliente — voluntarios defienden posiciones",
+            "Pastel de posiciones — del 1 al 5 según tu acuerdo",
+        ], key="fmt_deb")
+        instruc_debate = {
+            "Debate clásico (2 equipos)":
+                "Divide el salón en 2 grupos. Grupo A defiende Posición A, Grupo B defiende Posición B. "
+                "5 min preparación → 3 min exposición A → 3 min exposición B → "
+                "2 min repreguntas → 2 min cierre cada uno → reflexión final docente.",
+            "Plenaria — todos participan":
+                "Lanza la pregunta. Regla: solo habla quien levanta la mano. "
+                "Puedes agregar, rebatir o matizar lo que dijo el anterior. "
+                "El docente solo modera. Al final hace el cierre.",
+            "Silla caliente — voluntarios defienden posiciones":
+                "2 sillas al frente. Un alumno en cada una defiende su posición. "
+                "El resto puede 'reemplazar' a cualquiera para agregar un argumento nuevo.",
+            "Pastel de posiciones — del 1 al 5 según tu acuerdo":
+                "Todos escriben su posición del 1 (muy en contra) al 5 (muy a favor). "
+                "Se forma un diagrama en el piso. Los extremos debaten primero. "
+                "Luego se pueden mover si alguien los convenció.",
+        }
+        st.info(f"**Instrucción:** {instruc_debate[formato]}")
+
+    # ── TAB 4: BANCO DE PREGUNTAS ─────────────────────────────────────
+    with ccss_t4:
+        st.markdown("#### Banco de Preguntas — Evaluación Rápida")
+        tema_pq = st.selectbox("Tema:", list(CCSS_PREGUNTAS_BANCO.keys()), key="pq_tema")
+        preguntas_pq = CCSS_PREGUNTAS_BANCO[tema_pq]
+
+        modo_pq = st.radio("Modo:", ["Ver todas con respuestas", "Quiz interactivo", "Solo preguntas (para imprimir)"], key="modo_pq")
+
+        if modo_pq == "Ver todas con respuestas":
+            for i, preg in enumerate(preguntas_pq, 1):
+                with st.expander(f"Pregunta {i}: {preg['p'][:60]}..."):
+                    for j, alt in enumerate(preg['a']):
+                        if j == preg['c']:
+                            st.success(f"**{chr(65+j)}) {alt}** ← CORRECTA")
+                        else:
+                            st.write(f"{chr(65+j)}) {alt}")
+
+        elif modo_pq == "Quiz interactivo":
+            if 'pq_respuestas' not in st.session_state:
+                st.session_state.pq_respuestas = {}
+            for i, preg in enumerate(preguntas_pq):
+                resp = st.radio(
+                    f"**{i+1}. {preg['p']}**",
+                    preg['a'], key=f"pq_{tema_pq}_{i}",
+                    index=None)
+                if resp:
+                    if preg['a'].index(resp) == preg['c']:
+                        st.success("Correcto")
+                    else:
+                        st.error(f"Incorrecto. Respuesta: {preg['a'][preg['c']]}")
+
+        else:  # Solo preguntas
+            txt_impr = f"BANCO DE PREGUNTAS — {tema_pq}\n" + "="*50 + "\n\n"
+            for i, preg in enumerate(preguntas_pq, 1):
+                txt_impr += f"{i}. {preg['p']}\n"
+                for j, alt in enumerate(preg['a']):
+                    txt_impr += f"   {chr(65+j)}) {alt}\n"
+                txt_impr += "\n"
+            st.text_area("Preguntas para imprimir:", txt_impr, height=300, key="pq_print")
+
+    # ── TAB 5: ORGANIZADORES VISUALES ─────────────────────────────────
+    with ccss_t5:
+        st.markdown("#### Organizadores Visuales para el Aula")
+        org_tipo = st.selectbox("Tipo de organizador:", [
+            "Mapa T — Comparar dos elementos",
+            "Espina de Ishikawa — Causas de un evento histórico",
+            "Semáforo de evaluación — Qué sé / qué no sé / qué debo aprender",
+            "Pirámide social — Estratificación histórica",
+            "Rueda de atributos — Características de un personaje/periodo",
+        ], key="org_tipo")
+
+        instruc_org = {
+            "Mapa T — Comparar dos elementos": {
+                "desc": "Divide la hoja en T. Izquierda: Elemento A. Derecha: Elemento B. Abajo: similitudes.",
+                "ejemplo": "Tahuantinsuyo vs Mesopotamia | Bolívar vs San Martín | Capitalismo vs Comunismo",
+                "pasos": ["1. El docente da los dos elementos a comparar", "2. Individualmente completan el Mapa T (8 min)", "3. En parejas comparan sus mapas (5 min)", "4. La clase construye un mapa colectivo en la pizarra"],
+            },
+            "Espina de Ishikawa — Causas de un evento histórico": {
+                "desc": "La 'espina central' es el evento. Las 'espinas' son las causas. Se organizan por categorías: políticas, económicas, sociales, culturales.",
+                "ejemplo": "¿Por qué cayó el Imperio Romano? | ¿Por qué ocurrió la Revolución Industrial en Inglaterra? | ¿Por qué el Perú perdió la guerra con Chile?",
+                "pasos": ["1. Dibuja la espina central en la pizarra", "2. Define las categorías de causas", "3. Grupos buscan causas de cada categoría (10 min)", "4. Completan la espina colectivamente"],
+            },
+            "Semáforo de evaluación — Qué sé / qué no sé / qué debo aprender": {
+                "desc": "Cada alumno clasifica sus conocimientos en 3 columnas: VERDE (sé bien), AMARILLO (sé más o menos), ROJO (no sé / no entiendo).",
+                "ejemplo": "Úsalo al inicio de una unidad para diagnóstico, o al final para metacognición.",
+                "pasos": ["1. El docente da una lista de 10-15 conceptos del tema", "2. Cada alumno los clasifica en 3 columnas (5 min)", "3. El docente ve qué contenidos necesitan más trabajo", "4. Los alumnos VERDE ayudan a los ROJO en actividad cooperativa"],
+            },
+            "Pirámide social — Estratificación histórica": {
+                "desc": "Dibuja una pirámide dividida en capas. Cada capa representa un estrato social: arriba los más poderosos, abajo la mayoría.",
+                "ejemplo": "Sociedad colonial peruana | Sociedad medieval feudal | Sociedad del Antiguo Egipto | Sociedad inca",
+                "pasos": ["1. Dibuja la pirámide vacía en la pizarra", "2. Los alumnos en grupos identifican los grupos sociales", "3. Los ubican en la pirámide según su posición", "4. Discuten: ¿podía alguien cambiar de estrato? ¿Cómo? ¿Era justo?"],
+            },
+            "Rueda de atributos — Características de un personaje/periodo": {
+                "desc": "En el centro va el personaje o periodo. En los rayos de la rueda, los atributos o características más importantes.",
+                "ejemplo": "Pachacútec | La Ilustración | La Revolución Industrial | La Guerra Fría",
+                "pasos": ["1. El centro de la rueda ya está dado", "2. Individualmente: llenan 6-8 atributos en los rayos (5 min)", "3. Comparan en grupos y justifican por qué eligieron esos atributos", "4. Discuten cuál es el atributo MÁS importante y por qué"],
+            },
+        }
+        info_org = instruc_org[org_tipo]
+        st.markdown(f"**Descripción:** {info_org['desc']}")
+        st.info(f"**Ejemplos para usar:** {info_org['ejemplo']}")
+        st.markdown("**Pasos para aplicarlo en clase:**")
+        for paso in info_org["pasos"]:
+            st.markdown(paso)
+
+        st.markdown("---")
+        st.markdown("**Recurso descargable — Hoja de trabajo en blanco:**")
+        grado_org = st.selectbox("Grado:", ["1ro Secundaria","2do Secundaria","3ro Secundaria","4to Secundaria","5to Secundaria"], key="gr_org")
+        tema_org = st.text_input("Tema específico:", placeholder="Ej: El Tahuantinsuyo", key="tema_org_inp")
+        if st.button("Generar hoja de trabajo PDF", type="primary", key="btn_org_pdf"):
+            try:
+                buf_org = _generar_hoja_organizador(org_tipo, grado_org, tema_org or "_______________", config)
+                st.download_button(
+                    "Descargar hoja de trabajo",
+                    buf_org,
+                    f"Organizador_{org_tipo[:15].replace(' ','_')}_{grado_org}.pdf",
+                    "application/pdf", type="primary", key="dl_org_pdf")
+            except Exception as _e:
+                st.error(f"Error: {_e}")
+
+
+def _generar_hoja_organizador(tipo, grado, tema, config):
+    """Genera hoja de trabajo en blanco para organizador visual."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=12, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=6, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=10, parent=styles['Normal'])
+    story = [
+        Paragraph("I.E.P. ALTERNATIVO YACHAY — Ciencias Sociales", st_t),
+        Paragraph(f"{tipo.upper()}", st_t),
+        Paragraph(f"Grado: {grado}  |  Tema: {tema}  |  Alumno/a: ___________________________  |  Fecha: _______", st_s),
+        Spacer(1, 0.5*cm),
+    ]
+    anio = config.get('anio', 2026)
+    if "Mapa T" in tipo:
+        story.append(Paragraph("Elemento A: _________________", ParagraphStyle('lab', fontSize=10, fontName='Helvetica-Bold', parent=styles['Normal'])))
+        t_data = [["ELEMENTO A", "ELEMENTO B"]] + [["", ""] for _ in range(12)]
+        t_data += [["SIMILITUDES (abajo)", ""]]
+        t = Table(t_data, colWidths=[8*cm, 8*cm], rowHeights=[1*cm]*14)
+        t.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.8,colors.black),
+            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+            ('BACKGROUND',(0,0),(-1,0),colors.Color(0.2,0.2,0.5)),
+            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('SPAN',(0,-1),(-1,-1)),
+        ]))
+        story.append(t)
+    elif "Ishikawa" in tipo:
+        story.append(Paragraph("EVENTO CENTRAL: " + tema, ParagraphStyle('ec', fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, parent=styles['Normal'])))
+        cats = [["CAUSAS POLÍTICAS", "CAUSAS ECONÓMICAS"], ["CAUSAS SOCIALES", "CAUSAS CULTURALES"]]
+        for cat_row in cats:
+            t_cat = Table([[cat_row[0], cat_row[1]],
+                           ["", ""]],
+                          colWidths=[8*cm, 8*cm], rowHeights=[0.7*cm, 4.5*cm])
+
+
+
+
+", "
+
+
+
+
+
+"]],
+                          colWidths=[8*cm, 8*cm], rowHeights=[0.7*cm, 4.5*cm])
+            t_cat.setStyle(TableStyle([
+                ('GRID',(0,0),(-1,-1),0.8,colors.black),
+                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.3,0.5)),
+                ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                ('ALIGN',(0,0),(-1,0),'CENTER'),
+            ]))
+            story += [t_cat, Spacer(1, 0.3*cm)]
+    elif "Semaforo" in tipo or "Semáforo" in tipo:
+        t_sem = Table(
+            [["VERDE — Lo sé bien", "AMARILLO — Lo sé a medias", "ROJO — No lo sé"]] +
+            [["", "", ""] for _ in range(15)],
+            colWidths=[5.2*cm, 5.5*cm, 5.2*cm],
+            rowHeights=[1*cm] + [0.8*cm]*15)
+        t_sem.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+            ('BACKGROUND',(0,0),(0,0),colors.Color(0.1,0.6,0.1)),
+            ('BACKGROUND',(1,0),(1,0),colors.Color(0.8,0.7,0)),
+            ('BACKGROUND',(2,0),(2,0),colors.Color(0.7,0.1,0.1)),
+            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ]))
+        story.append(t_sem)
+    else:
+        # Genérico: tabla en blanco con título
+        t_gen = Table([["Tema: " + tema]] + [[""] for _ in range(20)],
+                       colWidths=[16*cm], rowHeights=[1*cm]*21)
+        t_gen.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+            ('FONTNAME',(0,0),(0,0),'Helvetica-Bold'),
+        ]))
+        story.append(t_gen)
+
+    story.append(Spacer(1, 0.4*cm))
+    story.append(Paragraph(
+        f"YACHAY PRO — Ciencias Sociales — {anio}",
+        ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                       textColor=colors.grey, parent=styles['Normal'])))
+    doc.build(story)
+    buf.seek(0)
+    return buf
 
 
 def tab_yachay_plickers(config):
@@ -21380,6 +22474,7 @@ def main():
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
                 ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
+                ("🌍", "Herram. C. Sociales", "ccss", "#b45309"),
             ]
 
             # Grid de módulos
@@ -21459,6 +22554,8 @@ def main():
                 _tab_registro_pdf_docente(grado_d, config)
             elif mod == "tests_vocacionales":
                 _tab_test_vocacional_ui(config)
+            elif mod == "ccss":
+                _tab_ciencias_sociales(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
