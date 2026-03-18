@@ -621,6 +621,7 @@ ARCHIVO_BD = "base_datos.xlsx"
 ARCHIVO_MATRICULA = "matricula.xlsx"
 ARCHIVO_DOCENTES = "docentes.xlsx"
 ARCHIVO_ASISTENCIAS = "asistencias.json"
+ARCHIVO_INDICE_CACHE = "indice_dni_cache.json"  # Caché local del índice — sobrevive reinicios
 ARCHIVO_RESULTADOS = "resultados_examenes.json"
 
 
@@ -1273,6 +1274,12 @@ class BaseDatos:
         # Invalidar índice DNI para que se reconstruya con datos nuevos
         st.session_state.pop('_indice_dni', None)
         st.session_state.pop('_indice_dni_ts', None)
+        # Borrar caché local también para que se regenere con el nuevo alumno
+        try:
+            if Path(ARCHIVO_INDICE_CACHE).exists():
+                Path(ARCHIVO_INDICE_CACHE).unlink()
+        except Exception:
+            pass
         # Sincronizar con Google Sheets
         gs = _gs()
         if gs:
@@ -1616,48 +1623,38 @@ class BaseDatos:
         asistencias[fecha_hoy][dni]['nombre'] = nombre
         with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
             json.dump(asistencias, f, indent=2, ensure_ascii=False)
-        # Backup silencioso en Drive
-        try: _drive_backup_json("asistencias.json", asistencias)
-        except Exception: pass
-        # Sincronizar con Google Sheets en silencio
-        try:
-            gs = _gs()
-            if gs:
-                grado = ''
-                nivel = ''
-                # Usar índice DNI (rápido) para obtener grado/nivel
-                indice = st.session_state.get('_indice_dni', {})
-                if dni in indice:
-                    grado = str(indice[dni].get('Grado', indice[dni].get('grado', '')))
-                    nivel = str(indice[dni].get('Nivel', indice[dni].get('nivel', '')))
-                else:
-                    # Fallback: buscar en archivo local
-                    try:
-                        if Path(ARCHIVO_MATRICULA).exists():
-                            df_m = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
-                            df_m.columns = df_m.columns.str.strip()
-                            if 'DNI' in df_m.columns:
-                                est = df_m[df_m['DNI'].astype(str).str.strip() == str(dni).strip()]
-                                if not est.empty:
-                                    grado = str(est.iloc[0].get('Grado', ''))
-                                    nivel = str(est.iloc[0].get('Nivel', ''))
-                    except Exception:
-                        pass
-                reg = asistencias[fecha_hoy][dni]
-                gs.guardar_asistencia({
-                    'fecha': fecha_hoy,
-                    'dni': str(dni),
-                    'nombre': nombre,
-                    'tipo_persona': 'docente' if es_docente else 'alumno',
-                    'hora_entrada': reg.get('entrada', ''),
-                    'hora_salida': reg.get('salida', ''),
-                    'hora_entrada_tarde': reg.get('entrada_tarde', ''),
-                    'hora_salida_tarde': reg.get('salida_tarde', ''),
-                    'grado': grado,
-                    'nivel': nivel,
-                })
-        except Exception:
-            pass  # Error silencioso — asistencia ya guardada localmente
+        # Invalidar caché inmediatamente para que el render muestre el registro
+        st.session_state['_asis_invalidar'] = True
+        st.session_state.pop('_cache_asis_hoy', None)
+        # Sync GSheets y Drive en hilo separado — NO bloquea la UI
+        import threading as _th
+        _snap_asis = dict(asistencias)
+        _snap_dni = str(dni)
+        _snap_nom = str(nombre)
+        _snap_doc = bool(es_docente)
+        _snap_fecha = str(fecha_hoy)
+        def _sync_bg():
+            try: _drive_backup_json("asistencias.json", _snap_asis)
+            except Exception: pass
+            try:
+                gs = _gs()
+                if gs:
+                    indice = st.session_state.get('_indice_dni', {})
+                    grado = str(indice.get(_snap_dni, {}).get('Grado', ''))
+                    nivel = str(indice.get(_snap_dni, {}).get('Nivel', ''))
+                    reg = _snap_asis.get(_snap_fecha, {}).get(_snap_dni, {})
+                    gs.guardar_asistencia({
+                        'fecha': _snap_fecha, 'dni': _snap_dni, 'nombre': _snap_nom,
+                        'tipo_persona': 'docente' if _snap_doc else 'alumno',
+                        'hora_entrada': reg.get('entrada', ''),
+                        'hora_salida': reg.get('salida', ''),
+                        'hora_entrada_tarde': reg.get('entrada_tarde', ''),
+                        'hora_salida_tarde': reg.get('salida_tarde', ''),
+                        'grado': grado, 'nivel': nivel,
+                    })
+            except Exception: pass
+        _t = _th.Thread(target=_sync_bg, daemon=True)
+        _t.start()
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -1922,24 +1919,62 @@ class BaseDatos:
 
 
 def _construir_indice_dni():
-    """Construye índice DNI→persona en memoria para búsqueda instantánea.
-    Se refresca cada 3 minutos automáticamente."""
+    """Construye índice DNI→persona en memoria.
+    Orden: GSheets (fuente principal) → caché local JSON → Excel local → docentes.
+    El caché local persiste reinicios de Streamlit y funciona sin internet."""
     indice = {}
-    # 1. Archivo local matricula (rápido)
+
+    # 1. GOOGLE SHEETS — fuente principal
+    gs_ok = False
     try:
-        if Path(ARCHIVO_MATRICULA).exists():
-            df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
-            df.columns = df.columns.str.strip()
-            if not df.empty and 'DNI' in df.columns:
-                for _, row in df.iterrows():
+        gs = _gs()
+        if gs:
+            df_gs = gs.leer_matricula()
+            if not df_gs.empty:
+                col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
+                           'grado': 'Grado', 'seccion': 'Seccion',
+                           'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
+                           'celular_apoderado': 'Celular_Apoderado'}
+                df_gs = df_gs.rename(columns=col_map)
+                for _, row in df_gs.iterrows():
                     dni = str(row.get('DNI', '')).strip()
                     if dni and len(dni) >= 7:
                         r = row.to_dict()
                         r['_tipo'] = 'alumno'
                         indice[dni] = r
+                gs_ok = True
     except Exception:
         pass
-    # 2. Archivo local docentes
+
+    # 2. CACHÉ LOCAL — si GSheets falló (sin internet, reinicio, etc.)
+    if not indice:
+        try:
+            if Path(ARCHIVO_INDICE_CACHE).exists():
+                with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as f:
+                    indice = json.load(f)
+                # Marcar como cargado desde caché
+                if indice:
+                    st.session_state['_indice_desde_cache'] = True
+        except Exception:
+            pass
+
+    # 3. EXCEL LOCAL — último recurso si todo lo anterior falla
+    if not indice:
+        try:
+            if Path(ARCHIVO_MATRICULA).exists():
+                df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
+                df.columns = df.columns.str.strip()
+                if not df.empty and 'DNI' in df.columns:
+                    for _, row in df.iterrows():
+                        dni = str(row.get('DNI', '')).strip()
+                        if dni and len(dni) >= 7:
+                            r = row.to_dict()
+                            r['_tipo'] = 'alumno'
+                            indice[dni] = r
+        except Exception:
+            pass
+
+    # 4. DOCENTES — siempre complementar
     try:
         if Path(ARCHIVO_DOCENTES).exists():
             df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
@@ -1953,27 +1988,18 @@ def _construir_indice_dni():
                         indice[dni] = r
     except Exception:
         pass
-    # 3. GS complementa (sin bloquear si falla)
-    try:
-        gs = _gs()
-        if gs:
-            df_gs = gs.leer_matricula()
-            if not df_gs.empty:
-                col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
-                           'grado': 'Grado', 'seccion': 'Seccion',
-                           'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
-                           'celular_apoderado': 'Celular_Apoderado'}
-                df_gs = df_gs.rename(columns=col_map)
-                for _, row in df_gs.iterrows():
-                    dni = str(row.get('DNI', '')).strip()
-                    if dni and len(dni) >= 7 and dni not in indice:
-                        r = row.to_dict()
-                        r['_tipo'] = 'alumno'
-                        indice[dni] = r
-    except Exception:
-        pass
+
+    # Guardar en memoria
     st.session_state['_indice_dni'] = indice
     st.session_state['_indice_dni_ts'] = time.time()
+
+    # 5. Persistir caché local si vinieron de GSheets (datos frescos)
+    if gs_ok and indice:
+        try:
+            with open(ARCHIVO_INDICE_CACHE, 'w', encoding='utf-8') as f:
+                json.dump(indice, f, ensure_ascii=False)
+        except Exception:
+            pass
 
 
 def _nombre_completo_docente():
@@ -5765,6 +5791,18 @@ def tab_asistencias():
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
+    # Aviso si está operando desde caché local (sin internet)
+    if st.session_state.get('_indice_desde_cache'):
+        n_idx = len(st.session_state.get('_indice_dni', {}))
+        st.warning(
+            f"📴 **Modo sin internet** — Operando desde caché local ({n_idx} personas). "
+            f"Las asistencias se guardan localmente y se sincronizarán cuando vuelva la conexión."
+        )
+    else:
+        n_idx = len(st.session_state.get('_indice_dni', {}))
+        if n_idx > 0:
+            st.success(f"✅ Sistema listo — {n_idx} personas en índice", icon="🟢")
+
     # Inicializar tracking de WhatsApp enviados
     if 'wa_enviados' not in st.session_state:
         st.session_state.wa_enviados = set()
@@ -6230,8 +6268,19 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia — AUTO-DETECTA mañana/tarde, tardanza, horas docente"""
-    persona = BaseDatos.buscar_por_dni(dni)
+    """Registra asistencia — rápido: usa índice DNI en caché, no GSheets."""
+    # Usar índice en caché si disponible (mucho más rápido que buscar en GS)
+    _idx = st.session_state.get('_indice_dni', {})
+    if dni in _idx:
+        _d = _idx[dni]
+        persona = {
+            'DNI': dni,
+            'Nombre': _d.get('Nombre', _d.get('nombre', '')),
+            'Grado': _d.get('Grado', _d.get('grado', '')),
+            'Nivel': _d.get('Nivel', _d.get('nivel', '')),
+        }
+    else:
+        persona = BaseDatos.buscar_por_dni(dni)
     if persona:
         hora = hora_peru_str()
         modo = st.session_state.get('tipo_asistencia', 'Entrada')
