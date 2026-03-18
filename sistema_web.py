@@ -5295,11 +5295,10 @@ def _seccion_documentos_auxiliar(config):
     if not df_mat.empty and 'Grado' in df_mat.columns:
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
-    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6, doc_tab7, doc_tab8, doc_tab9, doc_tab10 = st.tabs([
+    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6, doc_tab7, doc_tab8, doc_tab9 = st.tabs([
         "📦 Acta Entrega Salón",
         "📜 Constancia Reglamento",
         "👥 Junta Directiva Aula",
-        "📚 Acta Entrega Libros",
         "📋 Compromiso de Padres",
         "📖 Reglamento — Alumnos",
         "📖 Reglamento — Padres",
@@ -5398,63 +5397,8 @@ def _seccion_documentos_auxiliar(config):
             except Exception as _e:
                 st.error(f"Error: {_e}")
 
-    # ── TAB 4: MÁS DOCUMENTOS ──────────────────────────────────────────
+    # ── TAB 4: COMPROMISO DE PADRES ──────────────────────────────────
     with doc_tab4:
-        st.markdown("#### Otros documentos exigidos por MINEDU a colegios privados")
-        st.markdown("""
-**Documentos del acervo documentario que MINEDU/UGEL puede solicitar en supervisión:**
-
-| Documento | Base legal | Estado |
-|-----------|-----------|--------|
-| Proyecto Educativo Institucional (PEI) | R.M. 657-2017 | Dirección |
-| Plan Anual de Trabajo (PAT) | R.M. 657-2017 | Dirección |
-| Reglamento Interno | D.S. 011-2012-ED | Dirección |
-| Normas de Convivencia por aula | R.M. 627-2016 | Por aula |
-| Acta de elección de Comité de Aula | R.M. 627-2016 | Por aula |
-| Acta de entrega de salón | Resolución institucional | Por aula |
-| Registro de asistencia docente | D.L. 276 | YACHAY PRO ✅ |
-| Registro de asistencia alumnos | D.S. 011-2012 | YACHAY PRO ✅ |
-| Registro auxiliar de evaluación | DCN | YACHAY PRO ✅ |
-| Libro de visitas UGEL | R.D. UGEL | Dirección |
-| Constancias de entrega de boletas | Norma institucional | Dirección |
-| Padrón de familias por aula | R.M. 627-2016 | Matrícula YACHAY PRO ✅ |
-
-        """)
-        st.success("✅ Los documentos marcados con YACHAY PRO ya están cubiertos por el sistema.")
-
-    # ── TAB 4: ACTA ENTREGA DE LIBROS ─────────────────────────────────
-    with doc_tab4:
-        st.markdown("#### Acta de Entrega de Textos Escolares")
-        st.info(
-            "Requerida cuando el MINEDU o la institución entrega libros/textos "
-            "a los estudiantes. Cada padre/madre firma la recepción."
-        )
-        col_l1, col_l2, col_l3 = st.columns(3)
-        with col_l1:
-            grado_lib = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_lib")
-        with col_l2:
-            seccion_lib = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_lib")
-        with col_l3:
-            tipo_texto = st.selectbox("Tipo de texto:", [
-                "Textos escolares MINEDU",
-                "Cuadernos de trabajo MINEDU",
-                "Materiales educativos",
-                "Libros de la institución",
-            ], key="doc_tipo_lib")
-        if st.button("📄 Generar Acta de Libros", type="primary",
-                     use_container_width=True, key="btn_acta_lib"):
-            try:
-                buf_lib = _generar_pdf_acta_libros(config, grado_lib, seccion_lib, anio, tipo_texto, df_mat)
-                st.download_button(
-                    "⬇️ Descargar Acta de Libros",
-                    buf_lib,
-                    f"Acta_Libros_{grado_lib}_{seccion_lib}_{anio}.pdf",
-                    "application/pdf", type="primary", key="dl_acta_lib")
-            except Exception as _e:
-                st.error(f"Error: {_e}")
-
-    # ── TAB 5: COMPROMISO DE PADRES ────────────────────────────────────
-    with doc_tab5:
         st.markdown("#### Carta de Compromiso del Padre/Madre de Familia")
         st.info(
             "Documento donde el padre/madre se compromete a apoyar la educación "
@@ -5510,8 +5454,8 @@ def _seccion_documentos_auxiliar(config):
         st.success("✅ La mayoría de documentos exigibles ya están cubiertos por YACHAY PRO.")
         st.info("📌 PEI, PAT, RI, PCI ya los tienes elaborados. Los demás documentos del día a día los genera este módulo.")
 
-    # ── TAB 6: ACTA REGLAMENTO — ALUMNOS ──────────────────────────────
-    with doc_tab6:
+    # ── TAB 5: ACTA REGLAMENTO — ALUMNOS ──────────────────────────────
+    with doc_tab5:
         st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Estudiantes")
         st.info(
             "Cada alumno/a firma confirmando que leyó y entendió el Reglamento Interno "
@@ -5533,8 +5477,8 @@ def _seccion_documentos_auxiliar(config):
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # ── TAB 7: ACTA REGLAMENTO — PADRES ───────────────────────────────
-    with doc_tab7:
+    # ── TAB 6: ACTA REGLAMENTO — PADRES ───────────────────────────────
+    with doc_tab6:
         st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Padres de Familia")
         st.info(
             "Cada padre/madre firma confirmando que recibió y leyó el Reglamento Interno. "
@@ -5556,8 +5500,8 @@ def _seccion_documentos_auxiliar(config):
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # ── TAB 8: MUNICIPIO ESCOLAR ───────────────────────────────────────
-    with doc_tab8:
+    # ── TAB 7: MUNICIPIO ESCOLAR ───────────────────────────────────────
+    with doc_tab7:
         st.markdown("#### Municipio Escolar de Aula")
         st.info(
             "Formato de conformación del Municipio Escolar del Aula con los cargos "
@@ -5578,8 +5522,8 @@ def _seccion_documentos_auxiliar(config):
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # ── TAB 9: ACUERDOS DE CONVIVENCIA ────────────────────────────────
-    with doc_tab9:
+    # ── TAB 8: ACUERDOS DE CONVIVENCIA ────────────────────────────────
+    with doc_tab8:
         st.markdown("#### Acta de Elaboración de los Acuerdos de Convivencia del Aula")
         st.info(
             "Los estudiantes elaboran y firman sus propios acuerdos de convivencia. "
@@ -5600,8 +5544,8 @@ def _seccion_documentos_auxiliar(config):
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # ── TAB 10: MÁS DOCUMENTOS ────────────────────────────────────────
-    with doc_tab10:
+    # ── TAB 9: MÁS DOCUMENTOS ────────────────────────────────────────
+    with doc_tab9:
         st.markdown("#### Documentos del acervo institucional — MINEDU/UGEL")
         st.markdown("""
 | Documento | Base legal | Disponible |
