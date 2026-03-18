@@ -5295,12 +5295,16 @@ def _seccion_documentos_auxiliar(config):
     if not df_mat.empty and 'Grado' in df_mat.columns:
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
-    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6 = st.tabs([
+    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6, doc_tab7, doc_tab8, doc_tab9, doc_tab10 = st.tabs([
         "📦 Acta Entrega Salón",
         "📜 Constancia Reglamento",
         "👥 Junta Directiva Aula",
         "📚 Acta Entrega Libros",
         "📋 Compromiso de Padres",
+        "📖 Reglamento — Alumnos",
+        "📖 Reglamento — Padres",
+        "🏛️ Municipio Escolar",
+        "🤝 Acuerdos Convivencia",
         "🗂️ Más Documentos",
     ])
 
@@ -5506,6 +5510,470 @@ def _seccion_documentos_auxiliar(config):
         st.success("✅ La mayoría de documentos exigibles ya están cubiertos por YACHAY PRO.")
         st.info("📌 PEI, PAT, RI, PCI ya los tienes elaborados. Los demás documentos del día a día los genera este módulo.")
 
+    # ── TAB 6: ACTA REGLAMENTO — ALUMNOS ──────────────────────────────
+    with doc_tab6:
+        st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Estudiantes")
+        st.info(
+            "Cada alumno/a firma confirmando que leyó y entendió el Reglamento Interno "
+            "y los Acuerdos de Convivencia. Exigida por MINEDU al inicio del año escolar."
+        )
+        col_r1, col_r2 = st.columns(2)
+        with col_r1:
+            grado_ri_alu = st.text_input("Grado y Sección:", placeholder="Ej: 1° Primaria — Sección A", key="ri_alu_gr")
+            docente_ri_alu = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="ri_alu_doc")
+        with col_r2:
+            n_alumnos_ri = st.number_input("Número de líneas para alumnos:", 20, 40, 30, key="ri_alu_n")
+        if st.button("📄 Generar Acta Reglamento — Alumnos", type="primary",
+                     use_container_width=True, key="btn_ri_alu"):
+            try:
+                buf = _generar_acta_reglamento_alumnos(config, grado_ri_alu, docente_ri_alu, int(n_alumnos_ri))
+                nombre_arch = f"Acta_Reglamento_Alumnos_{grado_ri_alu.replace(' ','_')[:20]}_{anio}.pdf"
+                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
+                                   type="primary", key="dl_ri_alu")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+    # ── TAB 7: ACTA REGLAMENTO — PADRES ───────────────────────────────
+    with doc_tab7:
+        st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Padres de Familia")
+        st.info(
+            "Cada padre/madre firma confirmando que recibió y leyó el Reglamento Interno. "
+            "Incluye columna de nombre del alumno/a al que representa."
+        )
+        col_p1, col_p2 = st.columns(2)
+        with col_p1:
+            grado_ri_pad = st.text_input("Grado y Sección:", placeholder="Ej: 1° Primaria — Sección A", key="ri_pad_gr")
+            docente_ri_pad = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="ri_pad_doc")
+        with col_p2:
+            n_padres_ri = st.number_input("Número de líneas para padres:", 20, 40, 30, key="ri_pad_n")
+        if st.button("📄 Generar Acta Reglamento — Padres", type="primary",
+                     use_container_width=True, key="btn_ri_pad"):
+            try:
+                buf = _generar_acta_reglamento_padres(config, grado_ri_pad, docente_ri_pad, int(n_padres_ri))
+                nombre_arch = f"Acta_Reglamento_Padres_{grado_ri_pad.replace(' ','_')[:20]}_{anio}.pdf"
+                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
+                                   type="primary", key="dl_ri_pad")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+    # ── TAB 8: MUNICIPIO ESCOLAR ───────────────────────────────────────
+    with doc_tab8:
+        st.markdown("#### Municipio Escolar de Aula")
+        st.info(
+            "Formato de conformación del Municipio Escolar del Aula con los cargos "
+            "establecidos por MINEDU: Alcalde, Teniente Alcalde y Regidores."
+        )
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            grado_mun = st.text_input("Grado y Sección:", placeholder="Ej: 3° Secundaria — A", key="mun_gr")
+        with col_m2:
+            docente_mun = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="mun_doc")
+        if st.button("📄 Generar Municipio Escolar", type="primary",
+                     use_container_width=True, key="btn_mun"):
+            try:
+                buf = _generar_municipio_escolar(config, grado_mun, docente_mun)
+                nombre_arch = f"Municipio_Escolar_{grado_mun.replace(' ','_')[:20]}_{anio}.pdf"
+                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
+                                   type="primary", key="dl_mun")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+    # ── TAB 9: ACUERDOS DE CONVIVENCIA ────────────────────────────────
+    with doc_tab9:
+        st.markdown("#### Acta de Elaboración de los Acuerdos de Convivencia del Aula")
+        st.info(
+            "Los estudiantes elaboran y firman sus propios acuerdos de convivencia. "
+            "Exigido por MINEDU — R.M. 627-2016. Incluye 7 espacios para acuerdos y firmas de representantes."
+        )
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            grado_conv = st.text_input("Grado y Sección:", placeholder="Ej: 2° Secundaria — B", key="conv_gr")
+        with col_c2:
+            docente_conv = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="conv_doc")
+        if st.button("📄 Generar Acuerdos de Convivencia", type="primary",
+                     use_container_width=True, key="btn_conv"):
+            try:
+                buf = _generar_acuerdos_convivencia(config, grado_conv, docente_conv)
+                nombre_arch = f"Acuerdos_Convivencia_{grado_conv.replace(' ','_')[:20]}_{anio}.pdf"
+                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
+                                   type="primary", key="dl_conv")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+    # ── TAB 10: MÁS DOCUMENTOS ────────────────────────────────────────
+    with doc_tab10:
+        st.markdown("#### Documentos del acervo institucional — MINEDU/UGEL")
+        st.markdown("""
+| Documento | Base legal | Disponible |
+|-----------|-----------|-----------|
+| Acta de Entrega de Salón | Norma institucional | ✅ Tab 1 |
+| Constancia Reglamento Interno | R.M. 657-2017 | ✅ Tab 2 |
+| Acta Junta Directiva Comité Aula | R.M. 627-2016 | ✅ Tab 3 |
+| Acta Entrega Textos/Libros | R.M. MINEDU | ✅ Tab 4 |
+| Carta Compromiso Padres | D.S. 011-2012 | ✅ Tab 5 |
+| Acta Reglamento — Alumnos | R.M. 657-2017 | ✅ Tab 6 |
+| Acta Reglamento — Padres | R.M. 657-2017 | ✅ Tab 7 |
+| Municipio Escolar de Aula | R.M. 234-2023 | ✅ Tab 8 |
+| Acuerdos de Convivencia | R.M. 627-2016 | ✅ Tab 9 |
+| Registro de asistencia alumnos | D.S. 011-2012 | ✅ YACHAY PRO |
+| Registro auxiliar evaluación | DCN | ✅ YACHAY PRO |
+| Constancias de estudios/conducta | Norma institucional | ✅ Documentos |
+| Carnets estudiantiles | Norma institucional | ✅ YACHAY PRO |
+| PEI / PAT / RI / PCI | R.M. 657-2017 | 📝 Ya los tienes |
+        """)
+        st.success("✅ Todos los documentos exigibles del día a día están cubiertos por YACHAY PRO.")
+        st.caption(f"📅 Año activo del sistema: **{anio}** — cambia en 'Título del Año' y todos los documentos se actualizan.")
+
+
+
+
+def _generar_acta_reglamento_alumnos(config, grado, docente, n_filas=30):
+    """Acta de conformidad de lectura del Reglamento Interno — Estudiantes."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    dre = config.get('dre', 'Cusco')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=8, parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=9, alignment=TA_JUSTIFY,
+                           leading=13, spaceAfter=6, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph(f"ACTA DE CONFORMIDAD DE LECTURA DEL REGLAMENTO INTERNO {anio}", st_t),
+        Paragraph(ie, st_s),
+        Spacer(1, 0.3*cm),
+        Paragraph("II. DATOS INFORMATIVOS:", ParagraphStyle('h', fontName='Helvetica-Bold',
+                   fontSize=9, parent=styles['Normal'], spaceAfter=4)),
+    ]
+    datos = [
+        [f"2.1 DRE     :  {dre}", f"2.3 I.E.             :  {ie}"],
+        [f"2.2 UGEL    :  {ugel}", f"2.4 Grado y Sección  :  {grado or '___________________________'}"],
+    ]
+    t_datos = Table(datos, colWidths=[8*cm, 8*cm])
+    t_datos.setStyle(TableStyle([
+        ('FONTSIZE',(0,0),(-1,-1), 8.5), ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('TOPPADDING',(0,0),(-1,-1), 3), ('BOTTOMPADDING',(0,0),(-1,-1), 3),
+    ]))
+    story += [t_datos, Spacer(1, 0.2*cm)]
+    story.append(Paragraph(
+        f"2.5 Docente / Tutor/a: {docente or '_______________________________________________'}",
+        ParagraphStyle('d', fontSize=8.5, parent=styles['Normal'], spaceAfter=8)))
+    story.append(Paragraph(
+        f"Los estudiantes del {grado or '____________'} de la {ie} declaramos haber recibido, "
+        f"leído y comprendido el Reglamento Interno y los Acuerdos de Convivencia "
+        f"vigentes para el año lectivo {anio}, comprometiéndonos a su cumplimiento.", st_b))
+    story.append(Spacer(1, 0.2*cm))
+    story.append(Paragraph("2.5 INTEGRANTES:", ParagraphStyle('h2', fontName='Helvetica-Bold',
+                             fontSize=9, parent=styles['Normal'], spaceAfter=4)))
+    header = [["N°", "APELLIDOS Y NOMBRES DEL ESTUDIANTE", "FIRMA"]]
+    rows = [[str(i), "", ""] for i in range(1, n_filas+1)]
+    t = Table(header + rows, colWidths=[1*cm, 12*cm, 3.5*cm])
+    t.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1), 8),
+        ('GRID',(0,0),(-1,-1), 0.4, colors.black),
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('ALIGN',(1,1),(1,-1),'LEFT'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.97,0.97,1)]),
+        ('MINROWHEIGHT',(0,1),(-1,-1), 0.65*cm),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.3*cm))
+    story.append(KeepTogether([
+        Table([
+            ["_______________________________", "  ", "_______________________________"],
+            ["Docente / Tutor/a de Aula", "  ", "Vo.Bo. Dirección"],
+            [docente or "________________________", "  ", ""],
+        ], colWidths=[7*cm, 0.5*cm, 7*cm],
+        style=TableStyle([('FONTSIZE',(0,0),(-1,-1),8.5),('ALIGN',(0,0),(-1,-1),'CENTER')])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>Chinchero, {fecha_hoy} | YACHAY PRO</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_acta_reglamento_padres(config, grado, docente, n_filas=30):
+    """Acta de conformidad de lectura del Reglamento Interno — Padres de Familia."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    dre = config.get('dre', 'Cusco')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=8, parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=9, alignment=TA_JUSTIFY,
+                           leading=13, spaceAfter=6, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph(f"ACTA DE CONFORMIDAD DE LECTURA DEL REGLAMENTO INTERNO {anio}", st_t),
+        Paragraph(f"{ie} — PADRES DE FAMILIA", st_s),
+        Spacer(1, 0.3*cm),
+        Paragraph("II. DATOS INFORMATIVOS:", ParagraphStyle('h', fontName='Helvetica-Bold',
+                   fontSize=9, parent=styles['Normal'], spaceAfter=4)),
+    ]
+    datos = [
+        [f"2.1 DRE     :  {dre}", f"2.3 I.E.             :  {ie}"],
+        [f"2.2 UGEL    :  {ugel}", f"2.4 Grado y Sección  :  {grado or '___________________________'}"],
+    ]
+    t_datos = Table(datos, colWidths=[8*cm, 8*cm])
+    t_datos.setStyle(TableStyle([
+        ('FONTSIZE',(0,0),(-1,-1), 8.5), ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('TOPPADDING',(0,0),(-1,-1), 3), ('BOTTOMPADDING',(0,0),(-1,-1), 3),
+    ]))
+    story += [t_datos, Spacer(1, 0.2*cm)]
+    story.append(Paragraph(
+        f"2.5 Docente / Tutor/a: {docente or '_______________________________________________'}",
+        ParagraphStyle('d', fontSize=8.5, parent=styles['Normal'], spaceAfter=8)))
+    story.append(Paragraph(
+        f"Los padres y madres de familia del {grado or '____________'} de la {ie} "
+        f"declaramos haber recibido, leído y comprendido el Reglamento Interno "
+        f"vigente para el año lectivo {anio}, comprometiéndonos a su cumplimiento "
+        f"y difusión en nuestro hogar.", st_b))
+    story.append(Spacer(1, 0.2*cm))
+    story.append(Paragraph("2.5 INTEGRANTES:", ParagraphStyle('h2', fontName='Helvetica-Bold',
+                             fontSize=9, parent=styles['Normal'], spaceAfter=4)))
+    header = [["N°", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "HIJO/A (ALUMNO/A)", "FIRMA"]]
+    rows = [[str(i), "", "", ""] for i in range(1, n_filas+1)]
+    t = Table(header + rows, colWidths=[0.8*cm, 6.5*cm, 5.5*cm, 3.7*cm])
+    t.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1), 8),
+        ('GRID',(0,0),(-1,-1), 0.4, colors.black),
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('ALIGN',(1,1),(2,-1),'LEFT'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.97,0.97,1)]),
+        ('MINROWHEIGHT',(0,1),(-1,-1), 0.65*cm),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.3*cm))
+    story.append(KeepTogether([
+        Table([
+            ["_______________________________", "  ", "_______________________________"],
+            ["Docente / Tutor/a de Aula", "  ", "Vo.Bo. Dirección"],
+            [docente or "________________________", "  ", ""],
+        ], colWidths=[7*cm, 0.5*cm, 7*cm],
+        style=TableStyle([('FONTSIZE',(0,0),(-1,-1),8.5),('ALIGN',(0,0),(-1,-1),'CENTER')])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>Chinchero, {fecha_hoy} | YACHAY PRO</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_municipio_escolar(config, grado, docente):
+    """Municipio Escolar de Aula — cargos MINEDU."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    dre = config.get('dre', 'Cusco')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=12, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=8, parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=9, alignment=TA_JUSTIFY,
+                           leading=13, spaceAfter=6, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph(f"MUNICIPIO ESCOLAR DE AULA {anio}", st_t),
+        Paragraph(ie, st_s),
+        Spacer(1, 0.3*cm),
+        Paragraph("I. DATOS INFORMATIVOS:", ParagraphStyle('h', fontName='Helvetica-Bold',
+                   fontSize=9, parent=styles['Normal'], spaceAfter=4)),
+    ]
+    datos = [
+        [f"1.1 DRE     :  {dre}", f"1.3 I.E.             :  {ie}"],
+        [f"1.2 UGEL    :  {ugel}", f"1.4 Grado y Sección  :  {grado or '___________________________'}"],
+    ]
+    t_datos = Table(datos, colWidths=[8*cm, 8*cm])
+    t_datos.setStyle(TableStyle([
+        ('FONTSIZE',(0,0),(-1,-1), 8.5),('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('TOPPADDING',(0,0),(-1,-1), 3),('BOTTOMPADDING',(0,0),(-1,-1), 3),
+    ]))
+    story += [t_datos, Spacer(1, 0.3*cm)]
+    story.append(Paragraph("1.5 INTEGRANTES DEL MUNICIPIO ESCOLAR:",
+                            ParagraphStyle('h2', fontName='Helvetica-Bold', fontSize=9,
+                                           parent=styles['Normal'], spaceAfter=4)))
+    CARGOS = [
+        ("Alcalde", True),
+        ("Teniente Alcalde", False),
+        ("Regidor/a de Educación, Cultura, Recreación y Deporte", False),
+        ("Regiduría de Salud y Ambiente", False),
+        ("Regiduría de Emprendimiento y Actividades Productivas", False),
+        ("Regiduría de Derechos del Niño, Niña y Adolescente", False),
+        ("Regiduría de Comunicación y Tecnologías de la Información", False),
+    ]
+    header = [["NOMBRES Y APELLIDOS", "CARGO"]]
+    rows = [["", c[0]] for c in CARGOS]
+    t = Table(header + rows, colWidths=[10*cm, 6.5*cm])
+    style_cmds = [
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1), 9),
+        ('GRID',(0,0),(-1,-1), 0.5, colors.black),
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('ALIGN',(1,1),(1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.96,0.96,1)]),
+        ('MINROWHEIGHT',(0,1),(-1,-1), 1.2*cm),
+    ]
+    # Alcalde con fondo especial
+    style_cmds.append(('BACKGROUND',(0,1),(-1,1), colors.Color(0.95,0.95,0.75)))
+    t.setStyle(TableStyle(style_cmds))
+    story.append(t)
+    story.append(Spacer(1, 0.4*cm))
+    story.append(KeepTogether([
+        Paragraph("FIRMA DEL TUTOR/A:",
+                  ParagraphStyle('ft', fontName='Helvetica-Bold', fontSize=9,
+                                 parent=styles['Normal'], spaceAfter=12)),
+        Table([
+            ["_______________________________"],
+            ["FIRMA DEL TUTOR/A:"],
+            [docente or "Docente / Tutor/a de Aula"],
+            [ie],
+        ], colWidths=[16.5*cm],
+        style=TableStyle([('FONTSIZE',(0,0),(-1,-1),9),('ALIGN',(0,0),(-1,-1),'CENTER')])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>Chinchero, {fecha_hoy} | YACHAY PRO</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_acuerdos_convivencia(config, grado, docente):
+    """Acta de elaboración de los Acuerdos de Convivencia del Aula."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    dre = config.get('dre', 'Cusco')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=8, parent=styles['Normal'])
+    st_b = ParagraphStyle('B', fontSize=9, alignment=TA_JUSTIFY,
+                           leading=13, spaceAfter=6, parent=styles['Normal'])
+    fecha_hoy = fecha_peru_str()
+    story = [
+        Paragraph(f"ACTA DE ELABORACIÓN DE LOS ACUERDOS DE CONVIVENCIA DEL AULA {anio}", st_t),
+        Paragraph(ie, st_s),
+        Spacer(1, 0.3*cm),
+        Paragraph("III. DATOS INFORMATIVOS:", ParagraphStyle('h', fontName='Helvetica-Bold',
+                   fontSize=9, parent=styles['Normal'], spaceAfter=4)),
+    ]
+    datos = [
+        [f"3.1 DRE     :  {dre}", f"3.3 I.E.             :  {ie}"],
+        [f"3.2 UGEL    :  {ugel}", f"3.4 Grado y Sección  :  {grado or '___________________________'}"],
+    ]
+    t_datos = Table(datos, colWidths=[8*cm, 8*cm])
+    t_datos.setStyle(TableStyle([
+        ('FONTSIZE',(0,0),(-1,-1), 8.5),('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('TOPPADDING',(0,0),(-1,-1), 3),('BOTTOMPADDING',(0,0),(-1,-1), 3),
+    ]))
+    story += [t_datos, Spacer(1, 0.3*cm)]
+    # Tabla de acuerdos — 7 filas vacías para llenar a mano
+    story.append(Paragraph("ACUERDOS DE CONVIVENCIA:",
+                            ParagraphStyle('h2', fontName='Helvetica-Bold', fontSize=9,
+                                           parent=styles['Normal'], spaceAfter=4)))
+    acuerdos_data = [["N°", "ACUERDOS DE CONVIVENCIA"]]
+    for i in range(1, 8):
+        acuerdos_data.append([f"0{i}", ""])
+    t_ac = Table(acuerdos_data, colWidths=[1.2*cm, 15.3*cm])
+    t_ac.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1), 9),
+        ('GRID',(0,0),(-1,-1), 0.5, colors.black),
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.1,0.1,0.4)),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('ALIGN',(1,1),(1,-1),'LEFT'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.97,0.97,1)]),
+        ('MINROWHEIGHT',(0,1),(-1,-1), 1.4*cm),
+    ]))
+    story += [t_ac, Spacer(1, 0.4*cm)]
+    story.append(KeepTogether([
+        Paragraph("FIRMA DE LOS REPRESENTANTES DEL AULA:",
+                  ParagraphStyle('fr', fontName='Helvetica-Bold', fontSize=9,
+                                 parent=styles['Normal'], spaceAfter=10)),
+        Table([
+            ["_______________________", "  ", "_______________________", "  ", "_______________________"],
+            ["Alcalde/sa", "  ", "Teniente Alcalde/sa", "  ", "Docente / Tutor/a"],
+            ["", "  ", "", "  ", docente or ""],
+        ], colWidths=[5*cm, 0.3*cm, 5*cm, 0.3*cm, 6.4*cm],
+        style=TableStyle([('FONTSIZE',(0,0),(-1,-1),8.5),('ALIGN',(0,0),(-1,-1),'CENTER'),
+                          ('FONTNAME',(0,1),(-1,1),'Helvetica-Bold')])),
+        Spacer(1, 0.3*cm),
+        Paragraph(f"<i>Chinchero, {fecha_hoy} | Conforme R.M. 627-2016-MINEDU | YACHAY PRO</i>",
+                  ParagraphStyle('fi', fontSize=7, alignment=TA_CENTER,
+                                 textColor=colors.grey, parent=styles['Normal'])),
+    ]))
+    doc.build(story)
+    buf.seek(0)
+    return buf
 
 
 def _seccion_registros_pdf(config):
@@ -5791,17 +6259,23 @@ def tab_asistencias():
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
-    # Aviso si está operando desde caché local (sin internet)
+    # Construir índice al abrir si no existe o venció
+    import time as _t_asis
+    _idx_ts = st.session_state.get('_indice_dni_ts', 0)
+    if not st.session_state.get('_indice_dni') or (_t_asis.time() - _idx_ts) > 180:
+        _construir_indice_dni()
+
+    # Aviso de estado
     if st.session_state.get('_indice_desde_cache'):
         n_idx = len(st.session_state.get('_indice_dni', {}))
         st.warning(
-            f"📴 **Modo sin internet** — Operando desde caché local ({n_idx} personas). "
-            f"Las asistencias se guardan localmente y se sincronizarán cuando vuelva la conexión."
+            f"📴 **Modo sin internet** — Caché local ({n_idx} personas). "
+            f"Las asistencias se guardan y sincronizan cuando vuelva la conexión."
         )
     else:
         n_idx = len(st.session_state.get('_indice_dni', {}))
         if n_idx > 0:
-            st.success(f"✅ Sistema listo — {n_idx} personas en índice", icon="🟢")
+            st.success(f"✅ Sistema listo — {n_idx} personas en índice")
 
     # Inicializar tracking de WhatsApp enviados
     if 'wa_enviados' not in st.session_state:
@@ -22393,6 +22867,7 @@ def main():
                 ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
                 ("⏱️", "Temporizador", "temporizador", "#0891b2"),
+                ("📄", "Documentos", "documentos_doc", "#7c3aed"),
             ]
 
             # Grid de módulos
@@ -22474,6 +22949,8 @@ def main():
                 _tab_test_vocacional_ui(config)
             elif mod == "temporizador":
                 _tab_temporizador(config)
+            elif mod == "documentos_doc":
+                _seccion_documentos_auxiliar(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
