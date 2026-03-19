@@ -22504,62 +22504,137 @@ def _tab_guess_up():
             eq_idx = int(equipo_turno.split()[-1]) - 1
             color_eq = colores_eq[min(eq_idx, len(colores_eq)-1)]
 
-            # ── Pantalla gigante proyectable ─────────────────────────
+            # Marcador para mostrar en pantalla gigante
+            score_html = ""
+            for i in range(n_equipos):
+                eq = f"Equipo {i+1}"
+                pts = st.session_state.gu_score.get(eq, 0)
+                score_html += (f"<div style='background:{colores_eq[i]};color:white;"
+                               f"padding:6px 16px;border-radius:10px;font-weight:900;"
+                               f"font-size:1rem;'>{eq}: {pts} pts</div>")
+
+            # ── Pantalla gigante con todo integrado ──────────────────
             _comp_g.html(f"""<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box;}}
 body{{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
-  font-family:'Segoe UI',sans-serif;min-height:380px;
+  font-family:'Segoe UI',sans-serif;min-height:420px;
   display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:20px;gap:12px;}}
-.equipo-badge{{background:{color_eq};color:white;padding:6px 20px;
-  border-radius:20px;font-size:0.85rem;font-weight:700;letter-spacing:1px;}}
-.categoria{{color:#a5b4fc;font-size:0.9rem;letter-spacing:3px;
+  justify-content:center;padding:16px;gap:10px;}}
+.top-bar{{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;width:100%;}}
+.equipo-badge{{background:{color_eq};color:white;padding:5px 18px;
+  border-radius:20px;font-size:0.85rem;font-weight:700;}}
+.categoria{{color:#a5b4fc;font-size:0.85rem;letter-spacing:2px;
   text-transform:uppercase;font-weight:600;}}
 .palabra-card{{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);
-  border-radius:24px;padding:28px 48px;text-align:center;
-  box-shadow:0 8px 40px rgba(0,0,0,0.4);}}
-.palabra{{color:white;font-size:5.5rem;font-weight:900;line-height:1;
+  border-radius:24px;padding:24px 48px;text-align:center;width:90%;max-width:700px;}}
+.palabra{{color:white;font-size:5rem;font-weight:900;line-height:1.1;
   text-shadow:0 4px 20px rgba(0,0,0,0.5);}}
-.hint{{color:#94a3b8;font-size:0.82rem;margin-top:8px;}}
-.timer-bar{{width:90%;max-width:600px;height:8px;
-  background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;}}
-.timer-fill{{height:8px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
-  border-radius:4px;animation:countdown {t_turno}s linear forwards;width:100%;}}
-@keyframes countdown{{from{{width:100%}}to{{width:0%}}}}
-.nav-hint{{color:#64748b;font-size:0.75rem;margin-top:4px;}}
-.btn-fs{{position:fixed;top:12px;right:12px;background:rgba(255,255,255,0.1);
-  color:white;border:1px solid rgba(255,255,255,0.2);padding:6px 12px;
-  border-radius:8px;cursor:pointer;font-size:0.8rem;}}
-.btn-fs:hover{{background:rgba(255,255,255,0.2);}}
+.hint{{color:#94a3b8;font-size:0.8rem;}}
+.timer-bar{{width:90%;max-width:600px;height:7px;
+  background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;}}
+.timer-fill{{height:7px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
+  border-radius:3px;width:100%;}}
+.score-row{{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}}
+.nav-hint{{color:#475569;font-size:0.72rem;}}
+.btn-fs{{position:fixed;top:10px;right:10px;background:rgba(255,255,255,0.12);
+  color:white;border:1px solid rgba(255,255,255,0.25);padding:5px 12px;
+  border-radius:8px;cursor:pointer;font-size:0.78rem;z-index:100;}}
+.btns-inline{{display:flex;gap:10px;margin-top:4px;}}
+.btn-adivino{{background:#16a34a;color:white;border:none;padding:10px 24px;
+  border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;}}
+.btn-pasar{{background:#2563eb;color:white;border:none;padding:10px 24px;
+  border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;}}
+.btn-adivino:hover{{background:#15803d;}}
+.btn-pasar:hover{{background:#1d4ed8;}}
 </style></head><body>
-<button class="btn-fs" onclick="toggleFS()">⛶ Pantalla completa</button>
-<div class="equipo-badge">Turno: {equipo_turno}</div>
-<div class="categoria">{cat_sel}</div>
-<div class="palabra-card">
-  <div class="palabra">{palabra}</div>
+<button class="btn-fs" onclick="toggleFS()">&#x26F6; Pantalla completa</button>
+<div class="top-bar">
+  <div class="equipo-badge">Turno: {equipo_turno}</div>
+  <div class="categoria">{cat_sel}</div>
 </div>
-<div class="hint">💡 Da pistas sin decir la palabra ni partes de ella</div>
+<div class="palabra-card">
+  <div class="palabra" id="palabra-txt">{palabra}</div>
+</div>
+<div class="hint">&#128161; Da pistas sin decir la palabra ni partes de ella</div>
 <div class="timer-bar"><div class="timer-fill" id="tfill"></div></div>
-<div class="nav-hint">← → flechas para navegar | Enter = adivinó</div>
+<div class="score-row">{score_html}</div>
+<div class="btns-inline">
+  <button class="btn-adivino" id="btn-adivino" onclick="accion('adivino')">
+    &#10003; ADIVINO (+1)
+  </button>
+  <button class="btn-pasar" id="btn-pasar" onclick="accion('pasar')">
+    &#9197; PASAR
+  </button>
+</div>
+<div class="nav-hint">Flechas &#8592;&#8594; = pasar &nbsp;|&nbsp; Enter = adivino</div>
+
 <script>
-function toggleFS(){{
+var timerSeg = {t_turno};
+var iv = null;
+
+function resetTimer() {{
+  clearInterval(iv);
+  var el = document.getElementById('tfill');
+  el.style.transition = 'none';
+  el.style.width = '100%';
+  void el.offsetHeight;
+  el.style.transition = 'width ' + timerSeg + 's linear';
+  el.style.width = '0%';
+}}
+
+function accion(tipo) {{
+  // Notificar al parent de Streamlit via postMessage
+  window.parent.postMessage({{type: 'gu_accion', valor: tipo}}, '*');
+  // También simular click en botón Streamlit
+  var selector = tipo === 'adivino' ? 'ADIVINO' : 'PASAR';
+  var btns = window.parent.document.querySelectorAll('button p, button span');
+  for(var i=0;i<btns.length;i++) {{
+    if(btns[i].innerText && btns[i].innerText.toUpperCase().indexOf(selector) >= 0) {{
+      btns[i].closest('button').click();
+      break;
+    }}
+  }}
+}}
+
+document.addEventListener('keydown', function(e) {{
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {{
+    e.preventDefault();
+    accion('pasar');
+  }} else if(e.key === 'Enter') {{
+    e.preventDefault();
+    accion('adivino');
+  }}
+}});
+
+// También capturar desde parent cuando en pantalla completa
+window.parent.document.addEventListener('keydown', function(e) {{
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {{
+    var btns = window.parent.document.querySelectorAll('button');
+    btns.forEach(function(b) {{ if((b.innerText||'').toUpperCase().indexOf('PASAR')>=0) b.click(); }});
+  }}
+  if(e.key === 'Enter') {{
+    var btns = window.parent.document.querySelectorAll('button');
+    btns.forEach(function(b) {{ if((b.innerText||'').toUpperCase().indexOf('ADIVINO')>=0) b.click(); }});
+  }}
+}});
+
+function toggleFS() {{
   if(!document.fullscreenElement)
-    document.documentElement.requestFullscreen().catch(()=>{{}});
+    document.documentElement.requestFullscreen().catch(function(){{}});
   else document.exitFullscreen();
 }}
-// Reiniciar timer al cargar
-document.getElementById('tfill').style.animation='none';
-void document.getElementById('tfill').offsetHeight;
-document.getElementById('tfill').style.animation='countdown {t_turno}s linear forwards';
-</script>
-</body></html>""", height=420, scrolling=False)
 
-            # ── Botones de acción ─────────────────────────────────────
+resetTimer();
+</script>
+</body></html>""", height=460, scrolling=False)
+
+            # ── Botones Streamlit (con texto simple para que no queden vacíos) ──
             def _siguiente_palabra(puntos=False):
                 if puntos:
-                    st.session_state.gu_score[equipo_turno] =                         st.session_state.gu_score.get(equipo_turno, 0) + 1
+                    st.session_state.gu_score[equipo_turno] = \
+                        st.session_state.gu_score.get(equipo_turno, 0) + 1
                 st.session_state.gu_usadas.append(palabra)
                 restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
                 if not restantes:
@@ -22569,12 +22644,12 @@ document.getElementById('tfill').style.animation='countdown {t_turno}s linear fo
 
             col_a, col_b, col_c = st.columns([2, 2, 2])
             with col_a:
-                if st.button("✅ ADIVINÓ (+1 punto)", type="primary",
+                if st.button("ADIVINO +1 punto", type="primary",
                               use_container_width=True, key="gu_si"):
                     _siguiente_palabra(puntos=True)
                     st.rerun()
             with col_b:
-                if st.button("⏭️ PASAR (sin punto)", use_container_width=True, key="gu_no"):
+                if st.button("PASAR sin punto", use_container_width=True, key="gu_no"):
                     _siguiente_palabra(puntos=False)
                     st.rerun()
             with col_c:
@@ -22583,28 +22658,6 @@ document.getElementById('tfill').style.animation='countdown {t_turno}s linear fo
                                          index=eq_idx % n_equipos,
                                          key="gu_eq_sel")
                 st.session_state.gu_equipo_turno = eq_nuevo
-
-            # Atajos de teclado
-            import streamlit.components.v1 as _kc
-            _kc.html("""<script>
-window.parent.document.addEventListener('keydown', function(e) {
-  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-    // Click PASAR
-    var btns = window.parent.document.querySelectorAll('button');
-    btns.forEach(b => { if(b.innerText.includes('PASAR')) b.click(); });
-  }
-  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    // Click PASAR también (navegar)
-    var btns = window.parent.document.querySelectorAll('button');
-    btns.forEach(b => { if(b.innerText.includes('PASAR')) b.click(); });
-  }
-  if(e.key === 'Enter') {
-    // Click ADIVINÓ
-    var btns = window.parent.document.querySelectorAll('button');
-    btns.forEach(b => { if(b.innerText.includes('ADIVINO') || b.innerText.includes('ADIVINÓ')) b.click(); });
-  }
-}, false);
-</script>""", height=0)
 
 
 
