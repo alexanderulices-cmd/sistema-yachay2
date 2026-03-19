@@ -22408,125 +22408,203 @@ def _tab_guess_up():
     import streamlit.components.v1 as _comp_g
     import random
     st.header("🎭 Guess Up — ¡Adivina la Palabra!")
-    st.caption("Estudiantes van al frente — la palabra se proyecta en su espalda — el equipo da pistas")
+    st.caption("Un estudiante va al frente de espaldas — su equipo da pistas — ¡a adivinar!")
 
-    g_tab1, g_tab2 = st.tabs(["🎮 Jugar", "⚙️ Configurar"])
-
-    with g_tab1:
-        cat_sel = st.selectbox("Categoría:", list(GUESS_CATEGORIAS.keys()), key="gu_cat")
-        palabras = GUESS_CATEGORIAS[cat_sel]
-
-        n_equipos = st.radio("Equipos:", [2, 3, 4], horizontal=True, key="gu_equipos")
-        t_turno = st.slider("Tiempo por turno (seg):", 30, 120, 60, step=10, key="gu_tiempo")
-
-        if 'gu_score' not in st.session_state:
-            st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
-        if 'gu_palabra_actual' not in st.session_state:
-            st.session_state.gu_palabra_actual = random.choice(palabras)
-        if 'gu_usadas' not in st.session_state:
-            st.session_state.gu_usadas = []
-
-        # Marcador
-        st.markdown("---")
-        cols_score = st.columns(n_equipos)
-        colores_eq = ["#dc2626","#2563eb","#059669","#f59e0b"]
-        for i in range(n_equipos):
-            eq = f"Equipo {i+1}"
-            with cols_score[i]:
-                st.markdown(
-                    f"<div style='background:{colores_eq[i]};color:white;padding:12px;"
-                    f"border-radius:12px;text-align:center;font-weight:900;font-size:1.1rem;'>"
-                    f"{eq}<br><span style='font-size:2rem;'>{st.session_state.gu_score.get(eq,0)}</span> pts</div>",
-                    unsafe_allow_html=True)
-        st.markdown("---")
-
-        # Tarjeta de palabra — pantalla gigante
-        palabra = st.session_state.gu_palabra_actual
-        _comp_g.html(f"""<!DOCTYPE html><html><head>
-<meta charset="utf-8">
-<style>
-body{{margin:0;padding:0;background:linear-gradient(135deg,#1e1b4b,#312e81);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:300px;font-family:'Segoe UI',sans-serif;}}
-.categoria{{color:#a5b4fc;font-size:1rem;letter-spacing:3px;text-transform:uppercase;
-  font-weight:600;margin-bottom:8px;}}
-.palabra{{color:white;font-size:5rem;font-weight:900;text-align:center;
-  text-shadow:0 4px 30px rgba(255,255,255,0.3);line-height:1.1;
-  padding:20px 40px;background:rgba(255,255,255,0.08);border-radius:20px;
-  border:2px solid rgba(255,255,255,0.15);}}
-.hint{{color:#94a3b8;font-size:0.85rem;margin-top:12px;}}
-.timer-bar{{width:80%;height:8px;background:rgba(255,255,255,0.15);
-  border-radius:4px;margin-top:16px;overflow:hidden;}}
-.timer-fill{{height:8px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
-  border-radius:4px;animation:countdown {t_turno}s linear forwards;}}
-@keyframes countdown{{from{{width:100%}}to{{width:0%}}}}
-</style></head><body>
-<div class="categoria">{cat_sel}</div>
-<div class="palabra">{palabra}</div>
-<div class="hint">💡 Da pistas sin decir la palabra ni partes de ella</div>
-<div class="timer-bar"><div class="timer-fill"></div></div>
-</body></html>""", height=320)
-
-        col_a, col_b, col_c = st.columns(3)
-        with col_a:
-            if st.button("✅ ADIVINÓ", type="primary", use_container_width=True, key="gu_si"):
-                equipo_turno = st.session_state.get('gu_equipo_turno', 'Equipo 1')
-                st.session_state.gu_score[equipo_turno] = st.session_state.gu_score.get(equipo_turno, 0) + 1
-                st.session_state.gu_usadas.append(palabra)
-                restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
-                if not restantes:
-                    st.session_state.gu_usadas = []
-                    restantes = palabras
-                st.session_state.gu_palabra_actual = random.choice(restantes)
-                st.rerun()
-        with col_b:
-            if st.button("⏭️ PASAR", use_container_width=True, key="gu_no"):
-                st.session_state.gu_usadas.append(palabra)
-                restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
-                if not restantes:
-                    st.session_state.gu_usadas = []
-                    restantes = palabras
-                st.session_state.gu_palabra_actual = random.choice(restantes)
-                st.rerun()
-        with col_c:
-            equipo_actual = st.session_state.get('gu_equipo_turno', 'Equipo 1')
-            eq_idx = int(equipo_actual.split()[-1]) - 1
-            eq_opciones = [f"Equipo {i+1}" for i in range(n_equipos)]
-            eq_nuevo = st.selectbox("Turno de:", eq_opciones,
-                                     index=eq_idx % n_equipos, key="gu_eq_sel",
-                                     label_visibility="visible")
-            st.session_state.gu_equipo_turno = eq_nuevo
-
-        if st.button("🔄 Reiniciar marcador", key="gu_reset"):
-            st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
-            st.session_state.gu_usadas = []
-            st.session_state.gu_palabra_actual = random.choice(palabras)
-            st.rerun()
+    g_tab1, g_tab2, g_tab3 = st.tabs(["🎮 Jugar", "📖 Cómo jugar", "⚙️ Mis palabras"])
 
     with g_tab2:
+        st.markdown("#### ¿Cómo se juega?")
+        st.markdown("""
+<div style='background:#f0fdf4;border-left:4px solid #16a34a;padding:16px;border-radius:8px;'>
+
+**👥 Preparación:**
+1. Divide el salón en **2, 3 o 4 equipos**
+2. Elige la **categoría** (animales, lugares del Perú, personajes históricos, etc.)
+3. Configura el **tiempo por turno** (60 segundos recomendado)
+
+**🎮 En cada turno:**
+1. **1 o 2 estudiantes** del equipo en turno van al frente y dan la **espalda a la pantalla**
+2. El resto del equipo ve la palabra en pantalla y da **pistas verbales**
+3. Los del frente intentan **adivinar** la palabra
+
+**✅ Puntaje:**
+- Si adivinan → presiona **✅ ADIVINÓ** → el equipo gana 1 punto
+- Si no pueden → presiona **⏭️ PASAR** → sin puntos, cambia la palabra
+- Usa la tecla **→ flecha derecha** para pasar o **← izquierda** para retroceder
+
+**🏆 Gana el equipo con más puntos al final**
+
+</div>
+
+**Reglas del juego:**
+- ❌ No puedes decir la palabra ni partes de ella
+- ❌ No puedes decir el idioma ni traducirla
+- ❌ No puedes hacer señas del número de sílabas
+- ✅ Puedes describir para qué sirve, cómo es, dónde vive, qué hace
+        """, unsafe_allow_html=True)
+
+    with g_tab3:
         st.markdown("#### Agregar palabras personalizadas")
-        cat_custom = st.text_input("Nombre de la categoría personalizada:", key="gu_cat_nombre",
-                                    placeholder="Ej: Temas del bimestre")
-        palabras_custom = st.text_area("Palabras (una por línea):", height=150, key="gu_palabras_txt",
-                                        placeholder="Fotosintesis\nMesopotamia\nPachacutec...")
+        st.caption("Perfecto para poner términos del tema que están estudiando")
+        cat_custom = st.text_input("Nombre de la categoría:", key="gu_cat_nombre",
+                                    placeholder="Ej: Civilizaciones antiguas")
+        palabras_custom = st.text_area("Palabras (una por línea):", height=150,
+                                        key="gu_palabras_txt",
+                                        placeholder="Mesopotamia\nFotosintesis\nPachacutec...")
         if st.button("➕ Agregar categoría", type="primary", key="gu_agregar"):
             if cat_custom and palabras_custom:
                 lista = [p.strip() for p in palabras_custom.strip().split("\n") if p.strip()]
                 if lista:
                     GUESS_CATEGORIAS[f"📝 {cat_custom}"] = lista
-                    st.success(f"✅ Categoría '{cat_custom}' agregada con {len(lista)} palabras")
+                    st.success(f"✅ '{cat_custom}' agregada con {len(lista)} palabras")
                     st.rerun()
 
-        st.markdown("---")
-        st.markdown("#### Instrucciones para el aula")
-        st.info(
-            "**Cómo jugar:**\n"
-            "1. Divide el salón en 2-4 equipos\n"
-            "2. Un estudiante de cada equipo viene al frente — da la espalda a la pizarra\n"
-            "3. La pantalla muestra la palabra — su equipo da pistas sin decirla\n"
-            "4. Si adivina → ✅ punto | Si no puede → ⏭️ pasar\n"
-            "5. Gana el equipo con más puntos al final"
-        )
+    with g_tab1:
+        # ── Configuración ─────────────────────────────────────────────
+        col_cfg, col_game = st.columns([1, 2])
+
+        with col_cfg:
+            cat_sel = st.selectbox("Categoría:", list(GUESS_CATEGORIAS.keys()), key="gu_cat")
+            n_equipos = st.radio("Equipos:", [2, 3, 4], horizontal=True, key="gu_equipos")
+            t_turno = st.slider("Tiempo (seg):", 30, 120, 60, step=10, key="gu_tiempo")
+
+            # Marcador
+            if 'gu_score' not in st.session_state:
+                st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
+
+            st.markdown("---")
+            st.markdown("**Marcador:**")
+            colores_eq = ["#dc2626","#2563eb","#059669","#f59e0b"]
+            for i in range(n_equipos):
+                eq = f"Equipo {i+1}"
+                pts = st.session_state.gu_score.get(eq, 0)
+                st.markdown(
+                    f"<div style='background:{colores_eq[i]};color:white;padding:6px 12px;"
+                    f"border-radius:8px;display:flex;justify-content:space-between;"
+                    f"align-items:center;margin:3px 0;font-weight:700;'>"
+                    f"<span>{eq}</span><span style='font-size:1.3rem;'>{pts} pts</span></div>",
+                    unsafe_allow_html=True)
+
+            st.markdown("---")
+            if st.button("🔄 Reiniciar marcador", key="gu_reset", use_container_width=True):
+                st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
+                st.session_state.gu_usadas = []
+                st.rerun()
+
+        with col_game:
+            palabras = GUESS_CATEGORIAS[cat_sel]
+            if 'gu_palabra_actual' not in st.session_state:
+                st.session_state.gu_palabra_actual = random.choice(palabras)
+            if 'gu_usadas' not in st.session_state:
+                st.session_state.gu_usadas = []
+
+            palabra = st.session_state.gu_palabra_actual
+            equipo_turno = st.session_state.get('gu_equipo_turno', 'Equipo 1')
+            eq_idx = int(equipo_turno.split()[-1]) - 1
+            color_eq = colores_eq[min(eq_idx, len(colores_eq)-1)]
+
+            # ── Pantalla gigante proyectable ─────────────────────────
+            _comp_g.html(f"""<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<style>
+*{{margin:0;padding:0;box-sizing:border-box;}}
+body{{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
+  font-family:'Segoe UI',sans-serif;min-height:380px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:20px;gap:12px;}}
+.equipo-badge{{background:{color_eq};color:white;padding:6px 20px;
+  border-radius:20px;font-size:0.85rem;font-weight:700;letter-spacing:1px;}}
+.categoria{{color:#a5b4fc;font-size:0.9rem;letter-spacing:3px;
+  text-transform:uppercase;font-weight:600;}}
+.palabra-card{{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);
+  border-radius:24px;padding:28px 48px;text-align:center;
+  box-shadow:0 8px 40px rgba(0,0,0,0.4);}}
+.palabra{{color:white;font-size:5.5rem;font-weight:900;line-height:1;
+  text-shadow:0 4px 20px rgba(0,0,0,0.5);}}
+.hint{{color:#94a3b8;font-size:0.82rem;margin-top:8px;}}
+.timer-bar{{width:90%;max-width:600px;height:8px;
+  background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;}}
+.timer-fill{{height:8px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
+  border-radius:4px;animation:countdown {t_turno}s linear forwards;width:100%;}}
+@keyframes countdown{{from{{width:100%}}to{{width:0%}}}}
+.nav-hint{{color:#64748b;font-size:0.75rem;margin-top:4px;}}
+.btn-fs{{position:fixed;top:12px;right:12px;background:rgba(255,255,255,0.1);
+  color:white;border:1px solid rgba(255,255,255,0.2);padding:6px 12px;
+  border-radius:8px;cursor:pointer;font-size:0.8rem;}}
+.btn-fs:hover{{background:rgba(255,255,255,0.2);}}
+</style></head><body>
+<button class="btn-fs" onclick="toggleFS()">⛶ Pantalla completa</button>
+<div class="equipo-badge">Turno: {equipo_turno}</div>
+<div class="categoria">{cat_sel}</div>
+<div class="palabra-card">
+  <div class="palabra">{palabra}</div>
+</div>
+<div class="hint">💡 Da pistas sin decir la palabra ni partes de ella</div>
+<div class="timer-bar"><div class="timer-fill" id="tfill"></div></div>
+<div class="nav-hint">← → flechas para navegar | Enter = adivinó</div>
+<script>
+function toggleFS(){{
+  if(!document.fullscreenElement)
+    document.documentElement.requestFullscreen().catch(()=>{{}});
+  else document.exitFullscreen();
+}}
+// Reiniciar timer al cargar
+document.getElementById('tfill').style.animation='none';
+void document.getElementById('tfill').offsetHeight;
+document.getElementById('tfill').style.animation='countdown {t_turno}s linear forwards';
+</script>
+</body></html>""", height=420, scrolling=False)
+
+            # ── Botones de acción ─────────────────────────────────────
+            def _siguiente_palabra(puntos=False):
+                if puntos:
+                    st.session_state.gu_score[equipo_turno] =                         st.session_state.gu_score.get(equipo_turno, 0) + 1
+                st.session_state.gu_usadas.append(palabra)
+                restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
+                if not restantes:
+                    st.session_state.gu_usadas = []
+                    restantes = list(palabras)
+                st.session_state.gu_palabra_actual = random.choice(restantes)
+
+            col_a, col_b, col_c = st.columns([2, 2, 2])
+            with col_a:
+                if st.button("✅ ADIVINÓ (+1 punto)", type="primary",
+                              use_container_width=True, key="gu_si"):
+                    _siguiente_palabra(puntos=True)
+                    st.rerun()
+            with col_b:
+                if st.button("⏭️ PASAR (sin punto)", use_container_width=True, key="gu_no"):
+                    _siguiente_palabra(puntos=False)
+                    st.rerun()
+            with col_c:
+                eq_opciones = [f"Equipo {i+1}" for i in range(n_equipos)]
+                eq_nuevo = st.selectbox("Turno de:", eq_opciones,
+                                         index=eq_idx % n_equipos,
+                                         key="gu_eq_sel")
+                st.session_state.gu_equipo_turno = eq_nuevo
+
+            # Atajos de teclado
+            import streamlit.components.v1 as _kc
+            _kc.html("""<script>
+window.parent.document.addEventListener('keydown', function(e) {
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    // Click PASAR
+    var btns = window.parent.document.querySelectorAll('button');
+    btns.forEach(b => { if(b.innerText.includes('PASAR')) b.click(); });
+  }
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    // Click PASAR también (navegar)
+    var btns = window.parent.document.querySelectorAll('button');
+    btns.forEach(b => { if(b.innerText.includes('PASAR')) b.click(); });
+  }
+  if(e.key === 'Enter') {
+    // Click ADIVINÓ
+    var btns = window.parent.document.querySelectorAll('button');
+    btns.forEach(b => { if(b.innerText.includes('ADIVINO') || b.innerText.includes('ADIVINÓ')) b.click(); });
+  }
+}, false);
+</script>""", height=0)
+
 
 
 def tab_yachay_plickers(config):
@@ -23503,6 +23581,100 @@ def tab_yachay_plickers(config):
                             st.caption(f"Sin celular: {r_wa['Nombre']}")
 
 
+def _tab_horarios_directivo(config):
+    """Directivo/Admin — ver todos los horarios guardados por docentes."""
+    anio = config.get('anio', 2026)
+    st.header("📅 Horarios de Clases — Todos los Docentes")
+    st.caption("Aquí aparecen los horarios que cada docente guardó desde su módulo")
+
+    dv_tab1, dv_tab2 = st.tabs(["👁️ Ver Horarios", "✏️ Mi Horario (Directivo)"])
+
+    with dv_tab1:
+        if st.button("🔄 Actualizar", key="btn_dv_refresh"):
+            st.session_state.pop('_cache_horarios', None)
+
+        if '_cache_horarios' not in st.session_state:
+            with st.spinner("Cargando horarios..."):
+                st.session_state['_cache_horarios'] = _horarios_cargar_todos()
+
+        todos = st.session_state.get('_cache_horarios', {})
+
+        if not todos:
+            st.info("📭 Ningún docente ha guardado su horario todavía.")
+            st.caption("Los docentes guardan su horario desde: Dashboard → 📅 Mi Horario → botón 💾 GUARDAR")
+        else:
+            st.success(f"✅ {len(todos)} horario(s) guardado(s)")
+
+            # Selector de docente
+            opciones = {}
+            for clave, datos in todos.items():
+                label = f"{datos.get('docente','?')} — {datos.get('grado','?')}"
+                opciones[label] = datos
+
+            sel = st.selectbox("Selecciona el horario:", list(opciones.keys()),
+                                key="dv_sel_horario")
+            if sel:
+                datos = opciones[sel]
+                horas = datos.get('horas', [])
+                dias = datos.get('dias', [])
+                horario = datos.get('horario', {})
+                areas = datos.get('areas', {})
+
+                # Mostrar tabla visual
+                st.markdown(f"**{datos.get('docente','')} | {datos.get('grado','')} | {anio}**")
+
+                if horas and dias:
+                    # Encabezado
+                    hdr = st.columns([1.5] + [2]*len(dias))
+                    with hdr[0]: st.markdown("**Hora**")
+                    for ci, d in enumerate(dias):
+                        with hdr[ci+1]: st.markdown(f"**{d}**")
+
+                    for hora in horas:
+                        is_rec = "recreo" in hora.lower()
+                        row_c = st.columns([1.5] + [2]*len(dias))
+                        with row_c[0]:
+                            st.markdown(f"<div style='font-size:0.75rem;color:#64748b;"
+                                        f"font-weight:600;padding-top:6px;'>{hora}</div>",
+                                        unsafe_allow_html=True)
+                        for ci, d in enumerate(dias):
+                            with row_c[ci+1]:
+                                if is_rec:
+                                    st.markdown(
+                                        "<div style='background:#e2e8f0;padding:5px;"
+                                        "border-radius:6px;text-align:center;font-size:0.75rem;"
+                                        "color:#64748b;'>RECREO</div>",
+                                        unsafe_allow_html=True)
+                                else:
+                                    val = horario.get(hora, {}).get(d, "")
+                                    color_c = "#f8fafc"
+                                    for ak, av in areas.items():
+                                        if ak.lower() in val.lower() and val:
+                                            color_c = av
+                                            break
+                                    st.markdown(
+                                        f"<div style='background:{color_c};padding:5px;"
+                                        f"border-radius:6px;text-align:center;font-size:0.75rem;"
+                                        f"font-weight:600;color:#1e293b;min-height:28px;'>"
+                                        f"{val}</div>",
+                                        unsafe_allow_html=True)
+
+                    st.markdown("---")
+                    if st.button("📄 Descargar PDF este horario", type="primary",
+                                  key="btn_dv_pdf"):
+                        buf_dv = _generar_pdf_horario(
+                            datos.get('docente',''), datos.get('grado',''),
+                            anio, horario, horas, dias, areas)
+                        st.download_button(
+                            "⬇️ Descargar PDF",
+                            buf_dv,
+                            f"Horario_{datos.get('grado','').replace(' ','_')[:20]}_{anio}.pdf",
+                            "application/pdf", type="primary", key="dl_dv_pdf")
+
+    with dv_tab2:
+        st.caption("El directivo también puede crear y guardar su propio horario")
+        _tab_horario(config)
+
 def main():
     if st.session_state.rol is None:
         pantalla_login()
@@ -23903,6 +24075,9 @@ def main():
                 _tab_horarios_directivo(config)  # Admin/Directivo ven todos
             elif mod == "guess_up":
                 _tab_guess_up()
+
+
+def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
     st.subheader("📕 Libro de Reclamaciones Virtual")
     st.markdown("*Según normativa del Ministerio de Educación*")
@@ -23981,97 +24156,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-def _tab_horarios_directivo(config):
-    """Directivo/Admin — ver todos los horarios guardados por docentes."""
-    anio = config.get('anio', 2026)
-    st.header("📅 Horarios de Clases — Todos los Docentes")
-    st.caption("Aquí aparecen los horarios que cada docente guardó desde su módulo")
-
-    dv_tab1, dv_tab2 = st.tabs(["👁️ Ver Horarios", "✏️ Mi Horario (Directivo)"])
-
-    with dv_tab1:
-        if st.button("🔄 Actualizar", key="btn_dv_refresh"):
-            st.session_state.pop('_cache_horarios', None)
-
-        if '_cache_horarios' not in st.session_state:
-            with st.spinner("Cargando horarios..."):
-                st.session_state['_cache_horarios'] = _horarios_cargar_todos()
-
-        todos = st.session_state.get('_cache_horarios', {})
-
-        if not todos:
-            st.info("📭 Ningún docente ha guardado su horario todavía.")
-            st.caption("Los docentes guardan su horario desde: Dashboard → 📅 Mi Horario → botón 💾 GUARDAR")
-        else:
-            st.success(f"✅ {len(todos)} horario(s) guardado(s)")
-
-            # Selector de docente
-            opciones = {}
-            for clave, datos in todos.items():
-                label = f"{datos.get('docente','?')} — {datos.get('grado','?')}"
-                opciones[label] = datos
-
-            sel = st.selectbox("Selecciona el horario:", list(opciones.keys()),
-                                key="dv_sel_horario")
-            if sel:
-                datos = opciones[sel]
-                horas = datos.get('horas', [])
-                dias = datos.get('dias', [])
-                horario = datos.get('horario', {})
-                areas = datos.get('areas', {})
-
-                # Mostrar tabla visual
-                st.markdown(f"**{datos.get('docente','')} | {datos.get('grado','')} | {anio}**")
-
-                if horas and dias:
-                    # Encabezado
-                    hdr = st.columns([1.5] + [2]*len(dias))
-                    with hdr[0]: st.markdown("**Hora**")
-                    for ci, d in enumerate(dias):
-                        with hdr[ci+1]: st.markdown(f"**{d}**")
-
-                    for hora in horas:
-                        is_rec = "recreo" in hora.lower()
-                        row_c = st.columns([1.5] + [2]*len(dias))
-                        with row_c[0]:
-                            st.markdown(f"<div style='font-size:0.75rem;color:#64748b;"
-                                        f"font-weight:600;padding-top:6px;'>{hora}</div>",
-                                        unsafe_allow_html=True)
-                        for ci, d in enumerate(dias):
-                            with row_c[ci+1]:
-                                if is_rec:
-                                    st.markdown(
-                                        "<div style='background:#e2e8f0;padding:5px;"
-                                        "border-radius:6px;text-align:center;font-size:0.75rem;"
-                                        "color:#64748b;'>RECREO</div>",
-                                        unsafe_allow_html=True)
-                                else:
-                                    val = horario.get(hora, {}).get(d, "")
-                                    color_c = "#f8fafc"
-                                    for ak, av in areas.items():
-                                        if ak.lower() in val.lower() and val:
-                                            color_c = av
-                                            break
-                                    st.markdown(
-                                        f"<div style='background:{color_c};padding:5px;"
-                                        f"border-radius:6px;text-align:center;font-size:0.75rem;"
-                                        f"font-weight:600;color:#1e293b;min-height:28px;'>"
-                                        f"{val}</div>",
-                                        unsafe_allow_html=True)
-
-                    st.markdown("---")
-                    if st.button("📄 Descargar PDF este horario", type="primary",
-                                  key="btn_dv_pdf"):
-                        buf_dv = _generar_pdf_horario(
-                            datos.get('docente',''), datos.get('grado',''),
-                            anio, horario, horas, dias, areas)
-                        st.download_button(
-                            "⬇️ Descargar PDF",
-                            buf_dv,
-                            f"Horario_{datos.get('grado','').replace(' ','_')[:20]}_{anio}.pdf",
-                            "application/pdf", type="primary", key="dl_dv_pdf")
-
-    with dv_tab2:
-        st.caption("El directivo también puede crear y guardar su propio horario")
-        _tab_horario(config)
