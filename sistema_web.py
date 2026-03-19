@@ -4007,6 +4007,7 @@ def pantalla_login():
                         st.session_state.rol = rol
                     st.session_state.docente_info = datos_u.get('docente_info')
                     st.session_state.usuario_actual = usuario_lower
+                    st.session_state.modulo_activo = None  # Siempre al dashboard al entrar
                     st.toast(f"✅ Bienvenido, {datos_u.get('label', usuario_lower)}")
                     st.rerun()
                 else:
