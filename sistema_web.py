@@ -22111,13 +22111,13 @@ def _tab_horario(config):
                             f"Horario_{(grado_h or 'grado').replace(' ','_')[:20]}_{anio}.pdf",
                             "application/pdf", type="primary", key="dl_h_pdf")
                 with c3:
-                    if st.button("🖨️ PDF sin color (B/N)", use_container_width=True, key="btn_h_bn"):
+                    if st.button("Imprimir B/N", use_container_width=True, key="btn_h_bn"):
                         buf_b = _generar_pdf_horario_blanco(grado_h, anio, horas, dias)
                         st.download_button("⬇️ Descargar B/N", buf_b,
                                             f"Horario_BN_{anio}.pdf", "application/pdf",
                                             type="primary", key="dl_h_bn")
                 with c4:
-                    if st.button("🗑️ Limpiar", use_container_width=True, key="btn_h_clear"):
+                    if st.button("Limpiar horario", use_container_width=True, key="btn_h_clear"):
                         st.session_state.horario_data = {}
                         st.rerun()
             else:
@@ -22297,7 +22297,7 @@ def _tab_horario(config):
                                             f"Horario_Auto_{anio}.pdf", "application/pdf",
                                             type="primary", key="dl_au_pdf")
                 with c2:
-                    if st.button("🔀 Reorganizar diferente", use_container_width=True,
+                    if st.button("Reorganizar diferente", use_container_width=True,
                                   key="btn_au_reorg"):
                         # Limpiar para forzar nueva generación
                         st.session_state.pop('au_horas_generadas', None)
@@ -22504,137 +22504,174 @@ def _tab_guess_up():
             eq_idx = int(equipo_turno.split()[-1]) - 1
             color_eq = colores_eq[min(eq_idx, len(colores_eq)-1)]
 
-            # Marcador para mostrar en pantalla gigante
+            # ── Construir datos para la pantalla ────────────────────
             score_html = ""
             for i in range(n_equipos):
                 eq = f"Equipo {i+1}"
                 pts = st.session_state.gu_score.get(eq, 0)
                 score_html += (f"<div style='background:{colores_eq[i]};color:white;"
-                               f"padding:6px 16px;border-radius:10px;font-weight:900;"
-                               f"font-size:1rem;'>{eq}: {pts} pts</div>")
+                               f"padding:8px 20px;border-radius:12px;font-weight:900;"
+                               f"font-size:1.1rem;min-width:120px;text-align:center;'>"
+                               f"{eq}<br><span style=\'font-size:1.6rem;\'>{pts}</span> pts</div>")
 
-            # ── Pantalla gigante con todo integrado ──────────────────
+            eq_buttons_html = ""
+            for i in range(n_equipos):
+                eq = f"Equipo {i+1}"
+                active = "active" if eq == equipo_turno else ""
+                eq_buttons_html += (f"<button class='eq-btn {active}' "
+                                    f"style='background:{colores_eq[i]};' "
+                                    f"onclick='cambiarEquipo({i+1})'>{eq}</button>")
+
+            colores_js = str(list(colores_eq[:n_equipos]))
+
             _comp_g.html(f"""<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box;}}
+html,body{{width:100%;}}
 body{{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
-  font-family:'Segoe UI',sans-serif;min-height:420px;
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:16px;gap:10px;}}
-.top-bar{{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;width:100%;}}
-.equipo-badge{{background:{color_eq};color:white;padding:5px 18px;
-  border-radius:20px;font-size:0.85rem;font-weight:700;}}
+  font-family:'Segoe UI',sans-serif;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:12px;gap:10px;min-height:520px;}}
+.top-bar{{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;}}
+.equipo-badge{{padding:5px 18px;border-radius:20px;font-size:0.9rem;font-weight:700;
+  color:white;background:{color_eq};transition:background 0.3s;}}
 .categoria{{color:#a5b4fc;font-size:0.85rem;letter-spacing:2px;
   text-transform:uppercase;font-weight:600;}}
-.palabra-card{{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);
-  border-radius:24px;padding:24px 48px;text-align:center;width:90%;max-width:700px;}}
-.palabra{{color:white;font-size:5rem;font-weight:900;line-height:1.1;
-  text-shadow:0 4px 20px rgba(0,0,0,0.5);}}
+.palabra-card{{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.2);
+  border-radius:28px;padding:24px 52px;text-align:center;width:92%;max-width:800px;}}
+.palabra{{color:white;font-size:6rem;font-weight:900;line-height:1.05;
+  text-shadow:0 4px 24px rgba(0,0,0,0.6);word-break:break-word;}}
 .hint{{color:#94a3b8;font-size:0.8rem;}}
-.timer-bar{{width:90%;max-width:600px;height:7px;
-  background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;}}
-.timer-fill{{height:7px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
-  border-radius:3px;width:100%;}}
-.score-row{{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}}
-.nav-hint{{color:#475569;font-size:0.72rem;}}
-.btn-fs{{position:fixed;top:10px;right:10px;background:rgba(255,255,255,0.12);
+.timer-wrap{{width:88%;max-width:640px;text-align:center;}}
+.timer-num{{color:white;font-size:1.5rem;font-weight:900;margin-bottom:4px;}}
+.timer-bar{{width:100%;height:10px;background:rgba(255,255,255,0.12);
+  border-radius:5px;overflow:hidden;}}
+.timer-fill{{height:10px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
+  border-radius:5px;width:100%;transition:width 1s linear;}}
+.score-row{{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}}
+.btns-inline{{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}}
+.btn-adivino{{background:linear-gradient(135deg,#16a34a,#15803d);color:white;
+  border:none;padding:12px 32px;border-radius:12px;font-size:1rem;
+  font-weight:700;cursor:pointer;}}
+.btn-pasar{{background:linear-gradient(135deg,#ea580c,#c2410c);color:white;
+  border:none;padding:12px 32px;border-radius:12px;font-size:1rem;
+  font-weight:700;cursor:pointer;}}
+.eq-btns{{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}}
+.eq-btn{{padding:5px 14px;border-radius:16px;font-size:0.78rem;font-weight:700;
+  color:white;border:2px solid transparent;cursor:pointer;opacity:0.5;transition:all 0.2s;}}
+.eq-btn.active{{opacity:1;border-color:white;transform:scale(1.08);}}
+.btn-fs{{position:fixed;top:10px;right:10px;background:rgba(255,255,255,0.1);
   color:white;border:1px solid rgba(255,255,255,0.25);padding:5px 12px;
   border-radius:8px;cursor:pointer;font-size:0.78rem;z-index:100;}}
-.btns-inline{{display:flex;gap:10px;margin-top:4px;}}
-.btn-adivino{{background:#16a34a;color:white;border:none;padding:10px 24px;
-  border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;}}
-.btn-pasar{{background:#2563eb;color:white;border:none;padding:10px 24px;
-  border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;}}
-.btn-adivino:hover{{background:#15803d;}}
-.btn-pasar:hover{{background:#1d4ed8;}}
+.nav-hint{{color:#475569;font-size:0.7rem;}}
+:fullscreen .palabra{{font-size:9rem!important;}}
+:fullscreen .palabra-card{{padding:40px 80px!important;max-width:1000px!important;}}
 </style></head><body>
 <button class="btn-fs" onclick="toggleFS()">&#x26F6; Pantalla completa</button>
 <div class="top-bar">
-  <div class="equipo-badge">Turno: {equipo_turno}</div>
+  <div class="equipo-badge" id="eq-badge">Turno: {equipo_turno}</div>
   <div class="categoria">{cat_sel}</div>
 </div>
 <div class="palabra-card">
-  <div class="palabra" id="palabra-txt">{palabra}</div>
+  <div class="palabra">{palabra}</div>
 </div>
 <div class="hint">&#128161; Da pistas sin decir la palabra ni partes de ella</div>
-<div class="timer-bar"><div class="timer-fill" id="tfill"></div></div>
+<div class="timer-wrap">
+  <div class="timer-num" id="tnum">{t_turno}</div>
+  <div class="timer-bar"><div class="timer-fill" id="tfill"></div></div>
+</div>
 <div class="score-row">{score_html}</div>
 <div class="btns-inline">
-  <button class="btn-adivino" id="btn-adivino" onclick="accion('adivino')">
-    &#10003; ADIVINO (+1)
-  </button>
-  <button class="btn-pasar" id="btn-pasar" onclick="accion('pasar')">
-    &#9197; PASAR
-  </button>
+  <button class="btn-adivino" onclick="accion('adivino')">&#10003; ADIVINO (+1)</button>
+  <button class="btn-pasar" onclick="accion('pasar')">&#9197; PASAR</button>
 </div>
-<div class="nav-hint">Flechas &#8592;&#8594; = pasar &nbsp;|&nbsp; Enter = adivino</div>
-
+<div class="eq-btns" id="eq-btns">{eq_buttons_html}</div>
+<div class="nav-hint">&#8592;&#8594; = pasar | Enter = adivino | Teclas 1-{n_equipos} = cambiar equipo</div>
 <script>
+var COLORES = {colores_js};
+var equipoActual = {eq_idx + 1};
 var timerSeg = {t_turno};
+var timerRestante = timerSeg;
 var iv = null;
+
+function startTimer() {{
+  clearInterval(iv);
+  iv = setInterval(function() {{
+    timerRestante = Math.max(0, timerRestante - 1);
+    document.getElementById('tnum').textContent = timerRestante;
+    document.getElementById('tfill').style.width = (timerRestante/timerSeg*100) + '%';
+    if(timerRestante <= 0) {{
+      clearInterval(iv);
+      document.getElementById('tnum').textContent = '&#9200;';
+      document.getElementById('tnum').style.color = '#ef4444';
+    }}
+  }}, 1000);
+}}
 
 function resetTimer() {{
   clearInterval(iv);
-  var el = document.getElementById('tfill');
-  el.style.transition = 'none';
-  el.style.width = '100%';
-  void el.offsetHeight;
-  el.style.transition = 'width ' + timerSeg + 's linear';
-  el.style.width = '0%';
+  timerRestante = timerSeg;
+  document.getElementById('tnum').textContent = timerSeg;
+  document.getElementById('tnum').style.color = 'white';
+  document.getElementById('tfill').style.width = '100%';
+  startTimer();
+}}
+
+function cambiarEquipo(n) {{
+  equipoActual = n;
+  document.querySelectorAll('.eq-btn').forEach(function(b,i) {{
+    b.classList.toggle('active', i===n-1);
+  }});
+  var badge = document.getElementById('eq-badge');
+  badge.textContent = 'Turno: Equipo ' + n;
+  badge.style.background = COLORES[n-1]||'#7c3aed';
+  resetTimer();
+  try {{
+    var frames = window.parent.document.querySelectorAll('iframe');
+    frames.forEach(function(fr) {{
+      var sel = fr.contentDocument && fr.contentDocument.querySelector('select');
+      if(sel && sel.id && sel.id.indexOf('gu_eq_sel')>=0) {{
+        sel.selectedIndex = n-1;
+        sel.dispatchEvent(new Event('change', {{bubbles:true}}));
+      }}
+    }});
+  }} catch(e) {{}}
 }}
 
 function accion(tipo) {{
-  // Notificar al parent de Streamlit via postMessage
-  window.parent.postMessage({{type: 'gu_accion', valor: tipo}}, '*');
-  // También simular click en botón Streamlit
-  var selector = tipo === 'adivino' ? 'ADIVINO' : 'PASAR';
-  var btns = window.parent.document.querySelectorAll('button p, button span');
+  var keyword = tipo==='adivino' ? 'ADIVINO' : 'PASAR';
+  var btns = window.parent.document.querySelectorAll('button');
   for(var i=0;i<btns.length;i++) {{
-    if(btns[i].innerText && btns[i].innerText.toUpperCase().indexOf(selector) >= 0) {{
-      btns[i].closest('button').click();
-      break;
+    if((btns[i].innerText||'').toUpperCase().indexOf(keyword)>=0) {{
+      btns[i].click(); break;
     }}
   }}
+  if(tipo==='pasar') resetTimer();
 }}
 
 document.addEventListener('keydown', function(e) {{
-  if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {{
-    e.preventDefault();
-    accion('pasar');
-  }} else if(e.key === 'Enter') {{
-    e.preventDefault();
-    accion('adivino');
-  }}
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') {{ e.preventDefault(); accion('pasar'); }}
+  else if(e.key==='Enter') {{ e.preventDefault(); accion('adivino'); }}
+  else if(e.key>='1'&&e.key<='{n_equipos}') cambiarEquipo(parseInt(e.key));
 }});
-
-// También capturar desde parent cuando en pantalla completa
 window.parent.document.addEventListener('keydown', function(e) {{
-  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {{
-    var btns = window.parent.document.querySelectorAll('button');
-    btns.forEach(function(b) {{ if((b.innerText||'').toUpperCase().indexOf('PASAR')>=0) b.click(); }});
-  }}
-  if(e.key === 'Enter') {{
-    var btns = window.parent.document.querySelectorAll('button');
-    btns.forEach(function(b) {{ if((b.innerText||'').toUpperCase().indexOf('ADIVINO')>=0) b.click(); }});
-  }}
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') accion('pasar');
+  else if(e.key==='Enter') accion('adivino');
+  else if(e.key>='1'&&e.key<='{n_equipos}') cambiarEquipo(parseInt(e.key));
 }});
 
 function toggleFS() {{
-  if(!document.fullscreenElement)
-    document.documentElement.requestFullscreen().catch(function(){{}});
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){{}});
   else document.exitFullscreen();
 }}
-
-resetTimer();
+startTimer();
 </script>
-</body></html>""", height=460, scrolling=False)
+</body></html>""", height=560, scrolling=False)
 
-            # ── Botones Streamlit (con texto simple para que no queden vacíos) ──
+            # ── Botones Streamlit funcionales ─────────────────────────
             def _siguiente_palabra(puntos=False):
                 if puntos:
-                    st.session_state.gu_score[equipo_turno] = \
-                        st.session_state.gu_score.get(equipo_turno, 0) + 1
+                    st.session_state.gu_score[equipo_turno] =                         st.session_state.gu_score.get(equipo_turno, 0) + 1
                 st.session_state.gu_usadas.append(palabra)
                 restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
                 if not restantes:
@@ -22649,7 +22686,8 @@ resetTimer();
                     _siguiente_palabra(puntos=True)
                     st.rerun()
             with col_b:
-                if st.button("PASAR sin punto", use_container_width=True, key="gu_no"):
+                if st.button("PASAR sin punto", type="primary",
+                              use_container_width=True, key="gu_no"):
                     _siguiente_palabra(puntos=False)
                     st.rerun()
             with col_c:
@@ -22658,6 +22696,26 @@ resetTimer();
                                          index=eq_idx % n_equipos,
                                          key="gu_eq_sel")
                 st.session_state.gu_equipo_turno = eq_nuevo
+
+            import streamlit.components.v1 as _css_gu
+            _css_gu.html("""<script>
+(function fix() {
+  var btns = window.parent.document.querySelectorAll('button');
+  btns.forEach(function(b) {
+    var txt = (b.innerText||'').toUpperCase();
+    if(txt.indexOf('PASAR') >= 0) {
+      b.style.cssText += 'background:linear-gradient(135deg,#ea580c,#c2410c)!important;color:white!important;-webkit-text-fill-color:white!important;border:2px solid #9a3412!important;font-weight:700!important;';
+      var p=b.querySelector('p'); if(p) p.style.cssText+='color:white!important;-webkit-text-fill-color:white!important;';
+    }
+    if(txt.indexOf('ADIVINO') >= 0) {
+      b.style.cssText += 'background:linear-gradient(135deg,#16a34a,#15803d)!important;color:white!important;-webkit-text-fill-color:white!important;border:2px solid #14532d!important;font-weight:700!important;';
+      var p=b.querySelector('p'); if(p) p.style.cssText+='color:white!important;-webkit-text-fill-color:white!important;';
+    }
+  });
+}
+new MutationObserver(fix).observe(window.parent.document.body,{childList:true,subtree:true});
+fix();
+</script>""", height=0)
 
 
 
