@@ -5296,15 +5296,15 @@ def _seccion_documentos_auxiliar(config):
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
     doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6, doc_tab7, doc_tab8, doc_tab9 = st.tabs([
-        "📦 Acta Entrega Salón",
-        "📜 Constancia Reglamento",
-        "👥 Junta Directiva Aula",
-        "📋 Compromiso de Padres",
-        "📖 Reglamento — Alumnos",
-        "📖 Reglamento — Padres",
+        "📦 Entrega Salón",
+        "📜 Constancia RI",
+        "👥 Junta Directiva",
+        "📋 Compromiso Padres",
+        "📖 RI Alumnos",
+        "📖 RI Padres",
         "🏛️ Municipio Escolar",
-        "🤝 Acuerdos Convivencia",
-        "🗂️ Más Documentos",
+        "🤝 Acuerdos Aula",
+        "🗂️ Más Docs",
     ])
 
     # ── TAB 1: ACTA ENTREGA DE SALÓN ──────────────────────────────────
@@ -21247,435 +21247,1286 @@ if(document.getElementById('bgm')) {{
 # ════════════════════════════════════════════════════════════════════════
 
 def _tab_temporizador(config):
-    """Temporizador de aula con modos: debate, trabajo grupal, exposicion, etc."""
+    """Dinámica de Aula — temporizador mejorado con dinámicas grupales."""
     import streamlit.components.v1 as _comp_tmr
-    st.header("⏱️ Temporizador de Aula")
-    st.caption("Debates · Trabajos grupales · Exposiciones · Reglas personalizadas")
+    import json as _json_tmr
+    st.header("🎯 Dinámica de Aula")
+    st.caption("Debates · Trabajos grupales · Pausas activas · Dinámicas · Exposiciones")
 
     MODOS = {
         "⚖️ Debate estructurado": {
-            "desc": "Turnos de habla cronometrados para debates formales",
-            "guia": {
-                "que_es": "Un debate es una discusión organizada donde dos equipos defienden posiciones opuestas sobre un tema. No se trata de ganar — se trata de pensar, argumentar y escuchar.",
-                "como_funciona": [
-                    "Se forman 2 equipos: Equipo A y Equipo B, cada uno defiende una posición.",
-                    "Cada equipo tiene turnos fijos: Apertura (presentan su posición), Argumentos (desarrollan sus razones), Réplica (responden al otro equipo) y Cierre (resumen final).",
-                    "El temporizador controla el tiempo — cuando suena, se cede el turno SIN EXCEPCIÓN.",
-                    "El moderador (docente o alumno) da y quita la palabra.",
-                ],
-                "clave": "Un buen argumento tiene 3 partes: AFIRMACIÓN (qué defiendes) + RAZÓN (por qué) + EVIDENCIA (prueba o ejemplo concreto).",
-            },
-            "fases": [
-                ("Apertura Equipo A", 120, "#dc2626"),
-                ("Apertura Equipo B", 120, "#2563eb"),
-                ("Argumentos Equipo A", 180, "#dc2626"),
-                ("Argumentos Equipo B", 180, "#2563eb"),
-                ("Réplica Equipo A", 90, "#dc2626"),
-                ("Réplica Equipo B", 90, "#2563eb"),
-                ("Cierre Equipo A", 60, "#dc2626"),
-                ("Cierre Equipo B", 60, "#2563eb"),
-            ],
-            "reglas": [
-                "Solo habla quien tiene el turno",
-                "No interrumpir — esperar el turno de réplica",
-                "Argumentar con evidencias, no con opiniones",
-                "Respetar el tiempo — el moderador puede cortar",
-            ]
+            "color": "#dc2626", "emoji": "⚖️",
+            "desc": "Dos equipos defienden posiciones con turnos cronometrados",
+            "guia": {"que_es": "Discusión organizada donde dos equipos defienden posiciones opuestas. No se trata de ganar — se trata de pensar, argumentar y escuchar.", "como_funciona": ["Se forman 2 equipos: A y B, cada uno defiende su posición.", "Turnos fijos: Apertura → Argumentos → Réplica → Cierre.", "El temporizador controla — cuando suena, se cede el turno SIN excepción."], "clave": "Buen argumento = AFIRMACIÓN + RAZÓN + EVIDENCIA concreta."},
+            "fases": [("Apertura Equipo A",120,"#dc2626"),("Apertura Equipo B",120,"#2563eb"),("Argumentos A",180,"#dc2626"),("Argumentos B",180,"#2563eb"),("Réplica A",90,"#dc2626"),("Réplica B",90,"#2563eb"),("Cierre A",60,"#dc2626"),("Cierre B",60,"#2563eb")],
+            "reglas": ["Solo habla quien tiene el turno","No interrumpir — esperar la réplica","Argumentar con evidencias, no opiniones","Respetar el tiempo sin excepción"]
         },
         "👥 Trabajo grupal": {
-            "desc": "Gestión del tiempo para actividades colaborativas",
-            "guia": {
-                "que_es": "El trabajo grupal es una actividad donde un equipo de personas colabora para lograr un objetivo común. Cada integrante tiene una responsabilidad específica — el éxito depende de TODOS.",
-                "como_funciona": [
-                    "Primero: leen las instrucciones JUNTOS para asegurarse de que todos entienden la tarea.",
-                    "Segundo: trabajan en equipo — un coordinador organiza, un secretario anota, un vocero presentará.",
-                    "Tercero: preparan cómo van a presentar su trabajo al resto del salón.",
-                    "Cuarto: cada grupo expone su resultado — el resto escucha y puede preguntar.",
-                ],
-                "clave": "El trabajo grupal no es que uno trabaje y los demás copien. Si alguien no participa, el grupo lo menciona al docente. Todos aprenden cuando todos aportan.",
-            },
-            "fases": [
-                ("Leer instrucciones", 60, "#7c3aed"),
-                ("Trabajo grupal", 600, "#059669"),
-                ("Preparar presentación", 120, "#f59e0b"),
-                ("Exposición por grupo", 180, "#0891b2"),
-            ],
-            "reglas": [
-                "Todos participan activamente",
-                "Un líder coordina pero todos aportan",
-                "Sin celulares durante el trabajo",
-                "El producto final debe ser de todo el grupo",
-            ]
+            "color": "#059669", "emoji": "👥",
+            "desc": "Gestión del tiempo para actividades colaborativas en equipo",
+            "guia": {"que_es": "Actividad donde el equipo colabora para lograr un objetivo. Cada integrante tiene una responsabilidad.", "como_funciona": ["Leen las instrucciones JUNTOS primero.","Trabajan con roles: coordinador, secretario, vocero.","Preparan cómo presentar al salón.","Cada grupo expone su resultado."], "clave": "Si alguien no participa, el grupo lo menciona. TODOS aprenden cuando TODOS aportan."},
+            "fases": [("Leer instrucciones",60,"#7c3aed"),("Trabajo grupal",600,"#059669"),("Preparar presentación",120,"#f59e0b"),("Exposición por grupo",180,"#0891b2")],
+            "reglas": ["Todos participan activamente","Rol de coordinador, secretario y vocero","Sin celulares durante el trabajo","El producto es de todo el grupo"]
         },
         "🎤 Exposición oral": {
-            "desc": "Control de tiempo para presentaciones de alumnos",
-            "guia": {
-                "que_es": "Una exposición oral es la presentación de un tema ante un público. Es una habilidad fundamental en la vida — en la universidad, en el trabajo y en la ciudadanía hablarás en público constantemente.",
-                "como_funciona": [
-                    "Primero: tienes un tiempo breve para revisar tus apuntes y preparar tu presentación.",
-                    "Segundo: expones el tema frente a la clase — usa material de apoyo si tienes.",
-                    "Tercero: el público (tus compañeros) puede hacerte preguntas — responde con seguridad.",
-                    "Cuarto: el docente te da retroalimentación — qué hiciste bien y qué puedes mejorar.",
-                ],
-                "clave": "La clave de una buena exposición: MIRAR a tu audiencia (no al papel), hablar con voz CLARA y PAUSAS (no muy rápido), y conocer tu tema (no leer textualmente).",
-            },
-            "fases": [
-                ("Preparación final", 120, "#7c3aed"),
-                ("Exposición", 300, "#059669"),
-                ("Preguntas del público", 120, "#f59e0b"),
-                ("Retroalimentación docente", 60, "#0891b2"),
-            ],
-            "reglas": [
-                "Hablar con voz clara y volumen adecuado",
-                "Mirar al público, no al papel",
-                "Usar el material de apoyo sin leerlo textualmente",
-                "Respetar el tiempo asignado",
-            ]
+            "color": "#7c3aed", "emoji": "🎤",
+            "desc": "Presentaciones orales de alumnos con tiempo controlado",
+            "guia": {"que_es": "Presentación de un tema ante el salón. Habilidad fundamental para la universidad y el trabajo.", "como_funciona": ["Tiempo breve para revisar apuntes.","Expones frente a la clase con apoyo visual.","El público puede hacer preguntas.","El docente da retroalimentación."], "clave": "MIRAR a la audiencia, voz CLARA, conocer el tema (no leer textualmente)."},
+            "fases": [("Preparación final",120,"#7c3aed"),("Exposición",300,"#059669"),("Preguntas del público",120,"#f59e0b"),("Retroalimentación",60,"#0891b2")],
+            "reglas": ["Voz clara y volumen adecuado","Mirar al público, no al papel","Usar apoyo visual sin leerlo","Respetar el tiempo asignado"]
         },
         "💡 Lluvia de ideas": {
-            "desc": "Ideación libre y organización de propuestas",
-            "guia": {
-                "que_es": "La lluvia de ideas (brainstorming) es una técnica para generar la mayor cantidad posible de ideas en poco tiempo, SIN juzgarlas. Después se seleccionan las mejores. Fue creada por Alex Osborn en 1939 y se usa en empresas, ciencia y arte.",
-                "como_funciona": [
-                    "Fase 1 — GENERACIÓN: todos dicen ideas libremente. Ninguna idea se critica ni descarta. La cantidad es lo que importa.",
-                    "Fase 2 — SELECCIÓN: el grupo evalúa las ideas y elige las más útiles o creativas.",
-                    "Fase 3 — DESARROLLO: profundizan la idea elegida, le agregan detalles y la hacen viable.",
-                    "Fase 4 — PRESENTACIÓN: exponen la idea desarrollada al resto del salón.",
-                ],
-                "clave": "La regla de oro de la lluvia de ideas: NO HAY IDEAS MALAS en la fase de generación. Las ideas más locas a veces son las más creativas. Juzgar demasiado pronto mata la creatividad.",
-            },
-            "fases": [
-                ("Generación de ideas (sin juzgar)", 180, "#f59e0b"),
-                ("Selección de mejores ideas", 120, "#059669"),
-                ("Desarrollo de la idea elegida", 300, "#2563eb"),
-                ("Presentación al grupo", 120, "#7c3aed"),
-            ],
-            "reglas": [
-                "Ninguna idea es mala en la fase de generación",
-                "No criticar las ideas ajenas",
-                "Construir sobre las ideas de los demás",
-                "Cantidad antes que calidad en la primera fase",
-            ]
+            "color": "#f59e0b", "emoji": "💡",
+            "desc": "Generar ideas libremente sin juzgar — luego seleccionar las mejores",
+            "guia": {"que_es": "Técnica para generar la mayor cantidad de ideas posible sin juzgarlas. Usada en empresas, ciencia y arte.", "como_funciona": ["GENERACIÓN: todos dicen ideas, ninguna se critica.","SELECCIÓN: eligen las más útiles o creativas.","DESARROLLO: profundizan la idea elegida.","PRESENTACIÓN: exponen la propuesta final."], "clave": "NO HAY IDEAS MALAS en la generación. Las más locas a veces son las más creativas."},
+            "fases": [("Generación libre",180,"#f59e0b"),("Selección de ideas",120,"#059669"),("Desarrollo",300,"#2563eb"),("Presentación",120,"#7c3aed")],
+            "reglas": ["Ninguna idea es mala en generación","No criticar ideas ajenas","Construir sobre ideas de los demás","Cantidad antes que calidad al inicio"]
         },
         "🔄 Rotación de estaciones": {
-            "desc": "Aprendizaje por estaciones con rotación cronometrada",
-            "guia": {
-                "que_es": "La rotación de estaciones divide el salón en 4 zonas (estaciones), cada una con una actividad diferente sobre el mismo tema. Los grupos rotan para completar todas las estaciones.",
-                "como_funciona": [
-                    "El salón se divide en 4 grupos y 4 estaciones. Cada estación tiene materiales e instrucciones.",
-                    "Cuando el temporizador suena, TODOS los grupos se levantan y rotan a la siguiente estación.",
-                    "Al finalizar, cada grupo habrá pasado por las 4 estaciones y completado las 4 actividades.",
-                    "Puesta en común: el docente guía una reflexión sobre lo trabajado en todas las estaciones.",
-                ],
-                "clave": "La rotación es INMEDIATA cuando el temporizador suena. No importa si terminaste o no — toma tu trabajo y muévete. El compañero que llega continúa donde dejaste.",
-            },
-            "fases": [
-                ("Estación 1", 300, "#dc2626"),
-                ("Rotación", 20, "#0f172a"),
-                ("Estación 2", 300, "#2563eb"),
-                ("Rotación", 20, "#0f172a"),
-                ("Estación 3", 300, "#059669"),
-                ("Rotación", 20, "#0f172a"),
-                ("Estación 4", 300, "#7c3aed"),
-                ("Puesta en común", 180, "#f59e0b"),
-            ],
-            "reglas": [
-                "Respetar la señal de rotación inmediatamente",
-                "Dejar la estación ordenada para el siguiente grupo",
-                "Completar la tarea antes de rotar",
-                "No llevar materiales de una estación a otra",
-            ]
+            "color": "#0891b2", "emoji": "🔄",
+            "desc": "Grupos rotan por 4 estaciones de aprendizaje con señal de cambio",
+            "guia": {"que_es": "El salón se divide en 4 zonas (estaciones), cada una con una actividad diferente sobre el mismo tema.", "como_funciona": ["Cada grupo empieza en una estación diferente.","Cuando el temporizador suena, TODOS rotan a la siguiente.","Al final, cada grupo habrá pasado por las 4 estaciones.","Puesta en común al finalizar."], "clave": "La rotación es INMEDIATA cuando suena. No importa si terminaste — continúa el siguiente grupo."},
+            "fases": [("Estación 1",300,"#dc2626"),("Rotación",20,"#0f172a"),("Estación 2",300,"#2563eb"),("Rotación",20,"#0f172a"),("Estación 3",300,"#059669"),("Rotación",20,"#0f172a"),("Estación 4",300,"#7c3aed"),("Puesta en común",180,"#f59e0b")],
+            "reglas": ["Rotación inmediata al sonar","Dejar estación ordenada","Completar la tarea antes de rotar","No llevar materiales entre estaciones"]
+        },
+        "🧊 Estatuas / Congelados": {
+            "color": "#0c4a6e", "emoji": "🧊",
+            "desc": "Dinámica de movimiento y pausa — activa el cerebro y relaja la tensión",
+            "guia": {"que_es": "Dinámica clásica de aula: cuando la música o señal para, todos se congelan como estatuas. Activa la atención y genera risas.", "como_funciona": ["Todos se mueven libremente por el espacio disponible.","Cuando el docente dice STOP o para la música, todos se congelan.","Quien se mueve queda fuera o hace un penitencia divertida.","El docente puede dar instrucciones: congelarse en pose de animal, héroe, letra, etc."], "clave": "Variantes: congelarse en parejas, en grupos de 3, con una pose relacionada al tema de la clase."},
+            "fases": [("Explicar las reglas",30,"#0891b2"),("Ronda 1 — movimiento libre",45,"#059669"),("CONGELADOS",15,"#0c4a6e"),("Ronda 2 — con consigna",45,"#059669"),("CONGELADOS",15,"#0c4a6e"),("Ronda 3 — dificultad mayor",40,"#059669"),("CONGELADOS — pose del tema",20,"#dc2626"),("Reflexión y regreso",30,"#7c3aed")],
+            "reglas": ["Al escuchar STOP — inmóvil al instante","Quien se mueve hace una penitencia divertida","Respetar el espacio de los compañeros","La pose del congelado puede ser temática"]
+        },
+        "🪢 Nudo Humano": {
+            "color": "#7c2d12", "emoji": "🪢",
+            "desc": "Dinámica cooperativa — el grupo se enreda y debe desanudarse sin soltarse",
+            "guia": {"que_es": "Dinámica de trabajo en equipo: el grupo forma un nudo humano y debe desanudarse comunicándose y cooperando.", "como_funciona": ["Grupos de 8-10 personas en círculo.","Todos extienden las manos al centro y agarran manos de dos personas distintas (no del vecino inmediato).","El grupo debe desanudarse hasta formar un círculo sin soltarse las manos.","Pueden girar, agacharse, pasar por debajo o por encima."], "clave": "No hay una sola solución. La clave es COMUNICARSE, escuchar propuestas y ser paciente. Muy útil para trabajar liderazgo."},
+            "fases": [("Formar grupos y explicar",60,"#7c3aed"),("Formar el nudo",30,"#f59e0b"),("Desanudar — intento 1",180,"#dc2626"),("Reflexión parcial",30,"#0891b2"),("Nuevo intento si faltó",120,"#059669"),("Celebración y reflexión",60,"#7c3aed")],
+            "reglas": ["No soltarse las manos durante el juego","Escuchar todas las propuestas del grupo","No jalar bruscamente — movimientos suaves","El que lidera propone, no impone"]
+        },
+        "⚡ Energizador rápido": {
+            "color": "#b45309", "emoji": "⚡",
+            "desc": "5 minutos de actividad física para reactivar la energía del salón",
+            "guia": {"que_es": "Actividad breve de 5 minutos para romper la monotonía, activar el cuerpo y resetear la atención del grupo.", "como_funciona": ["El docente dirige una secuencia de movimientos simples.","Todos de pie, sin necesidad de moverse del lugar.","Se puede hacer entre clases o cuando el grupo está decaído.","Termina con una respiración profunda y vuelta a la calma."], "clave": "No importa hacerlo perfecto — importa moverse y reírse juntos. El humor activa el aprendizaje."},
+            "fases": [("De pie — estiramiento",30,"#059669"),("Aplausos rítmicos x2",20,"#f59e0b"),("Saltos en el lugar",15,"#dc2626"),("Rotación de hombros",15,"#0891b2"),("Carrera en el lugar",20,"#dc2626"),("Movimiento libre 8 seg",8,"#7c3aed"),("Respiración profunda",20,"#059669"),("Sentarse despacio",15,"#0891b2")],
+            "reglas": ["Todos de pie y participando","Sin burlarse de los movimientos del compañero","El docente también participa","Al terminar: silencio y a trabajar"]
         },
         "📝 Examen / Evaluación": {
-            "desc": "Control de tiempo para pruebas escritas",
-            "guia": {
-                "que_es": "El examen es una evaluación individual donde demuestras lo que aprendiste. No es para castigarte — es para que el docente vea cómo está tu aprendizaje y pueda ayudarte mejor.",
-                "como_funciona": [
-                    "Fase 1: lee TODAS las instrucciones antes de empezar a responder. Entender la pregunta es la mitad del trabajo.",
-                    "Fase 2: desarrolla el examen — empieza por lo que sabes bien para ganar confianza.",
-                    "Fase 3: usa los últimos minutos para REVISAR tus respuestas — busca errores de ortografía, preguntas sin responder, o ideas incompletas.",
-                ],
-                "clave": "Gestión del tiempo en el examen: calcula cuántos minutos tienes por pregunta. Si una pregunta te toma demasiado, pasa a la siguiente y vuelve al final.",
-            },
-            "fases": [
-                ("Lectura de instrucciones", 120, "#0891b2"),
-                ("Desarrollo del examen", 2400, "#1e293b"),
-                ("Revisión final", 300, "#f59e0b"),
-            ],
-            "reglas": [
-                "Trabajo individual y en silencio",
-                "Prohibido el uso de celular",
-                "Levantar la mano para consultas",
-                "Al terminar: esperar en silencio hasta el tiempo",
-            ]
+            "color": "#1e293b", "emoji": "📝",
+            "desc": "Control de tiempo para pruebas escritas con fases claras",
+            "guia": {"que_es": "El examen demuestra lo que aprendiste. No es castigo — es información para el docente y para ti.", "como_funciona": ["Lee TODAS las instrucciones antes de empezar.","Empieza por lo que sabes bien — gana confianza.","Deja lo difícil para el final.","Usa los últimos minutos para revisar."], "clave": "Calcula cuántos minutos tienes por pregunta. Si una toma demasiado, pasa y vuelve al final."},
+            "fases": [("Lectura de instrucciones",120,"#0891b2"),("Desarrollo del examen",2400,"#1e293b"),("Revisión final",300,"#f59e0b")],
+            "reglas": ["Trabajo individual en silencio","Prohibido el celular","Levantar la mano para consultas","Al terminar: esperar en silencio"]
         },
         "⚙️ Personalizado": {
-            "desc": "Crea tu propio temporizador con fases y tiempos a medida",
-            "guia": {
-                "que_es": "Modo personalizado: el docente configura las fases, tiempos y reglas específicas para la actividad del día.",
-                "como_funciona": [
-                    "El docente define el nombre y duración de cada fase.",
-                    "Escribe las reglas específicas para esta actividad.",
-                    "Los alumnos siguen las instrucciones que aparecen en pantalla.",
-                ],
-                "clave": "Presta atención a las reglas que aparecen en el panel — el docente las configuró específicamente para esta actividad.",
-            },
+            "color": "#475569", "emoji": "⚙️",
+            "desc": "Crea tu propio temporizador con fases, tiempos y reglas a medida",
+            "guia": {"que_es": "El docente configura fases, tiempos y reglas específicas para la actividad del día.", "como_funciona": ["Define el número de fases.","Nombra cada fase y su duración.","Escribe las reglas específicas.","Los alumnos siguen lo que aparece en pantalla."], "clave": "Presta atención a las reglas — el docente las configuró para esta actividad."},
             "fases": [],
             "reglas": []
         },
     }
 
+    # ── LAYOUT ────────────────────────────────────────────────────────
     col_conf, col_timer = st.columns([1, 2])
 
     with col_conf:
-        modo_sel = st.selectbox("Modo:", list(MODOS.keys()), key="tmr_modo")
+        modo_sel = st.selectbox("Actividad:", list(MODOS.keys()), key="tmr_modo",
+                                 format_func=lambda x: x)
         modo = MODOS[modo_sel]
-        st.caption(modo["desc"])
+        st.markdown(f"<div style='background:{modo['color']}22;border-left:4px solid {modo['color']};"
+                    f"padding:8px 12px;border-radius:6px;font-size:0.85rem;color:#334155;"
+                    f"margin-bottom:8px;'>{modo['desc']}</div>", unsafe_allow_html=True)
 
         if modo_sel == "⚙️ Personalizado":
-            st.markdown("**Configurar fases:**")
             n_fases = st.number_input("Número de fases:", 1, 10, 3, key="tmr_n_fases")
             fases_custom = []
             for fi in range(int(n_fases)):
                 c1, c2 = st.columns([2, 1])
-                with c1:
-                    nombre_f = st.text_input(f"Fase {fi+1}:", f"Fase {fi+1}", key=f"tmr_fn_{fi}")
-                with c2:
-                    seg_f = st.number_input("Seg:", 10, 3600, 60, key=f"tmr_fs_{fi}")
+                with c1: nombre_f = st.text_input(f"Fase {fi+1}:", f"Fase {fi+1}", key=f"tmr_fn_{fi}")
+                with c2: seg_f = st.number_input("Seg:", 10, 3600, 60, key=f"tmr_fs_{fi}")
                 fases_custom.append((nombre_f, seg_f, "#7c3aed"))
             fases = fases_custom
-            reglas_txt = st.text_area("Reglas (una por línea):", key="tmr_reglas_custom", height=100)
+            reglas_txt = st.text_area("Reglas (una por línea):", key="tmr_reglas_custom", height=80)
             reglas = [r.strip() for r in reglas_txt.split("\n") if r.strip()]
         else:
             fases = modo["fases"]
             reglas = modo["reglas"]
 
-        # Guía para los estudiantes
-        guia = modo.get("guia", {}) if modo_sel != "⚙️ Personalizado" else {}
+        # Guía
+        guia = modo.get("guia", {})
         if guia:
-            with st.expander("📖 Guía para estudiantes — ¿Qué es y cómo funciona?", expanded=False):
+            with st.expander("📖 Guía para estudiantes", expanded=False):
                 st.markdown(f"**¿Qué es?** {guia.get('que_es','')}")
                 st.markdown("**¿Cómo funciona?**")
                 for paso in guia.get("como_funciona", []):
                     st.markdown(f"- {paso}")
                 if guia.get("clave"):
-                    st.info(f"**Clave:** {guia['clave']}")
+                    st.info(f"💡 **Clave:** {guia['clave']}")
 
+        # Reglas
         if reglas:
-            st.markdown("**Reglas activas:**")
+            st.markdown("**Reglas:**")
             for r in reglas:
-                st.markdown(f"• {r}")
+                st.markdown(f"<div style='background:#f1f5f9;padding:4px 10px;border-radius:6px;"
+                            f"font-size:0.82rem;margin:2px 0;'>• {r}</div>",
+                            unsafe_allow_html=True)
 
     with col_timer:
-        import json as _json_tmr
-        fases_js = _json_tmr.dumps([
-            {"nombre": f[0], "seg": f[1], "color": f[2]} for f in fases
-        ])
+        fases_js = _json_tmr.dumps([{"nombre": f[0], "seg": f[1], "color": f[2]} for f in fases])
         reglas_js = _json_tmr.dumps(reglas)
         guia_data = modo.get("guia", {}) if modo_sel != "⚙️ Personalizado" else {}
         guia_js = _json_tmr.dumps(guia_data)
+        color_principal = modo.get("color", "#7c3aed")
+        emoji_modo = modo.get("emoji", "⏱️")
 
         _comp_tmr.html(f"""<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{background:#0f172a;color:white;font-family:'Segoe UI',sans-serif;
-  padding:16px;min-height:680px;display:flex;flex-direction:column;gap:12px;}}
-.fase-titulo{{font-size:1.1rem;color:#94a3b8;text-align:center;font-weight:600;}}
-.fase-nombre{{font-size:2.8rem;font-weight:900;text-align:center;margin:4px 0;
-  text-shadow:0 2px 12px rgba(0,0,0,0.5);}}
-.timer-display{{text-align:center;margin:8px 0;position:relative;}}
-.timer-svg{{filter:drop-shadow(0 0 20px var(--col));}}
-.timer-num{{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-size:5.5rem;font-weight:900;}}
-.timer-label{{position:absolute;top:68%;left:50%;transform:translateX(-50%);
-  font-size:1rem;color:rgba(255,255,255,0.6);}}
-.barra-abajo{{height:8px;border-radius:4px;background:rgba(255,255,255,0.1);margin:0 8px;}}
-.barra-fill{{height:8px;border-radius:4px;transition:width 0.9s linear;}}
+body{{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+  color:white;font-family:'Segoe UI',sans-serif;
+  padding:16px;min-height:560px;display:flex;flex-direction:column;gap:10px;}}
+.header{{text-align:center;}}
+.modo-emoji{{font-size:2.5rem;line-height:1;margin-bottom:4px;}}
+.fase-titulo{{font-size:0.85rem;color:#94a3b8;font-weight:600;letter-spacing:1px;text-transform:uppercase;}}
+.fase-nombre{{font-size:1.8rem;font-weight:900;margin:4px 0;
+  background:linear-gradient(90deg,var(--col),#ffffff88);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;}}
+.timer-wrap{{display:flex;justify-content:center;align-items:center;position:relative;margin:4px 0;}}
+.timer-svg{{filter:drop-shadow(0 0 16px var(--col));}}
+.timer-num{{position:absolute;font-size:3.2rem;font-weight:900;
+  text-shadow:0 2px 20px rgba(0,0,0,0.8);}}
+.timer-sub{{position:absolute;top:60%;left:50%;transform:translateX(-50%);
+  font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:2px;}}
+.progress-bar{{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}}
+.progress-fill{{height:6px;border-radius:3px;transition:width 0.9s linear;}}
 .btns{{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}}
-.btn{{padding:10px 20px;border-radius:10px;border:none;cursor:pointer;
-  font-size:0.95rem;font-weight:700;transition:all 0.2s;}}
-.btn-play{{background:#16a34a;color:white;}}
-.btn-pause{{background:#d97706;color:white;}}
-.btn-reset{{background:#dc2626;color:white;}}
-.btn-next{{background:#2563eb;color:white;}}
-.fases-lista{{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}}
-.fase-chip{{padding:4px 10px;border-radius:20px;font-size:0.72rem;
-  font-weight:600;opacity:0.45;transition:all 0.3s;}}
-.fase-chip.activa{{opacity:1;transform:scale(1.1);box-shadow:0 0 10px rgba(255,255,255,0.3);}}
-.fase-chip.done{{opacity:0.25;text-decoration:line-through;}}
-.reglas-box{{background:rgba(255,255,255,0.06);border-radius:10px;padding:10px 14px;
-  font-size:0.78rem;color:#94a3b8;line-height:1.6;}}
-@keyframes flash{{0%,100%{{opacity:1}}50%{{opacity:0.2}}}}
-.tiempo-up{{animation:flash 0.5s ease infinite;}}
-</style>
-</head>
-<body>
-<div class="fase-titulo" id="titulo-fase">— Listo para comenzar —</div>
-<div class="fase-nombre" id="nombre-fase" style="color:#f59e0b;">Selecciona un modo y presiona INICIAR</div>
-<div class="timer-display">
-  <svg class="timer-svg" width="260" height="260" viewBox="0 0 260 260"
-       style="--col:#7c3aed">
-    <circle cx="130" cy="130" r="114" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
-    <circle id="tring" cx="130" cy="130" r="114" fill="none"
-      stroke="#7c3aed" stroke-width="12" stroke-linecap="round"
-      stroke-dasharray="716" stroke-dashoffset="716"
-      transform="rotate(-90 130 130)"/>
+.btn{{padding:10px 18px;border-radius:12px;border:none;cursor:pointer;
+  font-size:0.9rem;font-weight:700;transition:all 0.15s;letter-spacing:0.5px;}}
+.btn:hover{{transform:translateY(-1px);filter:brightness(1.15);}}
+.btn:active{{transform:translateY(0);}}
+.btn-play{{background:linear-gradient(135deg,#16a34a,#15803d);color:white;box-shadow:0 4px 12px rgba(22,163,74,0.4);}}
+.btn-next{{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;box-shadow:0 4px 12px rgba(37,99,235,0.4);}}
+.btn-reset{{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;box-shadow:0 4px 12px rgba(220,38,38,0.4);}}
+.btn-fs{{background:linear-gradient(135deg,#475569,#334155);color:white;}}
+.fases-lista{{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}}
+.fase-chip{{padding:4px 10px;border-radius:20px;font-size:0.7rem;
+  font-weight:600;opacity:0.4;transition:all 0.3s;cursor:default;}}
+.fase-chip.activa{{opacity:1;transform:scale(1.1);box-shadow:0 0 12px rgba(255,255,255,0.25);}}
+.fase-chip.done{{opacity:0.2;}}
+.info-box{{background:rgba(255,255,255,0.05);border-radius:10px;
+  padding:10px 12px;font-size:0.75rem;color:#94a3b8;line-height:1.6;}}
+@keyframes flash{{0%,100%{{opacity:1}}50%{{opacity:0.1}}}}
+.flash{{animation:flash 0.4s ease 3;}}
+@keyframes pulsar{{0%,100%{{transform:scale(1)}}50%{{transform:scale(1.05)}}}}
+.pulsar{{animation:pulsar 1s ease infinite;}}
+</style></head><body>
+<div class="header">
+  <div class="modo-emoji" id="modo-emoji">{emoji_modo}</div>
+  <div class="fase-titulo" id="titulo-fase">Listo para comenzar</div>
+  <div class="fase-nombre" id="nombre-fase" style="--col:{color_principal}">
+    Selecciona y presiona INICIAR
+  </div>
+</div>
+<div class="timer-wrap">
+  <svg class="timer-svg" width="180" height="180" viewBox="0 0 180 180"
+       style="--col:{color_principal}">
+    <circle cx="90" cy="90" r="76" fill="none"
+      stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+    <circle id="tring" cx="90" cy="90" r="76" fill="none"
+      stroke="{color_principal}" stroke-width="12" stroke-linecap="round"
+      stroke-dasharray="478" stroke-dashoffset="478"
+      transform="rotate(-90 90 90)"
+      style="transition:stroke-dashoffset 0.9s linear, stroke 0.3s ease;"/>
   </svg>
   <div class="timer-num" id="tnum">--:--</div>
-  <div class="timer-label" id="tlabel">SEG</div>
+  <div class="timer-sub">MIN : SEG</div>
 </div>
-<div class="barra-abajo"><div class="barra-fill" id="bfill" style="width:0%;background:#7c3aed;"></div></div>
+<div class="progress-bar">
+  <div class="progress-fill" id="pfill" style="width:0%;background:{color_principal};"></div>
+</div>
 <div class="btns">
-  <button class="btn btn-play" id="btn-play" onclick="togglePlay()">&#9654; INICIAR</button>
-  <button class="btn btn-next" onclick="siguienteFase()">&#9197; SIGUIENTE</button>
-  <button class="btn btn-reset" onclick="resetTimer()">&#8634; REINICIAR</button>
-  <button class="btn" onclick="toggleFS()" style="background:#475569;color:white;">&#x26F6; PANTALLA COMPLETA</button>
+  <button class="btn btn-play" id="btnplay" onclick="togglePlay()">&#9654; INICIAR</button>
+  <button class="btn btn-next" onclick="nextFase()">&#9197; SIGUIENTE</button>
+  <button class="btn btn-reset" onclick="resetAll()">&#8634; REINICIAR</button>
+  <button class="btn btn-fs" onclick="toggleFS()">&#x26F6; PANTALLA</button>
 </div>
 <div class="fases-lista" id="fases-lista"></div>
-<div class="reglas-box" id="reglas-box" style="display:none"></div>
-<div id="guia-box" style="display:none;background:rgba(255,255,255,0.05);border-radius:10px;
-  padding:10px 14px;font-size:0.78rem;color:#94a3b8;line-height:1.6;margin-top:4px;"></div>
+<div class="info-box" id="infobox" style="display:none"></div>
 
 <script>
-const FASES = {fases_js};
-const REGLAS = {reglas_js};
-const GUIA = {guia_js};
-const CIRCUM = 716;
-let faseIdx = 0, seg = 0, maxSeg = 0, iv = null, corriendo = false;
+const FASES={fases_js};
+const REGLAS={reglas_js};
+const GUIA={guia_js};
+const CIRCUM=478;
+let fi=0,seg=0,maxSeg=0,iv=null,run=false;
 
-function fmt(s) {{
-  const m = Math.floor(s/60), ss = s%60;
-  return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
-}}
+const fmt=s=>((m=Math.floor(s/60),ss=s%60),(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss);
 
-function renderFases() {{
-  const c = document.getElementById('fases-lista');
-  c.innerHTML = '';
-  FASES.forEach((f,i) => {{
-    const d = document.createElement('div');
-    d.className = 'fase-chip' + (i===faseIdx?' activa':i<faseIdx?' done':'');
-    d.style.background = f.color + '44';
-    d.style.color = f.color;
-    d.style.border = '1.5px solid ' + f.color;
-    d.textContent = (i<faseIdx?'\u2713 ':i===faseIdx?'\u25b6 ':'') + f.nombre;
+function renderChips(){{
+  const c=document.getElementById('fases-lista');c.innerHTML='';
+  FASES.forEach((f,i)=>{{
+    const d=document.createElement('div');
+    d.className='fase-chip'+(i===fi?' activa':i<fi?' done':'');
+    d.style.background=f.color+'33';d.style.color=f.color;
+    d.style.border='1.5px solid '+f.color+'88';
+    d.textContent=(i<fi?'✓ ':i===fi?'▶ ':'')+f.nombre;
     c.appendChild(d);
   }});
 }}
 
-function renderGuiaYReglas() {{
-  const rb = document.getElementById('reglas-box');
-  const gb = document.getElementById('guia-box');
-  if(REGLAS.length > 0) {{
-    rb.style.display = 'block';
-    rb.innerHTML = '<b style="color:white;font-size:0.82rem;">Reglas:</b><br>' + REGLAS.map(r=>'&#x2022; '+r).join('<br>');
+function renderInfo(){{
+  const b=document.getElementById('infobox');
+  let html='';
+  if(REGLAS.length>0){{
+    html+='<b style="color:white;font-size:0.8rem;">Reglas:</b><br>';
+    html+=REGLAS.map(r=>'• '+r).join('<br>')+'<br>';
   }}
-  if(GUIA && GUIA.que_es) {{
-    gb.style.display = 'block';
-    let html = '<details style="cursor:pointer;">';
-    html += '<summary style="color:#a5b4fc;font-weight:700;font-size:0.8rem;">&#x1F4D6; &#191;Qu&#233; es esta actividad? (clic para ver)</summary>';
-    html += '<div style="margin-top:8px;">';
-    html += '<p style="color:#e2e8f0;margin-bottom:6px;">' + GUIA.que_es + '</p>';
-    if(GUIA.como_funciona && GUIA.como_funciona.length > 0) {{
-      html += '<b style="color:#a5b4fc;">&#191;C&#243;mo funciona?</b><br>';
-      GUIA.como_funciona.forEach((p,i) => {{ html += '<span style="color:#cbd5e1;">&#x2192; ' + p + '</span><br>'; }});
-    }}
-    if(GUIA.clave) {{
-      html += '<div style="margin-top:8px;padding:6px 10px;background:rgba(245,158,11,0.15);border-left:3px solid #f59e0b;border-radius:4px;">';
-      html += '<b style="color:#fbbf24;">Clave:</b> <span style="color:#e2e8f0;">' + GUIA.clave + '</span></div>';
-    }}
-    html += '</div></details>';
-    gb.innerHTML = html;
+  if(GUIA&&GUIA.que_es){{
+    html+='<details style="margin-top:6px;cursor:pointer;">';
+    html+='<summary style="color:#a5b4fc;font-weight:700;font-size:0.78rem;">📖 Guía para estudiantes</summary>';
+    html+='<p style="color:#e2e8f0;margin:6px 0;">'+GUIA.que_es+'</p>';
+    if(GUIA.clave)html+='<div style="background:rgba(245,158,11,0.15);padding:4px 8px;border-left:3px solid #f59e0b;border-radius:3px;color:#fde68a;">💡 '+GUIA.clave+'</div>';
+    html+='</details>';
   }}
+  if(html){{b.style.display='block';b.innerHTML=html;}}
 }}
 
-function cargarFase() {{
-  if(faseIdx >= FASES.length) {{ finTodo(); return; }}
-  const f = FASES[faseIdx];
-  seg = f.seg; maxSeg = f.seg;
-  document.getElementById('titulo-fase').textContent = 'Fase '+(faseIdx+1)+' / '+FASES.length;
-  document.getElementById('nombre-fase').textContent = f.nombre;
-  document.getElementById('nombre-fase').style.color = f.color;
-  document.getElementById('tring').style.stroke = f.color;
-  document.getElementById('bfill').style.background = f.color;
-  document.querySelector('.timer-svg').style.setProperty('--col', f.color);
-  updateDisplay();
-  renderFases();
+function loadFase(){{
+  if(fi>=FASES.length){{finAll();return;}}
+  const f=FASES[fi];seg=f.seg;maxSeg=f.seg;
+  document.getElementById('titulo-fase').textContent='Fase '+(fi+1)+' / '+FASES.length;
+  document.getElementById('nombre-fase').textContent=f.nombre;
+  document.getElementById('nombre-fase').style.setProperty('--col',f.color);
+  document.getElementById('tring').style.stroke=f.color;
+  document.getElementById('pfill').style.background=f.color;
+  updateUI();renderChips();
 }}
 
-function updateDisplay() {{
-  document.getElementById('tnum').textContent = fmt(seg);
-  const pct = seg/maxSeg;
-  const off = CIRCUM*(1-pct);
-  document.getElementById('tring').style.strokeDashoffset = off;
-  document.getElementById('bfill').style.width = (pct*100)+'%';
-  const tn = document.getElementById('tnum');
-  if(seg <= 10 && seg > 0) {{ tn.classList.add('tiempo-up'); }}
-  else {{ tn.classList.remove('tiempo-up'); }}
+function updateUI(){{
+  document.getElementById('tnum').textContent=fmt(seg);
+  const pct=seg/maxSeg;
+  document.getElementById('tring').style.strokeDashoffset=CIRCUM*(1-pct);
+  document.getElementById('pfill').style.width=(pct*100)+'%';
+  const tn=document.getElementById('tnum');
+  if(seg<=10&&seg>0)tn.classList.add('pulsar');else tn.classList.remove('pulsar');
 }}
 
-function tick() {{
-  if(seg > 0) {{ seg--; updateDisplay(); }}
-  else {{ clearInterval(iv); iv=null; corriendo=false;
-    document.getElementById('btn-play').textContent='▶ INICIAR';
-    // Sonido visual
-    document.body.style.background='#16a34a';
-    setTimeout(()=>document.body.style.background='#0f172a', 600);
-    setTimeout(()=>document.body.style.background='#16a34a', 1200);
-    setTimeout(()=>{{ document.body.style.background='#0f172a';
-      faseIdx++; cargarFase(); }}, 1800);
+function tick(){{
+  if(seg>0){{seg--;updateUI();}}
+  else{{
+    clearInterval(iv);iv=null;run=false;
+    document.getElementById('btnplay').innerHTML='&#9654; INICIAR';
+    // Flash verde y avanzar
+    document.body.style.background='linear-gradient(135deg,#14532d,#166534)';
+    const el=document.getElementById('fase-nombre');
+    setTimeout(()=>document.body.style.background='linear-gradient(135deg,#0f172a,#1e293b)',600);
+    setTimeout(()=>{{fi++;loadFase();}},1500);
   }}
 }}
 
-function togglePlay() {{
-  if(!corriendo) {{
+function togglePlay(){{
+  if(!run){{
     if(FASES.length===0)return;
-    if(seg===0 && faseIdx===0){{ cargarFase(); }}
-    corriendo=true; iv=setInterval(tick,1000);
-    document.getElementById('btn-play').textContent='⏸ PAUSAR';
-  }} else {{
-    corriendo=false; clearInterval(iv); iv=null;
-    document.getElementById('btn-play').textContent='▶ CONTINUAR';
+    if(seg===0&&fi===0)loadFase();
+    run=true;iv=setInterval(tick,1000);
+    document.getElementById('btnplay').innerHTML='&#9646;&#9646; PAUSAR';
+  }}else{{
+    run=false;clearInterval(iv);iv=null;
+    document.getElementById('btnplay').innerHTML='&#9654; CONTINUAR';
   }}
 }}
 
-function siguienteFase() {{
-  if(corriendo){{ corriendo=false; clearInterval(iv); iv=null; }}
-  faseIdx = Math.min(faseIdx+1, FASES.length-1);
-  cargarFase();
-  document.getElementById('btn-play').textContent='▶ INICIAR';
+function nextFase(){{
+  if(run){{run=false;clearInterval(iv);iv=null;}}
+  fi=Math.min(fi+1,FASES.length-1);loadFase();
+  document.getElementById('btnplay').innerHTML='&#9654; INICIAR';
 }}
 
-function resetTimer() {{
-  corriendo=false; clearInterval(iv); iv=null;
-  faseIdx=0; cargarFase();
-  document.getElementById('btn-play').textContent='\u25b6 INICIAR';
+function resetAll(){{
+  run=false;clearInterval(iv);iv=null;fi=0;
+  if(FASES.length>0)loadFase();
+  document.getElementById('btnplay').innerHTML='&#9654; INICIAR';
 }}
 
-function toggleFS() {{
-  if(!document.fullscreenElement) {{
-    document.documentElement.requestFullscreen().catch(()=>{{}});
-  }} else {{
-    document.exitFullscreen();
-  }}
-}}
-
-function finTodo() {{
-  document.getElementById('titulo-fase').textContent='🏁 ACTIVIDAD COMPLETADA';
-  document.getElementById('nombre-fase').textContent='Todas las fases terminaron';
+function finAll(){{
+  document.getElementById('titulo-fase').textContent='🏁 COMPLETADO';
+  document.getElementById('nombre-fase').textContent='¡Actividad terminada!';
   document.getElementById('tnum').textContent='00:00';
-  document.getElementById('bfill').style.width='0%';
-  renderFases();
+  document.getElementById('pfill').style.width='0%';
+  renderChips();
 }}
 
-// Init
-if(FASES.length>0){{ cargarFase(); renderGuiaYReglas(); }}
-else{{
-  document.getElementById('titulo-fase').textContent='Sin fases configuradas';
-  document.getElementById('nombre-fase').textContent='Configura el modo en el panel';
+function toggleFS(){{
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{{}});
+  else document.exitFullscreen();
 }}
-</script>
-</body></html>""", height=700, scrolling=False)
+
+if(FASES.length>0){{loadFase();renderInfo();}}
+else{{
+  document.getElementById('titulo-fase').textContent='Modo personalizado';
+  document.getElementById('nombre-fase').textContent='Configura tus fases en el panel';
+  renderInfo();
+}}
+</script></body></html>""", height=590, scrolling=False)
+
+
+
+# ════════════════════════════════════════════════════════════════════
+# MÓDULO: HORARIO DE CLASES
+# ════════════════════════════════════════════════════════════════════
+
+COLORES_CURSOS = {
+    "Matemática": "#bbf7d0", "Aritmética": "#bbf7d0", "Álgebra": "#bbf7d0",
+    "Geometría": "#bbf7d0", "Trigonometría": "#bbf7d0", "Cálculo": "#bbf7d0",
+    "Comunicación": "#bfdbfe", "Gramática": "#bfdbfe", "Redacción": "#bfdbfe",
+    "Literatura": "#bfdbfe", "Lectura": "#bfdbfe",
+    "Historia": "#fde68a", "Geografía": "#fde68a", "Ciencias Sociales": "#fde68a",
+    "Economía": "#fde68a",
+    "Ciencia": "#d9f99d", "Biología": "#d9f99d", "Física": "#d9f99d",
+    "Química": "#d9f99d", "CTA": "#d9f99d",
+    "Inglés": "#e9d5ff", "Francés": "#e9d5ff",
+    "Arte": "#fbcfe8", "Educación Artística": "#fbcfe8", "Música": "#fbcfe8",
+    "Ed. Física": "#fed7aa", "Educación Física": "#fed7aa",
+    "Religión": "#e0e7ff", "Educación Religiosa": "#e0e7ff",
+    "Tutoría": "#fecaca", "Computación": "#cffafe",
+    "Razonamiento Verbal": "#bfdbfe", "Razonamiento Matemático": "#bbf7d0",
+    "Recreo": "#f1f5f9",
+}
+
+def _color_curso(nombre):
+    for k, v in COLORES_CURSOS.items():
+        if k.lower() in nombre.lower():
+            return v
+    return "#f8fafc"
+
+
+def _generar_pdf_horario(docente, grado, anio, horario_data, horas, dias, areas_colores=None):
+    """Genera horario de clases en PDF con colores pasteles por área."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io
+
+    if areas_colores is None:
+        areas_colores = COLORES_CURSOS
+
+    def _get_color(nombre):
+        for k, v in areas_colores.items():
+            if k.lower() in nombre.lower():
+                return v
+        # Fallback to COLORES_CURSOS
+        for k, v in COLORES_CURSOS.items():
+            if k.lower() in nombre.lower():
+                return v
+        return "#f8fafc"
+
+    def hex2rgb(h):
+        h = h.lstrip('#')
+        return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
+
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.5*cm, rightMargin=1.5*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=14, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=6, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=10, parent=styles['Normal'])
+
+    # Construir tabla
+    header = ["Hora"] + dias
+    rows = [header]
+    for hora in horas:
+        row = [hora]
+        for dia in dias:
+            val = horario_data.get(hora, {}).get(dia, "")
+            row.append(val)
+        rows.append(row)
+
+    # Anchos de columna
+    n_dias = len(dias)
+    total_w = 25*cm
+    hora_w = 2.8*cm
+    dia_w = (total_w - hora_w) / n_dias
+    col_widths = [hora_w] + [dia_w]*n_dias
+    row_heights = [1*cm] + [1.8*cm]*(len(horas))
+
+    style_cmds = [
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,0), 10),
+        ('BACKGROUND', (0,0), (-1,0), colors.Color(0.12,0.12,0.35)),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.Color(0.7,0.7,0.7)),
+        ('FONTNAME', (0,1), (0,-1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,1), (0,-1), 8),
+        ('BACKGROUND', (0,1), (0,-1), colors.Color(0.9,0.9,0.95)),
+    ]
+
+    # Colorear celdas por curso
+    for ri, hora in enumerate(horas, 1):
+        for ci, dia in enumerate(dias, 1):
+            val = horario_data.get(hora, {}).get(dia, "")
+            if val and val != "RECREO":
+                hex_c = _get_color(val)
+                r,g,b = hex2rgb(hex_c)
+                style_cmds.append(('BACKGROUND', (ci,ri), (ci,ri), colors.Color(r,g,b)))
+            elif val == "RECREO":
+                style_cmds.append(('BACKGROUND', (ci,ri), (ci,ri), colors.Color(0.85,0.9,0.85)))
+                style_cmds.append(('FONTNAME', (ci,ri), (ci,ri), 'Helvetica-BoldOblique'))
+                style_cmds.append(('FONTSIZE', (ci,ri), (ci,ri), 9))
+
+    t = Table(rows, colWidths=col_widths, rowHeights=row_heights)
+    t.setStyle(TableStyle(style_cmds))
+
+    # Construir leyenda de colores en el pie
+    leyenda_items = []
+    areas_vistas = set()
+    for hora in horas:
+        for dia in dias:
+            val = horario_data.get(hora, {}).get(dia, "")
+            if val and val not in ("RECREO", "") and val not in areas_vistas:
+                areas_vistas.add(val)
+                hex_c = _get_color(val)
+                r, g, b = hex2rgb(hex_c)
+                leyenda_items.append([val, colors.Color(r, g, b)])
+
+    story = [
+        Paragraph(f"HORARIO DE CLASES — {grado.upper()}", st_t),
+        Paragraph(f"Docente: {docente}  |  Año {anio}  |  I.E.P. ALTERNATIVO YACHAY", st_s),
+        t,
+    ]
+
+    # Leyenda
+    if leyenda_items:
+        story.append(Spacer(1, 0.3*cm))
+        n_col = min(len(leyenda_items), 8)
+        ley_row = []
+        for nombre, col_r in leyenda_items:
+            ley_row.append(nombre)
+        ley_table_data = [ley_row[:n_col]]
+        ley_widths = [(25*cm) / n_col] * n_col
+        ley_t = Table(ley_table_data, colWidths=ley_widths, rowHeights=[0.5*cm])
+        ley_style = [
+            ('FONTSIZE',(0,0),(-1,-1), 7.5),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('GRID',(0,0),(-1,-1), 0.3, colors.Color(0.8,0.8,0.8)),
+        ]
+        for ci, (_, col_r) in enumerate(leyenda_items[:n_col]):
+            ley_style.append(('BACKGROUND',(ci,0),(ci,0), col_r))
+        ley_t.setStyle(TableStyle(ley_style))
+        story.append(ley_t)
+
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_horario_blanco(grado, anio, horas, dias):
+    """Genera horario en blanco para llenar a mano."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.5*cm, rightMargin=1.5*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=13, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
+                           spaceAfter=8, parent=styles['Normal'])
+    header = ["Hora"] + dias
+    rows = [header] + [[h]+[""]*len(dias) for h in horas]
+    n_dias = len(dias)
+    hora_w = 2.8*cm
+    dia_w = (25*cm - hora_w) / n_dias
+    t = Table(rows, colWidths=[hora_w]+[dia_w]*n_dias,
+              rowHeights=[1*cm]+[2*cm]*len(horas))
+    t.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,0),10),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.12,0.12,0.35)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('GRID',(0,0),(-1,-1),0.5,colors.Color(0.6,0.6,0.6)),
+        ('FONTNAME',(0,1),(0,-1),'Helvetica-Bold'),
+        ('FONTSIZE',(0,1),(0,-1),8),
+        ('BACKGROUND',(0,1),(0,-1),colors.Color(0.93,0.93,0.97)),
+    ]))
+    story = [
+        Paragraph(f"HORARIO DE CLASES — {grado.upper() if grado else 'GRADO Y SECCIÓN'}", st_t),
+        Paragraph(f"Docente: _________________________  |  Año {anio}  |  I.E.P. ALTERNATIVO YACHAY", st_s),
+        t,
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+
+def _horario_guardar(usuario, grado, horario_data, horas, dias, areas, docente_nombre):
+    """Guarda el horario del docente en GSheets (Config) y JSON local."""
+    import json as _j, time as _t
+    clave = f"horario_{usuario}"
+    datos = {
+        "usuario": usuario,
+        "docente": docente_nombre,
+        "grado": grado,
+        "horas": horas,
+        "dias": dias,
+        "areas": areas,
+        "horario": horario_data,
+        "ts": _t.time(),
+    }
+    valor = _j.dumps(datos, ensure_ascii=False)
+    # Local
+    try:
+        horarios_local = {}
+        if Path("horarios.json").exists():
+            with open("horarios.json","r",encoding="utf-8") as f:
+                horarios_local = _j.load(f)
+        horarios_local[clave] = datos
+        with open("horarios.json","w",encoding="utf-8") as f:
+            _j.dump(horarios_local, f, ensure_ascii=False)
+    except Exception: pass
+    # GSheets en hilo de fondo
+    import threading as _th
+    def _bg():
+        try:
+            gs = _gs()
+            if gs:
+                hoja = gs._get_hoja('config')
+                if hoja:
+                    celdas = hoja.get_all_records()
+                    for i, row in enumerate(celdas):
+                        if str(row.get('clave','')).strip() == clave:
+                            hoja.update_cell(i+2, 2, valor)
+                            return
+                    hoja.append_row([clave, valor])
+        except Exception: pass
+    _th.Thread(target=_bg, daemon=True).start()
+
+
+def _horarios_cargar_todos():
+    """Carga todos los horarios guardados (para directivo/admin)."""
+    import json as _j
+    horarios = {}
+    # 1. Local
+    try:
+        if Path("horarios.json").exists():
+            with open("horarios.json","r",encoding="utf-8") as f:
+                horarios = _j.load(f)
+    except Exception: pass
+    # 2. GSheets
+    try:
+        gs = _gs()
+        if gs:
+            hoja = gs._get_hoja('config')
+            if hoja:
+                for row in hoja.get_all_records():
+                    clave = str(row.get('clave','')).strip()
+                    if clave.startswith('horario_'):
+                        try:
+                            datos = _j.loads(str(row.get('valor','{}')))
+                            horarios[clave] = datos
+                        except Exception: pass
+    except Exception: pass
+    return horarios
+
+
+def _horario_cargar_usuario(usuario):
+    """Carga el horario de un docente específico."""
+    import json as _j
+    clave = f"horario_{usuario}"
+    # Local primero
+    try:
+        if Path("horarios.json").exists():
+            with open("horarios.json","r",encoding="utf-8") as f:
+                todos = _j.load(f)
+                if clave in todos:
+                    return todos[clave]
+    except Exception: pass
+    # GSheets
+    try:
+        gs = _gs()
+        if gs:
+            hoja = gs._get_hoja('config')
+            if hoja:
+                for row in hoja.get_all_records():
+                    if str(row.get('clave','')).strip() == clave:
+                        return _j.loads(str(row.get('valor','{}')))
+    except Exception: pass
+    return None
+
+
+def _tab_horario(config):
+    """Módulo de construcción de horario de clases con áreas personalizadas."""
+    anio = config.get('anio', 2026)
+    st.header("📅 Horario de Clases")
+    st.caption("Construye y descarga el horario semanal con colores pasteles por área")
+
+    usuario_actual = st.session_state.get('usuario_actual', 'docente')
+
+    # ── Cargar horario guardado al entrar ─────────────────────────────
+    if 'h_cargado_inicial' not in st.session_state:
+        datos_guardados = _horario_cargar_usuario(usuario_actual)
+        if datos_guardados:
+            st.session_state.horario_data = datos_guardados.get('horario', {})
+            st.session_state.h_areas = datos_guardados.get('areas', st.session_state.get('h_areas', {}))
+            st.session_state['h_grado_guardado'] = datos_guardados.get('grado', '')
+            st.session_state['h_docente_guardado'] = datos_guardados.get('docente', '')
+            st.session_state['h_horas_guardadas'] = datos_guardados.get('horas', [])
+            st.session_state['h_dias_guardados'] = datos_guardados.get('dias', [])
+            st.info(f"📂 Horario anterior cargado — **{datos_guardados.get('grado','')}**")
+        st.session_state['h_cargado_inicial'] = True
+
+    # ── Paleta de colores pastel disponibles ──────────────────────────
+    PALETA = [
+        "#bbf7d0","#bfdbfe","#fde68a","#d9f99d","#e9d5ff",
+        "#fbcfe8","#fed7aa","#e0e7ff","#fecaca","#cffafe",
+        "#fef9c3","#d1fae5","#ede9fe","#fce7f3","#dcfce7",
+        "#dbeafe","#fef3c7","#ecfdf5","#f3e8ff","#fff7ed",
+    ]
+
+    # ── Inicializar áreas personalizadas en session_state ─────────────
+    if 'h_areas' not in st.session_state:
+        st.session_state.h_areas = {
+            "Matemática": "#bbf7d0",
+            "Comunicación": "#bfdbfe",
+            "Ciencias Sociales": "#fde68a",
+            "Ciencia y Tec.": "#d9f99d",
+            "Inglés": "#e9d5ff",
+            "Arte": "#fbcfe8",
+            "Ed. Física": "#fed7aa",
+            "Religión": "#e0e7ff",
+            "Tutoría": "#fecaca",
+            "Recreo": "#f1f5f9",
+        }
+
+    h_tab1, h_tab2, h_tab3, h_tab4 = st.tabs([
+        "✏️ Crear Horario", "🎨 Mis Áreas / Materias",
+        "🤖 Organizar Automático", "📋 Descargar Blanco"])
+
+    # ══════════════════════════════════════════════════════════════════
+    with h_tab2:
+        st.markdown("#### Gestiona tus áreas y sus colores")
+        st.caption("Agrega las materias de tu colegio — el sistema asigna colores automáticamente")
+
+        # Mostrar áreas actuales
+        st.markdown("**Áreas actuales:**")
+        areas_to_delete = []
+        cols_a = st.columns(4)
+        for i, (area, color) in enumerate(st.session_state.h_areas.items()):
+            with cols_a[i % 4]:
+                st.markdown(
+                    f"<div style='background:{color};padding:8px 10px;border-radius:8px;"
+                    f"text-align:center;font-size:0.82rem;font-weight:600;color:#1e293b;"
+                    f"margin-bottom:6px;border:1px solid rgba(0,0,0,0.1);'>{area}</div>",
+                    unsafe_allow_html=True)
+                if area != "Recreo":
+                    if st.button("🗑️", key=f"del_area_{i}", help=f"Eliminar {area}"):
+                        areas_to_delete.append(area)
+        for a in areas_to_delete:
+            del st.session_state.h_areas[a]
+        if areas_to_delete:
+            st.rerun()
+
+        st.markdown("---")
+        st.markdown("**Agregar nueva área/materia:**")
+        col_n1, col_n2, col_n3 = st.columns([2, 1, 1])
+        with col_n1:
+            nueva_area = st.text_input("Nombre del área:", placeholder="Ej: Razonamiento Verbal",
+                                        key="h_nueva_area")
+        with col_n2:
+            # Color automático o elegir
+            n_areas = len(st.session_state.h_areas)
+            color_auto = PALETA[n_areas % len(PALETA)]
+            color_elegido = st.color_picker("Color:", color_auto, key="h_color_area")
+        with col_n3:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("➕ Agregar", type="primary", key="h_btn_add_area"):
+                if nueva_area.strip():
+                    st.session_state.h_areas[nueva_area.strip()] = color_elegido
+                    st.success(f"✅ '{nueva_area}' agregada")
+                    st.rerun()
+
+        st.markdown("---")
+        if st.button("🔄 Restaurar áreas por defecto", key="h_reset_areas"):
+            del st.session_state['h_areas']
+            st.rerun()
+
+        # Vista previa de leyenda
+        st.markdown("**Vista previa de leyenda:**")
+        cols_l = st.columns(5)
+        for i, (area, color) in enumerate(st.session_state.h_areas.items()):
+            with cols_l[i % 5]:
+                st.markdown(
+                    f"<div style='background:{color};padding:5px 8px;border-radius:6px;"
+                    f"text-align:center;font-size:0.75rem;font-weight:600;color:#1e293b;"
+                    f"margin:2px 0;border:1px solid rgba(0,0,0,0.08);'>{area}</div>",
+                    unsafe_allow_html=True)
+
+    # ══════════════════════════════════════════════════════════════════
+    with h_tab1:
+        col_i, col_d = st.columns([1, 2])
+        with col_i:
+            docente_h = st.text_input("Docente:", placeholder="Apellidos y Nombres", key="h_docente")
+            grado_h = st.text_input("Grado y Sección:", placeholder="4° Primaria — A", key="h_grado")
+
+            HORAS_PRESET = {
+                "Primaria (8:00–14:00)": [
+                    "8:00–8:45","8:45–9:30","9:30–10:00","10:00–10:30",
+                    "10:30–11:00 (Recreo)","11:00–11:45","11:45–12:30","12:30–14:00"
+                ],
+                "Secundaria mañana (7:30–13:00)": [
+                    "7:30–8:15","8:15–9:00","9:00–9:45","9:45–10:30",
+                    "10:30–11:00 (Recreo)","11:00–11:45","11:45–12:30","12:30–13:00"
+                ],
+                "Personalizado": []
+            }
+            preset_h = st.selectbox("Franjas horarias:", list(HORAS_PRESET.keys()), key="h_preset")
+            if preset_h == "Personalizado":
+                horas_txt = st.text_area("Una franja por línea:", height=120, key="h_horas_txt",
+                                          placeholder="8:00-8:45\n8:45-9:30\n...")
+                horas = [h.strip() for h in horas_txt.split("\n") if h.strip()]
+            else:
+                horas = HORAS_PRESET[preset_h]
+
+            dias = st.multiselect("Días:", ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],
+                                   default=["Lunes","Martes","Miércoles","Jueves","Viernes"],
+                                   key="h_dias")
+
+            # Mini leyenda de colores en el panel
+            if st.session_state.h_areas:
+                st.markdown("**Colores disponibles:**")
+                for area, color in list(st.session_state.h_areas.items())[:6]:
+                    st.markdown(
+                        f"<div style='background:{color};padding:3px 8px;border-radius:4px;"
+                        f"font-size:0.72rem;font-weight:600;color:#1e293b;margin:2px 0;'>"
+                        f"{area}</div>", unsafe_allow_html=True)
+                if len(st.session_state.h_areas) > 6:
+                    st.caption(f"+ {len(st.session_state.h_areas)-6} más en pestaña Áreas")
+
+        with col_d:
+            if horas and dias:
+                st.markdown("**Completa el horario:** *(escribe el nombre del área en cada celda)*")
+                if 'horario_data' not in st.session_state:
+                    st.session_state.horario_data = {}
+
+                # Mostrar encabezado de días
+                header_cols = st.columns([1] + [2]*len(dias))
+                with header_cols[0]:
+                    st.markdown("**Hora**")
+                for ci, dia in enumerate(dias):
+                    with header_cols[ci+1]:
+                        st.markdown(f"**{dia}**")
+
+                for hora in horas:
+                    if hora not in st.session_state.horario_data:
+                        st.session_state.horario_data[hora] = {}
+                    is_recreo = "recreo" in hora.lower()
+                    row_cols = st.columns([1] + [2]*len(dias))
+                    with row_cols[0]:
+                        st.markdown(f"<div style='font-size:0.78rem;font-weight:600;"
+                                    f"color:#475569;padding-top:8px;'>{hora}</div>",
+                                    unsafe_allow_html=True)
+                    for ci, dia in enumerate(dias):
+                        with row_cols[ci+1]:
+                            if is_recreo:
+                                st.markdown(
+                                    "<div style='background:#e2e8f0;padding:6px;border-radius:6px;"
+                                    "text-align:center;font-size:0.78rem;color:#64748b;"
+                                    "font-weight:600;'>RECREO</div>",
+                                    unsafe_allow_html=True)
+                                st.session_state.horario_data[hora][dia] = "RECREO"
+                            else:
+                                # Buscar color del área actual
+                                val_actual = st.session_state.horario_data[hora].get(dia, "")
+                                color_preview = "#f8fafc"
+                                for area_k, area_c in st.session_state.h_areas.items():
+                                    if area_k.lower() in val_actual.lower() and val_actual:
+                                        color_preview = area_c
+                                        break
+                                val = st.text_input(
+                                    f"_{hora}_{dia}",
+                                    value=val_actual,
+                                    key=f"h_{hora}_{dia}",
+                                    label_visibility="collapsed",
+                                    placeholder="Área..."
+                                )
+                                st.session_state.horario_data[hora][dia] = val
+                                # Mostrar color debajo si hay valor
+                                if val and val != "RECREO":
+                                    color_c = "#f8fafc"
+                                    for ak, av in st.session_state.h_areas.items():
+                                        if ak.lower() in val.lower():
+                                            color_c = av
+                                            break
+                                    st.markdown(
+                                        f"<div style='background:{color_c};height:4px;"
+                                        f"border-radius:2px;margin-top:-12px;'></div>",
+                                        unsafe_allow_html=True)
+
+                st.markdown("---")
+                c1, c2, c3, c4 = st.columns(4)
+                with c1:
+                    if st.button("💾 GUARDAR Horario", type="primary",
+                                  use_container_width=True, key="btn_h_save"):
+                        _horario_guardar(
+                            usuario_actual,
+                            grado_h or st.session_state.get('h_grado_guardado',''),
+                            st.session_state.horario_data,
+                            horas, dias,
+                            st.session_state.h_areas,
+                            docente_h or st.session_state.get('h_docente_guardado',''))
+                        st.success("✅ Horario guardado — el directivo puede verlo")
+                with c2:
+                    if st.button("📄 Descargar PDF a Colores",
+                                  use_container_width=True, key="btn_h_pdf"):
+                        buf_h = _generar_pdf_horario(
+                            docente_h or "_______________",
+                            grado_h or "___",
+                            anio,
+                            st.session_state.horario_data,
+                            horas, dias,
+                            st.session_state.h_areas)
+                        st.download_button(
+                            "⬇️ Descargar PDF con Colores",
+                            buf_h,
+                            f"Horario_{(grado_h or 'grado').replace(' ','_')[:20]}_{anio}.pdf",
+                            "application/pdf", type="primary", key="dl_h_pdf")
+                with c3:
+                    if st.button("🖨️ PDF sin color (B/N)", use_container_width=True, key="btn_h_bn"):
+                        buf_b = _generar_pdf_horario_blanco(grado_h, anio, horas, dias)
+                        st.download_button("⬇️ Descargar B/N", buf_b,
+                                            f"Horario_BN_{anio}.pdf", "application/pdf",
+                                            type="primary", key="dl_h_bn")
+                with c4:
+                    if st.button("🗑️ Limpiar", use_container_width=True, key="btn_h_clear"):
+                        st.session_state.horario_data = {}
+                        st.rerun()
+            else:
+                st.info("Configura las franjas horarias y los días en el panel izquierdo.")
+
+    # ══════════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════
+    with h_tab3:
+        st.markdown("#### 🤖 Organizador Automático de Horario")
+        st.caption("Dinos cuántas horas tiene cada área — el sistema distribuye el horario solo")
+
+        col_au1, col_au2 = st.columns([1, 2])
+
+        with col_au1:
+            st.markdown("**1. Configura las franjas y días:**")
+            HORAS_AUTO = {
+                "Primaria (8:00–14:00)": [
+                    "8:00–8:45","8:45–9:30","9:30–10:00","10:00–10:30",
+                    "11:00–11:45","11:45–12:30","12:30–13:15","13:15–14:00"
+                ],
+                "Secundaria mañana (7:30–13:00)": [
+                    "7:30–8:15","8:15–9:00","9:00–9:45","9:45–10:30",
+                    "11:00–11:45","11:45–12:30","12:30–13:00"
+                ],
+            }
+            preset_auto = st.selectbox("Horario base:", list(HORAS_AUTO.keys()), key="au_preset")
+            horas_auto = HORAS_AUTO[preset_auto]
+
+            hora_recreo = st.text_input("Franja del recreo:", value="10:30–11:00 (Recreo)", key="au_recreo")
+            dias_auto = st.multiselect("Días:", ["Lunes","Martes","Miércoles","Jueves","Viernes"],
+                                        default=["Lunes","Martes","Miércoles","Jueves","Viernes"],
+                                        key="au_dias")
+
+            n_bloques = len(horas_auto) * len(dias_auto) if dias_auto else 0
+            st.info(f"📊 {n_bloques} bloques disponibles para {len(dias_auto)} días")
+
+            st.markdown("---")
+            st.markdown("**2. Áreas y horas semanales:**")
+            st.caption("¿Cuántas veces por semana va cada área?")
+
+            if 'au_horas_area' not in st.session_state:
+                st.session_state.au_horas_area = {
+                    area: 2 for area in list(st.session_state.h_areas.keys())
+                    if area != "Recreo"
+                }
+
+            total_asignado = 0
+            for area in [a for a in st.session_state.h_areas if a != "Recreo"]:
+                if area not in st.session_state.au_horas_area:
+                    st.session_state.au_horas_area[area] = 2
+                color = st.session_state.h_areas[area]
+                c_a, c_n = st.columns([3, 1])
+                with c_a:
+                    st.markdown(
+                        f"<div style='background:{color};padding:4px 10px;border-radius:6px;"
+                        f"font-size:0.82rem;font-weight:600;color:#1e293b;margin-top:4px;'>"
+                        f"{area}</div>", unsafe_allow_html=True)
+                with c_n:
+                    horas_n = st.number_input("", 0, 10,
+                        st.session_state.au_horas_area.get(area, 2),
+                        key=f"au_n_{area}", label_visibility="collapsed")
+                    st.session_state.au_horas_area[area] = horas_n
+                    total_asignado += horas_n
+
+            st.markdown("---")
+            diferencia = n_bloques - total_asignado
+            if diferencia == 0:
+                st.success(f"✅ {total_asignado}/{n_bloques} bloques asignados — perfecto")
+            elif diferencia > 0:
+                st.warning(f"⚠️ {total_asignado}/{n_bloques} — quedan {diferencia} bloques libres")
+            else:
+                st.error(f"❌ {total_asignado}/{n_bloques} — excedes en {-diferencia} bloques")
+
+            docente_au = st.text_input("Docente:", key="au_docente", placeholder="Apellidos Nombres")
+            grado_au = st.text_input("Grado:", key="au_grado", placeholder="4° Primaria — A")
+
+        with col_au2:
+            if st.button("🤖 ORGANIZAR AUTOMÁTICAMENTE", type="primary",
+                          use_container_width=True, key="btn_auto"):
+                import random as _rand
+
+                # Construir lista de áreas a colocar
+                cola = []
+                for area, n in st.session_state.au_horas_area.items():
+                    cola.extend([area] * n)
+
+                # Mezclar para distribución variada
+                _rand.shuffle(cola)
+
+                # Distribuir equitativamente — evitar misma área días consecutivos
+                horas_todas = horas_auto
+                dias_todos = dias_auto or []
+                horario_auto = {h: {d: "" for d in dias_todos} for h in horas_todas}
+
+                # Algoritmo: llenar columna por columna alternando
+                idx = 0
+                # Primero crear lista ordenada de celdas (por día para distribuir)
+                celdas = []
+                for d in dias_todos:
+                    for h in horas_todas:
+                        celdas.append((h, d))
+
+                # Mezclar celdas para distribución aleatoria
+                _rand.shuffle(celdas)
+
+                for h, d in celdas:
+                    if idx < len(cola):
+                        horario_auto[h][d] = cola[idx]
+                        idx += 1
+
+                # Guardar en session_state
+                horas_con_recreo = []
+                for h in horas_todas:
+                    horas_con_recreo.append(h)
+                    if h == horas_todas[3] and hora_recreo:  # después del 4to bloque
+                        horas_con_recreo.append(hora_recreo)
+
+                st.session_state.horario_data = horario_auto
+                st.session_state.au_horas_generadas = horas_con_recreo
+                st.session_state.au_dias_generados = dias_todos
+                st.success("✅ ¡Horario organizado! Revísalo abajo — puedes editarlo en la pestaña Crear Horario.")
+
+            # Mostrar resultado si ya fue generado
+            if st.session_state.get('au_horas_generadas'):
+                horas_vis = st.session_state.au_horas_generadas
+                dias_vis = st.session_state.au_dias_generados
+
+                st.markdown("---")
+                st.markdown("**Vista previa del horario generado:**")
+
+                # Tabla visual
+                header_cols = [st.columns([1.2] + [2]*len(dias_vis))]
+                cols_hdr = st.columns([1.2] + [2]*len(dias_vis))
+                with cols_hdr[0]:
+                    st.markdown("**Hora**")
+                for ci, d in enumerate(dias_vis):
+                    with cols_hdr[ci+1]:
+                        st.markdown(f"**{d[:3]}**")
+
+                for h in horas_vis:
+                    is_rec = "recreo" in h.lower()
+                    row_c = st.columns([1.2] + [2]*len(dias_vis))
+                    with row_c[0]:
+                        st.markdown(f"<div style='font-size:0.72rem;color:#64748b;"
+                                    f"font-weight:600;padding-top:6px;'>{h}</div>",
+                                    unsafe_allow_html=True)
+                    for ci, d in enumerate(dias_vis):
+                        with row_c[ci+1]:
+                            if is_rec:
+                                st.markdown("<div style='background:#e2e8f0;padding:4px 6px;"
+                                            "border-radius:5px;text-align:center;font-size:0.72rem;"
+                                            "color:#64748b;'>RECREO</div>", unsafe_allow_html=True)
+                            else:
+                                val = st.session_state.horario_data.get(h, {}).get(d, "")
+                                color_c = "#f1f5f9"
+                                for ak, av in st.session_state.h_areas.items():
+                                    if ak.lower() in val.lower() and val:
+                                        color_c = av
+                                        break
+                                st.markdown(
+                                    f"<div style='background:{color_c};padding:4px 6px;"
+                                    f"border-radius:5px;text-align:center;font-size:0.72rem;"
+                                    f"font-weight:600;color:#1e293b;min-height:28px;'>"
+                                    f"{val or ''}</div>", unsafe_allow_html=True)
+
+                st.markdown("---")
+                c1, c2 = st.columns(2)
+                with c1:
+                    if st.button("📄 Descargar este horario PDF", type="primary",
+                                  use_container_width=True, key="btn_au_pdf"):
+                        buf_au = _generar_pdf_horario(
+                            docente_au or "___", grado_au or "___", anio,
+                            st.session_state.horario_data,
+                            [h for h in horas_vis if "recreo" not in h.lower()],
+                            dias_vis, st.session_state.h_areas)
+                        st.download_button("⬇️ Descargar PDF", buf_au,
+                                            f"Horario_Auto_{anio}.pdf", "application/pdf",
+                                            type="primary", key="dl_au_pdf")
+                with c2:
+                    if st.button("🔀 Reorganizar diferente", use_container_width=True,
+                                  key="btn_au_reorg"):
+                        # Limpiar para forzar nueva generación
+                        st.session_state.pop('au_horas_generadas', None)
+                        st.rerun()
+            else:
+                st.info("👆 Configura las áreas con sus horas semanales y presiona ORGANIZAR")
+                st.markdown("""
+**¿Cómo funciona?**
+- Dices cuántas veces por semana va cada área (ej: Matemática = 5, Comunicación = 4)
+- El sistema distribuye las clases evitando repetir la misma área el mismo día
+- Puedes reorganizar varias veces hasta que te guste el resultado
+- Luego edita manualmente en la pestaña **✏️ Crear Horario** si quieres ajustar algo
+                """)
+
+    with h_tab4:
+        st.markdown("#### Horario en blanco para llenar a mano")
+        col_b1, col_b2 = st.columns(2)
+        with col_b1:
+            grado_b = st.text_input("Grado (opcional):", placeholder="4° Primaria", key="h_b_grado")
+            preset_b = st.selectbox("Franjas:", [
+                "Primaria (8:00–14:00)",
+                "Secundaria mañana (7:30–13:00)"], key="h_b_preset")
+        with col_b2:
+            dias_b = st.multiselect("Días:", ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],
+                                     default=["Lunes","Martes","Miércoles","Jueves","Viernes"],
+                                     key="h_b_dias")
+        horas_b_map = {
+            "Primaria (8:00–14:00)": ["8:00–8:45","8:45–9:30","9:30–10:00","10:00–10:30",
+                                       "10:30–11:00","11:00–11:45","11:45–12:30","12:30–14:00"],
+            "Secundaria mañana (7:30–13:00)": ["7:30–8:15","8:15–9:00","9:00–9:45","9:45–10:30",
+                                                "10:30–11:00","11:00–11:45","11:45–12:30","12:30–13:00"],
+        }
+        if st.button("📄 Descargar Blanco", type="primary",
+                      use_container_width=True, key="btn_h_blanco"):
+            horas_b = horas_b_map.get(preset_b, [])
+            buf_b = _generar_pdf_horario_blanco(
+                grado_b, anio, horas_b,
+                dias_b or ["Lunes","Martes","Miércoles","Jueves","Viernes"])
+            st.download_button("⬇️ Descargar en Blanco", buf_b,
+                                f"Horario_Blanco_{anio}.pdf",
+                                "application/pdf", type="primary", key="dl_h_blanco2")
+
+
+
+
+# ════════════════════════════════════════════════════════════════════
+# MÓDULO: GUESS UP — Adivina la palabra
+# ════════════════════════════════════════════════════════════════════
+
+GUESS_CATEGORIAS = {
+    "🐾 Animales": [
+        "Perro","Gato","León","Elefante","Jirafa","Pingüino","Delfín","Tigre",
+        "Cocodrilo","Cóndor","Llama","Alpaca","Vicuña","Serpiente","Araña",
+        "Mariposa","Águila","Oso","Mono","Cebra","Hipopótamo","Rinoceronte",
+        "Flamenco","Tucán","Loro","Ballena","Tiburón","Pulpo","Cangrejo","Pato",
+    ],
+    "🍎 Frutas y verduras": [
+        "Mango","Papaya","Chirimoya","Lúcuma","Maracuyá","Pitahaya","Aguaymanto",
+        "Camu camu","Guanábana","Carambola","Zanahoria","Brócoli","Espinaca",
+        "Pepino","Palta","Tomate","Fresa","Uva","Sandía","Piña","Naranja",
+        "Limón","Plátano","Pera","Manzana","Melón","Durazno","Granada",
+    ],
+    "🏔️ Lugares del Perú": [
+        "Machu Picchu","Lago Titicaca","Colca","Nazca","Paracas","Iquitos",
+        "Cusco","Arequipa","Lima","Puno","Huancayo","Trujillo","Chiclayo",
+        "Amazonas","Tiwinza","Choquequirao","Kuelap","Chan Chan","Sipán",
+        "Valle Sagrado","Chinchero","Pisac","Ollantaytambo",
+    ],
+    "📚 Personajes históricos": [
+        "Pachacútec","Manco Cápac","Atahualpa","Túpac Amaru II","San Martín",
+        "Simón Bolívar","Grau","Bolognesi","Micaela Bastidas","Francisco Pizarro",
+        "Garcilaso de la Vega","César Vallejo","Mario Vargas Llosa","Abraham Valdelomar",
+        "Chabuca Granda","Arturo Cormillot","Ciro Alegría",
+    ],
+    "⚽ Deportes": [
+        "Fútbol","Básquet","Voleibol","Natación","Atletismo","Ciclismo",
+        "Karate","Judo","Tenis","Ping pong","Surf","Boxeo","Esgrima",
+        "Gimnasia","Halterofilia","Arquería","Equitación","Escalada",
+    ],
+    "🎭 Acciones / Verbos": [
+        "Correr","Saltar","Nadar","Volar","Cocinar","Bailar","Cantar",
+        "Llorar","Reír","Dormir","Estudiar","Leer","Escribir","Pintar",
+        "Construir","Manejar","Sembrar","Cosechar","Pescar","Cazar",
+    ],
+    "🎓 Profesiones": [
+        "Doctor","Maestro","Ingeniero","Abogado","Arquitecto","Piloto",
+        "Bombero","Policía","Chef","Periodista","Científico","Astronauta",
+        "Fotógrafo","Músico","Actor","Deportista","Granjero","Pescador",
+    ],
+    "🌍 Países": [
+        "Perú","Brasil","Argentina","Chile","Colombia","Ecuador","Bolivia",
+        "México","Estados Unidos","Francia","España","Italia","Alemania",
+        "Japón","China","India","Australia","Egipto","Sudáfrica","Canadá",
+    ],
+    "🧪 Ciencias — Conceptos": [
+        "Fotosíntesis","Gravedad","Ósmosis","Célula","ADN","Átomo","Molécula",
+        "Evolución","Ecosistema","Volcán","Terremoto","Tsunami","Eclipse",
+        "Fotón","Electrón","Proteína","Vitamina","Bacteria","Virus","Hongo",
+    ],
+    "🎨 Arte y cultura": [
+        "Pintura","Escultura","Música","Teatro","Danza","Fotografía",
+        "Literatura","Poesía","Cerámica","Tejido","Bordado","Huayno",
+        "Marinera","Saya","Diablada","Carnaval","Pachamama","Inti Raymi",
+    ],
+}
+
+def _tab_guess_up():
+    """Juego Guess Up — Adivina la palabra proyectada en tu espalda."""
+    import streamlit.components.v1 as _comp_g
+    import random
+    st.header("🎭 Guess Up — ¡Adivina la Palabra!")
+    st.caption("Estudiantes van al frente — la palabra se proyecta en su espalda — el equipo da pistas")
+
+    g_tab1, g_tab2 = st.tabs(["🎮 Jugar", "⚙️ Configurar"])
+
+    with g_tab1:
+        cat_sel = st.selectbox("Categoría:", list(GUESS_CATEGORIAS.keys()), key="gu_cat")
+        palabras = GUESS_CATEGORIAS[cat_sel]
+
+        n_equipos = st.radio("Equipos:", [2, 3, 4], horizontal=True, key="gu_equipos")
+        t_turno = st.slider("Tiempo por turno (seg):", 30, 120, 60, step=10, key="gu_tiempo")
+
+        if 'gu_score' not in st.session_state:
+            st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
+        if 'gu_palabra_actual' not in st.session_state:
+            st.session_state.gu_palabra_actual = random.choice(palabras)
+        if 'gu_usadas' not in st.session_state:
+            st.session_state.gu_usadas = []
+
+        # Marcador
+        st.markdown("---")
+        cols_score = st.columns(n_equipos)
+        colores_eq = ["#dc2626","#2563eb","#059669","#f59e0b"]
+        for i in range(n_equipos):
+            eq = f"Equipo {i+1}"
+            with cols_score[i]:
+                st.markdown(
+                    f"<div style='background:{colores_eq[i]};color:white;padding:12px;"
+                    f"border-radius:12px;text-align:center;font-weight:900;font-size:1.1rem;'>"
+                    f"{eq}<br><span style='font-size:2rem;'>{st.session_state.gu_score.get(eq,0)}</span> pts</div>",
+                    unsafe_allow_html=True)
+        st.markdown("---")
+
+        # Tarjeta de palabra — pantalla gigante
+        palabra = st.session_state.gu_palabra_actual
+        _comp_g.html(f"""<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<style>
+body{{margin:0;padding:0;background:linear-gradient(135deg,#1e1b4b,#312e81);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;font-family:'Segoe UI',sans-serif;}}
+.categoria{{color:#a5b4fc;font-size:1rem;letter-spacing:3px;text-transform:uppercase;
+  font-weight:600;margin-bottom:8px;}}
+.palabra{{color:white;font-size:5rem;font-weight:900;text-align:center;
+  text-shadow:0 4px 30px rgba(255,255,255,0.3);line-height:1.1;
+  padding:20px 40px;background:rgba(255,255,255,0.08);border-radius:20px;
+  border:2px solid rgba(255,255,255,0.15);}}
+.hint{{color:#94a3b8;font-size:0.85rem;margin-top:12px;}}
+.timer-bar{{width:80%;height:8px;background:rgba(255,255,255,0.15);
+  border-radius:4px;margin-top:16px;overflow:hidden;}}
+.timer-fill{{height:8px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
+  border-radius:4px;animation:countdown {t_turno}s linear forwards;}}
+@keyframes countdown{{from{{width:100%}}to{{width:0%}}}}
+</style></head><body>
+<div class="categoria">{cat_sel}</div>
+<div class="palabra">{palabra}</div>
+<div class="hint">💡 Da pistas sin decir la palabra ni partes de ella</div>
+<div class="timer-bar"><div class="timer-fill"></div></div>
+</body></html>""", height=320)
+
+        col_a, col_b, col_c = st.columns(3)
+        with col_a:
+            if st.button("✅ ADIVINÓ", type="primary", use_container_width=True, key="gu_si"):
+                equipo_turno = st.session_state.get('gu_equipo_turno', 'Equipo 1')
+                st.session_state.gu_score[equipo_turno] = st.session_state.gu_score.get(equipo_turno, 0) + 1
+                st.session_state.gu_usadas.append(palabra)
+                restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
+                if not restantes:
+                    st.session_state.gu_usadas = []
+                    restantes = palabras
+                st.session_state.gu_palabra_actual = random.choice(restantes)
+                st.rerun()
+        with col_b:
+            if st.button("⏭️ PASAR", use_container_width=True, key="gu_no"):
+                st.session_state.gu_usadas.append(palabra)
+                restantes = [p for p in palabras if p not in st.session_state.gu_usadas]
+                if not restantes:
+                    st.session_state.gu_usadas = []
+                    restantes = palabras
+                st.session_state.gu_palabra_actual = random.choice(restantes)
+                st.rerun()
+        with col_c:
+            equipo_actual = st.session_state.get('gu_equipo_turno', 'Equipo 1')
+            eq_idx = int(equipo_actual.split()[-1]) - 1
+            eq_opciones = [f"Equipo {i+1}" for i in range(n_equipos)]
+            eq_nuevo = st.selectbox("Turno de:", eq_opciones,
+                                     index=eq_idx % n_equipos, key="gu_eq_sel",
+                                     label_visibility="visible")
+            st.session_state.gu_equipo_turno = eq_nuevo
+
+        if st.button("🔄 Reiniciar marcador", key="gu_reset"):
+            st.session_state.gu_score = {f"Equipo {i+1}": 0 for i in range(4)}
+            st.session_state.gu_usadas = []
+            st.session_state.gu_palabra_actual = random.choice(palabras)
+            st.rerun()
+
+    with g_tab2:
+        st.markdown("#### Agregar palabras personalizadas")
+        cat_custom = st.text_input("Nombre de la categoría personalizada:", key="gu_cat_nombre",
+                                    placeholder="Ej: Temas del bimestre")
+        palabras_custom = st.text_area("Palabras (una por línea):", height=150, key="gu_palabras_txt",
+                                        placeholder="Fotosintesis\nMesopotamia\nPachacutec...")
+        if st.button("➕ Agregar categoría", type="primary", key="gu_agregar"):
+            if cat_custom and palabras_custom:
+                lista = [p.strip() for p in palabras_custom.strip().split("\n") if p.strip()]
+                if lista:
+                    GUESS_CATEGORIAS[f"📝 {cat_custom}"] = lista
+                    st.success(f"✅ Categoría '{cat_custom}' agregada con {len(lista)} palabras")
+                    st.rerun()
+
+        st.markdown("---")
+        st.markdown("#### Instrucciones para el aula")
+        st.info(
+            "**Cómo jugar:**\n"
+            "1. Divide el salón en 2-4 equipos\n"
+            "2. Un estudiante de cada equipo viene al frente — da la espalda a la pizarra\n"
+            "3. La pantalla muestra la palabra — su equipo da pistas sin decirla\n"
+            "4. Si adivina → ✅ punto | Si no puede → ⏭️ pasar\n"
+            "5. Gana el equipo con más puntos al final"
+        )
 
 
 def tab_yachay_plickers(config):
@@ -22768,6 +23619,12 @@ def main():
             if st.button("📄\n\n**Documentos**", use_container_width=True, key="aux_docs", type="primary"):
                 st.session_state.modulo_activo = "documentos_aux"
 
+        # Segunda fila de botones
+        ca6, ca7, ca8 = st.columns(3)
+        with ca6:
+            if st.button("📅\n\n**Horarios**", use_container_width=True, key="aux_horarios", type="primary"):
+                st.session_state.modulo_activo = "horarios_aux"
+
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
         if mod == "asistencia":
@@ -22781,6 +23638,8 @@ def main():
             _seccion_registros_pdf(config)
         elif mod == "documentos_aux":
             _seccion_documentos_auxiliar(config)
+        elif mod == "horarios_aux":
+            _tab_horarios_directivo(config)
 
     # ========================================
     # DOCENTE — Su grado solamente
@@ -22810,8 +23669,10 @@ def main():
                 ("📊", "Calificación YACHAY", "calificacion", "#dc2626"),
                 ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
-                ("⏱️", "Temporizador", "temporizador", "#0891b2"),
+                ("🎯", "Dinámica de Aula", "temporizador", "#0891b2"),
                 ("📄", "Documentos", "documentos_doc", "#7c3aed"),
+                ("📅", "Mi Horario", "horario", "#0f766e"),
+                ("🎭", "Guess Up", "guess_up", "#7c2d12"),
             ]
 
             # Grid de módulos
@@ -22895,6 +23756,10 @@ def main():
                 _tab_temporizador(config)
             elif mod == "documentos_doc":
                 _seccion_documentos_auxiliar(config)
+            elif mod == "horario":
+                _tab_horario(config)
+            elif mod == "guess_up":
+                _tab_guess_up()
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -22920,7 +23785,6 @@ def main():
                 ("📋", "Asistencia", "asistencia", "#16a34a"),
                 ("📄", "Documentos", "documentos", "#7c3aed"),
                 ("🪪", "Carnets", "carnets", "#0891b2"),
-                ("📊", "Calificación", "calificacion", "#dc2626"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
                 ("📈", "Reportes", "reportes", "#ea580c"),
                 ("📝", "Incidencias", "incidencias", "#be185d"),
@@ -22931,7 +23795,9 @@ def main():
                 ("📋", "Registros PDF", "registros_pdf", "#0d9488"),
                 ("🧠", "Tests Vocacionales", "tests_vocacionales", "#7c3aed"),
                 ("🏃", "Pausa Activa", "pausa_activa", "#059669"),
-                ("⏱️", "Temporizador", "temporizador", "#0891b2"),
+                ("🎯", "Dinámica de Aula", "temporizador", "#0891b2"),
+                ("📅", "Horarios", "horario", "#0f766e"),
+                ("🎭", "Guess Up", "guess_up", "#7c2d12"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -23033,8 +23899,10 @@ def main():
                 _seccion_registros_pdf(config)
             elif mod == "temporizador":
                 _tab_temporizador(config)
-
-def tab_libro_reclamaciones(config):
+            elif mod == "horario":
+                _tab_horarios_directivo(config)  # Admin/Directivo ven todos
+            elif mod == "guess_up":
+                _tab_guess_up()
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
     st.subheader("📕 Libro de Reclamaciones Virtual")
     st.markdown("*Según normativa del Ministerio de Educación*")
@@ -23112,3 +23980,98 @@ def tab_libro_reclamaciones(config):
 
 if __name__ == "__main__":
     main()
+
+
+def _tab_horarios_directivo(config):
+    """Directivo/Admin — ver todos los horarios guardados por docentes."""
+    anio = config.get('anio', 2026)
+    st.header("📅 Horarios de Clases — Todos los Docentes")
+    st.caption("Aquí aparecen los horarios que cada docente guardó desde su módulo")
+
+    dv_tab1, dv_tab2 = st.tabs(["👁️ Ver Horarios", "✏️ Mi Horario (Directivo)"])
+
+    with dv_tab1:
+        if st.button("🔄 Actualizar", key="btn_dv_refresh"):
+            st.session_state.pop('_cache_horarios', None)
+
+        if '_cache_horarios' not in st.session_state:
+            with st.spinner("Cargando horarios..."):
+                st.session_state['_cache_horarios'] = _horarios_cargar_todos()
+
+        todos = st.session_state.get('_cache_horarios', {})
+
+        if not todos:
+            st.info("📭 Ningún docente ha guardado su horario todavía.")
+            st.caption("Los docentes guardan su horario desde: Dashboard → 📅 Mi Horario → botón 💾 GUARDAR")
+        else:
+            st.success(f"✅ {len(todos)} horario(s) guardado(s)")
+
+            # Selector de docente
+            opciones = {}
+            for clave, datos in todos.items():
+                label = f"{datos.get('docente','?')} — {datos.get('grado','?')}"
+                opciones[label] = datos
+
+            sel = st.selectbox("Selecciona el horario:", list(opciones.keys()),
+                                key="dv_sel_horario")
+            if sel:
+                datos = opciones[sel]
+                horas = datos.get('horas', [])
+                dias = datos.get('dias', [])
+                horario = datos.get('horario', {})
+                areas = datos.get('areas', {})
+
+                # Mostrar tabla visual
+                st.markdown(f"**{datos.get('docente','')} | {datos.get('grado','')} | {anio}**")
+
+                if horas and dias:
+                    # Encabezado
+                    hdr = st.columns([1.5] + [2]*len(dias))
+                    with hdr[0]: st.markdown("**Hora**")
+                    for ci, d in enumerate(dias):
+                        with hdr[ci+1]: st.markdown(f"**{d}**")
+
+                    for hora in horas:
+                        is_rec = "recreo" in hora.lower()
+                        row_c = st.columns([1.5] + [2]*len(dias))
+                        with row_c[0]:
+                            st.markdown(f"<div style='font-size:0.75rem;color:#64748b;"
+                                        f"font-weight:600;padding-top:6px;'>{hora}</div>",
+                                        unsafe_allow_html=True)
+                        for ci, d in enumerate(dias):
+                            with row_c[ci+1]:
+                                if is_rec:
+                                    st.markdown(
+                                        "<div style='background:#e2e8f0;padding:5px;"
+                                        "border-radius:6px;text-align:center;font-size:0.75rem;"
+                                        "color:#64748b;'>RECREO</div>",
+                                        unsafe_allow_html=True)
+                                else:
+                                    val = horario.get(hora, {}).get(d, "")
+                                    color_c = "#f8fafc"
+                                    for ak, av in areas.items():
+                                        if ak.lower() in val.lower() and val:
+                                            color_c = av
+                                            break
+                                    st.markdown(
+                                        f"<div style='background:{color_c};padding:5px;"
+                                        f"border-radius:6px;text-align:center;font-size:0.75rem;"
+                                        f"font-weight:600;color:#1e293b;min-height:28px;'>"
+                                        f"{val}</div>",
+                                        unsafe_allow_html=True)
+
+                    st.markdown("---")
+                    if st.button("📄 Descargar PDF este horario", type="primary",
+                                  key="btn_dv_pdf"):
+                        buf_dv = _generar_pdf_horario(
+                            datos.get('docente',''), datos.get('grado',''),
+                            anio, horario, horas, dias, areas)
+                        st.download_button(
+                            "⬇️ Descargar PDF",
+                            buf_dv,
+                            f"Horario_{datos.get('grado','').replace(' ','_')[:20]}_{anio}.pdf",
+                            "application/pdf", type="primary", key="dl_dv_pdf")
+
+    with dv_tab2:
+        st.caption("El directivo también puede crear y guardar su propio horario")
+        _tab_horario(config)
