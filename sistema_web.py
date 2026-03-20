@@ -1692,13 +1692,23 @@ class BaseDatos:
 
     @staticmethod
     def obtener_estadisticas():
+        # Cache 60 seg — evita llamar a GSheets en cada render del dashboard
+        import time as _t
+        _now = _t.time()
+        _cached = st.session_state.get('_cache_stats')
+        _ts = st.session_state.get('_cache_stats_ts', 0)
+        if _cached is not None and (_now - _ts) < 60:
+            return _cached
         df = BaseDatos.cargar_matricula()
         df_d = BaseDatos.cargar_docentes()
-        return {
+        result = {
             'total_alumnos': len(df) if not df.empty else 0,
             'total_docentes': len(df_d) if not df_d.empty else 0,
             'grados': df['Grado'].nunique() if not df.empty and 'Grado' in df.columns else 0
         }
+        st.session_state['_cache_stats'] = result
+        st.session_state['_cache_stats_ts'] = _now
+        return result
 
     # ---- RESULTADOS POR DOCENTE (separados por usuario) ----
 
@@ -1919,46 +1929,25 @@ class BaseDatos:
 
 
 def _construir_indice_dni():
-    """Construye índice DNI→persona en memoria.
-    Orden: GSheets (fuente principal) → caché local JSON → Excel local → docentes.
-    El caché local persiste reinicios de Streamlit y funciona sin internet."""
+    """Construye índice DNI→persona OFFLINE-FIRST.
+    1° caché JSON local (instantáneo, <10ms)
+    2° Excel local (rápido, ~20ms)
+    3° GSheets en hilo de fondo — NUNCA bloquea la UI
+    El caché persiste reinicios y funciona sin internet."""
     indice = {}
-
-    # 1. GOOGLE SHEETS — fuente principal
     gs_ok = False
+
+    # ── PASO 1: caché JSON local — INSTANTÁNEO ────────────────────────
     try:
-        gs = _gs()
-        if gs:
-            df_gs = gs.leer_matricula()
-            if not df_gs.empty:
-                col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
-                           'grado': 'Grado', 'seccion': 'Seccion',
-                           'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
-                           'celular_apoderado': 'Celular_Apoderado'}
-                df_gs = df_gs.rename(columns=col_map)
-                for _, row in df_gs.iterrows():
-                    dni = str(row.get('DNI', '')).strip()
-                    if dni and len(dni) >= 7:
-                        r = row.to_dict()
-                        r['_tipo'] = 'alumno'
-                        indice[dni] = r
-                gs_ok = True
+        if Path(ARCHIVO_INDICE_CACHE).exists():
+            with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as f:
+                indice = json.load(f)
+            if indice:
+                st.session_state['_indice_desde_cache'] = True
     except Exception:
         pass
 
-    # 2. CACHÉ LOCAL — si GSheets falló (sin internet, reinicio, etc.)
-    if not indice:
-        try:
-            if Path(ARCHIVO_INDICE_CACHE).exists():
-                with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as f:
-                    indice = json.load(f)
-                # Marcar como cargado desde caché
-                if indice:
-                    st.session_state['_indice_desde_cache'] = True
-        except Exception:
-            pass
-
-    # 3. EXCEL LOCAL — último recurso si todo lo anterior falla
+    # ── PASO 2: Excel local si no hay caché ──────────────────────────
     if not indice:
         try:
             if Path(ARCHIVO_MATRICULA).exists():
@@ -1974,7 +1963,7 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # 4. DOCENTES — siempre complementar
+    # ── PASO 3: Docentes local ───────────────────────────────────────
     try:
         if Path(ARCHIVO_DOCENTES).exists():
             df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
@@ -1989,17 +1978,43 @@ def _construir_indice_dni():
     except Exception:
         pass
 
-    # Guardar en memoria
+    # Guardar en RAM inmediatamente — UI lista al instante
     st.session_state['_indice_dni'] = indice
     st.session_state['_indice_dni_ts'] = time.time()
 
-    # 5. Persistir caché local si vinieron de GSheets (datos frescos)
-    if gs_ok and indice:
+    # ── PASO 4: GSheets en hilo de fondo — NUNCA bloquea ─────────────
+    import threading as _th_idx
+    def _gs_actualizar():
         try:
-            with open(ARCHIVO_INDICE_CACHE, 'w', encoding='utf-8') as f:
-                json.dump(indice, f, ensure_ascii=False)
+            gs = _gs()
+            if not gs:
+                return
+            df_gs = gs.leer_matricula()
+            if df_gs.empty:
+                return
+            col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
+                       'grado': 'Grado', 'seccion': 'Seccion',
+                       'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
+                       'celular_apoderado': 'Celular_Apoderado'}
+            df_gs = df_gs.rename(columns=col_map)
+            idx_nuevo = dict(st.session_state.get('_indice_dni', {}))
+            for _, row in df_gs.iterrows():
+                dni = str(row.get('DNI', '')).strip()
+                if dni and len(dni) >= 7:
+                    r = row.to_dict()
+                    r['_tipo'] = 'alumno'
+                    idx_nuevo[dni] = r
+            # Actualizar RAM y caché en disco
+            st.session_state['_indice_dni'] = idx_nuevo
+            st.session_state['_indice_desde_cache'] = False
+            try:
+                with open(ARCHIVO_INDICE_CACHE, 'w', encoding='utf-8') as f:
+                    json.dump(idx_nuevo, f, ensure_ascii=False)
+            except Exception:
+                pass
         except Exception:
             pass
+    _th_idx.Thread(target=_gs_actualizar, daemon=True).start()
 
 
 def _nombre_completo_docente():
@@ -5221,16 +5236,31 @@ def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
         ["Vocal 1", "", "", ""],
         ["Vocal 2", "", "", ""],
     ]
-    t_c = Table(cargos_data, colWidths=[3.8*cm, 7*cm, 2.5*cm, 3.2*cm])
+    # Paragraphs en cargo para wrap automático
+    from reportlab.platypus import Paragraph as _P
+    st_cell = ParagraphStyle('cell', parent=styles['Normal'], fontSize=7.5,
+                              leading=9, alignment=TA_CENTER)
+    st_hdr  = ParagraphStyle('hdr', parent=styles['Normal'], fontSize=8,
+                              fontName='Helvetica-Bold', leading=10, alignment=TA_CENTER)
+    cargos_wrapped = []
+    for i, row in enumerate(cargos_data):
+        style = st_hdr if i == 0 else st_cell
+        cargos_wrapped.append([_P(str(row[0]), style), row[1], row[2], row[3]])
+    t_c = Table(cargos_wrapped, colWidths=[4.2*cm, 6.6*cm, 2.2*cm, 3.5*cm])
     t_c.setStyle(TableStyle([
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0,0), (-1,-1), 8.5),
+        ('FONTNAME', (1,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (1,0), (-1,-1), 8),
         ('GRID', (0,0), (-1,-1), 0.5, colors.black),
         ('BACKGROUND', (0,0), (-1,0), colors.Color(0.1,0.1,0.4)),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
-        ('MINROWHEIGHT', (0,1), (-1,-1), 0.9*cm),
+        ('MINROWHEIGHT', (0,1), (-1,-1), 1.1*cm),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('LEFTPADDING', (0,0), (0,-1), 4),
+        ('RIGHTPADDING', (0,0), (0,-1), 4),
     ]))
     story += [t_c, Spacer(1, 0.3*cm)]
 
@@ -5284,292 +5314,985 @@ def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
 
 
 def _seccion_documentos_auxiliar(config):
-    """Módulo de documentos administrativos para auxiliar / directivos."""
+    """Módulo de documentos administrativos — navegación por botones, sin tabs."""
     st.subheader("📄 Documentos Administrativos")
-    st.caption("Genera documentos oficiales listos para imprimir, firmar y archivar.")
+    st.caption("Selecciona el documento que necesitas generar.")
 
     anio = config.get('anio', 2026)
     df_mat = BaseDatos.cargar_matricula()
     df_doc = BaseDatos.cargar_docentes() if hasattr(BaseDatos, 'cargar_docentes') else pd.DataFrame()
-
     grados_lista = []
     if not df_mat.empty and 'Grado' in df_mat.columns:
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
-    doc_tab1, doc_tab2, doc_tab3, doc_tab4, doc_tab5, doc_tab6, doc_tab7, doc_tab8, doc_tab9 = st.tabs([
-        "📦 Entrega Salón",
-        "📜 Constancia RI",
-        "👥 Junta Directiva",
-        "📋 Compromiso Padres",
-        "📖 RI Alumnos",
-        "📖 RI Padres",
-        "🏛️ Municipio Escolar",
-        "🤝 Acuerdos Aula",
-        "🗂️ Más Docs",
-    ])
+    # ── Grupos de documentos ─────────────────────────────────────────
+    GRUPOS = {
+        "🏫 Actas de Salón": [
+            ("📦 Entrega de Salón",     "salon"),
+            ("👥 Junta Directiva",       "junta"),
+            ("📖 RI — Alumnos",          "ri_alumnos"),
+            ("📖 RI — Padres",           "ri_padres"),
+            ("🤝 Acuerdos Aula",         "acuerdos"),
+        ],
+        "👨‍👩‍👧 Relación con Padres": [
+            ("📜 Constancia RI",          "constancia"),
+            ("📋 Compromiso Padres",      "compromiso"),
+            ("🏛️ Municipio Escolar",     "municipio"),
+        ],
+        "📋 Registros de Control": [
+            ("📋 Asistencia Manual",      "asist_manual"),
+            ("🔧 Préstamo Equipos",       "prestamo"),
+            ("📚 Horas Colegiadas",       "horas_col"),
+        ],
+        "🔍 Gestión Pedagógica": [
+            ("🔍 Ficha de Monitoreo",     "monitoreo"),
+            ("📝 Programaciones Word",    "programacion"),
+        ],
+    }
 
-    # ── TAB 1: ACTA ENTREGA DE SALÓN ──────────────────────────────────
-    with doc_tab1:
-        st.markdown("#### Acta de Entrega de Salón de Clases")
-        st.info(
-            "Documento oficial firmado por la **Directora** y el/la **docente** "
-            "al inicio del año escolar. Incluye inventario del aula. "
-            "Requerido por MINEDU como parte del acervo documentario institucional."
-        )
+    # Estado del documento seleccionado
+    if 'doc_sel_key' not in st.session_state:
+        st.session_state.doc_sel_key = None
+
+    # ── Panel de selección con columnas por grupo ─────────────────────
+    if st.session_state.doc_sel_key is None:
+        cols = st.columns(len(GRUPOS))
+        for ci, (grupo, docs) in enumerate(GRUPOS.items()):
+            with cols[ci]:
+                st.markdown(f"**{grupo}**")
+                for label, key in docs:
+                    if st.button(label, key=f"docbtn_{key}",
+                                  use_container_width=True):
+                        st.session_state.doc_sel_key = key
+                        st.rerun()
+        return
+
+    # ── Botón volver ─────────────────────────────────────────────────
+    if st.button("⬅️ Volver a documentos", key="doc_volver"):
+        st.session_state.doc_sel_key = None
+        st.rerun()
+    st.markdown("---")
+
+    key = st.session_state.doc_sel_key
+
+    # ── ACTA ENTREGA DE SALÓN ─────────────────────────────────────────
+    if key == "salon":
+        st.markdown("#### 📦 Acta de Entrega de Salón de Clases")
+        st.info("Firmada por la Directora y el/la docente al inicio del año escolar.")
         col1, col2, col3 = st.columns(3)
         with col1:
             grado_ent = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_ent")
         with col2:
             seccion_ent = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_ent")
         with col3:
-            docente_ent = st.text_input("Nombre del docente:", key="doc_doc_ent",
-                                        placeholder="Lic. Apellidos Nombres")
-        if st.button("📄 Generar Acta de Entrega", type="primary",
-                     use_container_width=True, key="btn_acta_entrega"):
+            docente_ent = st.text_input("Docente:", key="doc_doc_ent", placeholder="Lic. Apellidos Nombres")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_salon"):
             try:
-                buf_ae = _generar_pdf_acta_entrega_salon(
-                    config, docente_ent, grado_ent, seccion_ent, anio)
-                st.download_button(
-                    "⬇️ Descargar Acta de Entrega",
-                    buf_ae,
-                    f"Acta_Entrega_Salon_{grado_ent}_{seccion_ent}_{anio}.pdf",
-                    "application/pdf", type="primary", key="dl_acta_entrega")
-            except Exception as _e:
-                st.error(f"Error: {_e}")
+                buf = _generar_pdf_acta_entrega_salon(config, docente_ent, grado_ent, seccion_ent, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Acta_Salon_{grado_ent}_{seccion_ent}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_salon")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 2: CONSTANCIA REGLAMENTO ─────────────────────────────────
-    with doc_tab2:
-        st.markdown("#### Constancia de Recepción del Reglamento Interno")
-        st.info(
-            "Constancia de que el padre/madre de familia, docente o personal "
-            "recibió el **Reglamento Interno** y las **Normas de Convivencia**. "
-            "Exigida por MINEDU para demostrar socialización del reglamento."
-        )
+    # ── CONSTANCIA RI ─────────────────────────────────────────────────
+    elif key == "constancia":
+        st.markdown("#### 📜 Constancia de Recepción del Reglamento Interno")
         col_a, col_b = st.columns(2)
         with col_a:
-            sol_nom = st.text_input("Nombre del receptor:", key="doc_sol_nom",
-                                    placeholder="Apellidos y Nombres")
-            sol_cargo = st.selectbox("Cargo:", [
-                "Padre/Madre de familia",
-                "Docente",
-                "Personal administrativo",
-                "Personal auxiliar",
-                "Otro"
-            ], key="doc_sol_cargo")
+            sol_nom  = st.text_input("Nombre del receptor:", key="doc_sol_nom", placeholder="Apellidos y Nombres")
+            sol_cargo= st.selectbox("Cargo:", ["Padre/Madre de familia","Docente","Personal administrativo","Estudiante"], key="doc_sol_cargo")
+            sol_grado= st.text_input("Grado/sección (si corresponde):", key="doc_sol_grado")
         with col_b:
-            sol_grado = st.selectbox("Grado (si aplica):",
-                                     ["—"] + (grados_lista or []), key="doc_sol_grado")
-        if st.button("📄 Generar Constancia", type="primary",
-                     use_container_width=True, key="btn_const_reg"):
+            sol_dni  = st.text_input("DNI:", key="doc_sol_dni")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_const"):
             try:
-                grado_c = sol_grado if sol_grado != "—" else ""
-                buf_cr = _generar_pdf_constancia_reglamento(
-                    config, sol_nom, sol_cargo, grado_c)
-                st.download_button(
-                    "⬇️ Descargar Constancia",
-                    buf_cr,
-                    f"Constancia_Reglamento_{sol_nom.replace(' ','_')[:20]}.pdf",
-                    "application/pdf", type="primary", key="dl_const_reg")
-            except Exception as _e:
-                st.error(f"Error: {_e}")
+                buf = _generar_constancia_reglamento(config, sol_nom, sol_cargo, sol_grado, sol_dni, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Constancia_RI_{sol_nom[:15]}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_const")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 3: JUNTA DIRECTIVA COMITÉ DE AULA ────────────────────────
-    with doc_tab3:
-        st.markdown("#### Acta de Conformación — Junta Directiva del Comité de Aula")
-        st.info(
-            "Obligatorio por **R.M. N° 627-2016-MINEDU**. Cada aula debe elegir "
-            "su Junta Directiva: Presidente/a, Vicepresidente/a, Secretario/a, "
-            "Tesorero/a y Vocales. Se archiva en dirección."
-        )
-        col_j1, col_j2 = st.columns(2)
-        with col_j1:
-            grado_jd = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_jd")
-        with col_j2:
-            sec_jd = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_jd")
-        if st.button("📄 Generar Acta Junta Directiva", type="primary",
-                     use_container_width=True, key="btn_junta_dir"):
+    # ── JUNTA DIRECTIVA ───────────────────────────────────────────────
+    elif key == "junta":
+        st.markdown("#### 👥 Acta de Constitución de Junta Directiva de Aula")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_j  = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_j")
+        with col2:
+            seccion_j= st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_j")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_junta"):
             try:
-                buf_jd = _generar_pdf_junta_directiva_aula(config, grado_jd, sec_jd, anio)
-                st.download_button(
-                    "⬇️ Descargar Acta Junta Directiva",
-                    buf_jd,
-                    f"Acta_Junta_Directiva_{grado_jd}_{sec_jd}_{anio}.pdf",
-                    "application/pdf", type="primary", key="dl_junta_dir")
-            except Exception as _e:
-                st.error(f"Error: {_e}")
+                buf = _generar_pdf_junta_directiva_aula(config, grado_j, seccion_j, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Junta_Directiva_{grado_j}_{seccion_j}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_junta")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 4: COMPROMISO DE PADRES ──────────────────────────────────
-    with doc_tab4:
-        st.markdown("#### Carta de Compromiso del Padre/Madre de Familia")
-        st.info(
-            "Documento donde el padre/madre se compromete a apoyar la educación "
-            "de su hijo/a. Muy útil para casos de bajo rendimiento o inasistencias."
-        )
+    # ── COMPROMISO PADRES ─────────────────────────────────────────────
+    elif key == "compromiso":
+        st.markdown("#### 📋 Carta Compromiso del Padre/Madre de Familia")
         col_p1, col_p2 = st.columns(2)
         with col_p1:
-            alumno_comp = st.text_input("Nombre del alumno/a:", key="doc_alu_comp",
-                                        placeholder="Apellidos y Nombres")
-            grado_comp = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_gr_comp")
+            alumno_comp = st.text_input("Nombre del alumno/a:", key="doc_alu_comp", placeholder="Apellidos y Nombres")
+            grado_comp  = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_gr_comp")
         with col_p2:
-            padre_comp = st.text_input("Nombre del padre/madre:", key="doc_pad_comp",
-                                       placeholder="Apellidos y Nombres")
-            motivo_comp = st.selectbox("Motivo:", [
-                "Bajo rendimiento académico",
-                "Inasistencias reiteradas",
-                "Problemas de conducta",
-                "Compromiso general de apoyo",
-                "Deudas pendientes",
-            ], key="doc_mot_comp")
-        if st.button("📄 Generar Carta Compromiso", type="primary",
-                     use_container_width=True, key="btn_comp"):
+            apoderado_comp = st.text_input("Padre/madre/apoderado:", key="doc_apo_comp", placeholder="Apellidos y Nombres")
+            motivo_comp    = st.selectbox("Motivo:", ["Bajo rendimiento académico","Exceso de inasistencias","Conducta inapropiada","Deudas económicas","Compromiso general"], key="doc_mot_comp")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_comp"):
             try:
-                buf_comp = _generar_pdf_carta_compromiso_padre(
-                    config, alumno_comp, padre_comp, grado_comp, motivo_comp, anio)
-                st.download_button(
-                    "⬇️ Descargar Carta Compromiso",
-                    buf_comp,
-                    f"Compromiso_{alumno_comp.replace(' ','_')[:20]}_{anio}.pdf",
-                    "application/pdf", type="primary", key="dl_comp")
-            except Exception as _e:
-                st.error(f"Error: {_e}")
+                buf = _generar_carta_compromiso_padres(config, alumno_comp, apoderado_comp, grado_comp, motivo_comp, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Compromiso_{alumno_comp[:15]}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_comp")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 6: MÁS DOCUMENTOS ──────────────────────────────────────────
-    with doc_tab6:
-        st.markdown("#### Documentos del acervo institucional — MINEDU/UGEL")
-        st.markdown("""
-| Documento | Base legal | Disponible |
-|-----------|-----------|-----------|
-| Acta de Entrega de Salón | Norma institucional | ✅ Tab 1 |
-| Constancia Reglamento Interno | R.M. 657-2017 | ✅ Tab 2 |
-| Acta Junta Directiva Comité Aula | R.M. 627-2016 | ✅ Tab 3 |
-| Acta Entrega Textos/Libros | R.M. MINEDU | ✅ Tab 4 |
-| Carta Compromiso Padres | D.S. 011-2012 | ✅ Tab 5 |
-| Registro de asistencia alumnos | D.S. 011-2012 | ✅ YACHAY PRO |
-| Registro auxiliar evaluación | DCN | ✅ YACHAY PRO |
-| Constancias de estudios/conducta | Norma institucional | ✅ Documentos |
-| Carnets estudiantiles | Norma institucional | ✅ YACHAY PRO |
-| Padrón de familias por aula | R.M. 627-2016 | ✅ Matrícula |
-| Libro de visitas UGEL | R.D. UGEL | 📝 Manual |
-| PEI / PAT / RI / PCI | R.M. 657-2017 | 📝 Ya los tienes |
-        """)
-        st.success("✅ La mayoría de documentos exigibles ya están cubiertos por YACHAY PRO.")
-        st.info("📌 PEI, PAT, RI, PCI ya los tienes elaborados. Los demás documentos del día a día los genera este módulo.")
-
-    # ── TAB 5: ACTA REGLAMENTO — ALUMNOS ──────────────────────────────
-    with doc_tab5:
-        st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Estudiantes")
-        st.info(
-            "Cada alumno/a firma confirmando que leyó y entendió el Reglamento Interno "
-            "y los Acuerdos de Convivencia. Exigida por MINEDU al inicio del año escolar."
-        )
-        col_r1, col_r2 = st.columns(2)
-        with col_r1:
-            grado_ri_alu = st.text_input("Grado y Sección:", placeholder="Ej: 1° Primaria — Sección A", key="ri_alu_gr")
-            docente_ri_alu = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="ri_alu_doc")
-        with col_r2:
-            n_alumnos_ri = st.number_input("Número de líneas para alumnos:", 20, 40, 30, key="ri_alu_n")
-        if st.button("📄 Generar Acta Reglamento — Alumnos", type="primary",
-                     use_container_width=True, key="btn_ri_alu"):
+    # ── RI ALUMNOS ────────────────────────────────────────────────────
+    elif key == "ri_alumnos":
+        st.markdown("#### 📖 Acta de Conformidad — Reglamento Interno Estudiantes")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_ria = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_ria")
+        with col2:
+            docente_ria = st.text_input("Docente:", key="doc_doc_ria", placeholder="Lic. Apellidos Nombres")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_ria"):
             try:
-                buf = _generar_acta_reglamento_alumnos(config, grado_ri_alu, docente_ri_alu, int(n_alumnos_ri))
-                nombre_arch = f"Acta_Reglamento_Alumnos_{grado_ri_alu.replace(' ','_')[:20]}_{anio}.pdf"
-                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
-                                   type="primary", key="dl_ri_alu")
-            except Exception as e:
-                st.error(f"Error: {e}")
+                buf = _generar_acta_reglamento_alumnos(config, grado_ria, docente_ria)
+                st.download_button("⬇️ Descargar", buf,
+                    f"RI_Alumnos_{grado_ria}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_ria")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 6: ACTA REGLAMENTO — PADRES ───────────────────────────────
-    with doc_tab6:
-        st.markdown("#### Acta de Conformidad de Lectura del Reglamento Interno — Padres de Familia")
-        st.info(
-            "Cada padre/madre firma confirmando que recibió y leyó el Reglamento Interno. "
-            "Incluye columna de nombre del alumno/a al que representa."
-        )
-        col_p1, col_p2 = st.columns(2)
-        with col_p1:
-            grado_ri_pad = st.text_input("Grado y Sección:", placeholder="Ej: 1° Primaria — Sección A", key="ri_pad_gr")
-            docente_ri_pad = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="ri_pad_doc")
-        with col_p2:
-            n_padres_ri = st.number_input("Número de líneas para padres:", 20, 40, 30, key="ri_pad_n")
-        if st.button("📄 Generar Acta Reglamento — Padres", type="primary",
-                     use_container_width=True, key="btn_ri_pad"):
+    # ── RI PADRES ─────────────────────────────────────────────────────
+    elif key == "ri_padres":
+        st.markdown("#### 📖 Acta de Conformidad — Reglamento Interno Padres")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_rip = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_rip")
+        with col2:
+            docente_rip = st.text_input("Docente:", key="doc_doc_rip", placeholder="Lic. Apellidos Nombres")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_rip"):
             try:
-                buf = _generar_acta_reglamento_padres(config, grado_ri_pad, docente_ri_pad, int(n_padres_ri))
-                nombre_arch = f"Acta_Reglamento_Padres_{grado_ri_pad.replace(' ','_')[:20]}_{anio}.pdf"
-                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
-                                   type="primary", key="dl_ri_pad")
-            except Exception as e:
-                st.error(f"Error: {e}")
+                buf = _generar_acta_reglamento_padres(config, grado_rip, docente_rip)
+                st.download_button("⬇️ Descargar", buf,
+                    f"RI_Padres_{grado_rip}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_rip")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 7: MUNICIPIO ESCOLAR ───────────────────────────────────────
-    with doc_tab7:
-        st.markdown("#### Municipio Escolar de Aula")
-        st.info(
-            "Formato de conformación del Municipio Escolar del Aula con los cargos "
-            "establecidos por MINEDU: Alcalde, Teniente Alcalde y Regidores."
-        )
-        col_m1, col_m2 = st.columns(2)
-        with col_m1:
-            grado_mun = st.text_input("Grado y Sección:", placeholder="Ej: 3° Secundaria — A", key="mun_gr")
-        with col_m2:
-            docente_mun = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="mun_doc")
-        if st.button("📄 Generar Municipio Escolar", type="primary",
-                     use_container_width=True, key="btn_mun"):
+    # ── MUNICIPIO ESCOLAR ─────────────────────────────────────────────
+    elif key == "municipio":
+        st.markdown("#### 🏛️ Acta de Constitución — Municipio Escolar de Aula")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_me = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_me")
+        with col2:
+            seccion_me = st.selectbox("Sección:", ["Única","A","B","C"], key="doc_sec_me")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_me"):
             try:
-                buf = _generar_municipio_escolar(config, grado_mun, docente_mun)
-                nombre_arch = f"Municipio_Escolar_{grado_mun.replace(' ','_')[:20]}_{anio}.pdf"
-                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
-                                   type="primary", key="dl_mun")
-            except Exception as e:
-                st.error(f"Error: {e}")
+                buf = _generar_pdf_municipio_escolar(config, grado_me, seccion_me, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Municipio_{grado_me}_{seccion_me}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_me")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 8: ACUERDOS DE CONVIVENCIA ────────────────────────────────
-    with doc_tab8:
-        st.markdown("#### Acta de Elaboración de los Acuerdos de Convivencia del Aula")
-        st.info(
-            "Los estudiantes elaboran y firman sus propios acuerdos de convivencia. "
-            "Exigido por MINEDU — R.M. 627-2016. Incluye 7 espacios para acuerdos y firmas de representantes."
-        )
-        col_c1, col_c2 = st.columns(2)
-        with col_c1:
-            grado_conv = st.text_input("Grado y Sección:", placeholder="Ej: 2° Secundaria — B", key="conv_gr")
-        with col_c2:
-            docente_conv = st.text_input("Docente / Tutor/a:", placeholder="Apellidos y Nombres", key="conv_doc")
-        if st.button("📄 Generar Acuerdos de Convivencia", type="primary",
-                     use_container_width=True, key="btn_conv"):
+    # ── ACUERDOS CONVIVENCIA ──────────────────────────────────────────
+    elif key == "acuerdos":
+        st.markdown("#### 🤝 Acta de Elaboración de Acuerdos de Convivencia")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_ac = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_ac")
+        with col2:
+            docente_ac = st.text_input("Docente/Tutor:", key="doc_doc_ac", placeholder="Lic. Apellidos Nombres")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_ac"):
             try:
-                buf = _generar_acuerdos_convivencia(config, grado_conv, docente_conv)
-                nombre_arch = f"Acuerdos_Convivencia_{grado_conv.replace(' ','_')[:20]}_{anio}.pdf"
-                st.download_button("⬇️ Descargar", buf, nombre_arch, "application/pdf",
-                                   type="primary", key="dl_conv")
-            except Exception as e:
-                st.error(f"Error: {e}")
+                buf = _generar_pdf_acuerdos_convivencia(config, grado_ac, docente_ac, anio)
+                st.download_button("⬇️ Descargar", buf,
+                    f"Acuerdos_{grado_ac}_{anio}.pdf", "application/pdf",
+                    type="primary", key="dl_ac")
+            except Exception as e: st.error(str(e))
 
-    # ── TAB 9: MÁS DOCUMENTOS ────────────────────────────────────────
-    with doc_tab9:
-        st.markdown("#### Documentos del acervo institucional — MINEDU/UGEL")
-        st.markdown("""
-| Documento | Base legal | Disponible |
-|-----------|-----------|-----------|
-| Acta de Entrega de Salón | Norma institucional | ✅ Tab 1 |
-| Constancia Reglamento Interno | R.M. 657-2017 | ✅ Tab 2 |
-| Acta Junta Directiva Comité Aula | R.M. 627-2016 | ✅ Tab 3 |
-| Acta Entrega Textos/Libros | R.M. MINEDU | ✅ Tab 4 |
-| Carta Compromiso Padres | D.S. 011-2012 | ✅ Tab 5 |
-| Acta Reglamento — Alumnos | R.M. 657-2017 | ✅ Tab 6 |
-| Acta Reglamento — Padres | R.M. 657-2017 | ✅ Tab 7 |
-| Municipio Escolar de Aula | R.M. 234-2023 | ✅ Tab 8 |
-| Acuerdos de Convivencia | R.M. 627-2016 | ✅ Tab 9 |
-| Registro de asistencia alumnos | D.S. 011-2012 | ✅ YACHAY PRO |
-| Registro auxiliar evaluación | DCN | ✅ YACHAY PRO |
-| Constancias de estudios/conducta | Norma institucional | ✅ Documentos |
-| Carnets estudiantiles | Norma institucional | ✅ YACHAY PRO |
-| PEI / PAT / RI / PCI | R.M. 657-2017 | 📝 Ya los tienes |
-        """)
-        st.success("✅ Todos los documentos exigibles del día a día están cubiertos por YACHAY PRO.")
-        st.caption(f"📅 Año activo del sistema: **{anio}** — cambia en 'Título del Año' y todos los documentos se actualizan.")
+    # ── ASISTENCIA MANUAL ─────────────────────────────────────────────
+    elif key == "asist_manual":
+        st.markdown("#### 📋 Registro de Asistencia Docente — Firma Manual")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            mes_am = st.selectbox("Mes:", ["Marzo","Abril","Mayo","Junio","Julio","Agosto",
+                                           "Septiembre","Octubre","Noviembre","Diciembre"], key="am_mes")
+        with col2:
+            n_dias_am = st.number_input("Días hábiles:", 15, 26, 22, key="am_ndias")
+        with col3:
+            usar_lista = st.checkbox("Usar lista de docentes", True, key="am_usar")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_am"):
+            nombres = list(df_doc['Nombre'].dropna()) if not df_doc.empty and 'Nombre' in df_doc.columns and usar_lista else []
+            if not nombres: nombres = [f"___________________________ {i+1}" for i in range(20)]
+            buf = _generar_registro_asistencia_manual(config, mes_am, int(n_dias_am), nombres)
+            st.download_button("⬇️ Descargar", buf,
+                f"Asistencia_Manual_{mes_am}_{anio}.pdf", "application/pdf",
+                type="primary", key="dl_am")
+
+    # ── PRÉSTAMO EQUIPOS ──────────────────────────────────────────────
+    elif key == "prestamo":
+        st.markdown("#### 🔧 Control de Préstamo de Equipos e Implementos")
+        st.info("La auxiliar registra quién lleva cada equipo, cuándo y cuándo lo devuelve.")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_pr"):
+            buf = _generar_control_prestamo_equipos(config)
+            st.download_button("⬇️ Descargar", buf,
+                f"Prestamos_{anio}.pdf", "application/pdf",
+                type="primary", key="dl_pr")
+
+    # ── HORAS COLEGIADAS ──────────────────────────────────────────────
+    elif key == "horas_col":
+        st.markdown("#### 📚 Control de Trabajo Colegiado")
+        col1, col2 = st.columns(2)
+        with col1:
+            trim_hc = st.selectbox("Trimestre:", ["I Trimestre","II Trimestre","III Trimestre"], key="hc_trim")
+        with col2:
+            n_ses_hc = st.number_input("N° sesiones:", 4, 20, 8, key="hc_nsesiones")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_hc"):
+            nombres = list(df_doc['Nombre'].dropna()) if not df_doc.empty and 'Nombre' in df_doc.columns else []
+            buf = _generar_control_horas_colegiadas(config, trim_hc, int(n_ses_hc), nombres)
+            st.download_button("⬇️ Descargar", buf,
+                f"Horas_Colegiadas_{trim_hc.replace(' ','_')}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_hc")
+
+    # ── MONITOREO ─────────────────────────────────────────────────────
+    elif key == "monitoreo":
+        st.markdown("#### 🔍 Ficha de Monitoreo Pedagógico")
+        st.caption("Basada en el MBDD — Dominios I y II. Válida para UGEL Chinchero.")
+        col1, col2 = st.columns(2)
+        with col1:
+            doc_mon   = st.text_input("Docente monitoreado:", key="mon_doc", placeholder="Apellidos y Nombres")
+            area_mon  = st.text_input("Área:", key="mon_area", placeholder="Matemática")
+            grado_mon = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="mon_grado")
+        with col2:
+            tipo_mon  = st.selectbox("Tipo:", [
+                "Monitoreo de acompañamiento pedagógico",
+                "Visita de aula (observación)",
+                "Revisión de planificación curricular",
+                "Monitoreo de evaluación formativa"], key="mon_tipo")
+            dir_mon   = st.text_input("Director(a):", key="mon_dir", placeholder="Apellidos y Nombres")
+        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_mon"):
+            buf = _generar_ficha_monitoreo(config, doc_mon, area_mon, grado_mon, tipo_mon, dir_mon, anio)
+            st.download_button("⬇️ Descargar", buf,
+                f"Monitoreo_{(doc_mon or 'docente').replace(' ','_')[:20]}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_mon")
+
+    # ── PROGRAMACIONES WORD ───────────────────────────────────────────
+    elif key == "programacion":
+        st.markdown("#### 📝 Esquemas de Programación Curricular (.docx)")
+        st.caption("Anexos oficiales según INSTRUCTIVO N°001-2026 GEREDU Cusco")
+        col1, col2 = st.columns(2)
+        with col1:
+            nivel_prog = st.radio("Nivel:", ["Inicial","Primaria","Secundaria"],
+                                   horizontal=True, key="prog_nivel")
+            tipo_prog  = st.selectbox("Tipo:", ["Planificación Anual","Unidad Didáctica","Sesión de Aprendizaje"], key="prog_tipo")
+            doc_prog   = st.text_input("Docente:", key="prog_doc", placeholder="Apellidos y Nombres")
+        with col2:
+            area_prog  = st.text_input("Área:", key="prog_area", placeholder="Comunicación")
+            grado_prog = st.text_input("Grado y sección:", key="prog_grado", placeholder="4° A")
+            ciclo_prog = st.text_input("Ciclo:", key="prog_ciclo", placeholder="VI")
+        if st.button("📝 Generar Word", type="primary", use_container_width=True, key="btn_prog"):
+            with st.spinner("Generando esquema..."):
+                buf_prog = _generar_esquema_programacion_word(
+                    config, nivel_prog, tipo_prog, doc_prog, area_prog, grado_prog, ciclo_prog, anio)
+            if buf_prog:
+                st.download_button("⬇️ Descargar .docx", buf_prog,
+                    f"Esquema_{tipo_prog.replace(' ','_')}_{nivel_prog}_{anio}.docx",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    type="primary", key="dl_prog")
+                st.success("Listo — abre en Word o Google Docs y completa los campos.")
+            else:
+                st.error("Error al generar el archivo.")
 
 
+# ══════════════════════════════════════════════════════════════════════
+# NUEVOS DOCUMENTOS: REGISTROS CONTROL, MONITOREO, PROGRAMACIONES
+# ══════════════════════════════════════════════════════════════════════
+
+def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
+    """Registro de asistencia manual con columnas de entrada/salida y firma."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1*cm, bottomMargin=1*cm,
+                            leftMargin=1*cm, rightMargin=1*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, parent=styles['Normal'])
+
+    # Cabecera
+    dias = [str(d) for d in range(1, n_dias+1)]
+    # Limitar a 16 días por hoja para legibilidad
+    dias_por_hoja = 16
+    story = [
+        Paragraph(f"REGISTRO DE ASISTENCIA DOCENTE — {mes.upper()} {anio}", st_t),
+        Paragraph(f"{ie} | Responsable: ___________________ | Firma: ___________", st_s),
+        Spacer(1, 0.3*cm),
+    ]
+
+    def _bloque(dias_bloque, offset):
+        header = ["N°", "APELLIDOS Y NOMBRES"] + [f"{d}\nE|S" for d in dias_bloque] + ["Obs."]
+        rows = [header]
+        for i, nombre in enumerate(nombres_docentes):
+            fila = [str(i+1), nombre] + ["  /  "] * len(dias_bloque) + [""]
+            rows.append(fila)
+        n = len(dias_bloque)
+        ancho_total = 27*cm
+        w_n = 0.6*cm; w_nom = 5*cm; w_obs = 2*cm
+        w_dia = (ancho_total - w_n - w_nom - w_obs) / n
+        col_ws = [w_n, w_nom] + [w_dia]*n + [w_obs]
+        t = Table(rows, colWidths=col_ws,
+                  rowHeights=[0.9*cm] + [0.65*cm]*len(nombres_docentes))
+        t.setStyle(TableStyle([
+            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+            ('FONTSIZE',(0,0),(-1,0),7),
+            ('FONTSIZE',(0,1),(-1,-1),7),
+            ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.1,0.4)),
+            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('GRID',(0,0),(-1,-1),0.4,colors.black),
+            ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.96,0.96,1)]),
+            ('ALIGN',(1,1),(1,-1),'LEFT'),
+        ]))
+        return t
+
+    # Si hay muchos días, hacer dos bloques
+    if n_dias <= 16:
+        story.append(_bloque(dias, 0))
+    else:
+        story.append(_bloque(dias[:16], 0))
+        story.append(Spacer(1, 0.4*cm))
+        story.append(Paragraph(f"Continuación — {mes} {anio}", st_s))
+        story.append(_bloque(dias[16:], 16))
+
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph("FIRMA DEL DIRECTOR(A): ___________________________  FECHA: ___________  SELLO: ___________", st_s))
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_control_prestamo_equipos(config):
+    """Control de préstamo de equipos e implementos institucionales."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.8*cm, rightMargin=1.8*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=12, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, spaceAfter=6, parent=styles['Normal'])
+    st_h = ParagraphStyle('H', fontSize=9, fontName='Helvetica-Bold',
+                           spaceAfter=4, parent=styles['Normal'])
+
+    EQUIPOS = [
+        "Equipo de sonido / parlantes",
+        "Micrófono inalámbrico",
+        "Proyector / cañón",
+        "Pantalla de proyección",
+        "Laptop institucional",
+        "Extensión eléctrica",
+        "Cámara fotográfica",
+        "Sillas plegables",
+        "Mesas plegables",
+        "Otros: _______________",
+    ]
+    story = [
+        Paragraph(f"CONTROL DE PRÉSTAMO DE EQUIPOS E IMPLEMENTOS", st_t),
+        Paragraph(f"{ie}  |  Año {anio}  |  Responsable Auxiliar: _________________________", st_s),
+        Spacer(1, 0.3*cm),
+    ]
+
+    # Tabla de préstamos
+    header = ["N\u00b0", "EQUIPO / MATERIAL", "FECHA SALIDA", "HORA SALIDA", "RESPONSABLE / DOCENTE", "DESTINO", "FECHA DEVOL.", "HORA DEVOL.", "ESTADO DEVOL.", "VB AUXILIAR"]
+    rows = [header] + [[str(i+1), EQUIPOS[i % len(EQUIPOS)]] + [""]*8 for i in range(25)]
+    col_ws = [0.7*cm, 3.5*cm, 1.5*cm, 1.2*cm, 3.8*cm, 2*cm, 1.5*cm, 1.2*cm, 1.5*cm, 1.5*cm]
+    t = Table(rows, colWidths=col_ws,
+              rowHeights=[1.1*cm] + [0.7*cm]*25)
+    t.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1),7),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.95,0.95,1)]),
+        ('ALIGN',(1,0),(1,-1),'LEFT'),
+        ('ALIGN',(4,0),(4,-1),'LEFT'),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.5*cm))
+
+    # Inventario de equipos disponibles
+    story.append(Paragraph("INVENTARIO DE EQUIPOS DISPONIBLES:", st_h))
+    inv_data = [["N°","EQUIPO / IMPLEMENTO","CANTIDAD","ESTADO","OBSERVACIONES"]]
+    for i, eq in enumerate(EQUIPOS[:-1]):
+        inv_data.append([str(i+1), eq, "___", "Bueno / Regular / Malo", ""])
+    t2 = Table(inv_data, colWidths=[0.7*cm, 5*cm, 1.5*cm, 3.5*cm, 4.3*cm],
+               rowHeights=[0.7*cm]*len(inv_data))
+    t2.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1),7.5),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.2,0.2,0.5)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('ALIGN',(1,0),(1,-1),'LEFT'),
+    ]))
+    story.append(t2)
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_docentes):
+    """Control de asistencia y participación en horas de trabajo colegiado."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+    buf = _io.BytesIO()
+    anio = config.get('anio', 2026)
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1*cm, bottomMargin=1.2*cm,
+                            leftMargin=1*cm, rightMargin=1*cm)
+    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, parent=styles['Normal'])
+
+    sesiones_header = [f"Ses.{i+1}\n_____\n" for i in range(n_sesiones)]
+    header = ["N°", "APELLIDOS Y NOMBRES COMPLETOS", "Nivel/\nEspecialidad"] + sesiones_header + ["TOTAL\nAsist.", "Firma"]
+    rows = [header]
+    if not nombres_docentes:
+        nombres_docentes = [f"___________________________ {i+1}" for i in range(20)]
+    for i, nombre in enumerate(nombres_docentes):
+        fila = [str(i+1), nombre, ""] + [" A / I / J "] * n_sesiones + ["", ""]
+        rows.append(fila)
+    # Leyenda fila
+    rows.append(["", "LEYENDA: A=Asistió | I=Inasistencia | J=Justificado", ""] + [""]*n_sesiones + ["",""])
+
+    ancho = 26*cm
+    w_n = 0.5*cm; w_nom = 4.5*cm; w_nivel = 2.3*cm; w_firma = 2*cm; w_tot = 1.2*cm
+    w_ses = (ancho - w_n - w_nom - w_nivel - w_firma - w_tot) / n_sesiones
+    col_ws = [w_n, w_nom, w_nivel] + [w_ses]*n_sesiones + [w_tot, w_firma]
+    row_hs = [1.2*cm] + [0.65*cm]*len(nombres_docentes) + [0.5*cm]
+    t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
+    t.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,0),7),
+        ('FONTSIZE',(0,1),(-1,-1),7),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.05,0.3,0.05)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('GRID',(0,0),(-1,-2),0.4,colors.black),
+        ('ROWBACKGROUNDS',(0,1),(-1,-2),[colors.white,colors.Color(0.95,1,0.95)]),
+        ('SPAN',(1,-1),(1+n_sesiones,-1)),
+        ('FONTSIZE',(0,-1),(-1,-1),7),
+        ('BACKGROUND',(0,-1),(-1,-1),colors.Color(0.95,0.95,0.85)),
+        ('ALIGN',(1,1),(1,-1),'LEFT'),
+    ]))
+
+    story = [
+        Paragraph(f"CONTROL DE TRABAJO COLEGIADO — {trimestre.upper()} {anio}", st_t),
+        Paragraph(f"{ie}  |  Responsable: ___________________________  |  Firma y Sello: ___________", st_s),
+        Spacer(1, 0.3*cm),
+    ]
+
+    # Tabla de sesiones con temario
+    story.append(Paragraph("TEMARIO DE SESIONES:", ParagraphStyle('H2', fontSize=8,
+                            fontName='Helvetica-Bold', parent=styles['Normal'])))
+    tem_data = [["N° Sesión","Fecha","Tema / Agenda","Hora Inicio","Hora Fin","Facilitador","Productos"]]
+    for i in range(n_sesiones):
+        tem_data.append([f"Sesión {i+1}", "", "", "", "", "", ""])
+    t_tem = Table(tem_data, colWidths=[1.5*cm, 2*cm, 7*cm, 1.5*cm, 1.5*cm, 3.5*cm, 4.5*cm],
+                  rowHeights=[0.7*cm]*len(tem_data))
+    t_tem.setStyle(TableStyle([
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1),7.5),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.05,0.3,0.05)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('ALIGN',(2,0),(2,-1),'LEFT'),
+    ]))
+    story += [t_tem, Spacer(1, 0.4*cm), t]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, anio):
+    """Ficha de monitoreo pedagógico según MINEDU/GEREDU Cusco — MBDD."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, KeepTogether)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+    buf = _io.BytesIO()
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.8*cm, rightMargin=1.8*cm)
+    styles = getSampleStyleSheet()
+    def P(txt, bold=False, size=9, align=TA_LEFT, space=2):
+        return Paragraph(txt if not bold else f"<b>{txt}</b>",
+                         ParagraphStyle('p', fontSize=size, leading=size+2,
+                                        alignment=align, spaceAfter=space,
+                                        parent=styles['Normal']))
+    def tabla(data, col_ws, row_hs=None):
+        if row_hs is None:
+            row_hs = [0.7*cm]*len(data)
+        t = Table(data, colWidths=col_ws, rowHeights=row_hs)
+        t.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.4,colors.black),
+            ('FONTSIZE',(0,0),(-1,-1),7.5),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),4),
+        ]))
+        return t
+
+    story = []
+    # Encabezado
+    story += [
+        P("FICHA DE MONITOREO Y ACOMPAÑAMIENTO PEDAGÓGICO", bold=True, size=11, align=TA_CENTER, space=4),
+        P(f"{ie}  |  UGEL {ugel}  |  Año {anio}", size=8, align=TA_CENTER, space=6),
+        tabla([
+            ["I. DATOS GENERALES","","",""],
+            [f"DOCENTE: {docente or '_'*35}", f"ÁREA: {area or '_'*20}",
+             f"GRADO: {grado or '_'*15}", f"FECHA: {' '*20}"],
+            [f"DIRECTOR(A): {director or '_'*30}", f"TIPO: {tipo_mon}","N° SESIÓN: ____","HORA: _____"],
+        ], [4.5*cm, 3.5*cm, 3*cm, 2.7*cm],
+        [0.5*cm, 0.8*cm, 0.8*cm]),
+        Spacer(1, 0.3*cm),
+    ]
+
+    # Competencias del MBDD
+    COMPETENCIAS = [
+        ("DOMINIO I: PREPARACIÓN PARA EL APRENDIZAJE", [
+            ("Comp. 1", "Conoce y comprende las características de sus estudiantes y sus contextos",
+             ["1.1 Demuestra conocimiento de las características individuales y evolutivas de sus estudiantes.",
+              "1.2 Demuestra conocimiento de los enfoques y procesos pedagógicos del área.",
+              "1.3 Planifica considerando las necesidades e intereses de los estudiantes."]),
+            ("Comp. 2", "Planifica la enseñanza de forma colegiada garantizando la coherencia",
+             ["2.1 La planificación responde a las características del contexto.",
+              "2.2 La unidad didáctica presenta coherencia entre propósitos, actividades y evaluación.",
+              "2.3 La sesión de aprendizaje incluye los tres momentos didácticos.",
+              "2.4 Los materiales están previstos y son pertinentes."]),
+        ]),
+        ("DOMINIO II: ENSEÑANZA PARA EL APRENDIZAJE", [
+            ("Comp. 3", "Crea un clima propicio para el aprendizaje",
+             ["3.1 Promueve relaciones de respeto y colaboración entre estudiantes.",
+              "3.2 Genera un ambiente de confianza donde los estudiantes se sienten valorados.",
+              "3.3 Maneja el tiempo eficientemente."]),
+            ("Comp. 4", "Conduce el proceso de enseñanza con dominio del contenido disciplinar",
+             ["4.1 Desarrolla estrategias pedagógicas pertinentes al contenido.",
+              "4.2 Utiliza recursos didácticos significativos para el aprendizaje.",
+              "4.3 Maneja estrategias de retroalimentación formativa.",
+              "4.4 Sistematiza y cierra el aprendizaje de forma clara.",
+              "4.5 Usa las TIC como herramienta de aprendizaje cuando corresponde."]),
+            ("Comp. 5", "Evalúa permanentemente el aprendizaje",
+             ["5.1 Utiliza técnicas e instrumentos de evaluación pertinentes.",
+              "5.2 Proporciona retroalimentación oportuna y de calidad.",
+              "5.3 Sistematiza los resultados para la toma de decisiones."]),
+        ]),
+    ]
+    escala = ["L = Logrado", "EP = En Proceso", "I = Inicio", "NE = No Evidenciado"]
+    story.append(P(f"ESCALA: {'  |  '.join(escala)}", size=7.5, space=4))
+
+    for dominio, comps in COMPETENCIAS:
+        story.append(P(dominio, bold=True, size=8.5, space=2))
+        for cod, comp_txt, indicadores in comps:
+            rows_comp = [[P(f"<b>{cod}</b>", size=7.5), P(comp_txt, size=7.5), "NIVEL", "EVIDENCIAS"]]
+            for ind in indicadores:
+                rows_comp.append(["", P(f"• {ind}", size=7), "L / EP / I / NE", ""])
+            t_comp = Table(rows_comp, colWidths=[1*cm, 8*cm, 2.3*cm, 2.4*cm],
+                           rowHeights=[0.6*cm]*(len(rows_comp)))
+            t_comp.setStyle(TableStyle([
+                ('GRID',(0,0),(-1,-1),0.3,colors.black),
+                ('FONTSIZE',(0,0),(-1,-1),7),
+                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.85,0.9,1)),
+                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+                ('SPAN',(0,0),(0,len(rows_comp)-1)),
+                ('LEFTPADDING',(0,0),(-1,-1),3),
+            ]))
+            story += [t_comp, Spacer(1, 0.2*cm)]
+        story.append(Spacer(1, 0.2*cm))
+
+    # Fortalezas / Aspectos de mejora / Compromisos
+    rows_fm = [
+        [P("<b>FORTALEZAS IDENTIFICADAS:</b>", size=8), P("<b>ASPECTOS DE MEJORA:</b>", size=8)],
+        [P(" "*50+"\n"*3, size=7), P(" "*50+"\n"*3, size=7)],
+        [P("<b>COMPROMISOS DEL DOCENTE:</b>", size=8),
+         P("<b>PRÓXIMA VISITA / ACOMPAÑAMIENTO:</b>", size=8)],
+        [P("\n\n", size=7), P("Fecha: ________________", size=7)],
+    ]
+    t_fm = Table(rows_fm, colWidths=[8.6*cm, 5.1*cm],
+                 rowHeights=[0.5*cm, 1.8*cm, 0.5*cm, 0.7*cm])
+    t_fm.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('VALIGN',(0,0),(-1,-1),'TOP'),
+    ]))
+    story += [t_fm, Spacer(1, 0.5*cm)]
+
+    # Firmas
+    firmas = [["FIRMA DEL DOCENTE", "FIRMA Y SELLO DEL DIRECTOR(A)"],
+              [f"\n{docente or ''}\n", f"\n{director or ''}\n"]]
+    t_f = Table(firmas, colWidths=[8*cm, 5.7*cm], rowHeights=[0.4*cm, 1.5*cm])
+    t_f.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('FONTSIZE',(0,0),(-1,-1),8),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.85,0.85,0.95)),
+    ]))
+    story.append(t_f)
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado, ciclo, anio):
+    """Genera esquema de programación curricular en Word (.docx) según GEREDU Cusco."""
+    import subprocess, tempfile, os, io as _io
+    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel', 'Chinchero - Urubamba')
+
+    # Construir el JS según nivel y tipo
+    js_code = _build_programacion_js(nivel, tipo, docente or "", area or "", grado or "", ciclo or "", anio, ie, ugel)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        js_path = os.path.join(tmpdir, 'gen.js')
+        out_path = os.path.join(tmpdir, 'output.docx')
+        with open(js_path, 'w', encoding='utf-8') as f:
+            f.write(js_code.replace('OUTPUT_PATH', out_path.replace('\\', '/')))
+        try:
+            result = subprocess.run(['node', js_path], capture_output=True, text=True, timeout=30)
+            if result.returncode == 0 and os.path.exists(out_path):
+                with open(out_path, 'rb') as f:
+                    return _io.BytesIO(f.read())
+        except Exception:
+            pass
+    return None
+
+
+def _build_programacion_js(nivel, tipo, docente, area, grado, ciclo, anio, ie, ugel):
+    """Construye el código JS para generar el Word de programación."""
+    # Escapar para JS
+    def esc(s): return s.replace('"', '\\"').replace("'", "\\'")
+
+    if tipo == "Planificación Anual":
+        return _js_planificacion_anual(nivel, docente, area, grado, ciclo, anio, ie, ugel)
+    elif tipo == "Unidad Didáctica":
+        return _js_unidad_didactica(nivel, docente, area, grado, ciclo, anio, ie, ugel)
+    else:
+        return _js_sesion_aprendizaje(nivel, docente, area, grado, ciclo, anio, ie, ugel)
+
+
+def _js_planificacion_anual(nivel, docente, area, grado, ciclo, anio, ie, ugel):
+    return f"""
+const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
+        HeadingLevel }} = require('docx');
+const fs = require('fs');
+
+const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE'; const GRIS = 'F2F2F2';
+const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
+const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
+
+function celda(txt, opts={{}}) {{
+  return new TableCell({{
+    borders: bordes,
+    width: opts.w ? {{ size: opts.w, type: WidthType.DXA }} : {{ size: 1000, type: WidthType.DXA }},
+    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
+    verticalAlign: VerticalAlign.CENTER,
+    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
+    columnSpan: opts.span || 1,
+    children: [new Paragraph({{
+      alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      children: [new TextRun({{ text: txt, size: opts.size || 20,
+        bold: !!opts.bold, font: 'Arial', color: opts.color || '000000' }})]
+    }})]
+  }});
+}}
+
+function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
+
+const doc = new Document({{
+  sections: [{{
+    properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
+      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
+    children: [
+      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 120 }},
+        children: [new TextRun({{ text: '{ie}'.toUpperCase(), size: 28, bold: true, font: 'Arial' }})] }}),
+      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 60 }},
+        children: [new TextRun({{ text: 'UGEL {ugel}  |  AÑO {anio}', size: 20, font: 'Arial' }})] }}),
+      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 240 }},
+        children: [new TextRun({{ text: 'PLANIFICACIÓN ANUAL — {nivel.upper()}', size: 26, bold: true, font: 'Arial', color: AZUL }})] }}),
+      
+      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [2340, 2340, 2340, 2340], rows: [
+        fila(celda('INSTITUCIÓN EDUCATIVA', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{ie}', {{w:2340}}),
+             celda('ÁREA CURRICULAR', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{area or "_________________"}', {{w:2340}})),
+        fila(celda('DOCENTE', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{docente or "_______________________________"}', {{w:2340}}),
+             celda('GRADO Y SECCIÓN', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{grado or "___________"}', {{w:2340}})),
+        fila(celda('CICLO', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{ciclo or "______"}', {{w:2340}}),
+             celda('AÑO', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('{anio}', {{w:2340}})),
+      ]}}),
+      
+      new Paragraph({{ spacing: {{ before: 240, after: 80 }},
+        children: [new TextRun({{ text: 'I. PROPÓSITOS DE APRENDIZAJE Y ENFOQUES TRANSVERSALES', size: 22, bold: true, font: 'Arial', color: AZUL }})] }}),
+      
+      new Table({{ width: {{ size: 9360, type: WidthType.DXA }},
+        columnWidths: [3120, 3120, 3120], rows: [
+        fila(celda('COMPETENCIAS / CAPACIDADES', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
+             celda('ESTÁNDARES DE APRENDIZAJE', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
+             celda('DESEMPEÑOS PRECISADOS', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}})),
+        ...Array(6).fill(null).map(()=>fila(celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}))),
+      ]}}),
+
+      new Paragraph({{ spacing: {{ before: 200, after: 80 }},
+        children: [new TextRun({{ text: 'ENFOQUES TRANSVERSALES:', size: 20, bold: true, font: 'Arial' }})] }}),
+      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [4680, 4680], rows: [
+        fila(celda('ENFOQUES', {{bg:AZUL_CLARO,bold:true,center:true,w:4680}}),
+             celda('VALORES Y ACTITUDES', {{bg:AZUL_CLARO,bold:true,center:true,w:4680}})),
+        ...Array(4).fill(null).map(()=>fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}}))),
+      ]}}),
+
+      new Paragraph({{ spacing: {{ before: 240, after: 80 }},
+        children: [new TextRun({{ text: 'II. ORGANIZACIÓN Y DISTRIBUCIÓN DEL TIEMPO — UNIDADES DIDÁCTICAS', size: 22, bold: true, font: 'Arial', color: AZUL }})] }}),
+
+      new Table({{ width: {{ size: 9360, type: WidthType.DXA }},
+        columnWidths: [2200, 1000, 2160, 1000, 1000, 2000], rows: [
+        fila(celda('TÍTULO DE LA UNIDAD DIDÁCTICA', {{bg:AZUL_CLARO,bold:true,center:true,w:2200}}),
+             celda('TIPO', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
+             celda('SITUACIÓN SIGNIFICATIVA', {{bg:AZUL_CLARO,bold:true,center:true,w:2160}}),
+             celda('Nro.\nSES.', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
+             celda('TIEMPO', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
+             celda('COMPETENCIAS', {{bg:AZUL_CLARO,bold:true,center:true,w:2000}})),
+        ...Array(9).fill(null).map((_,i)=>fila(
+          celda(`Unidad ${{i+1}}: `,{{w:2200,size:22}}),
+          celda('',{{w:1000,size:22}}),celda('',{{w:2160,size:22}}),
+          celda('',{{w:1000,size:22}}),celda('',{{w:1000,size:22}}),celda('',{{w:2000,size:22}}))),
+      ]}}),
+
+      new Paragraph({{ spacing: {{ before: 200, after: 80 }},
+        children: [new TextRun({{ text: 'III. MATERIALES Y RECURSOS EDUCATIVOS', size: 20, bold: true, font: 'Arial', color: AZUL }})] }}),
+      new Paragraph({{ spacing: {{ after: 300 }},
+        children: [new TextRun({{ text: '_'.repeat(120), size: 20, font: 'Arial' }})] }}),
+
+      new Paragraph({{ spacing: {{ before: 600 }}, alignment: AlignmentType.CENTER,
+        children: [new TextRun({{ text: 'Cusco, _____ de ___________ de {anio}', size: 20, font: 'Arial' }})] }}),
+      new Paragraph({{ spacing: {{ before: 400 }}, alignment: AlignmentType.CENTER,
+        children: [new TextRun({{ text: '_'.repeat(40)+'          '+'_'.repeat(40), size: 20, font: 'Arial' }})] }}),
+      new Paragraph({{ alignment: AlignmentType.CENTER,
+        children: [new TextRun({{ text: 'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)', size: 20, font: 'Arial' }})] }}),
+    ]
+  }}]
+}});
+Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
+"""
+
+
+def _js_unidad_didactica(nivel, docente, area, grado, ciclo, anio, ie, ugel):
+    return f"""
+const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign }} = require('docx');
+const fs = require('fs');
+const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE'; const GRIS = 'F2F2F2';
+const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
+const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
+function celda(txt, opts={{}}) {{
+  return new TableCell({{ borders: bordes,
+    width: {{ size: opts.w||1000, type: WidthType.DXA }},
+    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
+    verticalAlign: VerticalAlign.CENTER, columnSpan: opts.span||1,
+    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
+    children: [new Paragraph({{ alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      children: [new TextRun({{ text: txt, size: opts.size||20, bold: !!opts.bold, font: 'Arial', color: opts.color||'000000' }})] }})] }});
+}}
+function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
+const titulo = '{nivel.upper()} — UNIDAD DIDÁCTICA N°____';
+const doc = new Document({{ sections: [{{ properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
+      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
+    children: [
+      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 80 }},
+        children: [new TextRun({{ text: '{ie}'.toUpperCase(), size: 26, bold: true, font: 'Arial' }})] }}),
+      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 200 }},
+        children: [new TextRun({{ text: titulo, size: 24, bold: true, font: 'Arial', color: AZUL }})] }}),
+      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [2340,2340,2340,2340], rows: [
+        fila(celda('INSTITUCIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{ie}',{{w:2340}}),
+             celda('ÁREA',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{area or "___"}',{{w:2340}})),
+        fila(celda('DOCENTE',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{docente or "_______________________"}',{{w:2340}}),
+             celda('GRADO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{grado or "___"}',{{w:2340}})),
+        fila(celda('CICLO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{ciclo or "____"}',{{w:2340}}),
+             celda('DURACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('Del ___ al ___',{{w:2340}})),
+        fila(celda('TÍTULO DE LA UNIDAD',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('',{{w:7020,span:3}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:200,after:80}}, children:[new TextRun({{text:'I. PROPÓSITOS DE APRENDIZAJE',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[2340,2340,2340,2340],rows:[
+        fila(celda('COMPETENCIAS/CAPACIDADES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('DESEMPEÑOS PRECISADOS',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('PROD./EVIDENCIA',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('CRITERIOS EVALUACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}})),
+        ...Array(4).fill(null).map(()=>fila(celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),
+          celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}))),
+      ]}}),
+      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'II. ENFOQUES TRANSVERSALES',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[3120,3120,3120],rows:[
+        fila(celda('ENFOQUE',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
+             celda('VALORES',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
+             celda('ACTITUDES OBSERVABLES',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}})),
+        fila(celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'III. SITUACIÓN SIGNIFICATIVA',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[9360],rows:[
+        fila(celda('',{{w:9360,size:24}}),...[]),
+        ...Array(3).fill(null).map(()=>fila(celda('',{{w:9360,size:24}}))),
+      ]}}),
+      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'IV. SECUENCIA DE SESIONES DE APRENDIZAJE',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1560,4680,1560,1560],rows:[
+        fila(celda('SESIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}}),
+             celda('TÍTULO / ACTIVIDAD PRINCIPAL',{{bg:AZUL_CLARO,bold:true,center:true,w:4680}}),
+             celda('HORAS',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}}),
+             celda('MATERIALES',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}})),
+        ...Array(10).fill(null).map((_,i)=>fila(celda(`Ses. ${{i+1}}`,{{w:1560,center:true,size:22}}),
+          celda('',{{w:4680,size:22}}),celda('',{{w:1560,size:22}}),celda('',{{w:1560,size:22}}))),
+      ]}}),
+      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'V. MATERIALES Y RECURSOS EDUCATIVOS',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Paragraph({{ spacing:{{after:200}}, children:[new TextRun({{text:'_'.repeat(120),size:20,font:'Arial'}})] }}),
+      new Paragraph({{ spacing:{{before:400}},alignment:AlignmentType.CENTER,
+        children:[new TextRun({{text:'_'.repeat(40)+'          '+'_'.repeat(40),size:20,font:'Arial'}})] }}),
+      new Paragraph({{ alignment:AlignmentType.CENTER,
+        children:[new TextRun({{text:'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)',size:20,font:'Arial'}})] }}),
+    ] }}] }});
+Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
+"""
+
+
+def _js_sesion_aprendizaje(nivel, docente, area, grado, ciclo, anio, ie, ugel):
+    return f"""
+const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign }} = require('docx');
+const fs = require('fs');
+const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE';
+const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
+const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
+function celda(txt, opts={{}}) {{
+  return new TableCell({{ borders: bordes,
+    width: {{ size: opts.w||1000, type: WidthType.DXA }},
+    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
+    verticalAlign: VerticalAlign.CENTER, columnSpan: opts.span||1,
+    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
+    rowSpan: opts.rowSpan||1,
+    children: [new Paragraph({{ alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      children: [new TextRun({{ text: txt, size: opts.size||20, bold: !!opts.bold, font: 'Arial', color: opts.color||'000000' }})] }})] }});
+}}
+function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
+const doc = new Document({{ sections: [{{ properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
+      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
+    children: [
+      new Paragraph({{ alignment:AlignmentType.CENTER, spacing:{{after:80}},
+        children:[new TextRun({{text:'{ie}'.toUpperCase(),size:26,bold:true,font:'Arial'}})] }}),
+      new Paragraph({{ alignment:AlignmentType.CENTER, spacing:{{after:180}},
+        children:[new TextRun({{text:'SESIÓN DE APRENDIZAJE — {nivel.upper()}',size:24,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1760,1600,1760,1600,1760,840],rows:[
+        fila(celda('INSTITUCIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{ie}',{{w:1600}}),
+             celda('ÁREA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{area or "___"}',{{w:1600}}),
+             celda('FECHA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:840}})),
+        fila(celda('DOCENTE',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{docente or "________________"}',{{w:1600}}),
+             celda('GRADO/SECCIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{grado or "___"}',{{w:1600}}),
+             celda('DURACIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:840}})),
+        fila(celda('TÍTULO DE LA SESIÓN',{{bg:AZUL_CLARO,bold:true,span:1,w:1760}}),celda('',{{w:7600,span:5}})),
+        fila(celda('SITUACIÓN SIGNIFICATIVA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:7600,span:5}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:180,after:80}},
+        children:[new TextRun({{text:'II. PROPÓSITOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1872,1872,1872,1872,1872],rows:[
+        fila(celda('COMPETENCIAS/CAPACIDADES',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
+             celda('APRENDIZAJES REGIONALES CLAVE',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
+             celda('DESEMPEÑOS PRECISADOS',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
+             celda('PROD./EVIDENCIA PARCIAL',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
+             celda('CRITERIOS DE EVALUACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}})),
+        fila(celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}}),
+             celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}})),
+      ]}}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[2340,2340,2340,2340],rows:[
+        fila(celda('ENFOQUE TRANSVERSAL',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('VALORES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('ACTITUDES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
+             celda('INSTRUMENTO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}})),
+        fila(celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:160,after:80}},
+        children:[new TextRun({{text:'III. SECUENCIA DIDÁCTICA',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1200,5760,1200,1200],rows:[
+        fila(celda('MOMENTOS',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}}),
+             celda('ACTIVIDADES / ESTRATEGIAS',{{bg:AZUL_CLARO,bold:true,center:true,w:5760}}),
+             celda('MATERIALES',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}}),
+             celda('TIEMPO',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}})),
+        fila(celda('INICIO',{{bg:'E2EFDA',bold:true,center:true,w:1200}}),
+             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
+        fila(celda('DESARROLLO',{{bg:'DDEBF7',bold:true,center:true,w:1200}}),
+             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
+        fila(celda('CIERRE',{{bg:'FFF2CC',bold:true,center:true,w:1200}}),
+             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:300,after:80}},
+        children:[new TextRun({{text:'IV. EVALUACIÓN / REFLEXIONES SOBRE EL APRENDIZAJE',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
+      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[4680,4680],rows:[
+        fila(celda('¿Qué logros tuvieron los estudiantes?',{{bg:AZUL_CLARO,bold:true,w:4680}}),
+             celda('¿Qué dificultades se identificaron?',{{bg:AZUL_CLARO,bold:true,w:4680}})),
+        fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}})),
+        fila(celda('¿Qué aprendizajes debo reforzar en la siguiente sesión?',{{bg:AZUL_CLARO,bold:true,w:4680}}),
+             celda('¿Qué actividades, estrategias y materiales funcionaron?',{{bg:AZUL_CLARO,bold:true,w:4680}})),
+        fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}})),
+      ]}}),
+      new Paragraph({{ spacing:{{before:400}},alignment:AlignmentType.CENTER,
+        children:[new TextRun({{text:'_'.repeat(40)+'          '+'_'.repeat(40),size:20,font:'Arial'}})] }}),
+      new Paragraph({{ alignment:AlignmentType.CENTER,
+        children:[new TextRun({{text:'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)',size:20,font:'Arial'}})] }}),
+    ] }}] }});
+Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
+"""
 
 
 def _generar_acta_reglamento_alumnos(config, grado, docente, n_filas=30):
@@ -6204,23 +6927,43 @@ def tab_asistencias():
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
-    # Construir índice al abrir si no existe o venció
-    import time as _t_asis
+    # ── Índice: si ya existe en RAM úsalo al instante ──────────────
+    import time as _t_asis, threading as _th_asis
     _idx_ts = st.session_state.get('_indice_dni_ts', 0)
-    if not st.session_state.get('_indice_dni') or (_t_asis.time() - _idx_ts) > 180:
-        _construir_indice_dni()
+    _idx    = st.session_state.get('_indice_dni')
+    _vencio = (_t_asis.time() - _idx_ts) > 180
 
-    # Aviso de estado
-    if st.session_state.get('_indice_desde_cache'):
-        n_idx = len(st.session_state.get('_indice_dni', {}))
-        st.warning(
-            f"📴 **Modo sin internet** — Caché local ({n_idx} personas). "
-            f"Las asistencias se guardan y sincronizan cuando vuelva la conexión."
-        )
+    if not _idx:
+        # Sin índice — intentar desde caché local INSTANTÁNEO (<5ms)
+        try:
+            if Path(ARCHIVO_INDICE_CACHE).exists():
+                import json as _jc
+                with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as _f:
+                    _cached = _jc.load(_f)
+                if _cached:
+                    st.session_state['_indice_dni'] = _cached
+                    st.session_state['_indice_dni_ts'] = _t_asis.time()
+                    st.session_state['_indice_desde_cache'] = True
+                    _idx = _cached
+        except Exception:
+            pass
+        # Construir desde GSheets en hilo de fondo — NO bloquea la UI
+        if not _th_asis.current_thread().name.startswith('_idx_bg'):
+            _t = _th_asis.Thread(target=_construir_indice_dni, daemon=True, name='_idx_bg')
+            _t.start()
+    elif _vencio:
+        # Índice vencido — refrescar en segundo plano sin bloquear
+        _t = _th_asis.Thread(target=_construir_indice_dni, daemon=True, name='_idx_bg')
+        _t.start()
+
+    # ── Estado del sistema ─────────────────────────────────────────
+    n_idx = len(st.session_state.get('_indice_dni', {}))
+    if n_idx == 0:
+        st.info("⏳ Cargando índice en segundo plano... Puede escanear, el sistema responde.")
+    elif st.session_state.get('_indice_desde_cache'):
+        st.warning(f"📴 **Sin internet** — Modo local ({n_idx} personas). Asistencias guardadas localmente.")
     else:
-        n_idx = len(st.session_state.get('_indice_dni', {}))
-        if n_idx > 0:
-            st.success(f"✅ Sistema listo — {n_idx} personas en índice")
+        st.success(f"✅ Listo — {n_idx} personas | Registro instantáneo")
 
     # Inicializar tracking de WhatsApp enviados
     if 'wa_enviados' not in st.session_state:
@@ -6687,44 +7430,54 @@ def tab_asistencias():
 
 
 def _registrar_asistencia_rapida(dni):
-    """Registra asistencia — rápido: usa índice DNI en caché, no GSheets."""
-    # Usar índice en caché si disponible (mucho más rápido que buscar en GS)
+    """Registra asistencia — INSTANTÁNEO: solo usa índice en RAM, nunca GSheets."""
+    # 1. Buscar SOLO en índice local (< 1ms, nunca bloquea)
     _idx = st.session_state.get('_indice_dni', {})
-    if dni in _idx:
-        _d = _idx[dni]
+    dni_str = str(dni).strip()
+    _d = _idx.get(dni_str)
+    if _d:
         persona = {
-            'DNI': dni,
+            'DNI': dni_str,
             'Nombre': _d.get('Nombre', _d.get('nombre', '')),
             'Grado': _d.get('Grado', _d.get('grado', '')),
             'Nivel': _d.get('Nivel', _d.get('nivel', '')),
+            '_tipo': _d.get('_tipo', 'alumno'),
         }
     else:
-        persona = BaseDatos.buscar_por_dni(dni)
+        # Fallback: caché JSON (no GSheets, no Excel)
+        persona = None
+        try:
+            if Path(ARCHIVO_INDICE_CACHE).exists():
+                import json as _jf
+                with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as _ff:
+                    _cache = _jf.load(_ff)
+                if dni_str in _cache:
+                    _d2 = _cache[dni_str]
+                    persona = {'DNI': dni_str,
+                               'Nombre': _d2.get('Nombre', _d2.get('nombre', '')),
+                               'Grado': _d2.get('Grado', _d2.get('grado', '')),
+                               'Nivel': _d2.get('Nivel', _d2.get('nivel', '')),
+                               '_tipo': _d2.get('_tipo', 'alumno')}
+                    # Agregar al índice RAM para próximas búsquedas
+                    if _idx is not None:
+                        _idx[dni_str] = _d2
+        except Exception:
+            pass
+
     if persona:
         hora = hora_peru_str()
         modo = st.session_state.get('tipo_asistencia', 'Entrada')
         es_d = persona.get('_tipo', '') == 'docente'
-
-        # Obtener nombre
-        if es_d:
-            df_doc = BaseDatos.cargar_docentes()
-            if not df_doc.empty and 'DNI' in df_doc.columns:
-                df_doc['DNI'] = df_doc['DNI'].astype(str).str.strip()
-                doc_e = df_doc[df_doc['DNI'] == str(dni).strip()]
-                nombre = doc_e.iloc[0]['Nombre'] if not doc_e.empty else persona.get('Nombre', '')
-            else:
-                nombre = persona.get('Nombre', '')
-        else:
-            nombre = persona.get('Nombre', '')
+        # Nombre desde índice directo — sin llamada extra
+        nombre = str(persona.get('Nombre', persona.get('nombre', dni_str)))
 
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         limite_txt = HORARIOS[_horario_activo()]['limite']
 
         # ── AUTO-DETECTAR TURNO mañana/tarde ─────────────────────────
         asis_hoy = BaseDatos.obtener_asistencias_hoy()
-        reg_hoy = asis_hoy.get(str(dni).strip(), {})
+        reg_hoy = asis_hoy.get(dni_str, {})
 
-        # ── Calcular minutos actuales para comparar ─────────────────
         try:
             _hh, _mm = hora.split(':')[:2]
             _mins_ahora = int(_hh) * 60 + int(_mm)
@@ -21732,45 +22485,62 @@ def _generar_pdf_horario(docente, grado, anio, horario_data, horas, dias, areas_
 
 
 def _generar_pdf_horario_blanco(grado, anio, horas, dias):
-    """Genera horario en blanco para llenar a mano."""
+    """Genera horario en blanco para llenar a mano — siempre en una hoja."""
     from reportlab.lib.pagesizes import A4, landscape
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     from reportlab.lib.enums import TA_CENTER
     import io as _io
     buf = _io.BytesIO()
+    # Márgenes mínimos para maximizar espacio
     doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
-                            topMargin=1.5*cm, bottomMargin=1.5*cm,
-                            leftMargin=1.5*cm, rightMargin=1.5*cm)
+                            topMargin=0.8*cm, bottomMargin=0.8*cm,
+                            leftMargin=0.8*cm, rightMargin=0.8*cm)
     styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('T', fontSize=13, fontName='Helvetica-Bold',
-                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
-    st_s = ParagraphStyle('S', fontSize=9, alignment=TA_CENTER,
-                           spaceAfter=8, parent=styles['Normal'])
-    header = ["Hora"] + dias
-    rows = [header] + [[h]+[""]*len(dias) for h in horas]
-    n_dias = len(dias)
-    hora_w = 2.8*cm
-    dia_w = (25*cm - hora_w) / n_dias
-    t = Table(rows, colWidths=[hora_w]+[dia_w]*n_dias,
-              rowHeights=[1*cm]+[2*cm]*len(horas))
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=2, parent=styles['Normal'])
+    st_s = ParagraphStyle('S', fontSize=7.5, alignment=TA_CENTER,
+                           spaceAfter=4, parent=styles['Normal'])
+
+    n_dias = len(dias) if dias else 5
+    n_horas = len(horas) if horas else 6
+
+    # Calcular ancho disponible (landscape A4 = 29.7cm - márgenes)
+    ancho_total = 28.1*cm
+    hora_w = 2.5*cm
+    dia_w = (ancho_total - hora_w) / n_dias
+
+    # Calcular alto disponible: A4 landscape alto = 21cm - márgenes - título
+    alto_total = 19*cm
+    header_h = 0.7*cm
+    fila_h = min(2.5*cm, (alto_total - header_h) / n_horas)
+
+    header = ["Hora"] + (dias if dias else ["Lunes","Martes","Miércoles","Jueves","Viernes"])
+    rows = [header] + [([h] + [""]*n_dias) for h in (horas if horas else [])]
+
+    t = Table(rows,
+              colWidths=[hora_w] + [dia_w]*n_dias,
+              rowHeights=[header_h] + [fila_h]*n_horas)
     t.setStyle(TableStyle([
         ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,0),10),
+        ('FONTSIZE',(0,0),(-1,0),9),
         ('BACKGROUND',(0,0),(-1,0),colors.Color(0.12,0.12,0.35)),
         ('TEXTCOLOR',(0,0),(-1,0),colors.white),
         ('ALIGN',(0,0),(-1,-1),'CENTER'),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('GRID',(0,0),(-1,-1),0.5,colors.Color(0.6,0.6,0.6)),
+        ('GRID',(0,0),(-1,-1),0.5,colors.Color(0.5,0.5,0.5)),
         ('FONTNAME',(0,1),(0,-1),'Helvetica-Bold'),
-        ('FONTSIZE',(0,1),(0,-1),8),
+        ('FONTSIZE',(0,1),(0,-1),7.5),
         ('BACKGROUND',(0,1),(0,-1),colors.Color(0.93,0.93,0.97)),
+        # Recreo con fondo diferente
+        *[('BACKGROUND',(0,i+1),(-1,i+1),colors.Color(0.88,0.92,0.88))
+          for i,h in enumerate(horas or []) if 'recreo' in h.lower()],
     ]))
     story = [
         Paragraph(f"HORARIO DE CLASES — {grado.upper() if grado else 'GRADO Y SECCIÓN'}", st_t),
-        Paragraph(f"Docente: _________________________  |  Año {anio}  |  I.E.P. ALTERNATIVO YACHAY", st_s),
+        Paragraph(f"Docente: _______________________________  |  Año {anio}  |  I.E.P. ALTERNATIVO YACHAY", st_s),
         t,
     ]
     doc.build(story)
@@ -21989,11 +22759,25 @@ def _tab_horario(config):
             grado_h = st.text_input("Grado y Sección:", placeholder="4° Primaria — A", key="h_grado")
 
             HORAS_PRESET = {
-                "Primaria (8:00–14:00)": [
-                    "8:00–8:45","8:45–9:30","9:30–10:00","10:00–10:30",
-                    "10:30–11:00 (Recreo)","11:00–11:45","11:45–12:30","12:30–14:00"
+                "Primaria — bloques dobles (8:00–14:00)": [
+                    "8:00 – 9:30",
+                    "9:30 – 11:00",
+                    "11:00 – 11:30 (Recreo)",
+                    "11:30 – 13:00",
+                    "13:00 – 14:00",
                 ],
-                "Secundaria mañana (7:30–13:00)": [
+                "Secundaria — bloques dobles (7:30–13:00)": [
+                    "7:30 – 9:00",
+                    "9:00 – 10:30",
+                    "10:30 – 11:00 (Recreo)",
+                    "11:00 – 12:30",
+                    "12:30 – 13:00",
+                ],
+                "Primaria — bloques simples 45min (8:00–14:00)": [
+                    "8:00–8:45","8:45–9:30","9:30–10:15","10:15–11:00",
+                    "11:00–11:30 (Recreo)","11:30–12:15","12:15–13:00","13:00–14:00"
+                ],
+                "Secundaria — bloques simples 45min (7:30–13:00)": [
                     "7:30–8:15","8:15–9:00","9:00–9:45","9:45–10:30",
                     "10:30–11:00 (Recreo)","11:00–11:45","11:45–12:30","12:30–13:00"
                 ],
@@ -24198,15 +24982,55 @@ def tab_libro_reclamaciones(config):
 
     col1, col2 = st.columns([2, 1])
     with col1:
+        st.markdown("### 📋 Registrar Reclamo")
+
+        # ── Paso 1: ingresar DNI primero ──────────────────────────────
+        st.markdown("**Paso 1 — Ingresa tu DNI para identificarte:**")
+        c_dni1, c_dni2 = st.columns([2, 1])
+        with c_dni1:
+            dni_input = st.text_input("DNI del reclamante:", key="r_dni_busq",
+                                      placeholder="Ingresa tu DNI de 8 dígitos")
+        with c_dni2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            buscar_dni = st.button("🔍 Verificar DNI", key="btn_buscar_dni",
+                                   use_container_width=True)
+
+        # Buscar datos con el DNI
+        if buscar_dni and dni_input:
+            persona = BaseDatos.buscar_por_dni(dni_input)
+            if persona:
+                st.session_state['_rec_nombre'] = persona.get('Nombre', persona.get('nombre', ''))
+                st.session_state['_rec_dni'] = dni_input
+                st.success(f"✅ Identificado: **{st.session_state['_rec_nombre']}**")
+            else:
+                st.warning("⚠️ DNI no encontrado en el sistema — puedes completar tu nombre manualmente.")
+                st.session_state['_rec_dni'] = dni_input
+                st.session_state['_rec_nombre'] = ''
+
+        st.markdown("---")
+        st.markdown("**Paso 2 — Completa el formulario:**")
+
         with st.form("form_reclamo", clear_on_submit=True):
-            st.markdown("### 📋 Registrar Reclamo")
-            r_nombre = st.text_input("Nombre completo del reclamante:", key="r_nombre")
-            r_dni = st.text_input("DNI:", key="r_dni")
-            r_celular = st.text_input("Celular:", key="r_cel")
-            r_tipo = st.selectbox("Tipo:", [
+            r_nombre = st.text_input("Nombre completo del reclamante:",
+                                     value=st.session_state.get('_rec_nombre', ''),
+                                     key="r_nombre")
+            c1f, c2f = st.columns(2)
+            with c1f:
+                r_dni = st.text_input("DNI:",
+                                      value=st.session_state.get('_rec_dni', ''),
+                                      key="r_dni")
+            with c2f:
+                r_celular = st.text_input("Celular:", key="r_cel",
+                                          placeholder="999 999 999")
+            r_correo = st.text_input("Correo electrónico (para respuesta):",
+                                     key="r_correo",
+                                     placeholder="ejemplo@correo.com")
+            r_tipo = st.selectbox("Tipo de comunicación:", [
                 "Queja", "Reclamo", "Sugerencia", "Denuncia"
             ], key="r_tipo")
-            r_detalle = st.text_area("Detalle del reclamo:", key="r_detalle")
+            r_detalle = st.text_area("Detalle:", key="r_detalle",
+                                     placeholder="Describe con detalle tu queja o reclamo...",
+                                     height=120)
             r_submit = st.form_submit_button("📩 ENVIAR RECLAMO",
                                               type="primary",
                                               use_container_width=True)
@@ -24224,6 +25048,7 @@ def tab_libro_reclamaciones(config):
                                         'nombre': r_nombre,
                                         'dni': r_dni,
                                         'celular': r_celular,
+                                        'correo': r_correo,
                                         'tipo': r_tipo,
                                         'detalle': r_detalle,
                                         'fecha': fecha_peru_str(),
@@ -24233,10 +25058,16 @@ def tab_libro_reclamaciones(config):
                                 ])
                         except Exception:
                             pass
-                    st.success(f"✅ Reclamo registrado exitosamente. Código: **{codigo_rec}**")
-                    st.info("📌 Su reclamo será revisado por la dirección en un plazo de 72 horas.")
+                    st.success(f"✅ Reclamo registrado. Código: **{codigo_rec}**")
+                    if r_correo:
+                        st.info(f"📧 Se enviará respuesta a: **{r_correo}** en un plazo de 72 horas.")
+                    else:
+                        st.info("📌 Su reclamo será revisado por la dirección en un plazo de 72 horas.")
+                    # Limpiar datos precargados
+                    st.session_state.pop('_rec_nombre', None)
+                    st.session_state.pop('_rec_dni', None)
                 else:
-                    st.error("⚠️ Complete todos los campos obligatorios")
+                    st.error("⚠️ Complete nombre, DNI y detalle del reclamo")
 
     with col2:
         st.markdown("### 📋 Reclamos Recibidos")
@@ -24254,8 +25085,12 @@ def tab_libro_reclamaciones(config):
                             with st.expander(
                                 f"{emoji} {rec.get('codigo', '')} — {rec.get('nombre', '')}"):
                                 st.write(f"**Tipo:** {rec.get('tipo', '')}")
-                                st.write(f"**Fecha:** {rec.get('fecha', '')}")
+                                st.write(f"**Fecha:** {rec.get('fecha', '')} {rec.get('hora','')}")
                                 st.write(f"**Detalle:** {rec.get('detalle', '')}")
+                                if rec.get('correo'):
+                                    st.write(f"**Correo:** {rec.get('correo', '')}")
+                                if rec.get('celular'):
+                                    st.write(f"**Celular:** {rec.get('celular', '')}")
                                 st.write(f"**Estado:** {estado}")
                     else:
                         st.info("📭 Sin reclamos registrados")
