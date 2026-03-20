@@ -5327,48 +5327,134 @@ def _seccion_documentos_auxiliar(config):
 
     # ── Grupos de documentos ─────────────────────────────────────────
     GRUPOS = {
-        "🏫 Actas de Salón": [
-            ("📦 Entrega de Salón",     "salon"),
-            ("👥 Junta Directiva",       "junta"),
-            ("📖 RI — Alumnos",          "ri_alumnos"),
-            ("📖 RI — Padres",           "ri_padres"),
-            ("🤝 Acuerdos Aula",         "acuerdos"),
-        ],
-        "👨‍👩‍👧 Relación con Padres": [
-            ("📜 Constancia RI",          "constancia"),
-            ("📋 Compromiso Padres",      "compromiso"),
-            ("🏛️ Municipio Escolar",     "municipio"),
-        ],
-        "📋 Registros de Control": [
-            ("📋 Asistencia Manual",      "asist_manual"),
-            ("🔧 Préstamo Equipos",       "prestamo"),
-            ("📚 Horas Colegiadas",       "horas_col"),
-        ],
-        "🔍 Gestión Pedagógica": [
-            ("🔍 Ficha de Monitoreo",     "monitoreo"),
-            ("📝 Programaciones Word",    "programacion"),
-        ],
+        "Actas de Salon": {
+            "color": "#1d4ed8",
+            "docs": [
+                ("Entrega de Salon",    "salon"),
+                ("Junta Directiva",     "junta"),
+                ("RI Alumnos",          "ri_alumnos"),
+                ("RI Padres",           "ri_padres"),
+                ("Acuerdos de Aula",    "acuerdos"),
+            ]
+        },
+        "Relacion con Padres": {
+            "color": "#7c3aed",
+            "docs": [
+                ("Constancia RI",       "constancia"),
+                ("Compromiso Padres",   "compromiso"),
+                ("Municipio Escolar",   "municipio"),
+            ]
+        },
+        "Registros de Control": {
+            "color": "#065f46",
+            "docs": [
+                ("Asistencia Manual",   "asist_manual"),
+                ("Prestamo de Equipos", "prestamo"),
+                ("Horas Colegiadas",    "horas_col"),
+            ]
+        },
+        "Gestion Pedagogica": {
+            "color": "#b91c1c",
+            "docs": [
+                ("Ficha de Monitoreo",  "monitoreo"),
+                ("Programaciones Word", "programacion"),
+            ]
+        },
+    }
+    COLORES_BTN = {
+        "salon": "#1d4ed8", "junta": "#2563eb", "ri_alumnos": "#3b82f6",
+        "ri_padres": "#1e40af", "acuerdos": "#0f766e",
+        "constancia": "#6d28d9", "compromiso": "#7c3aed", "municipio": "#8b5cf6",
+        "asist_manual": "#065f46", "prestamo": "#059669", "horas_col": "#10b981",
+        "monitoreo": "#b91c1c", "programacion": "#dc2626",
     }
 
-    # Estado del documento seleccionado
-    if 'doc_sel_key' not in st.session_state:
+    if "doc_sel_key" not in st.session_state:
         st.session_state.doc_sel_key = None
 
-    # ── Panel de selección con columnas por grupo ─────────────────────
     if st.session_state.doc_sel_key is None:
+        # Renderizar botones con colores via HTML+JS
+        import streamlit.components.v1 as _css_d
         cols = st.columns(len(GRUPOS))
-        for ci, (grupo, docs) in enumerate(GRUPOS.items()):
+        for ci, (grupo, info) in enumerate(GRUPOS.items()):
             with cols[ci]:
-                st.markdown(f"**{grupo}**")
-                for label, key in docs:
+                color = info["color"]
+                st.markdown(
+                    f"<div style='background:{color};color:white;padding:10px;border-radius:10px;"
+                    f"text-align:center;font-weight:800;font-size:0.95rem;margin-bottom:10px;"
+                    f"letter-spacing:0.3px;'>{grupo}</div>",
+                    unsafe_allow_html=True)
+                for label, key in info["docs"]:
+                    btn_color = COLORES_BTN.get(key, color)
+                    st.markdown(
+                        f"<div style='margin-bottom:6px;'>",
+                        unsafe_allow_html=True)
                     if st.button(label, key=f"docbtn_{key}",
-                                  use_container_width=True):
+                                  use_container_width=True, type="primary"):
                         st.session_state.doc_sel_key = key
                         st.rerun()
+                    st.markdown("</div>", unsafe_allow_html=True)
+        # CSS forzado por JS
+        _css_d.html("""<script>
+(function fixDocBtns() {
+  var MAP = {
+    'Entrega de Salon':    '#1d4ed8',
+    'Junta Directiva':     '#2563eb',
+    'RI Alumnos':          '#3b82f6',
+    'RI Padres':           '#1e40af',
+    'Acuerdos de Aula':    '#0f766e',
+    'Constancia RI':       '#6d28d9',
+    'Compromiso Padres':   '#7c3aed',
+    'Municipio Escolar':   '#8b5cf6',
+    'Asistencia Manual':   '#065f46',
+    'Prestamo de Equipos': '#059669',
+    'Horas Colegiadas':    '#10b981',
+    'Ficha de Monitoreo':  '#b91c1c',
+    'Programaciones Word': '#dc2626',
+  };
+  function apply() {
+    window.parent.document.querySelectorAll('button').forEach(function(b) {
+      var txt = (b.innerText||'').trim();
+      if(MAP[txt]) {
+        var c = MAP[txt];
+        b.style.setProperty('background', c, 'important');
+        b.style.setProperty('background-color', c, 'important');
+        b.style.setProperty('color', 'white', 'important');
+        b.style.setProperty('-webkit-text-fill-color', 'white', 'important');
+        b.style.setProperty('border', '2px solid rgba(255,255,255,0.25)', 'important');
+        b.style.setProperty('font-weight', '700', 'important');
+        b.style.setProperty('font-size', '0.87rem', 'important');
+        b.style.setProperty('border-radius', '8px', 'important');
+        var p = b.querySelector('p');
+        if(p) { p.style.setProperty('color','white','important'); p.style.setProperty('-webkit-text-fill-color','white','important'); }
+      }
+    });
+  }
+  apply();
+  new MutationObserver(apply).observe(window.parent.document.body, {childList:true, subtree:true});
+})();
+</script>""", height=0)
         return
 
     # ── Botón volver ─────────────────────────────────────────────────
-    if st.button("⬅️ Volver a documentos", key="doc_volver"):
+    # CSS para botón volver
+    import streamlit.components.v1 as _css_v
+    _css_v.html("""<script>
+(function(){function f(){
+  window.parent.document.querySelectorAll('button').forEach(function(b){
+    if((b.innerText||'').trim()==='Volver a documentos'){
+      b.style.setProperty('background','#374151','important');
+      b.style.setProperty('color','white','important');
+      b.style.setProperty('-webkit-text-fill-color','white','important');
+      b.style.setProperty('font-weight','700','important');
+      var p=b.querySelector('p');if(p){p.style.setProperty('color','white','important');p.style.setProperty('-webkit-text-fill-color','white','important');}
+    }
+  });
+}
+f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true,subtree:true});
+})();
+</script>""", height=0)
+    if st.button("Volver a documentos", key="doc_volver", type="primary"):
         st.session_state.doc_sel_key = None
         st.rerun()
     st.markdown("---")
@@ -5985,314 +6071,239 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
 
 
 def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado, ciclo, anio):
-    """Genera esquema de programación curricular en Word (.docx) según GEREDU Cusco."""
-    import subprocess, tempfile, os, io as _io
-    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    """Genera esquema de programación curricular en Word usando python-docx."""
+    from docx import Document as _DocxDoc
+    from docx.shared import Pt as _Pt, Cm as _Cm, RGBColor as _RGB
+    from docx.enum.text import WD_ALIGN_PARAGRAPH as _WDA
+    from docx.enum.table import WD_ALIGN_VERTICAL as _WDAV
+    from docx.oxml.ns import qn as _qn
+    from docx.oxml import OxmlElement as _OxmlEl
+    import io as _io
+
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     ugel = config.get('ugel', 'Chinchero - Urubamba')
 
-    # Construir el JS según nivel y tipo
-    js_code = _build_programacion_js(nivel, tipo, docente or "", area or "", grado or "", ciclo or "", anio, ie, ugel)
+    AZUL     = RGBColor(0x1F, 0x38, 0x64) if False else None  # use hex strings
+    AZUL_HEX = 'BDD7EE'   # cabeceras
+    HDR_HEX  = '1F3864'   # fila título tabla
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        js_path = os.path.join(tmpdir, 'gen.js')
-        out_path = os.path.join(tmpdir, 'output.docx')
-        with open(js_path, 'w', encoding='utf-8') as f:
-            f.write(js_code.replace('OUTPUT_PATH', out_path.replace('\\', '/')))
-        try:
-            result = subprocess.run(['node', js_path], capture_output=True, text=True, timeout=30)
-            if result.returncode == 0 and os.path.exists(out_path):
-                with open(out_path, 'rb') as f:
-                    return _io.BytesIO(f.read())
-        except Exception:
-            pass
-    return None
+    def _set_bg(cell, hex_color):
+        tc = cell._tc; tcPr = tc.get_or_add_tcPr()
+        shd = _OxmlEl('w:shd')
+        shd.set(_qn('w:val'),'clear'); shd.set(_qn('w:color'),'auto')
+        shd.set(_qn('w:fill'), hex_color); tcPr.append(shd)
 
+    def _set_borders(cell):
+        tc = cell._tc; tcPr = tc.get_or_add_tcPr()
+        tcB = _OxmlEl('w:tcBorders')
+        for e in ('top','left','bottom','right'):
+            el = _OxmlEl(f'w:{e}')
+            el.set(_qn('w:val'),'single'); el.set(_qn('w:sz'),'4')
+            el.set(_qn('w:color'),'000000'); tcB.append(el)
+        tcPr.append(tcB)
 
-def _build_programacion_js(nivel, tipo, docente, area, grado, ciclo, anio, ie, ugel):
-    """Construye el código JS para generar el Word de programación."""
-    # Escapar para JS
-    def esc(s): return s.replace('"', '\\"').replace("'", "\\'")
+    def _cell(table_or_cell, txt='', bg=None, bold=False, size=9,
+               center=False, italic=False):
+        """Configure a cell — pass the cell object directly."""
+        cell = table_or_cell
+        cell.text = ''
+        _set_borders(cell)
+        if bg: _set_bg(cell, bg)
+        cell.vertical_alignment = _WDAV.CENTER
+        p = cell.paragraphs[0]
+        p.alignment = _WDA.CENTER if center else _WDA.LEFT
+        run = p.add_run(str(txt))
+        run.bold = bold; run.italic = italic
+        run.font.size = _Pt(size)
+        if bg == HDR_HEX:
+            run.font.color.rgb = _RGB(0xFF,0xFF,0xFF)
+        return cell
+
+    def _par(doc, txt, bold=False, size=10, center=False, space_before=6, space_after=4, color_hex=None):
+        p = doc.add_paragraph()
+        p.alignment = _WDA.CENTER if center else _WDA.LEFT
+        p.paragraph_format.space_before = _Pt(space_before)
+        p.paragraph_format.space_after  = _Pt(space_after)
+        run = p.add_run(str(txt))
+        run.bold = bold; run.font.size = _Pt(size)
+        if color_hex:
+            r,g,b = int(color_hex[0:2],16), int(color_hex[2:4],16), int(color_hex[4:6],16)
+            run.font.color.rgb = _RGB(r,g,b)
+        return p
+
+    def _blank_rows(table, n, n_cols):
+        for _ in range(n):
+            row = table.add_row()
+            for ci in range(n_cols):
+                _set_borders(row.cells[ci])
+                row.cells[ci].paragraphs[0].runs[0].font.size = _Pt(9) if row.cells[ci].paragraphs[0].runs else None
+
+    doc = _DocxDoc()
+    sec = doc.sections[0]
+    sec.top_margin = _Cm(2); sec.bottom_margin = _Cm(2)
+    sec.left_margin = _Cm(2); sec.right_margin = _Cm(2)
+    # Fuente por defecto
+    doc.styles['Normal'].font.name = 'Arial'
+    doc.styles['Normal'].font.size = _Pt(10)
+
+    # ── Encabezado ────────────────────────────────────────────────────
+    _par(doc, ie.upper(), bold=True, size=13, center=True, space_before=0, space_after=2)
+    _par(doc, f'UGEL {ugel}  |  Año {anio}', size=9, center=True, space_before=0, space_after=4)
+    _par(doc, f'{tipo.upper()} — {nivel.upper()}', bold=True, size=13,
+         center=True, space_before=2, space_after=8, color_hex='1F3864')
+
+    # ── Tabla datos generales ─────────────────────────────────────────
+    t0 = doc.add_table(rows=3, cols=4)
+    t0.style = 'Table Grid'
+    datos = [
+        ['INSTITUCIÓN EDUCATIVA', ie,        'ÁREA CURRICULAR',    area or '___________'],
+        ['DOCENTE',               docente or '___________________', 'GRADO Y SECCIÓN', grado or '_______'],
+        ['CICLO',                 ciclo or '____', 'AÑO',           str(anio)],
+    ]
+    for ri, row_data in enumerate(datos):
+        row = t0.rows[ri]
+        for ci, val in enumerate(row_data):
+            cell = row.cells[ci]
+            is_hdr = (ci % 2 == 0)
+            _cell(cell, val, bg=AZUL_HEX if is_hdr else None,
+                  bold=is_hdr, size=8.5, center=is_hdr)
+
+    doc.add_paragraph()
 
     if tipo == "Planificación Anual":
-        return _js_planificacion_anual(nivel, docente, area, grado, ciclo, anio, ie, ugel)
+        _par(doc, 'I. PROPÓSITOS DE APRENDIZAJE Y ENFOQUES TRANSVERSALES',
+             bold=True, size=11, color_hex='1F3864')
+        t1 = doc.add_table(rows=7, cols=3)
+        t1.style = 'Table Grid'
+        hdrs = ['COMPETENCIAS / CAPACIDADES', 'ESTÁNDARES DE APRENDIZAJE', 'DESEMPEÑOS PRECISADOS']
+        for ci, h in enumerate(hdrs):
+            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1, 7):
+            for ci in range(3): _set_borders(t1.rows[ri].cells[ci])
+
+        _par(doc, 'ENFOQUES TRANSVERSALES:', bold=True, size=10, space_before=8)
+        t2 = doc.add_table(rows=5, cols=2)
+        t2.style = 'Table Grid'
+        for ci, h in enumerate(['ENFOQUES', 'VALORES Y ACTITUDES']):
+            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1,5):
+            for ci in range(2): _set_borders(t2.rows[ri].cells[ci])
+
+        _par(doc, 'II. ORGANIZACIÓN Y DISTRIBUCIÓN DEL TIEMPO — UNIDADES DIDÁCTICAS',
+             bold=True, size=11, color_hex='1F3864', space_before=10)
+        t3 = doc.add_table(rows=10, cols=6)
+        t3.style = 'Table Grid'
+        hdrs3 = ['TÍTULO DE LA UNIDAD', 'TIPO', 'SITUACIÓN SIGNIFICATIVA',
+                 'N° SES.', 'TIEMPO', 'COMPETENCIAS']
+        for ci, h in enumerate(hdrs3):
+            _cell(t3.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        for ri in range(1,10):
+            for ci in range(6): _set_borders(t3.rows[ri].cells[ci])
+
     elif tipo == "Unidad Didáctica":
-        return _js_unidad_didactica(nivel, docente, area, grado, ciclo, anio, ie, ugel)
-    else:
-        return _js_sesion_aprendizaje(nivel, docente, area, grado, ciclo, anio, ie, ugel)
+        _par(doc, 'I. PROPÓSITOS DE APRENDIZAJE', bold=True, size=11, color_hex='1F3864')
+        t1 = doc.add_table(rows=5, cols=4)
+        t1.style = 'Table Grid'
+        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES','DESEMPEÑOS PRECISADOS',
+                                  'PRODUCTO/EVIDENCIA','CRITERIOS DE EVALUACIÓN']):
+            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        for ri in range(1,5):
+            for ci in range(4): _set_borders(t1.rows[ri].cells[ci])
 
+        _par(doc, 'II. ENFOQUES TRANSVERSALES', bold=True, size=10, space_before=8)
+        t2 = doc.add_table(rows=3, cols=3)
+        t2.style = 'Table Grid'
+        for ci, h in enumerate(['ENFOQUE','VALORES','ACTITUDES OBSERVABLES']):
+            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1,3):
+            for ci in range(3): _set_borders(t2.rows[ri].cells[ci])
 
-def _js_planificacion_anual(nivel, docente, area, grado, ciclo, anio, ie, ugel):
-    return f"""
-const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
-        HeadingLevel }} = require('docx');
-const fs = require('fs');
+        _par(doc, 'III. SITUACIÓN SIGNIFICATIVA', bold=True, size=10, space_before=8)
+        t3 = doc.add_table(rows=3, cols=1)
+        t3.style = 'Table Grid'
+        _cell(t3.rows[0].cells[0], 'Descripción de la situación que genera el reto o problema:',
+              bg=AZUL_HEX, bold=True, size=8.5)
+        for ri in range(1,3): _set_borders(t3.rows[ri].cells[0])
 
-const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE'; const GRIS = 'F2F2F2';
-const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
-const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
+        _par(doc, 'IV. SECUENCIA DE SESIONES DE APRENDIZAJE', bold=True, size=10, space_before=8)
+        t4 = doc.add_table(rows=11, cols=4)
+        t4.style = 'Table Grid'
+        for ci, h in enumerate(['SESIÓN','TÍTULO / ACTIVIDAD PRINCIPAL','HORAS','MATERIALES']):
+            _cell(t4.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1,11):
+            _cell(t4.rows[ri].cells[0], f'Ses. {ri}', center=True, size=9)
+            for ci in range(1,4): _set_borders(t4.rows[ri].cells[ci])
 
-function celda(txt, opts={{}}) {{
-  return new TableCell({{
-    borders: bordes,
-    width: opts.w ? {{ size: opts.w, type: WidthType.DXA }} : {{ size: 1000, type: WidthType.DXA }},
-    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
-    verticalAlign: VerticalAlign.CENTER,
-    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
-    columnSpan: opts.span || 1,
-    children: [new Paragraph({{
-      alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
-      children: [new TextRun({{ text: txt, size: opts.size || 20,
-        bold: !!opts.bold, font: 'Arial', color: opts.color || '000000' }})]
-    }})]
-  }});
-}}
+    else:  # Sesión de Aprendizaje
+        _par(doc, 'I. DATOS DE LA SESIÓN', bold=True, size=11, color_hex='1F3864', space_before=4)
+        t0b = doc.add_table(rows=1, cols=4)
+        t0b.style = 'Table Grid'
+        datos_ses = ['ÁREA', area or '___', 'GRADO', grado or '___']
+        for ci, v in enumerate(datos_ses):
+            _cell(t0b.rows[0].cells[ci], v,
+                  bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5, center=(ci%2==0))
+        t0c = doc.add_table(rows=2, cols=4)
+        t0c.style = 'Table Grid'
+        for ci, v in enumerate(['DOCENTE', docente or '___________________', 'DURACIÓN', '___ minutos']):
+            _cell(t0c.rows[0].cells[ci], v, bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5, center=(ci%2==0))
+        for ci, v in enumerate(['TÍTULO DE LA SESIÓN', '', 'FECHA', '_______________']):
+            _cell(t0c.rows[1].cells[ci], v, bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5)
 
-function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
+        _par(doc, 'II. PROPÓSITOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN',
+             bold=True, size=11, color_hex='1F3864', space_before=8)
+        t1 = doc.add_table(rows=3, cols=5)
+        t1.style = 'Table Grid'
+        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES','APRENDIZAJES REGIONALES CLAVE',
+                                  'DESEMPEÑOS PRECISADOS','PRODUCTO/EVIDENCIA','CRITERIOS EVALUACIÓN']):
+            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=7.5, center=True)
+        for ri in range(1,3):
+            for ci in range(5): _set_borders(t1.rows[ri].cells[ci])
 
-const doc = new Document({{
-  sections: [{{
-    properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
-      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
-    children: [
-      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 120 }},
-        children: [new TextRun({{ text: '{ie}'.toUpperCase(), size: 28, bold: true, font: 'Arial' }})] }}),
-      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 60 }},
-        children: [new TextRun({{ text: 'UGEL {ugel}  |  AÑO {anio}', size: 20, font: 'Arial' }})] }}),
-      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 240 }},
-        children: [new TextRun({{ text: 'PLANIFICACIÓN ANUAL — {nivel.upper()}', size: 26, bold: true, font: 'Arial', color: AZUL }})] }}),
-      
-      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [2340, 2340, 2340, 2340], rows: [
-        fila(celda('INSTITUCIÓN EDUCATIVA', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{ie}', {{w:2340}}),
-             celda('ÁREA CURRICULAR', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{area or "_________________"}', {{w:2340}})),
-        fila(celda('DOCENTE', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{docente or "_______________________________"}', {{w:2340}}),
-             celda('GRADO Y SECCIÓN', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{grado or "___________"}', {{w:2340}})),
-        fila(celda('CICLO', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{ciclo or "______"}', {{w:2340}}),
-             celda('AÑO', {{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('{anio}', {{w:2340}})),
-      ]}}),
-      
-      new Paragraph({{ spacing: {{ before: 240, after: 80 }},
-        children: [new TextRun({{ text: 'I. PROPÓSITOS DE APRENDIZAJE Y ENFOQUES TRANSVERSALES', size: 22, bold: true, font: 'Arial', color: AZUL }})] }}),
-      
-      new Table({{ width: {{ size: 9360, type: WidthType.DXA }},
-        columnWidths: [3120, 3120, 3120], rows: [
-        fila(celda('COMPETENCIAS / CAPACIDADES', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
-             celda('ESTÁNDARES DE APRENDIZAJE', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
-             celda('DESEMPEÑOS PRECISADOS', {{bg:AZUL_CLARO,bold:true,center:true,w:3120}})),
-        ...Array(6).fill(null).map(()=>fila(celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}))),
-      ]}}),
+        t_et = doc.add_table(rows=2, cols=4)
+        t_et.style = 'Table Grid'
+        for ci, h in enumerate(['ENFOQUE TRANSVERSAL','VALORES','ACTITUDES','INSTRUMENTO']):
+            _cell(t_et.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        for ci in range(4): _set_borders(t_et.rows[1].cells[ci])
 
-      new Paragraph({{ spacing: {{ before: 200, after: 80 }},
-        children: [new TextRun({{ text: 'ENFOQUES TRANSVERSALES:', size: 20, bold: true, font: 'Arial' }})] }}),
-      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [4680, 4680], rows: [
-        fila(celda('ENFOQUES', {{bg:AZUL_CLARO,bold:true,center:true,w:4680}}),
-             celda('VALORES Y ACTITUDES', {{bg:AZUL_CLARO,bold:true,center:true,w:4680}})),
-        ...Array(4).fill(null).map(()=>fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}}))),
-      ]}}),
+        _par(doc, 'III. SECUENCIA DIDÁCTICA', bold=True, size=11, color_hex='1F3864', space_before=8)
+        t2 = doc.add_table(rows=4, cols=4)
+        t2.style = 'Table Grid'
+        for ci, h in enumerate(['MOMENTOS','ACTIVIDADES / ESTRATEGIAS','MATERIALES','TIEMPO']):
+            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri, momento in enumerate(['INICIO','DESARROLLO','CIERRE'], 1):
+            momento_bgs = ['E2EFDA','DDEBF7','FFF2CC']
+            _cell(t2.rows[ri].cells[0], momento, bg=momento_bgs[ri-1], bold=True, center=True, size=9)
+            _set_borders(t2.rows[ri].cells[1])
+            _set_borders(t2.rows[ri].cells[2])
+            _cell(t2.rows[ri].cells[3], '___ min', center=True, size=9)
 
-      new Paragraph({{ spacing: {{ before: 240, after: 80 }},
-        children: [new TextRun({{ text: 'II. ORGANIZACIÓN Y DISTRIBUCIÓN DEL TIEMPO — UNIDADES DIDÁCTICAS', size: 22, bold: true, font: 'Arial', color: AZUL }})] }}),
+        _par(doc, 'IV. REFLEXIONES SOBRE EL APRENDIZAJE', bold=True, size=10, color_hex='1F3864', space_before=8)
+        t3 = doc.add_table(rows=3, cols=2)
+        t3.style = 'Table Grid'
+        reflex = ['¿Qué logros tuvieron los estudiantes?',
+                  '¿Qué dificultades se identificaron?',
+                  '¿Qué aprendizajes debo reforzar en la siguiente sesión?',
+                  '¿Qué actividades y materiales funcionaron mejor?']
+        for ci in range(2):
+            _cell(t3.rows[0].cells[ci], reflex[ci], bg=AZUL_HEX, bold=True, size=8)
+            _set_borders(t3.rows[1].cells[ci])
+            _cell(t3.rows[2].cells[ci], reflex[ci+2], bg=AZUL_HEX, bold=True, size=8)
 
-      new Table({{ width: {{ size: 9360, type: WidthType.DXA }},
-        columnWidths: [2200, 1000, 2160, 1000, 1000, 2000], rows: [
-        fila(celda('TÍTULO DE LA UNIDAD DIDÁCTICA', {{bg:AZUL_CLARO,bold:true,center:true,w:2200}}),
-             celda('TIPO', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
-             celda('SITUACIÓN SIGNIFICATIVA', {{bg:AZUL_CLARO,bold:true,center:true,w:2160}}),
-             celda('Nro.\nSES.', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
-             celda('TIEMPO', {{bg:AZUL_CLARO,bold:true,center:true,w:1000}}),
-             celda('COMPETENCIAS', {{bg:AZUL_CLARO,bold:true,center:true,w:2000}})),
-        ...Array(9).fill(null).map((_,i)=>fila(
-          celda(`Unidad ${{i+1}}: `,{{w:2200,size:22}}),
-          celda('',{{w:1000,size:22}}),celda('',{{w:2160,size:22}}),
-          celda('',{{w:1000,size:22}}),celda('',{{w:1000,size:22}}),celda('',{{w:2000,size:22}}))),
-      ]}}),
+    # Firmas
+    doc.add_paragraph()
+    _par(doc, 'Cusco, _____ de ___________ de ' + str(anio), size=10, center=True, space_before=12)
+    doc.add_paragraph()
+    t_f = doc.add_table(rows=2, cols=2)
+    t_f.style = 'Table Grid'
+    _cell(t_f.rows[0].cells[0], 'FIRMA DEL DOCENTE', bg=AZUL_HEX, bold=True, center=True, size=9)
+    _cell(t_f.rows[0].cells[1], 'FIRMA Y SELLO DEL DIRECTOR(A)', bg=AZUL_HEX, bold=True, center=True, size=9)
+    _cell(t_f.rows[1].cells[0], f'\n\n{docente or ""}\n', center=True, size=9)
+    _cell(t_f.rows[1].cells[1], '\n\n\n', center=True, size=9)
 
-      new Paragraph({{ spacing: {{ before: 200, after: 80 }},
-        children: [new TextRun({{ text: 'III. MATERIALES Y RECURSOS EDUCATIVOS', size: 20, bold: true, font: 'Arial', color: AZUL }})] }}),
-      new Paragraph({{ spacing: {{ after: 300 }},
-        children: [new TextRun({{ text: '_'.repeat(120), size: 20, font: 'Arial' }})] }}),
-
-      new Paragraph({{ spacing: {{ before: 600 }}, alignment: AlignmentType.CENTER,
-        children: [new TextRun({{ text: 'Cusco, _____ de ___________ de {anio}', size: 20, font: 'Arial' }})] }}),
-      new Paragraph({{ spacing: {{ before: 400 }}, alignment: AlignmentType.CENTER,
-        children: [new TextRun({{ text: '_'.repeat(40)+'          '+'_'.repeat(40), size: 20, font: 'Arial' }})] }}),
-      new Paragraph({{ alignment: AlignmentType.CENTER,
-        children: [new TextRun({{ text: 'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)', size: 20, font: 'Arial' }})] }}),
-    ]
-  }}]
-}});
-Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
-"""
-
-
-def _js_unidad_didactica(nivel, docente, area, grado, ciclo, anio, ie, ugel):
-    return f"""
-const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign }} = require('docx');
-const fs = require('fs');
-const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE'; const GRIS = 'F2F2F2';
-const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
-const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
-function celda(txt, opts={{}}) {{
-  return new TableCell({{ borders: bordes,
-    width: {{ size: opts.w||1000, type: WidthType.DXA }},
-    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
-    verticalAlign: VerticalAlign.CENTER, columnSpan: opts.span||1,
-    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
-    children: [new Paragraph({{ alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
-      children: [new TextRun({{ text: txt, size: opts.size||20, bold: !!opts.bold, font: 'Arial', color: opts.color||'000000' }})] }})] }});
-}}
-function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
-const titulo = '{nivel.upper()} — UNIDAD DIDÁCTICA N°____';
-const doc = new Document({{ sections: [{{ properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
-      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
-    children: [
-      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 80 }},
-        children: [new TextRun({{ text: '{ie}'.toUpperCase(), size: 26, bold: true, font: 'Arial' }})] }}),
-      new Paragraph({{ alignment: AlignmentType.CENTER, spacing: {{ after: 200 }},
-        children: [new TextRun({{ text: titulo, size: 24, bold: true, font: 'Arial', color: AZUL }})] }}),
-      new Table({{ width: {{ size: 9360, type: WidthType.DXA }}, columnWidths: [2340,2340,2340,2340], rows: [
-        fila(celda('INSTITUCIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{ie}',{{w:2340}}),
-             celda('ÁREA',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{area or "___"}',{{w:2340}})),
-        fila(celda('DOCENTE',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{docente or "_______________________"}',{{w:2340}}),
-             celda('GRADO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{grado or "___"}',{{w:2340}})),
-        fila(celda('CICLO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('{ciclo or "____"}',{{w:2340}}),
-             celda('DURACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),celda('Del ___ al ___',{{w:2340}})),
-        fila(celda('TÍTULO DE LA UNIDAD',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('',{{w:7020,span:3}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:200,after:80}}, children:[new TextRun({{text:'I. PROPÓSITOS DE APRENDIZAJE',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[2340,2340,2340,2340],rows:[
-        fila(celda('COMPETENCIAS/CAPACIDADES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('DESEMPEÑOS PRECISADOS',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('PROD./EVIDENCIA',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('CRITERIOS EVALUACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}})),
-        ...Array(4).fill(null).map(()=>fila(celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),
-          celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}))),
-      ]}}),
-      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'II. ENFOQUES TRANSVERSALES',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[3120,3120,3120],rows:[
-        fila(celda('ENFOQUE',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
-             celda('VALORES',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}}),
-             celda('ACTITUDES OBSERVABLES',{{bg:AZUL_CLARO,bold:true,center:true,w:3120}})),
-        fila(celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}}),celda('',{{w:3120,size:24}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'III. SITUACIÓN SIGNIFICATIVA',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[9360],rows:[
-        fila(celda('',{{w:9360,size:24}}),...[]),
-        ...Array(3).fill(null).map(()=>fila(celda('',{{w:9360,size:24}}))),
-      ]}}),
-      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'IV. SECUENCIA DE SESIONES DE APRENDIZAJE',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1560,4680,1560,1560],rows:[
-        fila(celda('SESIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}}),
-             celda('TÍTULO / ACTIVIDAD PRINCIPAL',{{bg:AZUL_CLARO,bold:true,center:true,w:4680}}),
-             celda('HORAS',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}}),
-             celda('MATERIALES',{{bg:AZUL_CLARO,bold:true,center:true,w:1560}})),
-        ...Array(10).fill(null).map((_,i)=>fila(celda(`Ses. ${{i+1}}`,{{w:1560,center:true,size:22}}),
-          celda('',{{w:4680,size:22}}),celda('',{{w:1560,size:22}}),celda('',{{w:1560,size:22}}))),
-      ]}}),
-      new Paragraph({{ spacing:{{before:160,after:60}}, children:[new TextRun({{text:'V. MATERIALES Y RECURSOS EDUCATIVOS',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Paragraph({{ spacing:{{after:200}}, children:[new TextRun({{text:'_'.repeat(120),size:20,font:'Arial'}})] }}),
-      new Paragraph({{ spacing:{{before:400}},alignment:AlignmentType.CENTER,
-        children:[new TextRun({{text:'_'.repeat(40)+'          '+'_'.repeat(40),size:20,font:'Arial'}})] }}),
-      new Paragraph({{ alignment:AlignmentType.CENTER,
-        children:[new TextRun({{text:'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)',size:20,font:'Arial'}})] }}),
-    ] }}] }});
-Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
-"""
-
-
-def _js_sesion_aprendizaje(nivel, docente, area, grado, ciclo, anio, ie, ugel):
-    return f"""
-const {{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign }} = require('docx');
-const fs = require('fs');
-const AZUL = '1F3864'; const AZUL_CLARO = 'BDD7EE';
-const borde = {{ style: BorderStyle.SINGLE, size: 4, color: '000000' }};
-const bordes = {{ top: borde, bottom: borde, left: borde, right: borde }};
-function celda(txt, opts={{}}) {{
-  return new TableCell({{ borders: bordes,
-    width: {{ size: opts.w||1000, type: WidthType.DXA }},
-    shading: opts.bg ? {{ fill: opts.bg, type: ShadingType.CLEAR }} : undefined,
-    verticalAlign: VerticalAlign.CENTER, columnSpan: opts.span||1,
-    margins: {{ top: 80, bottom: 80, left: 100, right: 100 }},
-    rowSpan: opts.rowSpan||1,
-    children: [new Paragraph({{ alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
-      children: [new TextRun({{ text: txt, size: opts.size||20, bold: !!opts.bold, font: 'Arial', color: opts.color||'000000' }})] }})] }});
-}}
-function fila(...celdas) {{ return new TableRow({{ children: celdas }}); }}
-const doc = new Document({{ sections: [{{ properties: {{ page: {{ size: {{ width: 11906, height: 16838 }},
-      margin: {{ top: 1134, right: 1134, bottom: 1134, left: 1134 }} }} }},
-    children: [
-      new Paragraph({{ alignment:AlignmentType.CENTER, spacing:{{after:80}},
-        children:[new TextRun({{text:'{ie}'.toUpperCase(),size:26,bold:true,font:'Arial'}})] }}),
-      new Paragraph({{ alignment:AlignmentType.CENTER, spacing:{{after:180}},
-        children:[new TextRun({{text:'SESIÓN DE APRENDIZAJE — {nivel.upper()}',size:24,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1760,1600,1760,1600,1760,840],rows:[
-        fila(celda('INSTITUCIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{ie}',{{w:1600}}),
-             celda('ÁREA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{area or "___"}',{{w:1600}}),
-             celda('FECHA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:840}})),
-        fila(celda('DOCENTE',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{docente or "________________"}',{{w:1600}}),
-             celda('GRADO/SECCIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('{grado or "___"}',{{w:1600}}),
-             celda('DURACIÓN',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:840}})),
-        fila(celda('TÍTULO DE LA SESIÓN',{{bg:AZUL_CLARO,bold:true,span:1,w:1760}}),celda('',{{w:7600,span:5}})),
-        fila(celda('SITUACIÓN SIGNIFICATIVA',{{bg:AZUL_CLARO,bold:true,w:1760}}),celda('',{{w:7600,span:5}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:180,after:80}},
-        children:[new TextRun({{text:'II. PROPÓSITOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1872,1872,1872,1872,1872],rows:[
-        fila(celda('COMPETENCIAS/CAPACIDADES',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
-             celda('APRENDIZAJES REGIONALES CLAVE',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
-             celda('DESEMPEÑOS PRECISADOS',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
-             celda('PROD./EVIDENCIA PARCIAL',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}}),
-             celda('CRITERIOS DE EVALUACIÓN',{{bg:AZUL_CLARO,bold:true,center:true,w:1872}})),
-        fila(celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}}),
-             celda('',{{w:1872,size:24}}),celda('',{{w:1872,size:24}})),
-      ]}}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[2340,2340,2340,2340],rows:[
-        fila(celda('ENFOQUE TRANSVERSAL',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('VALORES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('ACTITUDES',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}}),
-             celda('INSTRUMENTO',{{bg:AZUL_CLARO,bold:true,center:true,w:2340}})),
-        fila(celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}}),celda('',{{w:2340,size:24}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:160,after:80}},
-        children:[new TextRun({{text:'III. SECUENCIA DIDÁCTICA',size:22,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[1200,5760,1200,1200],rows:[
-        fila(celda('MOMENTOS',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}}),
-             celda('ACTIVIDADES / ESTRATEGIAS',{{bg:AZUL_CLARO,bold:true,center:true,w:5760}}),
-             celda('MATERIALES',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}}),
-             celda('TIEMPO',{{bg:AZUL_CLARO,bold:true,center:true,w:1200}})),
-        fila(celda('INICIO',{{bg:'E2EFDA',bold:true,center:true,w:1200}}),
-             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
-        fila(celda('DESARROLLO',{{bg:'DDEBF7',bold:true,center:true,w:1200}}),
-             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
-        fila(celda('CIERRE',{{bg:'FFF2CC',bold:true,center:true,w:1200}}),
-             celda('',{{w:5760,size:24}}),celda('',{{w:1200,size:24}}),celda('___ min',{{w:1200,size:22,center:true}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:300,after:80}},
-        children:[new TextRun({{text:'IV. EVALUACIÓN / REFLEXIONES SOBRE EL APRENDIZAJE',size:20,bold:true,font:'Arial',color:AZUL}})] }}),
-      new Table({{ width:{{size:9360,type:WidthType.DXA}},columnWidths:[4680,4680],rows:[
-        fila(celda('¿Qué logros tuvieron los estudiantes?',{{bg:AZUL_CLARO,bold:true,w:4680}}),
-             celda('¿Qué dificultades se identificaron?',{{bg:AZUL_CLARO,bold:true,w:4680}})),
-        fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}})),
-        fila(celda('¿Qué aprendizajes debo reforzar en la siguiente sesión?',{{bg:AZUL_CLARO,bold:true,w:4680}}),
-             celda('¿Qué actividades, estrategias y materiales funcionaron?',{{bg:AZUL_CLARO,bold:true,w:4680}})),
-        fila(celda('',{{w:4680,size:24}}),celda('',{{w:4680,size:24}})),
-      ]}}),
-      new Paragraph({{ spacing:{{before:400}},alignment:AlignmentType.CENTER,
-        children:[new TextRun({{text:'_'.repeat(40)+'          '+'_'.repeat(40),size:20,font:'Arial'}})] }}),
-      new Paragraph({{ alignment:AlignmentType.CENTER,
-        children:[new TextRun({{text:'FIRMA DEL DOCENTE          FIRMA Y SELLO DEL DIRECTOR(A)',size:20,font:'Arial'}})] }}),
-    ] }}] }});
-Packer.toBuffer(doc).then(b => fs.writeFileSync('OUTPUT_PATH', b)).catch(e => console.error(e));
-"""
+    buf = _io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf
 
 
 def _generar_acta_reglamento_alumnos(config, grado, docente, n_filas=30):
