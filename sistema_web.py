@@ -5378,28 +5378,9 @@ def _seccion_documentos_auxiliar(config):
         st.session_state.doc_sel_key = None
 
     if st.session_state.doc_sel_key is None:
-        # Renderizar botones con colores via HTML+JS
         import streamlit.components.v1 as _css_d
-        cols = st.columns(len(GRUPOS))
-        for ci, (grupo, info) in enumerate(GRUPOS.items()):
-            with cols[ci]:
-                color = info["color"]
-                st.markdown(
-                    f"<div style='background:{color};color:white;padding:10px;border-radius:10px;"
-                    f"text-align:center;font-weight:800;font-size:0.95rem;margin-bottom:10px;"
-                    f"letter-spacing:0.3px;'>{grupo}</div>",
-                    unsafe_allow_html=True)
-                for label, key in info["docs"]:
-                    btn_color = COLORES_BTN.get(key, color)
-                    st.markdown(
-                        f"<div style='margin-bottom:6px;'>",
-                        unsafe_allow_html=True)
-                    if st.button(label, key=f"docbtn_{key}",
-                                  use_container_width=True, type="primary"):
-                        st.session_state.doc_sel_key = key
-                        st.rerun()
-                    st.markdown("</div>", unsafe_allow_html=True)
-        # CSS forzado por JS
+
+        # CSS forzado — primero para que aplique desde el inicio
         _css_d.html("""<script>
 (function fixDocBtns() {
   var MAP = {
@@ -5408,6 +5389,9 @@ def _seccion_documentos_auxiliar(config):
     'RI Alumnos':          '#3b82f6',
     'RI Padres':           '#1e40af',
     'Acuerdos de Aula':    '#0f766e',
+    'Seleccion de Textos': '#0c4a6e',
+    'Material Propio':     '#155e75',
+    'Conformidad Material':'#164e63',
     'Constancia RI':       '#6d28d9',
     'Compromiso Padres':   '#7c3aed',
     'Municipio Escolar':   '#8b5cf6',
@@ -5426,19 +5410,45 @@ def _seccion_documentos_auxiliar(config):
         b.style.setProperty('background-color', c, 'important');
         b.style.setProperty('color', 'white', 'important');
         b.style.setProperty('-webkit-text-fill-color', 'white', 'important');
-        b.style.setProperty('border', '2px solid rgba(255,255,255,0.25)', 'important');
+        b.style.setProperty('border', '2px solid rgba(255,255,255,0.3)', 'important');
         b.style.setProperty('font-weight', '700', 'important');
-        b.style.setProperty('font-size', '0.87rem', 'important');
+        b.style.setProperty('font-size', '0.85rem', 'important');
         b.style.setProperty('border-radius', '8px', 'important');
+        b.style.setProperty('min-height', '42px', 'important');
         var p = b.querySelector('p');
-        if(p) { p.style.setProperty('color','white','important'); p.style.setProperty('-webkit-text-fill-color','white','important'); }
+        if(p) {
+          p.style.setProperty('color','white','important');
+          p.style.setProperty('-webkit-text-fill-color','white','important');
+          p.style.setProperty('font-weight','700','important');
+        }
       }
     });
   }
   apply();
-  new MutationObserver(apply).observe(window.parent.document.body, {childList:true, subtree:true});
+  new MutationObserver(apply).observe(window.parent.document.body,
+    {childList:true, subtree:true});
 })();
 </script>""", height=0)
+
+        # Renderizar grupos — Actas de Salón tiene más docs, usar 2 filas
+        for grupo, info in GRUPOS.items():
+            color = info["color"]
+            st.markdown(
+                f"<div style='background:{color};color:white;padding:8px 14px;"
+                f"border-radius:8px;font-weight:800;font-size:0.9rem;"
+                f"margin:10px 0 6px 0;'>{grupo}</div>",
+                unsafe_allow_html=True)
+            docs = info["docs"]
+            # Mostrar en filas de 3 botones
+            for i in range(0, len(docs), 3):
+                row_docs = docs[i:i+3]
+                cols_btn = st.columns(len(row_docs))
+                for ci, (label, key) in enumerate(row_docs):
+                    with cols_btn[ci]:
+                        if st.button(label, key=f"docbtn_{key}",
+                                      use_container_width=True, type="primary"):
+                            st.session_state.doc_sel_key = key
+                            st.rerun()
         return
 
     # ── Botón volver ─────────────────────────────────────────────────
