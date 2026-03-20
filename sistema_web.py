@@ -5695,7 +5695,7 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
 # ══════════════════════════════════════════════════════════════════════
 
 def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
-    """Registro de asistencia manual con columnas de entrada/salida y firma."""
+    """Registro de asistencia con columnas ENTRADA/SALIDA por día para firma."""
     from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -5703,65 +5703,88 @@ def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
     from reportlab.lib.units import cm
     from reportlab.lib.enums import TA_CENTER
     import io as _io
-    buf = _io.BytesIO()
+    buf  = _io.BytesIO()
     anio = config.get('anio', 2026)
-    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
-                            topMargin=1*cm, bottomMargin=1*cm,
-                            leftMargin=1*cm, rightMargin=1*cm)
-    styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
-                           alignment=TA_CENTER, parent=styles['Normal'])
-    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, parent=styles['Normal'])
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
 
-    # Cabecera
-    dias = [str(d) for d in range(1, n_dias+1)]
-    # Limitar a 16 días por hoja para legibilidad
-    dias_por_hoja = 16
-    story = [
-        Paragraph(f"REGISTRO DE ASISTENCIA DOCENTE — {mes.upper()} {anio}", st_t),
-        Paragraph(f"{ie} | Responsable: ___________________ | Firma: ___________", st_s),
-        Spacer(1, 0.3*cm),
-    ]
+    # Cada día tiene 2 columnas: E(ntrada) | S(alida)
+    # Con 10 días por bloque caben bien en landscape A4
+    DIAS_X_BLOQUE = 10
 
-    def _bloque(dias_bloque, offset):
-        header = ["N°", "APELLIDOS Y NOMBRES"] + [f"{d}\nE|S" for d in dias_bloque] + ["Obs."]
-        rows = [header]
-        for i, nombre in enumerate(nombres_docentes):
-            fila = [str(i+1), nombre] + ["  /  "] * len(dias_bloque) + [""]
+    def _bloque(dias_bloque, nombres):
+        # Encabezado: N° | Apellidos y Nombres | D1-E | D1-S | D2-E | D2-S ...| Obs
+        header_row1 = ['N°', 'APELLIDOS Y NOMBRES'] +                       [f'Día {d}' for d in dias_bloque for _ in range(2)] + ['Obs.']
+        header_row2 = ['', ''] +                       ['E', 'S'] * len(dias_bloque) + ['']
+        rows = [header_row1, header_row2]
+        for i, nombre in enumerate(nombres):
+            fila = [str(i+1), nombre] + [''] * (len(dias_bloque)*2) + ['']
             rows.append(fila)
-        n = len(dias_bloque)
-        ancho_total = 27*cm
-        w_n = 0.6*cm; w_nom = 5*cm; w_obs = 2*cm
-        w_dia = (ancho_total - w_n - w_nom - w_obs) / n
-        col_ws = [w_n, w_nom] + [w_dia]*n + [w_obs]
-        t = Table(rows, colWidths=col_ws,
-                  rowHeights=[0.9*cm] + [0.65*cm]*len(nombres_docentes))
-        t.setStyle(TableStyle([
-            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-            ('FONTSIZE',(0,0),(-1,0),7),
-            ('FONTSIZE',(0,1),(-1,-1),7),
-            ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.1,0.4)),
-            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+
+        n_col = 2 + len(dias_bloque)*2 + 1
+        ancho = 27*cm
+        w_n = 0.55*cm; w_nom = 4.5*cm; w_obs = 1.2*cm
+        w_dia = (ancho - w_n - w_nom - w_obs) / (len(dias_bloque)*2)
+        col_ws = [w_n, w_nom] + [w_dia]*(len(dias_bloque)*2) + [w_obs]
+
+        row_hs = [0.5*cm, 0.5*cm] + [0.65*cm]*len(nombres)
+
+        t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
+
+        # Span días en fila 0
+        style_cmds = [
+            ('FONTNAME',(0,0),(-1,1),'Helvetica-Bold'),
+            ('FONTSIZE',(0,0),(-1,1),6.5),
+            ('FONTSIZE',(0,2),(-1,-1),7),
+            ('BACKGROUND',(0,0),(-1,1),colors.Color(0.1,0.1,0.4)),
+            ('TEXTCOLOR',(0,0),(-1,1),colors.white),
             ('ALIGN',(0,0),(-1,-1),'CENTER'),
             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('GRID',(0,0),(-1,-1),0.4,colors.black),
-            ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.96,0.96,1)]),
-            ('ALIGN',(1,1),(1,-1),'LEFT'),
-        ]))
+            ('GRID',(0,0),(-1,-1),0.3,colors.black),
+            ('ROWBACKGROUNDS',(0,2),(-1,-1),[colors.white, colors.Color(0.96,0.96,1)]),
+            ('ALIGN',(1,2),(1,-1),'LEFT'),
+            # Resaltar columnas E/S alternadas
+        ]
+        # Span cada "Día X" sobre sus 2 celdas E/S en fila 0
+        for di, _ in enumerate(dias_bloque):
+            c = 2 + di*2
+            style_cmds.append(('SPAN',(c,0),(c+1,0)))
+        # Color suave para E vs S
+        for di in range(len(dias_bloque)):
+            ce = 2 + di*2
+            cs = 3 + di*2
+            style_cmds.append(('BACKGROUND',(ce,1),(ce,1),colors.Color(0.7,0.85,1.0)))
+            style_cmds.append(('BACKGROUND',(cs,1),(cs,1),colors.Color(1.0,0.75,0.75)))
+
+        t.setStyle(TableStyle(style_cmds))
         return t
 
-    # Si hay muchos días, hacer dos bloques
-    if n_dias <= 16:
-        story.append(_bloque(dias, 0))
-    else:
-        story.append(_bloque(dias[:16], 0))
-        story.append(Spacer(1, 0.4*cm))
-        story.append(Paragraph(f"Continuación — {mes} {anio}", st_s))
-        story.append(_bloque(dias[16:], 16))
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=0.8*cm, bottomMargin=0.8*cm,
+                            leftMargin=0.7*cm, rightMargin=0.7*cm)
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, parent=getSampleStyleSheet()['Normal'])
+    st_s = ParagraphStyle('S', fontSize=7.5, alignment=TA_CENTER,
+                           parent=getSampleStyleSheet()['Normal'])
 
-    story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph("FIRMA DEL DIRECTOR(A): ___________________________  FECHA: ___________  SELLO: ___________", st_s))
+    dias = list(range(1, n_dias+1))
+    story = [
+        Paragraph(f'REGISTRO DE ASISTENCIA DOCENTE — {mes.upper()} {anio}', st_t),
+        Paragraph(f'{ie}  |  E = Entrada  |  S = Salida  |  '
+                  f'Responsable: ___________________ | Firma: ___________', st_s),
+        Spacer(1, 0.25*cm),
+    ]
+
+    # Dividir en bloques de DIAS_X_BLOQUE
+    for i in range(0, len(dias), DIAS_X_BLOQUE):
+        bloque_dias = dias[i:i+DIAS_X_BLOQUE]
+        story.append(_bloque(bloque_dias, nombres_docentes))
+        if i + DIAS_X_BLOQUE < len(dias):
+            story.append(Spacer(1, 0.3*cm))
+
+    story.append(Spacer(1, 0.4*cm))
+    story.append(Paragraph(
+        'FIRMA DEL DIRECTOR(A): ___________________________  '
+        'FECHA: ___________  SELLO: ___________', st_s))
     doc.build(story)
     buf.seek(0)
     return buf
@@ -6073,7 +6096,7 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
 def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado, ciclo, anio):
     """Genera esquema de programación curricular en Word usando python-docx."""
     from docx import Document as _DocxDoc
-    from docx.shared import Pt as _Pt, Cm as _Cm, RGBColor as _RGB
+    from docx.shared import Pt as _Pt, Cm as _Cm, RGBColor as _RGB, Inches as _In
     from docx.enum.text import WD_ALIGN_PARAGRAPH as _WDA
     from docx.enum.table import WD_ALIGN_VERTICAL as _WDAV
     from docx.oxml.ns import qn as _qn
@@ -6082,10 +6105,8 @@ def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado
 
     ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     ugel = config.get('ugel', 'Chinchero - Urubamba')
-
-    AZUL     = RGBColor(0x1F, 0x38, 0x64) if False else None  # use hex strings
-    AZUL_HEX = 'BDD7EE'   # cabeceras
-    HDR_HEX  = '1F3864'   # fila título tabla
+    AZUL_HEX = 'BDD7EE'
+    HDR_HEX  = '1F3864'
 
     def _set_bg(cell, hex_color):
         tc = cell._tc; tcPr = tc.get_or_add_tcPr()
@@ -6093,212 +6114,322 @@ def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado
         shd.set(_qn('w:val'),'clear'); shd.set(_qn('w:color'),'auto')
         shd.set(_qn('w:fill'), hex_color); tcPr.append(shd)
 
-    def _set_borders(cell):
+    def _set_borders(cell, color='000000'):
         tc = cell._tc; tcPr = tc.get_or_add_tcPr()
+        # Remove existing tcBorders first
+        for old in tcPr.findall(_qn('w:tcBorders')):
+            tcPr.remove(old)
         tcB = _OxmlEl('w:tcBorders')
         for e in ('top','left','bottom','right'):
             el = _OxmlEl(f'w:{e}')
-            el.set(_qn('w:val'),'single'); el.set(_qn('w:sz'),'4')
-            el.set(_qn('w:color'),'000000'); tcB.append(el)
+            el.set(_qn('w:val'),'single')
+            el.set(_qn('w:sz'),'4')
+            el.set(_qn('w:color'), color)
+            tcB.append(el)
         tcPr.append(tcB)
 
-    def _cell(table_or_cell, txt='', bg=None, bold=False, size=9,
-               center=False, italic=False):
-        """Configure a cell — pass the cell object directly."""
-        cell = table_or_cell
-        cell.text = ''
+    def _cell_write(cell, txt='', bg=None, bold=False, size=9,
+                    center=False, italic=False, color_txt=None, wrap=True):
+        """Write text into a cell with proper formatting."""
         _set_borders(cell)
-        if bg: _set_bg(cell, bg)
+        if bg:
+            _set_bg(cell, bg)
         cell.vertical_alignment = _WDAV.CENTER
-        p = cell.paragraphs[0]
+        # Set word wrap
+        tc = cell._tc; tcPr = tc.get_or_add_tcPr()
+        noWrap = tcPr.find(_qn('w:noWrap'))
+        if noWrap is not None and wrap:
+            tcPr.remove(noWrap)
+        # Clear and write
+        for para in cell.paragraphs:
+            for run in para.runs:
+                run.text = ''
+        p = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
+        p.clear()
         p.alignment = _WDA.CENTER if center else _WDA.LEFT
+        p.paragraph_format.space_before = _Pt(1)
+        p.paragraph_format.space_after  = _Pt(1)
         run = p.add_run(str(txt))
         run.bold = bold; run.italic = italic
         run.font.size = _Pt(size)
-        if bg == HDR_HEX:
+        run.font.name = 'Arial'
+        if color_txt:
+            r,g,b = int(color_txt[0:2],16), int(color_txt[2:4],16), int(color_txt[4:6],16)
+            run.font.color.rgb = _RGB(r,g,b)
+        elif bg == HDR_HEX:
             run.font.color.rgb = _RGB(0xFF,0xFF,0xFF)
         return cell
 
-    def _par(doc, txt, bold=False, size=10, center=False, space_before=6, space_after=4, color_hex=None):
+    def _set_col_widths(table, widths_cm):
+        """Set exact column widths."""
+        for row in table.rows:
+            row.height_rule = None
+            for ci, cell in enumerate(row.cells):
+                if ci < len(widths_cm):
+                    cell.width = _Cm(widths_cm[ci])
+        # Also set table layout to fixed
+        tbl = table._tbl
+        tblPr = tbl.find(_qn('w:tblPr'))
+        if tblPr is None:
+            tblPr = _OxmlEl('w:tblPr')
+            tbl.insert(0, tblPr)
+        tblLayout = _OxmlEl('w:tblLayout')
+        tblLayout.set(_qn('w:type'), 'fixed')
+        # Remove existing layout
+        for old in tblPr.findall(_qn('w:tblLayout')):
+            tblPr.remove(old)
+        tblPr.append(tblLayout)
+
+    def _par(doc, txt, bold=False, size=10, center=False, sb=4, sa=2, color_hex=None):
         p = doc.add_paragraph()
         p.alignment = _WDA.CENTER if center else _WDA.LEFT
-        p.paragraph_format.space_before = _Pt(space_before)
-        p.paragraph_format.space_after  = _Pt(space_after)
+        p.paragraph_format.space_before = _Pt(sb)
+        p.paragraph_format.space_after  = _Pt(sa)
         run = p.add_run(str(txt))
-        run.bold = bold; run.font.size = _Pt(size)
+        run.bold = bold; run.font.size = _Pt(size); run.font.name = 'Arial'
         if color_hex:
             r,g,b = int(color_hex[0:2],16), int(color_hex[2:4],16), int(color_hex[4:6],16)
             run.font.color.rgb = _RGB(r,g,b)
         return p
 
-    def _blank_rows(table, n, n_cols):
-        for _ in range(n):
-            row = table.add_row()
-            for ci in range(n_cols):
-                _set_borders(row.cells[ci])
-                row.cells[ci].paragraphs[0].runs[0].font.size = _Pt(9) if row.cells[ci].paragraphs[0].runs else None
-
     doc = _DocxDoc()
     sec = doc.sections[0]
-    sec.top_margin = _Cm(2); sec.bottom_margin = _Cm(2)
-    sec.left_margin = _Cm(2); sec.right_margin = _Cm(2)
-    # Fuente por defecto
+    sec.top_margin = _Cm(1.8); sec.bottom_margin = _Cm(1.8)
+    sec.left_margin = _Cm(2);  sec.right_margin  = _Cm(2)
     doc.styles['Normal'].font.name = 'Arial'
     doc.styles['Normal'].font.size = _Pt(10)
 
     # ── Encabezado ────────────────────────────────────────────────────
-    _par(doc, ie.upper(), bold=True, size=13, center=True, space_before=0, space_after=2)
-    _par(doc, f'UGEL {ugel}  |  Año {anio}', size=9, center=True, space_before=0, space_after=4)
-    _par(doc, f'{tipo.upper()} — {nivel.upper()}', bold=True, size=13,
-         center=True, space_before=2, space_after=8, color_hex='1F3864')
+    _par(doc, ie.upper(), bold=True, size=13, center=True, sb=0, sa=2)
+    _par(doc, f'UGEL {ugel}  |  Año {anio}', size=9, center=True, sb=0, sa=4)
+    _par(doc, f'{tipo.upper()} — {nivel.upper()}',
+         bold=True, size=12, center=True, sb=0, sa=8, color_hex=HDR_HEX)
 
     # ── Tabla datos generales ─────────────────────────────────────────
     t0 = doc.add_table(rows=3, cols=4)
     t0.style = 'Table Grid'
+    _set_col_widths(t0, [3.8, 5.0, 3.2, 4.0])
     datos = [
-        ['INSTITUCIÓN EDUCATIVA', ie,        'ÁREA CURRICULAR',    area or '___________'],
-        ['DOCENTE',               docente or '___________________', 'GRADO Y SECCIÓN', grado or '_______'],
-        ['CICLO',                 ciclo or '____', 'AÑO',           str(anio)],
+        ['INSTITUCIÓN EDUCATIVA', ie,                   'ÁREA CURRICULAR',  area or '___________'],
+        ['DOCENTE',               docente or '___________________',
+                                                         'GRADO Y SECCIÓN',  grado or '_______'],
+        ['CICLO',                 ciclo or '____',       'AÑO',              str(anio)],
     ]
     for ri, row_data in enumerate(datos):
         row = t0.rows[ri]
         for ci, val in enumerate(row_data):
-            cell = row.cells[ci]
-            is_hdr = (ci % 2 == 0)
-            _cell(cell, val, bg=AZUL_HEX if is_hdr else None,
-                  bold=is_hdr, size=8.5, center=is_hdr)
+            _cell_write(row.cells[ci], val,
+                        bg=AZUL_HEX if ci%2==0 else None,
+                        bold=(ci%2==0), size=8.5, center=(ci%2==0))
 
-    doc.add_paragraph()
+    doc.add_paragraph().paragraph_format.space_after = _Pt(4)
 
+    # ══════════════════════════════════════════════════════════════════
     if tipo == "Planificación Anual":
         _par(doc, 'I. PROPÓSITOS DE APRENDIZAJE Y ENFOQUES TRANSVERSALES',
-             bold=True, size=11, color_hex='1F3864')
+             bold=True, size=10.5, color_hex=HDR_HEX)
         t1 = doc.add_table(rows=7, cols=3)
         t1.style = 'Table Grid'
-        hdrs = ['COMPETENCIAS / CAPACIDADES', 'ESTÁNDARES DE APRENDIZAJE', 'DESEMPEÑOS PRECISADOS']
-        for ci, h in enumerate(hdrs):
-            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
-        for ri in range(1, 7):
-            for ci in range(3): _set_borders(t1.rows[ri].cells[ci])
+        _set_col_widths(t1, [5.4, 5.4, 5.2])
+        for ci, h in enumerate(['COMPETENCIAS / CAPACIDADES',
+                                  'ESTÁNDARES DE APRENDIZAJE', 'DESEMPEÑOS PRECISADOS']):
+            _cell_write(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1,7):
+            for ci in range(3):
+                _cell_write(t1.rows[ri].cells[ci], '', size=9)
 
-        _par(doc, 'ENFOQUES TRANSVERSALES:', bold=True, size=10, space_before=8)
-        t2 = doc.add_table(rows=5, cols=2)
+        _par(doc, 'ENFOQUES TRANSVERSALES:', bold=True, size=9.5, sb=8, sa=2)
+        t2 = doc.add_table(rows=4, cols=2)
         t2.style = 'Table Grid'
+        _set_col_widths(t2, [8.0, 8.0])
         for ci, h in enumerate(['ENFOQUES', 'VALORES Y ACTITUDES']):
-            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
-        for ri in range(1,5):
-            for ci in range(2): _set_borders(t2.rows[ri].cells[ci])
+            _cell_write(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        for ri in range(1,4):
+            for ci in range(2): _cell_write(t2.rows[ri].cells[ci], '', size=9)
 
         _par(doc, 'II. ORGANIZACIÓN Y DISTRIBUCIÓN DEL TIEMPO — UNIDADES DIDÁCTICAS',
-             bold=True, size=11, color_hex='1F3864', space_before=10)
-        t3 = doc.add_table(rows=10, cols=6)
+             bold=True, size=10.5, color_hex=HDR_HEX, sb=10, sa=2)
+        t3 = doc.add_table(rows=10, cols=5)
         t3.style = 'Table Grid'
-        hdrs3 = ['TÍTULO DE LA UNIDAD', 'TIPO', 'SITUACIÓN SIGNIFICATIVA',
-                 'N° SES.', 'TIEMPO', 'COMPETENCIAS']
-        for ci, h in enumerate(hdrs3):
-            _cell(t3.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        _set_col_widths(t3, [3.0, 1.5, 4.5, 1.5, 5.5])
+        for ci, h in enumerate(['TÍTULO DE LA UNIDAD', 'TIPO',
+                                  'SITUACIÓN SIGNIFICATIVA', 'N° SESIONES', 'COMPETENCIAS']):
+            _cell_write(t3.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
         for ri in range(1,10):
-            for ci in range(6): _set_borders(t3.rows[ri].cells[ci])
+            _cell_write(t3.rows[ri].cells[0], f'Unidad {ri}:', size=8.5, bold=True)
+            for ci in range(1,5): _cell_write(t3.rows[ri].cells[ci], '', size=9)
 
     elif tipo == "Unidad Didáctica":
-        _par(doc, 'I. PROPÓSITOS DE APRENDIZAJE', bold=True, size=11, color_hex='1F3864')
+        _par(doc, 'I. PROPÓSITOS DE APRENDIZAJE', bold=True, size=10.5, color_hex=HDR_HEX)
         t1 = doc.add_table(rows=5, cols=4)
         t1.style = 'Table Grid'
-        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES','DESEMPEÑOS PRECISADOS',
-                                  'PRODUCTO/EVIDENCIA','CRITERIOS DE EVALUACIÓN']):
-            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        _set_col_widths(t1, [4.0, 4.0, 4.0, 4.0])
+        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES', 'DESEMPEÑOS PRECISADOS',
+                                  'PRODUCTO/EVIDENCIA', 'CRITERIOS DE EVALUACIÓN']):
+            _cell_write(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
         for ri in range(1,5):
-            for ci in range(4): _set_borders(t1.rows[ri].cells[ci])
+            for ci in range(4): _cell_write(t1.rows[ri].cells[ci], '', size=9)
 
-        _par(doc, 'II. ENFOQUES TRANSVERSALES', bold=True, size=10, space_before=8)
+        _par(doc, 'II. ENFOQUES TRANSVERSALES', bold=True, size=9.5, sb=8, sa=2)
         t2 = doc.add_table(rows=3, cols=3)
         t2.style = 'Table Grid'
-        for ci, h in enumerate(['ENFOQUE','VALORES','ACTITUDES OBSERVABLES']):
-            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        _set_col_widths(t2, [5.3, 5.3, 5.4])
+        for ci, h in enumerate(['ENFOQUE', 'VALORES', 'ACTITUDES OBSERVABLES']):
+            _cell_write(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
         for ri in range(1,3):
-            for ci in range(3): _set_borders(t2.rows[ri].cells[ci])
+            for ci in range(3): _cell_write(t2.rows[ri].cells[ci], '', size=9)
 
-        _par(doc, 'III. SITUACIÓN SIGNIFICATIVA', bold=True, size=10, space_before=8)
-        t3 = doc.add_table(rows=3, cols=1)
+        _par(doc, 'III. SITUACIÓN SIGNIFICATIVA', bold=True, size=9.5, sb=8, sa=2)
+        t3 = doc.add_table(rows=4, cols=1)
         t3.style = 'Table Grid'
-        _cell(t3.rows[0].cells[0], 'Descripción de la situación que genera el reto o problema:',
-              bg=AZUL_HEX, bold=True, size=8.5)
-        for ri in range(1,3): _set_borders(t3.rows[ri].cells[0])
+        _set_col_widths(t3, [16.0])
+        _cell_write(t3.rows[0].cells[0],
+                    'Descripción de la situación que genera el reto o problema de aprendizaje:',
+                    bg=AZUL_HEX, bold=True, size=8.5)
+        for ri in range(1,4): _cell_write(t3.rows[ri].cells[0], '', size=9)
 
-        _par(doc, 'IV. SECUENCIA DE SESIONES DE APRENDIZAJE', bold=True, size=10, space_before=8)
+        _par(doc, 'IV. SECUENCIA DE SESIONES DE APRENDIZAJE', bold=True, size=9.5, sb=8, sa=2)
         t4 = doc.add_table(rows=11, cols=4)
         t4.style = 'Table Grid'
-        for ci, h in enumerate(['SESIÓN','TÍTULO / ACTIVIDAD PRINCIPAL','HORAS','MATERIALES']):
-            _cell(t4.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
+        _set_col_widths(t4, [1.8, 7.5, 1.5, 5.2])
+        for ci, h in enumerate(['SESIÓN', 'TÍTULO / ACTIVIDAD PRINCIPAL', 'HORAS', 'MATERIALES']):
+            _cell_write(t4.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
         for ri in range(1,11):
-            _cell(t4.rows[ri].cells[0], f'Ses. {ri}', center=True, size=9)
-            for ci in range(1,4): _set_borders(t4.rows[ri].cells[ci])
+            _cell_write(t4.rows[ri].cells[0], f'Ses. {ri}', center=True, size=9)
+            for ci in range(1,4): _cell_write(t4.rows[ri].cells[ci], '', size=9)
 
     else:  # Sesión de Aprendizaje
-        _par(doc, 'I. DATOS DE LA SESIÓN', bold=True, size=11, color_hex='1F3864', space_before=4)
-        t0b = doc.add_table(rows=1, cols=4)
-        t0b.style = 'Table Grid'
-        datos_ses = ['ÁREA', area or '___', 'GRADO', grado or '___']
-        for ci, v in enumerate(datos_ses):
-            _cell(t0b.rows[0].cells[ci], v,
-                  bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5, center=(ci%2==0))
-        t0c = doc.add_table(rows=2, cols=4)
-        t0c.style = 'Table Grid'
-        for ci, v in enumerate(['DOCENTE', docente or '___________________', 'DURACIÓN', '___ minutos']):
-            _cell(t0c.rows[0].cells[ci], v, bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5, center=(ci%2==0))
-        for ci, v in enumerate(['TÍTULO DE LA SESIÓN', '', 'FECHA', '_______________']):
-            _cell(t0c.rows[1].cells[ci], v, bg=AZUL_HEX if ci%2==0 else None, bold=(ci%2==0), size=8.5)
+        _par(doc, 'I. DATOS INFORMATIVOS', bold=True, size=10.5, color_hex=HDR_HEX, sb=4, sa=2)
+        t_info = doc.add_table(rows=2, cols=6)
+        t_info.style = 'Table Grid'
+        _set_col_widths(t_info, [2.5, 4.5, 2.0, 2.0, 2.0, 3.0])
+        info_rows = [
+            ['ÁREA', area or '___', 'GRADO', grado or '___', 'DURACIÓN', '___ min'],
+            ['DOCENTE', docente or '___________________', 'CICLO', ciclo or '___', 'FECHA', '___________'],
+        ]
+        for ri, row_data in enumerate(info_rows):
+            for ci, val in enumerate(row_data):
+                _cell_write(t_info.rows[ri].cells[ci], val,
+                            bg=AZUL_HEX if ci%2==0 else None,
+                            bold=(ci%2==0), size=8.5, center=(ci%2==0))
+        t_tit = doc.add_table(rows=1, cols=2)
+        t_tit.style = 'Table Grid'
+        _set_col_widths(t_tit, [4.0, 12.0])
+        _cell_write(t_tit.rows[0].cells[0], 'TÍTULO DE LA SESIÓN', bg=AZUL_HEX, bold=True, size=8.5)
+        _cell_write(t_tit.rows[0].cells[1], '', size=9)
 
         _par(doc, 'II. PROPÓSITOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN',
-             bold=True, size=11, color_hex='1F3864', space_before=8)
-        t1 = doc.add_table(rows=3, cols=5)
+             bold=True, size=10.5, color_hex=HDR_HEX, sb=8, sa=2)
+        t1 = doc.add_table(rows=3, cols=4)
         t1.style = 'Table Grid'
-        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES','APRENDIZAJES REGIONALES CLAVE',
-                                  'DESEMPEÑOS PRECISADOS','PRODUCTO/EVIDENCIA','CRITERIOS EVALUACIÓN']):
-            _cell(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=7.5, center=True)
+        _set_col_widths(t1, [3.5, 4.5, 4.5, 3.5])
+        for ci, h in enumerate(['COMPETENCIAS/CAPACIDADES', 'DESEMPEÑOS PRECISADOS',
+                                  'EVIDENCIA/PRODUCTO', 'CRITERIOS DE EVALUACIÓN']):
+            _cell_write(t1.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
         for ri in range(1,3):
-            for ci in range(5): _set_borders(t1.rows[ri].cells[ci])
+            for ci in range(4): _cell_write(t1.rows[ri].cells[ci], '', size=9)
 
         t_et = doc.add_table(rows=2, cols=4)
         t_et.style = 'Table Grid'
-        for ci, h in enumerate(['ENFOQUE TRANSVERSAL','VALORES','ACTITUDES','INSTRUMENTO']):
-            _cell(t_et.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
-        for ci in range(4): _set_borders(t_et.rows[1].cells[ci])
+        _set_col_widths(t_et, [4.0, 4.0, 4.0, 4.0])
+        for ci, h in enumerate(['ENFOQUE TRANSVERSAL', 'VALORES', 'ACTITUDES', 'INSTRUMENTO']):
+            _cell_write(t_et.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8, center=True)
+        for ci in range(4): _cell_write(t_et.rows[1].cells[ci], '', size=9)
 
-        _par(doc, 'III. SECUENCIA DIDÁCTICA', bold=True, size=11, color_hex='1F3864', space_before=8)
-        t2 = doc.add_table(rows=4, cols=4)
+        _par(doc, 'III. SECUENCIA DIDÁCTICA', bold=True, size=10.5, color_hex=HDR_HEX, sb=8, sa=2)
+
+        # Tabla con subfilas dentro de cada momento
+        # MOMENTOS | ACTIVIDADES / ESTRATEGIAS | RECURSOS | TIEMPO
+        MOMENTOS = [
+            ('INICIO', 'E2EFDA', [
+                ('• Saludo y motivación:', ''),
+                ('• Saberes previos:', '¿Qué saben sobre...?'),
+                ('• Normas de convivencia:', ''),
+                ('• Propósito de la sesión:', 'Hoy aprenderemos...'),
+                ('• Actividad de enganche:', ''),
+            ]),
+            ('DESARROLLO', 'DDEBF7', [
+                ('• Presentación del reto / situación:', ''),
+                ('• Actividad 1:', ''),
+                ('• Actividad 2:', ''),
+                ('• Actividad 3:', ''),
+                ('• Actividad 4:', ''),
+                ('• Monitoreo y acompañamiento:', ''),
+                ('• Plenaria / socialización:', ''),
+            ]),
+            ('CIERRE', 'FFF2CC', [
+                ('• Metacognición:', '¿Qué aprendiste hoy? ¿Cómo lo aprendiste?'),
+                ('• Evaluación formativa:', ''),
+                ('• Tarea / extensión:', ''),
+            ]),
+        ]
+
+        # Encabezado de la tabla secuencia
+        t2 = doc.add_table(rows=1, cols=4)
         t2.style = 'Table Grid'
-        for ci, h in enumerate(['MOMENTOS','ACTIVIDADES / ESTRATEGIAS','MATERIALES','TIEMPO']):
-            _cell(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
-        for ri, momento in enumerate(['INICIO','DESARROLLO','CIERRE'], 1):
-            momento_bgs = ['E2EFDA','DDEBF7','FFF2CC']
-            _cell(t2.rows[ri].cells[0], momento, bg=momento_bgs[ri-1], bold=True, center=True, size=9)
-            _set_borders(t2.rows[ri].cells[1])
-            _set_borders(t2.rows[ri].cells[2])
-            _cell(t2.rows[ri].cells[3], '___ min', center=True, size=9)
+        _set_col_widths(t2, [2.2, 9.8, 2.5, 1.5])
+        for ci, h in enumerate(['MOMENTO', 'ACTIVIDADES / ESTRATEGIAS', 'MATERIALES', 'TIEMPO']):
+            _cell_write(t2.rows[0].cells[ci], h, bg=AZUL_HEX, bold=True, size=8.5, center=True)
 
-        _par(doc, 'IV. REFLEXIONES SOBRE EL APRENDIZAJE', bold=True, size=10, color_hex='1F3864', space_before=8)
+        for momento, bg_hex, subfilas in MOMENTOS:
+            # Primera subfila con nombre del momento (rowspan visual)
+            first = True
+            for sub_label, sub_hint in subfilas:
+                row = t2.add_row()
+                _set_col_widths(t2, [2.2, 9.8, 2.5, 1.5])
+                if first:
+                    _cell_write(row.cells[0], momento, bg=bg_hex,
+                                bold=True, center=True, size=9,
+                                color_txt='1e293b' if bg_hex != HDR_HEX else None)
+                    first = False
+                else:
+                    _cell_write(row.cells[0], '', bg=bg_hex, size=9)
+                # Actividad con sugerencia en gris
+                _set_borders(row.cells[1])
+                p = row.cells[1].paragraphs[0]
+                p.paragraph_format.space_before = _Pt(1)
+                p.paragraph_format.space_after  = _Pt(1)
+                r1 = p.add_run(sub_label)
+                r1.bold = True; r1.font.size = _Pt(8.5); r1.font.name = 'Arial'
+                if sub_hint:
+                    r2 = p.add_run(f'  {sub_hint}')
+                    r2.italic = True; r2.font.size = _Pt(8)
+                    r2.font.name = 'Arial'
+                    r2.font.color.rgb = _RGB(0x64, 0x74, 0x8B)
+                _cell_write(row.cells[2], '', size=9)
+                _cell_write(row.cells[3], '', center=True, size=9)
+
+        _par(doc, 'IV. REFLEXIONES SOBRE EL APRENDIZAJE', bold=True, size=10.5,
+             color_hex=HDR_HEX, sb=8, sa=2)
         t3 = doc.add_table(rows=3, cols=2)
         t3.style = 'Table Grid'
-        reflex = ['¿Qué logros tuvieron los estudiantes?',
-                  '¿Qué dificultades se identificaron?',
-                  '¿Qué aprendizajes debo reforzar en la siguiente sesión?',
-                  '¿Qué actividades y materiales funcionaron mejor?']
+        _set_col_widths(t3, [8.0, 8.0])
+        reflex = [
+            '¿Qué logros tuvieron los estudiantes?',
+            '¿Qué dificultades se identificaron?',
+            '¿Qué aprendizajes debo reforzar en la siguiente sesión?',
+            '¿Qué actividades y materiales funcionaron mejor?',
+        ]
+        for ri_r in range(2):
+            for ci_r in range(2):
+                ri_t = ri_r * 1
+                _cell_write(t3.rows[ri_r*2].cells[ci_r] if ri_r == 0 else t3.rows[2].cells[ci_r],
+                            reflex[ri_r*2 + ci_r], bg=AZUL_HEX, bold=True, size=8)
         for ci in range(2):
-            _cell(t3.rows[0].cells[ci], reflex[ci], bg=AZUL_HEX, bold=True, size=8)
-            _set_borders(t3.rows[1].cells[ci])
-            _cell(t3.rows[2].cells[ci], reflex[ci+2], bg=AZUL_HEX, bold=True, size=8)
+            _cell_write(t3.rows[1].cells[ci], '', size=9)
 
-    # Firmas
-    doc.add_paragraph()
-    _par(doc, 'Cusco, _____ de ___________ de ' + str(anio), size=10, center=True, space_before=12)
-    doc.add_paragraph()
+    # ── Firmas ────────────────────────────────────────────────────────
+    doc.add_paragraph().paragraph_format.space_after = _Pt(8)
+    _par(doc, f'Cusco, _____ de ___________ de {anio}', size=10, center=True, sb=10, sa=6)
     t_f = doc.add_table(rows=2, cols=2)
     t_f.style = 'Table Grid'
-    _cell(t_f.rows[0].cells[0], 'FIRMA DEL DOCENTE', bg=AZUL_HEX, bold=True, center=True, size=9)
-    _cell(t_f.rows[0].cells[1], 'FIRMA Y SELLO DEL DIRECTOR(A)', bg=AZUL_HEX, bold=True, center=True, size=9)
-    _cell(t_f.rows[1].cells[0], f'\n\n{docente or ""}\n', center=True, size=9)
-    _cell(t_f.rows[1].cells[1], '\n\n\n', center=True, size=9)
+    _set_col_widths(t_f, [8.0, 8.0])
+    _cell_write(t_f.rows[0].cells[0], 'FIRMA DEL DOCENTE',
+                bg=AZUL_HEX, bold=True, center=True, size=9)
+    _cell_write(t_f.rows[0].cells[1], 'FIRMA Y SELLO DEL DIRECTOR(A)',
+                bg=AZUL_HEX, bold=True, center=True, size=9)
+    _cell_write(t_f.rows[1].cells[0], f'\n\n{docente or ""}\n', center=True, size=9)
+    _cell_write(t_f.rows[1].cells[1], '\n\n\n', center=True, size=9)
 
     buf = _io.BytesIO()
     doc.save(buf)
