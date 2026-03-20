@@ -22279,10 +22279,12 @@ def _tab_temporizador(config):
 <meta charset="utf-8">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
+html,body{{width:100%;height:100%;}}
 body{{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
   color:white;font-family:'Segoe UI',sans-serif;
-  padding:16px;min-height:560px;display:flex;flex-direction:column;gap:10px;}}
-.header{{text-align:center;}}
+  padding:16px;min-height:560px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;}}
+.header{{text-align:center;width:100%;}}
 .modo-emoji{{font-size:2.5rem;line-height:1;margin-bottom:4px;}}
 .fase-titulo{{font-size:0.85rem;color:#94a3b8;font-weight:600;letter-spacing:1px;text-transform:uppercase;}}
 .fase-nombre{{font-size:1.8rem;font-weight:900;margin:4px 0;
@@ -22295,16 +22297,15 @@ body{{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
   text-shadow:0 2px 20px rgba(0,0,0,0.8);}}
 .timer-sub{{position:absolute;top:60%;left:50%;transform:translateX(-50%);
   font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:2px;}}
-.progress-bar{{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}}
+.progress-bar{{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;width:90%;max-width:600px;}}
 .progress-fill{{height:6px;border-radius:3px;transition:width 0.9s linear;}}
 .btns{{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}}
 .btn{{padding:10px 18px;border-radius:12px;border:none;cursor:pointer;
   font-size:0.9rem;font-weight:700;transition:all 0.15s;letter-spacing:0.5px;}}
 .btn:hover{{transform:translateY(-1px);filter:brightness(1.15);}}
-.btn:active{{transform:translateY(0);}}
-.btn-play{{background:linear-gradient(135deg,#16a34a,#15803d);color:white;box-shadow:0 4px 12px rgba(22,163,74,0.4);}}
-.btn-next{{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;box-shadow:0 4px 12px rgba(37,99,235,0.4);}}
-.btn-reset{{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;box-shadow:0 4px 12px rgba(220,38,38,0.4);}}
+.btn-play{{background:linear-gradient(135deg,#16a34a,#15803d);color:white;}}
+.btn-next{{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;}}
+.btn-reset{{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;}}
 .btn-fs{{background:linear-gradient(135deg,#475569,#334155);color:white;}}
 .fases-lista{{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}}
 .fase-chip{{padding:4px 10px;border-radius:20px;font-size:0.7rem;
@@ -22317,6 +22318,68 @@ body{{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
 .flash{{animation:flash 0.4s ease 3;}}
 @keyframes pulsar{{0%,100%{{transform:scale(1)}}50%{{transform:scale(1.05)}}}}
 .pulsar{{animation:pulsar 1s ease infinite;}}
+
+/* ═══ PANTALLA COMPLETA — TODO ENORME ═══════════════════════════ */
+:fullscreen body, :-webkit-full-screen body {{
+  background:linear-gradient(135deg,#050d1a 0%,#0f172a 100%) !important;
+  justify-content:center !important;
+  gap:2vh !important;
+  padding:3vh 4vw !important;
+}}
+:fullscreen .modo-emoji, :-webkit-full-screen .modo-emoji {{
+  font-size:5rem !important;
+  margin-bottom:1vh !important;
+}}
+:fullscreen .fase-titulo, :-webkit-full-screen .fase-titulo {{
+  font-size:1.6rem !important;
+  letter-spacing:3px !important;
+  margin-bottom:0.5vh !important;
+}}
+:fullscreen .fase-nombre, :-webkit-full-screen .fase-nombre {{
+  font-size:5rem !important;
+  margin:1vh 0 !important;
+}}
+:fullscreen .timer-wrap, :-webkit-full-screen .timer-wrap {{
+  transform:scale(2.8) !important;
+  margin:6vh 0 !important;
+}}
+:fullscreen .timer-num, :-webkit-full-screen .timer-num {{
+  font-size:3.2rem !important;
+}}
+:fullscreen .progress-bar, :-webkit-full-screen .progress-bar {{
+  height:14px !important;
+  width:80vw !important;
+  max-width:900px !important;
+  border-radius:7px !important;
+}}
+:fullscreen .progress-fill, :-webkit-full-screen .progress-fill {{
+  height:14px !important;
+  border-radius:7px !important;
+}}
+:fullscreen .btns, :-webkit-full-screen .btns {{
+  gap:20px !important;
+  margin-top:2vh !important;
+}}
+:fullscreen .btn, :-webkit-full-screen .btn {{
+  padding:18px 40px !important;
+  font-size:1.5rem !important;
+  border-radius:18px !important;
+}}
+:fullscreen .fases-lista, :-webkit-full-screen .fases-lista {{
+  gap:12px !important;
+  margin-top:2vh !important;
+}}
+:fullscreen .fase-chip, :-webkit-full-screen .fase-chip {{
+  padding:8px 20px !important;
+  font-size:1rem !important;
+  border-radius:25px !important;
+}}
+:fullscreen .info-box, :-webkit-full-screen .info-box {{
+  font-size:1.1rem !important;
+  padding:16px 24px !important;
+  max-width:70vw !important;
+  line-height:1.8 !important;
+}}
 </style></head><body>
 <div class="header">
   <div class="modo-emoji" id="modo-emoji">{emoji_modo}</div>
