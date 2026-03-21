@@ -5325,6 +5325,11 @@ def _seccion_documentos_auxiliar(config):
     if not df_mat.empty and 'Grado' in df_mat.columns:
         grados_lista = sorted(df_mat['Grado'].dropna().unique().tolist())
 
+    # Usar key con prefijo único para documentos — evita colisión con otros módulos
+    _KEY = '_doc_inst_sel'
+    if _KEY not in st.session_state:
+        st.session_state[_KEY] = None
+
     # ── Grupos de documentos ─────────────────────────────────────────
     GRUPOS = {
         "Actas de Salon": {
@@ -5374,10 +5379,7 @@ def _seccion_documentos_auxiliar(config):
         "monitoreo": "#b91c1c", "programacion": "#dc2626",
     }
 
-    if "doc_sel_key" not in st.session_state:
-        st.session_state.doc_sel_key = None
-
-    if st.session_state.doc_sel_key is None:
+    if st.session_state[_KEY] is None:
         import streamlit.components.v1 as _css_d
 
         # CSS forzado — primero para que aplique desde el inicio
@@ -5445,9 +5447,9 @@ def _seccion_documentos_auxiliar(config):
                 cols_btn = st.columns(len(row_docs))
                 for ci, (label, key) in enumerate(row_docs):
                     with cols_btn[ci]:
-                        if st.button(label, key=f"docbtn_{key}",
+                        if st.button(label, key=f"docbtn_{key}_inst",
                                       use_container_width=True, type="primary"):
-                            st.session_state.doc_sel_key = key
+                            st.session_state[_KEY] = key
                             st.rerun()
         return
 
@@ -5470,11 +5472,15 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
 })();
 </script>""", height=0)
     if st.button("Volver a documentos", key="doc_volver", type="primary"):
-        st.session_state.doc_sel_key = None
+        st.session_state[_KEY] = None
         st.rerun()
     st.markdown("---")
 
-    key = st.session_state.doc_sel_key
+    key = st.session_state[_KEY]
+    if key is None:
+        st.session_state[_KEY] = None
+        st.rerun()
+        return
 
     # ── ACTA ENTREGA DE SALÓN ─────────────────────────────────────────
     if key == "salon":
@@ -5595,57 +5601,53 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
                     type="primary", key="dl_me")
             except Exception as e: st.error(str(e))
 
-    # ── ACUERDOS CONVIVENCIA ──────────────────────────────────────────
+    # ── SELECCION DE TEXTOS ───────────────────────────────────────────
     elif key == "seleccion_textos":
-        st.markdown("#### 📚 Acta de Selección de Textos Escolares")
-        st.info(
-            "**Base legal:** Ley N° 29694 (mod. por Ley N° 29839) y D.S. 015-2012-ED — OBNATE/MINEDU.  \n"
-            "Este acta tiene carácter de **declaración jurada** y debe entregarse a la UGEL por mesa de partes. "
-            "Se genera cuando el colegio cambia de editorial o selecciona textos por primera vez.")
+        st.markdown("#### Acta de Seleccion de Textos Escolares")
+        st.info("Base legal: Ley N 29694 (mod. por Ley N 29839) y D.S. 015-2012-ED — OBNATE/MINEDU. "
+                "Tiene caracter de declaracion jurada — entregala a la UGEL por mesa de partes.")
         col_st1, col_st2 = st.columns(2)
         with col_st1:
             nivel_st = st.selectbox("Nivel:", ["Inicial","Primaria","Secundaria"], key="st_nivel")
-            grado_st = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="st_grado")
-            docente_st = st.text_input("Docente responsable:", key="st_docente",
-                                        placeholder="Apellidos y Nombres")
+            grado_st = st.selectbox("Grado:", grados_lista or ["1 Primaria"], key="st_grado")
+            docente_st = st.text_input("Docente:", key="st_docente", placeholder="Apellidos y Nombres")
         with col_st2:
-            director_st = st.text_input("Director(a):", key="st_director",
-                                         placeholder="Apellidos y Nombres")
-            area_st = st.text_input("Área curricular:", key="st_area",
-                                     placeholder="Matemática, Comunicación...")
-            n_libros_st = st.number_input("N° de libros en la terna (1-3):", 1, 3, 3, key="st_nlibros")
-        st.markdown("**Libros evaluados (terna):**")
+            director_st = st.text_input("Director(a):", key="st_director", placeholder="Apellidos y Nombres")
+            area_st = st.text_input("Area curricular:", key="st_area", placeholder="Matematica")
+            n_libros_st = st.number_input("N libros en terna (1-3):", 1, 3, 3, key="st_nlibros")
+        st.markdown("**Libros evaluados:**")
         libros_terna = []
         for i in range(int(n_libros_st)):
-            c1, c2, c3 = st.columns(3)
-            with c1: titulo_l = st.text_input(f"Título libro {i+1}:", key=f"st_titulo_{i}")
-            with c2: editorial_l = st.text_input(f"Editorial:", key=f"st_editorial_{i}")
-            with c3: precio_l = st.text_input(f"Precio S/.", key=f"st_precio_{i}", placeholder="0.00")
+            c1,c2,c3 = st.columns(3)
+            with c1: titulo_l = st.text_input(f"Titulo {i+1}:", key=f"st_titulo_{i}")
+            with c2: editorial_l = st.text_input("Editorial:", key=f"st_editorial_{i}")
+            with c3: precio_l = st.text_input("Precio S/.", key=f"st_precio_{i}", placeholder="0.00")
             libros_terna.append((titulo_l, editorial_l, precio_l))
-        st.markdown("**Libro seleccionado por los padres:**")
-        c1, c2 = st.columns(2)
-        with c1: libro_sel_titulo = st.text_input("Título del libro elegido:", key="st_sel_titulo")
-        with c2: libro_sel_edit = st.text_input("Editorial:", key="st_sel_edit")
-        n_asistentes = st.number_input("N° de padres asistentes a la reunión:", 5, 100, 20, key="st_nasist")
-        if st.button("📄 Generar Acta de Selección de Textos", type="primary",
+        c1,c2 = st.columns(2)
+        with c1: libro_sel = st.text_input("Libro elegido:", key="st_sel_titulo")
+        with c2: libro_edit = st.text_input("Editorial:", key="st_sel_edit")
+        n_asist = st.number_input("N padres asistentes:", 5, 100, 20, key="st_nasist")
+        if st.button("Generar Acta Seleccion Textos", type="primary",
                       use_container_width=True, key="btn_st"):
             buf_st = _generar_acta_seleccion_textos(
                 config, nivel_st, grado_st, docente_st, director_st, area_st,
-                libros_terna, libro_sel_titulo, libro_sel_edit, int(n_asistentes), anio)
-            st.download_button("⬇️ Descargar Acta", buf_st,
-                                f"Acta_Seleccion_Textos_{grado_st}_{area_st}_{anio}.pdf",
-                                "application/pdf", type="primary", key="dl_st")
-        st.caption("💡 Esta acta se entrega a la UGEL Chinchero–Urubamba por mesa de partes junto a las muestras evaluadas.")
-        st.markdown("#### 🤝 Acta de Elaboración de Acuerdos de Convivencia")
+                libros_terna, libro_sel, libro_edit, int(n_asist), anio)
+            st.download_button("Descargar Acta", buf_st,
+                f"Acta_Seleccion_{grado_st}_{anio}.pdf", "application/pdf",
+                type="primary", key="dl_st")
+
+    # ── ACUERDOS CONVIVENCIA ──────────────────────────────────────────
+    elif key == "acuerdos":
+        st.markdown("#### Acta de Elaboracion de Acuerdos de Convivencia del Aula")
         col1, col2 = st.columns(2)
         with col1:
-            grado_ac = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_grado_ac")
+            grado_ac = st.selectbox("Grado:", grados_lista or ["1 Primaria"], key="doc_grado_ac")
         with col2:
             docente_ac = st.text_input("Docente/Tutor:", key="doc_doc_ac", placeholder="Lic. Apellidos Nombres")
-        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_ac"):
+        if st.button("Generar", type="primary", use_container_width=True, key="btn_ac"):
             try:
                 buf = _generar_pdf_acuerdos_convivencia(config, grado_ac, docente_ac, anio)
-                st.download_button("⬇️ Descargar", buf,
+                st.download_button("Descargar", buf,
                     f"Acuerdos_{grado_ac}_{anio}.pdf", "application/pdf",
                     type="primary", key="dl_ac")
             except Exception as e: st.error(str(e))
@@ -25418,11 +25420,6 @@ def tab_libro_reclamaciones(config):
             st.warning("⚠️ Conecta Google Sheets")
 
 
-if __name__ == "__main__":
-    main()
-
-
-
 def _generar_acta_seleccion_textos(config, nivel, grado, docente, director,
                                     area, libros_terna, libro_sel, editorial_sel,
                                     n_asistentes, anio):
@@ -26121,3 +26118,6 @@ def _generar_pdf_acuerdos_convivencia(config, grado, docente, anio):
     doc.build(story)
     buf.seek(0)
     return buf
+
+if __name__ == "__main__":
+    main()
