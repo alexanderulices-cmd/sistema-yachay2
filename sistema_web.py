@@ -5758,7 +5758,7 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
     # ── MONITOREO ─────────────────────────────────────────────────────
     elif key == "monitoreo":
         st.markdown("#### 🔍 Ficha de Monitoreo Pedagógico")
-        st.caption("Basada en el MBDD — Dominios I y II. Válida para UGEL Chinchero.")
+        st.caption("Basada en el MBDD — Dominios I y II. Válida para UGEL Urubamba.")
         col1, col2 = st.columns(2)
         with col1:
             doc_mon   = st.text_input("Docente monitoreado:", key="mon_doc", placeholder="Apellidos y Nombres")
@@ -5990,83 +5990,382 @@ def _generar_control_prestamo_equipos(config):
 
 
 def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_docentes):
-    """Control de asistencia y participación en horas de trabajo colegiado."""
-    from reportlab.lib.pagesizes import A4, landscape
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    """
+    Genera UN modelo de Acta de Trabajo Colegiado lista para imprimir y completar a mano.
+    Formato oficial segun MINEDU: promotor + director + docentes firman al final.
+    Se imprime tantas veces como sesiones haya (semanal o mensual).
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, KeepTogether)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     import io as _io
-    buf = _io.BytesIO()
+
+    buf  = _io.BytesIO()
     anio = config.get('anio', 2026)
-    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
-                            topMargin=1*cm, bottomMargin=1.2*cm,
-                            leftMargin=1*cm, rightMargin=1*cm)
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel', 'Urubamba')
+    doc  = SimpleDocTemplate(buf, pagesize=A4,
+                              topMargin=1.8*cm, bottomMargin=1.8*cm,
+                              leftMargin=2.5*cm, rightMargin=2.5*cm)
     styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
-                           alignment=TA_CENTER, parent=styles['Normal'])
-    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, parent=styles['Normal'])
 
-    sesiones_header = [f"Ses.{i+1}\n_____\n" for i in range(n_sesiones)]
-    header = ["N°", "APELLIDOS Y NOMBRES COMPLETOS", "Nivel/\nEspecialidad"] + sesiones_header + ["TOTAL\nAsist.", "Firma"]
-    rows = [header]
+    VERDE_OSC = colors.Color(0.05, 0.30, 0.05)
+    VERDE_CLAR = colors.Color(0.88, 0.97, 0.88)
+    AZUL_HEX  = colors.Color(0.10, 0.20, 0.50)
+    GRIS = colors.Color(0.95, 0.95, 0.95)
+
+    def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=3, sa=3, italic=False):
+        fn = 'Helvetica-BoldOblique' if (bold and italic) else (
+             'Helvetica-Bold' if bold else
+             'Helvetica-Oblique' if italic else 'Helvetica')
+        return Paragraph(
+            txt,
+            ParagraphStyle('pac', fontSize=size, leading=size+3.5,
+                           alignment=align, spaceBefore=sb, spaceAfter=sa,
+                           fontName=fn, parent=styles['Normal']))
+
+    def linea_escrib(label, alto=0.8*cm, label_w=4*cm, total_w=15.5*cm):
+        """Celda con etiqueta en negrita y espacio en blanco para escribir."""
+        t = Table([[P(label, bold=True, size=9, align=TA_LEFT, sb=1, sa=1), ""]],
+                  colWidths=[label_w, total_w - label_w],
+                  rowHeights=[alto])
+        t.setStyle(TableStyle([
+            ('BOX',(0,0),(-1,-1),0.5,colors.black),
+            ('LINEAFTER',(0,0),(0,0),0.5,colors.black),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),4),
+            ('BACKGROUND',(0,0),(0,0), VERDE_CLAR),
+        ]))
+        return t
+
+    def bloque_lineas(label, n_lineas=4, alto_linea=0.8*cm):
+        """Bloque con cabecera verde y n_lineas en blanco para escribir."""
+        data = [[P(label, bold=True, size=9, align=TA_LEFT, sb=1, sa=1)]]
+        for _ in range(n_lineas):
+            data.append([""])
+        row_hs = [0.55*cm] + [alto_linea]*n_lineas
+        t = Table(data, colWidths=[15.5*cm], rowHeights=row_hs)
+        t.setStyle(TableStyle([
+            ('BOX',(0,0),(-1,-1),0.5,colors.black),
+            ('LINEBELOW',(0,0),(0,0),0.5,colors.black),
+            ('BACKGROUND',(0,0),(-1,0), VERDE_CLAR),
+            ('GRID',(0,1),(-1,-1),0.3,colors.Color(0.8,0.8,0.8)),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),4),
+        ]))
+        return t
+
     if not nombres_docentes:
-        nombres_docentes = [f"___________________________ {i+1}" for i in range(20)]
-    for i, nombre in enumerate(nombres_docentes):
-        fila = [str(i+1), nombre, ""] + [" A / I / J "] * n_sesiones + ["", ""]
-        rows.append(fila)
-    # Leyenda fila
-    rows.append(["", "LEYENDA: A=Asistió | I=Inasistencia | J=Justificado", ""] + [""]*n_sesiones + ["",""])
+        nombres_docentes = ["___________________________"] * 10
 
-    ancho = 26*cm
-    w_n = 0.5*cm; w_nom = 4.5*cm; w_nivel = 2.3*cm; w_firma = 2*cm; w_tot = 1.2*cm
-    w_ses = (ancho - w_n - w_nom - w_nivel - w_firma - w_tot) / n_sesiones
-    col_ws = [w_n, w_nom, w_nivel] + [w_ses]*n_sesiones + [w_tot, w_firma]
-    row_hs = [1.2*cm] + [0.65*cm]*len(nombres_docentes) + [0.5*cm]
-    t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
-    t.setStyle(TableStyle([
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,0),7),
-        ('FONTSIZE',(0,1),(-1,-1),7),
-        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.05,0.3,0.05)),
-        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-        ('ALIGN',(0,0),(-1,-1),'CENTER'),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('GRID',(0,0),(-1,-2),0.4,colors.black),
-        ('ROWBACKGROUNDS',(0,1),(-1,-2),[colors.white,colors.Color(0.95,1,0.95)]),
-        ('SPAN',(1,-1),(1+n_sesiones,-1)),
-        ('FONTSIZE',(0,-1),(-1,-1),7),
-        ('BACKGROUND',(0,-1),(-1,-1),colors.Color(0.95,0.95,0.85)),
-        ('ALIGN',(1,1),(1,-1),'LEFT'),
-    ]))
+    story = []
 
-    story = [
-        Paragraph(f"CONTROL DE TRABAJO COLEGIADO — {trimestre.upper()} {anio}", st_t),
-        Paragraph(f"{ie}  |  Responsable: ___________________________  |  Firma y Sello: ___________", st_s),
-        Spacer(1, 0.3*cm),
+    # ── ENCABEZADO ────────────────────────────────────────────────────
+    story += [
+        P(f"{ie.upper()}", bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Año {anio}", size=9, align=TA_CENTER, sb=0, sa=2),
+        HRFlowable(width="100%", thickness=2, color=VERDE_OSC, spaceAfter=6),
+        P("ACTA DE REUNIÓN DE TRABAJO COLEGIADO",
+          bold=True, size=14, align=TA_CENTER, sb=2, sa=2),
+        P(f"{trimestre}  |  Año Escolar {anio}",
+          size=10, align=TA_CENTER, sb=0, sa=4),
+        HRFlowable(width="100%", thickness=1, color=VERDE_OSC, spaceAfter=8),
     ]
 
-    # Tabla de sesiones con temario
-    story.append(Paragraph("TEMARIO DE SESIONES:", ParagraphStyle('H2', fontSize=8,
-                            fontName='Helvetica-Bold', parent=styles['Normal'])))
-    tem_data = [["N° Sesión","Fecha","Tema / Agenda","Hora Inicio","Hora Fin","Facilitador","Productos"]]
-    for i in range(n_sesiones):
-        tem_data.append([f"Sesión {i+1}", "", "", "", "", "", ""])
-    t_tem = Table(tem_data, colWidths=[1.5*cm, 2*cm, 7*cm, 1.5*cm, 1.5*cm, 3.5*cm, 4.5*cm],
-                  rowHeights=[0.7*cm]*len(tem_data))
-    t_tem.setStyle(TableStyle([
+    # ── I. DATOS DE LA REUNION ─────────────────────────────────────────
+    story.append(P("I. DATOS DE LA REUNIÓN", bold=True, size=10.5,
+                   align=TA_LEFT, sb=4, sa=3))
+
+    datos_cols = [2.8*cm, 4.9*cm, 2.8*cm, 5.0*cm]
+    datos_data = [
+        [P("Institución:", bold=True, size=8.5, sb=1,sa=1),
+         P(ie, size=8.5, sb=1,sa=1),
+         P("UGEL:", bold=True, size=8.5, sb=1,sa=1),
+         P(ugel, size=8.5, sb=1,sa=1)],
+        [P("Fecha:", bold=True, size=8.5, sb=1,sa=1),
+         P("_____ / _____ / _______", size=8.5, sb=1,sa=1),
+         P("N° Sesión:", bold=True, size=8.5, sb=1,sa=1),
+         P("_____  de  _____  sesiones", size=8.5, sb=1,sa=1)],
+        [P("Hora inicio:", bold=True, size=8.5, sb=1,sa=1),
+         P("_______", size=8.5, sb=1,sa=1),
+         P("Hora término:", bold=True, size=8.5, sb=1,sa=1),
+         P("_______", size=8.5, sb=1,sa=1)],
+        [P("Lugar:", bold=True, size=8.5, sb=1,sa=1),
+         P("_______________________________", size=8.5, sb=1,sa=1),
+         P("Modalidad:", bold=True, size=8.5, sb=1,sa=1),
+         P("Presencial  /  Virtual  /  Mixto", size=8.5, sb=1,sa=1)],
+    ]
+    t_datos = Table(datos_data, colWidths=datos_cols,
+                    rowHeights=[0.7*cm]*4)
+    t_datos.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),5),
+        ('BACKGROUND',(0,0),(0,-1), VERDE_CLAR),
+        ('BACKGROUND',(2,0),(2,-1), VERDE_CLAR),
+    ]))
+    story.append(t_datos)
+    story.append(Spacer(1, 0.25*cm))
+
+    # ── II. PARTICIPANTES ─────────────────────────────────────────────
+    story.append(P("II. PARTICIPANTES", bold=True, size=10.5,
+                   align=TA_LEFT, sb=4, sa=3))
+
+    # Promotor y Director en una fila
+    prom_data = [
+        [P("Promotor(a):", bold=True, size=8.5, sb=1,sa=1),
+         P("________________________________________", size=8.5, sb=1,sa=1),
+         P("Director(a):", bold=True, size=8.5, sb=1,sa=1),
+         P("________________________________________", size=8.5, sb=1,sa=1)],
+    ]
+    t_prom = Table(prom_data, colWidths=[2.5*cm, 5.5*cm, 2.5*cm, 5.0*cm],
+                   rowHeights=[0.75*cm])
+    t_prom.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),5),
+        ('BACKGROUND',(0,0),(0,0), VERDE_CLAR),
+        ('BACKGROUND',(2,0),(2,0), VERDE_CLAR),
+    ]))
+    story.append(t_prom)
+    story.append(Spacer(1, 0.15*cm))
+
+    # Lista de docentes con asistencia
+    doc_data = [[
+        P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+        P("APELLIDOS Y NOMBRES DEL DOCENTE", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+        P("ÁREA / NIVEL", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+        P("ASISTENCIA (A/I/J)", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("FIRMA", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+    ]]
+    for i, nombre in enumerate(nombres_docentes):
+        doc_data.append([
+            P(str(i+1), size=8.5, align=TA_CENTER, sb=1,sa=1),
+            P(nombre, size=8.5, align=TA_LEFT, sb=1,sa=1),
+            P("", size=8.5, sb=1,sa=1),
+            P("", size=8.5, align=TA_CENTER, sb=1,sa=1),
+            P("", size=8.5, sb=1,sa=1),
+        ])
+
+    t_doc = Table(doc_data,
+                  colWidths=[0.7*cm, 7.0*cm, 3.3*cm, 2.0*cm, 2.5*cm],
+                  rowHeights=[0.7*cm] + [0.6*cm]*len(nombres_docentes))
+    t_doc.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
         ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,-1),7.5),
-        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.05,0.3,0.05)),
-        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),4),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),
+         [colors.white, colors.Color(0.94,1,0.94)]),
+    ]))
+    story.append(t_doc)
+    story.append(P("Leyenda: A = Asistió  |  I = Inasistencia  |  J = Justificado",
+                   italic=True, size=8, align=TA_LEFT, sb=2, sa=4))
+
+    # ── III. AGENDA / TEMAS ───────────────────────────────────────────
+    story.append(P("III. AGENDA DE LA REUNIÓN", bold=True, size=10.5,
+                   align=TA_LEFT, sb=4, sa=3))
+    agenda_data = [
+        [P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("PUNTO DE AGENDA / TEMA A TRATAR", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("RESPONSABLE", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("TIEMPO", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1)],
+    ]
+    for i in range(6):
+        agenda_data.append([
+            P(str(i+1), size=8.5, align=TA_CENTER, sb=1,sa=1),
+            "", "", ""
+        ])
+    t_agenda = Table(agenda_data,
+                     colWidths=[0.8*cm, 10.0*cm, 3.0*cm, 1.7*cm],
+                     rowHeights=[0.65*cm] + [0.75*cm]*6)
+    t_agenda.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),4),
+    ]))
+    story.append(t_agenda)
+    story.append(Spacer(1, 0.3*cm))
+
+    # ── IV. DESARROLLO / TEMAS TRATADOS ──────────────────────────────
+    story.append(P("IV. DESARROLLO DE LA REUNIÓN — RESUMEN DE TEMAS TRATADOS",
+                   bold=True, size=10.5, align=TA_LEFT, sb=4, sa=3))
+    desarr_data = [
+        [P("TEMA TRATADO", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("DESCRIPCION / CONTENIDO DESARROLLADO", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1)],
+    ]
+    for _ in range(5):
+        desarr_data.append(["", ""])
+    t_des = Table(desarr_data,
+                  colWidths=[4.5*cm, 11.0*cm],
+                  rowHeights=[0.65*cm] + [1.2*cm]*5)
+    t_des.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'TOP'),
+        ('LEFTPADDING',(0,0),(-1,-1),4),
+        ('TOPPADDING',(0,1),(-1,-1),5),
+    ]))
+    story.append(t_des)
+    story.append(Spacer(1, 0.3*cm))
+
+    # ── V. ACUERDOS Y COMPROMISOS ─────────────────────────────────────
+    story.append(P("V. ACUERDOS Y COMPROMISOS", bold=True, size=10.5,
+                   align=TA_LEFT, sb=4, sa=3))
+    acuerdos_data = [
+        [P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("ACUERDO / COMPROMISO", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("RESPONSABLE", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("PLAZO / FECHA", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1)],
+    ]
+    for i in range(6):
+        acuerdos_data.append([
+            P(str(i+1), size=8.5, align=TA_CENTER, sb=1,sa=1),
+            "", "", ""
+        ])
+    t_ac = Table(acuerdos_data,
+                 colWidths=[0.8*cm, 9.5*cm, 3.0*cm, 2.2*cm],
+                 rowHeights=[0.65*cm] + [0.85*cm]*6)
+    t_ac.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),4),
+    ]))
+    story.append(t_ac)
+    story.append(Spacer(1, 0.3*cm))
+
+    # ── VI. PROXIMA REUNION ───────────────────────────────────────────
+    prox_data = [[
+        P("PRÓXIMA REUNIÓN:", bold=True, size=8.5, sb=1,sa=1),
+        P("Fecha: _______________", size=8.5, sb=1,sa=1),
+        P("Hora: _________", size=8.5, sb=1,sa=1),
+        P("Tema: _________________________________________", size=8.5, sb=1,sa=1),
+    ]]
+    t_prox = Table(prox_data, colWidths=[3.5*cm, 3.5*cm, 2.5*cm, 6.0*cm],
+                   rowHeights=[0.7*cm])
+    t_prox.setStyle(TableStyle([
+        ('BOX',(0,0),(-1,-1),0.5,VERDE_OSC),
+        ('GRID',(0,0),(-1,-1),0.3,colors.Color(0.7,0.9,0.7)),
+        ('BACKGROUND',(0,0),(-1,-1), VERDE_CLAR),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),5),
+    ]))
+    story.append(t_prox)
+    story.append(Spacer(1, 0.5*cm))
+
+    # ── VII. FIRMAS ───────────────────────────────────────────────────
+    story.append(HRFlowable(width="100%", thickness=1, color=VERDE_OSC, spaceAfter=6))
+    story.append(P(
+        f"Siendo las _____ horas se da por concluida la presente reunión en "
+        f"Chinchero, a los _____ días del mes de _____________________ de {anio}.",
+        size=9.5, align=TA_JUSTIFY, sb=2, sa=8))
+
+    # Firmas principales: Promotor + Director + Secretario
+    firmas_data = [
+        [P("FIRMA DEL PROMOTOR(A)", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("FIRMA Y SELLO DEL DIRECTOR(A)", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
+         P("SECRETARIO(A) DE ACTAS", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1)],
+        ["\\n\\n\\n___________________\\n", "\\n\\n\\n___________________\\n", "\\n\\n\\n___________________\\n"],
+        [P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1),
+         P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1),
+         P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1)],
+    ]
+    t_firmas = Table(firmas_data, colWidths=[5.1*cm, 5.2*cm, 5.2*cm],
+                     rowHeights=[0.6*cm, 2.0*cm, 0.55*cm])
+    t_firmas.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.5,colors.black),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
         ('ALIGN',(0,0),(-1,-1),'CENTER'),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('ALIGN',(2,0),(2,-1),'LEFT'),
+        ('FONTSIZE',(0,0),(-1,-1),8.5),
     ]))
-    story += [t_tem, Spacer(1, 0.4*cm), t]
+    story.append(t_firmas)
+    story.append(Spacer(1, 0.3*cm))
+
+    # Firmas de TODOS los docentes — 3 columnas
+    story.append(P("FIRMAS DE TODOS LOS DOCENTES PARTICIPANTES:",
+                   bold=True, size=9, align=TA_LEFT, sb=2, sa=3))
+
+    # Organizar docentes en grupos de 3 por fila
+    COLS = 3
+    W_FIRMA = 15.5*cm / COLS  # ~5.17cm cada columna
+
+    # Cabecera
+    cab = [P("APELLIDOS Y NOMBRES", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+           P("ÁREA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+           P("FIRMA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1)] * COLS
+    # Construir filas de a 3 docentes
+    doc_firmas_data = [cab[:COLS*3]]  # encabezado triple
+
+    # Repartir docentes en filas de 3
+    for i in range(0, len(nombres_docentes), COLS):
+        grupo = nombres_docentes[i:i+COLS]
+        # Completar con vacíos si el grupo no llega a 3
+        while len(grupo) < COLS:
+            grupo.append("")
+        fila = []
+        for nombre in grupo:
+            fila += [
+                P(nombre, size=7.5, align=TA_LEFT, sb=1, sa=1),
+                "",   # área — espacio en blanco
+                "",   # firma — espacio en blanco
+            ]
+        doc_firmas_data.append(fila)
+
+    # Anchos: (nombre, area, firma) × 3
+    col_ws_doc = [3.5*cm, 1.2*cm, 0.5*cm] * COLS  # nombre ancho, área, firma
+    # Recalcular para que sumen 15.5cm
+    # nombre=3.0, area=1.3, firma=0.87 × 3 = 15.51cm ~ ok
+    col_ws_doc = [3.0*cm, 1.3*cm, 0.87*cm] * COLS
+
+    t_doc_f = Table(doc_firmas_data,
+                    colWidths=col_ws_doc,
+                    rowHeights=[0.55*cm] + [0.85*cm]*(len(doc_firmas_data)-1))
+    # Estilo general
+    cmds_df = [
+        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('FONTSIZE',(0,0),(-1,-1),7.5),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),3),
+        ('RIGHTPADDING',(0,0),(-1,-1),3),
+        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
+        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.94,1,0.94)]),
+    ]
+    # Líneas divisoras entre grupos de 3 columnas
+    for g in range(1, COLS):
+        col_sep = g * 3
+        cmds_df.append(('LINEAFTER',(col_sep-1,0),(col_sep-1,-1), 1.5, VERDE_OSC))
+    t_doc_f.setStyle(TableStyle(cmds_df))
+    story.append(t_doc_f)
+    story.append(Spacer(1, 0.25*cm))
+    story.append(P(
+        f"Nota: El presente documento tiene valor de declaración jurada. "
+        f"Archivar en el file de Trabajo Colegiado {anio} y reportar a la UGEL {ugel} "
+        f"al finalizar cada trimestre.",
+        italic=True, size=8, align=TA_JUSTIFY, sb=2, sa=0))
+
     doc.build(story)
     buf.seek(0)
     return buf
@@ -6084,7 +6383,7 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
     import io as _io
     buf = _io.BytesIO()
     ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.5*cm, bottomMargin=1.5*cm,
                             leftMargin=1.8*cm, rightMargin=1.8*cm)
@@ -6219,7 +6518,7 @@ def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado
     import io as _io
 
     ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     AZUL_HEX = 'BDD7EE'
     HDR_HEX  = '1F3864'
 
@@ -6565,7 +6864,7 @@ def _generar_acta_reglamento_alumnos(config, grado, docente, n_filas=30):
     anio = config.get('anio', 2026)
     ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     dre = config.get('dre', 'Cusco')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.8*cm, bottomMargin=1.8*cm,
                             leftMargin=2*cm, rightMargin=2*cm)
@@ -6650,7 +6949,7 @@ def _generar_acta_reglamento_padres(config, grado, docente, n_filas=30):
     anio = config.get('anio', 2026)
     ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     dre = config.get('dre', 'Cusco')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.8*cm, bottomMargin=1.8*cm,
                             leftMargin=2*cm, rightMargin=2*cm)
@@ -6736,7 +7035,7 @@ def _generar_municipio_escolar(config, grado, docente):
     anio = config.get('anio', 2026)
     ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     dre = config.get('dre', 'Cusco')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.8*cm, bottomMargin=1.8*cm,
                             leftMargin=2*cm, rightMargin=2*cm)
@@ -6831,7 +7130,7 @@ def _generar_acuerdos_convivencia(config, grado, docente):
     anio = config.get('anio', 2026)
     ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     dre = config.get('dre', 'Cusco')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.8*cm, bottomMargin=1.8*cm,
                             leftMargin=2*cm, rightMargin=2*cm)
@@ -25436,7 +25735,7 @@ def _generar_acta_seleccion_textos(config, nivel, grado, docente, director,
 
     buf  = _io.BytesIO()
     ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     dre  = config.get('dre', 'Cusco')
 
     doc = SimpleDocTemplate(buf, pagesize=A4,
@@ -25587,7 +25886,7 @@ def _generar_acta_seleccion_textos(config, nivel, grado, docente, director,
     story.append(Spacer(1, 0.3*cm))
     story.append(P(
         "<b>NOTA:</b> Este documento tiene carácter de declaración jurada. "
-        "Debe entregarse a la UGEL Chinchero–Urubamba por mesa de partes adjuntando "
+        "Debe entregarse a la UGEL Urubamba (distrito de Chinchero) por mesa de partes adjuntando "
         "las muestras de los textos evaluados y la lista de asistencia de padres.",
         size=8, align=TA_JUSTIFY, sb=2, sa=0))
 
@@ -25598,9 +25897,10 @@ def _generar_acta_seleccion_textos(config, nivel, grado, docente, director,
 
 def _generar_acta_material_propio(config, nivel, grado, director, editorial,
                                    tipo_material, materiales, n_asistentes, anio):
-    """Acta de Presentacion de Material Educativo Propio a padres de familia."""
+    """Acta de Presentacion de Material Educativo Propio — version mejorada."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
+                                     TableStyle, KeepTogether)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
@@ -25610,124 +25910,173 @@ def _generar_acta_material_propio(config, nivel, grado, director, editorial,
 
     buf  = _io.BytesIO()
     ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     hoy  = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio',
              'julio','agosto','septiembre','octubre','noviembre','diciembre']
-    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {str(anio)}"
 
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=2*cm, bottomMargin=2*cm,
-                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2.3*cm, rightMargin=2.3*cm)
     styles = getSampleStyleSheet()
+    ANCHO = 15.9*cm  # ancho util real
 
     def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=2, sa=3):
-        s = ParagraphStyle('p', fontSize=size, leading=size+3, alignment=align,
-                           spaceBefore=sb, spaceAfter=sa,
+        return Paragraph(
+            f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p_mp', fontSize=size, leading=size+3,
+                           alignment=align, spaceBefore=sb, spaceAfter=sa,
                            fontName='Helvetica-Bold' if bold else 'Helvetica',
-                           parent=styles['Normal'])
-        return Paragraph(txt, s)
+                           parent=styles['Normal']))
 
-    def T(data, col_ws, bg=colors.Color(0.1,0.2,0.5)):
+    def T(data, col_ws, hdr_bg=None):
+        if hdr_bg is None:
+            hdr_bg = colors.Color(0.1, 0.2, 0.5)
         t = Table(data, colWidths=col_ws)
-        t.setStyle(TableStyle([
-            ('GRID',(0,0),(-1,-1),0.5,colors.black),
-            ('FONTSIZE',(0,0),(-1,-1),8.5),
-            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('LEFTPADDING',(0,0),(-1,-1),5),
-            ('TOPPADDING',(0,0),(-1,-1),4),
-            ('BOTTOMPADDING',(0,0),(-1,-1),4),
-            ('BACKGROUND',(0,0),(-1,0),bg),
-            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-            ('ALIGN',(0,0),(-1,0),'CENTER'),
-        ]))
+        cmds = [
+            ('GRID',         (0,0), (-1,-1), 0.5, colors.black),
+            ('FONTSIZE',     (0,0), (-1,-1), 8.5),
+            ('VALIGN',       (0,0), (-1,-1), 'MIDDLE'),
+            ('LEFTPADDING',  (0,0), (-1,-1), 5),
+            ('RIGHTPADDING', (0,0), (-1,-1), 5),
+            ('TOPPADDING',   (0,0), (-1,-1), 4),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 4),
+        ]
+        if len(data) > 0:
+            cmds += [
+                ('BACKGROUND', (0,0), (-1,0), hdr_bg),
+                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
+                ('FONTNAME',   (0,0), (-1,0), 'Helvetica-Bold'),
+                ('ALIGN',      (0,0), (-1,0), 'CENTER'),
+            ]
+        t.setStyle(TableStyle(cmds))
         return t
 
-    story = [
-        P(ie.upper(), bold=True, size=12, align=TA_CENTER, sb=0, sa=2),
-        P(f"UGEL {ugel}  |  Año {anio}", size=8.5, align=TA_CENTER, sb=0, sa=4),
+    story = []
+
+    # Membrete
+    story += [
+        P(ie.upper(), bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Año {str(anio)}", size=9, align=TA_CENTER, sb=0, sa=4),
         P("ACTA DE PRESENTACION DEL MATERIAL EDUCATIVO PROPIO A PADRES DE FAMILIA",
           bold=True, size=12, align=TA_CENTER, sb=0, sa=2),
-        P("(Ley N 29694 modificada por Ley N 29839 y D.S. N 015-2012-ED)",
+        P(f"(Ley N° 29694 modificada por Ley N° 29839 y D.S. N° 015-2012-ED)",
           size=8, align=TA_CENTER, sb=0, sa=8),
-
-        P("<b>I. DATOS GENERALES</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        T([["Campo","Dato","Campo","Dato"],
-           ["Institucion Educativa", ie, "Nivel", nivel],
-           ["Director(a)", director or "_______________", "Grado", grado],
-           ["Editorial", editorial or "_______________", "Fecha", fecha_str],
-           ["Tipo de material", tipo_material, "Anio de uso", str(anio)]],
-          [3.5*cm, 4.8*cm, 2.7*cm, 4*cm]),
-        Spacer(1, 0.3*cm),
-
-        P("<b>II. ANTECEDENTES Y JUSTIFICACION</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        P(f"La Institucion Educativa Privada {ie}, en el marco de su autonomia pedagogica "
-          f"reconocida por el Art. 73 de la Ley General de Educacion N 28044 y su Reglamento, "
-          f"ha desarrollado en alianza con la editorial <b>{editorial or '_______________'}</b> "
-          f"material educativo propio adaptado al enfoque pedagogico institucional, al curriculo "
-          f"nacional vigente y al contexto sociocultural de Chinchero, Cusco. "
-          f"Dicho material corresponde a la categoria: <b>{tipo_material}</b>.",
-          size=9.5),
-        Spacer(1, 0.2*cm),
-
-        P("<b>III. MATERIAL EDUCATIVO PRESENTADO</b>", size=10, align=TA_LEFT, sb=4, sa=4),
     ]
 
-    mat_data = [["N", "AREA CURRICULAR", "TITULO DEL MATERIAL", "EDITORIAL", "COSTO S/."]]
-    for i, (area, titulo, precio) in enumerate(materiales):
-        mat_data.append([str(i+1), area or "___", titulo or "___", editorial or "___", precio or "___"])
-    if not materiales:
-        for i in range(5):
-            mat_data.append([str(i+1), "", "", editorial or "___", ""])
-    story.append(T(mat_data, [0.7*cm, 3.5*cm, 5*cm, 3*cm, 2.8*cm]))
+    # I. Datos generales
+    story.append(P("I. DATOS GENERALES", bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    w1, w2, w3, w4 = 3.5*cm, 4.5*cm, 2.7*cm, 5.2*cm
+    datos_t = T([
+        ["Campo", "Dato", "Campo", "Dato"],
+        ["Institucion Educativa:", ie,  "Nivel:", nivel],
+        ["Director(a):",  director or "___________________", "Grado:", grado],
+        ["Editorial:",    editorial or "___________________", "Fecha:", fecha_str],
+        ["Tipo de material:", tipo_material[:40] if tipo_material else "___", "Año escolar:", str(anio)],
+    ], [w1, w2, w3, w4])
+    story.append(datos_t)
+    story.append(Spacer(1, 0.3*cm))
+
+    # II. Antecedentes
+    story.append(P("II. ANTECEDENTES Y JUSTIFICACION", bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    story.append(P(
+        f"La Institucion Educativa Privada {ie}, en el marco de su autonomia pedagogica "
+        f"reconocida por el Art. 73 de la Ley General de Educacion N° 28044 y su Reglamento, "
+        f"ha desarrollado en alianza con la editorial <b>{editorial or '___________________'}</b> "
+        f"material educativo propio para el año escolar <b>{str(anio)}</b>. "
+        f"Dicho material corresponde a la categoria: <b>{tipo_material}</b>.", size=9.5))
     story.append(Spacer(1, 0.2*cm))
 
-    story += [
-        P("<b>IV. CARACTERISTICAS DEL MATERIAL</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        P("El material educativo presentado tiene las siguientes caracteristicas: "
-          "(a) Esta alineado con el Curriculo Nacional de Educacion Basica vigente; "
-          "(b) Incorpora el contexto cultural andino y quechua de la region Cusco; "
-          "(c) Ha sido elaborado por el equipo docente de la institucion; "
-          "(d) El precio es accesible y competitivo con el mercado editorial nacional; "
-          "(e) En caso de ser material de uso unico, los padres tienen derecho a optar "
-          "por materiales alternativos de uso reutilizable.", size=9.5),
-        Spacer(1, 0.2*cm),
+    # III. Material presentado
+    story.append(P("III. MATERIAL EDUCATIVO PRESENTADO", bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    mat_cols = [0.7*cm, 3.5*cm, 5.5*cm, 3.0*cm, 3.2*cm]
+    mat_data = [["N°", "AREA CURRICULAR", "TITULO DEL MATERIAL", "EDITORIAL", "COSTO S/."]]
+    if materiales:
+        for i, (area, titulo, precio) in enumerate(materiales):
+            mat_data.append([str(i+1), area or "___", titulo or "___",
+                             editorial or "___", precio or "___"])
+    else:
+        for i in range(5):
+            mat_data.append([str(i+1), "", "", editorial or "___", ""])
+    story.append(T(mat_data, mat_cols))
+    story.append(Spacer(1, 0.2*cm))
 
-        P("<b>V. DESARROLLO DE LA REUNION</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        P(f"Siendo las _____horas del dia {fecha_str}, en las instalaciones de "
-          f"{ie}, se reunieron {n_asistentes} padre(s)/madre(s) de familia "
-          f"convocados mediante comunicado escrito con 7 dias de anticipacion. "
-          f"El/La Director(a) y el equipo docente presentaron el material educativo, "
-          f"explicaron su fundamento pedagogico, mostraron ejemplares fisicos y "
-          f"respondieron las consultas de los presentes.", size=9.5),
-        Spacer(1, 0.2*cm),
+    # IV. Fundamento pedagogico
+    story.append(P("IV. FUNDAMENTO PEDAGOGICO Y PERTINENCIA CURRICULAR",
+                   bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    story.append(P(
+        "El material educativo presentado cumple con los siguientes criterios de calidad y pertinencia: "
+        "<br/>"
+        "<b>a) Alineamiento curricular:</b> Todos los contenidos estan elaborados en estricta "
+        "concordancia con el Curriculo Nacional de Educacion Basica (CNEB) vigente, respetando "
+        "las competencias, capacidades, estandares y desempenos por nivel y grado. "
+        "<br/>"
+        "<b>b) Demanda de los padres de familia:</b> El material incorpora los campos tematicos "
+        "identificados en el diagnostico de necesidades realizado con los padres de familia, "
+        "respondiendo a sus expectativas de aprendizaje para sus hijos. "
+        "<br/>"
+        "<b>c) Pertinencia sociocultural:</b> Los contenidos integran la realidad sociocultural "
+        "del distrito de Chinchero, provincia de Urubamba, region Cusco, incorporando "
+        "saberes locales y la cosmovisión andina de la comunidad. "
+        "<br/>"
+        "<b>d) Innovacion pedagogica:</b> El material propone estrategias metodologicas "
+        "innovadoras coherentes con el enfoque por competencias del CNEB, promoviendo el "
+        "pensamiento critico, la creatividad y el aprendizaje autonomo. "
+        "<br/>"
+        "<b>e) Accesibilidad economica:</b> El precio fijado es justo y accesible, habiendo "
+        "sido consultado previamente con los representantes de los padres de familia.",
+        size=9.5))
+    story.append(Spacer(1, 0.2*cm))
 
-        P("<b>VI. DECLARACION</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        P("Los firmantes declaramos que la institucion educativa presento el material "
-          "con transparencia, informo sobre el costo, no obligo a la adquisicion "
-          "exclusiva, y respeta el derecho de los padres a usar materiales alternativos "
-          "de acuerdo a la Ley N 29694 modificada por Ley N 29839.", size=9.5),
-        Spacer(1, 0.5*cm),
+    # V. Reunion con padres
+    story.append(P("V. DESARROLLO DE LA REUNION DE PRESENTACION",
+                   bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    story.append(P(
+        f"Siendo las _____horas del {fecha_str}, en las instalaciones de {ie}, "
+        f"se reunieron <b>{n_asistentes} padre(s)/madre(s) de familia</b> convocados "
+        f"mediante comunicado escrito con siete (07) dias de anticipacion. "
+        f"El/La Director(a) y el equipo docente presentaron el material educativo, "
+        f"explicaron su fundamento pedagogico y curricular, mostraron ejemplares "
+        f"fisicos de cada texto, detallaron los costos y respondieron las consultas "
+        f"de los presentes. Los padres manifestaron su conformidad con la propuesta.",
+        size=9.5))
+    story.append(Spacer(1, 0.2*cm))
 
-        P(f"Chinchero, {fecha_str}", size=10, align=TA_CENTER, sb=0, sa=8),
-        T([["FIRMA Y SELLO DEL DIRECTOR(A)","REPRESENTANTE APAFA","REPRESENTANTE COMITE DE AULA"],
-           [f"\n\n\n{director or ''}\n", "\n\n\n_______________\n", "\n\n\n_______________\n"]],
-          [5*cm, 5*cm, 5*cm]),
-        Spacer(1, 0.3*cm),
+    # VI. Declaracion jurada
+    story.append(P("VI. DECLARACION JURADA",
+                   bold=True, size=10, align=TA_LEFT, sb=4, sa=3))
+    story.append(P(
+        "Los firmantes declaramos bajo juramento que: (1) El procedimiento de presentacion "
+        "del material se realizo conforme a la Ley N° 29694, modificada por Ley N° 29839 "
+        "y su Reglamento D.S. N° 015-2012-ED; (2) No se obligo a los padres de familia "
+        "a adquirir textos nuevos de manera exclusiva, garantizando su derecho a usar "
+        "materiales alternativos; (3) Los precios son los unicos que se cobraran por "
+        "concepto de material educativo para el año escolar " + str(anio) + ".",
+        size=9.5))
+    story.append(Spacer(1, 0.4*cm))
 
-        P("<b>LISTA DE PADRES/MADRES PRESENTES:</b>", size=9, align=TA_LEFT, sb=4, sa=2),
-    ]
+    # Lista de asistentes
+    story.append(P("LISTA DE PADRES/MADRES PRESENTES EN LA REUNION:",
+                   size=9, align=TA_LEFT, sb=4, sa=2))
+    n_filas = min(n_asistentes, 20)
+    padres_data = [["N°", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "DNI", "ALUMNO/A", "FIRMA"]]
+    for i in range(n_filas):
+        padres_data.append([str(i+1), "", "", "", ""])
+    story.append(T(padres_data, [0.7*cm, 5.8*cm, 2.2*cm, 4.0*cm, 3.2*cm]))
+    story.append(Spacer(1, 0.5*cm))
 
-    filas_padres = [["N", "APELLIDOS Y NOMBRES", "DNI", "HIJO/A", "FIRMA"]]
-    for i in range(min(n_asistentes, 25)):
-        filas_padres.append([str(i+1), "", "", "", ""])
-    story.append(T(filas_padres, [0.7*cm, 5.5*cm, 2.3*cm, 4*cm, 2.5*cm]))
+    # Firmas
+    story.append(P(f"Chinchero, {fecha_str}", size=10, align=TA_CENTER, sb=0, sa=8))
+    firmas_t = T([
+        ["FIRMA Y SELLO DEL DIRECTOR(A)", "REPRESENTANTE APAFA", "REPRESENTANTE COMITE DE AULA"],
+        [f"\n\n\n{director or ''}\n", "\n\n\n\n_______________\n", "\n\n\n\n_______________\n"],
+    ], [5.3*cm, 5.3*cm, 5.3*cm])
+    story.append(firmas_t)
     story.append(Spacer(1, 0.3*cm))
     story.append(P(
-        "<b>NOTA LEGAL:</b> Esta acta tiene caracter de declaracion jurada. "
-        "Debe archivarse en el acervo documental de la institucion y estar disponible "
-        "ante cualquier requerimiento de INDECOPI, UGEL o MINEDU.",
+        "<b>NOTA LEGAL:</b> Este documento tiene caracter de declaracion jurada. "
+        "Conservar junto al Acta de Conformidad de Padres en el archivo institucional.",
         size=8, align=TA_JUSTIFY, sb=2, sa=0))
 
     doc.build(story)
@@ -25737,9 +26086,9 @@ def _generar_acta_material_propio(config, nivel, grado, director, editorial,
 
 def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
                                         editorial, n_filas, anio):
-    """Acta de Conformidad de padres con el material educativo propio del colegio."""
+    """Acta de Conformidad de padres con material educativo propio — version mejorada."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
@@ -25749,100 +26098,122 @@ def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
 
     buf  = _io.BytesIO()
     ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Chinchero - Urubamba')
+    ugel = config.get('ugel', 'Urubamba')
     hoy  = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio',
              'julio','agosto','septiembre','octubre','noviembre','diciembre']
-    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {str(anio)}"
 
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=2*cm, bottomMargin=2*cm,
-                            leftMargin=2.5*cm, rightMargin=2.5*cm)
+                            topMargin=1.8*cm, bottomMargin=1.8*cm,
+                            leftMargin=2.3*cm, rightMargin=2.3*cm)
     styles = getSampleStyleSheet()
+    ANCHO = 15.9*cm
 
     def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=2, sa=3):
-        s = ParagraphStyle('p', fontSize=size, leading=size+3, alignment=align,
-                           spaceBefore=sb, spaceAfter=sa,
+        return Paragraph(
+            f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p_cm', fontSize=size, leading=size+3,
+                           alignment=align, spaceBefore=sb, spaceAfter=sa,
                            fontName='Helvetica-Bold' if bold else 'Helvetica',
-                           parent=styles['Normal'])
-        return Paragraph(txt, s)
+                           parent=styles['Normal']))
 
-    def T(data, col_ws, bg=colors.Color(0.1,0.2,0.5)):
+    def T(data, col_ws, hdr_bg=None):
+        if hdr_bg is None:
+            hdr_bg = colors.Color(0.1, 0.2, 0.5)
         t = Table(data, colWidths=col_ws)
-        t.setStyle(TableStyle([
-            ('GRID',(0,0),(-1,-1),0.5,colors.black),
-            ('FONTSIZE',(0,0),(-1,-1),8.5),
-            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('LEFTPADDING',(0,0),(-1,-1),5),
-            ('TOPPADDING',(0,0),(-1,-1),4),
-            ('BOTTOMPADDING',(0,0),(-1,-1),4),
-            ('BACKGROUND',(0,0),(-1,0),bg),
-            ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-            ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-            ('ALIGN',(0,0),(-1,0),'CENTER'),
-        ]))
+        cmds = [
+            ('GRID',         (0,0), (-1,-1), 0.5, colors.black),
+            ('FONTSIZE',     (0,0), (-1,-1), 8.5),
+            ('VALIGN',       (0,0), (-1,-1), 'MIDDLE'),
+            ('LEFTPADDING',  (0,0), (-1,-1), 5),
+            ('RIGHTPADDING', (0,0), (-1,-1), 5),
+            ('TOPPADDING',   (0,0), (-1,-1), 4),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 4),
+        ]
+        if len(data) > 0:
+            cmds += [
+                ('BACKGROUND', (0,0), (-1,0), hdr_bg),
+                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
+                ('FONTNAME',   (0,0), (-1,0), 'Helvetica-Bold'),
+                ('ALIGN',      (0,0), (-1,0), 'CENTER'),
+            ]
+        t.setStyle(TableStyle(cmds))
         return t
 
     story = [
-        P(ie.upper(), bold=True, size=12, align=TA_CENTER, sb=0, sa=2),
-        P(f"UGEL {ugel}  |  Nivel: {nivel}  |  Grado: {grado}  |  Anio {anio}",
-          size=8.5, align=TA_CENTER, sb=0, sa=4),
+        P(ie.upper(), bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Nivel: {nivel}  |  Grado: {grado}  |  Año {str(anio)}",
+          size=9, align=TA_CENTER, sb=0, sa=4),
         P("ACTA DE CONFORMIDAD DE PADRES DE FAMILIA",
           bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
         P("CON EL MATERIAL EDUCATIVO PROPIO DE LA INSTITUCION",
           bold=True, size=11, align=TA_CENTER, sb=0, sa=2),
-        P("(Ley N 29694 mod. por Ley N 29839 — INDECOPI/MINEDU)",
+        P(f"(Ley N° 29694 mod. por Ley N° 29839 — INDECOPI/MINEDU)",
           size=8, align=TA_CENTER, sb=0, sa=8),
-
-        P("<b>DATOS DE LA REUNION:</b>", size=10, align=TA_LEFT, sb=4, sa=4),
-        T([["Campo","Dato","Campo","Dato"],
-           ["Institucion", ie, "Grado / Nivel", f"{grado} — {nivel}"],
-           ["Docente / Tutor", docente or "_______________", "Director(a)", director or "_______________"],
-           ["Editorial del material", editorial or "_______________", "Fecha", fecha_str]],
-          [3.2*cm, 5.3*cm, 3.2*cm, 3.3*cm]),
-        Spacer(1, 0.3*cm),
-
-        P("Los padres y madres de familia que suscriben el presente documento, "
-          "identificados con el DNI consignado en la columna correspondiente, declaramos que:  "
-          "<br/><br/>"
-          "<b>1.</b> Hemos sido convocados y asistido a la reunion de presentacion del material "
-          f"educativo propio de {ie} en alianza con la editorial <b>{editorial or '_______________'}</b>. "
-          "<br/>"
-          "<b>2.</b> Hemos recibido informacion completa sobre el contenido, fundamento pedagogico, "
-          "caracteristicas y costo del material educativo. "
-          "<br/>"
-          "<b>3.</b> Conocemos que el material esta alineado con el Curriculo Nacional y adaptado "
-          "al contexto cultural de Chinchero, Cusco. "
-          "<br/>"
-          "<b>4.</b> Hemos sido informados de nuestro derecho a utilizar materiales alternativos "
-          "de acuerdo con la Ley N 29694 modificada por Ley N 29839, y de manera libre y voluntaria "
-          "expresamos nuestra <b>CONFORMIDAD</b> con el uso del material presentado para el ano escolar "
-          f"<b>{anio}</b>.",
-          size=9.5),
-        Spacer(1, 0.4*cm),
-
-        P("<b>LISTA DE PADRES/MADRES QUE FIRMAN EN CONFORMIDAD:</b>",
-          size=9, align=TA_LEFT, sb=4, sa=2),
     ]
 
-    filas = [["N", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "DNI", "NOMBRE DEL HIJO/A", "GRADO", "FIRMA"]]
+    # Datos
+    story.append(P("DATOS DE LA REUNION:", bold=True, size=10, align=TA_LEFT, sb=0, sa=3))
+    w1, w2, w3, w4 = 3.2*cm, 5.3*cm, 3.0*cm, 4.4*cm
+    story.append(T([
+        ["Campo", "Dato", "Campo", "Dato"],
+        ["Institucion", ie, "Grado / Nivel", f"{grado} — {nivel}"],
+        ["Docente / Tutor", docente or "___________________",
+         "Director(a)", director or "___________________"],
+        ["Editorial del material", editorial or "___________________",
+         "Fecha", fecha_str],
+    ], [w1, w2, w3, w4]))
+    story.append(Spacer(1, 0.3*cm))
+
+    # Declaracion
+    story.append(P(
+        "Los padres y madres de familia que suscriben el presente documento, "
+        "identificados con el DNI consignado, declaramos que:"
+        "<br/><br/>"
+        "<b>1.</b> Hemos sido convocados y asistido a la reunion de presentacion "
+        f"del material educativo propio de {ie} en alianza con la editorial "
+        f"<b>{editorial or '___________________'}</b>."
+        "<br/>"
+        "<b>2.</b> Hemos recibido informacion completa sobre el contenido, fundamento "
+        "pedagogico, caracteristicas y costo del material educativo."
+        "<br/>"
+        "<b>3.</b> Conocemos que el material esta alineado con el Curriculo Nacional "
+        "y adaptado al contexto cultural de Chinchero, Cusco, incorporando campos "
+        "tematicos que responden a nuestras demandas y necesidades como padres de familia."
+        "<br/>"
+        "<b>4.</b> Reconocemos que los libros y cuadernos presentados han sido "
+        "elaborados considerando las caracteristicas de aprendizaje de nuestros hijos, "
+        "los saberes locales de nuestra comunidad y el respeto irrestricto al "
+        "Curriculo Nacional de Educacion Basica vigente."
+        "<br/>"
+        "<b>5.</b> Hemos sido informados de nuestro derecho a utilizar materiales "
+        "alternativos de acuerdo con la Ley N° 29694 modificada por Ley N° 29839, "
+        "y de manera libre y voluntaria expresamos nuestra <b>CONFORMIDAD</b> con el "
+        f"uso del material presentado para el año escolar <b>{str(anio)}</b>.",
+        size=9.5))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Lista
+    story.append(P("LISTA DE PADRES/MADRES QUE FIRMAN EN CONFORMIDAD:",
+                   size=9, align=TA_LEFT, sb=4, sa=2))
+    filas = [["N°", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "DNI",
+               "NOMBRE DEL HIJO/A", "GRADO", "FIRMA"]]
     for i in range(n_filas):
         filas.append([str(i+1), "", "", "", grado, ""])
-    story.append(T(filas, [0.6*cm, 5.5*cm, 2*cm, 4*cm, 1.5*cm, 1.4*cm]))
+    story.append(T(filas, [0.6*cm, 5.5*cm, 2.0*cm, 4.0*cm, 1.5*cm, 2.3*cm]))
     story.append(Spacer(1, 0.5*cm))
 
     story += [
         P(f"Chinchero, {fecha_str}", size=10, align=TA_CENTER, sb=0, sa=8),
         T([["FIRMA Y SELLO DEL DIRECTOR(A)", "FIRMA DEL DOCENTE/TUTOR",
-            "V B REPRESENTANTE APAFA"],
-           [f"\n\n\n{director or ''}\n", f"\n\n\n{docente or ''}\n",
-            "\n\n\n_______________\n"]],
-          [5*cm, 5*cm, 5*cm]),
+            "V°B° REPRESENTANTE APAFA"],
+           [f"\\n\\n\\n{director or ''}\\n", f"\\n\\n\\n{docente or ''}\\n", "\\n\\n\\n_______________\\n"]],
+          [5.3*cm, 5.3*cm, 5.3*cm]),
         Spacer(1, 0.3*cm),
         P("<b>NOTA:</b> Este documento, junto al Acta de Presentacion del Material, "
-          "constituye la documentacion completa que acredita el proceso de informacion "
-          "y conformidad de los padres de familia con el material educativo propio. "
-          "Conserve ambos documentos en el archivo institucional.",
+          "constituye el expediente completo que protege al colegio ante INDECOPI y UGEL. "
+          "Conservar ambos documentos en el archivo institucional.",
           size=8, align=TA_JUSTIFY, sb=2, sa=0),
     ]
 
@@ -25863,7 +26234,7 @@ def _generar_constancia_reglamento(config, nombre, cargo, grado_sec, dni, anio):
     from datetime import date
     buf = _io.BytesIO()
     ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel','Chinchero - Urubamba')
+    ugel = config.get('ugel','Urubamba')
     hoy = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
     fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
@@ -25909,7 +26280,7 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
     from datetime import date
     buf = _io.BytesIO()
     ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel','Chinchero - Urubamba')
+    ugel = config.get('ugel','Urubamba')
     hoy = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
     fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
@@ -25973,7 +26344,7 @@ def _generar_pdf_municipio_escolar(config, grado, seccion, anio):
     from datetime import date
     buf = _io.BytesIO()
     ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel','Chinchero - Urubamba')
+    ugel = config.get('ugel','Urubamba')
     hoy = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
     fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
@@ -26052,7 +26423,7 @@ def _generar_pdf_acuerdos_convivencia(config, grado, docente, anio):
     from datetime import date
     buf = _io.BytesIO()
     ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel','Chinchero - Urubamba')
+    ugel = config.get('ugel','Urubamba')
     hoy = date.today()
     meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
     fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
