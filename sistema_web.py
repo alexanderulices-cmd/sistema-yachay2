@@ -6279,85 +6279,101 @@ def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_doc
         size=9.5, align=TA_JUSTIFY, sb=2, sa=8))
 
     # Firmas principales: Promotor + Director + Secretario
-    firmas_data = [
-        [P("FIRMA DEL PROMOTOR(A)", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-         P("FIRMA Y SELLO DEL DIRECTOR(A)", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-         P("SECRETARIO(A) DE ACTAS", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1)],
-        ["\\n\\n\\n___________________\\n", "\\n\\n\\n___________________\\n", "\\n\\n\\n___________________\\n"],
-        [P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1),
-         P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1),
-         P("Nombres: ___________________________", size=7.5, align=TA_CENTER, sb=1,sa=1)],
-    ]
-    t_firmas = Table(firmas_data, colWidths=[5.1*cm, 5.2*cm, 5.2*cm],
-                     rowHeights=[0.6*cm, 2.0*cm, 0.55*cm])
-    t_firmas.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1),0.5,colors.black),
-        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
-        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
-        ('ALIGN',(0,0),(-1,-1),'CENTER'),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('FONTSIZE',(0,0),(-1,-1),8.5),
+    # Usar celdas con altura real para la firma — NO strings con \n
+    espacio_firma = P("", size=9, sb=1, sa=1)  # celda vacía para firmar
+
+    def celda_firma(titulo, nombre_label=""):
+        """Celda de firma con cabecera verde oscura y espacio real en blanco."""
+        inner = Table(
+            [[P(titulo, bold=True, size=8.5, align=TA_CENTER, sb=1, sa=1)],
+             [espacio_firma],
+             [P(nombre_label or "Nombres y apellidos: _____________________",
+                size=7.5, align=TA_CENTER, sb=1, sa=1)]],
+            colWidths=[5.0*cm],
+            rowHeights=[0.65*cm, 2.2*cm, 0.55*cm])
+        inner.setStyle(TableStyle([
+            ('BOX',   (0,0),(-1,-1), 0.8, VERDE_OSC),
+            ('LINEBELOW',(0,0),(0,0), 0.5, VERDE_OSC),
+            ('LINEABOVE',(0,2),(0,2), 0.5, colors.Color(0.7,0.7,0.7)),
+            ('BACKGROUND',(0,0),(0,0), VERDE_OSC),
+            ('TEXTCOLOR',(0,0),(0,0), colors.white),
+            ('BACKGROUND',(0,1),(0,1), colors.white),
+            ('BACKGROUND',(0,2),(0,2), VERDE_CLAR),
+            ('ALIGN',  (0,0),(-1,-1), 'CENTER'),
+            ('VALIGN', (0,0),(-1,-1), 'MIDDLE'),
+        ]))
+        return inner
+
+    firmas_row = Table(
+        [[celda_firma("FIRMA DEL PROMOTOR(A)"),
+          celda_firma("FIRMA Y SELLO DEL DIRECTOR(A)"),
+          celda_firma("SECRETARIO(A) DE ACTAS")]],
+        colWidths=[5.1*cm, 5.2*cm, 5.2*cm],
+        rowHeights=[3.6*cm])
+    firmas_row.setStyle(TableStyle([
+        ('VALIGN',(0,0),(-1,-1),'TOP'),
+        ('LEFTPADDING',(0,0),(-1,-1),1),
+        ('RIGHTPADDING',(0,0),(-1,-1),1),
     ]))
-    story.append(t_firmas)
+    story.append(firmas_row)
     story.append(Spacer(1, 0.3*cm))
 
-    # Firmas de TODOS los docentes — 3 columnas
+    # Firmas de TODOS los docentes — 2 columnas (nombre + firma)
     story.append(P("FIRMAS DE TODOS LOS DOCENTES PARTICIPANTES:",
                    bold=True, size=9, align=TA_LEFT, sb=2, sa=3))
 
-    # Organizar docentes en grupos de 3 por fila
-    COLS = 3
-    W_FIRMA = 15.5*cm / COLS  # ~5.17cm cada columna
-
+    # Tabla de 2 columnas: (N° | Nombre | Firma) repetido 2 veces en la misma fila
     # Cabecera
-    cab = [P("APELLIDOS Y NOMBRES", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
-           P("ÁREA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
-           P("FIRMA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1)] * COLS
-    # Construir filas de a 3 docentes
-    doc_firmas_data = [cab[:COLS*3]]  # encabezado triple
+    doc_f_data = [[
+        P("N°", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("APELLIDOS Y NOMBRES", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("FIRMA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("N°", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("APELLIDOS Y NOMBRES", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+        P("FIRMA", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
+    ]]
 
-    # Repartir docentes en filas de 3
-    for i in range(0, len(nombres_docentes), COLS):
-        grupo = nombres_docentes[i:i+COLS]
-        # Completar con vacíos si el grupo no llega a 3
-        while len(grupo) < COLS:
-            grupo.append("")
-        fila = []
-        for nombre in grupo:
-            fila += [
-                P(nombre, size=7.5, align=TA_LEFT, sb=1, sa=1),
-                "",   # área — espacio en blanco
-                "",   # firma — espacio en blanco
-            ]
-        doc_firmas_data.append(fila)
+    # Dividir docentes en 2 columnas
+    mitad = (len(nombres_docentes) + 1) // 2
+    col_izq = nombres_docentes[:mitad]
+    col_der = nombres_docentes[mitad:]
 
-    # Anchos: (nombre, area, firma) × 3
-    col_ws_doc = [3.5*cm, 1.2*cm, 0.5*cm] * COLS  # nombre ancho, área, firma
-    # Recalcular para que sumen 15.5cm
-    # nombre=3.0, area=1.3, firma=0.87 × 3 = 15.51cm ~ ok
-    col_ws_doc = [3.0*cm, 1.3*cm, 0.87*cm] * COLS
+    n_filas_doc = max(len(col_izq), len(col_der))
+    for i in range(n_filas_doc):
+        nom_izq = col_izq[i] if i < len(col_izq) else ""
+        nom_der = col_der[i] if i < len(col_der) else ""
+        n_izq   = i + 1
+        n_der   = mitad + i + 1 if i < len(col_der) else ""
+        doc_f_data.append([
+            P(str(n_izq), size=8, align=TA_CENTER, sb=1,sa=1),
+            P(nom_izq, size=8, align=TA_LEFT, sb=1,sa=1),
+            "",  # espacio firma
+            P(str(n_der) if nom_der else "", size=8, align=TA_CENTER, sb=1,sa=1),
+            P(nom_der, size=8, align=TA_LEFT, sb=1,sa=1),
+            "",  # espacio firma
+        ])
 
-    t_doc_f = Table(doc_firmas_data,
-                    colWidths=col_ws_doc,
-                    rowHeights=[0.55*cm] + [0.85*cm]*(len(doc_firmas_data)-1))
-    # Estilo general
-    cmds_df = [
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('FONTSIZE',(0,0),(-1,-1),7.5),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('LEFTPADDING',(0,0),(-1,-1),3),
-        ('RIGHTPADDING',(0,0),(-1,-1),3),
+    # col: N°(0.6) | Nombre(5.2) | Firma(2.0) | sep | N°(0.6) | Nombre(5.2) | Firma(1.9)
+    t_doc_f = Table(doc_f_data,
+                    colWidths=[0.6*cm, 5.2*cm, 2.0*cm, 0.6*cm, 5.2*cm, 1.9*cm],
+                    rowHeights=[0.6*cm] + [0.85*cm]*n_filas_doc)
+    t_doc_f.setStyle(TableStyle([
+        ('GRID',      (0,0),(-1,-1), 0.4, colors.black),
+        ('FONTSIZE',  (0,0),(-1,-1), 7.5),
+        ('VALIGN',    (0,0),(-1,-1), 'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1), 3),
+        ('RIGHTPADDING',(0,0),(-1,-1), 3),
+        # Cabecera verde oscura con texto BLANCO legible
         ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
-        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('ALIGN',(0,0),(-1,0),'CENTER'),
-        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, colors.Color(0.94,1,0.94)]),
-    ]
-    # Líneas divisoras entre grupos de 3 columnas
-    for g in range(1, COLS):
-        col_sep = g * 3
-        cmds_df.append(('LINEAFTER',(col_sep-1,0),(col_sep-1,-1), 1.5, VERDE_OSC))
-    t_doc_f.setStyle(TableStyle(cmds_df))
+        ('TEXTCOLOR', (0,0),(-1,0), colors.white),
+        ('FONTNAME',  (0,0),(-1,0), 'Helvetica-Bold'),
+        ('ALIGN',     (0,0),(-1,0), 'CENTER'),
+        # Filas alternas
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),
+         [colors.white, colors.Color(0.94,1,0.94)]),
+        # Línea divisoria entre las dos mitades
+        ('LINEAFTER', (2,0),(2,-1), 1.5, VERDE_OSC),
+    ]))
     story.append(t_doc_f)
     story.append(Spacer(1, 0.25*cm))
     story.append(P(
