@@ -25852,3 +25852,272 @@ def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
     doc.build(story)
     buf.seek(0)
     return buf
+
+
+def _generar_constancia_reglamento(config, nombre, cargo, grado_sec, dni, anio):
+    """Constancia de recepcion del Reglamento Interno."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    from datetime import date
+    buf = _io.BytesIO()
+    ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel','Chinchero - Urubamba')
+    hoy = date.today()
+    meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=3*cm, bottomMargin=3*cm, leftMargin=3*cm, rightMargin=3*cm)
+    styles = getSampleStyleSheet()
+    def P(txt, bold=False, size=11, align=TA_JUSTIFY, sb=4, sa=4):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p', fontSize=size, leading=size+4, alignment=align,
+                           spaceBefore=sb, spaceAfter=sa,
+                           fontName='Helvetica-Bold' if bold else 'Helvetica', parent=styles['Normal']))
+    story = [
+        P(ie.upper(), bold=True, size=13, align=TA_CENTER, sb=0, sa=4),
+        P(f"UGEL {ugel}  |  Anio {anio}", size=9, align=TA_CENTER, sb=0, sa=10),
+        P("CONSTANCIA DE RECEPCION DEL REGLAMENTO INTERNO", bold=True, size=13, align=TA_CENTER, sb=0, sa=12),
+        P(f"La {ie}, hace constar que:"),
+        P(f"<b>{nombre or '___________________________________'}</b>, identificado(a) con DNI N° "
+          f"<b>{dni or '________'}</b>, en calidad de <b>{cargo or '___________'}</b>"
+          f"{' del grado ' + grado_sec if grado_sec else ''}, "
+          f"ha recibido el <b>Reglamento Interno</b> y las <b>Normas de Convivencia</b> "
+          f"de la institucion educativa para el anio escolar <b>{anio}</b>, "
+          f"comprometiendose a leerlo, conocerlo y cumplirlo en todos sus alcances."),
+        Spacer(1, 0.5*cm),
+        P(f"Se expide la presente constancia a solicitud del interesado(a) en "
+          f"Chinchero, a los {fecha_str}."),
+        Spacer(1, 2*cm),
+        P("_"*45, align=TA_CENTER),
+        P("FIRMA Y SELLO DEL DIRECTOR(A)", align=TA_CENTER, size=9),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, anio):
+    """Carta de compromiso del padre/madre de familia."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    from datetime import date
+    buf = _io.BytesIO()
+    ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel','Chinchero - Urubamba')
+    hoy = date.today()
+    meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    motivos_texto = {
+        "Bajo rendimiento academico": "mejorar el rendimiento academico de su hijo/a, apoyando las tareas, asistiendo a reuniones y comunicandose periodicamente con los docentes",
+        "Exceso de inasistencias": "garantizar la asistencia regular de su hijo/a, justificando las inasistencias oportunamente y evitando ausencias injustificadas",
+        "Conducta inapropiada": "apoyar el desarrollo de conductas positivas en su hijo/a, reforzando en casa los valores y normas de convivencia del colegio",
+        "Deudas economicas": "regularizar los pagos pendientes en los plazos acordados con la administracion",
+        "Compromiso general": "apoyar el proceso educativo integral de su hijo/a durante el anio escolar",
+    }
+    texto_compromiso = motivos_texto.get(motivo, motivos_texto["Compromiso general"])
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=2.5*cm, bottomMargin=2.5*cm, leftMargin=3*cm, rightMargin=3*cm)
+    styles = getSampleStyleSheet()
+    def P(txt, bold=False, size=11, align=TA_JUSTIFY, sb=4, sa=4):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p', fontSize=size, leading=size+4, alignment=align,
+                           spaceBefore=sb, spaceAfter=sa,
+                           fontName='Helvetica-Bold' if bold else 'Helvetica', parent=styles['Normal']))
+    story = [
+        P(ie.upper(), bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Anio {anio}", size=9, align=TA_CENTER, sb=0, sa=8),
+        P("CARTA DE COMPROMISO DEL PADRE/MADRE DE FAMILIA", bold=True, size=12, align=TA_CENTER, sb=0, sa=10),
+        P(f"Yo, <b>{apoderado or '___________________________________'}</b>, padre/madre/apoderado(a) "
+          f"del/la estudiante <b>{alumno or '___________________________________'}</b> del grado "
+          f"<b>{grado}</b>, me comprometo voluntariamente a {texto_compromiso}."),
+        Spacer(1, 0.3*cm),
+        P("Asimismo, me comprometo a: (1) Asistir a las reuniones de padres convocadas por la institucion; "
+          "(2) Mantener comunicacion permanente con el docente tutor; (3) Apoyar desde el hogar el proceso "
+          "de aprendizaje de mi hijo/a; (4) Cumplir el presente compromiso durante el anio escolar."),
+        Spacer(1, 0.3*cm),
+        P(f"En caso de incumplimiento, acepto las consecuencias establecidas en el Reglamento Interno "
+          f"de {ie}."),
+        Spacer(1, 0.5*cm),
+        P(f"Chinchero, {fecha_str}", align=TA_CENTER),
+        Spacer(1, 1.5*cm),
+        Table([
+            ["FIRMA DEL PADRE/MADRE", "FIRMA DEL DIRECTOR(A)", "FIRMA DEL DOCENTE TUTOR"],
+            [f"\n\n\n{apoderado or ''}\nDNI: __________\n", "\n\n\n\n", "\n\n\n\n"],
+        ], colWidths=[5.2*cm, 5.2*cm, 5.2*cm],
+        style=TableStyle([('GRID',(0,0),(-1,-1),0.5,colors.black),
+                          ('ALIGN',(0,0),(-1,-1),'CENTER'),('FONTSIZE',(0,0),(-1,-1),8.5),
+                          ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+                          ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                          ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold')])),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_municipio_escolar(config, grado, seccion, anio):
+    """Acta de constitucion del Municipio Escolar de Aula."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
+                                     TableStyle, KeepTogether)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    from datetime import date
+    buf = _io.BytesIO()
+    ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel','Chinchero - Urubamba')
+    hoy = date.today()
+    meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=2*cm, bottomMargin=2*cm, leftMargin=2.5*cm, rightMargin=2.5*cm)
+    styles = getSampleStyleSheet()
+    def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=3, sa=3):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p', fontSize=size, leading=size+3, alignment=align,
+                           spaceBefore=sb, spaceAfter=sa,
+                           fontName='Helvetica-Bold' if bold else 'Helvetica', parent=styles['Normal']))
+    CARGOS = [
+        ("Alcalde(sa)",""),("Teniente Alcalde(sa)",""),
+        ("Regidor(a) de Educacion y Cultura",""),
+        ("Regidor(a) de Salud y Medio Ambiente",""),
+        ("Regidor(a) de Produccion y Servicios",""),
+        ("Regidor(a) de Derechos y Ciudadania",""),
+        ("Regidor(a) de Deportes y Recreacion",""),
+    ]
+    story = [
+        P(ie.upper(), bold=True, size=12, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Anio {anio}", size=8.5, align=TA_CENTER, sb=0, sa=6),
+        P("ACTA DE CONSTITUCION DEL MUNICIPIO ESCOLAR DE AULA", bold=True, size=11, align=TA_CENTER, sb=0, sa=4),
+        P(f"Grado y Seccion: {grado} {seccion}  |  Fecha: {fecha_str}", size=9, align=TA_CENTER, sb=0, sa=8),
+        P(f"En las instalaciones de {ie}, siendo las _____ horas del {fecha_str}, "
+          f"reunidos los estudiantes del {grado} seccion {seccion}, con la presencia del/la tutor(a), "
+          f"se procedio a elegir democraticamente a los representantes del Municipio Escolar "
+          f"de Aula para el anio escolar {anio}, resultando elegidos los siguientes estudiantes:"),
+        Spacer(1, 0.3*cm),
+    ]
+    cargos_data = [["CARGO","APELLIDOS Y NOMBRES","DNI","FIRMA"]]
+    for cargo, _ in CARGOS:
+        cargos_data.append([cargo, "", "", ""])
+    t = Table(cargos_data, colWidths=[4.5*cm, 6*cm, 2.2*cm, 2.8*cm])
+    t.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.5,colors.black),
+        ('FONTSIZE',(0,0),(-1,-1),8.5),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(-1,0),'CENTER'),
+        ('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
+        ('MINROWHEIGHT',(0,1),(-1,-1),1*cm),
+    ]))
+    story += [t, Spacer(1, 0.5*cm),
+        P("Los elegidos asumen sus funciones a partir de la presente fecha y se comprometen "
+          "a representar dignamente a sus companeros, promoviendo la participacion democratica "
+          "y el ejercicio de ciudadania activa."),
+        Spacer(1, 0.5*cm),
+        P(f"Chinchero, {fecha_str}", align=TA_CENTER),
+        Spacer(1, 1*cm),
+        Table([["FIRMA DEL DOCENTE TUTOR","V B DIRECTOR(A)"],
+               ["\n\n\n\n","FIRMA Y SELLO\n\n\n"]],
+              colWidths=[7.8*cm, 7.8*cm],
+              style=TableStyle([('GRID',(0,0),(-1,-1),0.5,colors.black),
+                                ('ALIGN',(0,0),(-1,-1),'CENTER'),('FONTSIZE',(0,0),(-1,-1),8.5),
+                                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+                                ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold')])),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_pdf_acuerdos_convivencia(config, grado, docente, anio):
+    """Acta de elaboracion de los Acuerdos de Convivencia del Aula."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
+                                     TableStyle, KeepTogether)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    import io as _io
+    from datetime import date
+    buf = _io.BytesIO()
+    ie  = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel','Chinchero - Urubamba')
+    hoy = date.today()
+    meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+    fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {anio}"
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=2*cm, bottomMargin=2*cm, leftMargin=2.5*cm, rightMargin=2.5*cm)
+    styles = getSampleStyleSheet()
+    def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=3, sa=3):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('p', fontSize=size, leading=size+3, alignment=align,
+                           spaceBefore=sb, spaceAfter=sa,
+                           fontName='Helvetica-Bold' if bold else 'Helvetica', parent=styles['Normal']))
+    ACUERDOS = [
+        "Nos respetamos entre todos: estudiantes, docentes y familia.",
+        "Levantamos la mano para pedir la palabra y escuchamos cuando hablan.",
+        "Cuidamos el salon, el mobiliario y los materiales del colegio.",
+        "Llegamos puntualmente y usamos correctamente el uniforme.",
+        "Entregamos las tareas y trabajos en los plazos acordados.",
+        "Resolvemos los conflictos con dialogo, sin gritos ni violencia.",
+        "Cuidamos el medio ambiente y mantenemos limpio nuestro espacio.",
+    ]
+    story = [
+        P(ie.upper(), bold=True, size=12, align=TA_CENTER, sb=0, sa=2),
+        P(f"UGEL {ugel}  |  Anio {anio}", size=8.5, align=TA_CENTER, sb=0, sa=6),
+        P("ACTA DE ELABORACION DE LOS ACUERDOS DE CONVIVENCIA DEL AULA",
+          bold=True, size=11, align=TA_CENTER, sb=0, sa=4),
+        P(f"Grado: {grado}  |  Docente/Tutor: {docente or '_______________'}  |  Fecha: {fecha_str}",
+          size=9, align=TA_CENTER, sb=0, sa=8),
+        P(f"En {ie}, los estudiantes del {grado} con la participacion del/la docente "
+          f"{docente or '_______________'}, construyeron de manera participativa y democratica "
+          f"los siguientes acuerdos de convivencia para el anio escolar {anio}:"),
+        Spacer(1, 0.3*cm),
+    ]
+    acuerdos_data = [["N","ACUERDO DE CONVIVENCIA","ELABORADO POR","V B DOCENTE"]]
+    for i, ac in enumerate(ACUERDOS):
+        acuerdos_data.append([str(i+1), ac, "Estudiantes del aula", ""])
+    t = Table(acuerdos_data, colWidths=[0.7*cm, 8.5*cm, 3.8*cm, 2.5*cm])
+    t.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1),0.5,colors.black),
+        ('FONTSIZE',(0,0),(-1,-1),8.5),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+        ('ALIGN',(0,0),(0,-1),'CENTER'),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.95,0.95,1)]),
+        ('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
+        ('MINROWHEIGHT',(0,1),(-1,-1),0.9*cm),
+    ]))
+    story += [t, Spacer(1, 0.4*cm),
+        P("Los estudiantes y el/la docente nos comprometemos a cumplir estos acuerdos "
+          "durante todo el anio escolar, revisandolos y actualizandolos cuando sea necesario."),
+        Spacer(1, 0.8*cm),
+        P(f"Chinchero, {fecha_str}", align=TA_CENTER),
+        Spacer(1, 0.8*cm),
+        Table([["ALCALDE(SA) DEL AULA","DOCENTE / TUTOR","V B DIRECTOR(A)"],
+               ["\n\n\n","FIRMA Y SELLO\n\n\n","FIRMA Y SELLO\n\n\n"]],
+              colWidths=[5.2*cm, 5.2*cm, 5.2*cm],
+              style=TableStyle([('GRID',(0,0),(-1,-1),0.5,colors.black),
+                                ('ALIGN',(0,0),(-1,-1),'CENTER'),('FONTSIZE',(0,0),(-1,-1),8.5),
+                                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
+                                ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold')])),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
