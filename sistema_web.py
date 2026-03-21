@@ -6111,66 +6111,8 @@ def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_doc
     story.append(t_datos)
     story.append(Spacer(1, 0.25*cm))
 
-    # ── II. PARTICIPANTES ─────────────────────────────────────────────
-    story.append(P("II. PARTICIPANTES", bold=True, size=10.5,
-                   align=TA_LEFT, sb=4, sa=3))
-
-    # Promotor y Director en una fila
-    prom_data = [
-        [P("Promotor(a):", bold=True, size=8.5, sb=1,sa=1),
-         P("________________________________________", size=8.5, sb=1,sa=1),
-         P("Director(a):", bold=True, size=8.5, sb=1,sa=1),
-         P("________________________________________", size=8.5, sb=1,sa=1)],
-    ]
-    t_prom = Table(prom_data, colWidths=[2.5*cm, 5.5*cm, 2.5*cm, 5.0*cm],
-                   rowHeights=[0.75*cm])
-    t_prom.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('LEFTPADDING',(0,0),(-1,-1),5),
-        ('BACKGROUND',(0,0),(0,0), VERDE_CLAR),
-        ('BACKGROUND',(2,0),(2,0), VERDE_CLAR),
-    ]))
-    story.append(t_prom)
-    story.append(Spacer(1, 0.15*cm))
-
-    # Lista de docentes con asistencia
-    doc_data = [[
-        P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-        P("APELLIDOS Y NOMBRES DEL DOCENTE", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-        P("ÁREA / NIVEL", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-        P("ASISTENCIA (A/I/J)", bold=True, size=8, align=TA_CENTER, sb=1,sa=1),
-        P("FIRMA", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
-    ]]
-    for i, nombre in enumerate(nombres_docentes):
-        doc_data.append([
-            P(str(i+1), size=8.5, align=TA_CENTER, sb=1,sa=1),
-            P(nombre, size=8.5, align=TA_LEFT, sb=1,sa=1),
-            P("", size=8.5, sb=1,sa=1),
-            P("", size=8.5, align=TA_CENTER, sb=1,sa=1),
-            P("", size=8.5, sb=1,sa=1),
-        ])
-
-    t_doc = Table(doc_data,
-                  colWidths=[0.7*cm, 7.0*cm, 3.3*cm, 2.0*cm, 2.5*cm],
-                  rowHeights=[0.7*cm] + [0.6*cm]*len(nombres_docentes))
-    t_doc.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('BACKGROUND',(0,0),(-1,0), VERDE_OSC),
-        ('TEXTCOLOR',(0,0),(-1,0), colors.white),
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('ALIGN',(0,0),(-1,0),'CENTER'),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('LEFTPADDING',(0,0),(-1,-1),4),
-        ('ROWBACKGROUNDS',(0,1),(-1,-1),
-         [colors.white, colors.Color(0.94,1,0.94)]),
-    ]))
-    story.append(t_doc)
-    story.append(P("Leyenda: A = Asistió  |  I = Inasistencia  |  J = Justificado",
-                   italic=True, size=8, align=TA_LEFT, sb=2, sa=4))
-
-    # ── III. AGENDA / TEMAS ───────────────────────────────────────────
-    story.append(P("III. AGENDA DE LA REUNIÓN", bold=True, size=10.5,
+    # ── II. AGENDA / TEMAS ───────────────────────────────────────────
+    story.append(P("II. AGENDA DE LA REUNIÓN", bold=True, size=10.5,
                    align=TA_LEFT, sb=4, sa=3))
     agenda_data = [
         [P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
@@ -6199,7 +6141,7 @@ def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_doc
     story.append(Spacer(1, 0.3*cm))
 
     # ── IV. DESARROLLO / TEMAS TRATADOS ──────────────────────────────
-    story.append(P("IV. DESARROLLO DE LA REUNIÓN — RESUMEN DE TEMAS TRATADOS",
+    story.append(P("III. DESARROLLO DE LA REUNIÓN — RESUMEN DE TEMAS TRATADOS",
                    bold=True, size=10.5, align=TA_LEFT, sb=4, sa=3))
     desarr_data = [
         [P("TEMA TRATADO", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
@@ -6224,7 +6166,7 @@ def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_doc
     story.append(Spacer(1, 0.3*cm))
 
     # ── V. ACUERDOS Y COMPROMISOS ─────────────────────────────────────
-    story.append(P("V. ACUERDOS Y COMPROMISOS", bold=True, size=10.5,
+    story.append(P("IV. ACUERDOS Y COMPROMISOS", bold=True, size=10.5,
                    align=TA_LEFT, sb=4, sa=3))
     acuerdos_data = [
         [P("N°", bold=True, size=8.5, align=TA_CENTER, sb=1,sa=1),
