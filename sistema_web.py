@@ -2419,7 +2419,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     nc = len(cursos)
     dp = 3  # desempeños por competencia
     cp = 4  # competencias por curso
-    total_d = nc * cp * dp
+    # total_d se recalculará después de construir r1/r2 con competencias reales
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=landscape(A4))
     w, h = landscape(A4)
@@ -2445,18 +2445,49 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     cols_per_c = cp * dp
     r0 = ["N°", "APELLIDOS Y NOMBRES"]
     for curso in cursos:
+        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
         r0.append(curso.upper())
-        r0.extend([""] * (cols_per_c - 1))
+        r0.extend([""] * (len(comps_c) * dp - 1))
+    # Usar nombres reales de competencias del CNEB
+    ABREV_COMP = {
+        'Construye interpretaciones históricas': 'Hist.',
+        'Gestiona responsablemente el espacio y el ambiente': 'Geog.',
+        'Gestiona responsablemente los recursos económicos': 'Econ.',
+        'Construye su identidad': 'Identidad',
+        'Convive y participa democráticamente': 'Convivencia',
+        'Se comunica oralmente en su lengua materna': 'Oral',
+        'Lee diversos tipos de textos escritos': 'Lectura',
+        'Escribe diversos tipos de textos': 'Escritura',
+        'Resuelve problemas de cantidad': 'Cantidad',
+        'Resuelve problemas de regularidad, equivalencia y cambio': 'Regularidad',
+        'Resuelve problemas de forma, movimiento y localización': 'Forma',
+        'Resuelve problemas de gestión de datos e incertidumbre': 'Datos',
+        'Indaga mediante métodos científicos': 'Indaga',
+        'Explica el mundo físico basándose en conocimientos científicos': 'Explica',
+        'Diseña y construye soluciones tecnológicas': 'Diseña',
+        'Se desenvuelve de manera autónoma a través de su motricidad': 'Motric.',
+        'Asume una vida saludable': 'Salud',
+        'Interactúa a través de sus habilidades sociomotrices': 'Interactúa',
+        'Aprecia de manera crítica manifestaciones artístico-culturales': 'Aprecia',
+        'Crea proyectos desde los lenguajes artísticos': 'Crea',
+        'Gestiona proyectos de emprendimiento económico o social': 'Emprend.',
+    }
     r1 = ["", ""]
-    for _ in range(nc):
-        for ci in range(1, cp + 1):
-            r1.append(f"C{ci}")
+    for curso in cursos:
+        comps_curso = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
+        cp_real = len(comps_curso)
+        for comp in comps_curso:
+            abrev = ABREV_COMP.get(comp, comp[:8])
+            r1.append(abrev)
             r1.extend([""] * (dp - 1))
     r2 = ["", ""]
-    for _ in range(nc):
-        for _ in range(cp):
+    for curso in cursos:
+        comps_curso = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
+        for _ in comps_curso:
             for di in range(1, dp + 1):
                 r2.append(f"D{di}")
+    # Recalcular total_d con competencias reales
+    total_d = sum(len(COMPETENCIAS_CN.get(c, ['','','',''])) * dp for c in cursos)
 
     if not estudiantes_df.empty:
         est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
@@ -2577,19 +2608,48 @@ def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_d
     sub.add_run(f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}").font.size = Pt(8)
 
     # Preparar cabeceras
+    ABREV_COMP_D = {
+        'Construye interpretaciones históricas': 'Hist.',
+        'Gestiona responsablemente el espacio y el ambiente': 'Geog.',
+        'Gestiona responsablemente los recursos económicos': 'Econ.',
+        'Construye su identidad': 'Identidad',
+        'Convive y participa democráticamente': 'Convivencia',
+        'Se comunica oralmente en su lengua materna': 'Oral',
+        'Lee diversos tipos de textos escritos': 'Lectura',
+        'Escribe diversos tipos de textos': 'Escritura',
+        'Resuelve problemas de cantidad': 'Cantidad',
+        'Resuelve problemas de regularidad, equivalencia y cambio': 'Regularidad',
+        'Resuelve problemas de forma, movimiento y localización': 'Forma',
+        'Resuelve problemas de gestión de datos e incertidumbre': 'Datos',
+        'Indaga mediante métodos científicos': 'Indaga',
+        'Explica el mundo físico basándose en conocimientos científicos': 'Explica',
+        'Diseña y construye soluciones tecnológicas': 'Diseña',
+        'Se desenvuelve de manera autónoma a través de su motricidad': 'Motric.',
+        'Asume una vida saludable': 'Salud',
+        'Interactúa a través de sus habilidades sociomotrices': 'Interactúa',
+        'Aprecia de manera crítica manifestaciones artístico-culturales': 'Aprecia',
+        'Crea proyectos desde los lenguajes artísticos': 'Crea',
+        'Gestiona proyectos de emprendimiento económico o social': 'Emprend.',
+    }
     r0 = ["N°", "APELLIDOS Y NOMBRES"]
     for curso in cursos:
+        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
         r0.append(curso.upper())
-        r0.extend([""] * (cols_per_c - 1))
+        r0.extend([""] * (len(comps_c) * dp - 1))
     r1 = ["", ""]
-    for _ in range(nc):
-        for ci in range(1, cp + 1):
-            r1.append(f"C{ci}"); r1.extend([""] * (dp - 1))
+    for curso in cursos:
+        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
+        for comp in comps_c:
+            abrev = ABREV_COMP_D.get(comp, comp[:8])
+            r1.append(abrev); r1.extend([""] * (dp - 1))
     r2 = ["", ""]
-    for _ in range(nc):
-        for _ in range(cp):
+    for curso in cursos:
+        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
+        for _ in comps_c:
             for di in range(1, dp + 1):
                 r2.append(f"D{di}")
+    # Recalcular cols_per_c y total_cols con competencias reales
+    total_cols = 2 + sum(len(COMPETENCIAS_CN.get(c, ['']*cp)) * dp for c in cursos)
 
     if not estudiantes_df.empty:
         est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
@@ -2597,13 +2657,12 @@ def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_d
         est = pd.DataFrame()
     ne = len(est) if not est.empty else 25
 
-    total_cols = 2 + nc * cols_per_c
     table = doc.add_table(rows=3 + ne, cols=total_cols)
     table.style = 'Table Grid'
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
     # Anchos de columna (en twips, 1cm=567)
-    col_widths_cm = [0.7, 4.5] + [0.55] * (nc * cols_per_c)
+    col_widths_cm = [0.7, 4.5] + [0.55] * (total_cols - 2)
 
     def set_cell(cell, text, bold=False, size=5, bg_hex=None, align_center=True):
         cell.text = ""
@@ -3327,8 +3386,8 @@ def generar_link_whatsapp(tel, msg):
     # Codificar preservando emojis correctamente
     import urllib.parse as _up
     msg_encoded = _up.quote(msg, safe='', encoding='utf-8')
-    # web.whatsapp.com abre WhatsApp Web de escritorio directamente (sin app móvil)
-    return f"https://web.whatsapp.com/send?phone={t}&text={msg_encoded}"
+    # whatsapp:// abre la app instalada en PC directamente — sin abrir Chrome
+    return f"whatsapp://send?phone={t}&text={msg_encoded}"
 
 
 FRASES_MOTIVACIONALES = [
@@ -7871,7 +7930,7 @@ def tab_asistencias():
                 if len(t_cel) == 9: t_cel = "51" + t_cel
                 elif not t_cel.startswith("51"): t_cel = "51" + t_cel
                 msg_enc = urllib.parse.quote(msg, safe='', encoding='utf-8')
-                link_wa = f"https://web.whatsapp.com/send?phone={t_cel}&text={msg_enc}"
+                link_wa = f"whatsapp://send?phone={t_cel}&text={msg_enc}"
 
                 col_wa, col_info = st.columns([5, 2])
                 with col_wa:
@@ -7884,13 +7943,33 @@ def tab_asistencias():
                 with col_info:
                     st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
 
-            # Abrir WA — reutiliza SIEMPRE la misma pestaña "_wa_yachay"
+            # Abrir WA — usa whatsapp:// para app instalada, cae a wa.me si no está
             if '_wa_link_pendiente' in st.session_state:
                 _link_abrir = st.session_state.pop('_wa_link_pendiente')
+                # Extraer número y texto del link para construir fallback
+                _link_fallback = _link_abrir.replace(
+                    'whatsapp://send?', 'https://wa.me/').replace(
+                    '&text=', '?text=').replace('phone=', '')
                 import streamlit.components.v1 as _cwav2
-                _cwav2.html(
-                    f'<script>window.parent.open("{_link_abrir}","_wa_yachay","width=1200,height=800");</script>',
-                    height=0)
+                _cwav2.html(f"""<script>
+(function() {{
+  var url = "{_link_abrir}";
+  var fallback = "{_link_fallback}";
+  // Intentar abrir app instalada
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  try {{
+    iframe.src = url;
+    // Si en 1.5s no abrió la app, abrir wa.me como fallback
+    setTimeout(function() {{
+      window.parent.open(fallback, '_wa_yachay', 'width=1200,height=800');
+    }}, 1500);
+  }} catch(e) {{
+    window.parent.open(fallback, '_wa_yachay', 'width=1200,height=800');
+  }}
+}})();
+</script>""", height=0)
 
             if sin_celular:
                 with st.expander(f"⚠️ {len(sin_celular)} sin celular — verificar en matrícula/docentes"):
