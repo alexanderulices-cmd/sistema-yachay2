@@ -2641,7 +2641,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 
 
 def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_df, cursos=None):
-    """Genera el registro auxiliar en formato Word (.docx)"""
+    """Registro auxiliar Word — competencias+capacidades reales MINEDU, colores por área."""
     try:
         from docx import Document as DocxDoc
         from docx.shared import Pt, Cm, RGBColor
@@ -2649,78 +2649,82 @@ def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_d
         from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
         from docx.oxml.ns import qn
         from docx.oxml import OxmlElement
-        import copy
     except ImportError:
         return None
 
     if cursos is None:
-        cursos = ["Matemática", "Comunicación", "Ciencia y Tec."]
+        cursos = ["Matemática", "Comunicación"]
 
-    nc = len(cursos)
-    dp = 3  # desempeños por competencia
-    cp = 4  # competencias por curso
-    cols_per_c = cp * dp
+    # ── Estructura competencias/capacidades ────────────────────────
+    estructura = []  # (curso, comp_abrev, comp_full, [caps])
+    for curso in cursos:
+        comps_full = COMPETENCIAS_CN.get(curso, ['Competencia 1'])
+        for cf in comps_full:
+            caps = CAPACIDADES_REG.get(cf, ['C1', 'C2', 'C3'])
+            ca   = COMP_ABREV_REG.get(cf, cf[:14])
+            estructura.append((curso, ca, cf, caps))
 
+    total_caps = sum(len(caps) for _,_,_,caps in estructura)
+    total_cols = 2 + total_caps  # N° + Nombre + caps
+
+    # ── Helpers de color ───────────────────────────────────────────
+    def hex_from_rgb(r_f, g_f, b_f, factor=1.0):
+        r = min(255, int(r_f * factor * 255))
+        g = min(255, int(g_f * factor * 255))
+        b = min(255, int(b_f * factor * 255))
+        return f"{r:02X}{g:02X}{b:02X}"
+
+    def color_area(curso, factor=1.0):
+        c = COLORES_AREA_REG.get(curso, _COLOR_DEFAULT_REG)
+        return hex_from_rgb(*c, factor=factor)
+
+    def set_cell(cell, text, bold=False, size=5.5, bg_hex=None,
+                 align_center=True, text_color='000000', wrap=True):
+        cell.text = ""
+        tc  = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+        if bg_hex:
+            shd = OxmlElement('w:shd')
+            shd.set(qn('w:val'), 'clear')
+            shd.set(qn('w:color'), 'auto')
+            shd.set(qn('w:fill'), bg_hex)
+            old = tcPr.find(qn('w:shd'))
+            if old is not None: tcPr.remove(old)
+            tcPr.append(shd)
+        p = cell.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER if align_center else WD_ALIGN_PARAGRAPH.LEFT
+        run = p.add_run(str(text))
+        run.bold = bold
+        run.font.size = Pt(size)
+        run.font.color.rgb = RGBColor.from_string(text_color)
+        cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    def merge_row_span(row, col_start, col_end):
+        if col_end <= col_start:
+            return row.cells[col_start]
+        cell_s = row.cells[col_start]
+        cell_e = row.cells[col_end]
+        try:
+            cell_s.merge(cell_e)
+        except Exception:
+            pass
+        return cell_s
+
+    # ── Documento ─────────────────────────────────────────────────
     doc = DocxDoc()
-    section = doc.sections[0]
-    # Hoja A4 horizontal
-    section.page_width  = Cm(29.7)
-    section.page_height = Cm(21.0)
-    section.left_margin = section.right_margin = Cm(1.0)
-    section.top_margin  = section.bottom_margin = Cm(1.0)
+    sec = doc.sections[0]
+    sec.page_width  = Cm(29.7)
+    sec.page_height = Cm(21.0)
+    sec.left_margin = sec.right_margin = Cm(0.8)
+    sec.top_margin  = sec.bottom_margin = Cm(0.8)
 
-    # Título
-    titulo = doc.add_paragraph()
-    titulo.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_t = titulo.add_run("I.E.P. ALTERNATIVO YACHAY — REGISTRO AUXILIAR DE EVALUACIÓN")
-    run_t.bold = True; run_t.font.size = Pt(10)
+    tit = doc.add_paragraph()
+    tit.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = tit.add_run(f"I.E.P. ALTERNATIVO YACHAY — REGISTRO AUXILIAR DE EVALUACIÓN — CNEB")
+    r.bold = True; r.font.size = Pt(8)
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sub.add_run(f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}").font.size = Pt(8)
-
-    # Preparar cabeceras
-    ABREV_COMP_D = {
-        'Construye interpretaciones históricas': 'Hist.',
-        'Gestiona responsablemente el espacio y el ambiente': 'Geog.',
-        'Gestiona responsablemente los recursos económicos': 'Econ.',
-        'Construye su identidad': 'Identidad',
-        'Convive y participa democráticamente': 'Convivencia',
-        'Se comunica oralmente en su lengua materna': 'Oral',
-        'Lee diversos tipos de textos escritos': 'Lectura',
-        'Escribe diversos tipos de textos': 'Escritura',
-        'Resuelve problemas de cantidad': 'Cantidad',
-        'Resuelve problemas de regularidad, equivalencia y cambio': 'Regularidad',
-        'Resuelve problemas de forma, movimiento y localización': 'Forma',
-        'Resuelve problemas de gestión de datos e incertidumbre': 'Datos',
-        'Indaga mediante métodos científicos': 'Indaga',
-        'Explica el mundo físico basándose en conocimientos científicos': 'Explica',
-        'Diseña y construye soluciones tecnológicas': 'Diseña',
-        'Se desenvuelve de manera autónoma a través de su motricidad': 'Motric.',
-        'Asume una vida saludable': 'Salud',
-        'Interactúa a través de sus habilidades sociomotrices': 'Interactúa',
-        'Aprecia de manera crítica manifestaciones artístico-culturales': 'Aprecia',
-        'Crea proyectos desde los lenguajes artísticos': 'Crea',
-        'Gestiona proyectos de emprendimiento económico o social': 'Emprend.',
-    }
-    r0 = ["N°", "APELLIDOS Y NOMBRES"]
-    for curso in cursos:
-        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        r0.append(curso.upper())
-        r0.extend([""] * (len(comps_c) * dp - 1))
-    r1 = ["", ""]
-    for curso in cursos:
-        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        for comp in comps_c:
-            abrev = ABREV_COMP_D.get(comp, comp[:8])
-            r1.append(abrev); r1.extend([""] * (dp - 1))
-    r2 = ["", ""]
-    for curso in cursos:
-        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        for _ in comps_c:
-            for di in range(1, dp + 1):
-                r2.append(f"D{di}")
-    # Recalcular cols_per_c y total_cols con competencias reales
-    total_cols = 2 + sum(len(COMPETENCIAS_CN.get(c, ['']*cp)) * dp for c in cursos)
+    sub.add_run(f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}").font.size = Pt(7)
 
     if not estudiantes_df.empty:
         est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
@@ -2728,109 +2732,108 @@ def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_d
         est = pd.DataFrame()
     ne = len(est) if not est.empty else 25
 
+    # 3 filas cabecera + estudiantes
     table = doc.add_table(rows=3 + ne, cols=total_cols)
     table.style = 'Table Grid'
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-    # Anchos de columna (en twips, 1cm=567)
-    col_widths_cm = [0.7, 4.5] + [0.55] * (total_cols - 2)
+    # ── Anchos ─────────────────────────────────────────────────────
+    W_PAGE = 29.7 - 2*0.8   # cm disponibles
+    W_N    = 0.55
+    W_NOM  = 4.0
+    W_CAP  = max(0.50, (W_PAGE - W_N - W_NOM) / max(total_caps, 1))
+    if W_N + W_NOM + W_CAP * total_caps > W_PAGE:
+        W_NOM = max(2.8, W_PAGE - W_N - W_CAP * total_caps)
 
-    def set_cell(cell, text, bold=False, size=5, bg_hex=None, align_center=True):
-        cell.text = ""
-        p = cell.paragraphs[0]
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER if align_center else WD_ALIGN_PARAGRAPH.LEFT
-        run = p.add_run(str(text))
-        run.bold = bold; run.font.size = Pt(size)
-        cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        if bg_hex:
-            tc = cell._tc
-            tcPr = tc.get_or_add_tcPr()
-            shd = OxmlElement('w:shd')
-            shd.set(qn('w:val'), 'clear')
-            shd.set(qn('w:color'), 'auto')
-            shd.set(qn('w:fill'), bg_hex)
-            tcPr.append(shd)
+    col_widths_cm = [W_N, W_NOM] + [W_CAP] * total_caps
 
-    COLORES_CURSOS = ['1A237E', '1B5E20', '7B1FA2']
-
-    # Fila 0 — cursos
+    # ── FILA 0: Áreas ──────────────────────────────────────────────
     row0 = table.rows[0]
-    set_cell(row0.cells[0], "N°", bold=True, size=5, bg_hex='1A1A5C')
-    set_cell(row0.cells[1], "APELLIDOS Y NOMBRES", bold=True, size=5, bg_hex='1A1A5C')
-    for ci, curso in enumerate(cursos):
-        cs = 2 + ci * cols_per_c
-        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
-        # Merge cells for curso header
-        cell_start = row0.cells[cs]
-        cell_end   = row0.cells[cs + cols_per_c - 1]
-        cell_start.merge(cell_end)
-        set_cell(cell_start, curso.upper(), bold=True, size=5, bg_hex=color_c)
+    merge_row_span(row0, 0, 0)
+    merge_row_span(row0, 1, 1)
+    set_cell(row0.cells[0], "N°",      bold=True, bg_hex='1A1A5C', text_color='FFFFFF')
+    set_cell(row0.cells[1], "AP. Y NOMBRES", bold=True, bg_hex='1A1A5C', text_color='FFFFFF')
 
-    # Fila 1 — competencias
+    col_idx = 2
+    last_curso = None
+    curso_start = {}
+    for curso, ca, cf, caps in estructura:
+        if curso not in curso_start:
+            curso_start[curso] = col_idx
+        col_idx += len(caps)
+    for curso, start_c in curso_start.items():
+        total_c = sum(len(caps) for c,_,_,caps in estructura if c == curso)
+        end_c   = start_c + total_c - 1
+        bg = color_area(curso, factor=0.72)
+        merged = merge_row_span(row0, start_c, end_c)
+        set_cell(merged, curso.upper(), bold=True, bg_hex=bg, text_color='FFFFFF', size=6)
+
+    # ── FILA 1: Competencias ───────────────────────────────────────
     row1 = table.rows[1]
-    set_cell(row1.cells[0], "", bg_hex='1A1A5C'); set_cell(row1.cells[1], "", bg_hex='1A1A5C')
-    for ci in range(nc):
-        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
-        cs = 2 + ci * cols_per_c
-        for ki in range(cp):
-            s = cs + ki * dp
-            cell_s = row1.cells[s]; cell_e = row1.cells[s + dp - 1]
-            cell_s.merge(cell_e)
-            set_cell(cell_s, f"C{ki+1}", bold=True, size=5, bg_hex=color_c)
+    set_cell(row1.cells[0], "", bg_hex='1A1A5C', text_color='FFFFFF')
+    set_cell(row1.cells[1], "", bg_hex='1A1A5C', text_color='FFFFFF')
+    col_idx = 2
+    for curso, ca, cf, caps in estructura:
+        end_c = col_idx + len(caps) - 1
+        bg    = color_area(curso, factor=1.0)
+        merged = merge_row_span(row1, col_idx, end_c)
+        set_cell(merged, ca, bold=True, bg_hex=bg, size=5.5)
+        col_idx += len(caps)
 
-    # Fila 2 — desempeños
+    # ── FILA 2: Capacidades ────────────────────────────────────────
     row2 = table.rows[2]
-    set_cell(row2.cells[0], "", bg_hex='1A1A5C'); set_cell(row2.cells[1], "", bg_hex='1A1A5C')
-    for ci in range(nc):
-        color_c = COLORES_CURSOS[ci % len(COLORES_CURSOS)]
-        cs = 2 + ci * cols_per_c
-        for ki in range(cp):
-            for di in range(dp):
-                set_cell(row2.cells[cs + ki*dp + di], f"D{di+1}", bold=True, size=5, bg_hex=color_c)
+    set_cell(row2.cells[0], "", bg_hex='1A1A5C', text_color='FFFFFF')
+    set_cell(row2.cells[1], "", bg_hex='1A1A5C', text_color='FFFFFF')
+    col_idx = 2
+    for curso, ca, cf, caps in estructura:
+        bg_light = color_area(curso, factor=1.05)
+        for cap in caps:
+            set_cell(row2.cells[col_idx], cap, bold=True, bg_hex=bg_light, size=5)
+            col_idx += 1
 
-    # Filas de alumnos
+    # ── Filas estudiantes ──────────────────────────────────────────
     for idx in range(ne):
         rw = table.rows[3 + idx]
-        nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
-        if len(nm) > 30: nm = nm[:30] + "."
-        bg = 'FFFFFF' if idx % 2 == 0 else 'EEEEEE'
-        set_cell(rw.cells[0], str(idx+1), size=5, bg_hex=bg)
-        set_cell(rw.cells[1], nm, size=5, bg_hex=bg, align_center=False)
-        for col in range(2, total_cols):
-            set_cell(rw.cells[col], "", size=5, bg_hex=bg)
+        nm = str(est.iloc[idx].get('Nombre', ''))[:32] if idx < len(est) else ""
+        bg = 'FFFFFF' if idx % 2 == 0 else 'F2F2F2'
+        set_cell(rw.cells[0], str(idx+1), size=6, bg_hex=bg)
+        set_cell(rw.cells[1], nm, size=6, bg_hex=bg, align_center=False)
+        col_idx = 2
+        for curso, ca, cf, caps in estructura:
+            bg_est = color_area(curso, factor=1.08) if idx % 2 == 0 else color_area(curso, factor=1.04)
+            for _ in caps:
+                set_cell(rw.cells[col_idx], "", size=6, bg_hex=bg_est)
+                col_idx += 1
 
-    # Ancho de columnas
+    # ── Anchos de columna ──────────────────────────────────────────
     from docx.oxml import OxmlElement as OE
-    tbl = table._tbl
+    tbl  = table._tbl
     tblPr = tbl.find(qn('w:tblPr'))
     if tblPr is None:
         tblPr = OE('w:tblPr'); tbl.insert(0, tblPr)
-    tblW = OE('w:tblW'); tblW.set(qn('w:w'), '0'); tblW.set(qn('w:type'), 'auto')
+    tblW = OE('w:tblW')
+    tblW.set(qn('w:w'), '0'); tblW.set(qn('w:type'), 'auto')
     tblPr.append(tblW)
-    for i, row in enumerate(table.rows):
+    for row in table.rows:
         for j, cell in enumerate(row.cells):
             tcPr = cell._tc.get_or_add_tcPr()
-            tcW = OE('w:tcW')
-            w_val = int(col_widths_cm[j] * 567) if j < len(col_widths_cm) else int(0.55 * 567)
+            tcW  = OE('w:tcW')
+            w_val = int(col_widths_cm[j] * 567) if j < len(col_widths_cm) else int(0.50 * 567)
             tcW.set(qn('w:w'), str(w_val)); tcW.set(qn('w:type'), 'dxa')
-            existing = tcPr.find(qn('w:tcW'))
-            if existing is not None: tcPr.remove(existing)
+            old = tcPr.find(qn('w:tcW'))
+            if old is not None: tcPr.remove(old)
             tcPr.insert(0, tcW)
         trPr = row._tr.get_or_add_trPr()
-        trH = OE('w:trHeight'); trH.set(qn('w:val'), '200'); trH.set(qn('w:hRule'), 'atLeast')
-        existing_h = trPr.find(qn('w:trHeight'))
-        if existing_h is not None: trPr.remove(existing_h)
+        trH  = OE('w:trHeight')
+        trH.set(qn('w:val'), '200'); trH.set(qn('w:hRule'), 'atLeast')
+        old = trPr.find(qn('w:trHeight'))
+        if old is not None: trPr.remove(old)
         trPr.append(trH)
-
-    doc.add_paragraph().add_run(
-        f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) B(11-13) C(0-10) | {bimestre} | YACHAY PRO — {anio}"
-    ).font.size = Pt(6)
 
     buf = io.BytesIO()
     doc.save(buf)
     buf.seek(0)
-    return buf
-
+    return buf.getvalue()
 
 def generar_registro_asistencia_pdf(grado, seccion, anio, estudiantes_df,
                                      meses_sel, docente=""):
@@ -14325,6 +14328,66 @@ BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 # ================================================================
 # COMPETENCIAS DEL CURRÍCULO NACIONAL DEL PERÚ (MINEDU)
 # ================================================================
+COMPETENCIAS_CN = {
+    'Personal Social': [
+        'Construye su identidad',
+        'Convive y participa democráticamente'
+    ],
+    'Psicomotriz': [
+        'Se desenvuelve de manera autónoma a través de su motricidad'
+    ],
+    'Comunicación': [
+        'Se comunica oralmente en su lengua materna',
+        'Lee diversos tipos de textos escritos',
+        'Escribe diversos tipos de textos'
+    ],
+    'Matemática': [
+        'Resuelve problemas de cantidad',
+        'Resuelve problemas de regularidad, equivalencia y cambio',
+        'Resuelve problemas de forma, movimiento y localización',
+        'Resuelve problemas de gestión de datos e incertidumbre'
+    ],
+    'Ciencia y Tecnología': [
+        'Indaga mediante métodos científicos',
+        'Explica el mundo físico basándose en conocimientos científicos',
+        'Diseña y construye soluciones tecnológicas'
+    ],
+    'Educación Física': [
+        'Se desenvuelve de manera autónoma a través de su motricidad',
+        'Asume una vida saludable',
+        'Interactúa a través de sus habilidades sociomotrices'
+    ],
+    'Inglés': [
+        'Se comunica oralmente en inglés como lengua extranjera',
+        'Lee diversos tipos de textos en inglés',
+        'Escribe diversos tipos de textos en inglés'
+    ],
+    'Arte y Cultura': [
+        'Aprecia de manera crítica manifestaciones artístico-culturales',
+        'Crea proyectos desde los lenguajes artísticos'
+    ],
+    'Educación Religiosa': [
+        'Construye su identidad como persona humana, amada por Dios',
+        'Asume la experiencia del encuentro personal y comunitario con Dios'
+    ],
+    'Castellano como segunda lengua': [
+        'Se comunica oralmente en castellano como segunda lengua',
+        'Lee diversos tipos de textos en castellano como segunda lengua',
+        'Escribe diversos tipos de textos en castellano como segunda lengua'
+    ],
+    'Ciencias Sociales': [
+        'Construye interpretaciones históricas',
+        'Gestiona responsablemente el espacio y el ambiente',
+        'Gestiona responsablemente los recursos económicos'
+    ],
+    'Desarrollo Personal, Ciudadanía y Cívica': [
+        'Construye su identidad',
+        'Convive y participa democráticamente'
+    ],
+    'Educación para el Trabajo': [
+        'Gestiona proyectos de emprendimiento económico o social'
+    ],
+}
 # ================================================================
 # ESTRUCTURA OFICIAL MINEDU — CNEB (CNEB vigente)
 # Competencias con sus capacidades exactas abreviadas
@@ -14452,66 +14515,6 @@ COLORES_AREA_REG = {
 _COLOR_DEFAULT_REG = (0.92, 0.92, 0.92)
 
 
-COMPETENCIAS_CN = {
-    'Personal Social': [
-        'Construye su identidad',
-        'Convive y participa democráticamente'
-    ],
-    'Psicomotriz': [
-        'Se desenvuelve de manera autónoma a través de su motricidad'
-    ],
-    'Comunicación': [
-        'Se comunica oralmente en su lengua materna',
-        'Lee diversos tipos de textos escritos',
-        'Escribe diversos tipos de textos'
-    ],
-    'Matemática': [
-        'Resuelve problemas de cantidad',
-        'Resuelve problemas de regularidad, equivalencia y cambio',
-        'Resuelve problemas de forma, movimiento y localización',
-        'Resuelve problemas de gestión de datos e incertidumbre'
-    ],
-    'Ciencia y Tecnología': [
-        'Indaga mediante métodos científicos',
-        'Explica el mundo físico basándose en conocimientos científicos',
-        'Diseña y construye soluciones tecnológicas'
-    ],
-    'Educación Física': [
-        'Se desenvuelve de manera autónoma a través de su motricidad',
-        'Asume una vida saludable',
-        'Interactúa a través de sus habilidades sociomotrices'
-    ],
-    'Inglés': [
-        'Se comunica oralmente en inglés como lengua extranjera',
-        'Lee diversos tipos de textos en inglés',
-        'Escribe diversos tipos de textos en inglés'
-    ],
-    'Arte y Cultura': [
-        'Aprecia de manera crítica manifestaciones artístico-culturales',
-        'Crea proyectos desde los lenguajes artísticos'
-    ],
-    'Educación Religiosa': [
-        'Construye su identidad como persona humana, amada por Dios',
-        'Asume la experiencia del encuentro personal y comunitario con Dios'
-    ],
-    'Castellano como segunda lengua': [
-        'Se comunica oralmente en castellano como segunda lengua',
-        'Lee diversos tipos de textos en castellano como segunda lengua',
-        'Escribe diversos tipos de textos en castellano como segunda lengua'
-    ],
-    'Ciencias Sociales': [
-        'Construye interpretaciones históricas',
-        'Gestiona responsablemente el espacio y el ambiente',
-        'Gestiona responsablemente los recursos económicos'
-    ],
-    'Desarrollo Personal, Ciudadanía y Cívica': [
-        'Construye su identidad',
-        'Convive y participa democráticamente'
-    ],
-    'Educación para el Trabajo': [
-        'Gestiona proyectos de emprendimiento económico o social'
-    ],
-}
 
 
 def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
