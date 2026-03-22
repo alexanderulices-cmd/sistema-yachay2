@@ -9779,45 +9779,56 @@ def vista_docente(config):
 def _tab_registro_auxiliar_docente(grado, config):
     """Tab de registro auxiliar para docentes"""
     st.subheader("📝 Registro Auxiliar de Evaluación")
-    
-    # Sec/Preu: seleccionar grado
-    info = st.session_state.get('docente_info', {}) or {}
-    nivel_d = str(info.get('nivel', '')).upper()
-    es_sec = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
-              or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
-              or 'GRUPO' in str(grado) or 'Sec' in str(grado))
-    
+
+    info     = st.session_state.get('docente_info', {}) or {}
+    nivel_d  = str(info.get('nivel', '')).upper()
+    es_sec   = ('SECUNDARIA' in nivel_d or 'PREUNIVERSITARIO' in nivel_d
+                or str(grado) in ('ALL_NIVELES', 'ALL_SEC_PREU', 'ALL_SECUNDARIA')
+                or 'GRUPO' in str(grado) or 'Sec' in str(grado))
+
     if es_sec:
         grados_disp = _grados_del_docente()
         grado_sel = st.selectbox("🎓 Grado:", grados_disp, key="reg_aux_grado")
     else:
         grado_sel = grado
-    
-    tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
-                        horizontal=True, key="tipo_reg_aux")
-    sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        tipo_reg = st.radio("Tipo:", ["📄 En blanco", "📊 Con notas registradas"],
+                            horizontal=True, key="tipo_reg_aux")
+    with c2:
+        sec = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="ds")
     bim = st.selectbox("📅 Periodo:", list(BIMESTRES.keys()), key="dbim")
-    
-    # Determinar áreas según nivel del grado seleccionado
+
+    # ── Determinar lista de áreas según nivel ─────────────────────
     grado_str = str(grado_sel)
     if any(x in grado_str for x in ['GRUPO', 'Ciclo', 'Reforzamiento']):
-        todas_areas = list(set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])))
+        todas_areas = sorted(set(
+            AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
+            AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])))
+        nivel_label = "Pre-Universitario"
     elif any(x in grado_str for x in ['Sec']):
         todas_areas = list(AREAS_MINEDU.get('SECUNDARIA', []))
-        for a in set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])):
-            if a not in todas_areas:
-                todas_areas.append(a)
+        nivel_label = "Secundaria"
     elif 'Inicial' in grado_str:
         todas_areas = AREAS_MINEDU.get('INICIAL', ['Comunicación', 'Matemática'])
+        nivel_label = "Inicial"
     else:
         todas_areas = AREAS_MINEDU.get('PRIMARIA', ['Comunicación', 'Matemática'])
-    
+        nivel_label = "Primaria"
+
+    # ── Selección de cursos — multiselect claro ───────────────────
+    st.markdown(f"**📚 Cursos del registro** — Nivel: {nivel_label}")
+    st.caption("⚠️ Máximo 3 áreas por hoja. Selecciona los cursos del docente (sin escribir).")
+
     if tipo_reg == "📄 En blanco":
-        st.markdown("**Cursos:**")
-        cursos_d = st.multiselect("Seleccione cursos:", todas_areas,
-                                   default=todas_areas[:3], key="dc_cursos")
+        cursos_d = st.multiselect(
+            "Selecciona 1, 2 o 3 áreas:",
+            options=todas_areas,
+            default=todas_areas[:1],
+            key="dc_cursos",
+            help="El PDF se ajusta automáticamente al número de áreas elegidas")
     else:
-        # Mostrar cursos con notas registradas
         notas = {}
         if Path('notas.json').exists():
             with open('notas.json', 'r', encoding='utf-8') as f:
@@ -9829,48 +9840,62 @@ def _tab_registro_auxiliar_docente(grado, config):
                 if area_n not in cursos_con_notas:
                     cursos_con_notas[area_n] = 0
                 cursos_con_notas[area_n] += 1
-        # Mostrar info de notas registradas
         if cursos_con_notas:
-            st.success(f"📊 Cursos con notas: {len(cursos_con_notas)}")
-            for cn, cnt in sorted(cursos_con_notas.items()):
-                st.caption(f"  📚 **{cn}** — {cnt} registro(s)")
+            st.success(f"📊 {len(cursos_con_notas)} cursos con notas registradas")
         else:
-            st.info("📭 No hay notas registradas aún para este grado")
-        # Permitir seleccionar cursos también en este modo
-        opciones_areas = list(cursos_con_notas.keys()) if cursos_con_notas else todas_areas
+            st.info("📭 Sin notas registradas — muestra registro en blanco")
+        opciones_areas = list(cursos_con_notas.keys())
         for a in todas_areas:
             if a not in opciones_areas:
                 opciones_areas.append(a)
-        cursos_d = st.multiselect("📚 Seleccione cursos:", opciones_areas,
-                                   default=list(cursos_con_notas.keys())[:3] if cursos_con_notas else opciones_areas[:3],
-                                   key="dc_cursos_notas")
-        
+        cursos_d = st.multiselect(
+            "Selecciona 1, 2 o 3 áreas:",
+            options=opciones_areas,
+            default=list(cursos_con_notas.keys())[:1] if cursos_con_notas else opciones_areas[:1],
+            key="dc_cursos_notas",
+            help="Las áreas con notas aparecen primero en la lista")
+
+    # Aviso si pasan de 3
+    if len(cursos_d) > 3:
+        st.error("❌ Máximo 3 áreas por hoja. Las columnas quedarían muy angostas — por favor quita algunas.")
+        cursos_d = cursos_d[:3]
+    elif len(cursos_d) == 0:
+        st.warning("⚠️ Selecciona al menos 1 área.")
+
+    # Vista previa de lo que se generará
+    if cursos_d:
+        prev_cols = []
+        for curso in cursos_d:
+            comps = COMPETENCIAS_CN.get(curso, [])
+            n_caps = sum(len(CAPACIDADES_REG.get(c, ['','',''])) for c in comps)
+            prev_cols.append(f"**{curso}** — {len(comps)} comp. / {n_caps} caps.")
+        st.info("📋 Registro a generar: " + " | ".join(prev_cols))
+
     dg = BaseDatos.obtener_estudiantes_grado(grado_sel, sec)
-    st.info(f"📊 {len(dg)} estudiantes — {grado_sel}")
-    if not dg.empty:
-        st.dataframe(dg[['Nombre', 'DNI', 'Grado', 'Seccion']],
-                     use_container_width=True, hide_index=True)
+    st.caption(f"👥 {len(dg)} estudiantes — {grado_sel}")
+
     cd1, cd2 = st.columns(2)
     with cd1:
         if st.button("📥 Generar PDF Auxiliar", type="primary",
-                     use_container_width=True, key="ddra"):
-            if not dg.empty:
-                lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
-                sl = sec if sec != "Todas" else "Todas"
-                with st.spinner("Generando PDF..."):
-                    pdf = generar_registro_auxiliar_pdf(lg, sl, config['anio'], bim, dg, cursos_d)
-                st.session_state['_aux_pdf_d'] = pdf
-                st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
+                     use_container_width=True, key="ddra",
+                     disabled=len(cursos_d) == 0):
+            lg = grado_sel if grado_sel != "ALL_SECUNDARIA" else "Secundaria"
+            sl = sec if sec != "Todas" else "Todas"
+            with st.spinner("Generando PDF..."):
+                pdf = generar_registro_auxiliar_pdf(lg, sl, config['anio'], bim, dg, cursos_d)
+            st.session_state['_aux_pdf_d'] = pdf
+            st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
     with cd2:
-        if st.button("📄 Generar Word Auxiliar", use_container_width=True, key="ddra_docx_btn"):
-            if not dg.empty:
-                lg = grado if grado != "ALL_SECUNDARIA" else "Secundaria"
-                sl = sec if sec != "Todas" else "Todas"
-                with st.spinner("Generando Word..."):
-                    docx_aux2 = generar_registro_auxiliar_docx(lg, sl, config['anio'], bim, dg, cursos_d)
-                if docx_aux2:
-                    st.session_state['_aux_docx_d'] = docx_aux2
-                    st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
+        if st.button("📄 Generar Word", use_container_width=True, key="ddra_docx_btn",
+                     disabled=len(cursos_d) == 0):
+            lg = grado_sel if grado_sel != "ALL_SECUNDARIA" else "Secundaria"
+            sl = sec if sec != "Todas" else "Todas"
+            with st.spinner("Generando Word..."):
+                docx_aux2 = generar_registro_auxiliar_docx(lg, sl, config['anio'], bim, dg, cursos_d)
+            if docx_aux2:
+                st.session_state['_aux_docx_d'] = docx_aux2
+                st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
+
     if st.session_state.get('_aux_pdf_d'):
         st.download_button("⬇️ Descargar PDF", st.session_state['_aux_pdf_d'],
                            f"{st.session_state.get('_aux_key_d','RegAux')}.pdf",
@@ -14315,17 +14340,19 @@ CAPACIDADES_REG = {
         'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
     'Resuelve problemas de gestión de datos e incertidumbre': [
         'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
-    # ── PERSONAL SOCIAL (Primaria) ──────────────────────────────────
+    # ── PERSONAL SOCIAL (Primaria) e DPCC (Secundaria) ─────────────
+    # MINEDU: mismas competencias y capacidades en ambos niveles
     'Construye su identidad': [
         'Autoconoc.', 'Autorreg./auto.', 'Reflexión ética'],
     'Convive y participa democráticamente': [
-        'Interactúa', 'Construye norms.', 'Maneja conflictos', 'Delibera', 'Participa'],
+        'Interactúa respet.', 'Construye normas', 'Maneja conflictos', 'Delibera', 'Participa'],
+    # CCSS — capacidades exactas MINEDU (iguales 1° a 5° sec; cambian desempeños)
     'Construye interpretaciones históricas': [
-        'Interpreta fuentes', 'Comprende tiempo', 'Elabora expl.'],
+        'Interp.fuentes', 'Comprende tiempo', 'Elabora expl.'],
     'Gestiona responsablemente el espacio y el ambiente': [
-        'Comprende relac.', 'Maneja fuentes', 'Genera acciones'],
+        'Comprende relac.nat-soc', 'Maneja fuentes SIG', 'Genera acciones'],
     'Gestiona responsablemente los recursos económicos': [
-        'Comprende sist.econ.', 'Toma decis.econ.'],
+        'Comprende sist.econ.fin.', 'Toma decis.econ.fin.'],
     # ── C Y T ────────────────────────────────────────────────────────
     'Indaga mediante métodos científicos': [
         'Problematiza', 'Diseña estrat.', 'Genera datos', 'Analiza datos', 'Evalúa/reflexiona'],
