@@ -1963,18 +1963,21 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # ── PASO 3: Docentes local ───────────────────────────────────────
+    # ── PASO 3: Docentes local — SIEMPRE, incluso si ya hay caché ────
+    # Los docentes deben estar SIEMPRE en el índice, nunca se omiten
     try:
         if Path(ARCHIVO_DOCENTES).exists():
             df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
             df_d.columns = df_d.columns.str.strip()
             if not df_d.empty and 'DNI' in df_d.columns:
+                n_doc_antes = sum(1 for v in indice.values() if v.get('_tipo') == 'docente')
                 for _, row in df_d.iterrows():
                     dni = str(row.get('DNI', '')).strip()
                     if dni and len(dni) >= 7:
                         r = row.to_dict()
                         r['_tipo'] = 'docente'
                         indice[dni] = r
+                n_doc_despues = sum(1 for v in indice.values() if v.get('_tipo') == 'docente')
     except Exception:
         pass
 
@@ -1990,20 +1993,51 @@ def _construir_indice_dni():
             if not gs:
                 return
             df_gs = gs.leer_matricula()
-            if df_gs.empty:
-                return
             col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
                        'grado': 'Grado', 'seccion': 'Seccion',
                        'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
                        'celular_apoderado': 'Celular_Apoderado'}
-            df_gs = df_gs.rename(columns=col_map)
             idx_nuevo = dict(st.session_state.get('_indice_dni', {}))
-            for _, row in df_gs.iterrows():
-                dni = str(row.get('DNI', '')).strip()
-                if dni and len(dni) >= 7:
-                    r = row.to_dict()
-                    r['_tipo'] = 'alumno'
-                    idx_nuevo[dni] = r
+
+            # Agregar alumnos de GSheets
+            if not df_gs.empty:
+                df_gs = df_gs.rename(columns=col_map)
+                for _, row in df_gs.iterrows():
+                    dni = str(row.get('DNI', '')).strip()
+                    if dni and len(dni) >= 7:
+                        r = row.to_dict()
+                        r['_tipo'] = 'alumno'
+                        idx_nuevo[dni] = r
+
+            # ── TAMBIÉN agregar docentes de GSheets ───────────────────
+            # Sin esto, al sobreescribir el caché los docentes desaparecen
+            try:
+                df_doc_gs = gs.leer_docentes() if hasattr(gs, 'leer_docentes') else pd.DataFrame()
+                if not df_doc_gs.empty and 'DNI' in df_doc_gs.columns:
+                    for _, row in df_doc_gs.iterrows():
+                        dni = str(row.get('DNI', '')).strip()
+                        if dni and len(dni) >= 7:
+                            r = row.to_dict()
+                            r['_tipo'] = 'docente'
+                            idx_nuevo[dni] = r
+            except Exception:
+                pass
+
+            # ── También docentes del Excel local por si acaso ─────────
+            try:
+                if Path(ARCHIVO_DOCENTES).exists():
+                    df_dl = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
+                    df_dl.columns = df_dl.columns.str.strip()
+                    if not df_dl.empty and 'DNI' in df_dl.columns:
+                        for _, row in df_dl.iterrows():
+                            dni = str(row.get('DNI', '')).strip()
+                            if dni and len(dni) >= 7:
+                                r = row.to_dict()
+                                r['_tipo'] = 'docente'
+                                idx_nuevo[dni] = r
+            except Exception:
+                pass
+
             # Actualizar RAM y caché en disco
             st.session_state['_indice_dni'] = idx_nuevo
             st.session_state['_indice_desde_cache'] = False
@@ -5772,23 +5806,25 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
                                 "application/pdf", type="primary", key="dl_cm")
         st.caption("Guarda ambas actas (Presentacion + Conformidad) en el archivo del colegio. "
                    "Son tu respaldo ante cualquier fiscalizacion de INDECOPI o UGEL.")
-        st.markdown("#### 📋 Registro de Asistencia Docente — Firma Manual")
+
+    # ── ASISTENCIA MANUAL ─────────────────────────────────────────────
+    elif key == "asist_manual":
+        st.markdown("#### Registro de Asistencia Docente — Firma Manual")
         col1, col2, col3 = st.columns(3)
         with col1:
             mes_am = st.selectbox("Mes:", ["Marzo","Abril","Mayo","Junio","Julio","Agosto",
                                            "Septiembre","Octubre","Noviembre","Diciembre"], key="am_mes")
         with col2:
-            n_dias_am = st.number_input("Días hábiles:", 15, 26, 22, key="am_ndias")
+            n_dias_am = st.number_input("Dias habiles:", 15, 26, 22, key="am_ndias")
         with col3:
             usar_lista = st.checkbox("Usar lista de docentes", True, key="am_usar")
-        if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_am"):
+        if st.button("Generar Asistencia Manual", type="primary", use_container_width=True, key="btn_am"):
             nombres = list(df_doc['Nombre'].dropna()) if not df_doc.empty and 'Nombre' in df_doc.columns and usar_lista else []
             if not nombres: nombres = [f"___________________________ {i+1}" for i in range(20)]
             buf = _generar_registro_asistencia_manual(config, mes_am, int(n_dias_am), nombres)
-            st.download_button("⬇️ Descargar", buf,
+            st.download_button("Descargar", buf,
                 f"Asistencia_Manual_{mes_am}_{anio}.pdf", "application/pdf",
                 type="primary", key="dl_am")
-
     # ── PRÉSTAMO EQUIPOS ──────────────────────────────────────────────
     elif key == "prestamo":
         st.markdown("#### 🔧 Control de Préstamo de Equipos e Implementos")
@@ -9521,96 +9557,67 @@ def tab_base_datos():
             if df_vista.empty:
                 st.success("✅ No hay estudiantes con datos pendientes en este filtro.")
             else:
-                st.caption(f"📋 Mostrando {len(df_vista)} estudiante(s) — Haga clic en ✏️ para editar")
-                st.markdown("---")
+                st.caption(f"📋 {len(df_vista)} estudiante(s) — Edita directamente en la tabla y presiona **Guardar cambios**")
 
-                # Mostrar cada estudiante como fila editable
-                for i, (_, row) in enumerate(df_vista.iterrows()):
-                    dni_val = str(row.get("DNI", "")).strip()
-                    nombre = str(row.get("Nombre", "")).strip()
-                    grado = str(row.get("Grado", "")).strip()
-                    seccion = str(row.get("Seccion", "")).strip()
-                    cel = str(row.get("Celular_Apoderado", "")).replace("nan", "").strip()
-                    apod = str(row.get("Apoderado", "")).replace("nan", "").strip()
-                    dni_apod = str(row.get("DNI_Apoderado", "")).replace("nan", "").strip()
-                    es_prov = dni_val.startswith("PROV") or str(row.get("_provisional","")).upper() == "SI"
+                # Columnas editables mostradas
+                COLS_EDIT = ['Nombre', 'DNI', 'Grado', 'Seccion', 'Sexo',
+                             'Apoderado', 'DNI_Apoderado', 'Celular_Apoderado']
+                for c in COLS_EDIT:
+                    if c not in df_vista.columns:
+                        df_vista[c] = ''
 
-                    # Badge de estado
-                    badge = "🟡 PROVISIONAL" if es_prov else ("🟠 Sin celular" if not cel else "✅ Completo")
-                    icono = "👦" if str(row.get("Sexo","")).strip() == "Masculino" else "👧"
+                df_show = df_vista[COLS_EDIT].fillna('').astype(str)
+                # Limpiar 'nan'
+                df_show = df_show.replace('nan', '')
 
-                    with st.expander(f"{icono} {nombre}   —   {grado} {seccion}   {badge}", expanded=False):
-                        # Mostrar datos actuales
-                        ca, cb, cc = st.columns(3)
-                        with ca:
-                            st.caption("DNI actual")
-                            st.code(dni_val if not es_prov else f"⚠️ {dni_val} (provisional)")
-                        with cb:
-                            st.caption("Celular Apoderado")
-                            st.code(cel if cel else "— vacío —")
-                        with cc:
-                            st.caption("Apoderado")
-                            st.code(apod if apod else "— vacío —")
+                # Data editor — edición inline ultrarrápida
+                edited = st.data_editor(
+                    df_show,
+                    use_container_width=True,
+                    hide_index=False,
+                    num_rows="fixed",
+                    column_config={
+                        "Nombre":           st.column_config.TextColumn("Apellidos y Nombres", width="large"),
+                        "DNI":              st.column_config.TextColumn("DNI", max_chars=8, width="small"),
+                        "Grado":            st.column_config.SelectboxColumn("Grado", options=GRADOS_OPCIONES or [], width="medium"),
+                        "Seccion":          st.column_config.SelectboxColumn("Sección", options=SECCIONES or [], width="small"),
+                        "Sexo":             st.column_config.SelectboxColumn("Sexo", options=["Masculino","Femenino"], width="small"),
+                        "Apoderado":        st.column_config.TextColumn("Apoderado", width="large"),
+                        "DNI_Apoderado":    st.column_config.TextColumn("DNI Apoderado", max_chars=8, width="small"),
+                        "Celular_Apoderado":st.column_config.TextColumn("Celular", max_chars=9, width="small"),
+                    },
+                    key="data_editor_alumnos"
+                )
 
-                        # Formulario de edición
-                        with st.form(f"form_edit_{i}_{dni_val}"):
-                            # Fila 0: Nombre y Sexo
-                            en0, en1 = st.columns([3, 1])
-                            with en0:
-                                inp_nombre = st.text_input("✏️ Apellidos y Nombres:",
-                                    value=nombre, key=f"inp_nombre_{i}",
-                                    placeholder="APELLIDOS, Nombres")
-                            with en1:
-                                sexo_actual = str(row.get("Sexo", "Masculino")).strip()
-                                inp_sexo = st.selectbox("Sexo:",
-                                    ["Masculino", "Femenino"],
-                                    index=0 if sexo_actual == "Masculino" else 1,
-                                    key=f"inp_sexo_{i}")
-                            e1, e2 = st.columns(2)
-                            with e1:
-                                inp_dni = st.text_input("DNI del alumno:",
-                                    value="" if es_prov else (dni_val if not es_prov else ""),
-                                    max_chars=8, placeholder="12345678",
-                                    key=f"inp_dni_{i}")
-                                inp_apod = st.text_input("Apoderado:",
-                                    value=apod, key=f"inp_apod_{i}",
-                                    placeholder="Apellidos y nombres del apoderado")
-                            with e2:
-                                inp_cel = st.text_input("📱 Celular apoderado:",
-                                    value=cel, max_chars=9, placeholder="987654321",
-                                    key=f"inp_cel_{i}")
-                                inp_dni_apod = st.text_input("DNI apoderado:",
-                                    value=dni_apod, max_chars=8, placeholder="12345678",
-                                    key=f"inp_dni_apod_{i}")
-                            guardar = st.form_submit_button(f"💾 GUARDAR — {nombre}", type="primary", use_container_width=True)
-
-                        if guardar:
-                            df_upd = BaseDatos.cargar_matricula()
-                            df_upd["DNI"] = df_upd["DNI"].astype(str).str.strip()
-                            mask_upd = df_upd["DNI"] == dni_val
-                            if not mask_upd.any():
-                                mask_upd = df_upd["Nombre"] == nombre
-                            if mask_upd.any():
-                                if inp_nombre.strip():
-                                    df_upd.loc[mask_upd, "Nombre"] = inp_nombre.strip().upper()
-                                df_upd.loc[mask_upd, "Sexo"] = inp_sexo
-                                if inp_dni.strip() and len(inp_dni.strip()) == 8 and inp_dni.strip().isdigit():
-                                    df_upd.loc[mask_upd, "DNI"] = inp_dni.strip()
-                                    df_upd.loc[mask_upd, "_provisional"] = "NO"
-                                if inp_apod.strip():
-                                    df_upd.loc[mask_upd, "Apoderado"] = inp_apod.strip().upper()
-                                if inp_dni_apod.strip():
-                                    df_upd.loc[mask_upd, "DNI_Apoderado"] = inp_dni_apod.strip()
-                                if inp_cel.strip():
-                                    df_upd.loc[mask_upd, "Celular_Apoderado"] = inp_cel.strip()
-                                BaseDatos.guardar_matricula(df_upd)
-                                st.success(f"✅ **{inp_nombre.strip().upper()}** actualizado correctamente.")
-                                if inp_cel.strip():
-                                    st.info("📱 Celular guardado — ya puede generar QR y carnet.")
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error("⚠️ No se encontró el alumno.")
+                if st.button("💾 Guardar cambios", type="primary",
+                              use_container_width=True, key="btn_guardar_editor"):
+                    with st.spinner("Guardando..."):
+                        df_full = BaseDatos.cargar_matricula()
+                        df_full['DNI'] = df_full['DNI'].astype(str).str.strip()
+                        n_cambios = 0
+                        for idx_e, row_e in edited.iterrows():
+                            # Identificar por índice original en df_vista
+                            if idx_e < len(df_vista):
+                                orig_row = df_vista.iloc[idx_e]
+                                orig_dni = str(orig_row.get('DNI','')).strip()
+                                orig_nom = str(orig_row.get('Nombre','')).strip()
+                                # Buscar en df_full
+                                mask = df_full['DNI'] == orig_dni
+                                if not mask.any():
+                                    mask = df_full['Nombre'].astype(str).str.strip() == orig_nom
+                                if mask.any():
+                                    for col in COLS_EDIT:
+                                        val = str(row_e.get(col,'')).strip()
+                                        if val and val != 'nan':
+                                            df_full.loc[mask, col] = val.upper() if col in ('Nombre','Apoderado') else val
+                                    # Limpiar provisional si DNI real
+                                    new_dni = str(row_e.get('DNI','')).strip()
+                                    if new_dni and len(new_dni)==8 and new_dni.isdigit():
+                                        df_full.loc[mask, '_provisional'] = 'NO'
+                                    n_cambios += 1
+                        BaseDatos.guardar_matricula(df_full)
+                    st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
+                    st.rerun()
 
     with tab_dc:
         if not df_doc.empty:
@@ -26123,7 +26130,7 @@ def _generar_acta_material_propio(config, nivel, grado, director, editorial,
 
 def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
                                         editorial, n_filas, anio):
-    """Acta de Conformidad de padres con material educativo propio — version mejorada."""
+    """Acta de Conformidad de padres con material educativo propio."""
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -26140,41 +26147,42 @@ def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
     meses = ['enero','febrero','marzo','abril','mayo','junio',
              'julio','agosto','septiembre','octubre','noviembre','diciembre']
     fecha_str = f"{hoy.day} de {meses[hoy.month-1]} de {str(anio)}"
+    # Abreviar grado si es muy largo
+    grado_corto = str(grado)
+    if len(grado_corto) > 12:
+        grado_corto = grado_corto[:12]
 
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             topMargin=1.8*cm, bottomMargin=1.8*cm,
                             leftMargin=2.3*cm, rightMargin=2.3*cm)
     styles = getSampleStyleSheet()
-    ANCHO = 15.9*cm
 
     def P(txt, bold=False, size=10, align=TA_JUSTIFY, sb=2, sa=3):
         return Paragraph(
             f"<b>{txt}</b>" if bold else txt,
-            ParagraphStyle('p_cm', fontSize=size, leading=size+3,
+            ParagraphStyle('p_cm2', fontSize=size, leading=size+3,
                            alignment=align, spaceBefore=sb, spaceAfter=sa,
                            fontName='Helvetica-Bold' if bold else 'Helvetica',
                            parent=styles['Normal']))
 
-    def T(data, col_ws, hdr_bg=None):
-        if hdr_bg is None:
-            hdr_bg = colors.Color(0.1, 0.2, 0.5)
+    AZU = colors.Color(0.1, 0.2, 0.5)
+    CLAR = colors.Color(0.88, 0.92, 1.0)
+
+    def tabla_std(data, col_ws):
         t = Table(data, colWidths=col_ws)
         cmds = [
-            ('GRID',         (0,0), (-1,-1), 0.5, colors.black),
-            ('FONTSIZE',     (0,0), (-1,-1), 8.5),
-            ('VALIGN',       (0,0), (-1,-1), 'MIDDLE'),
-            ('LEFTPADDING',  (0,0), (-1,-1), 5),
-            ('RIGHTPADDING', (0,0), (-1,-1), 5),
-            ('TOPPADDING',   (0,0), (-1,-1), 4),
-            ('BOTTOMPADDING',(0,0), (-1,-1), 4),
+            ('GRID',         (0,0),(-1,-1), 0.5, colors.black),
+            ('FONTSIZE',     (0,0),(-1,-1), 8.5),
+            ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
+            ('LEFTPADDING',  (0,0),(-1,-1), 4),
+            ('RIGHTPADDING', (0,0),(-1,-1), 4),
+            ('TOPPADDING',   (0,0),(-1,-1), 4),
+            ('BOTTOMPADDING',(0,0),(-1,-1), 4),
+            ('BACKGROUND',   (0,0),(-1,0), AZU),
+            ('TEXTCOLOR',    (0,0),(-1,0), colors.white),
+            ('FONTNAME',     (0,0),(-1,0), 'Helvetica-Bold'),
+            ('ALIGN',        (0,0),(-1,0), 'CENTER'),
         ]
-        if len(data) > 0:
-            cmds += [
-                ('BACKGROUND', (0,0), (-1,0), hdr_bg),
-                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-                ('FONTNAME',   (0,0), (-1,0), 'Helvetica-Bold'),
-                ('ALIGN',      (0,0), (-1,0), 'CENTER'),
-            ]
         t.setStyle(TableStyle(cmds))
         return t
 
@@ -26186,21 +26194,20 @@ def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
           bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
         P("CON EL MATERIAL EDUCATIVO PROPIO DE LA INSTITUCION",
           bold=True, size=11, align=TA_CENTER, sb=0, sa=2),
-        P(f"(Ley N° 29694 mod. por Ley N° 29839 — INDECOPI/MINEDU)",
+        P("(Ley N° 29694 mod. por Ley N° 29839 — INDECOPI/MINEDU)",
           size=8, align=TA_CENTER, sb=0, sa=8),
     ]
 
     # Datos
     story.append(P("DATOS DE LA REUNION:", bold=True, size=10, align=TA_LEFT, sb=0, sa=3))
-    w1, w2, w3, w4 = 3.2*cm, 5.3*cm, 3.0*cm, 4.4*cm
-    story.append(T([
+    story.append(tabla_std([
         ["Campo", "Dato", "Campo", "Dato"],
-        ["Institucion", ie, "Grado / Nivel", f"{grado} — {nivel}"],
+        ["Institucion", ie,  "Grado / Nivel", f"{grado} — {nivel}"],
         ["Docente / Tutor", docente or "___________________",
          "Director(a)", director or "___________________"],
         ["Editorial del material", editorial or "___________________",
          "Fecha", fecha_str],
-    ], [w1, w2, w3, w4]))
+    ], [3.2*cm, 5.3*cm, 3.0*cm, 4.4*cm]))
     story.append(Spacer(1, 0.3*cm))
 
     # Declaracion
@@ -26216,43 +26223,97 @@ def _generar_acta_conformidad_material(config, nivel, grado, docente, director,
         "pedagogico, caracteristicas y costo del material educativo."
         "<br/>"
         "<b>3.</b> Conocemos que el material esta alineado con el Curriculo Nacional "
-        "y adaptado al contexto cultural de Chinchero, Cusco, incorporando campos "
-        "tematicos que responden a nuestras demandas y necesidades como padres de familia."
+        "y adaptado al contexto sociocultural del distrito de Chinchero, Urubamba-Cusco, "
+        "incorporando campos tematicos que responden a las demandas educativas "
+        "identificadas con los padres de familia."
         "<br/>"
         "<b>4.</b> Reconocemos que los libros y cuadernos presentados han sido "
-        "elaborados considerando las caracteristicas de aprendizaje de nuestros hijos, "
-        "los saberes locales de nuestra comunidad y el respeto irrestricto al "
-        "Curriculo Nacional de Educacion Basica vigente."
+        "elaborados considerando las caracteristicas de aprendizaje de nuestros hijos "
+        "y el respeto irrestricto al Curriculo Nacional de Educacion Basica vigente."
         "<br/>"
         "<b>5.</b> Hemos sido informados de nuestro derecho a utilizar materiales "
         "alternativos de acuerdo con la Ley N° 29694 modificada por Ley N° 29839, "
         "y de manera libre y voluntaria expresamos nuestra <b>CONFORMIDAD</b> con el "
-        f"uso del material presentado para el año escolar <b>{str(anio)}</b>.",
+        f"uso del material presentado para el ano escolar <b>{str(anio)}</b>.",
         size=9.5))
     story.append(Spacer(1, 0.4*cm))
 
-    # Lista
+    # Lista de firmas — columna GRADO con texto corto
     story.append(P("LISTA DE PADRES/MADRES QUE FIRMAN EN CONFORMIDAD:",
                    size=9, align=TA_LEFT, sb=4, sa=2))
     filas = [["N°", "APELLIDOS Y NOMBRES DEL PADRE/MADRE", "DNI",
                "NOMBRE DEL HIJO/A", "GRADO", "FIRMA"]]
     for i in range(n_filas):
-        filas.append([str(i+1), "", "", "", grado, ""])
-    story.append(T(filas, [0.6*cm, 5.5*cm, 2.0*cm, 4.0*cm, 1.5*cm, 2.3*cm]))
+        filas.append([str(i+1), "", "", "", grado_corto, ""])
+
+    # Anchos: N(0.6) | Nombres(5.5) | DNI(2.0) | Hijo(3.8) | Grado(1.8) | Firma(2.2)
+    t_lista = Table(filas,
+                    colWidths=[0.6*cm, 5.5*cm, 2.0*cm, 3.8*cm, 1.8*cm, 2.2*cm],
+                    rowHeights=[0.65*cm] + [0.75*cm]*n_filas)
+    t_lista.setStyle(TableStyle([
+        ('GRID',         (0,0),(-1,-1), 0.5, colors.black),
+        ('FONTSIZE',     (0,0),(-1,-1), 8),
+        ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
+        ('LEFTPADDING',  (0,0),(-1,-1), 3),
+        ('RIGHTPADDING', (0,0),(-1,-1), 3),
+        ('TOPPADDING',   (0,0),(-1,-1), 3),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 3),
+        ('BACKGROUND',   (0,0),(-1,0), AZU),
+        ('TEXTCOLOR',    (0,0),(-1,0), colors.white),
+        ('FONTNAME',     (0,0),(-1,0), 'Helvetica-Bold'),
+        ('ALIGN',        (0,0),(-1,0), 'CENTER'),
+        ('ALIGN',        (0,1),(0,-1), 'CENTER'),   # N°
+        ('ALIGN',        (4,0),(4,-1), 'CENTER'),   # Grado
+        ('ALIGN',        (5,0),(5,-1), 'CENTER'),   # Firma
+        ('ROWBACKGROUNDS',(0,1),(-1,-1), [colors.white, colors.Color(0.95,0.95,1)]),
+        # Wrap text en columna grado
+        ('WORDWRAP',     (4,0),(4,-1), True),
+    ]))
+    story.append(t_lista)
     story.append(Spacer(1, 0.5*cm))
 
-    story += [
-        P(f"Chinchero, {fecha_str}", size=10, align=TA_CENTER, sb=0, sa=8),
-        T([["FIRMA Y SELLO DEL DIRECTOR(A)", "FIRMA DEL DOCENTE/TUTOR",
-            "V°B° REPRESENTANTE APAFA"],
-           [f"\\n\\n\\n{director or ''}\\n", f"\\n\\n\\n{docente or ''}\\n", "\\n\\n\\n_______________\\n"]],
-          [5.3*cm, 5.3*cm, 5.3*cm]),
-        Spacer(1, 0.3*cm),
-        P("<b>NOTA:</b> Este documento, junto al Acta de Presentacion del Material, "
-          "constituye el expediente completo que protege al colegio ante INDECOPI y UGEL. "
-          "Conservar ambos documentos en el archivo institucional.",
-          size=8, align=TA_JUSTIFY, sb=2, sa=0),
-    ]
+    # Fecha centrada
+    story.append(P(f"Chinchero, {fecha_str}", size=10, align=TA_CENTER, sb=0, sa=8))
+
+    # Firmas finales — celdas con altura real, SIN literales \n
+    def celda_firma_cm(titulo):
+        inner = Table(
+            [[P(titulo, bold=True, size=8.5, align=TA_CENTER, sb=1, sa=1)],
+             [P("", size=9, sb=1, sa=1)],   # espacio real en blanco
+             [P("Nombres y apellidos:", size=7.5, align=TA_CENTER, sb=1, sa=1)]],
+            colWidths=[5.0*cm],
+            rowHeights=[0.65*cm, 2.0*cm, 0.5*cm])
+        inner.setStyle(TableStyle([
+            ('BOX',        (0,0),(-1,-1), 0.8, AZU),
+            ('LINEBELOW',  (0,0),(0,0),   0.5, AZU),
+            ('LINEABOVE',  (0,2),(0,2),   0.5, colors.Color(0.7,0.7,0.7)),
+            ('BACKGROUND', (0,0),(0,0),   AZU),
+            ('TEXTCOLOR',  (0,0),(0,0),   colors.white),
+            ('BACKGROUND', (0,1),(0,1),   colors.white),
+            ('BACKGROUND', (0,2),(0,2),   CLAR),
+            ('ALIGN',      (0,0),(-1,-1), 'CENTER'),
+            ('VALIGN',     (0,0),(-1,-1), 'MIDDLE'),
+        ]))
+        return inner
+
+    firmas_row = Table(
+        [[celda_firma_cm("FIRMA Y SELLO DEL DIRECTOR(A)"),
+          celda_firma_cm("FIRMA DEL DOCENTE/TUTOR"),
+          celda_firma_cm("V B REPRESENTANTE APAFA")]],
+        colWidths=[5.2*cm, 5.2*cm, 5.5*cm],
+        rowHeights=[3.4*cm])
+    firmas_row.setStyle(TableStyle([
+        ('VALIGN',       (0,0),(-1,-1), 'TOP'),
+        ('LEFTPADDING',  (0,0),(-1,-1), 1),
+        ('RIGHTPADDING', (0,0),(-1,-1), 1),
+    ]))
+    story.append(firmas_row)
+    story.append(Spacer(1, 0.3*cm))
+    story.append(P(
+        "<b>NOTA:</b> Este documento, junto al Acta de Presentacion del Material, "
+        "constituye el expediente completo que protege al colegio ante INDECOPI y UGEL. "
+        "Conservar ambos documentos en el archivo institucional.",
+        size=8, align=TA_JUSTIFY, sb=2, sa=0))
 
     doc.build(story)
     buf.seek(0)
