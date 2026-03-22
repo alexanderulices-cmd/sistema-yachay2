@@ -7305,18 +7305,39 @@ def _seccion_registros_pdf(config):
     st.info(f"📊 {len(dg)} estudiantes (orden alfabético)")
 
     st.markdown("---")
-    st.markdown("**📝 Registro Auxiliar (Cursos × Competencias × Desempeños)**")
+    st.markdown("**📝 Registro Auxiliar (Cursos × Competencias × Capacidades — MINEDU)**")
     bim = st.selectbox("📅 Periodo:", list(BIMESTRES.keys()), key="bim_sel")
-    st.markdown("**Cursos (hasta 3 por hoja):**")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        curso1 = st.text_input("Curso 1:", "Matemática", key="c1")
-    with c2:
-        curso2 = st.text_input("Curso 2:", "Comunicación", key="c2")
-    with c3:
-        curso3 = st.text_input("Curso 3:", "Ciencia y Tec.", key="c3")
-    cursos = [c for c in [curso1, curso2, curso3] if c.strip()]
-    st.caption(f"{len(cursos)} cursos × 4 competencias × 3 desempeños")
+
+    # Determinar áreas según el nivel/grado seleccionado
+    if 'Inicial' in gp:
+        areas_nivel = AREAS_MINEDU.get('INICIAL', ['Comunicación', 'Matemática'])
+        lbl_nivel = "Inicial"
+    elif any(x in gp for x in ['Sec', '1ro Sec', '2do Sec', '3ro Sec', '4to Sec', '5to Sec']):
+        areas_nivel = AREAS_MINEDU.get('SECUNDARIA', [])
+        lbl_nivel = "Secundaria"
+    else:
+        areas_nivel = AREAS_MINEDU.get('PRIMARIA', ['Comunicación', 'Matemática'])
+        lbl_nivel = "Primaria"
+
+    st.caption(f"Nivel detectado: **{lbl_nivel}** — Selecciona las áreas del registro (máx. 3 por hoja)")
+    cursos = st.multiselect(
+        "Áreas / Cursos:",
+        options=areas_nivel,
+        default=areas_nivel[:1],
+        key="reg_aux_cursos_admin",
+        help="Haz clic para seleccionar. Máximo 3 áreas por hoja.")
+    if len(cursos) > 3:
+        st.error("❌ Máximo 3 áreas por hoja — se usarán las primeras 3.")
+        cursos = cursos[:3]
+    if cursos:
+        prev = []
+        for curso in cursos:
+            comps = COMPETENCIAS_CN.get(curso, [])
+            n_caps = sum(len(CAPACIDADES_REG.get(c, ['','',''])) for c in comps)
+            prev.append(f"**{curso}** ({len(comps)} comp. / {n_caps} cap.)")
+        st.info("📋 " + " | ".join(prev))
+    else:
+        st.warning("⚠️ Selecciona al menos 1 área.")
     c1a, c2a = st.columns(2)
     with c1a:
         if st.button("📝 Generar PDF Auxiliar", type="primary",
