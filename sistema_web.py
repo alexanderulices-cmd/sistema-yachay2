@@ -1053,18 +1053,20 @@ def reproducir_sonido_asistencia():
 
 
 def _beep_html(script_body):
-    """Sonido MÁXIMO: 3 osciladores en paralelo + compresor + master gain."""
+    """Sonido MÁXIMO: 3 osciladores en paralelo + compresor + master gain.
+    Usa ID único por llamada para que el navegador siempre ejecute el script."""
     import streamlit.components.v1 as _c
+    import random as _rnd
+    # ID único fuerza al navegador a tratar cada llamada como nueva
+    uid = _rnd.randint(100000, 999999)
     _c.html(f"""
     <script>
-    (function() {{
+    (function beep_{uid}() {{
         try {{
             var AudioCtx = window.AudioContext || window.webkitAudioContext;
             var ctx = new AudioCtx();
-            // Desbloquear contexto en móviles
             if (ctx.state === 'suspended') {{ ctx.resume(); }}
 
-            // Cadena: osciladores → gain individual → master gain → compresor → destino
             var master = ctx.createGain();
             master.gain.value = 1.0;
 
@@ -1078,7 +1080,6 @@ def _beep_html(script_body):
             master.connect(comp);
             comp.connect(ctx.destination);
 
-            // Crea nota con 3 osciladores en paralelo (más volumen percibido)
             function nota(freq, inicio, dur, tipo) {{
                 var tipos = [tipo||'sine', 'triangle', 'sine'];
                 var ganas = [1.0, 0.6, 0.4];
@@ -1086,7 +1087,7 @@ def _beep_html(script_body):
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
                     o.connect(g); g.connect(master);
-                    o.frequency.value = freq + (i * 0.5); // micro-detune para riqueza
+                    o.frequency.value = freq + (i * 0.5);
                     o.type = tipos[i];
                     g.gain.setValueAtTime(0.0, ctx.currentTime + inicio);
                     g.gain.linearRampToValueAtTime(ganas[i], ctx.currentTime + inicio + 0.008);
@@ -1103,16 +1104,16 @@ def _beep_html(script_body):
 
 
 def reproducir_beep_exitoso():
-    """Pitido de éxito — Do-Mi-Sol ascendente, volumen máximo"""
+    """Pitido de éxito — Do-Mi-Sol ascendente, claro y alegre"""
     _beep_html("""
-        nota(523, 0.00, 0.20);   // Do
-        nota(659, 0.16, 0.20);   // Mi
-        nota(784, 0.32, 0.35);   // Sol
+        nota(523, 0.00, 0.18);   // Do
+        nota(659, 0.15, 0.18);   // Mi
+        nota(784, 0.30, 0.35);   // Sol
     """)
 
 
 def reproducir_beep_tardanza():
-    """Pitido de tardanza — Sol-Re descendente, volumen máximo"""
+    """Pitido de tardanza — Sol-Re descendente, advertencia"""
     _beep_html("""
         nota(784, 0.00, 0.22);   // Sol
         nota(294, 0.20, 0.40);   // Re grave
@@ -1120,9 +1121,11 @@ def reproducir_beep_tardanza():
 
 
 def reproducir_beep_error():
-    """Pitido de error — grave corto, volumen máximo"""
+    """Pitido de error/no encontrado — grave repetido, alarma"""
     _beep_html("""
-        nota(220, 0.00, 0.50, 'square');  // La grave en square
+        nota(220, 0.00, 0.18, 'square');
+        nota(220, 0.22, 0.18, 'square');
+        nota(165, 0.44, 0.40, 'square');
     """)
 
 
@@ -2448,160 +2451,194 @@ class GeneradorPDF:
 
 def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
                                   estudiantes_df, cursos=None):
+    """Registro auxiliar MINEDU CNEB vigente.
+    - Competencias reales + capacidades abreviadas
+    - Color por área
+    - Auto-ajusta tamaño de columna para que TODO entre en landscape A4
+    - Admite 1, 2 o 3 áreas por hoja
+    """
     if cursos is None:
-        cursos = ["Matemática", "Comunicación", "Ciencia y Tec."]
-    nc = len(cursos)
-    dp = 3  # desempeños por competencia
-    cp = 4  # competencias por curso
-    # total_d se recalculará después de construir r1/r2 con competencias reales
-    buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=landscape(A4))
-    w, h = landscape(A4)
-    if Path("escudo_upload.png").exists():
-        try:
-            c.saveState()
-            c.setFillAlpha(0.35)
-            c.drawImage("escudo_upload.png", w / 2 - 100, h / 2 - 100,
-                        200, 200, mask='auto')
-            c.restoreState()
-        except Exception:
-            pass
-    c.setFont("Helvetica-Bold", 11)
-    c.drawCentredString(w / 2, h - 22,
-                        "I.E.P. ALTERNATIVO YACHAY - REGISTRO AUXILIAR DE EVALUACIÓN")
-    c.setFont("Helvetica", 8)
-    c.drawCentredString(w / 2, h - 35,
-                        f"Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}")
-    c.setFont("Helvetica-Oblique", 7)
-    c.drawCentredString(w / 2, h - 47,
-                        '"Educar para la Vida — Pioneros en la Educación de Calidad"')
+        cursos = ["Comunicación", "Matemática"]
 
-    cols_per_c = cp * dp
-    r0 = ["N°", "APELLIDOS Y NOMBRES"]
-    for curso in cursos:
-        comps_c = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        r0.append(curso.upper())
-        r0.extend([""] * (len(comps_c) * dp - 1))
-    # Usar nombres reales de competencias del CNEB
-    ABREV_COMP = {
-        'Construye interpretaciones históricas': 'Hist.',
-        'Gestiona responsablemente el espacio y el ambiente': 'Geog.',
-        'Gestiona responsablemente los recursos económicos': 'Econ.',
-        'Construye su identidad': 'Identidad',
-        'Convive y participa democráticamente': 'Convivencia',
-        'Se comunica oralmente en su lengua materna': 'Oral',
-        'Lee diversos tipos de textos escritos': 'Lectura',
-        'Escribe diversos tipos de textos': 'Escritura',
-        'Resuelve problemas de cantidad': 'Cantidad',
-        'Resuelve problemas de regularidad, equivalencia y cambio': 'Regularidad',
-        'Resuelve problemas de forma, movimiento y localización': 'Forma',
-        'Resuelve problemas de gestión de datos e incertidumbre': 'Datos',
-        'Indaga mediante métodos científicos': 'Indaga',
-        'Explica el mundo físico basándose en conocimientos científicos': 'Explica',
-        'Diseña y construye soluciones tecnológicas': 'Diseña',
-        'Se desenvuelve de manera autónoma a través de su motricidad': 'Motric.',
-        'Asume una vida saludable': 'Salud',
-        'Interactúa a través de sus habilidades sociomotrices': 'Interactúa',
-        'Aprecia de manera crítica manifestaciones artístico-culturales': 'Aprecia',
-        'Crea proyectos desde los lenguajes artísticos': 'Crea',
-        'Gestiona proyectos de emprendimiento económico o social': 'Emprend.',
-    }
-    r1 = ["", ""]
-    for curso in cursos:
-        comps_curso = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        cp_real = len(comps_curso)
-        for comp in comps_curso:
-            abrev = ABREV_COMP.get(comp, comp[:8])
-            r1.append(abrev)
-            r1.extend([""] * (dp - 1))
-    r2 = ["", ""]
-    for curso in cursos:
-        comps_curso = COMPETENCIAS_CN.get(curso, [f"C{i+1}" for i in range(cp)])
-        for _ in comps_curso:
-            for di in range(1, dp + 1):
-                r2.append(f"D{di}")
-    # Recalcular total_d con competencias reales
-    total_d = sum(len(COMPETENCIAS_CN.get(c, ['','','',''])) * dp for c in cursos)
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io as _io
 
-    if not estudiantes_df.empty:
-        est = estudiantes_df.sort_values('Nombre').reset_index(drop=True)
-    else:
-        est = pd.DataFrame()
-    data = [r0, r1, r2]
-    ne = len(est) if not est.empty else 25
-    for idx in range(ne):
-        nm = est.iloc[idx].get('Nombre', '') if idx < len(est) else ""
-        if len(nm) > 28:
-            nm = nm[:28] + "."
-        data.append([str(idx + 1), nm] + [""] * total_d)
+    buf = _io.BytesIO()
 
-    avail = w - 30
-    wn = 16
-    wname = 115
-    wd = max(16, min(25, (avail - wn - wname) / total_d))
-    cw = [wn, wname] + [wd] * total_d
-    # Calcular alturas para que todo quepa en la hoja sin desbordar
-    ESPACIO_HEADER_AUX = 58   # título + subtítulos
-    ESPACIO_PIE_AUX   = 20   # leyenda al pie
-    altura_disp = h - ESPACIO_HEADER_AUX - ESPACIO_PIE_AUX
-    total_filas_aux = 3 + ne   # 3 cabeceras + alumnos
-    fila_h_aux = max(9, min(16, altura_disp / total_filas_aux))
-    cab_h_aux  = min(18, fila_h_aux * 1.3)
-    row_heights_aux = [cab_h_aux, cab_h_aux, cab_h_aux] + [fila_h_aux] * ne
-    tabla = Table(data, colWidths=cw, rowHeights=row_heights_aux, repeatRows=3)
-    sl = [
-        ('FONTNAME', (0, 0), (-1, 2), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 2), 5),
-        ('FONTSIZE', (0, 3), (-1, -1), 5.5),
-        ('GRID', (0, 0), (-1, -1), 0.4, colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('ALIGN', (1, 3), (1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BACKGROUND', (0, 0), (1, 2), colors.Color(0.1, 0.1, 0.35)),
-        ('TEXTCOLOR', (0, 0), (1, 2), colors.white),
-        ('ROWBACKGROUNDS', (0, 3), (-1, -1),
-         [colors.white, colors.Color(0.95, 0.95, 1)]),
+    est = estudiantes_df.sort_values('Nombre').reset_index(drop=True) if not estudiantes_df.empty else pd.DataFrame()
+    ne  = len(est) if not est.empty else 25
+
+    # ── Construir estructura (curso → comps → caps) ───────────────
+    estructura = []   # [(curso, comp_abrev, comp_full, [caps])]
+    for curso in cursos:
+        comps_full = COMPETENCIAS_CN.get(curso, ['Competencia 1'])
+        for cf in comps_full:
+            caps = CAPACIDADES_REG.get(cf, ['C1', 'C2', 'C3'])
+            ca   = COMP_ABREV_REG.get(cf, cf[:12])
+            estructura.append((curso, ca, cf, caps))
+
+    # total de columnas de datos
+    total_caps = sum(len(caps) for _,_,_,caps in estructura)
+
+    # ── Página landscape A4 ───────────────────────────────────────
+    PW, PH = landscape(A4)
+    MARGIN  = 0.4*cm
+    AVAIL   = PW - 2*MARGIN
+
+    # Ancho fijo N° y nombre
+    W_N   = 0.50*cm
+    W_NOM = 3.8*cm
+    # Ancho disponible para columnas de capacidades
+    W_DATA = AVAIL - W_N - W_NOM
+    W_CAP  = W_DATA / max(total_caps, 1)
+    # Límite mínimo/máximo de columna
+    W_CAP  = max(0.48*cm, min(1.2*cm, W_CAP))
+    # Si con el mínimo no cabe, reducir nombre
+    if W_N + W_NOM + W_CAP * total_caps > AVAIL:
+        W_NOM = max(2.8*cm, AVAIL - W_N - W_CAP * total_caps)
+
+    col_ws = [W_N, W_NOM] + [W_CAP] * total_caps
+
+    # ── Alturas ────────────────────────────────────────────────────
+    H_CURSO = 0.48*cm
+    H_COMP  = 1.10*cm   # rotado: texto vertical necesita espacio
+    H_CAP   = 0.82*cm
+    H_EST   = 0.55*cm
+
+    # ── Fila AREA (fila 0): spans por curso ───────────────────────
+    fila_area = ['N°', 'APELLIDOS Y NOMBRES']
+    col_start_by_curso = {}
+    col_idx = 2
+    for curso, ca, cf, caps in estructura:
+        if curso not in col_start_by_curso:
+            col_start_by_curso[curso] = col_idx
+        fila_area.extend([''] * len(caps))
+        col_idx += len(caps)
+    # Poner nombre del curso en primera celda del span
+    for curso, start_c in col_start_by_curso.items():
+        total_c = sum(len(caps) for c,_,_,caps in estructura if c == curso)
+        fila_area[start_c] = curso.upper()
+
+    # ── Fila COMPETENCIA (fila 1) ─────────────────────────────────
+    fila_comp = ['', '']
+    col_start_comp = {}
+    col_idx = 2
+    for curso, ca, cf, caps in estructura:
+        fila_comp.append(ca)
+        fila_comp.extend([''] * (len(caps)-1))
+        col_start_comp[(curso, cf)] = (col_idx, col_idx + len(caps) - 1)
+        col_idx += len(caps)
+
+    # ── Fila CAPACIDADES (fila 2) ─────────────────────────────────
+    fila_cap = ['', '']
+    for _, _, _, caps in estructura:
+        fila_cap.extend(caps)
+
+    # ── Filas estudiantes ─────────────────────────────────────────
+    filas_est = []
+    for i in range(ne):
+        nom = ''
+        if i < len(est):
+            nom = str(est.iloc[i].get('Nombre', '')).strip()
+            if len(nom) > 32: nom = nom[:32]
+        filas_est.append([str(i+1), nom] + [''] * total_caps)
+
+    data = [fila_area, fila_comp, fila_cap] + filas_est
+    row_hs = [H_CURSO, H_COMP, H_CAP] + [H_EST]*ne
+
+    # ── Estilos base ──────────────────────────────────────────────
+    styles_cmds = [
+        ('FONTNAME',      (0,0),(-1,-1), 'Helvetica'),
+        ('FONTSIZE',      (0,0),(-1,-1), 5.2),
+        ('ALIGN',         (0,0),(-1,-1), 'CENTER'),
+        ('VALIGN',        (0,0),(-1,-1), 'MIDDLE'),
+        ('GRID',          (0,0),(-1,-1), 0.25, colors.black),
+        ('LEFTPADDING',   (0,0),(-1,-1), 1),
+        ('RIGHTPADDING',  (0,0),(-1,-1), 1),
+        ('TOPPADDING',    (0,0),(-1,-1), 1),
+        ('BOTTOMPADDING', (0,0),(-1,-1), 1),
+        # Cabecera en bold
+        ('FONTNAME',      (0,0),(-1,2), 'Helvetica-Bold'),
+        # Nombre alumno alineado a izquierda
+        ('ALIGN',         (1,3),(1,-1), 'LEFT'),
+        # Filas alternas estudiantes
+        ('ROWBACKGROUNDS',(0,3),(-1,-1),
+         [colors.white, colors.Color(0.96,0.96,0.96)]),
+        # Borde grueso exterior
+        ('BOX',           (0,0),(-1,-1), 0.8, colors.black),
+        # Span N° y Nombre sobre las 3 filas de cabecera
+        ('SPAN',          (0,0),(0,2)),
+        ('SPAN',          (1,0),(1,2)),
+        ('BACKGROUND',    (0,0),(1,2), colors.Color(0.15,0.15,0.35)),
+        ('TEXTCOLOR',     (0,0),(1,2), colors.white),
+        ('FONTSIZE',      (0,0),(0,2), 5.5),
+        ('FONTSIZE',      (1,0),(1,2), 5.5),
     ]
-    colores_c = [
-        colors.Color(0, 0.2, 0.5),
-        colors.Color(0.15, 0.35, 0.15),
-        colors.Color(0.4, 0.15, 0.15)
-    ]
-    for ci, curso in enumerate(cursos):
-        cs = 2 + ci * cols_per_c
-        ce = cs + cols_per_c - 1
-        sl.append(('SPAN', (cs, 0), (ce, 0)))
-        bg = colores_c[ci % len(colores_c)]
-        sl.append(('BACKGROUND', (cs, 0), (ce, 0), bg))
-        sl.append(('TEXTCOLOR', (cs, 0), (ce, 0), colors.white))
-        for ki in range(cp):
-            s = cs + ki * dp
-            e = s + dp - 1
-            sl.append(('SPAN', (s, 1), (e, 1)))
-            bg2 = colors.Color(min(bg.red + 0.1, 1),
-                               min(bg.green + 0.1, 1),
-                               min(bg.blue + 0.1, 1))
-            sl.append(('BACKGROUND', (s, 1), (e, 1), bg2))
-            sl.append(('TEXTCOLOR', (s, 1), (e, 1), colors.white))
-            sl.append(('BACKGROUND', (s, 2), (e, 2), bg2))
-            sl.append(('TEXTCOLOR', (s, 2), (e, 2), colors.white))
-    tabla.setStyle(TableStyle(sl))
-    tw, th = tabla.wrap(w - 20, h - ESPACIO_HEADER_AUX - ESPACIO_PIE_AUX)
-    # Siempre posicionar desde el encabezado hacia abajo
-    tabla_y_aux = h - ESPACIO_HEADER_AUX - th
-    tabla.drawOn(c, 10, tabla_y_aux)
-    c.setFont("Helvetica", 5)
-    c.drawString(10, 12,
-                 f"C=Competencia | D=Desempeño | AD(18-20) A(14-17) "
-                 f"B(11-13) C(0-10) | {bimestre} | YACHAY PRO — {anio}")
-    c.save()
-    buffer.seek(0)
-    return buffer
 
+    # ── Colores y spans por curso/competencia ─────────────────────
+    col_idx = 2
+    for curso, ca, cf, caps in estructura:
+        c_rgb   = COLORES_AREA_REG.get(curso, _COLOR_DEFAULT_REG)
+        bg_area = colors.Color(c_rgb[0]*0.75, c_rgb[1]*0.75, c_rgb[2]*0.75)
+        bg_comp = colors.Color(*c_rgb)
+        bg_cap  = colors.Color(min(1,c_rgb[0]*1.05), min(1,c_rgb[1]*1.05), min(1,c_rgb[2]*1.05))
+        bg_est  = colors.Color(min(1,c_rgb[0]*1.08), min(1,c_rgb[1]*1.08), min(1,c_rgb[2]*1.08))
 
-# ================================================================
-# REGISTRO ASISTENCIA PDF (sin sáb/dom, sin feriados + pie feriados)
-# ================================================================
+        cs = col_idx
+        ce = col_idx + len(caps) - 1
+
+        # Comp span y color
+        styles_cmds.append(('SPAN',       (cs,1),(ce,1)))
+        styles_cmds.append(('BACKGROUND', (cs,1),(ce,1), bg_comp))
+        # Caps color
+        styles_cmds.append(('BACKGROUND', (cs,2),(ce,2), bg_cap))
+        # Estudiantes color
+        styles_cmds.append(('BACKGROUND', (cs,3),(cs,-1), bg_est))
+        # Línea vertical gruesa al inicio de cada competencia
+        if cs > 2:
+            styles_cmds.append(('LINEBEFORE', (cs,0),(cs,-1), 0.7, colors.Color(0.3,0.3,0.3)))
+
+        col_idx += len(caps)
+
+    # Span y color filas AREA por curso
+    col_idx = 2
+    last_curso = None
+    for curso, ca, cf, caps in estructura:
+        if curso != last_curso:
+            start_c = col_start_by_curso[curso]
+            total_c = sum(len(c) for cu,_,_,c in estructura if cu == curso)
+            end_c   = start_c + total_c - 1
+            c_rgb   = COLORES_AREA_REG.get(curso, _COLOR_DEFAULT_REG)
+            bg_area = colors.Color(c_rgb[0]*0.72, c_rgb[1]*0.72, c_rgb[2]*0.72)
+            styles_cmds.append(('SPAN',       (start_c,0),(end_c,0)))
+            styles_cmds.append(('BACKGROUND', (start_c,0),(end_c,0), bg_area))
+            styles_cmds.append(('TEXTCOLOR',  (start_c,0),(end_c,0), colors.white))
+            styles_cmds.append(('FONTSIZE',   (start_c,0),(end_c,0), 5.8))
+            if start_c > 2:
+                styles_cmds.append(('LINEBEFORE', (start_c,0),(start_c,-1), 1.2, colors.black))
+            last_curso = curso
+        col_idx += len(caps)
+
+    # ── PDF ───────────────────────────────────────────────────────
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=0.5*cm, bottomMargin=0.5*cm,
+                            leftMargin=MARGIN, rightMargin=MARGIN)
+    ss = getSampleStyleSheet()
+    tit = Paragraph(
+        f"<b>I.E.P. ALTERNATIVO YACHAY — REGISTRO AUXILIAR DE EVALUACIÓN — CNEB</b>"
+        f"&nbsp;&nbsp;Grado: {grado} | Sección: {seccion} | {bimestre} | Año: {anio}",
+        ParagraphStyle('t', fontSize=6.5, leading=8, alignment=1, parent=ss['Normal']))
+
+    t = Table(data, colWidths=col_ws, rowHeights=row_hs)
+    t.setStyle(TableStyle(styles_cmds))
+    doc.build([tit, Spacer(1,0.12*cm), t])
+    buf.seek(0)
+    return buf
+
 
 def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_df, cursos=None):
     """Genera el registro auxiliar en formato Word (.docx)"""
@@ -8216,6 +8253,7 @@ def _registrar_asistencia_rapida(dni):
         else:
             reproducir_beep_exitoso()
     else:
+        reproducir_beep_error()
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
         nombre_manual = st.text_input("Nombre completo:", key=f"nombre_manual_{dni}",
                                       placeholder="Ej: FLORES QUISPE JUAN")
@@ -14241,6 +14279,131 @@ BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 # ================================================================
 # COMPETENCIAS DEL CURRÍCULO NACIONAL DEL PERÚ (MINEDU)
 # ================================================================
+# ================================================================
+# ESTRUCTURA OFICIAL MINEDU — CNEB (CNEB vigente)
+# Competencias con sus capacidades exactas abreviadas
+# ================================================================
+
+CAPACIDADES_REG = {
+    # ── COMUNICACIÓN ────────────────────────────────────────────────
+    'Se comunica oralmente en su lengua materna': [
+        'Obtiene inf.', 'Infiere/interp.', 'Adecúa/organiza', 'Rec.no verb.', 'Interactúa', 'Reflexiona'],
+    'Lee diversos tipos de textos escritos': [
+        'Obtiene inf.', 'Infiere/interp.', 'Reflexiona/evalúa'],
+    'Escribe diversos tipos de textos': [
+        'Adecúa texto', 'Organiza ideas', 'Usa convenc.', 'Reflexiona/evalúa'],
+    # Inglés (mismas capacidades)
+    'Se comunica oralmente en inglés como lengua extranjera': [
+        'Obtiene inf.', 'Infiere/interp.', 'Adecúa/organiza', 'Rec.no verb.', 'Interactúa', 'Reflexiona'],
+    'Lee diversos tipos de textos en inglés': [
+        'Obtiene inf.', 'Infiere/interp.', 'Reflexiona/evalúa'],
+    'Escribe diversos tipos de textos en inglés': [
+        'Adecúa texto', 'Organiza ideas', 'Usa convenc.', 'Reflexiona/evalúa'],
+    # Castellano 2da lengua
+    'Se comunica oralmente en castellano como segunda lengua': [
+        'Obtiene inf.', 'Infiere/interp.', 'Adecúa/organiza', 'Interactúa', 'Reflexiona'],
+    'Lee diversos tipos de textos en castellano como segunda lengua': [
+        'Obtiene inf.', 'Infiere/interp.', 'Reflexiona/evalúa'],
+    'Escribe diversos tipos de textos en castellano como segunda lengua': [
+        'Adecúa texto', 'Organiza ideas', 'Usa convenc.', 'Reflexiona/evalúa'],
+    # ── MATEMÁTICA ──────────────────────────────────────────────────
+    'Resuelve problemas de cantidad': [
+        'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
+    'Resuelve problemas de regularidad, equivalencia y cambio': [
+        'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
+    'Resuelve problemas de forma, movimiento y localización': [
+        'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
+    'Resuelve problemas de gestión de datos e incertidumbre': [
+        'Traduce', 'Comunica', 'Usa estrateg.', 'Argumenta'],
+    # ── PERSONAL SOCIAL (Primaria) ──────────────────────────────────
+    'Construye su identidad': [
+        'Autoconoc.', 'Autorreg./auto.', 'Reflexión ética'],
+    'Convive y participa democráticamente': [
+        'Interactúa', 'Construye norms.', 'Maneja conflictos', 'Delibera', 'Participa'],
+    'Construye interpretaciones históricas': [
+        'Interpreta fuentes', 'Comprende tiempo', 'Elabora expl.'],
+    'Gestiona responsablemente el espacio y el ambiente': [
+        'Comprende relac.', 'Maneja fuentes', 'Genera acciones'],
+    'Gestiona responsablemente los recursos económicos': [
+        'Comprende sist.econ.', 'Toma decis.econ.'],
+    # ── C Y T ────────────────────────────────────────────────────────
+    'Indaga mediante métodos científicos': [
+        'Problematiza', 'Diseña estrat.', 'Genera datos', 'Analiza datos', 'Evalúa/reflexiona'],
+    'Explica el mundo físico basándose en conocimientos científicos': [
+        'Comprende relac.', 'Evalúa implicanc.'],
+    'Diseña y construye soluciones tecnológicas': [
+        'Determina alt.', 'Diseña altern.', 'Implementa', 'Evalúa diseño'],
+    # ── EDUCACIÓN FÍSICA ────────────────────────────────────────────
+    'Se desenvuelve de manera autónoma a través de su motricidad': [
+        'Comprende su cuerpo', 'Se expresa corporal.'],
+    'Asume una vida saludable': [
+        'Comprende relac.', 'Incorpora prácticas'],
+    'Interactúa a través de sus habilidades sociomotrices': [
+        'Se relaciona', 'Crea y aplica', 'Actúa con fair play'],
+    # ── ARTE Y CULTURA ───────────────────────────────────────────────
+    'Aprecia de manera crítica manifestaciones artístico-culturales': [
+        'Percibe', 'Contextualiza', 'Reflexiona'],
+    'Crea proyectos desde los lenguajes artísticos': [
+        'Explora medios', 'Aplica procesos', 'Evalúa diseño'],
+    # ── ED. RELIGIOSA ────────────────────────────────────────────────
+    'Construye su identidad como persona humana, amada por Dios': [
+        'Conoce a Dios', 'Cultiva relac.'],
+    'Asume la experiencia del encuentro personal y comunitario con Dios': [
+        'Transforma vida', 'Actúa en sociedad'],
+    # ── ED. PARA EL TRABAJO ──────────────────────────────────────────
+    'Gestiona proyectos de emprendimiento económico o social': [
+        'Crea prop.valor', 'Aplica hab.técnicas', 'Trabaja cooperat.', 'Evalúa resultados'],
+}
+
+COMP_ABREV_REG = {
+    'Se comunica oralmente en su lengua materna':                 'Com.Oral LM',
+    'Lee diversos tipos de textos escritos':                      'Lectura LM',
+    'Escribe diversos tipos de textos':                           'Escritura LM',
+    'Resuelve problemas de cantidad':                             'Cantidad',
+    'Resuelve problemas de regularidad, equivalencia y cambio':   'Regularidad',
+    'Resuelve problemas de forma, movimiento y localización':     'Forma/Loc.',
+    'Resuelve problemas de gestión de datos e incertidumbre':     'Datos/Inc.',
+    'Construye su identidad':                                     'Identidad',
+    'Convive y participa democráticamente':                       'Convivencia',
+    'Construye interpretaciones históricas':                      'Hist.',
+    'Gestiona responsablemente el espacio y el ambiente':         'Geogr.',
+    'Gestiona responsablemente los recursos económicos':          'Econ.',
+    'Indaga mediante métodos científicos':                        'Indagación',
+    'Explica el mundo físico basándose en conocimientos científicos': 'Explica CyT',
+    'Diseña y construye soluciones tecnológicas':                 'Tecnología',
+    'Se desenvuelve de manera autónoma a través de su motricidad':'Motricidad',
+    'Asume una vida saludable':                                   'Vida sana',
+    'Interactúa a través de sus habilidades sociomotrices':       'Sociomotriz',
+    'Aprecia de manera crítica manifestaciones artístico-culturales': 'Aprecia',
+    'Crea proyectos desde los lenguajes artísticos':              'Crea',
+    'Se comunica oralmente en inglés como lengua extranjera':     'Com.Oral Ing',
+    'Lee diversos tipos de textos en inglés':                     'Lectura Ing',
+    'Escribe diversos tipos de textos en inglés':                 'Escritura Ing',
+    'Construye su identidad como persona humana, amada por Dios': 'Ident.Rel.',
+    'Asume la experiencia del encuentro personal y comunitario con Dios': 'Encuentro',
+    'Gestiona proyectos de emprendimiento económico o social':    'Emprend.',
+    'Se comunica oralmente en castellano como segunda lengua':    'Com.Oral Cast',
+    'Lee diversos tipos de textos en castellano como segunda lengua': 'Lectura Cast',
+    'Escribe diversos tipos de textos en castellano como segunda lengua':'Escrit.Cast',
+}
+
+COLORES_AREA_REG = {
+    'Comunicación':              (0.68, 0.84, 1.00),
+    'Personal Social':           (0.72, 0.98, 0.78),
+    'Matemática':                (1.00, 0.88, 0.65),
+    'Ciencia y Tecnología':      (0.78, 0.95, 0.78),
+    'Ciencias Sociales':         (1.00, 0.78, 0.68),
+    'Desarrollo Personal, Ciudadanía y Cívica': (0.88, 0.78, 1.00),
+    'Educación Física':          (0.72, 0.95, 0.95),
+    'Arte y Cultura':            (1.00, 0.82, 0.95),
+    'Inglés':                    (0.82, 0.82, 1.00),
+    'Educación Religiosa':       (1.00, 0.95, 0.72),
+    'Educación para el Trabajo': (0.82, 1.00, 0.82),
+    'Castellano como segunda lengua': (0.68, 0.90, 1.00),
+}
+_COLOR_DEFAULT_REG = (0.92, 0.92, 0.92)
+
+
 COMPETENCIAS_CN = {
     'Personal Social': [
         'Construye su identidad',
