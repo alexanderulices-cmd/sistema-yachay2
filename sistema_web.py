@@ -8102,31 +8102,18 @@ def tab_asistencias():
                 with col_info:
                     st.caption(f"{tipo_tab.replace('_',' ').title()} | {cel}")
 
-            # Abrir WA — intenta app instalada, si no abre web.whatsapp.com
+            # Abrir WA — directo a web.whatsapp.com (pestaña reutilizable _wa_yachay)
             if '_wa_link_pendiente' in st.session_state:
                 _link_app = st.session_state.pop('_wa_link_pendiente')
-                _link_web = st.session_state.pop('_wa_link_web', 
+                _link_web = st.session_state.pop('_wa_link_web',
                     _link_app.replace('whatsapp://send?', 'https://web.whatsapp.com/send?'))
                 import streamlit.components.v1 as _cwav2
                 import random as _rnd_wa
                 _uid_wa = _rnd_wa.randint(100000, 999999)
                 _cwav2.html(f"""<script>
 (function wa_{_uid_wa}() {{
-  var appUrl = "{_link_app}";
-  var webUrl = "{_link_web}";
-  var opened = false;
-  // Intentar abrir WhatsApp app instalada (PC/Desktop)
-  try {{
-    window.location.href = appUrl;
-    opened = true;
-  }} catch(e) {{ opened = false; }}
-  // Si en 2 segundos no respondió la app, abrir WhatsApp Web en misma pestaña reutilizable
-  setTimeout(function() {{
-    if (document.hasFocus()) {{
-      // La app no se abrió — usar WhatsApp Web
-      window.parent.open(webUrl, '_wa_yachay');
-    }}
-  }}, 2000);
+  // Abre en la pestaña _wa_yachay — siempre la misma, no abre nuevas
+  window.open("{_link_web}", "_wa_yachay");
 }})();
 </script>""", height=0)
 
