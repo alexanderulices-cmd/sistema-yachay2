@@ -8102,36 +8102,16 @@ def tab_asistencias():
                 with col_info:
                     st.caption(f"{tipo_tab.replace('_',' ').title()} | {cel}")
 
-            # Abrir WA — whatsapp:// abre Desktop en PC y app en celular automáticamente
+            # Abrir WA — solo whatsapp:// (Desktop en PC, app en celular)
             if '_wa_link_pendiente' in st.session_state:
                 _link_app = st.session_state.pop('_wa_link_pendiente')
-                _link_web = st.session_state.pop('_wa_link_web',
-                    _link_app.replace('whatsapp://send?', 'https://web.whatsapp.com/send?'))
+                st.session_state.pop('_wa_link_web', None)
                 import streamlit.components.v1 as _cwav2
                 import random as _rnd_wa
                 _uid_wa = _rnd_wa.randint(100000, 999999)
                 _cwav2.html(f"""<script>
-(function wa_{_uid_wa}() {{
-  // whatsapp:// abre WhatsApp Desktop en PC y WhatsApp en celular
-  // Si no está instalado, cae a WhatsApp Web como respaldo
-  var appUrl = "{_link_app}";
-  var webUrl = "{_link_web}";
-
-  // Intentar abrir la app nativa
-  var start = Date.now();
-  window.location.href = appUrl;
-
-  // Si en 2 segundos la página sigue visible (app no abrió), usar WhatsApp Web
-  setTimeout(function() {{
-    if (Date.now() - start < 3000) {{
-      if (window._waTab && !window._waTab.closed) {{
-        window._waTab.location.href = webUrl;
-        window._waTab.focus();
-      }} else {{
-        window._waTab = window.open(webUrl, "_wa_yachay");
-      }}
-    }}
-  }}, 2000);
+(function wa_{_uid_wa}(){{
+  window.location.href = "{_link_app}";
 }})();
 </script>""", height=0)
 
