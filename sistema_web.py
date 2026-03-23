@@ -1932,15 +1932,10 @@ class BaseDatos:
 
 
 def _construir_indice_dni():
-    """Construye índice DNI→persona OFFLINE-FIRST.
-    1° caché JSON local (instantáneo, <10ms)
-    2° Excel local (rápido, ~20ms)
-    3° GSheets en hilo de fondo — NUNCA bloquea la UI
-    El caché persiste reinicios y funciona sin internet."""
+    """Construye indice DNI-persona. Docentes SIEMPRE sincrono, alumnos GSheets en background."""
     indice = {}
-    gs_ok = False
 
-    # ── PASO 1: caché JSON local — INSTANTÁNEO ────────────────────────
+    # PASO 1: cache JSON local
     try:
         if Path(ARCHIVO_INDICE_CACHE).exists():
             with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as f:
@@ -1950,7 +1945,7 @@ def _construir_indice_dni():
     except Exception:
         pass
 
-    # ── PASO 2: Excel local si no hay caché ──────────────────────────
+    # PASO 2: Alumnos Excel local (solo si cache vacio)
     if not indice:
         try:
             if Path(ARCHIVO_MATRICULA).exists():
@@ -1960,98 +1955,119 @@ def _construir_indice_dni():
                     for _, row in df.iterrows():
                         dni = str(row.get('DNI', '')).strip()
                         if dni and len(dni) >= 7:
-                            r = row.to_dict()
-                            r['_tipo'] = 'alumno'
+                            r = row.to_dict(); r['_tipo'] = 'alumno'
                             indice[dni] = r
         except Exception:
             pass
 
-    # ── PASO 3: Docentes local — SIEMPRE, incluso si ya hay caché ────
-    # Los docentes deben estar SIEMPRE en el índice, nunca se omiten
+    # PASO 3a: Docentes Excel local
+    _docs_ok = False
     try:
         if Path(ARCHIVO_DOCENTES).exists():
             df_d = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
             df_d.columns = df_d.columns.str.strip()
             if not df_d.empty and 'DNI' in df_d.columns:
-                n_doc_antes = sum(1 for v in indice.values() if v.get('_tipo') == 'docente')
                 for _, row in df_d.iterrows():
-                    dni = str(row.get('DNI', '')).strip()
+                    dni = str(row.get('DNI', '')).strip().replace('.0','')
                     if dni and len(dni) >= 7:
-                        r = row.to_dict()
-                        r['_tipo'] = 'docente'
+                        r = row.to_dict(); r['_tipo'] = 'docente'
                         indice[dni] = r
-                n_doc_despues = sum(1 for v in indice.values() if v.get('_tipo') == 'docente')
+                _docs_ok = True
     except Exception:
         pass
 
-    # Guardar en RAM inmediatamente — UI lista al instante
-    st.session_state['_indice_dni'] = indice
-    st.session_state['_indice_dni_ts'] = time.time()
-
-    # ── PASO 4: GSheets en hilo de fondo — NUNCA bloquea ─────────────
-    import threading as _th_idx
-    def _gs_actualizar():
+    # PASO 3b: Docentes GSheets (Streamlit Cloud — no hay Excel local)
+    if not _docs_ok:
         try:
             gs = _gs()
-            if not gs:
-                return
-            df_gs = gs.leer_matricula()
-            col_map = {'nombre': 'Nombre', 'dni': 'DNI', 'nivel': 'Nivel',
-                       'grado': 'Grado', 'seccion': 'Seccion',
-                       'apoderado': 'Apoderado', 'dni_apoderado': 'DNI_Apoderado',
-                       'celular_apoderado': 'Celular_Apoderado'}
-            idx_nuevo = dict(st.session_state.get('_indice_dni', {}))
+            if gs and hasattr(gs, 'leer_docentes'):
+                df_doc = gs.leer_docentes()
+                if not df_doc.empty:
+                    df_doc.columns = [c.strip().lower() for c in df_doc.columns]
+                    for _, row in df_doc.iterrows():
+                        dni_r = str(row.get('dni', '')).strip().replace('.0','')
+                        if not dni_r: continue
+                        dni = dni_r.zfill(8) if dni_r.isdigit() and len(dni_r) <= 8 else dni_r
+                        if len(dni) < 7: continue
+                        indice[dni] = {
+                            'DNI': dni, '_tipo': 'docente',
+                            'Nombre': str(row.get('nombre','')).strip().upper(),
+                            'Cargo':  str(row.get('cargo','DOCENTE')).strip(),
+                            'Grado':  str(row.get('grado_asignado','')).strip(),
+                            'Celular':str(row.get('celular','')).strip(),
+                        }
+                    _docs_ok = True
+        except Exception:
+            pass
 
-            # Agregar alumnos de GSheets
+    # PASO 3c: FALLBACK — usuarios con rol docente que tengan DNI registrado
+    # Esto cubre el caso donde GSheets falla o la hoja docentes esta vacia
+    try:
+        gs = _gs()
+        if gs:
+            usuarios = gs.leer_usuarios()
+            for uname, ud in usuarios.items():
+                rol = str(ud.get('rol', '')).lower()
+                if not any(r in rol for r in ['docente','director','auxiliar','promotor']):
+                    continue
+                dni_u = str(ud.get('dni', '')).strip().replace('.0','')
+                if not dni_u or len(dni_u) < 7:
+                    continue
+                if dni_u not in indice:
+                    nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
+                    indice[dni_u] = {
+                        'DNI': dni_u, '_tipo': 'docente',
+                        'Nombre': nombre_u, 'Cargo': rol.upper(),
+                        'Grado': str(ud.get('grado','')).strip(),
+                    }
+    except Exception:
+        pass
+
+    # Guardar en RAM
+    st.session_state['_indice_dni']    = indice
+    st.session_state['_indice_dni_ts'] = time.time()
+    n_doc = sum(1 for v in indice.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
+    n_alu = sum(1 for v in indice.values() if isinstance(v,dict) and v.get('_tipo')=='alumno')
+    st.session_state['_indice_stats'] = {'docentes': n_doc, 'alumnos': n_alu}
+
+    # Guardar cache disco
+    try:
+        with open(ARCHIVO_INDICE_CACHE, 'w', encoding='utf-8') as f:
+            json.dump(indice, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+    # PASO 4: Alumnos GSheets en hilo de fondo
+    import threading as _th_idx
+    def _gs_act():
+        try:
+            gs = _gs()
+            if not gs: return
+            idx2 = dict(st.session_state.get('_indice_dni', {}))
+            df_gs = gs.leer_matricula()
+            col_map = {'nombre':'Nombre','dni':'DNI','nivel':'Nivel','grado':'Grado',
+                       'seccion':'Seccion','apoderado':'Apoderado',
+                       'dni_apoderado':'DNI_Apoderado','celular_apoderado':'Celular_Apoderado'}
             if not df_gs.empty:
                 df_gs = df_gs.rename(columns=col_map)
                 for _, row in df_gs.iterrows():
-                    dni = str(row.get('DNI', '')).strip()
+                    dni = str(row.get('DNI','')).strip().replace('.0','')
                     if dni and len(dni) >= 7:
-                        r = row.to_dict()
-                        r['_tipo'] = 'alumno'
-                        idx_nuevo[dni] = r
-
-            # ── TAMBIÉN agregar docentes de GSheets ───────────────────
-            # Sin esto, al sobreescribir el caché los docentes desaparecen
-            try:
-                df_doc_gs = gs.leer_docentes() if hasattr(gs, 'leer_docentes') else pd.DataFrame()
-                if not df_doc_gs.empty and 'DNI' in df_doc_gs.columns:
-                    for _, row in df_doc_gs.iterrows():
-                        dni = str(row.get('DNI', '')).strip()
-                        if dni and len(dni) >= 7:
-                            r = row.to_dict()
-                            r['_tipo'] = 'docente'
-                            idx_nuevo[dni] = r
-            except Exception:
-                pass
-
-            # ── También docentes del Excel local por si acaso ─────────
-            try:
-                if Path(ARCHIVO_DOCENTES).exists():
-                    df_dl = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
-                    df_dl.columns = df_dl.columns.str.strip()
-                    if not df_dl.empty and 'DNI' in df_dl.columns:
-                        for _, row in df_dl.iterrows():
-                            dni = str(row.get('DNI', '')).strip()
-                            if dni and len(dni) >= 7:
-                                r = row.to_dict()
-                                r['_tipo'] = 'docente'
-                                idx_nuevo[dni] = r
-            except Exception:
-                pass
-
-            # Actualizar RAM y caché en disco
-            st.session_state['_indice_dni'] = idx_nuevo
-            st.session_state['_indice_desde_cache'] = False
+                        r = row.to_dict(); r['_tipo'] = 'alumno'
+                        idx2[dni] = r
+            # Mantener docentes existentes
+            for k, v in list(idx2.items()):
+                if isinstance(v, dict) and v.get('_tipo') == 'docente':
+                    idx2[k] = v
+            st.session_state['_indice_dni'] = idx2
             try:
                 with open(ARCHIVO_INDICE_CACHE, 'w', encoding='utf-8') as f:
-                    json.dump(idx_nuevo, f, ensure_ascii=False)
+                    json.dump(idx2, f, ensure_ascii=False)
             except Exception:
                 pass
         except Exception:
             pass
-    _th_idx.Thread(target=_gs_actualizar, daemon=True).start()
+    _th_idx.Thread(target=_gs_act, daemon=True).start()
 
 
 def _nombre_completo_docente():
@@ -7696,6 +7712,42 @@ def tab_asistencias():
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
 
+        # Diagnóstico del índice — muestra cuántos docentes y alumnos cargados
+        _stats = st.session_state.get('_indice_stats', {})
+        _n_doc = _stats.get('docentes', 0)
+        _n_alu = _stats.get('alumnos', 0)
+        _idx   = st.session_state.get('_indice_dni', {})
+        if not _stats:
+            _n_doc = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
+            _n_alu = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='alumno')
+
+        col_stat1, col_stat2, col_stat3 = st.columns([2, 2, 2])
+        with col_stat1:
+            st.metric("👥 Alumnos en índice", _n_alu)
+        with col_stat2:
+            color_doc = "normal" if _n_doc > 0 else "off"
+            st.metric("👨‍🏫 Docentes en índice", _n_doc,
+                      delta="OK" if _n_doc > 0 else "⚠️ Sin cargar",
+                      delta_color=color_doc)
+        with col_stat3:
+            if st.button("🔄 Recargar índice", key="btn_reload_indice",
+                         help="Si docentes no aparecen, presiona aquí"):
+                # Borrar cache y reconstruir
+                st.session_state.pop('_indice_dni', None)
+                st.session_state.pop('_indice_dni_ts', None)
+                st.session_state.pop('_indice_stats', None)
+                try:
+                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+                except Exception:
+                    pass
+                with st.spinner("Recargando docentes y alumnos..."):
+                    _construir_indice_dni()
+                st.success("✅ Índice recargado")
+                st.rerun()
+
+        if _n_doc == 0:
+            st.warning("⚠️ **No hay docentes en el índice.** Verifica que los docentes tengan DNI registrado en Google Sheets (hoja 'docentes'). Presiona 🔄 Recargar para intentar de nuevo.")
+
         # Callback que se ejecuta al cambiar el campo (Enter o scanner)
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
@@ -8154,12 +8206,53 @@ def _registrar_asistencia_rapida(dni):
         except Exception:
             pass
 
+    # ── FALLBACK DIRECTO A GSHEETS ────────────────────────────────────
+    # Si el índice no tiene al DNI (docente o alumno nuevo), busca directamente
+    # Esto resuelve el caso de Streamlit Cloud donde docentes.xlsx no existe
+    if not persona:
+        try:
+            gs = _gs()
+            if gs and hasattr(gs, 'leer_docentes'):
+                df_doc_fb = gs.leer_docentes()
+                if not df_doc_fb.empty and 'DNI' in df_doc_fb.columns:
+                    df_doc_fb['DNI'] = df_doc_fb['DNI'].astype(str).str.strip()
+                    fila = df_doc_fb[df_doc_fb['DNI'] == dni_str]
+                    if not fila.empty:
+                        r = fila.iloc[0].to_dict()
+                        r['_tipo'] = 'docente'
+                        if _idx is not None:
+                            _idx[dni_str] = r
+                        nom_fb = str(r.get('Nombre', r.get('nombre', dni_str))).strip()
+                        persona = {'DNI': dni_str, 'Nombre': nom_fb,
+                                   'Grado': '', 'Nivel': '', '_tipo': 'docente'}
+        except Exception:
+            pass
+
+    if not persona:
+        try:
+            gs = _gs()
+            if gs:
+                df_mat_fb = gs.leer_matricula()
+                if not df_mat_fb.empty:
+                    col_map_fb = {'dni':'DNI','nombre':'Nombre','grado':'Grado','nivel':'Nivel'}
+                    df_mat_fb = df_mat_fb.rename(columns=col_map_fb)
+                    if 'DNI' in df_mat_fb.columns:
+                        df_mat_fb['DNI'] = df_mat_fb['DNI'].astype(str).str.strip()
+                        fila = df_mat_fb[df_mat_fb['DNI'] == dni_str]
+                        if not fila.empty:
+                            r = fila.iloc[0].to_dict()
+                            r['_tipo'] = 'alumno'
+                            if _idx is not None:
+                                _idx[dni_str] = r
+                            nom_fb = str(r.get('Nombre', r.get('nombre', dni_str))).strip()
+                            persona = {'DNI': dni_str, 'Nombre': nom_fb,
+                                       'Grado': str(r.get('Grado','')),
+                                       'Nivel': str(r.get('Nivel','')),
+                                       '_tipo': 'alumno'}
+        except Exception:
+            pass
+
     if persona:
-        hora = hora_peru_str()
-        modo = st.session_state.get('tipo_asistencia', 'Entrada')
-        es_d = persona.get('_tipo', '') == 'docente'
-        # Nombre desde índice directo — sin llamada extra
-        nombre = str(persona.get('Nombre', persona.get('nombre', dni_str)))
 
         tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
         limite_txt = HORARIOS[_horario_activo()]['limite']
