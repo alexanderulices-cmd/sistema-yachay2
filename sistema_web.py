@@ -8018,13 +8018,10 @@ def tab_asistencias():
 
                 clave_envio = f"{dk}_{tipo_tab}_{fecha_peru_str()}"
                 ya_enviado = clave_envio in st.session_state.wa_enviados
-                if ya_enviado:
-                    enviados += 1
-                    continue
 
                 nombre = dat['nombre']
                 es_doc = dat.get('es_docente', False)
-                tipo_icon = "DOCENTE" if es_doc else "📚"
+                tipo_icon = "DOCENTE" if es_doc else "ALU"
 
                 cel = ''
                 # ── Buscar celular en AMBAS tablas siempre ───────────────
@@ -8034,14 +8031,12 @@ def tab_asistencias():
                     df_doc_wa = BaseDatos.cargar_docentes()
                     st.session_state['_cache_docentes_wa'] = df_doc_wa
                 if not df_doc_wa.empty and 'Celular' in df_doc_wa.columns:
-                    # Por DNI
                     if 'DNI' in df_doc_wa.columns:
                         fila_d = df_doc_wa[df_doc_wa['DNI'].astype(str).str.strip() == str(dk).strip()]
                         if not fila_d.empty:
                             cv = str(fila_d.iloc[0].get('Celular', '')).strip()
                             if cv and cv not in ('nan', 'None', '', 'NaN'):
                                 cel = cv
-                    # Por nombre (fallback si DNI no coincide)
                     if not cel and 'Nombre' in df_doc_wa.columns:
                         nm_up = nombre.strip().upper()
                         fila_n = df_doc_wa[df_doc_wa['Nombre'].astype(str).str.strip().str.upper() == nm_up]
@@ -8075,50 +8070,63 @@ def tab_asistencias():
                     sin_celular.append(f"{tipo_icon} {nombre}")
                     continue
 
-                pendientes += 1
+                pendientes += 1 if not ya_enviado else 0
+                if ya_enviado:
+                    enviados += 1
                 msg = generar_mensaje_asistencia(nombre, tipo_tab, hora_reg)
                 t_cel = ''.join(c for c in cel if c.isdigit())
                 if len(t_cel) == 9: t_cel = "51" + t_cel
                 elif not t_cel.startswith("51"): t_cel = "51" + t_cel
                 msg_enc = urllib.parse.quote(msg, safe='', encoding='utf-8')
-                link_wa = f"whatsapp://send?phone={t_cel}&text={msg_enc}"
+                # whatsapp:// para app PC; fallback web.whatsapp.com (NO wa.me que es móvil)
+                link_wa_app = f"whatsapp://send?phone={t_cel}&text={msg_enc}"
+                link_wa_web = f"https://web.whatsapp.com/send?phone={t_cel}&text={msg_enc}"
 
                 col_wa, col_info = st.columns([5, 2])
                 with col_wa:
-                    btn_label = f"📱 {tipo_icon} {nombre} — {hora_reg} → {cel}"
-                    if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
-                                 use_container_width=True, type="primary"):
-                        st.session_state.wa_enviados.add(clave_envio)
-                        st.session_state['_wa_link_pendiente'] = link_wa
-                        st.rerun()
+                    if ya_enviado:
+                        # Botón verde con checkmark — NO desaparece
+                        st.markdown(
+                            f"<div style='background:#16a34a;color:white;padding:8px 14px;"
+                            f"border-radius:8px;font-weight:600;font-size:14px;'>"
+                            f"✅ {nombre} — {hora_reg} — ENVIADO</div>",
+                            unsafe_allow_html=True)
+                    else:
+                        btn_label = f"Enviar WA: {nombre} — {hora_reg}"
+                        if st.button(btn_label, key=f"wa_{dk}_{tipo_tab}",
+                                     use_container_width=True, type="primary"):
+                            st.session_state.wa_enviados.add(clave_envio)
+                            st.session_state['_wa_link_pendiente'] = link_wa_app
+                            st.session_state['_wa_link_web'] = link_wa_web
+                            st.rerun()
                 with col_info:
-                    st.caption(f"📋 {tipo_tab.replace('_',' ').title()}")
+                    st.caption(f"{tipo_tab.replace('_',' ').title()} | {cel}")
 
-            # Abrir WA — usa whatsapp:// para app instalada, cae a wa.me si no está
+            # Abrir WA — intenta app instalada, si no abre web.whatsapp.com
             if '_wa_link_pendiente' in st.session_state:
-                _link_abrir = st.session_state.pop('_wa_link_pendiente')
-                # Extraer número y texto del link para construir fallback
-                _link_fallback = _link_abrir.replace(
-                    'whatsapp://send?', 'https://wa.me/').replace(
-                    '&text=', '?text=').replace('phone=', '')
+                _link_app = st.session_state.pop('_wa_link_pendiente')
+                _link_web = st.session_state.pop('_wa_link_web', 
+                    _link_app.replace('whatsapp://send?', 'https://web.whatsapp.com/send?'))
                 import streamlit.components.v1 as _cwav2
+                import random as _rnd_wa
+                _uid_wa = _rnd_wa.randint(100000, 999999)
                 _cwav2.html(f"""<script>
-(function() {{
-  var url = "{_link_abrir}";
-  var fallback = "{_link_fallback}";
-  // Intentar abrir app instalada
-  var iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
+(function wa_{_uid_wa}() {{
+  var appUrl = "{_link_app}";
+  var webUrl = "{_link_web}";
+  var opened = false;
+  // Intentar abrir WhatsApp app instalada (PC/Desktop)
   try {{
-    iframe.src = url;
-    // Si en 1.5s no abrió la app, abrir wa.me como fallback
-    setTimeout(function() {{
-      window.parent.open(fallback, '_wa_yachay', 'width=1200,height=800');
-    }}, 1500);
-  }} catch(e) {{
-    window.parent.open(fallback, '_wa_yachay', 'width=1200,height=800');
-  }}
+    window.location.href = appUrl;
+    opened = true;
+  }} catch(e) {{ opened = false; }}
+  // Si en 2 segundos no respondió la app, abrir WhatsApp Web en misma pestaña reutilizable
+  setTimeout(function() {{
+    if (document.hasFocus()) {{
+      // La app no se abrió — usar WhatsApp Web
+      window.parent.open(webUrl, '_wa_yachay');
+    }}
+  }}, 2000);
 }})();
 </script>""", height=0)
 
