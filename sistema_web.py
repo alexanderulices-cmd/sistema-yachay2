@@ -8255,8 +8255,11 @@ def _registrar_asistencia_rapida(dni):
             pass
 
     if persona:
-
-        tp = "DOCENTE" if es_d else "ALUMNO"
+        hora   = hora_peru_str()
+        modo   = st.session_state.get('tipo_asistencia', 'Entrada')
+        es_d   = persona.get('_tipo', '') == 'docente'
+        nombre = str(persona.get('Nombre', persona.get('nombre', dni_str))).strip()
+        tp     = "DOCENTE" if es_d else "ALUMNO"
         limite_txt = HORARIOS[_horario_activo()]['limite']
 
         # ── AUTO-DETECTAR TURNO mañana/tarde ─────────────────────────
