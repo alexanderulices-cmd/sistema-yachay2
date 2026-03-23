@@ -4299,7 +4299,7 @@ def configurar_sidebar():
             "admin": "⚙️ Administrador",
             "directivo": "📋 Directivo",
             "auxiliar": "👤 Auxiliar",
-            "docente": "👨‍🏫 Docente"
+            "docente": "DOCENTE Docente"
         }
         label = roles_nombres.get(st.session_state.rol, '')
         if st.session_state.rol == "docente" and st.session_state.docente_info:
@@ -4506,7 +4506,7 @@ def configurar_sidebar():
             with c1:
                 st.metric("📚 Alumnos", stats['total_alumnos'])
             with c2:
-                st.metric("👨‍🏫 Docentes", stats['total_docentes'])
+                st.metric("DOCENTE Docentes", stats['total_docentes'])
         
         # Mensaje de guardado para todos
         st.markdown("""<div style="background: #dcfce7; border-radius: 8px; 
@@ -4562,7 +4562,7 @@ def _gestion_usuarios_admin():
     
     st.caption(f"**{len(usuarios)} cuentas de acceso:**")
     for usr, datos in usuarios.items():
-        rol_emoji = {"admin": "⚙️", "directivo": "📋", "auxiliar": "👤", "docente": "👨‍🏫"}.get(datos.get('rol', ''), '•')
+        rol_emoji = {"admin": "⚙️", "directivo": "📋", "auxiliar": "👤", "docente": "DOCENTE"}.get(datos.get('rol', ''), '•')
         grado_txt = ""
         if datos.get('docente_info') and datos['docente_info'].get('grado'):
             grado_txt = f" — {datos['docente_info']['grado']}"
@@ -4638,7 +4638,7 @@ def _gestion_usuarios_admin():
 def tab_matricula(config):
     st.header("📝 Matrícula")
     tab_est, tab_doc, tab_lista, tab_pdf = st.tabs([
-        "➕ Registrar Alumno", "👨‍🏫 Registrar Docente",
+        "➕ Registrar Alumno", "DOCENTE Registrar Docente",
         "📋 Listas", "⬇️ Registros PDF"
     ])
 
@@ -4751,7 +4751,7 @@ def tab_matricula(config):
                 st.error("⚠️ El nombre es obligatorio")
 
     with tab_doc:
-        st.subheader("👨‍🏫 Registro de Docente / Personal")
+        st.subheader("DOCENTE Registro de Docente / Personal")
         c1, c2 = st.columns(2)
         with c1:
             dn_n = st.text_input("👤 Apellidos y Nombres:", key="dn_nom")
@@ -4925,7 +4925,7 @@ def tab_matricula(config):
             st.info("📝 Sin alumnos matriculados.")
 
         st.markdown("---")
-        st.subheader("👨‍🏫 Docentes Registrados")
+        st.subheader("DOCENTE Docentes Registrados")
         df_doc = BaseDatos.cargar_docentes()
         if not df_doc.empty:
             if 'Nombre' in df_doc.columns:
@@ -7442,7 +7442,7 @@ def tab_documentos(config):
                 nm = st.text_input("👤 Estudiante:", key="alumno")
                 dn = st.text_input("🆔 DNI Estudiante:", key="dni")
                 gr = st.text_input("📚 Grado:", key="grado")
-                ap = st.text_input("👨‍👩‍👧 Padre/Madre/Apoderado:", key="apoderado")
+                ap = st.text_input("Familia Padre/Madre/Apoderado:", key="apoderado")
                 da = st.text_input("🆔 DNI Padre/Madre/Apoderado:", key="dni_apo")
                 nc = {}
                 if td == "CONSTANCIA DE CONDUCTA":
@@ -7491,13 +7491,13 @@ def tab_carnets(config):
     st.header("🪪 Centro de Carnetización")
     t1, t2, t3, t4 = st.tabs([
         "⚡ Individual", "📋 Desde Matrícula",
-        "📦 Lote Alumnos (PDF)", "👨‍🏫 Lote Docentes (PDF)"
+        "📦 Lote Alumnos (PDF)", "DOCENTE Lote Docentes (PDF)"
     ])
 
     with t1:
         c1, c2 = st.columns(2)
         with c1:
-            c_tipo = st.radio("Tipo de carnet:", ["🎓 Alumno", "👨‍🏫 Docente"],
+            c_tipo = st.radio("Tipo de carnet:", ["🎓 Alumno", "DOCENTE Docente"],
                               horizontal=True, key="c_tipo")
             es_doc_ind = "Docente" in c_tipo
             cn = st.text_input("👤 Nombre:", key="cn")
@@ -7582,7 +7582,7 @@ def tab_carnets(config):
             st.info("📝 Registra estudiantes.")
 
     with t4:
-        st.subheader("👨‍🏫 Carnets Docentes — PDF (8 por hoja)")
+        st.subheader("DOCENTE Carnets Docentes — PDF (8 por hoja)")
         st.caption("Tamaño fotocheck con líneas de corte para plastificar")
         df_doc = BaseDatos.cargar_docentes()
         if not df_doc.empty:
@@ -7613,43 +7613,45 @@ def tab_asistencias():
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
                f"📅 {hora_peru().strftime('%d/%m/%Y')}")
 
-    # ── Índice: si ya existe en RAM úsalo al instante ──────────────
-    import time as _t_asis, threading as _th_asis
+    import time as _t_asis
+
+    # ── CARGA AUTOMÁTICA SIEMPRE — sin botón, sin intervención ──────────
+    # SIEMPRE reconstruye el índice al entrar, garantizando docentes + alumnos
+    _idx = st.session_state.get('_indice_dni', {})
     _idx_ts = st.session_state.get('_indice_dni_ts', 0)
-    _idx    = st.session_state.get('_indice_dni')
-    _vencio = (_t_asis.time() - _idx_ts) > 180
+    _edad = _t_asis.time() - _idx_ts
 
-    if not _idx:
-        # Sin índice — intentar desde caché local INSTANTÁNEO (<5ms)
-        try:
-            if Path(ARCHIVO_INDICE_CACHE).exists():
-                import json as _jc
-                with open(ARCHIVO_INDICE_CACHE, 'r', encoding='utf-8') as _f:
-                    _cached = _jc.load(_f)
-                if _cached:
-                    st.session_state['_indice_dni'] = _cached
-                    st.session_state['_indice_dni_ts'] = _t_asis.time()
-                    st.session_state['_indice_desde_cache'] = True
-                    _idx = _cached
-        except Exception:
-            pass
-        # Construir desde GSheets en hilo de fondo — NO bloquea la UI
-        if not _th_asis.current_thread().name.startswith('_idx_bg'):
-            _t = _th_asis.Thread(target=_construir_indice_dni, daemon=True, name='_idx_bg')
-            _t.start()
-    elif _vencio:
-        # Índice vencido — refrescar en segundo plano sin bloquear
-        _t = _th_asis.Thread(target=_construir_indice_dni, daemon=True, name='_idx_bg')
-        _t.start()
+    # Contar antes de decidir
+    _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
+    _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
 
-    # ── Estado del sistema ─────────────────────────────────────────
-    n_idx = len(st.session_state.get('_indice_dni', {}))
-    if n_idx == 0:
-        st.info("⏳ Cargando índice en segundo plano... Puede escanear, el sistema responde.")
-    elif st.session_state.get('_indice_desde_cache'):
-        st.warning(f"📴 **Sin internet** — Modo local ({n_idx} personas). Asistencias guardadas localmente.")
-    else:
-        st.success(f"✅ Listo — {n_idx} personas | Registro instantáneo")
+    # Reconstruir si: vacío, viejo (>3min), o faltan docentes
+    if (not _idx) or (_edad > 180) or (_n_doc == 0):
+        _construir_indice_dni()
+        _idx  = st.session_state.get('_indice_dni', {})
+        _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
+        _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+
+    # ── Estado visual ──────────────────────────────────────────────────
+    _col_a, _col_b = st.columns(2)
+    with _col_a:
+        st.metric("Alumnos listos", _n_alu)
+    with _col_b:
+        st.metric("Docentes listos", _n_doc,
+                  delta="OK" if _n_doc > 0 else "Sin DNI registrado",
+                  delta_color="normal" if _n_doc > 0 else "inverse")
+
+    if _n_alu == 0 and _n_doc == 0:
+        st.error("❌ No se cargaron datos. Verifica tu conexión a Google Sheets o que el Excel de matrícula esté subido.")
+        if st.button("Intentar cargar de nuevo", type="primary", key="btn_force_reload"):
+            st.session_state.pop('_indice_dni', None)
+            st.session_state.pop('_indice_dni_ts', None)
+            try:
+                Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+            except Exception:
+                pass
+            st.rerun()
+        return  # No mostrar el resto si no hay datos
 
     # Inicializar tracking de WhatsApp enviados
     if 'wa_enviados' not in st.session_state:
@@ -7658,25 +7660,25 @@ def tab_asistencias():
     # ── Horario y Modo ──────────────────────────────────────────
     col_h, col_modo = st.columns([2, 3])
     with col_h:
-        horario_sel = st.radio("⏰ Horario:", ['normal', 'invierno'],
+        horario_sel = st.radio("Horario:", ['normal', 'invierno'],
                                 format_func=lambda x: HORARIOS[x]['nombre'],
                                 horizontal=True, key="horario_radio",
                                 index=0 if _horario_activo() == 'normal' else 1)
         _guardar_horario(horario_sel)
         limite = HORARIOS[horario_sel]['limite']
-        st.caption(f"Límite puntualidad: **{limite}** — después = tardanza automática")
+        st.caption(f"Límite puntualidad: **{limite}**")
 
     with col_modo:
         c1, c2 = st.columns(2)
         with c1:
-            if st.button("🟢 ENTRADA", use_container_width=True, key="be", type="primary"):
+            if st.button("ENTRADA", use_container_width=True, key="be", type="primary"):
                 st.session_state.tipo_asistencia = "Entrada"
                 st.rerun()
         with c2:
-            if st.button("🔵 SALIDA", use_container_width=True, key="bs", type="primary"):
+            if st.button("SALIDA", use_container_width=True, key="bs", type="primary"):
                 st.session_state.tipo_asistencia = "Salida"
                 st.rerun()
-        st.caption("💡 El sistema detecta automáticamente si es turno mañana o tarde")
+        st.caption("El sistema detecta automáticamente mañana o tarde")
 
     _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb"}
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
@@ -7723,10 +7725,10 @@ def tab_asistencias():
 
         col_stat1, col_stat2, col_stat3 = st.columns([2, 2, 2])
         with col_stat1:
-            st.metric("👥 Alumnos en índice", _n_alu)
+            st.metric("Alumnos en índice", _n_alu)
         with col_stat2:
             color_doc = "normal" if _n_doc > 0 else "off"
-            st.metric("👨‍🏫 Docentes en índice", _n_doc,
+            st.metric("Docentes en índice", _n_doc,
                       delta="OK" if _n_doc > 0 else "⚠️ Sin cargar",
                       delta_color=color_doc)
         with col_stat3:
@@ -7839,7 +7841,7 @@ def tab_asistencias():
         with c1:
             st.metric("📚 Alumnos", len(alumnos_h))
         with c2:
-            st.metric("👨‍🏫 Docentes", len(docentes_h))
+            st.metric("DOCENTE Docentes", len(docentes_h))
         with c3:
             _ent = sum(1 for v in asis.values() if v.get('entrada') or v.get('tardanza'))
             st.metric("🌅 Ent. Mañana", _ent)
@@ -7862,7 +7864,7 @@ def tab_asistencias():
                 use_container_width=True, hide_index=True
             )
         if docentes_h:
-            st.markdown("**👨‍🏫 Docentes registrados hoy:**")
+            st.markdown("**DOCENTE Docentes registrados hoy:**")
             st.dataframe(
                 pd.DataFrame(docentes_h).drop(columns=['es_docente']),
                 use_container_width=True, hide_index=True
@@ -8022,7 +8024,7 @@ def tab_asistencias():
 
                 nombre = dat['nombre']
                 es_doc = dat.get('es_docente', False)
-                tipo_icon = "👨‍🏫" if es_doc else "📚"
+                tipo_icon = "DOCENTE" if es_doc else "📚"
 
                 cel = ''
                 # ── Buscar celular en AMBAS tablas siempre ───────────────
@@ -8254,7 +8256,7 @@ def _registrar_asistencia_rapida(dni):
 
     if persona:
 
-        tp = "👨‍🏫 DOCENTE" if es_d else "📚 ALUMNO"
+        tp = "DOCENTE" if es_d else "ALUMNO"
         limite_txt = HORARIOS[_horario_activo()]['limite']
 
         # ── AUTO-DETECTAR TURNO mañana/tarde ─────────────────────────
@@ -9517,7 +9519,7 @@ def tab_base_datos():
     with c1:
         st.metric("📚 Alumnos", len(df) if not df.empty else 0)
     with c2:
-        st.metric("👨‍🏫 Docentes", len(df_doc) if not df_doc.empty else 0)
+        st.metric("DOCENTE Docentes", len(df_doc) if not df_doc.empty else 0)
     with c3:
         st.metric("🎓 Grados",
                    df['Grado'].nunique() if not df.empty and 'Grado' in df.columns
@@ -9531,7 +9533,7 @@ def tab_base_datos():
                   delta="pendientes" if n_prov > 0 else None,
                   delta_color="inverse" if n_prov > 0 else "off")
 
-    tab_al, tab_completar, tab_dc = st.tabs(["📚 Alumnos", "✏️ Completar Datos", "👨‍🏫 Docentes"])
+    tab_al, tab_completar, tab_dc = st.tabs(["📚 Alumnos", "✏️ Completar Datos", "DOCENTE Docentes"])
     with tab_al:
         if not df.empty:
             c1, c2 = st.columns(2)
@@ -9825,13 +9827,13 @@ def vista_docente(config):
     grado = str(info.get('grado', ''))
     label = _nombre_completo_docente()
     if grado == 'ALL_NIVELES':
-        st.markdown(f"### 👨‍🏫 {label} — Todos los Niveles")
+        st.markdown(f"### DOCENTE {label} — Todos los Niveles")
     elif grado in ('ALL_SEC_PREU', 'ALL_SECUNDARIA'):
-        st.markdown(f"### 👨‍🏫 {label} — Secundaria / Pre-Universitario")
+        st.markdown(f"### DOCENTE {label} — Secundaria / Pre-Universitario")
     elif grado:
-        st.markdown(f"### 👨‍🏫 {label} — {grado}")
+        st.markdown(f"### DOCENTE {label} — {grado}")
     else:
-        st.markdown(f"### 👨‍🏫 {label}")
+        st.markdown(f"### DOCENTE {label}")
         st.info("💡 Pida al administrador que asigne su grado en 'Gestionar Usuarios'.")
 
     # Determinar nivel del docente
@@ -11497,7 +11499,7 @@ TESTS_VOCACIONALES = {
             {"id":3,"pregunta":"Si pudieras elegir un trabajo de mayor, ¿cuál elegiría?",
              "opciones":{"A":("🎭 Artista, diseñador/a o músico/a","ART"),
                          "B":("🔬 Científico/a o médico/a","CIE"),
-                         "C":("👩‍🏫 Profesor/a o comunicador/a","SOC"),
+                         "C":("DOC Profesor/a o comunicador/a","SOC"),
                          "D":("🏅 Deportista o entrenador/a","MOV"),
                          "E":("💻 Ingeniero/a o programador/a","LOG")}},
             {"id":4,"pregunta":"¿Cómo prefieres aprender algo nuevo?",
@@ -11688,7 +11690,7 @@ TESTS_VOCACIONALES = {
              "opciones":{"A":("🌟 Mucha satisfacción por haber aprendido algo","INT"),
                          "B":("🤗 Alegría de compartirlo con mis compañeros","SOC"),
                          "C":("🥇 Orgullo de haber ganado o superado el reto","LOG"),
-                         "D":("😮‍💨 Alivio de que ya terminó","BIE"),
+                         "D":(":O Alivio de que ya terminó","BIE"),
                          "E":("😊 Ganas de que el profesor o mis papás lo vean","EXT")}},
             {"id":3,"pregunta":"¿Cómo te sientes en el colegio la mayoría de días?",
              "opciones":{"A":("😄 Me encanta, aprendo cosas interesantes","INT"),
@@ -12890,7 +12892,7 @@ def _tab_test_vocacional_ui(config):
 
         # ── MODO DE ACCESO ────────────────────────────────────────────────────
         modo_acceso = st.radio("¿Quién ingresa?", [
-            "👨‍🏫 Docente selecciona al alumno",
+            "DOCENTE Docente selecciona al alumno",
             "🎓 Alumno ingresa su DNI",
         ], horizontal=True, key="dig_acceso_modo")
 
@@ -13322,7 +13324,7 @@ def tab_reportes(config):
     st.subheader("📊 Reportes e Historial")
 
     subtab = st.radio("Seleccionar:", [
-        "📋 Asistencia Mensual", "👨‍🏫 Asistencia Docentes",
+        "📋 Asistencia Mensual", "DOCENTE Asistencia Docentes",
         "📊 Reporte Integral",
         "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones",
         "📁 Fichas Docentes",
@@ -13381,10 +13383,10 @@ def tab_reportes(config):
             st.info("No hay evaluaciones para los filtros seleccionados.")
         return
 
-    if subtab == "👨‍🏫 Asistencia Docentes":
+    if subtab == "DOCENTE Asistencia Docentes":
         st.markdown("""<div style='background:linear-gradient(135deg,#001e7c,#0044cc);color:white;
             padding:15px 20px;border-radius:12px;margin-bottom:15px;text-align:center;'>
-            <h3 style='margin:0;color:white;'>👨‍🏫 I.E.P. ALTERNATIVO YACHAY</h3>
+            <h3 style='margin:0;color:white;'>DOCENTE I.E.P. ALTERNATIVO YACHAY</h3>
             <p style='margin:4px 0 0;color:#b8d4ff;'>Reporte de Asistencia y Puntualidad — Docentes</p>
             <p style='margin:2px 0 0;color:#FFD700;font-size:0.85rem;'>📍 Chinchero, Cusco — {hora_peru().year}</p>
         </div>""", unsafe_allow_html=True)
@@ -13595,7 +13597,7 @@ def tab_reportes(config):
 
                     # Métricas
                     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-                    col_m1.metric("👨‍🏫 Docentes", len(data_tabla))
+                    col_m1.metric("DOCENTE Docentes", len(data_tabla))
                     col_m2.metric("📅 Prom. días", f"{sum(r['Días'] for r in data_tabla)/max(len(data_tabla),1):.1f}")
                     total_punt = sum(r['Puntuales'] for r in data_tabla)
                     total_tard = sum(r['Tardanzas'] for r in data_tabla)
@@ -13681,7 +13683,7 @@ def tab_reportes(config):
                 st.markdown("### ✏️ Editar Registro de Asistencia — Docente")
                 st.caption("Para docentes con actividades especiales que justifican la hora de llegada")
 
-                docente_edit = st.selectbox("👨‍🏫 Docente:",
+                docente_edit = st.selectbox("DOCENTE Docente:",
                                             sorted(docentes_asist.keys()),
                                             key="edit_doc_sel")
                 fecha_edit = st.date_input("📅 Fecha:", value=hora_peru().date(),
@@ -13839,7 +13841,7 @@ def tab_reportes(config):
 
                     # Métricas
                     ch1, ch2, ch3 = st.columns(3)
-                    ch1.metric("👨‍🏫 Docentes", len(horas_data))
+                    ch1.metric("DOCENTE Docentes", len(horas_data))
                     ch2.metric("⏱️ Prom. horas/mes", f"{sum(r['Horas Total'] for r in horas_data)/max(len(horas_data),1):.1f}h")
                     ch3.metric("⏱️ Total horas", f"{sum(r['Horas Total'] for r in horas_data):.0f}h")
 
@@ -13904,7 +13906,7 @@ def tab_reportes(config):
                                 link = generar_link_whatsapp(cel, msg)
                                 st.markdown(
                                     f'<a href="{link}" target="_blank" class="wa-btn">'
-                                    f'📱 👨‍🏫 {nm} → {cel}</a>',
+                                    f'📱 DOCENTE {nm} → {cel}</a>',
                                     unsafe_allow_html=True)
                                 enviados_count += 1
                     if enviados_count == 0:
@@ -14308,7 +14310,7 @@ def tab_reportes(config):
         with fc4:
             docentes_f = sorted(set(f.get('docente_nombre', f.get('docente', ''))
                                     for f in fichas if f.get('docente')))
-            filtro_doc = st.selectbox("👨‍🏫 Docente:", ["Todos"] + docentes_f, key="fichas_f_doc")
+            filtro_doc = st.selectbox("DOCENTE Docente:", ["Todos"] + docentes_f, key="fichas_f_doc")
 
         # ── Aplicar filtros ──
         fichas_filtradas = fichas.copy()
@@ -14328,7 +14330,7 @@ def tab_reportes(config):
             st.metric("📄 Total fichas", len(fichas_filtradas))
         with mc2:
             docs_unicos = len(set(f.get('docente', '') for f in fichas_filtradas))
-            st.metric("👨‍🏫 Docentes", docs_unicos)
+            st.metric("DOCENTE Docentes", docs_unicos)
         with mc3:
             grados_unicos = len(set(f.get('grado', '') for f in fichas_filtradas))
             st.metric("🎓 Grados", grados_unicos)
@@ -18910,7 +18912,7 @@ def _vista_directivo_material(config, semana_actual):
                 por_docente[doc].append(m)
             for docente_n, mats in por_docente.items():
                 grado_n = mats[0].get('grado', '')
-                with st.expander(f"👨‍🏫 {docente_n} — {grado_n} ({len(mats)} material(es))", expanded=True):
+                with st.expander(f"DOCENTE {docente_n} — {grado_n} ({len(mats)} material(es))", expanded=True):
                     for mat in mats:
                         c1, c2, c3 = st.columns([3, 1, 1])
                         with c1:
@@ -20803,7 +20805,7 @@ PAUSA_MODELOS = [
             ("🙆", "Brazos arriba — respira hondo y estira al maximo", 12),
             ("🤸", "Inclinate hacia la DERECHA — 5 segundos — siente el estiramiento", 10),
             ("🤸", "Inclinate hacia la IZQUIERDA — 5 segundos — igual lado", 10),
-            ("🙆‍♂️", "Abre el pecho — lleva los brazos atras — une los codos", 10),
+            ("(*)", "Abre el pecho — lleva los brazos atras — une los codos", 10),
             ("🧘", "Gira el cuello DERECHA lento — 3 veces — luego IZQUIERDA", 12),
             ("🦵", "Sacude las piernas una por una — suelta la tension", 8),
             ("💆", "Masajea los hombros con las manos cruzadas — 10 seg", 10),
@@ -20854,7 +20856,7 @@ PAUSA_MODELOS = [
         "emoji_principal": "🧘",
         "descripcion": "Tecnicas de respiracion y mindfulness",
         "pasos": [
-            ("😮‍💨", "INHALA por la nariz lentamente — 4 segundos — hincha el pecho", 6),
+            (":O", "INHALA por la nariz lentamente — 4 segundos — hincha el pecho", 6),
             ("🫁", "RETIENE el aire — 4 segundos — siente el silencio interior", 5),
             ("💨", "EXHALA por la boca — 8 segundos — suelta toda la tension", 10),
             ("🌊", "Repite 2 veces — respira como las olas del mar", 20),
@@ -21554,7 +21556,7 @@ PAUSA_MODELOS = [
         "nivel": ["DOCENTES"],
         "color_fondo": "#064e3b",
         "color_acento": "#6ee7b7",
-        "emoji_principal": "👩‍🏫",
+        "emoji_principal": "DOC",
         "descripcion": "Pausa especial para docentes — recarga entre clases",
         "pasos": [
             ("🌬️", "RESPIRACION 4-4-4-4 — inhala 4 — retiene 4 — exhala 4 — retiene 4", 20),
@@ -25879,7 +25881,7 @@ def main():
                 </div>""", unsafe_allow_html=True)
             with s2:
                 st.markdown(f"""<div class="stat-card">
-                    <h3>👨‍🏫 {stats['total_docentes']}</h3>
+                    <h3>DOCENTE {stats['total_docentes']}</h3>
                     <p>Docentes Registrados</p>
                 </div>""", unsafe_allow_html=True)
             with s3:
