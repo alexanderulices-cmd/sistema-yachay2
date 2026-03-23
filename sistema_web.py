@@ -8102,7 +8102,7 @@ def tab_asistencias():
                 with col_info:
                     st.caption(f"{tipo_tab.replace('_',' ').title()} | {cel}")
 
-            # Abrir WA — redirige la pestaña _wa_yachay existente, sin abrir nuevas
+            # Abrir WA — whatsapp:// abre Desktop en PC y app en celular automáticamente
             if '_wa_link_pendiente' in st.session_state:
                 _link_app = st.session_state.pop('_wa_link_pendiente')
                 _link_web = st.session_state.pop('_wa_link_web',
@@ -8112,18 +8112,26 @@ def tab_asistencias():
                 _uid_wa = _rnd_wa.randint(100000, 999999)
                 _cwav2.html(f"""<script>
 (function wa_{_uid_wa}() {{
-  var url = "{_link_web}";
-  // Buscar pestaña ya abierta de WhatsApp Web y redirigirla
-  if (window._waTab && !window._waTab.closed) {{
-    window._waTab.location.href = url;
-    window._waTab.focus();
-  }} else {{
-    window._waTab = window.open(url, "_wa_yachay");
-  }}
-  // Guardar referencia en ventana padre para reusar
-  if (window.parent && window.parent !== window) {{
-    window.parent._waTab = window._waTab;
-  }}
+  // whatsapp:// abre WhatsApp Desktop en PC y WhatsApp en celular
+  // Si no está instalado, cae a WhatsApp Web como respaldo
+  var appUrl = "{_link_app}";
+  var webUrl = "{_link_web}";
+
+  // Intentar abrir la app nativa
+  var start = Date.now();
+  window.location.href = appUrl;
+
+  // Si en 2 segundos la página sigue visible (app no abrió), usar WhatsApp Web
+  setTimeout(function() {{
+    if (Date.now() - start < 3000) {{
+      if (window._waTab && !window._waTab.closed) {{
+        window._waTab.location.href = webUrl;
+        window._waTab.focus();
+      }} else {{
+        window._waTab = window.open(webUrl, "_wa_yachay");
+      }}
+    }}
+  }}, 2000);
 }})();
 </script>""", height=0)
 
