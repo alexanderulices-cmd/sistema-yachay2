@@ -8102,7 +8102,7 @@ def tab_asistencias():
                 with col_info:
                     st.caption(f"{tipo_tab.replace('_',' ').title()} | {cel}")
 
-            # Abrir WA — directo a web.whatsapp.com (pestaña reutilizable _wa_yachay)
+            # Abrir WA — redirige la pestaña _wa_yachay existente, sin abrir nuevas
             if '_wa_link_pendiente' in st.session_state:
                 _link_app = st.session_state.pop('_wa_link_pendiente')
                 _link_web = st.session_state.pop('_wa_link_web',
@@ -8112,8 +8112,18 @@ def tab_asistencias():
                 _uid_wa = _rnd_wa.randint(100000, 999999)
                 _cwav2.html(f"""<script>
 (function wa_{_uid_wa}() {{
-  // Abre en la pestaña _wa_yachay — siempre la misma, no abre nuevas
-  window.open("{_link_web}", "_wa_yachay");
+  var url = "{_link_web}";
+  // Buscar pestaña ya abierta de WhatsApp Web y redirigirla
+  if (window._waTab && !window._waTab.closed) {{
+    window._waTab.location.href = url;
+    window._waTab.focus();
+  }} else {{
+    window._waTab = window.open(url, "_wa_yachay");
+  }}
+  // Guardar referencia en ventana padre para reusar
+  if (window.parent && window.parent !== window) {{
+    window.parent._waTab = window._waTab;
+  }}
 }})();
 </script>""", height=0)
 
