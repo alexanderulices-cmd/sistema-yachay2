@@ -8007,72 +8007,83 @@ def tab_asistencias():
                     return _dt.strptime(f, '%d/%m/%Y')
                 except Exception:
                     return _dt.min
-            _fechas_ord = sorted(_hist_todas.keys(),
-                                  key=_parse_fecha, reverse=True)
+            # Solo fechas válidas DD/MM/YYYY
+            _fechas_ord = sorted(
+                [f for f in _hist_todas.keys() if len(f.split('/')) == 3],
+                key=_parse_fecha, reverse=True
+            )
 
-            # Selector de mes para filtrar
-            _meses_disp = sorted(set(
-                f.split('/')[1] + '/' + f.split('/')[2]
-                for f in _fechas_ord
-            ), reverse=True)
-            _mes_nombres = {
-                '01': 'Enero','02': 'Febrero','03': 'Marzo','04': 'Abril',
-                '05': 'Mayo','06': 'Junio','07': 'Julio','08': 'Agosto',
-                '09': 'Septiembre','10': 'Octubre','11': 'Noviembre','12': 'Diciembre'
-            }
-            _meses_labels = {
-                m: f"{_mes_nombres.get(m.split('/')[0], m.split('/')[0])} {m.split('/')[1]}"
-                for m in _meses_disp
-            }
+            if not _fechas_ord:
+                st.info("No hay fechas válidas en el historial aún.")
+            else:
+                _mes_nombres = {
+                    '01':'Enero','02':'Febrero','03':'Marzo','04':'Abril',
+                    '05':'Mayo','06':'Junio','07':'Julio','08':'Agosto',
+                    '09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'
+                }
+                _meses_disp = sorted(set(
+                    f.split('/')[1] + '/' + f.split('/')[2]
+                    for f in _fechas_ord
+                ), reverse=True)
+                _meses_labels = {
+                    m: f"{_mes_nombres.get(m.split('/')[0], m.split('/')[0])} {m.split('/')[1]}"
+                    for m in _meses_disp
+                }
 
-            hc1, hc2 = st.columns([2, 3])
-            with hc1:
-                _mes_sel = st.selectbox(
-                    "Mes:",
-                    options=list(_meses_labels.keys()),
-                    format_func=lambda m: _meses_labels[m],
-                    key="hist_mes_sel"
-                )
-            # Fechas del mes seleccionado
-            _fechas_mes = [f for f in _fechas_ord
-                           if f.split('/')[1] + '/' + f.split('/')[2] == _mes_sel]
-            with hc2:
-                _dia_sel = st.selectbox(
-                    "Dia:",
-                    options=_fechas_mes,
-                    format_func=lambda f: (
-                        f"{'Lun' if _parse_fecha(f).weekday()==0 else 'Mar' if _parse_fecha(f).weekday()==1 else 'Mie' if _parse_fecha(f).weekday()==2 else 'Jue' if _parse_fecha(f).weekday()==3 else 'Vie' if _parse_fecha(f).weekday()==4 else 'Sab' if _parse_fecha(f).weekday()==5 else 'Dom'} "
-                        f"{f} — "
-                        f"{sum(1 for v in _hist_todas[f].values() if not v.get('es_docente',False))} alum / "
-                        f"{sum(1 for v in _hist_todas[f].values() if v.get('es_docente',False))} doc"
-                    ) if _fechas_mes else f,
-                    key="hist_dia_sel"
-                ) if _fechas_mes else None
+                hc1, hc2 = st.columns([2, 3])
+                with hc1:
+                    _mes_sel = st.selectbox(
+                        "Mes:",
+                        options=list(_meses_labels.keys()),
+                        format_func=lambda m: _meses_labels[m],
+                        key="hist_mes_sel"
+                    )
+                _fechas_mes = [f for f in _fechas_ord
+                               if f.split('/')[1] + '/' + f.split('/')[2] == _mes_sel]
 
-            if _dia_sel:
-                _asis_hist_sel = _hist_todas.get(_dia_sel, {})
-                _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
-                _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
-                st.info(f"📋 **{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes registrados")
+                def _dia_label(f):
+                    dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']
+                    try:
+                        d = dias[_parse_fecha(f).weekday()]
+                    except Exception:
+                        d = ''
+                    n_alu = sum(1 for v in _hist_todas.get(f,{}).values() if not v.get('es_docente',False))
+                    n_doc = sum(1 for v in _hist_todas.get(f,{}).values() if v.get('es_docente',False))
+                    return f"{d} {f} — {n_alu} alum / {n_doc} doc"
 
-                if st.button(f"📥 Generar PDF — {_dia_sel}", type="primary",
-                             use_container_width=True, key="btn_pdf_hist"):
-                    _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_hist_sel)
-                    st.session_state['_pdf_hist_bytes'] = _pdf_hist
-                    st.session_state['_pdf_hist_fecha'] = _dia_sel
+                with hc2:
+                    if _fechas_mes:
+                        _dia_sel = st.selectbox(
+                            "Dia:",
+                            options=_fechas_mes,
+                            format_func=_dia_label,
+                            key="hist_dia_sel"
+                        )
+                    else:
+                        _dia_sel = None
+                        st.info("Sin registros en este mes.")
 
-                if st.session_state.get('_pdf_hist_bytes'):
-                    _fh = st.session_state.get('_pdf_hist_fecha', _dia_sel)
-                    if _fh == _dia_sel:  # solo mostrar si corresponde al día seleccionado
+                if _dia_sel:
+                    _asis_hist_sel = _hist_todas.get(_dia_sel, {})
+                    _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
+                    _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
+                    st.info(f"**{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes")
+
+                    if st.button(f"Generar PDF — {_dia_sel}", type="primary",
+                                 use_container_width=True, key="btn_pdf_hist"):
+                        _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_hist_sel)
+                        st.session_state['_pdf_hist_bytes'] = _pdf_hist
+                        st.session_state['_pdf_hist_fecha'] = _dia_sel
+
+                    if (st.session_state.get('_pdf_hist_bytes')
+                            and st.session_state.get('_pdf_hist_fecha') == _dia_sel):
                         st.download_button(
-                            f"⬇️ Descargar PDF — {_fh}",
+                            f"Descargar PDF — {_dia_sel}",
                             st.session_state['_pdf_hist_bytes'],
-                            f"Asistencia_{_fh.replace('/','')}.pdf",
+                            f"Asistencia_{_dia_sel.replace('/','')}.pdf",
                             "application/pdf",
                             key="dl_pdf_hist"
                         )
-        else:
-            st.info("Aún no hay registros históricos guardados. Los registros se acumulan automáticamente cada día.")
 
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
