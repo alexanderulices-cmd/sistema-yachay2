@@ -7608,6 +7608,111 @@ def tab_carnets(config):
 # TAB: ASISTENCIAS (Alumnos + Docentes)
 # ================================================================
 
+def _generar_pdf_asistencia_dia(fecha_str, asis_data):
+    """Genera PDF de asistencia de un día. fecha_str = 'dd/mm/yyyy'."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                     Paragraph, Spacer)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io as _io
+
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1*cm, bottomMargin=1*cm,
+                            leftMargin=1.5*cm, rightMargin=1.5*cm)
+    ss = getSampleStyleSheet()
+
+    def _P(txt, bold=False, size=9, align=1):
+        return Paragraph(
+            f"<b>{txt}</b>" if bold else txt,
+            ParagraphStyle('pdf', fontSize=size, leading=size+2,
+                           alignment=align,
+                           fontName='Helvetica-Bold' if bold else 'Helvetica',
+                           parent=ss['Normal']))
+
+    AZU  = colors.Color(0.10, 0.20, 0.50)
+    VERD = colors.Color(0.05, 0.40, 0.10)
+    HDRS = ['DNI','Apellidos y Nombres','Ent. Manana','Puntual',
+            'Sal. Manana','Ent. Tarde','Sal. Tarde']
+    COL_WS = [2.2*cm, 7.2*cm, 2.6*cm, 1.8*cm, 2.6*cm, 2.6*cm, 2.6*cm]
+
+    alumnos_d, docentes_d = [], []
+    for dk, v in asis_data.items():
+        entrada_m = v.get('entrada') or v.get('tardanza') or ''
+        es_tard   = bool(entrada_m) and _es_tardanza(entrada_m)
+        reg = {
+            'DNI'   : dk,
+            'Nombre': v.get('nombre',''),
+            'EM'    : entrada_m or '—',
+            'P'     : 'TARD' if es_tard else ('OK' if entrada_m else '—'),
+            'SM'    : v.get('salida','') or '—',
+            'ET'    : v.get('entrada_tarde','') or '—',
+            'ST'    : v.get('salida_tarde','') or '—',
+        }
+        (docentes_d if v.get('es_docente') else alumnos_d).append(reg)
+
+    alumnos_d.sort(key=lambda x: x['Nombre'])
+    docentes_d.sort(key=lambda x: x['Nombre'])
+
+    def _tabla(datos, titulo, color_hdr):
+        if not datos: return []
+        rows = [HDRS]
+        tard_rows = []
+        for i, r in enumerate(datos):
+            rows.append([r['DNI'], r['Nombre'], r['EM'], r['P'],
+                         r['SM'], r['ET'], r['ST']])
+            if r['P'] == 'TARD':
+                tard_rows.append(i+1)
+        t = Table(rows, colWidths=COL_WS,
+                  rowHeights=[0.65*cm]+[0.55*cm]*(len(rows)-1))
+        cmds = [
+            ('GRID',         (0,0),(-1,-1), 0.3, colors.black),
+            ('FONTSIZE',     (0,0),(-1,-1), 7.5),
+            ('FONTNAME',     (0,0),(-1,0),  'Helvetica-Bold'),
+            ('BACKGROUND',   (0,0),(-1,0),  color_hdr),
+            ('TEXTCOLOR',    (0,0),(-1,0),  colors.white),
+            ('ALIGN',        (0,0),(-1,-1), 'CENTER'),
+            ('ALIGN',        (1,1),(1,-1),  'LEFT'),
+            ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
+            ('ROWBACKGROUNDS',(0,1),(-1,-1),
+             [colors.white, colors.Color(0.95,0.95,1.0)]),
+        ]
+        for ri in tard_rows:
+            cmds.append(('BACKGROUND',(3,ri),(3,ri), colors.Color(1,0.85,0.5)))
+        t.setStyle(TableStyle(cmds))
+        return [_P(titulo, bold=True, size=10, align=0),
+                Spacer(1,0.15*cm), t, Spacer(1,0.4*cm)]
+
+    n_ent   = sum(1 for v in asis_data.values() if v.get('entrada') or v.get('tardanza'))
+    n_tard  = sum(1 for v in asis_data.values()
+                  if (v.get('entrada') or v.get('tardanza'))
+                  and _es_tardanza(v.get('entrada','') or v.get('tardanza','')))
+    n_sal   = sum(1 for v in asis_data.values() if v.get('salida'))
+    n_et    = sum(1 for v in asis_data.values() if v.get('entrada_tarde'))
+    n_st    = sum(1 for v in asis_data.values() if v.get('salida_tarde'))
+
+    story = [
+        _P("I.E.P. ALTERNATIVO YACHAY  —  UGEL Urubamba", bold=True, size=12),
+        _P(f"REGISTRO DE ASISTENCIA  —  {fecha_str}  |  "
+           f"Alumnos: {len(alumnos_d)}  |  Docentes: {len(docentes_d)}", size=9),
+        Spacer(1, 0.3*cm),
+    ]
+    story += _tabla(alumnos_d, f"ALUMNOS  ({len(alumnos_d)} registros)", AZU)
+    story += _tabla(docentes_d, f"DOCENTES  ({len(docentes_d)} registros)", VERD)
+    story += [
+        _P(f"RESUMEN DEL DIA {fecha_str}:  "
+           f"{n_ent} entradas  |  {n_tard} tardanzas  |  "
+           f"{n_sal} salidas mañana  |  {n_et} entradas tarde  |  "
+           f"{n_st} salidas tarde  |  "
+           f"TOTAL PERSONAS: {len(asis_data)}", size=8),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
 def tab_asistencias():
     st.header("📋 Control de Asistencia")
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
@@ -7870,96 +7975,104 @@ def tab_asistencias():
                 use_container_width=True, hide_index=True
             )
 
-        # ── Botón PDF del día ────────────────────────────────────────
-        if st.button("📥 Descargar PDF del día", type="primary",
+        # ── Botón PDF del día ─────────────────────────────────────
+        _fecha_hoy_pdf = hora_peru().strftime('%d/%m/%Y')
+        if st.button("📥 Descargar PDF del dia", type="primary",
                      use_container_width=True, key="btn_pdf_dia"):
-            from reportlab.lib.pagesizes import A4, landscape
-            from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
-                                             Paragraph, Spacer)
-            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-            from reportlab.lib import colors
-            from reportlab.lib.units import cm
-            import io as _io
-            buf_dia = _io.BytesIO()
-            _hoy_str = hora_peru().strftime('%d/%m/%Y')
-            _hora_imp = hora_peru_str()
-            doc_dia = SimpleDocTemplate(buf_dia, pagesize=landscape(A4),
-                                        topMargin=1*cm, bottomMargin=1*cm,
-                                        leftMargin=1.5*cm, rightMargin=1.5*cm)
-            ss = getSampleStyleSheet()
-            def _P(txt, bold=False, size=9, align=1):
-                return Paragraph(
-                    f"<b>{txt}</b>" if bold else txt,
-                    ParagraphStyle('pd', fontSize=size, leading=size+2,
-                                   alignment=align, fontName='Helvetica-Bold' if bold else 'Helvetica',
-                                   parent=ss['Normal']))
-            story_dia = [
-                _P("I.E.P. ALTERNATIVO YACHAY — UGEL Urubamba", bold=True, size=12),
-                _P(f"REGISTRO DE ASISTENCIA DEL DIA — {_hoy_str} | Generado: {_hora_imp}",
-                   size=9),
-                Spacer(1, 0.3*cm),
-            ]
-            HDRS = ['DNI','Nombre','Entrada Manana','Puntual','Salida Manana',
-                    'Entrada Tarde','Salida Tarde']
-            AZU  = colors.Color(0.1,0.2,0.5)
-            VERD = colors.Color(0.05,0.4,0.1)
-            def _tabla_seccion(datos, titulo, color_hdr):
-                if not datos: return []
-                rows = [HDRS]
-                for r in sorted(datos, key=lambda x: x['Nombre']):
-                    rows.append([
-                        r['DNI'],
-                        r['Nombre'],
-                        r.get('① Entrada Mañana','—'),
-                        'TARD' if 'Tard' in str(r.get('Puntual','')) else ('OK' if r.get('Puntual','') not in ('—','') else '—'),
-                        r.get('② Salida Mañana','—'),
-                        r.get('③ Entrada Tarde','—'),
-                        r.get('④ Salida Tarde','—'),
-                    ])
-                col_ws = [2.2*cm, 7.0*cm, 2.8*cm, 1.8*cm, 2.8*cm, 2.8*cm, 2.8*cm]
-                t = Table(rows, colWidths=col_ws,
-                          rowHeights=[0.65*cm]+[0.55*cm]*(len(rows)-1))
-                t.setStyle(TableStyle([
-                    ('GRID',(0,0),(-1,-1),0.3,colors.black),
-                    ('FONTSIZE',(0,0),(-1,-1),7.5),
-                    ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-                    ('BACKGROUND',(0,0),(-1,0),color_hdr),
-                    ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-                    ('ALIGN',(0,0),(-1,-1),'CENTER'),
-                    ('ALIGN',(1,1),(1,-1),'LEFT'),
-                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                    ('ROWBACKGROUNDS',(0,1),(-1,-1),
-                     [colors.white, colors.Color(0.95,0.95,1)]),
-                    # Tardanzas en naranja
-                    *[('BACKGROUND',(3,i+1),(3,i+1),colors.Color(1,0.85,0.5))
-                      for i,r in enumerate(rows[1:]) if r[3]=='TARD'],
-                ]))
-                return [_P(titulo, bold=True, size=10, align=0), Spacer(1,0.15*cm), t, Spacer(1,0.4*cm)]
+            _pdf_bytes = _generar_pdf_asistencia_dia(_fecha_hoy_pdf, asis)
+            st.session_state['_pdf_dia_bytes'] = _pdf_bytes
+            st.session_state['_pdf_dia_fecha'] = _fecha_hoy_pdf
+        if st.session_state.get('_pdf_dia_bytes'):
+            _fec = st.session_state.get('_pdf_dia_fecha', _fecha_hoy_pdf)
+            _fname = "Asistencia_" + _fec.replace('/','') + ".pdf"
+            st.download_button("⬇️ Descargar PDF — " + _fec,
+                               st.session_state['_pdf_dia_bytes'],
+                               _fname, "application/pdf", key="dl_pdf_dia")
 
-            story_dia += _tabla_seccion(alumnos_h,
-                f"ALUMNOS — {len(alumnos_h)} registros", AZU)
-            story_dia += _tabla_seccion(docentes_h,
-                f"DOCENTES — {len(docentes_h)} registros", VERD)
+        # ── Historial — cualquier día guardado ───────────────────────
+        st.markdown("---")
+        st.markdown("### 📅 Historial de Asistencia — Descargar por Fecha")
 
-            # Resumen al pie
-            story_dia += [
-                Spacer(1, 0.2*cm),
-                _P(f"RESUMEN: {len(alumnos_h)} alumnos | {len(docentes_h)} docentes | "
-                   f"{_ent} entradas | {_tard} tardanzas | "
-                   f"{sum(1 for v in asis.values() if v.get('salida'))} salidas manana | "
-                   f"{sum(1 for v in asis.values() if v.get('entrada_tarde'))} entradas tarde | "
-                   f"{sum(1 for v in asis.values() if v.get('salida_tarde'))} salidas tarde",
-                   size=8),
-            ]
-            doc_dia.build(story_dia)
-            buf_dia.seek(0)
-            st.download_button(
-                "⬇️ Descargar PDF",
-                buf_dia.read(),
-                f"Asistencia_{hora_peru().strftime('%Y%m%d')}.pdf",
-                "application/pdf",
-                key="dl_pdf_dia"
-            )
+        # Cargar todas las fechas guardadas
+        _hist_todas = {}
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _fh:
+                _hist_todas = json.load(_fh)
+
+        if _hist_todas:
+            # Ordenar fechas de más reciente a más antigua
+            from datetime import datetime as _dt
+            def _parse_fecha(f):
+                try:
+                    return _dt.strptime(f, '%d/%m/%Y')
+                except Exception:
+                    return _dt.min
+            _fechas_ord = sorted(_hist_todas.keys(),
+                                  key=_parse_fecha, reverse=True)
+
+            # Selector de mes para filtrar
+            _meses_disp = sorted(set(
+                f.split('/')[1] + '/' + f.split('/')[2]
+                for f in _fechas_ord
+            ), reverse=True)
+            _mes_nombres = {
+                '01': 'Enero','02': 'Febrero','03': 'Marzo','04': 'Abril',
+                '05': 'Mayo','06': 'Junio','07': 'Julio','08': 'Agosto',
+                '09': 'Septiembre','10': 'Octubre','11': 'Noviembre','12': 'Diciembre'
+            }
+            _meses_labels = {
+                m: f"{_mes_nombres.get(m.split('/')[0], m.split('/')[0])} {m.split('/')[1]}"
+                for m in _meses_disp
+            }
+
+            hc1, hc2 = st.columns([2, 3])
+            with hc1:
+                _mes_sel = st.selectbox(
+                    "Mes:",
+                    options=list(_meses_labels.keys()),
+                    format_func=lambda m: _meses_labels[m],
+                    key="hist_mes_sel"
+                )
+            # Fechas del mes seleccionado
+            _fechas_mes = [f for f in _fechas_ord
+                           if f.split('/')[1] + '/' + f.split('/')[2] == _mes_sel]
+            with hc2:
+                _dia_sel = st.selectbox(
+                    "Dia:",
+                    options=_fechas_mes,
+                    format_func=lambda f: (
+                        f"{'Lun' if _parse_fecha(f).weekday()==0 else 'Mar' if _parse_fecha(f).weekday()==1 else 'Mie' if _parse_fecha(f).weekday()==2 else 'Jue' if _parse_fecha(f).weekday()==3 else 'Vie' if _parse_fecha(f).weekday()==4 else 'Sab' if _parse_fecha(f).weekday()==5 else 'Dom'} "
+                        f"{f} — "
+                        f"{sum(1 for v in _hist_todas[f].values() if not v.get('es_docente',False))} alum / "
+                        f"{sum(1 for v in _hist_todas[f].values() if v.get('es_docente',False))} doc"
+                    ) if _fechas_mes else f,
+                    key="hist_dia_sel"
+                ) if _fechas_mes else None
+
+            if _dia_sel:
+                _asis_hist_sel = _hist_todas.get(_dia_sel, {})
+                _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
+                _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
+                st.info(f"📋 **{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes registrados")
+
+                if st.button(f"📥 Generar PDF — {_dia_sel}", type="primary",
+                             use_container_width=True, key="btn_pdf_hist"):
+                    _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_hist_sel)
+                    st.session_state['_pdf_hist_bytes'] = _pdf_hist
+                    st.session_state['_pdf_hist_fecha'] = _dia_sel
+
+                if st.session_state.get('_pdf_hist_bytes'):
+                    _fh = st.session_state.get('_pdf_hist_fecha', _dia_sel)
+                    if _fh == _dia_sel:  # solo mostrar si corresponde al día seleccionado
+                        st.download_button(
+                            f"⬇️ Descargar PDF — {_fh}",
+                            st.session_state['_pdf_hist_bytes'],
+                            f"Asistencia_{_fh.replace('/','')}.pdf",
+                            "application/pdf",
+                            key="dl_pdf_hist"
+                        )
+        else:
+            st.info("Aún no hay registros históricos guardados. Los registros se acumulan automáticamente cada día.")
 
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
@@ -8085,6 +8198,57 @@ def tab_asistencias():
             else:
                 st.info("Aún no hay suficientes datos.")
 
+
+        # ── HISTORIAL PDF por fecha ──────────────────────────────────
+        with st.expander("📅 Historial — Descargar PDF de otro dia", expanded=False):
+            if Path(ARCHIVO_ASISTENCIAS).exists():
+                with open(ARCHIVO_ASISTENCIAS,'r',encoding='utf-8') as _fh:
+                    _hist_all = json.load(_fh)
+                # Fechas disponibles ordenadas desc
+                _fechas_disp = sorted(_hist_all.keys(),
+                    key=lambda d: (d.split('/')[2], d.split('/')[1], d.split('/')[0]),
+                    reverse=True)
+                if _fechas_disp:
+                    # Selector de mes y dia
+                    _meses_disp = sorted(set(
+                        f"{d.split('/')[1]}/{d.split('/')[2]}"
+                        for d in _fechas_disp), reverse=True)
+                    _mes_sel = st.selectbox("Mes:",
+                        _meses_disp,
+                        format_func=lambda m: (
+                            ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                             "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+                            [int(m.split('/')[0])] + " " + m.split('/')[1]),
+                        key="hist_mes_sel")
+                    _dias_del_mes = [d for d in _fechas_disp
+                                     if d.split('/')[1]+'/'+d.split('/')[2] == _mes_sel]
+                    _dia_sel = st.selectbox("Dia:",
+                        _dias_del_mes,
+                        format_func=lambda d: d,
+                        key="hist_dia_sel")
+                    _asis_sel = _hist_all.get(_dia_sel, {})
+                    _n_per = len(_asis_sel)
+                    _n_al  = sum(1 for v in _asis_sel.values() if not v.get('es_docente'))
+                    _n_dc  = sum(1 for v in _asis_sel.values() if v.get('es_docente'))
+                    st.caption(f"Dia {_dia_sel}: {_n_per} personas ({_n_al} alumnos, {_n_dc} docentes)")
+                    if st.button(f"📥 Generar PDF — {_dia_sel}",
+                                 type="primary", use_container_width=True,
+                                 key="btn_hist_pdf"):
+                        _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_sel)
+                        st.session_state['_pdf_hist_bytes'] = _pdf_hist
+                        st.session_state['_pdf_hist_fecha'] = _dia_sel
+                    if st.session_state.get('_pdf_hist_bytes'):
+                        _fh2   = st.session_state.get('_pdf_hist_fecha', _dia_sel)
+                        _fname2 = "Asistencia_" + _fh2.replace('/','') + ".pdf"
+                        st.download_button(
+                            f"⬇️ Descargar — {_fh2}",
+                            st.session_state['_pdf_hist_bytes'],
+                            _fname2, "application/pdf",
+                            key="dl_hist_pdf")
+                else:
+                    st.info("No hay registros historicos aun.")
+            else:
+                st.info("No hay archivo de asistencias guardado aun.")
         # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
