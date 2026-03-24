@@ -7609,105 +7609,224 @@ def tab_carnets(config):
 # ================================================================
 
 def _generar_pdf_asistencia_dia(fecha_str, asis_data):
-    """Genera PDF de asistencia de un día. fecha_str = 'dd/mm/yyyy'."""
+    """Genera PDF de asistencia diaria — con estadisticas visuales y frase motivacional."""
     from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
-                                     Paragraph, Spacer)
+                                     Paragraph, Spacer, HRFlowable)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     import io as _io
+    from datetime import datetime as _dt
 
     buf = _io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
-                            topMargin=1*cm, bottomMargin=1*cm,
+                            topMargin=0.8*cm, bottomMargin=0.8*cm,
                             leftMargin=1.5*cm, rightMargin=1.5*cm)
-    ss = getSampleStyleSheet()
+    ss  = getSampleStyleSheet()
 
-    def _P(txt, bold=False, size=9, align=1):
+    # ── Colores pasteles por estado ───────────────────────────────
+    C_PUNTUAL   = colors.Color(0.72, 0.96, 0.72)   # verde pastel
+    C_TARD      = colors.Color(1.00, 0.90, 0.60)   # amarillo pastel
+    C_AUSENTE   = colors.Color(1.00, 0.75, 0.75)   # rojo pastel
+    C_AZUL_HDR  = colors.Color(0.10, 0.20, 0.50)   # azul institucional
+    C_VERD_HDR  = colors.Color(0.05, 0.40, 0.10)   # verde docentes
+    C_LAVANDA   = colors.Color(0.88, 0.84, 1.00)   # lavanda para stat
+
+    def P(txt, bold=False, size=9, align=TA_CENTER, color=None):
+        c = color or colors.black
         return Paragraph(
             f"<b>{txt}</b>" if bold else txt,
-            ParagraphStyle('pdf', fontSize=size, leading=size+2,
-                           alignment=align,
+            ParagraphStyle('pp', fontSize=size, leading=size+3,
+                           alignment=align, textColor=c,
                            fontName='Helvetica-Bold' if bold else 'Helvetica',
                            parent=ss['Normal']))
 
-    AZU  = colors.Color(0.10, 0.20, 0.50)
-    VERD = colors.Color(0.05, 0.40, 0.10)
-    HDRS = ['DNI','Apellidos y Nombres','Ent. Manana','Puntual',
-            'Sal. Manana','Ent. Tarde','Sal. Tarde']
-    COL_WS = [2.2*cm, 7.2*cm, 2.6*cm, 1.8*cm, 2.6*cm, 2.6*cm, 2.6*cm]
-
-    alumnos_d, docentes_d = [], []
-    for dk, v in asis_data.items():
-        entrada_m = v.get('entrada') or v.get('tardanza') or ''
-        es_tard   = bool(entrada_m) and _es_tardanza(entrada_m)
-        reg = {
-            'DNI'   : dk,
+    # ── Separar alumnos y docentes ────────────────────────────────
+    alumnos, docentes = [], []
+    for dni, v in asis_data.items():
+        es_d = v.get('es_docente', False)
+        ent  = v.get('entrada','') or v.get('tardanza','')
+        tard = bool(v.get('tardanza','')) or (bool(ent) and _es_tardanza(ent))
+        rec  = {
+            'DNI':    dni,
             'Nombre': v.get('nombre',''),
-            'EM'    : entrada_m or '—',
-            'P'     : 'TARD' if es_tard else ('OK' if entrada_m else '—'),
-            'SM'    : v.get('salida','') or '—',
-            'ET'    : v.get('entrada_tarde','') or '—',
-            'ST'    : v.get('salida_tarde','') or '—',
+            'Entrada': ent or '—',
+            'Puntual': 'TARD.' if tard else ('OK' if ent else '—'),
+            'Sal.Man': v.get('salida','') or '—',
+            'Ent.Tard': v.get('entrada_tarde','') or '—',
+            'Sal.Tard': v.get('salida_tarde','') or '—',
+            '_tard': tard,
+            '_ent': bool(ent),
         }
-        (docentes_d if v.get('es_docente') else alumnos_d).append(reg)
+        if es_d:
+            docentes.append(rec)
+        else:
+            alumnos.append(rec)
 
-    alumnos_d.sort(key=lambda x: x['Nombre'])
-    docentes_d.sort(key=lambda x: x['Nombre'])
+    alumnos  = sorted(alumnos,  key=lambda x: x['Nombre'])
+    docentes = sorted(docentes, key=lambda x: x['Nombre'])
+
+    # ── Estadísticas ──────────────────────────────────────────────
+    def _stats(lista):
+        puntual = sum(1 for r in lista if r['_ent'] and not r['_tard'])
+        tard    = sum(1 for r in lista if r['_tard'])
+        ausente = len(lista) - puntual - tard
+        return puntual, tard, ausente
+
+    a_pun, a_tar, a_aus = _stats(alumnos)
+    d_pun, d_tar, d_aus = _stats(docentes)
+
+    def _pct(n, total):
+        return f"{round(n/total*100)}%" if total > 0 else "0%"
+
+    story = []
+
+    # ── MEMBRETE ──────────────────────────────────────────────────
+    story += [
+        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=14),
+        P("UGEL Urubamba  |  Chinchero, Cusco", size=9),
+        P('"Pioneros en la Educación de Calidad"', size=9,
+          color=colors.Color(0.3, 0.5, 0.1)),
+        HRFlowable(width="100%", thickness=1.5,
+                   color=C_AZUL_HDR, spaceAfter=4),
+        P(f"REGISTRO DE ASISTENCIA — {fecha_str}", bold=True, size=12),
+        P(f"Generado: {hora_peru_str()}  |  "
+          f"{len(alumnos)} alumnos  |  {len(docentes)} docentes",
+          size=8.5, color=colors.Color(0.4, 0.4, 0.4)),
+        Spacer(1, 0.25*cm),
+    ]
+
+    # ── ESTADÍSTICAS VISUALES — dos cuadros lado a lado ───────────
+    def _cuadro_stat(titulo, puntual, tard, ausente, total, color_hdr):
+        """Cuadro estadístico con barras de color pastel."""
+        pct_p = round(puntual/total*100) if total else 0
+        pct_t = round(tard/total*100)    if total else 0
+        pct_a = round(ausente/total*100) if total else 0
+
+        # Mini barra de progreso en 3 segmentos
+        W_BARRA = 8.0*cm
+        rows = [
+            # Título
+            [P(f"{titulo}  ({total} personas)",
+               bold=True, size=9.5, color=colors.white)],
+            # Fila de iconos y números
+            [Table([
+                [
+                    P("PUNTUALES", bold=True, size=8),
+                    P("TARDANZAS", bold=True, size=8),
+                    P("SIN REGISTRO", bold=True, size=8),
+                ],
+                [
+                    P(f"{puntual}  {_pct(puntual,total)}",
+                      bold=True, size=14, color=colors.Color(0.1,0.5,0.1)),
+                    P(f"{tard}  {_pct(tard,total)}",
+                      bold=True, size=14, color=colors.Color(0.7,0.4,0.0)),
+                    P(f"{ausente}  {_pct(ausente,total)}",
+                      bold=True, size=14, color=colors.Color(0.7,0.1,0.1)),
+                ],
+            ], colWidths=[3.0*cm, 3.0*cm, 3.0*cm], rowHeights=[0.5*cm, 1.1*cm])],
+        ]
+        t = Table(rows, colWidths=[9.2*cm],
+                  rowHeights=[0.6*cm, 1.8*cm])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0,0),(0,0), color_hdr),
+            ('BACKGROUND', (0,1),(0,1), colors.Color(0.97,0.97,1.0)),
+            ('BOX',        (0,0),(0,-1), 1.2, color_hdr),
+            ('LINEBELOW',  (0,0),(0,0), 0.5, color_hdr),
+            ('VALIGN',     (0,0),(-1,-1), 'MIDDLE'),
+            ('TOPPADDING', (0,0),(-1,-1), 3),
+            ('BOTTOMPADDING',(0,0),(-1,-1), 3),
+        ]))
+        return t
+
+    # Lado a lado en una tabla de 2 columnas
+    cuadro_alumnos  = _cuadro_stat("ALUMNOS",  a_pun, a_tar, a_aus, len(alumnos),  C_AZUL_HDR)
+    cuadro_docentes = _cuadro_stat("DOCENTES", d_pun, d_tar, d_aus, len(docentes), C_VERD_HDR)
+
+    t_stats = Table([[cuadro_alumnos, cuadro_docentes]],
+                    colWidths=[9.6*cm, 9.6*cm])
+    t_stats.setStyle(TableStyle([
+        ('VALIGN',(0,0),(-1,-1),'TOP'),
+        ('LEFTPADDING',(0,0),(-1,-1),1),
+        ('RIGHTPADDING',(0,0),(-1,-1),1),
+    ]))
+    story.append(t_stats)
+    story.append(Spacer(1, 0.3*cm))
+
+    # ── TABLA PRINCIPAL — alumnos + docentes ──────────────────────
+    HDRS = ['DNI','Nombre','Entrada Mañana','Puntual','Salida Mañana',
+            'Entrada Tarde','Salida Tarde']
+    COL_W = [2.0*cm, 6.5*cm, 2.6*cm, 1.6*cm, 2.6*cm, 2.6*cm, 2.6*cm]
 
     def _tabla(datos, titulo, color_hdr):
-        if not datos: return []
+        if not datos:
+            return []
         rows = [HDRS]
-        tard_rows = []
-        for i, r in enumerate(datos):
-            rows.append([r['DNI'], r['Nombre'], r['EM'], r['P'],
-                         r['SM'], r['ET'], r['ST']])
-            if r['P'] == 'TARD':
-                tard_rows.append(i+1)
-        t = Table(rows, colWidths=COL_WS,
-                  rowHeights=[0.65*cm]+[0.55*cm]*(len(rows)-1))
+        for r in datos:
+            rows.append([
+                r['DNI'], r['Nombre'], r['Entrada'],
+                r['Puntual'], r['Sal.Man'], r['Ent.Tard'], r['Sal.Tard']
+            ])
+        t = Table(rows, colWidths=COL_W,
+                  rowHeights=[0.60*cm]+[0.52*cm]*(len(rows)-1))
         cmds = [
-            ('GRID',         (0,0),(-1,-1), 0.3, colors.black),
-            ('FONTSIZE',     (0,0),(-1,-1), 7.5),
-            ('FONTNAME',     (0,0),(-1,0),  'Helvetica-Bold'),
-            ('BACKGROUND',   (0,0),(-1,0),  color_hdr),
-            ('TEXTCOLOR',    (0,0),(-1,0),  colors.white),
-            ('ALIGN',        (0,0),(-1,-1), 'CENTER'),
-            ('ALIGN',        (1,1),(1,-1),  'LEFT'),
-            ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
+            ('GRID',     (0,0),(-1,-1), 0.25, colors.grey),
+            ('FONTSIZE', (0,0),(-1,-1), 7.0),
+            ('VALIGN',   (0,0),(-1,-1), 'MIDDLE'),
+            ('LEFTPADDING', (0,0),(-1,-1), 3),
+            ('BACKGROUND', (0,0),(-1,0), color_hdr),
+            ('TEXTCOLOR',  (0,0),(-1,0), colors.white),
+            ('FONTNAME',   (0,0),(-1,0), 'Helvetica-Bold'),
+            ('ALIGN',      (0,0),(-1,0), 'CENTER'),
+            ('ALIGN',      (1,1),(1,-1), 'LEFT'),
             ('ROWBACKGROUNDS',(0,1),(-1,-1),
-             [colors.white, colors.Color(0.95,0.95,1.0)]),
+             [colors.white, colors.Color(0.96,0.96,1.0)]),
         ]
-        for ri in tard_rows:
-            cmds.append(('BACKGROUND',(3,ri),(3,ri), colors.Color(1,0.85,0.5)))
+        # Color por estado de puntualidad
+        for i, r in enumerate(datos, 1):
+            if r['_tard']:
+                cmds.append(('BACKGROUND',(3,i),(3,i), C_TARD))
+            elif r['_ent']:
+                cmds.append(('BACKGROUND',(3,i),(3,i), C_PUNTUAL))
         t.setStyle(TableStyle(cmds))
-        return [_P(titulo, bold=True, size=10, align=0),
-                Spacer(1,0.15*cm), t, Spacer(1,0.4*cm)]
+        tit = Table([[P(titulo, bold=True, size=9, color=colors.white)]],
+                    colWidths=[sum(c.cm if hasattr(c,'cm') else c for c in COL_W)*cm])
+        tit.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(-1,-1), color_hdr),
+            ('TOPPADDING',(0,0),(-1,-1),4),
+            ('BOTTOMPADDING',(0,0),(-1,-1),4),
+        ]))
+        return [tit, t, Spacer(1, 0.3*cm)]
 
-    n_ent   = sum(1 for v in asis_data.values() if v.get('entrada') or v.get('tardanza'))
-    n_tard  = sum(1 for v in asis_data.values()
-                  if (v.get('entrada') or v.get('tardanza'))
-                  and _es_tardanza(v.get('entrada','') or v.get('tardanza','')))
-    n_sal   = sum(1 for v in asis_data.values() if v.get('salida'))
-    n_et    = sum(1 for v in asis_data.values() if v.get('entrada_tarde'))
-    n_st    = sum(1 for v in asis_data.values() if v.get('salida_tarde'))
+    story += _tabla(alumnos, f"ALUMNOS — {len(alumnos)} registros", C_AZUL_HDR)
+    story += _tabla(docentes, f"DOCENTES — {len(docentes)} registros", C_VERD_HDR)
 
-    story = [
-        _P("I.E.P. ALTERNATIVO YACHAY  —  UGEL Urubamba", bold=True, size=12),
-        _P(f"REGISTRO DE ASISTENCIA  —  {fecha_str}  |  "
-           f"Alumnos: {len(alumnos_d)}  |  Docentes: {len(docentes_d)}", size=9),
-        Spacer(1, 0.3*cm),
+    # ── FRASES motivacionales rotativas ──────────────────────────
+    import hashlib
+    _frases = [
+        '"La puntualidad es el respeto más pequeño que podemos hacer al tiempo de los demás." — Kant',
+        '"Llegar a tiempo no es una virtud menor: es el primer acto de responsabilidad del día."',
+        '"La asistencia constante construye el hábito del éxito. Cada día cuenta, cada presencia importa."',
+        '"Un estudiante que llega puntual ya ganó la mitad de la batalla del aprendizaje."',
+        '"La disciplina de la puntualidad enseña más que cualquier libro. — I.E.P. Alternativo YACHAY"',
+        '"Estar presente es el primer paso para ser parte del cambio. — Pioneros en la Educación de Calidad"',
     ]
-    story += _tabla(alumnos_d, f"ALUMNOS  ({len(alumnos_d)} registros)", AZU)
-    story += _tabla(docentes_d, f"DOCENTES  ({len(docentes_d)} registros)", VERD)
+    # Frase del día basada en la fecha (siempre la misma para el mismo día)
+    _idx_frase = int(hashlib.md5(fecha_str.encode()).hexdigest(), 16) % len(_frases)
+    _frase_dia = _frases[_idx_frase]
+
     story += [
-        _P(f"RESUMEN DEL DIA {fecha_str}:  "
-           f"{n_ent} entradas  |  {n_tard} tardanzas  |  "
-           f"{n_sal} salidas mañana  |  {n_et} entradas tarde  |  "
-           f"{n_st} salidas tarde  |  "
-           f"TOTAL PERSONAS: {len(asis_data)}", size=8),
+        HRFlowable(width="100%", thickness=0.8,
+                   color=colors.Color(0.7,0.7,0.7), spaceBefore=4, spaceAfter=4),
+        P(_frase_dia, size=8, align=TA_CENTER,
+          color=colors.Color(0.3, 0.3, 0.5)),
+        P(f"I.E.P. ALTERNATIVO YACHAY  |  Chinchero, Cusco  |  UGEL Urubamba  |  "
+          f"Generado el {fecha_str} a las {hora_peru_str()}",
+          size=7, color=colors.Color(0.5,0.5,0.5)),
     ]
+
     doc.build(story)
     buf.seek(0)
     return buf.read()
