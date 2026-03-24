@@ -8215,8 +8215,9 @@ def tab_asistencias():
             if Path(ARCHIVO_ASISTENCIAS).exists():
                 with open(ARCHIVO_ASISTENCIAS,'r',encoding='utf-8') as _fh:
                     _hist_all = json.load(_fh)
-                # Fechas disponibles ordenadas desc
-                _fechas_disp = sorted(_hist_all.keys(),
+                # Solo fechas válidas DD/MM/YYYY
+                _fechas_disp = sorted(
+                    [d for d in _hist_all.keys() if len(d.split('/')) == 3],
                     key=lambda d: (d.split('/')[2], d.split('/')[1], d.split('/')[0]),
                     reverse=True)
                 if _fechas_disp:
