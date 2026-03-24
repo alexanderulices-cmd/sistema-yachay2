@@ -7870,6 +7870,97 @@ def tab_asistencias():
                 use_container_width=True, hide_index=True
             )
 
+        # ── Botón PDF del día ────────────────────────────────────────
+        if st.button("📥 Descargar PDF del día", type="primary",
+                     use_container_width=True, key="btn_pdf_dia"):
+            from reportlab.lib.pagesizes import A4, landscape
+            from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                             Paragraph, Spacer)
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib import colors
+            from reportlab.lib.units import cm
+            import io as _io
+            buf_dia = _io.BytesIO()
+            _hoy_str = hora_peru().strftime('%d/%m/%Y')
+            _hora_imp = hora_peru_str()
+            doc_dia = SimpleDocTemplate(buf_dia, pagesize=landscape(A4),
+                                        topMargin=1*cm, bottomMargin=1*cm,
+                                        leftMargin=1.5*cm, rightMargin=1.5*cm)
+            ss = getSampleStyleSheet()
+            def _P(txt, bold=False, size=9, align=1):
+                return Paragraph(
+                    f"<b>{txt}</b>" if bold else txt,
+                    ParagraphStyle('pd', fontSize=size, leading=size+2,
+                                   alignment=align, fontName='Helvetica-Bold' if bold else 'Helvetica',
+                                   parent=ss['Normal']))
+            story_dia = [
+                _P("I.E.P. ALTERNATIVO YACHAY — UGEL Urubamba", bold=True, size=12),
+                _P(f"REGISTRO DE ASISTENCIA DEL DIA — {_hoy_str} | Generado: {_hora_imp}",
+                   size=9),
+                Spacer(1, 0.3*cm),
+            ]
+            HDRS = ['DNI','Nombre','Entrada Manana','Puntual','Salida Manana',
+                    'Entrada Tarde','Salida Tarde']
+            AZU  = colors.Color(0.1,0.2,0.5)
+            VERD = colors.Color(0.05,0.4,0.1)
+            def _tabla_seccion(datos, titulo, color_hdr):
+                if not datos: return []
+                rows = [HDRS]
+                for r in sorted(datos, key=lambda x: x['Nombre']):
+                    rows.append([
+                        r['DNI'],
+                        r['Nombre'],
+                        r.get('① Entrada Mañana','—'),
+                        'TARD' if 'Tard' in str(r.get('Puntual','')) else ('OK' if r.get('Puntual','') not in ('—','') else '—'),
+                        r.get('② Salida Mañana','—'),
+                        r.get('③ Entrada Tarde','—'),
+                        r.get('④ Salida Tarde','—'),
+                    ])
+                col_ws = [2.2*cm, 7.0*cm, 2.8*cm, 1.8*cm, 2.8*cm, 2.8*cm, 2.8*cm]
+                t = Table(rows, colWidths=col_ws,
+                          rowHeights=[0.65*cm]+[0.55*cm]*(len(rows)-1))
+                t.setStyle(TableStyle([
+                    ('GRID',(0,0),(-1,-1),0.3,colors.black),
+                    ('FONTSIZE',(0,0),(-1,-1),7.5),
+                    ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+                    ('BACKGROUND',(0,0),(-1,0),color_hdr),
+                    ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+                    ('ALIGN',(1,1),(1,-1),'LEFT'),
+                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                    ('ROWBACKGROUNDS',(0,1),(-1,-1),
+                     [colors.white, colors.Color(0.95,0.95,1)]),
+                    # Tardanzas en naranja
+                    *[('BACKGROUND',(3,i+1),(3,i+1),colors.Color(1,0.85,0.5))
+                      for i,r in enumerate(rows[1:]) if r[3]=='TARD'],
+                ]))
+                return [_P(titulo, bold=True, size=10, align=0), Spacer(1,0.15*cm), t, Spacer(1,0.4*cm)]
+
+            story_dia += _tabla_seccion(alumnos_h,
+                f"ALUMNOS — {len(alumnos_h)} registros", AZU)
+            story_dia += _tabla_seccion(docentes_h,
+                f"DOCENTES — {len(docentes_h)} registros", VERD)
+
+            # Resumen al pie
+            story_dia += [
+                Spacer(1, 0.2*cm),
+                _P(f"RESUMEN: {len(alumnos_h)} alumnos | {len(docentes_h)} docentes | "
+                   f"{_ent} entradas | {_tard} tardanzas | "
+                   f"{sum(1 for v in asis.values() if v.get('salida'))} salidas manana | "
+                   f"{sum(1 for v in asis.values() if v.get('entrada_tarde'))} entradas tarde | "
+                   f"{sum(1 for v in asis.values() if v.get('salida_tarde'))} salidas tarde",
+                   size=8),
+            ]
+            doc_dia.build(story_dia)
+            buf_dia.seek(0)
+            st.download_button(
+                "⬇️ Descargar PDF",
+                buf_dia.read(),
+                f"Asistencia_{hora_peru().strftime('%Y%m%d')}.pdf",
+                "application/pdf",
+                key="dl_pdf_dia"
+            )
+
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
         st.subheader("📊 Analytics de Asistencia")
