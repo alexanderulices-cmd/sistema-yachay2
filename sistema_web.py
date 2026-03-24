@@ -4007,6 +4007,237 @@ def procesar_examen(image_bytes, num_preguntas):
 # PANTALLA DE LOGIN (Usuario + Contraseña — SEGURO)
 # ================================================================
 
+def _portal_padres_familia():
+    """Portal público para padres: consulta asistencia y notas de su hijo/a."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    # ── Botón volver ──────────────────────────────────────────────
+    if st.button("← Volver al inicio", key="portal_volver"):
+        st.session_state.pop('_portal_padres', None)
+        st.session_state.pop('_portal_dni', None)
+        st.rerun()
+
+    st.markdown("""
+    <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
+                border-radius:16px;padding:20px;text-align:center;
+                color:white;margin-bottom:20px;'>
+        <div style='font-size:1.8rem;font-weight:800;'>I.E.P. ALTERNATIVO YACHAY</div>
+        <div style='font-size:1.1rem;opacity:0.9;'>👨‍👩‍👧 Portal de Padres de Familia</div>
+        <div style='font-size:0.85rem;opacity:0.8;margin-top:4px;'>
+            Consulta la asistencia y calificaciones de tu hijo/a
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Buscar por DNI del estudiante ─────────────────────────────
+    col_inp, col_btn = st.columns([3, 1])
+    with col_inp:
+        dni_input = st.text_input("DNI del estudiante:",
+                                   max_chars=8,
+                                   placeholder="Escribe el DNI de 8 dígitos",
+                                   key="portal_dni_input")
+    with col_btn:
+        st.markdown("<br>", unsafe_allow_html=True)
+        buscar = st.button("Buscar", type="primary",
+                           use_container_width=True, key="portal_buscar")
+
+    dni_buscar = st.session_state.get('_portal_dni', '')
+    if buscar and dni_input.strip():
+        st.session_state['_portal_dni'] = dni_input.strip()
+        dni_buscar = dni_input.strip()
+
+    if not dni_buscar:
+        st.info("Ingresa el DNI del estudiante para ver su historial.")
+        return
+
+    # ── Buscar alumno ─────────────────────────────────────────────
+    df_mat = BaseDatos.cargar_matricula()
+    alumno = None
+    if not df_mat.empty and 'DNI' in df_mat.columns:
+        df_mat['DNI'] = df_mat['DNI'].astype(str).str.strip()
+        fila = df_mat[df_mat['DNI'] == dni_buscar]
+        if not fila.empty:
+            alumno = fila.iloc[0].to_dict()
+
+    if not alumno:
+        st.error("No se encontró ningún estudiante con ese DNI. Verifica el número.")
+        return
+
+    nombre = str(alumno.get('Nombre', '')).strip()
+    grado  = str(alumno.get('Grado', '')).strip()
+    st.success(f"Estudiante encontrado: **{nombre}** — {grado}")
+    st.markdown("---")
+
+    # ── Cargar historial de asistencia ────────────────────────────
+    asis_hist = {}
+    if _Path(ARCHIVO_ASISTENCIAS).exists():
+        with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+            asis_hist = _json.load(f)
+
+    # Recopilar registros del alumno ordenados por fecha
+    from datetime import datetime as _dt
+    registros = []
+    for fecha, personas in asis_hist.items():
+        if len(fecha.split('/')) != 3:
+            continue
+        if dni_buscar in personas:
+            v = personas[dni_buscar]
+            ent  = v.get('entrada','') or v.get('tardanza','')
+            try:
+                fecha_dt = _dt.strptime(fecha, '%d/%m/%Y')
+            except Exception:
+                continue
+            registros.append({
+                'fecha_dt': fecha_dt,
+                'fecha':    fecha,
+                'entrada':  ent,
+                'tardanza': bool(v.get('tardanza','')),
+                'sal_man':  v.get('salida',''),
+                'ent_tar':  v.get('entrada_tarde',''),
+                'sal_tar':  v.get('salida_tarde',''),
+            })
+
+    registros = sorted(registros, key=lambda x: x['fecha_dt'], reverse=True)
+
+    # ── Estadísticas generales ────────────────────────────────────
+    total   = len(registros)
+    puntual = sum(1 for r in registros if r['entrada'] and not r['tardanza'])
+    tarde   = sum(1 for r in registros if r['tardanza'])
+    ausente = 0  # no se puede saber ausencias sin nómina completa
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(f"""
+        <div style='background:#dcfce7;border-radius:12px;padding:14px;text-align:center;'>
+            <div style='font-size:2rem;font-weight:900;color:#16a34a;'>{puntual}</div>
+            <div style='font-size:0.85rem;color:#166534;font-weight:600;'>DÍAS PUNTUAL</div>
+        </div>""", unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"""
+        <div style='background:#fef9c3;border-radius:12px;padding:14px;text-align:center;'>
+            <div style='font-size:2rem;font-weight:900;color:#ca8a04;'>{tarde}</div>
+            <div style='font-size:0.85rem;color:#854d0e;font-weight:600;'>TARDANZAS</div>
+        </div>""", unsafe_allow_html=True)
+    with col3:
+        pct = round(puntual/total*100) if total else 0
+        color_pct = "#16a34a" if pct >= 90 else ("#ca8a04" if pct >= 75 else "#dc2626")
+        st.markdown(f"""
+        <div style='background:#f0f9ff;border-radius:12px;padding:14px;text-align:center;'>
+            <div style='font-size:2rem;font-weight:900;color:{color_pct};'>{pct}%</div>
+            <div style='font-size:0.85rem;color:#0369a1;font-weight:600;'>PUNTUALIDAD</div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Gráfico de barras últimos 14 días ─────────────────────────
+    if registros:
+        st.markdown("**📊 Puntualidad — últimos 14 días**")
+        ultimos = registros[:14][::-1]
+        bars_html = "<div style='display:flex;align-items:flex-end;gap:6px;height:80px;'>"
+        for r in ultimos:
+            if r['tardanza']:
+                color = "#fbbf24"; h = 50; label = "T"
+            elif r['entrada']:
+                color = "#22c55e"; h = 75; label = "P"
+            else:
+                color = "#e5e7eb"; h = 20; label = "—"
+            bars_html += (
+                f"<div style='display:flex;flex-direction:column;align-items:center;gap:3px;'>"
+                f"<div style='width:24px;height:{h}px;background:{color};"
+                f"border-radius:4px 4px 0 0;'></div>"
+                f"<div style='font-size:9px;color:#666;'>{r['fecha'][0:5]}</div>"
+                f"</div>")
+        bars_html += "</div>"
+        bars_html += "<div style='font-size:11px;color:#888;margin-top:6px;'>"
+        bars_html += "🟢 Puntual &nbsp;&nbsp; 🟡 Tardanza</div>"
+        st.markdown(bars_html, unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Historial detallado ───────────────────────────────────────
+    st.markdown("**📅 Historial de Asistencia**")
+    for r in registros[:30]:
+        from datetime import datetime as _dt2
+        try:
+            dia_sem = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][r['fecha_dt'].weekday()]
+        except Exception:
+            dia_sem = ''
+        if r['tardanza']:
+            icon = "🟡"; estado = "TARDANZA"; bg = "#fffbeb"; bc = "#fbbf24"
+        elif r['entrada']:
+            icon = "✅"; estado = "PUNTUAL";  bg = "#f0fdf4"; bc = "#86efac"
+        else:
+            icon = "⚪"; estado = "—";        bg = "#f9fafb"; bc = "#e5e7eb"
+
+        detalles = []
+        if r['entrada']:  detalles.append(f"Entrada: {r['entrada']}")
+        if r['sal_man']:  detalles.append(f"Salida mañana: {r['sal_man']}")
+        if r['ent_tar']:  detalles.append(f"Entrada tarde: {r['ent_tar']}")
+        if r['sal_tar']:  detalles.append(f"Salida tarde: {r['sal_tar']}")
+
+        st.markdown(
+            f"<div style='background:{bg};border:1px solid {bc};"
+            f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
+            f"display:flex;align-items:center;gap:12px;'>"
+            f"<span style='font-size:1.4rem;'>{icon}</span>"
+            f"<div>"
+            f"<b style='font-size:0.95rem;'>{dia_sem} {r['fecha']}</b>"
+            f"<span style='margin-left:10px;font-size:0.8rem;"
+            f"color:#555;'>{estado}</span>"
+            f"<div style='font-size:0.78rem;color:#777;margin-top:2px;'>"
+            f"{'  |  '.join(detalles) if detalles else 'Sin detalle'}</div>"
+            f"</div></div>",
+            unsafe_allow_html=True)
+
+    if not registros:
+        st.info("No hay registros de asistencia aún para este estudiante.")
+
+    # ── Notas / Calificaciones ────────────────────────────────────
+    st.markdown("---")
+    st.markdown("**📚 Calificaciones**")
+
+    notas_data = {}
+    if _Path('notas.json').exists():
+        with open('notas.json','r',encoding='utf-8') as f:
+            notas_data = _json.load(f)
+
+    # Buscar notas del alumno por DNI o nombre
+    mis_notas = {}
+    for k, v in notas_data.items():
+        if not isinstance(v, dict): continue
+        if (str(v.get('dni','')).strip() == dni_buscar or
+                str(v.get('nombre','')).strip().upper() == nombre.upper()):
+            area = v.get('area', v.get('curso', 'Sin área'))
+            sem  = v.get('semana', v.get('periodo', ''))
+            nota = v.get('nota', v.get('calificacion', ''))
+            if area not in mis_notas:
+                mis_notas[area] = []
+            mis_notas[area].append({'sem': str(sem), 'nota': str(nota)})
+
+    if mis_notas:
+        for area, notas_area in sorted(mis_notas.items()):
+            with st.expander(f"📖 {area}", expanded=True):
+                cols_n = st.columns(min(len(notas_area), 6))
+                for ci, n in enumerate(notas_area[-6:]):
+                    with cols_n[ci % len(cols_n)]:
+                        try:
+                            nval = float(n['nota'])
+                            ncolor = "#16a34a" if nval >= 14 else ("#ca8a04" if nval >= 11 else "#dc2626")
+                            nletra = "AD" if nval >= 18 else ("A" if nval >= 14 else ("B" if nval >= 11 else "C"))
+                        except Exception:
+                            ncolor = "#6b7280"; nletra = str(n['nota'])
+                        st.markdown(
+                            f"<div style='background:#f8fafc;border:1px solid #e2e8f0;"
+                            f"border-radius:8px;padding:8px;text-align:center;'>"
+                            f"<div style='font-size:1.3rem;font-weight:900;color:{ncolor};'>"
+                            f"{n['nota']}</div>"
+                            f"<div style='font-size:0.7rem;color:{ncolor};'>{nletra}</div>"
+                            f"<div style='font-size:0.7rem;color:#888;'>Sem {n['sem']}</div>"
+                            f"</div>", unsafe_allow_html=True)
+    else:
+        st.info("No hay calificaciones registradas aún para este estudiante.")
+
+
 def pantalla_login():
     # CSS especial para login
     st.markdown("""
@@ -4185,6 +4416,24 @@ def pantalla_login():
             © 2026 YACHAY PRO — Todos los derechos reservados
         </div>
         """, unsafe_allow_html=True)
+
+        # ── PORTAL PADRES DE FAMILIA ──────────────────────────────
+        st.markdown("---")
+        st.markdown("""
+        <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
+                    border-radius:14px;padding:14px 18px;text-align:center;
+                    color:white;margin-bottom:8px;'>
+            <div style='font-size:1.3rem;font-weight:800;'>👨‍👩‍👧 Portal de Padres de Familia</div>
+            <div style='font-size:0.85rem;opacity:0.9;margin-top:4px;'>
+                Consulta asistencia y calificaciones de tu hijo/a
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("📊 CONSULTAR ASISTENCIA Y NOTAS DE MI HIJO/A",
+                     use_container_width=True, key="btn_portal_padres",
+                     type="secondary"):
+            st.session_state['_portal_padres'] = True
+            st.rerun()
 
         # Libro de reclamaciones
         st.markdown("---")
@@ -7609,225 +7858,214 @@ def tab_carnets(config):
 # ================================================================
 
 def _generar_pdf_asistencia_dia(fecha_str, asis_data):
-    """Genera PDF de asistencia diaria — con estadisticas visuales y frase motivacional."""
+    """PDF de asistencia: pag1=alumnos, pag2=docentes, stats, pie de pagina con numero."""
     from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
-                                     Paragraph, Spacer, HRFlowable)
+                                     Paragraph, Spacer, HRFlowable, PageBreak)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
-    import io as _io
-    from datetime import datetime as _dt
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io, hashlib
 
     buf = _io.BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
-                            topMargin=0.8*cm, bottomMargin=0.8*cm,
-                            leftMargin=1.5*cm, rightMargin=1.5*cm)
-    ss  = getSampleStyleSheet()
+    PW, PH = landscape(A4)
+    ML = MR = 1.5*cm; MT = 1.0*cm; MB = 1.2*cm
 
-    # ── Colores pasteles por estado ───────────────────────────────
-    C_PUNTUAL   = colors.Color(0.72, 0.96, 0.72)   # verde pastel
-    C_TARD      = colors.Color(1.00, 0.90, 0.60)   # amarillo pastel
-    C_AUSENTE   = colors.Color(1.00, 0.75, 0.75)   # rojo pastel
-    C_AZUL_HDR  = colors.Color(0.10, 0.20, 0.50)   # azul institucional
-    C_VERD_HDR  = colors.Color(0.05, 0.40, 0.10)   # verde docentes
-    C_LAVANDA   = colors.Color(0.88, 0.84, 1.00)   # lavanda para stat
+    C_PUN   = colors.Color(0.75, 0.97, 0.75)
+    C_TARD  = colors.Color(1.00, 0.91, 0.60)
+    C_AZU   = colors.Color(0.10, 0.20, 0.50)
+    C_VER   = colors.Color(0.05, 0.40, 0.10)
+    C_LIGHT = colors.Color(0.97, 0.97, 1.00)
+    ss = getSampleStyleSheet()
 
     def P(txt, bold=False, size=9, align=TA_CENTER, color=None):
-        c = color or colors.black
         return Paragraph(
             f"<b>{txt}</b>" if bold else txt,
-            ParagraphStyle('pp', fontSize=size, leading=size+3,
-                           alignment=align, textColor=c,
-                           fontName='Helvetica-Bold' if bold else 'Helvetica',
-                           parent=ss['Normal']))
+            ParagraphStyle("_p", fontSize=size, leading=size+3,
+                           alignment=align, textColor=color or colors.black,
+                           fontName="Helvetica-Bold" if bold else "Helvetica",
+                           parent=ss["Normal"]))
 
-    # ── Separar alumnos y docentes ────────────────────────────────
+    def _es_tard(ent):
+        try:
+            h, m = int(ent[:2]), int(ent[3:5])
+            return h * 60 + m > 8 * 60 + 5
+        except Exception:
+            return False
+
     alumnos, docentes = [], []
     for dni, v in asis_data.items():
-        es_d = v.get('es_docente', False)
-        ent  = v.get('entrada','') or v.get('tardanza','')
-        tard = bool(v.get('tardanza','')) or (bool(ent) and _es_tardanza(ent))
-        rec  = {
-            'DNI':    dni,
-            'Nombre': v.get('nombre',''),
-            'Entrada': ent or '—',
-            'Puntual': 'TARD.' if tard else ('OK' if ent else '—'),
-            'Sal.Man': v.get('salida','') or '—',
-            'Ent.Tard': v.get('entrada_tarde','') or '—',
-            'Sal.Tard': v.get('salida_tarde','') or '—',
-            '_tard': tard,
-            '_ent': bool(ent),
-        }
-        if es_d:
+        ent  = v.get("entrada","") or v.get("tardanza","")
+        tard = bool(v.get("tardanza","")) or _es_tard(ent)
+        rec = {"DNI": dni, "Nombre": v.get("nombre",""),
+               "Ent.Man": ent or "—",
+               "Estado": "TARD." if tard else ("OK" if ent else "—"),
+               "Sal.Man": v.get("salida","") or "—",
+               "Ent.Tar": v.get("entrada_tarde","") or "—",
+               "Sal.Tar": v.get("salida_tarde","") or "—",
+               "_tard": tard, "_ent": bool(ent)}
+        if v.get("es_docente", False):
             docentes.append(rec)
         else:
             alumnos.append(rec)
 
-    alumnos  = sorted(alumnos,  key=lambda x: x['Nombre'])
-    docentes = sorted(docentes, key=lambda x: x['Nombre'])
+    alumnos  = sorted(alumnos,  key=lambda x: x["Nombre"])
+    docentes = sorted(docentes, key=lambda x: x["Nombre"])
 
-    # ── Estadísticas ──────────────────────────────────────────────
-    def _stats(lista):
-        puntual = sum(1 for r in lista if r['_ent'] and not r['_tard'])
-        tard    = sum(1 for r in lista if r['_tard'])
-        ausente = len(lista) - puntual - tard
-        return puntual, tard, ausente
+    def _stats(lst):
+        pun = sum(1 for r in lst if r["_ent"] and not r["_tard"])
+        tar = sum(1 for r in lst if r["_tard"])
+        aus = len(lst) - pun - tar
+        return pun, tar, aus
 
-    a_pun, a_tar, a_aus = _stats(alumnos)
-    d_pun, d_tar, d_aus = _stats(docentes)
+    a_p, a_t, a_a = _stats(alumnos)
+    d_p, d_t, d_a = _stats(docentes)
+    def _pct(n, tot): return f"{round(n/tot*100)}%" if tot else "0%"
 
-    def _pct(n, total):
-        return f"{round(n/total*100)}%" if total > 0 else "0%"
+    def _celda_stat(etiqueta, numero, porcentaje, txt_color, hdr_c):
+        """Celda: cabecera coloreada, numero grande, porcentaje separado abajo."""
+        return Table([
+            [P(etiqueta, bold=True, size=7.5, color=colors.white)],
+            [P(str(numero), bold=True, size=22, color=txt_color)],
+            [P(porcentaje, bold=False, size=11, color=txt_color)],
+        ], colWidths=[4.4*cm], rowHeights=[0.50*cm, 0.85*cm, 0.50*cm])
+
+    def _bloque_stat(titulo, pun, tar, aus, tot, hdr_c):
+        c_pun  = colors.Color(0.1, 0.55, 0.1)
+        c_tar  = colors.Color(0.65, 0.35, 0.0)
+        c_aus  = colors.Color(0.65, 0.1,  0.1)
+        c1 = _celda_stat("PUNTUALES",     pun, _pct(pun,tot), c_pun, hdr_c)
+        c2 = _celda_stat("TARDANZAS",     tar, _pct(tar,tot), c_tar, hdr_c)
+        c3 = _celda_stat("SIN REGISTRO",  aus, _pct(aus,tot), c_aus, hdr_c)
+        for t in (c1, c2, c3):
+            t.setStyle(TableStyle([
+                ("BACKGROUND",(0,0),(0,0), hdr_c),
+                ("BACKGROUND",(0,1),(0,2), C_LIGHT),
+                ("BOX",(0,0),(0,-1), 0.8, hdr_c),
+                ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+                ("ALIGN",(0,0),(-1,-1),"CENTER"),
+                ("TOPPADDING",(0,0),(-1,-1), 2),
+                ("BOTTOMPADDING",(0,0),(-1,-1), 2),
+            ]))
+        fila_celdas = Table([[c1, c2, c3]],
+                            colWidths=[4.6*cm, 4.6*cm, 4.6*cm])
+        fila_celdas.setStyle(TableStyle([
+            ("LEFTPADDING",(0,0),(-1,-1),2),
+            ("RIGHTPADDING",(0,0),(-1,-1),2),
+        ]))
+        envuelto = Table([
+            [P(f"{titulo}  —  {tot} personas", bold=True, size=9.5, color=colors.white)],
+            [fila_celdas],
+        ], colWidths=[14.2*cm], rowHeights=[0.52*cm, 2.1*cm])
+        envuelto.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0), hdr_c),
+            ("BACKGROUND",(0,1),(0,1), colors.Color(0.95,0.95,0.98)),
+            ("BOX",(0,0),(0,-1), 1.0, hdr_c),
+            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+            ("TOPPADDING",(0,0),(-1,-1),3),
+            ("BOTTOMPADDING",(0,0),(-1,-1),3),
+        ]))
+        return envuelto
+
+    HDRS = ["DNI","Apellidos y Nombres","Ent. Manana",
+            "Estado","Sal. Manana","Ent. Tarde","Sal. Tarde"]
+    CW   = [2.1*cm, 7.5*cm, 2.5*cm, 1.7*cm, 2.5*cm, 2.5*cm, 2.5*cm]
+
+    def _tabla_datos(lista, hdr_c):
+        if not lista:
+            return Table([["Sin registros"]], colWidths=[sum(CW)])
+        rows = [HDRS]
+        for r in lista:
+            rows.append([r["DNI"], r["Nombre"], r["Ent.Man"],
+                         r["Estado"], r["Sal.Man"], r["Ent.Tar"], r["Sal.Tar"]])
+        t = Table(rows, colWidths=CW,
+                  rowHeights=[0.60*cm]+[0.52*cm]*(len(rows)-1))
+        cmds = [
+            ("GRID",    (0,0),(-1,-1), 0.25, colors.Color(0.75,0.75,0.75)),
+            ("FONTSIZE",(0,0),(-1,-1), 7.2),
+            ("VALIGN",  (0,0),(-1,-1), "MIDDLE"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+            ("BACKGROUND",(0,0),(-1,0), hdr_c),
+            ("TEXTCOLOR", (0,0),(-1,0), colors.white),
+            ("FONTNAME",  (0,0),(-1,0), "Helvetica-Bold"),
+            ("ALIGN",     (0,0),(-1,0), "CENTER"),
+            ("ALIGN",     (1,1),(1,-1), "LEFT"),
+            ("ROWBACKGROUNDS",(0,1),(-1,-1),
+             [colors.white, colors.Color(0.96,0.96,1.0)]),
+        ]
+        for i, r in enumerate(lista, 1):
+            if r["_tard"]:
+                cmds += [("BACKGROUND",(3,i),(3,i), C_TARD),
+                         ("TEXTCOLOR", (3,i),(3,i), colors.Color(0.6,0.3,0))]
+            elif r["_ent"]:
+                cmds += [("BACKGROUND",(3,i),(3,i), C_PUN),
+                         ("TEXTCOLOR", (3,i),(3,i), colors.Color(0.1,0.45,0.1))]
+        t.setStyle(TableStyle(cmds))
+        return t
+
+    def _membrete(seccion, hdr_c):
+        return [
+            P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=13),
+            P("UGEL Urubamba  |  Chinchero, Cusco  |  "
+              "Pioneros en la Educacion de Calidad",
+              size=8.5, color=colors.Color(0.3,0.5,0.1)),
+            HRFlowable(width="100%", thickness=1.5, color=hdr_c,
+                       spaceBefore=3, spaceAfter=6),
+            P(f"REGISTRO DE ASISTENCIA  {fecha_str}  —  {seccion}",
+              bold=True, size=11),
+            Spacer(1, 0.25*cm),
+        ]
+
+    FRASES = [
+        "La puntualidad es el respeto mas pequeno que podemos hacer al tiempo de los demas. — Kant",
+        "Llegar a tiempo es el primer acto de responsabilidad del dia.",
+        "La asistencia constante construye el habito del exito. Cada dia cuenta.",
+        "Un estudiante que llega puntual ya gano la mitad de la batalla del aprendizaje.",
+        "La disciplina de la puntualidad ensena mas que cualquier libro.",
+        "Estar presente es el primer paso para ser parte del cambio. — I.E.P. YACHAY",
+    ]
+    idx_f = int(hashlib.md5(fecha_str.encode()).hexdigest(), 16) % len(FRASES)
+    frase = FRASES[idx_f]
+
+    def _pie(canvas, doc):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 6.5)
+        canvas.setFillColor(colors.Color(0.5,0.5,0.5))
+        canvas.drawCentredString(
+            PW/2, 0.45*cm,
+            f"Sistema de Gestion Educativa SIGE  |  "
+            f"I.E.P. Alternativo YACHAY  |  {fecha_str}  |  "
+            f"Pagina {doc.page} de 2")
+        canvas.restoreState()
 
     story = []
 
-    # ── MEMBRETE ──────────────────────────────────────────────────
-    story += [
-        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=14),
-        P("UGEL Urubamba  |  Chinchero, Cusco", size=9),
-        P('"Pioneros en la Educación de Calidad"', size=9,
-          color=colors.Color(0.3, 0.5, 0.1)),
-        HRFlowable(width="100%", thickness=1.5,
-                   color=C_AZUL_HDR, spaceAfter=4),
-        P(f"REGISTRO DE ASISTENCIA — {fecha_str}", bold=True, size=12),
-        P(f"Generado: {hora_peru_str()}  |  "
-          f"{len(alumnos)} alumnos  |  {len(docentes)} docentes",
-          size=8.5, color=colors.Color(0.4, 0.4, 0.4)),
-        Spacer(1, 0.25*cm),
-    ]
-
-    # ── ESTADÍSTICAS VISUALES — dos cuadros lado a lado ───────────
-    def _cuadro_stat(titulo, puntual, tard, ausente, total, color_hdr):
-        """Cuadro estadístico con barras de color pastel."""
-        pct_p = round(puntual/total*100) if total else 0
-        pct_t = round(tard/total*100)    if total else 0
-        pct_a = round(ausente/total*100) if total else 0
-
-        # Mini barra de progreso en 3 segmentos
-        W_BARRA = 8.0*cm
-        rows = [
-            # Título
-            [P(f"{titulo}  ({total} personas)",
-               bold=True, size=9.5, color=colors.white)],
-            # Fila de iconos y números
-            [Table([
-                [
-                    P("PUNTUALES", bold=True, size=8),
-                    P("TARDANZAS", bold=True, size=8),
-                    P("SIN REGISTRO", bold=True, size=8),
-                ],
-                [
-                    P(f"{puntual}  {_pct(puntual,total)}",
-                      bold=True, size=14, color=colors.Color(0.1,0.5,0.1)),
-                    P(f"{tard}  {_pct(tard,total)}",
-                      bold=True, size=14, color=colors.Color(0.7,0.4,0.0)),
-                    P(f"{ausente}  {_pct(ausente,total)}",
-                      bold=True, size=14, color=colors.Color(0.7,0.1,0.1)),
-                ],
-            ], colWidths=[3.0*cm, 3.0*cm, 3.0*cm], rowHeights=[0.5*cm, 1.1*cm])],
-        ]
-        t = Table(rows, colWidths=[9.2*cm],
-                  rowHeights=[0.6*cm, 1.8*cm])
-        t.setStyle(TableStyle([
-            ('BACKGROUND', (0,0),(0,0), color_hdr),
-            ('BACKGROUND', (0,1),(0,1), colors.Color(0.97,0.97,1.0)),
-            ('BOX',        (0,0),(0,-1), 1.2, color_hdr),
-            ('LINEBELOW',  (0,0),(0,0), 0.5, color_hdr),
-            ('VALIGN',     (0,0),(-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0),(-1,-1), 3),
-            ('BOTTOMPADDING',(0,0),(-1,-1), 3),
-        ]))
-        return t
-
-    # Lado a lado en una tabla de 2 columnas
-    cuadro_alumnos  = _cuadro_stat("ALUMNOS",  a_pun, a_tar, a_aus, len(alumnos),  C_AZUL_HDR)
-    cuadro_docentes = _cuadro_stat("DOCENTES", d_pun, d_tar, d_aus, len(docentes), C_VERD_HDR)
-
-    t_stats = Table([[cuadro_alumnos, cuadro_docentes]],
-                    colWidths=[9.6*cm, 9.6*cm])
-    t_stats.setStyle(TableStyle([
-        ('VALIGN',(0,0),(-1,-1),'TOP'),
-        ('LEFTPADDING',(0,0),(-1,-1),1),
-        ('RIGHTPADDING',(0,0),(-1,-1),1),
-    ]))
-    story.append(t_stats)
+    # PAGINA 1 — ALUMNOS
+    story += _membrete(f"ALUMNOS  ({len(alumnos)} registros)", C_AZU)
+    story.append(_bloque_stat("ESTADISTICAS DE ALUMNOS",
+                               a_p, a_t, a_a, len(alumnos), C_AZU))
+    story.append(Spacer(1, 0.4*cm))
+    story.append(_tabla_datos(alumnos, C_AZU))
     story.append(Spacer(1, 0.3*cm))
+    story.append(P(frase, size=7.5, align=TA_CENTER,
+                   color=colors.Color(0.3,0.3,0.5)))
+    story.append(PageBreak())
 
-    # ── TABLA PRINCIPAL — alumnos + docentes ──────────────────────
-    HDRS = ['DNI','Nombre','Entrada Mañana','Puntual','Salida Mañana',
-            'Entrada Tarde','Salida Tarde']
-    COL_W = [2.0*cm, 6.5*cm, 2.6*cm, 1.6*cm, 2.6*cm, 2.6*cm, 2.6*cm]
+    # PAGINA 2 — DOCENTES
+    story += _membrete(f"DOCENTES  ({len(docentes)} registros)", C_VER)
+    story.append(_bloque_stat("ESTADISTICAS DE DOCENTES",
+                               d_p, d_t, d_a, len(docentes), C_VER))
+    story.append(Spacer(1, 0.4*cm))
+    story.append(_tabla_datos(docentes, C_VER))
+    story.append(Spacer(1, 0.3*cm))
+    story.append(P(frase, size=7.5, align=TA_CENTER,
+                   color=colors.Color(0.3,0.3,0.5)))
 
-    def _tabla(datos, titulo, color_hdr):
-        if not datos:
-            return []
-        rows = [HDRS]
-        for r in datos:
-            rows.append([
-                r['DNI'], r['Nombre'], r['Entrada'],
-                r['Puntual'], r['Sal.Man'], r['Ent.Tard'], r['Sal.Tard']
-            ])
-        t = Table(rows, colWidths=COL_W,
-                  rowHeights=[0.60*cm]+[0.52*cm]*(len(rows)-1))
-        cmds = [
-            ('GRID',     (0,0),(-1,-1), 0.25, colors.grey),
-            ('FONTSIZE', (0,0),(-1,-1), 7.0),
-            ('VALIGN',   (0,0),(-1,-1), 'MIDDLE'),
-            ('LEFTPADDING', (0,0),(-1,-1), 3),
-            ('BACKGROUND', (0,0),(-1,0), color_hdr),
-            ('TEXTCOLOR',  (0,0),(-1,0), colors.white),
-            ('FONTNAME',   (0,0),(-1,0), 'Helvetica-Bold'),
-            ('ALIGN',      (0,0),(-1,0), 'CENTER'),
-            ('ALIGN',      (1,1),(1,-1), 'LEFT'),
-            ('ROWBACKGROUNDS',(0,1),(-1,-1),
-             [colors.white, colors.Color(0.96,0.96,1.0)]),
-        ]
-        # Color por estado de puntualidad
-        for i, r in enumerate(datos, 1):
-            if r['_tard']:
-                cmds.append(('BACKGROUND',(3,i),(3,i), C_TARD))
-            elif r['_ent']:
-                cmds.append(('BACKGROUND',(3,i),(3,i), C_PUNTUAL))
-        t.setStyle(TableStyle(cmds))
-        tit = Table([[P(titulo, bold=True, size=9, color=colors.white)]],
-                    colWidths=[sum(c.cm if hasattr(c,'cm') else c for c in COL_W)*cm])
-        tit.setStyle(TableStyle([
-            ('BACKGROUND',(0,0),(-1,-1), color_hdr),
-            ('TOPPADDING',(0,0),(-1,-1),4),
-            ('BOTTOMPADDING',(0,0),(-1,-1),4),
-        ]))
-        return [tit, t, Spacer(1, 0.3*cm)]
-
-    story += _tabla(alumnos, f"ALUMNOS — {len(alumnos)} registros", C_AZUL_HDR)
-    story += _tabla(docentes, f"DOCENTES — {len(docentes)} registros", C_VERD_HDR)
-
-    # ── FRASES motivacionales rotativas ──────────────────────────
-    import hashlib
-    _frases = [
-        '"La puntualidad es el respeto más pequeño que podemos hacer al tiempo de los demás." — Kant',
-        '"Llegar a tiempo no es una virtud menor: es el primer acto de responsabilidad del día."',
-        '"La asistencia constante construye el hábito del éxito. Cada día cuenta, cada presencia importa."',
-        '"Un estudiante que llega puntual ya ganó la mitad de la batalla del aprendizaje."',
-        '"La disciplina de la puntualidad enseña más que cualquier libro. — I.E.P. Alternativo YACHAY"',
-        '"Estar presente es el primer paso para ser parte del cambio. — Pioneros en la Educación de Calidad"',
-    ]
-    # Frase del día basada en la fecha (siempre la misma para el mismo día)
-    _idx_frase = int(hashlib.md5(fecha_str.encode()).hexdigest(), 16) % len(_frases)
-    _frase_dia = _frases[_idx_frase]
-
-    story += [
-        HRFlowable(width="100%", thickness=0.8,
-                   color=colors.Color(0.7,0.7,0.7), spaceBefore=4, spaceAfter=4),
-        P(_frase_dia, size=8, align=TA_CENTER,
-          color=colors.Color(0.3, 0.3, 0.5)),
-        P(f"I.E.P. ALTERNATIVO YACHAY  |  Chinchero, Cusco  |  UGEL Urubamba  |  "
-          f"Generado el {fecha_str} a las {hora_peru_str()}",
-          size=7, color=colors.Color(0.5,0.5,0.5)),
-    ]
-
-    doc.build(story)
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=MT, bottomMargin=MB,
+                            leftMargin=ML, rightMargin=MR)
+    doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
     buf.seek(0)
     return buf.read()
 
@@ -25926,6 +26164,11 @@ def _tab_horarios_directivo(config):
         _tab_horario(config)
 
 def main():
+    # ── Portal Padres de Familia ──────────────────────────────────
+    if st.session_state.get('_portal_padres'):
+        _portal_padres_familia()
+        st.stop()
+
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
