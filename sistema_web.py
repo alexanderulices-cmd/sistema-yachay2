@@ -4228,43 +4228,132 @@ def _portal_padres_familia():
     st.markdown("---")
     st.markdown("**📚 Calificaciones**")
 
-    notas_data = {}
-    if _Path('notas.json').exists():
-        with open('notas.json','r',encoding='utf-8') as f:
-            notas_data = _json.load(f)
+    # ── Leer notas desde resultados.json (guardado por Registrar Notas) ──────
+    mis_notas = {}   # {area: [{periodo, titulo, nota}]}
 
-    # Buscar notas del alumno por DNI o nombre
-    mis_notas = {}
-    for k, v in notas_data.items():
-        if not isinstance(v, dict): continue
-        if (str(v.get('dni','')).strip() == dni_buscar or
-                str(v.get('nombre','')).strip().upper() == nombre.upper()):
-            area = v.get('area', v.get('curso', 'Sin área'))
-            sem  = v.get('semana', v.get('periodo', ''))
-            nota = v.get('nota', v.get('calificacion', ''))
-            if area not in mis_notas:
-                mis_notas[area] = []
-            mis_notas[area].append({'sem': str(sem), 'nota': str(nota)})
+    def _leer_resultados_json(archivo):
+        if _Path(archivo).exists():
+            try:
+                with open(archivo, 'r', encoding='utf-8') as f:
+                    return _json.load(f)
+            except Exception:
+                pass
+        return []
+
+    # resultados.json — lista plana guardada por tab_registrar_notas
+    resultados_lista = _leer_resultados_json('resultados.json')
+    if isinstance(resultados_lista, dict):
+        # formato viejo: {docente: [lista]}
+        tmp = []
+        for v in resultados_lista.values():
+            if isinstance(v, list):
+                tmp.extend(v)
+        resultados_lista = tmp
+
+    # resultados_examenes.json — archivo permanente
+    resultados_exams = _leer_resultados_json('resultados_examenes.json')
+    if isinstance(resultados_exams, dict):
+        tmp2 = []
+        for v in resultados_exams.values():
+            if isinstance(v, list):
+                tmp2.extend(v)
+        resultados_exams = tmp2
+
+    todos_resultados = resultados_lista + resultados_exams
+
+    for reg in todos_resultados:
+        if not isinstance(reg, dict):
+            continue
+        dni_reg    = str(reg.get('dni', '')).strip()
+        nombre_reg = str(reg.get('nombre', '')).strip().upper()
+        # Coincidir por DNI o nombre
+        if dni_reg != dni_buscar and nombre_reg != nombre.upper():
+            continue
+        periodo = str(reg.get('periodo', reg.get('semana', reg.get('bimestre', ''))))
+        titulo  = str(reg.get('titulo', ''))
+        areas_reg = reg.get('areas', [])
+        if isinstance(areas_reg, list):
+            # formato: [{nombre, nota}]
+            for a in areas_reg:
+                if not isinstance(a, dict):
+                    continue
+                area_name = str(a.get('nombre', a.get('area', 'Sin área'))).strip()
+                nota_val  = str(a.get('nota', a.get('calificacion', '')))
+                if not area_name:
+                    continue
+                if area_name not in mis_notas:
+                    mis_notas[area_name] = []
+                mis_notas[area_name].append({
+                    'sem': periodo,
+                    'titulo': titulo,
+                    'nota': nota_val
+                })
+        elif isinstance(areas_reg, dict):
+            # formato: {nombre_area: nota}
+            for area_name, nota_val in areas_reg.items():
+                if area_name not in mis_notas:
+                    mis_notas[area_name] = []
+                mis_notas[area_name].append({
+                    'sem': periodo,
+                    'titulo': titulo,
+                    'nota': str(nota_val)
+                })
+
+    # También revisar historial_evaluaciones.json
+    hist_eval = {}
+    if _Path('historial_evaluaciones.json').exists():
+        try:
+            with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
+                hist_eval = _json.load(f)
+        except Exception:
+            pass
+    for clave, ev in hist_eval.items():
+        if not isinstance(ev, dict):
+            continue
+        ranking = ev.get('ranking', [])
+        for fila in ranking:
+            if not isinstance(fila, dict):
+                continue
+            dni_fila    = str(fila.get('dni', '')).strip()
+            nombre_fila = str(fila.get('nombre', '')).strip().upper()
+            if dni_fila != dni_buscar and nombre_fila != nombre.upper():
+                continue
+            periodo = str(ev.get('periodo', ev.get('bimestre', '')))
+            titulo  = str(ev.get('titulo', ''))
+            for area_name in ev.get('areas', []):
+                nota_val = str(fila.get(area_name, ''))
+                if not nota_val or nota_val == 'nan':
+                    continue
+                if area_name not in mis_notas:
+                    mis_notas[area_name] = []
+                mis_notas[area_name].append({
+                    'sem': periodo,
+                    'titulo': titulo,
+                    'nota': nota_val
+                })
 
     if mis_notas:
         for area, notas_area in sorted(mis_notas.items()):
             with st.expander(f"📖 {area}", expanded=True):
-                cols_n = st.columns(min(len(notas_area), 6))
-                for ci, n in enumerate(notas_area[-6:]):
-                    with cols_n[ci % len(cols_n)]:
+                cols_n = st.columns(min(len(notas_area), 4))
+                for ci, n in enumerate(notas_area[-8:]):
+                    with cols_n[ci % min(len(notas_area), 4)]:
                         try:
                             nval = float(n['nota'])
                             ncolor = "#16a34a" if nval >= 14 else ("#ca8a04" if nval >= 11 else "#dc2626")
                             nletra = "AD" if nval >= 18 else ("A" if nval >= 14 else ("B" if nval >= 11 else "C"))
                         except Exception:
                             ncolor = "#6b7280"; nletra = str(n['nota'])
+                        etiqueta = n.get('titulo', '') or n.get('sem', '')
+                        periodo  = n.get('sem', '')
                         st.markdown(
                             f"<div style='background:#f8fafc;border:1px solid #e2e8f0;"
-                            f"border-radius:8px;padding:8px;text-align:center;'>"
+                            f"border-radius:8px;padding:8px;text-align:center;margin-bottom:4px;'>"
                             f"<div style='font-size:1.3rem;font-weight:900;color:{ncolor};'>"
                             f"{n['nota']}</div>"
-                            f"<div style='font-size:0.7rem;color:{ncolor};'>{nletra}</div>"
-                            f"<div style='font-size:0.7rem;color:#888;'>Sem {n['sem']}</div>"
+                            f"<div style='font-size:0.7rem;color:{ncolor};font-weight:700;'>{nletra}</div>"
+                            f"<div style='font-size:0.68rem;color:#555;margin-top:2px;'>{etiqueta[:20]}</div>"
+                            f"<div style='font-size:0.65rem;color:#999;'>{periodo}</div>"
                             f"</div>", unsafe_allow_html=True)
     else:
         st.info("No hay calificaciones registradas aún para este estudiante.")
