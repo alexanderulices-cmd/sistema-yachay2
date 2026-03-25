@@ -4033,6 +4033,7 @@ def _portal_padres_familia():
         opacity: 1 !important;
         visibility: visible !important;
         min-height: 42px !important;
+        box-shadow: 0 3px 10px rgba(15,118,110,0.4) !important;
     }
     div[data-testid="stMain"] button p,
     .stButton > button p {
@@ -4040,29 +4041,74 @@ def _portal_padres_familia():
         -webkit-text-fill-color: white !important;
         font-weight: 700 !important;
     }
+    @keyframes shimmerText {
+        0%   { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
+    @keyframes floatBadge {
+        0%,100% { transform: translateY(0px); }
+        50%      { transform: translateY(-4px); }
+    }
+    @keyframes pulseGold {
+        0%,100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.5); }
+        50%      { box-shadow: 0 0 16px 6px rgba(255,215,0,0.25); }
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    # ── Botón volver ──────────────────────────────────────────────
-    if st.button("← Volver al inicio", key="portal_volver", type="primary"):
-        st.session_state.pop('_portal_padres', None)
-        st.session_state.pop('_portal_dni', None)
-        st.session_state.pop('_portal_hijos', None)
-        st.rerun()
+    # ── Botones superiores: VOLVER + CERRAR SESIÓN ────────────────
+    c_back, c_space = st.columns([2, 3])
+    with c_back:
+        if st.button("← Volver al inicio", key="portal_volver", type="primary"):
+            for k in ['_portal_padres', '_portal_dni', '_portal_hijos']:
+                st.session_state.pop(k, None)
+            st.rerun()
 
-    # ── Encabezado ────────────────────────────────────────────────
+    # ── ENCABEZADO con efectos ────────────────────────────────────
     st.markdown("""
-    <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
-                border-radius:16px;padding:22px;text-align:center;
-                color:white;margin-bottom:20px;'>
-        <div style='font-size:1.9rem;font-weight:800;letter-spacing:1px;'>
-            I.E.P. ALTERNATIVO YACHAY
+    <div style='background:linear-gradient(135deg,#0f766e 0%,#0d9488 50%,#14b8a6 100%);
+                border-radius:18px;padding:26px 20px 20px;text-align:center;
+                color:white;margin-bottom:20px;
+                box-shadow:0 8px 32px rgba(15,118,110,0.45);
+                position:relative;overflow:hidden;'>
+
+        <!-- Fondo animado -->
+        <div style='position:absolute;top:-40%;left:-40%;width:180%;height:180%;
+                    background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 65%);
+                    animation:shimmerText 4s linear infinite;pointer-events:none;'></div>
+
+        <div style='font-size:2rem;font-weight:900;letter-spacing:2px;
+                    text-shadow:0 2px 12px rgba(0,0,0,0.3);'>
+            🎓 I.E.P. ALTERNATIVO YACHAY
         </div>
-        <div style='font-size:1.1rem;opacity:0.9;margin-top:4px;'>
-            👨‍👩‍👧 Portal de Padres de Familia
+
+        <!-- PIONEROS con efecto dorado animado -->
+        <div style='margin:8px 0 4px;'>
+            <span style='
+                background:linear-gradient(90deg,#FFD700,#FFF176,#FFD700,#FFA500,#FFD700);
+                background-size:200% auto;
+                -webkit-background-clip:text;
+                -webkit-text-fill-color:transparent;
+                background-clip:text;
+                font-size:1.05rem;font-weight:800;letter-spacing:3px;
+                text-transform:uppercase;
+                animation:shimmerText 2.5s linear infinite;
+            '>✨ Pioneros en la Educación de Calidad ✨</span>
         </div>
-        <div style='font-size:0.85rem;opacity:0.8;margin-top:4px;'>
-            Consulta asistencia y calificaciones de tu hijo/a
+
+        <!-- LEMA -->
+        <div style='font-size:0.9rem;color:#ccfbf1;font-style:italic;margin-bottom:10px;'>
+            "Yachay — Educar para la Vida"
+        </div>
+
+        <div style='background:rgba(255,255,255,0.15);border-radius:10px;
+                    padding:8px 16px;display:inline-block;'>
+            <span style='font-size:1rem;font-weight:700;'>
+                👨‍👩‍👧 Portal de Padres de Familia
+            </span><br>
+            <span style='font-size:0.8rem;opacity:0.9;'>
+                Consulta asistencia y calificaciones de tu hijo/a
+            </span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -4070,7 +4116,7 @@ def _portal_padres_familia():
     # ── Input DNI ─────────────────────────────────────────────────
     col_inp, col_btn = st.columns([3, 1])
     with col_inp:
-        dni_input = st.text_input("DNI del apoderado o del estudiante:",
+        dni_input = st.text_input("🔑 DNI del apoderado o del estudiante:",
                                    max_chars=8,
                                    placeholder="Ingresa tu DNI o el DNI de tu hijo/a",
                                    key="portal_dni_input")
@@ -4086,24 +4132,27 @@ def _portal_padres_familia():
         dni_buscar = dni_input.strip()
 
     if not dni_buscar:
-        st.info("Ingresa tu DNI (apoderado) o el DNI de tu hijo/a para ver su historial.")
+        st.info("📌 Ingresa tu DNI (apoderado) o el DNI de tu hijo/a para ver su historial.")
         return
 
     # ── Buscar alumno por DNI estudiante O por DNI apoderado ──────
     df_mat = BaseDatos.cargar_matricula()
     alumno = None
+    dni_estudiante = dni_buscar
     if not df_mat.empty:
         if 'DNI' in df_mat.columns:
             df_mat['DNI'] = df_mat['DNI'].astype(str).str.strip()
             fila = df_mat[df_mat['DNI'] == dni_buscar]
             if not fila.empty:
                 alumno = fila.iloc[0].to_dict()
+                dni_estudiante = dni_buscar
 
         if alumno is None and 'DNI_Apoderado' in df_mat.columns:
             df_mat['DNI_Apoderado'] = df_mat['DNI_Apoderado'].astype(str).str.strip()
             fila_apo = df_mat[df_mat['DNI_Apoderado'] == dni_buscar]
             if not fila_apo.empty:
                 alumno = fila_apo.iloc[0].to_dict()
+                dni_estudiante = str(alumno.get('DNI', '')).strip()
                 if len(fila_apo) > 1:
                     st.session_state['_portal_hijos'] = fila_apo['DNI'].tolist()
 
@@ -4116,30 +4165,26 @@ def _portal_padres_familia():
             if not f2.empty:
                 r2 = f2.iloc[0]
                 opciones.append(f"{r2.get('Nombre','')} — {r2.get('Grado','')} ({d})")
-        sel = st.selectbox("Selecciona a tu hijo/a:", opciones, key="portal_hijo_sel")
+        sel = st.selectbox("👦 Selecciona a tu hijo/a:", opciones, key="portal_hijo_sel")
         idx_sel = opciones.index(sel)
         dni_estudiante = hijos[idx_sel]
         fila3 = df_mat[df_mat['DNI'] == dni_estudiante]
         if not fila3.empty:
             alumno = fila3.iloc[0].to_dict()
-        st.session_state['_portal_dni'] = dni_buscar  # mantener dni apoderado
-    else:
-        dni_estudiante = str(alumno.get('DNI', dni_buscar)).strip() if alumno else dni_buscar
 
     if not alumno:
         st.error("❌ No se encontró ningún estudiante con ese DNI. Verifica el número.")
         return
 
-    nombre  = str(alumno.get('Nombre', '')).strip()
-    grado   = str(alumno.get('Grado', '')).strip()
-    nivel   = str(alumno.get('Nivel', '')).strip().upper()
-    apod    = str(alumno.get('Apoderado', '')).strip()
+    nombre        = str(alumno.get('Nombre', '')).strip()
+    grado         = str(alumno.get('Grado', '')).strip()
+    nivel         = str(alumno.get('Nivel', '')).strip().upper()
+    apod          = str(alumno.get('Apoderado', '')).strip()
+    dni_estudiante = str(alumno.get('DNI', dni_estudiante)).strip()
 
-    # ── Determinar escala de notas ────────────────────────────────
-    # INICIAL / PRIMARIA → literal (AD/A/B/C)
-    # SECUNDARIA / PREUNIVERSITARIO → vigesimal (0–20)
+    # Escala: Secundaria/Preu → vigesimal 0-20 | Inicial/Primaria → literal AD/A/B/C
     es_vigesimal = nivel in ('SECUNDARIA', 'PREUNIVERSITARIO') or any(
-        g in grado for g in ['Secundaria', 'CEPRE', 'Ciclo', 'Reforzamiento', 'Preu', 'PREU']
+        g in grado for g in ['Secundaria','CEPRE','Ciclo','Reforzamiento','Preu','PREU']
     )
 
     # ── SALUDO PERSONALIZADO ──────────────────────────────────────
@@ -4147,15 +4192,16 @@ def _portal_padres_familia():
     st.markdown(f"""
     <div style='background:linear-gradient(135deg,#1e40af,#2563eb);
                 border-radius:14px;padding:18px 22px;color:white;margin-bottom:18px;
-                box-shadow:0 4px 16px rgba(37,99,235,0.35);'>
+                box-shadow:0 4px 16px rgba(37,99,235,0.35);
+                animation:pulseGold 3s ease-in-out infinite;'>
         <div style='font-size:1.15rem;font-weight:800;margin-bottom:6px;'>
             👋 ¡Hola, {nombre_apo}!
         </div>
-        <div style='font-size:0.95rem;opacity:0.95;line-height:1.6;'>
+        <div style='font-size:0.92rem;line-height:1.65;'>
             Te saluda el <b>SIGE Tutor del Colegio Yachay</b>.<br>
             Te informamos cómo vamos en el aprendizaje de tu hijo/a
             <b>{nombre}</b> del <b>{grado}</b>.<br>
-            Aquí encontrarás el registro de <b>asistencia</b> y <b>notas</b> actualizados.
+            Aquí encontrarás el <b>registro de asistencia</b> y <b>calificaciones</b> actualizados.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -4170,8 +4216,11 @@ def _portal_padres_familia():
 
     asis_hist = {}
     if _Path(ARCHIVO_ASISTENCIAS).exists():
-        with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-            asis_hist = _json.load(f)
+        try:
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                asis_hist = _json.load(f)
+        except Exception:
+            asis_hist = {}
 
     registros = []
     for fecha_key, personas in asis_hist.items():
@@ -4180,12 +4229,11 @@ def _portal_padres_familia():
         if dni_estudiante not in personas:
             continue
         v = personas[dni_estudiante]
-        # Soportar ambos formatos de fecha: 'YYYY-MM-DD' y 'DD/MM/YYYY'
         try:
             if '-' in fecha_key and len(fecha_key) == 10:
                 fecha_dt = _dt.strptime(fecha_key, '%Y-%m-%d')
                 fecha_display = fecha_dt.strftime('%d/%m/%Y')
-            elif '/' in fecha_key:
+            elif '/' in fecha_key and len(fecha_key) == 10:
                 fecha_dt = _dt.strptime(fecha_key, '%d/%m/%Y')
                 fecha_display = fecha_key
             else:
@@ -4210,7 +4258,6 @@ def _portal_padres_familia():
 
     registros = sorted(registros, key=lambda x: x['fecha_dt'], reverse=True)
 
-    # Estadísticas
     total   = len(registros)
     puntual = sum(1 for r in registros if r['entrada'] and not r['tardanza'])
     tarde   = sum(1 for r in registros if r['tardanza'])
@@ -4218,51 +4265,43 @@ def _portal_padres_familia():
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown(f"""
-        <div style='background:#dcfce7;border-radius:12px;padding:14px;text-align:center;'>
+        st.markdown(f"""<div style='background:#dcfce7;border-radius:12px;padding:14px;text-align:center;'>
             <div style='font-size:2rem;font-weight:900;color:#16a34a;'>{puntual}</div>
             <div style='font-size:0.85rem;color:#166534;font-weight:600;'>DÍAS PUNTUAL</div>
         </div>""", unsafe_allow_html=True)
     with col2:
-        st.markdown(f"""
-        <div style='background:#fef9c3;border-radius:12px;padding:14px;text-align:center;'>
+        st.markdown(f"""<div style='background:#fef9c3;border-radius:12px;padding:14px;text-align:center;'>
             <div style='font-size:2rem;font-weight:900;color:#ca8a04;'>{tarde}</div>
             <div style='font-size:0.85rem;color:#854d0e;font-weight:600;'>TARDANZAS</div>
         </div>""", unsafe_allow_html=True)
     with col3:
         color_pct = "#16a34a" if pct >= 90 else ("#ca8a04" if pct >= 75 else "#dc2626")
-        st.markdown(f"""
-        <div style='background:#f0f9ff;border-radius:12px;padding:14px;text-align:center;'>
+        st.markdown(f"""<div style='background:#f0f9ff;border-radius:12px;padding:14px;text-align:center;'>
             <div style='font-size:2rem;font-weight:900;color:{color_pct};'>{pct}%</div>
             <div style='font-size:0.85rem;color:#0369a1;font-weight:600;'>PUNTUALIDAD</div>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Gráfico barras
     if registros:
         st.markdown("**📊 Últimos 14 días**")
         ultimos = registros[:14][::-1]
         bars_html = "<div style='display:flex;align-items:flex-end;gap:6px;height:80px;'>"
         for r in ultimos:
             if r['tardanza']:
-                color = "#fbbf24"; h = 50; label = "T"
+                color = "#fbbf24"; h = 50
             elif r['entrada']:
-                color = "#22c55e"; h = 75; label = "P"
+                color = "#22c55e"; h = 75
             else:
-                color = "#e5e7eb"; h = 20; label = "—"
-            bars_html += (
-                f"<div style='display:flex;flex-direction:column;align-items:center;gap:3px;'>"
-                f"<div style='width:24px;height:{h}px;background:{color};"
-                f"border-radius:4px 4px 0 0;'></div>"
-                f"<div style='font-size:9px;color:#666;'>{r['fecha'][0:5]}</div>"
-                f"</div>")
-        bars_html += "</div>"
-        bars_html += "<div style='font-size:11px;color:#888;margin-top:6px;'>🟢 Puntual &nbsp;&nbsp; 🟡 Tardanza</div>"
+                color = "#e5e7eb"; h = 20
+            bars_html += (f"<div style='display:flex;flex-direction:column;align-items:center;gap:3px;'>"
+                          f"<div style='width:24px;height:{h}px;background:{color};"
+                          f"border-radius:4px 4px 0 0;'></div>"
+                          f"<div style='font-size:9px;color:#666;'>{r['fecha'][0:5]}</div></div>")
+        bars_html += "</div><div style='font-size:11px;color:#888;margin-top:6px;'>🟢 Puntual &nbsp;&nbsp; 🟡 Tardanza</div>"
         st.markdown(bars_html, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
-    # Historial detallado
     st.markdown("**📋 Historial detallado**")
     if registros:
         for r in registros[:30]:
@@ -4301,64 +4340,64 @@ def _portal_padres_familia():
     st.markdown("---")
 
     # ══════════════════════════════════════════════════════════════
-    # SECCIÓN 2: NOTAS / CALIFICACIONES
+    # SECCIÓN 2: CALIFICACIONES
     # ══════════════════════════════════════════════════════════════
-    escala_texto = "Escala vigesimal (0–20)" if es_vigesimal else "Escala literal (AD / A / B / C)"
-    st.markdown(f"## 📚 Calificaciones  <span style='font-size:0.8rem;color:#6b7280;font-weight:400;'>— {escala_texto}</span>", unsafe_allow_html=True)
+    escala_texto = "Escala vigesimal 0–20" if es_vigesimal else "Escala literal AD / A / B / C"
+    st.markdown(f"## 📚 Calificaciones")
+    st.caption(f"📏 {escala_texto} · {grado}")
 
-    # ── Cargar desde TODAS las fuentes ───────────────────────────
     mis_notas = {}  # {area: [{periodo, titulo, nota, fecha}]}
 
-    def _leer_json(archivo):
+    def _leer_json_portal(archivo):
         p = _Path(archivo)
-        if p.exists():
-            try:
-                with open(p, 'r', encoding='utf-8') as f:
-                    return _json.load(f)
-            except Exception:
-                pass
-        return None
-
-    def _nota_card(nota_str, es_vigesi):
-        """Retorna (color, etiqueta_letra)"""
+        if not p.exists():
+            return None
         try:
-            nval = float(nota_str)
-            if es_vigesi:
-                # 0-20
-                if nval >= 18:    return "#16a34a", "Excelente"
-                elif nval >= 14:  return "#16a34a", "Bueno"
-                elif nval >= 11:  return "#ca8a04", "Regular"
-                else:             return "#dc2626", "Bajo"
-            else:
-                # Convertir a letra si es número
-                if nval >= 18:    return "#16a34a", "AD"
-                elif nval >= 14:  return "#16a34a", "A"
-                elif nval >= 11:  return "#ca8a04", "B"
-                else:             return "#dc2626", "C"
+            with open(p, 'r', encoding='utf-8') as f:
+                return _json.load(f)
         except Exception:
-            # Ya es letra (AD/A/B/C/EP/L/I)
-            mapa = {"AD": "#16a34a", "A": "#16a34a", "L": "#16a34a",
-                    "B": "#ca8a04",  "EP": "#ca8a04",
-                    "C": "#dc2626",  "I": "#dc2626", "NE": "#6b7280"}
-            c = mapa.get(str(nota_str).strip().upper(), "#6b7280")
-            return c, str(nota_str).strip()
+            return None
 
     def _agregar_nota(area, periodo, titulo, nota, fecha=''):
-        area = str(area).strip() or 'General'
+        area  = str(area).strip() or 'General'
         nota_s = str(nota).strip()
-        if not nota_s or nota_s in ('', 'nan', 'None', '0', '0.0'):
+        if not nota_s or nota_s in ('', 'nan', 'None', '0', '0.0', 'NSP'):
             return
+        try:
+            if float(nota_s) == 0:
+                return
+        except Exception:
+            pass
         if area not in mis_notas:
             mis_notas[area] = []
         mis_notas[area].append({
-            'sem': str(periodo),
+            'sem':    str(periodo),
             'titulo': str(titulo),
-            'nota': nota_s,
-            'fecha': str(fecha)
+            'nota':   nota_s,
+            'fecha':  str(fecha)
         })
 
-    # 1) resultados.json — guardado por tab_registrar_notas y QAWAY
-    res_raw = _leer_json('resultados.json')
+    def _nota_display(nota_str, es_vigesi):
+        try:
+            nval = float(nota_str)
+            if es_vigesi:
+                if nval >= 18:   return "#16a34a", "Excelente"
+                elif nval >= 14: return "#16a34a", "Bueno"
+                elif nval >= 11: return "#ca8a04", "Regular"
+                else:            return "#dc2626", "Bajo"
+            else:
+                if nval >= 18:   return "#16a34a", "AD"
+                elif nval >= 14: return "#16a34a", "A"
+                elif nval >= 11: return "#ca8a04", "B"
+                else:            return "#dc2626", "C"
+        except Exception:
+            mapa = {"AD":"#16a34a","A":"#16a34a","L":"#16a34a",
+                    "B":"#ca8a04","EP":"#ca8a04",
+                    "C":"#dc2626","I":"#dc2626","NE":"#6b7280"}
+            return mapa.get(str(nota_str).strip().upper(), "#6b7280"), str(nota_str).strip()
+
+    # ── FUENTE 1: resultados.json ─────────────────────────────────
+    res_raw = _leer_json_portal('resultados.json')
     if isinstance(res_raw, dict):
         tmp = []
         for v in res_raw.values():
@@ -4377,13 +4416,13 @@ def _portal_padres_familia():
             for a in areas_r:
                 if isinstance(a, dict):
                     _agregar_nota(a.get('nombre', a.get('area', 'General')),
-                                  periodo, titulo, a.get('nota', a.get('calificacion', '')), fecha_r)
+                                  periodo, titulo, a.get('nota', a.get('calificacion','')), fecha_r)
         elif isinstance(areas_r, dict):
             for an, av in areas_r.items():
                 _agregar_nota(an, periodo, titulo, av, fecha_r)
 
-    # 2) resultados_examenes.json — archivo permanente
-    res_exam = _leer_json('resultados_examenes.json')
+    # ── FUENTE 2: resultados_examenes.json ────────────────────────
+    res_exam = _leer_json_portal('resultados_examenes.json')
     if isinstance(res_exam, dict):
         tmp2 = []
         for v in res_exam.values():
@@ -4402,74 +4441,89 @@ def _portal_padres_familia():
             for a in areas_r:
                 if isinstance(a, dict):
                     _agregar_nota(a.get('nombre', 'General'), periodo, titulo,
-                                  a.get('nota', ''), fecha_r)
+                                  a.get('nota', a.get('calificacion','')), fecha_r)
         elif isinstance(areas_r, dict):
             for an, av in areas_r.items():
                 _agregar_nota(an, periodo, titulo, av, fecha_r)
 
-    # 3) historial_evaluaciones.json — todas las evaluaciones incluyendo QAWAY
-    hist_ev = _leer_json('historial_evaluaciones.json') or {}
+    # ── FUENTE 3: historial_evaluaciones.json ─────────────────────
+    # ⚠️ areas es lista de DICTS: [{'nombre':'Historia','id':...}]
+    # ranking es: [{'DNI':'...','Nombre':'...','Historia':16,'Promedio':13.0}]
+    hist_ev = _leer_json_portal('historial_evaluaciones.json') or {}
     for clave_ev, ev in hist_ev.items():
         if not isinstance(ev, dict): continue
-        periodo = ev.get('periodo', ev.get('bimestre', ''))
-        titulo  = ev.get('titulo', '')
-        fecha_r = ev.get('fecha', '')
-        areas_ev = ev.get('areas', [])
+        periodo   = ev.get('periodo', ev.get('bimestre', ''))
+        titulo    = ev.get('titulo', '')
+        fecha_r   = ev.get('fecha', '')
+        areas_ev  = ev.get('areas', [])
+        # Extraer nombres de áreas (pueden ser dicts o strings)
+        areas_nombres_ev = []
+        for a in areas_ev:
+            if isinstance(a, dict):
+                areas_nombres_ev.append(str(a.get('nombre', '')).strip())
+            elif isinstance(a, str):
+                areas_nombres_ev.append(a.strip())
+        areas_nombres_ev = [x for x in areas_nombres_ev if x]
+
         for fila_ev in ev.get('ranking', []):
             if not isinstance(fila_ev, dict): continue
-            if (str(fila_ev.get('dni','')).strip() != dni_estudiante and
-                    str(fila_ev.get('nombre','')).strip().upper() != nombre.upper()):
+            dni_fila    = str(fila_ev.get('DNI', fila_ev.get('dni', ''))).strip()
+            nombre_fila = str(fila_ev.get('Nombre', fila_ev.get('nombre', ''))).strip().upper()
+            if dni_fila != dni_estudiante and nombre_fila != nombre.upper():
                 continue
-            if isinstance(areas_ev, list) and areas_ev:
-                for an in areas_ev:
+            # Leer nota por cada área
+            if areas_nombres_ev:
+                for an in areas_nombres_ev:
                     av = fila_ev.get(an, '')
                     _agregar_nota(an, periodo, titulo, av, fecha_r)
             else:
-                # QAWAY — promedio general
-                nota_g = fila_ev.get('promedio', fila_ev.get('nota', ''))
+                # QAWAY u otros sin áreas — usar promedio
+                nota_g = fila_ev.get('promedio', fila_ev.get('Promedio', fila_ev.get('nota', '')))
                 _agregar_nota('General / QAWAY', periodo, titulo, nota_g, fecha_r)
-            break  # solo 1 fila por alumno
 
     # ── Mostrar notas ─────────────────────────────────────────────
     if mis_notas:
         for area_n, notas_area in sorted(mis_notas.items()):
-            # Ordenar por fecha más reciente
-            notas_area_sorted = sorted(notas_area,
-                key=lambda x: x.get('fecha',''), reverse=True)
-            with st.expander(f"📖 {area_n}  ({len(notas_area_sorted)} registros)", expanded=True):
+            notas_sorted = sorted(notas_area, key=lambda x: x.get('fecha',''), reverse=True)
+            with st.expander(f"📖 {area_n}  ({len(notas_sorted)} evaluaciones)", expanded=True):
                 cols_per_row = 4
-                rows = [notas_area_sorted[i:i+cols_per_row]
-                        for i in range(0, min(len(notas_area_sorted), 12), cols_per_row)]
-                for row_notas in rows:
+                for i in range(0, min(len(notas_sorted), 12), cols_per_row):
+                    batch = notas_sorted[i:i+cols_per_row]
                     cols_n = st.columns(cols_per_row)
-                    for ci, n in enumerate(row_notas):
+                    for ci, n in enumerate(batch):
                         with cols_n[ci]:
-                            color, letra = _nota_card(n['nota'], es_vigesimal)
+                            color, letra = _nota_display(n['nota'], es_vigesimal)
                             etiqueta = (n.get('titulo','') or n.get('sem','')).replace('QAWAY: ','')
-                            periodo_d = n.get('sem', '')
-                            fecha_d   = n.get('fecha', '')
                             st.markdown(
-                                f"<div style='background:#f8fafc;border:2px solid {color}22;"
+                                f"<div style='background:#f8fafc;border:2px solid {color}44;"
                                 f"border-radius:10px;padding:10px 6px;text-align:center;"
-                                f"margin-bottom:4px;'>"
-                                f"<div style='font-size:1.5rem;font-weight:900;color:{color};'>"
+                                f"margin-bottom:4px;animation:floatBadge 3s ease-in-out infinite;'>"
+                                f"<div style='font-size:1.6rem;font-weight:900;color:{color};'>"
                                 f"{n['nota']}</div>"
-                                f"<div style='font-size:0.75rem;color:{color};font-weight:700;"
-                                f"margin:2px 0;'>{letra}</div>"
-                                f"<div style='font-size:0.68rem;color:#444;'>"
-                                f"{etiqueta[:22]}</div>"
-                                f"<div style='font-size:0.63rem;color:#999;'>{periodo_d}</div>"
-                                f"<div style='font-size:0.6rem;color:#bbb;'>{fecha_d}</div>"
+                                f"<div style='font-size:0.8rem;color:{color};font-weight:700;'>{letra}</div>"
+                                f"<div style='font-size:0.68rem;color:#444;margin-top:2px;'>{etiqueta[:24]}</div>"
+                                f"<div style='font-size:0.63rem;color:#777;'>{n.get('sem','')}</div>"
+                                f"<div style='font-size:0.6rem;color:#aaa;'>{n.get('fecha','')}</div>"
                                 f"</div>", unsafe_allow_html=True)
     else:
         st.info("📭 No hay calificaciones registradas aún para este estudiante.")
 
     # ── Pie del portal ────────────────────────────────────────────
     st.markdown("---")
+
+    # BOTÓN SALIR
+    if st.button("🚪 CERRAR PORTAL", type="primary",
+                 use_container_width=True, key="portal_cerrar_sesion"):
+        for k in ['_portal_padres', '_portal_dni', '_portal_hijos']:
+            st.session_state.pop(k, None)
+        st.rerun()
+
     st.markdown("""
-    <div style='text-align:center;color:#94a3b8;font-size:0.78rem;padding:10px 0;'>
-        🎓 I.E.P. Alternativo Yachay — SIGE Tutor &nbsp;|&nbsp;
-        Para consultas contacta a la institución.<br>
+    <div style='text-align:center;color:#94a3b8;font-size:0.78rem;padding:12px 0;'>
+        🎓 I.E.P. Alternativo Yachay &nbsp;|&nbsp; SIGE Tutor<br>
+        ✨ <i>Pioneros en la Educación de Calidad</i> &nbsp;·&nbsp;
+        <i>"Yachay — Educar para la Vida"</i><br>
+        Para consultas adicionales contacta a la institución educativa.<br>
         © 2026 YACHAY PRO — Todos los derechos reservados
     </div>
     """, unsafe_allow_html=True)
