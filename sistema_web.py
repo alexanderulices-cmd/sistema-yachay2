@@ -4011,26 +4011,63 @@ def _portal_padres_familia():
     """Portal público para padres: consulta asistencia y notas de su hijo/a."""
     import json as _json
     from pathlib import Path as _Path
+    from datetime import datetime as _dt
+
+    # ══════════════════════════════════════════════════════════════
+    # CSS PORTAL
+    # ══════════════════════════════════════════════════════════════
+    st.markdown("""
+    <style>
+    div[data-testid="stMain"] button,
+    div[data-testid="stVerticalBlock"] button,
+    .stButton > button,
+    div[data-testid="stBaseButton-primary"] > button,
+    div[data-testid="stBaseButton-secondary"] > button {
+        background-color: #0f766e !important;
+        background: linear-gradient(135deg,#0f766e,#0d9488) !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        min-height: 42px !important;
+    }
+    div[data-testid="stMain"] button p,
+    .stButton > button p {
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # ── Botón volver ──────────────────────────────────────────────
     if st.button("← Volver al inicio", key="portal_volver", type="primary"):
         st.session_state.pop('_portal_padres', None)
         st.session_state.pop('_portal_dni', None)
+        st.session_state.pop('_portal_hijos', None)
         st.rerun()
 
+    # ── Encabezado ────────────────────────────────────────────────
     st.markdown("""
     <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
-                border-radius:16px;padding:20px;text-align:center;
+                border-radius:16px;padding:22px;text-align:center;
                 color:white;margin-bottom:20px;'>
-        <div style='font-size:1.8rem;font-weight:800;'>I.E.P. ALTERNATIVO YACHAY</div>
-        <div style='font-size:1.1rem;opacity:0.9;'>👨‍👩‍👧 Portal de Padres de Familia</div>
+        <div style='font-size:1.9rem;font-weight:800;letter-spacing:1px;'>
+            I.E.P. ALTERNATIVO YACHAY
+        </div>
+        <div style='font-size:1.1rem;opacity:0.9;margin-top:4px;'>
+            👨‍👩‍👧 Portal de Padres de Familia
+        </div>
         <div style='font-size:0.85rem;opacity:0.8;margin-top:4px;'>
-            Consulta la asistencia y calificaciones de tu hijo/a
+            Consulta asistencia y calificaciones de tu hijo/a
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Buscar por DNI del apoderado o del estudiante ─────────────
+    # ── Input DNI ─────────────────────────────────────────────────
     col_inp, col_btn = st.columns([3, 1])
     with col_inp:
         dni_input = st.text_input("DNI del apoderado o del estudiante:",
@@ -4039,104 +4076,145 @@ def _portal_padres_familia():
                                    key="portal_dni_input")
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
-        buscar = st.button("Buscar", type="primary",
+        buscar = st.button("🔍 Buscar", type="primary",
                            use_container_width=True, key="portal_buscar")
 
     dni_buscar = st.session_state.get('_portal_dni', '')
     if buscar and dni_input.strip():
         st.session_state['_portal_dni'] = dni_input.strip()
+        st.session_state.pop('_portal_hijos', None)
         dni_buscar = dni_input.strip()
 
     if not dni_buscar:
         st.info("Ingresa tu DNI (apoderado) o el DNI de tu hijo/a para ver su historial.")
         return
 
-    # ── Buscar alumno por DNI del estudiante O por DNI del apoderado ──
+    # ── Buscar alumno por DNI estudiante O por DNI apoderado ──────
     df_mat = BaseDatos.cargar_matricula()
     alumno = None
     if not df_mat.empty:
-        # 1) Buscar por DNI del estudiante
         if 'DNI' in df_mat.columns:
             df_mat['DNI'] = df_mat['DNI'].astype(str).str.strip()
             fila = df_mat[df_mat['DNI'] == dni_buscar]
             if not fila.empty:
                 alumno = fila.iloc[0].to_dict()
 
-        # 2) Si no encontró, buscar por DNI del apoderado
         if alumno is None and 'DNI_Apoderado' in df_mat.columns:
             df_mat['DNI_Apoderado'] = df_mat['DNI_Apoderado'].astype(str).str.strip()
             fila_apo = df_mat[df_mat['DNI_Apoderado'] == dni_buscar]
             if not fila_apo.empty:
-                # Puede haber varios hijos — tomar el primero y mostrar lista
                 alumno = fila_apo.iloc[0].to_dict()
-                # Si hay más de un hijo, guardar todos para mostrar selector
                 if len(fila_apo) > 1:
                     st.session_state['_portal_hijos'] = fila_apo['DNI'].tolist()
-                else:
-                    st.session_state.pop('_portal_hijos', None)
 
-    # ── Selector de hijo si hay varios ───────────────────────────
+    # Selector si hay varios hijos
     hijos = st.session_state.get('_portal_hijos', [])
     if hijos and alumno is not None:
         opciones = []
         for d in hijos:
-            f = df_mat[df_mat['DNI'] == d]
-            if not f.empty:
-                r = f.iloc[0]
-                opciones.append(f"{r.get('Nombre','')} — {r.get('Grado','')} ({d})")
+            f2 = df_mat[df_mat['DNI'] == d]
+            if not f2.empty:
+                r2 = f2.iloc[0]
+                opciones.append(f"{r2.get('Nombre','')} — {r2.get('Grado','')} ({d})")
         sel = st.selectbox("Selecciona a tu hijo/a:", opciones, key="portal_hijo_sel")
         idx_sel = opciones.index(sel)
-        dni_buscar = hijos[idx_sel]
-        st.session_state['_portal_dni'] = dni_buscar
-        fila2 = df_mat[df_mat['DNI'] == dni_buscar]
-        if not fila2.empty:
-            alumno = fila2.iloc[0].to_dict()
+        dni_estudiante = hijos[idx_sel]
+        fila3 = df_mat[df_mat['DNI'] == dni_estudiante]
+        if not fila3.empty:
+            alumno = fila3.iloc[0].to_dict()
+        st.session_state['_portal_dni'] = dni_buscar  # mantener dni apoderado
+    else:
+        dni_estudiante = str(alumno.get('DNI', dni_buscar)).strip() if alumno else dni_buscar
 
     if not alumno:
-        st.error("No se encontró ningún estudiante con ese DNI. Verifica el número ingresado.")
+        st.error("❌ No se encontró ningún estudiante con ese DNI. Verifica el número.")
         return
 
-    nombre = str(alumno.get('Nombre', '')).strip()
-    grado  = str(alumno.get('Grado', '')).strip()
-    st.success(f"Estudiante encontrado: **{nombre}** — {grado}")
+    nombre  = str(alumno.get('Nombre', '')).strip()
+    grado   = str(alumno.get('Grado', '')).strip()
+    nivel   = str(alumno.get('Nivel', '')).strip().upper()
+    apod    = str(alumno.get('Apoderado', '')).strip()
+
+    # ── Determinar escala de notas ────────────────────────────────
+    # INICIAL / PRIMARIA → literal (AD/A/B/C)
+    # SECUNDARIA / PREUNIVERSITARIO → vigesimal (0–20)
+    es_vigesimal = nivel in ('SECUNDARIA', 'PREUNIVERSITARIO') or any(
+        g in grado for g in ['Secundaria', 'CEPRE', 'Ciclo', 'Reforzamiento', 'Preu', 'PREU']
+    )
+
+    # ── SALUDO PERSONALIZADO ──────────────────────────────────────
+    nombre_apo = apod if apod else "Estimado padre/madre"
+    st.markdown(f"""
+    <div style='background:linear-gradient(135deg,#1e40af,#2563eb);
+                border-radius:14px;padding:18px 22px;color:white;margin-bottom:18px;
+                box-shadow:0 4px 16px rgba(37,99,235,0.35);'>
+        <div style='font-size:1.15rem;font-weight:800;margin-bottom:6px;'>
+            👋 ¡Hola, {nombre_apo}!
+        </div>
+        <div style='font-size:0.95rem;opacity:0.95;line-height:1.6;'>
+            Te saluda el <b>SIGE Tutor del Colegio Yachay</b>.<br>
+            Te informamos cómo vamos en el aprendizaje de tu hijo/a
+            <b>{nombre}</b> del <b>{grado}</b>.<br>
+            Aquí encontrarás el registro de <b>asistencia</b> y <b>notas</b> actualizados.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.success(f"✅ Estudiante: **{nombre}** — {grado}")
     st.markdown("---")
 
-    # ── Cargar historial de asistencia ────────────────────────────
+    # ══════════════════════════════════════════════════════════════
+    # SECCIÓN 1: ASISTENCIA
+    # ══════════════════════════════════════════════════════════════
+    st.markdown("## 📅 Registro de Asistencia")
+
     asis_hist = {}
     if _Path(ARCHIVO_ASISTENCIAS).exists():
         with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
             asis_hist = _json.load(f)
 
-    # Recopilar registros del alumno ordenados por fecha
-    from datetime import datetime as _dt
     registros = []
-    for fecha, personas in asis_hist.items():
-        if len(fecha.split('/')) != 3:
+    for fecha_key, personas in asis_hist.items():
+        if not isinstance(personas, dict):
             continue
-        if dni_buscar in personas:
-            v = personas[dni_buscar]
-            ent  = v.get('entrada','') or v.get('tardanza','')
-            try:
-                fecha_dt = _dt.strptime(fecha, '%d/%m/%Y')
-            except Exception:
+        if dni_estudiante not in personas:
+            continue
+        v = personas[dni_estudiante]
+        # Soportar ambos formatos de fecha: 'YYYY-MM-DD' y 'DD/MM/YYYY'
+        try:
+            if '-' in fecha_key and len(fecha_key) == 10:
+                fecha_dt = _dt.strptime(fecha_key, '%Y-%m-%d')
+                fecha_display = fecha_dt.strftime('%d/%m/%Y')
+            elif '/' in fecha_key:
+                fecha_dt = _dt.strptime(fecha_key, '%d/%m/%Y')
+                fecha_display = fecha_key
+            else:
                 continue
-            registros.append({
-                'fecha_dt': fecha_dt,
-                'fecha':    fecha,
-                'entrada':  ent,
-                'tardanza': bool(v.get('tardanza','')),
-                'sal_man':  v.get('salida',''),
-                'ent_tar':  v.get('entrada_tarde',''),
-                'sal_tar':  v.get('salida_tarde',''),
-            })
+        except Exception:
+            continue
+
+        ent     = v.get('entrada', '')
+        tard    = v.get('tardanza', '')
+        sal_man = v.get('salida', '')
+        ent_tar = v.get('entrada_tarde', '')
+        sal_tar = v.get('salida_tarde', '')
+        registros.append({
+            'fecha_dt':  fecha_dt,
+            'fecha':     fecha_display,
+            'entrada':   ent or tard,
+            'tardanza':  bool(tard),
+            'sal_man':   sal_man,
+            'ent_tar':   ent_tar,
+            'sal_tar':   sal_tar,
+        })
 
     registros = sorted(registros, key=lambda x: x['fecha_dt'], reverse=True)
 
-    # ── Estadísticas generales ────────────────────────────────────
+    # Estadísticas
     total   = len(registros)
     puntual = sum(1 for r in registros if r['entrada'] and not r['tardanza'])
     tarde   = sum(1 for r in registros if r['tardanza'])
-    ausente = 0  # no se puede saber ausencias sin nómina completa
+    pct     = round(puntual / total * 100) if total else 0
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -4152,7 +4230,6 @@ def _portal_padres_familia():
             <div style='font-size:0.85rem;color:#854d0e;font-weight:600;'>TARDANZAS</div>
         </div>""", unsafe_allow_html=True)
     with col3:
-        pct = round(puntual/total*100) if total else 0
         color_pct = "#16a34a" if pct >= 90 else ("#ca8a04" if pct >= 75 else "#dc2626")
         st.markdown(f"""
         <div style='background:#f0f9ff;border-radius:12px;padding:14px;text-align:center;'>
@@ -4162,9 +4239,9 @@ def _portal_padres_familia():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Gráfico de barras últimos 14 días ─────────────────────────
+    # Gráfico barras
     if registros:
-        st.markdown("**📊 Puntualidad — últimos 14 días**")
+        st.markdown("**📊 Últimos 14 días**")
         ultimos = registros[:14][::-1]
         bars_html = "<div style='display:flex;align-items:flex-end;gap:6px;height:80px;'>"
         for r in ultimos:
@@ -4181,182 +4258,221 @@ def _portal_padres_familia():
                 f"<div style='font-size:9px;color:#666;'>{r['fecha'][0:5]}</div>"
                 f"</div>")
         bars_html += "</div>"
-        bars_html += "<div style='font-size:11px;color:#888;margin-top:6px;'>"
-        bars_html += "🟢 Puntual &nbsp;&nbsp; 🟡 Tardanza</div>"
+        bars_html += "<div style='font-size:11px;color:#888;margin-top:6px;'>🟢 Puntual &nbsp;&nbsp; 🟡 Tardanza</div>"
         st.markdown(bars_html, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Historial detallado ───────────────────────────────────────
-    st.markdown("**📅 Historial de Asistencia**")
-    for r in registros[:30]:
-        from datetime import datetime as _dt2
-        try:
-            dia_sem = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][r['fecha_dt'].weekday()]
-        except Exception:
-            dia_sem = ''
-        if r['tardanza']:
-            icon = "🟡"; estado = "TARDANZA"; bg = "#fffbeb"; bc = "#fbbf24"
-        elif r['entrada']:
-            icon = "✅"; estado = "PUNTUAL";  bg = "#f0fdf4"; bc = "#86efac"
-        else:
-            icon = "⚪"; estado = "—";        bg = "#f9fafb"; bc = "#e5e7eb"
-
-        detalles = []
-        if r['entrada']:  detalles.append(f"Entrada: {r['entrada']}")
-        if r['sal_man']:  detalles.append(f"Salida mañana: {r['sal_man']}")
-        if r['ent_tar']:  detalles.append(f"Entrada tarde: {r['ent_tar']}")
-        if r['sal_tar']:  detalles.append(f"Salida tarde: {r['sal_tar']}")
-
-        st.markdown(
-            f"<div style='background:{bg};border:1px solid {bc};"
-            f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
-            f"display:flex;align-items:center;gap:12px;'>"
-            f"<span style='font-size:1.4rem;'>{icon}</span>"
-            f"<div>"
-            f"<b style='font-size:0.95rem;'>{dia_sem} {r['fecha']}</b>"
-            f"<span style='margin-left:10px;font-size:0.8rem;"
-            f"color:#555;'>{estado}</span>"
-            f"<div style='font-size:0.78rem;color:#777;margin-top:2px;'>"
-            f"{'  |  '.join(detalles) if detalles else 'Sin detalle'}</div>"
-            f"</div></div>",
-            unsafe_allow_html=True)
-
-    if not registros:
-        st.info("No hay registros de asistencia aún para este estudiante.")
-
-    # ── Notas / Calificaciones ────────────────────────────────────
-    st.markdown("---")
-    st.markdown("**📚 Calificaciones**")
-
-    # ── Leer notas desde resultados.json (guardado por Registrar Notas) ──────
-    mis_notas = {}   # {area: [{periodo, titulo, nota}]}
-
-    def _leer_resultados_json(archivo):
-        if _Path(archivo).exists():
+    # Historial detallado
+    st.markdown("**📋 Historial detallado**")
+    if registros:
+        for r in registros[:30]:
             try:
-                with open(archivo, 'r', encoding='utf-8') as f:
+                dia_sem = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][r['fecha_dt'].weekday()]
+            except Exception:
+                dia_sem = ''
+            if r['tardanza']:
+                icon = "🟡"; estado = "TARDANZA"; bg = "#fffbeb"; bc = "#fbbf24"
+            elif r['entrada']:
+                icon = "✅"; estado = "PUNTUAL";  bg = "#f0fdf4"; bc = "#86efac"
+            else:
+                icon = "⚪"; estado = "—";        bg = "#f9fafb"; bc = "#e5e7eb"
+
+            detalles = []
+            if r['entrada']:  detalles.append(f"🕐 Entrada: <b>{r['entrada']}</b>")
+            if r['sal_man']:  detalles.append(f"🕐 Salida mañana: <b>{r['sal_man']}</b>")
+            if r['ent_tar']:  detalles.append(f"🕑 Entrada tarde: <b>{r['ent_tar']}</b>")
+            if r['sal_tar']:  detalles.append(f"🕑 Salida tarde: <b>{r['sal_tar']}</b>")
+
+            st.markdown(
+                f"<div style='background:{bg};border:1px solid {bc};"
+                f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
+                f"display:flex;align-items:center;gap:12px;'>"
+                f"<span style='font-size:1.4rem;'>{icon}</span>"
+                f"<div style='flex:1;'>"
+                f"<b style='font-size:0.95rem;'>{dia_sem} {r['fecha']}</b>"
+                f"<span style='margin-left:10px;font-size:0.8rem;color:#555;'>{estado}</span>"
+                f"<div style='font-size:0.8rem;color:#444;margin-top:3px;'>"
+                f"{'&nbsp;&nbsp;|&nbsp;&nbsp;'.join(detalles) if detalles else 'Sin detalle de hora'}"
+                f"</div></div></div>",
+                unsafe_allow_html=True)
+    else:
+        st.info("📭 No hay registros de asistencia aún para este estudiante.")
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════════════════════
+    # SECCIÓN 2: NOTAS / CALIFICACIONES
+    # ══════════════════════════════════════════════════════════════
+    escala_texto = "Escala vigesimal (0–20)" if es_vigesimal else "Escala literal (AD / A / B / C)"
+    st.markdown(f"## 📚 Calificaciones  <span style='font-size:0.8rem;color:#6b7280;font-weight:400;'>— {escala_texto}</span>", unsafe_allow_html=True)
+
+    # ── Cargar desde TODAS las fuentes ───────────────────────────
+    mis_notas = {}  # {area: [{periodo, titulo, nota, fecha}]}
+
+    def _leer_json(archivo):
+        p = _Path(archivo)
+        if p.exists():
+            try:
+                with open(p, 'r', encoding='utf-8') as f:
                     return _json.load(f)
             except Exception:
                 pass
-        return []
+        return None
 
-    # resultados.json — lista plana guardada por tab_registrar_notas
-    resultados_lista = _leer_resultados_json('resultados.json')
-    if isinstance(resultados_lista, dict):
-        # formato viejo: {docente: [lista]}
-        tmp = []
-        for v in resultados_lista.values():
-            if isinstance(v, list):
-                tmp.extend(v)
-        resultados_lista = tmp
-
-    # resultados_examenes.json — archivo permanente
-    resultados_exams = _leer_resultados_json('resultados_examenes.json')
-    if isinstance(resultados_exams, dict):
-        tmp2 = []
-        for v in resultados_exams.values():
-            if isinstance(v, list):
-                tmp2.extend(v)
-        resultados_exams = tmp2
-
-    todos_resultados = resultados_lista + resultados_exams
-
-    for reg in todos_resultados:
-        if not isinstance(reg, dict):
-            continue
-        dni_reg    = str(reg.get('dni', '')).strip()
-        nombre_reg = str(reg.get('nombre', '')).strip().upper()
-        # Coincidir por DNI o nombre
-        if dni_reg != dni_buscar and nombre_reg != nombre.upper():
-            continue
-        periodo = str(reg.get('periodo', reg.get('semana', reg.get('bimestre', ''))))
-        titulo  = str(reg.get('titulo', ''))
-        areas_reg = reg.get('areas', [])
-        if isinstance(areas_reg, list):
-            # formato: [{nombre, nota}]
-            for a in areas_reg:
-                if not isinstance(a, dict):
-                    continue
-                area_name = str(a.get('nombre', a.get('area', 'Sin área'))).strip()
-                nota_val  = str(a.get('nota', a.get('calificacion', '')))
-                if not area_name:
-                    continue
-                if area_name not in mis_notas:
-                    mis_notas[area_name] = []
-                mis_notas[area_name].append({
-                    'sem': periodo,
-                    'titulo': titulo,
-                    'nota': nota_val
-                })
-        elif isinstance(areas_reg, dict):
-            # formato: {nombre_area: nota}
-            for area_name, nota_val in areas_reg.items():
-                if area_name not in mis_notas:
-                    mis_notas[area_name] = []
-                mis_notas[area_name].append({
-                    'sem': periodo,
-                    'titulo': titulo,
-                    'nota': str(nota_val)
-                })
-
-    # También revisar historial_evaluaciones.json
-    hist_eval = {}
-    if _Path('historial_evaluaciones.json').exists():
+    def _nota_card(nota_str, es_vigesi):
+        """Retorna (color, etiqueta_letra)"""
         try:
-            with open('historial_evaluaciones.json', 'r', encoding='utf-8') as f:
-                hist_eval = _json.load(f)
+            nval = float(nota_str)
+            if es_vigesi:
+                # 0-20
+                if nval >= 18:    return "#16a34a", "Excelente"
+                elif nval >= 14:  return "#16a34a", "Bueno"
+                elif nval >= 11:  return "#ca8a04", "Regular"
+                else:             return "#dc2626", "Bajo"
+            else:
+                # Convertir a letra si es número
+                if nval >= 18:    return "#16a34a", "AD"
+                elif nval >= 14:  return "#16a34a", "A"
+                elif nval >= 11:  return "#ca8a04", "B"
+                else:             return "#dc2626", "C"
         except Exception:
-            pass
-    for clave, ev in hist_eval.items():
-        if not isinstance(ev, dict):
-            continue
-        ranking = ev.get('ranking', [])
-        for fila in ranking:
-            if not isinstance(fila, dict):
-                continue
-            dni_fila    = str(fila.get('dni', '')).strip()
-            nombre_fila = str(fila.get('nombre', '')).strip().upper()
-            if dni_fila != dni_buscar and nombre_fila != nombre.upper():
-                continue
-            periodo = str(ev.get('periodo', ev.get('bimestre', '')))
-            titulo  = str(ev.get('titulo', ''))
-            for area_name in ev.get('areas', []):
-                nota_val = str(fila.get(area_name, ''))
-                if not nota_val or nota_val == 'nan':
-                    continue
-                if area_name not in mis_notas:
-                    mis_notas[area_name] = []
-                mis_notas[area_name].append({
-                    'sem': periodo,
-                    'titulo': titulo,
-                    'nota': nota_val
-                })
+            # Ya es letra (AD/A/B/C/EP/L/I)
+            mapa = {"AD": "#16a34a", "A": "#16a34a", "L": "#16a34a",
+                    "B": "#ca8a04",  "EP": "#ca8a04",
+                    "C": "#dc2626",  "I": "#dc2626", "NE": "#6b7280"}
+            c = mapa.get(str(nota_str).strip().upper(), "#6b7280")
+            return c, str(nota_str).strip()
 
+    def _agregar_nota(area, periodo, titulo, nota, fecha=''):
+        area = str(area).strip() or 'General'
+        nota_s = str(nota).strip()
+        if not nota_s or nota_s in ('', 'nan', 'None', '0', '0.0'):
+            return
+        if area not in mis_notas:
+            mis_notas[area] = []
+        mis_notas[area].append({
+            'sem': str(periodo),
+            'titulo': str(titulo),
+            'nota': nota_s,
+            'fecha': str(fecha)
+        })
+
+    # 1) resultados.json — guardado por tab_registrar_notas y QAWAY
+    res_raw = _leer_json('resultados.json')
+    if isinstance(res_raw, dict):
+        tmp = []
+        for v in res_raw.values():
+            if isinstance(v, list): tmp.extend(v)
+        res_raw = tmp
+    for reg in (res_raw or []):
+        if not isinstance(reg, dict): continue
+        if (str(reg.get('dni','')).strip() != dni_estudiante and
+                str(reg.get('nombre','')).strip().upper() != nombre.upper()):
+            continue
+        periodo = reg.get('periodo', reg.get('bimestre', reg.get('semana', '')))
+        titulo  = reg.get('titulo', '')
+        fecha_r = reg.get('fecha', '')
+        areas_r = reg.get('areas', [])
+        if isinstance(areas_r, list):
+            for a in areas_r:
+                if isinstance(a, dict):
+                    _agregar_nota(a.get('nombre', a.get('area', 'General')),
+                                  periodo, titulo, a.get('nota', a.get('calificacion', '')), fecha_r)
+        elif isinstance(areas_r, dict):
+            for an, av in areas_r.items():
+                _agregar_nota(an, periodo, titulo, av, fecha_r)
+
+    # 2) resultados_examenes.json — archivo permanente
+    res_exam = _leer_json('resultados_examenes.json')
+    if isinstance(res_exam, dict):
+        tmp2 = []
+        for v in res_exam.values():
+            if isinstance(v, list): tmp2.extend(v)
+        res_exam = tmp2
+    for reg in (res_exam or []):
+        if not isinstance(reg, dict): continue
+        if (str(reg.get('dni','')).strip() != dni_estudiante and
+                str(reg.get('nombre','')).strip().upper() != nombre.upper()):
+            continue
+        periodo = reg.get('periodo', reg.get('bimestre', ''))
+        titulo  = reg.get('titulo', '')
+        fecha_r = reg.get('fecha', '')
+        areas_r = reg.get('areas', [])
+        if isinstance(areas_r, list):
+            for a in areas_r:
+                if isinstance(a, dict):
+                    _agregar_nota(a.get('nombre', 'General'), periodo, titulo,
+                                  a.get('nota', ''), fecha_r)
+        elif isinstance(areas_r, dict):
+            for an, av in areas_r.items():
+                _agregar_nota(an, periodo, titulo, av, fecha_r)
+
+    # 3) historial_evaluaciones.json — todas las evaluaciones incluyendo QAWAY
+    hist_ev = _leer_json('historial_evaluaciones.json') or {}
+    for clave_ev, ev in hist_ev.items():
+        if not isinstance(ev, dict): continue
+        periodo = ev.get('periodo', ev.get('bimestre', ''))
+        titulo  = ev.get('titulo', '')
+        fecha_r = ev.get('fecha', '')
+        areas_ev = ev.get('areas', [])
+        for fila_ev in ev.get('ranking', []):
+            if not isinstance(fila_ev, dict): continue
+            if (str(fila_ev.get('dni','')).strip() != dni_estudiante and
+                    str(fila_ev.get('nombre','')).strip().upper() != nombre.upper()):
+                continue
+            if isinstance(areas_ev, list) and areas_ev:
+                for an in areas_ev:
+                    av = fila_ev.get(an, '')
+                    _agregar_nota(an, periodo, titulo, av, fecha_r)
+            else:
+                # QAWAY — promedio general
+                nota_g = fila_ev.get('promedio', fila_ev.get('nota', ''))
+                _agregar_nota('General / QAWAY', periodo, titulo, nota_g, fecha_r)
+            break  # solo 1 fila por alumno
+
+    # ── Mostrar notas ─────────────────────────────────────────────
     if mis_notas:
-        for area, notas_area in sorted(mis_notas.items()):
-            with st.expander(f"📖 {area}", expanded=True):
-                cols_n = st.columns(min(len(notas_area), 4))
-                for ci, n in enumerate(notas_area[-8:]):
-                    with cols_n[ci % min(len(notas_area), 4)]:
-                        try:
-                            nval = float(n['nota'])
-                            ncolor = "#16a34a" if nval >= 14 else ("#ca8a04" if nval >= 11 else "#dc2626")
-                            nletra = "AD" if nval >= 18 else ("A" if nval >= 14 else ("B" if nval >= 11 else "C"))
-                        except Exception:
-                            ncolor = "#6b7280"; nletra = str(n['nota'])
-                        etiqueta = n.get('titulo', '') or n.get('sem', '')
-                        periodo  = n.get('sem', '')
-                        st.markdown(
-                            f"<div style='background:#f8fafc;border:1px solid #e2e8f0;"
-                            f"border-radius:8px;padding:8px;text-align:center;margin-bottom:4px;'>"
-                            f"<div style='font-size:1.3rem;font-weight:900;color:{ncolor};'>"
-                            f"{n['nota']}</div>"
-                            f"<div style='font-size:0.7rem;color:{ncolor};font-weight:700;'>{nletra}</div>"
-                            f"<div style='font-size:0.68rem;color:#555;margin-top:2px;'>{etiqueta[:20]}</div>"
-                            f"<div style='font-size:0.65rem;color:#999;'>{periodo}</div>"
-                            f"</div>", unsafe_allow_html=True)
+        for area_n, notas_area in sorted(mis_notas.items()):
+            # Ordenar por fecha más reciente
+            notas_area_sorted = sorted(notas_area,
+                key=lambda x: x.get('fecha',''), reverse=True)
+            with st.expander(f"📖 {area_n}  ({len(notas_area_sorted)} registros)", expanded=True):
+                cols_per_row = 4
+                rows = [notas_area_sorted[i:i+cols_per_row]
+                        for i in range(0, min(len(notas_area_sorted), 12), cols_per_row)]
+                for row_notas in rows:
+                    cols_n = st.columns(cols_per_row)
+                    for ci, n in enumerate(row_notas):
+                        with cols_n[ci]:
+                            color, letra = _nota_card(n['nota'], es_vigesimal)
+                            etiqueta = (n.get('titulo','') or n.get('sem','')).replace('QAWAY: ','')
+                            periodo_d = n.get('sem', '')
+                            fecha_d   = n.get('fecha', '')
+                            st.markdown(
+                                f"<div style='background:#f8fafc;border:2px solid {color}22;"
+                                f"border-radius:10px;padding:10px 6px;text-align:center;"
+                                f"margin-bottom:4px;'>"
+                                f"<div style='font-size:1.5rem;font-weight:900;color:{color};'>"
+                                f"{n['nota']}</div>"
+                                f"<div style='font-size:0.75rem;color:{color};font-weight:700;"
+                                f"margin:2px 0;'>{letra}</div>"
+                                f"<div style='font-size:0.68rem;color:#444;'>"
+                                f"{etiqueta[:22]}</div>"
+                                f"<div style='font-size:0.63rem;color:#999;'>{periodo_d}</div>"
+                                f"<div style='font-size:0.6rem;color:#bbb;'>{fecha_d}</div>"
+                                f"</div>", unsafe_allow_html=True)
     else:
-        st.info("No hay calificaciones registradas aún para este estudiante.")
+        st.info("📭 No hay calificaciones registradas aún para este estudiante.")
+
+    # ── Pie del portal ────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("""
+    <div style='text-align:center;color:#94a3b8;font-size:0.78rem;padding:10px 0;'>
+        🎓 I.E.P. Alternativo Yachay — SIGE Tutor &nbsp;|&nbsp;
+        Para consultas contacta a la institución.<br>
+        © 2026 YACHAY PRO — Todos los derechos reservados
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def pantalla_login():
