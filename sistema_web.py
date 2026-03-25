@@ -4444,15 +4444,43 @@ def _portal_padres_familia():
             nombre_fila = str(fila_ev.get('Nombre', fila_ev.get('nombre', ''))).strip().upper()
             if dni_fila != dni_estudiante and nombre_fila != nombre.upper():
                 continue
+            # Guardar puesto para esta sesión
+            puesto_ev = fila_ev.get('Puesto', fila_ev.get('puesto', ''))
+            total_ev  = len(ev.get('ranking', []))
+            medalla_ev = fila_ev.get('Medalla', fila_ev.get('medalla', ''))
             # Leer nota por cada área
             if areas_nombres_ev:
                 for an in areas_nombres_ev:
                     av = fila_ev.get(an, '')
-                    _agregar_nota(an, periodo, titulo, av, fecha_r)
+                    if av != '':
+                        nota_entry = {
+                            'sem':    periodo,
+                            'titulo': titulo,
+                            'nota':   str(av),
+                            'fecha':  fecha_r,
+                            'puesto': puesto_ev,
+                            'total':  total_ev,
+                            'medalla': medalla_ev,
+                        }
+                        an_key = str(an).strip() or 'General'
+                        if an_key not in mis_notas:
+                            mis_notas[an_key] = []
+                        mis_notas[an_key].append(nota_entry)
             else:
-                # QAWAY u otros sin áreas — usar promedio
                 nota_g = fila_ev.get('promedio', fila_ev.get('Promedio', fila_ev.get('nota', '')))
-                _agregar_nota('General / QAWAY', periodo, titulo, nota_g, fecha_r)
+                nota_entry = {
+                    'sem':    periodo,
+                    'titulo': titulo,
+                    'nota':   str(nota_g),
+                    'fecha':  fecha_r,
+                    'puesto': puesto_ev,
+                    'total':  total_ev,
+                    'medalla': medalla_ev,
+                }
+                an_key = 'General / QAWAY'
+                if an_key not in mis_notas:
+                    mis_notas[an_key] = []
+                mis_notas[an_key].append(nota_entry)
 
     # ── Mostrar notas POR SEMANA / FECHA ─────────────────────────
     if mis_notas:
@@ -4500,10 +4528,33 @@ def _portal_padres_familia():
             except Exception:
                 hcolor = "#0f766e"; prom_str = ""
 
+            # Obtener puesto de la sesión (viene de historial, mismo para todas las áreas)
+            puesto_ses  = notas_ses[0].get('puesto', '')
+            total_ses   = notas_ses[0].get('total', '')
+            medalla_ses = notas_ses[0].get('medalla', '')
+
+            # Etiqueta de ranking
+            if puesto_ses:
+                if puesto_ses == 1:   rank_html = "<span style='color:#FFD700;font-size:1.3rem;'>🥇</span> <b style='color:#FFD700;'>Puesto 1</b>"
+                elif puesto_ses == 2: rank_html = "<span style='font-size:1.3rem;'>🥈</span> <b style='color:#94a3b8;'>Puesto 2</b>"
+                elif puesto_ses == 3: rank_html = "<span style='font-size:1.3rem;'>🥉</span> <b style='color:#b45309;'>Puesto 3</b>"
+                else:                 rank_html = f"<b style='color:#475569;'>#{puesto_ses}</b>"
+                if total_ses:
+                    rank_html += f" <span style='color:#94a3b8;font-size:0.8rem;'>de {total_ses}</span>"
+            else:
+                rank_html = ""
+
             with st.expander(
                 f"📅 {label_fecha}  —  {label_titulo}{prom_str}",
-                expanded=(clave_ses == sesiones_sorted[0][0])  # abrir solo el más reciente
+                expanded=(clave_ses == sesiones_sorted[0][0])
             ):
+                if rank_html:
+                    st.markdown(
+                        f"<div style='background:#f1f5f9;border-radius:8px;padding:8px 14px;"
+                        f"margin-bottom:10px;display:inline-block;'>"
+                        f"🏆 Ranking: {rank_html}</div>",
+                        unsafe_allow_html=True)
+
                 cols_n = st.columns(min(len(notas_ses), 4))
                 for ci, n in enumerate(notas_ses):
                     with cols_n[ci % min(len(notas_ses), 4)]:
