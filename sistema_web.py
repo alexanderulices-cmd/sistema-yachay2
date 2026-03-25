@@ -4065,53 +4065,26 @@ def _portal_padres_familia():
             st.rerun()
 
     # ── ENCABEZADO con efectos ────────────────────────────────────
-    st.markdown("""
-    <div style='background:linear-gradient(135deg,#0f766e 0%,#0d9488 50%,#14b8a6 100%);
-                border-radius:18px;padding:26px 20px 20px;text-align:center;
-                color:white;margin-bottom:20px;
-                box-shadow:0 8px 32px rgba(15,118,110,0.45);
-                position:relative;overflow:hidden;'>
-
-        <!-- Fondo animado -->
-        <div style='position:absolute;top:-40%;left:-40%;width:180%;height:180%;
-                    background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 65%);
-                    animation:shimmerText 4s linear infinite;pointer-events:none;'></div>
-
-        <div style='font-size:2rem;font-weight:900;letter-spacing:2px;
-                    text-shadow:0 2px 12px rgba(0,0,0,0.3);'>
-            🎓 I.E.P. ALTERNATIVO YACHAY
-        </div>
-
-        <!-- PIONEROS con efecto dorado animado -->
-        <div style='margin:8px 0 4px;'>
-            <span style='
-                background:linear-gradient(90deg,#FFD700,#FFF176,#FFD700,#FFA500,#FFD700);
-                background-size:200% auto;
-                -webkit-background-clip:text;
-                -webkit-text-fill-color:transparent;
-                background-clip:text;
-                font-size:1.05rem;font-weight:800;letter-spacing:3px;
-                text-transform:uppercase;
-                animation:shimmerText 2.5s linear infinite;
-            '>✨ Pioneros en la Educación de Calidad ✨</span>
-        </div>
-
-        <!-- LEMA -->
-        <div style='font-size:0.9rem;color:#ccfbf1;font-style:italic;margin-bottom:10px;'>
-            "Yachay — Educar para la Vida"
-        </div>
-
-        <div style='background:rgba(255,255,255,0.15);border-radius:10px;
-                    padding:8px 16px;display:inline-block;'>
-            <span style='font-size:1rem;font-weight:700;'>
-                👨‍👩‍👧 Portal de Padres de Familia
-            </span><br>
-            <span style='font-size:0.8rem;opacity:0.9;'>
-                Consulta asistencia y calificaciones de tu hijo/a
-            </span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#0f766e 0%,#0d9488 50%,#14b8a6 100%);"
+        "border-radius:18px;padding:26px 20px 20px;text-align:center;color:white;"
+        "margin-bottom:20px;box-shadow:0 8px 32px rgba(15,118,110,0.45);'>"
+        "<div style='font-size:2rem;font-weight:900;letter-spacing:2px;"
+        "text-shadow:0 2px 12px rgba(0,0,0,0.3);'>🎓 I.E.P. ALTERNATIVO YACHAY</div>"
+        "<div style='margin:8px 0 4px;'>"
+        "<span style='background:linear-gradient(90deg,#FFD700,#FFF176,#FFD700,#FFA500,#FFD700);"
+        "background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;"
+        "background-clip:text;font-size:1.05rem;font-weight:800;letter-spacing:3px;"
+        "text-transform:uppercase;animation:shimmerText 2.5s linear infinite;'>"
+        "&#10024; Pioneros en la Educacion de Calidad &#10024;</span></div>"
+        "<div style='font-size:0.9rem;color:#ccfbf1;font-style:italic;margin-bottom:10px;'>"
+        "&#34;Yachay &mdash; Educar para la Vida&#34;</div>"
+        "<div style='background:rgba(255,255,255,0.15);border-radius:10px;"
+        "padding:8px 16px;display:inline-block;'>"
+        "<span style='font-size:1rem;font-weight:700;'>&#128106; Portal de Padres de Familia</span><br>"
+        "<span style='font-size:0.8rem;opacity:0.9;'>Consulta asistencia y calificaciones de tu hijo/a</span>"
+        "</div></div>",
+        unsafe_allow_html=True)
 
     # ── Input DNI ─────────────────────────────────────────────────
     col_inp, col_btn = st.columns([3, 1])
@@ -4481,30 +4454,68 @@ def _portal_padres_familia():
                 nota_g = fila_ev.get('promedio', fila_ev.get('Promedio', fila_ev.get('nota', '')))
                 _agregar_nota('General / QAWAY', periodo, titulo, nota_g, fecha_r)
 
-    # ── Mostrar notas ─────────────────────────────────────────────
+    # ── Mostrar notas POR SEMANA / FECHA ─────────────────────────
     if mis_notas:
-        for area_n, notas_area in sorted(mis_notas.items()):
-            notas_sorted = sorted(notas_area, key=lambda x: x.get('fecha',''), reverse=True)
-            with st.expander(f"📖 {area_n}  ({len(notas_sorted)} evaluaciones)", expanded=True):
-                cols_per_row = 4
-                for i in range(0, min(len(notas_sorted), 12), cols_per_row):
-                    batch = notas_sorted[i:i+cols_per_row]
-                    cols_n = st.columns(cols_per_row)
-                    for ci, n in enumerate(batch):
-                        with cols_n[ci]:
-                            color, letra = _nota_display(n['nota'], es_vigesimal)
-                            etiqueta = (n.get('titulo','') or n.get('sem','')).replace('QAWAY: ','')
-                            st.markdown(
-                                f"<div style='background:#f8fafc;border:2px solid {color}44;"
-                                f"border-radius:10px;padding:10px 6px;text-align:center;"
-                                f"margin-bottom:4px;animation:floatBadge 3s ease-in-out infinite;'>"
-                                f"<div style='font-size:1.6rem;font-weight:900;color:{color};'>"
-                                f"{n['nota']}</div>"
-                                f"<div style='font-size:0.8rem;color:{color};font-weight:700;'>{letra}</div>"
-                                f"<div style='font-size:0.68rem;color:#444;margin-top:2px;'>{etiqueta[:24]}</div>"
-                                f"<div style='font-size:0.63rem;color:#777;'>{n.get('sem','')}</div>"
-                                f"<div style='font-size:0.6rem;color:#aaa;'>{n.get('fecha','')}</div>"
-                                f"</div>", unsafe_allow_html=True)
+        # Aplanar todas las notas con su área
+        todas_notas = []
+        for area_n, notas_area in mis_notas.items():
+            for n in notas_area:
+                todas_notas.append({**n, 'area': area_n})
+
+        # Agrupar por (fecha + periodo + titulo) → cada evaluación es una "sesión"
+        from collections import defaultdict as _dd
+        sesiones = _dd(list)
+        for n in todas_notas:
+            clave = f"{n.get('fecha','') or n.get('sem','')}|{n.get('titulo','')}"
+            sesiones[clave].append(n)
+
+        # Ordenar sesiones: más reciente primero
+        def _sort_key_sesion(clave):
+            fecha_part = clave.split('|')[0]
+            try:
+                if '-' in fecha_part:
+                    return _dt.strptime(fecha_part, '%Y-%m-%d')
+                elif '/' in fecha_part:
+                    return _dt.strptime(fecha_part, '%d/%m/%Y')
+            except Exception:
+                pass
+            return _dt(2000, 1, 1)
+
+        sesiones_sorted = sorted(sesiones.items(), key=lambda x: _sort_key_sesion(x[0]), reverse=True)
+
+        for clave_ses, notas_ses in sesiones_sorted:
+            fecha_ses  = notas_ses[0].get('fecha', '')
+            sem_ses    = notas_ses[0].get('sem', '')
+            titulo_ses = notas_ses[0].get('titulo', '')
+            label_fecha = fecha_ses or sem_ses or 'Sin fecha'
+            label_titulo = titulo_ses.replace('QAWAY: ', '🎮 ') if titulo_ses else 'Evaluación'
+
+            # Color encabezado según promedio
+            try:
+                prom = sum(float(n['nota']) for n in notas_ses) / len(notas_ses)
+                if prom >= 14:   hcolor = "#16a34a"
+                elif prom >= 11: hcolor = "#ca8a04"
+                else:            hcolor = "#dc2626"
+                prom_str = f" · Prom: {prom:.1f}"
+            except Exception:
+                hcolor = "#0f766e"; prom_str = ""
+
+            with st.expander(
+                f"📅 {label_fecha}  —  {label_titulo}{prom_str}",
+                expanded=(clave_ses == sesiones_sorted[0][0])  # abrir solo el más reciente
+            ):
+                cols_n = st.columns(min(len(notas_ses), 4))
+                for ci, n in enumerate(notas_ses):
+                    with cols_n[ci % min(len(notas_ses), 4)]:
+                        color, letra = _nota_display(n['nota'], es_vigesimal)
+                        st.markdown(
+                            f"<div style='background:#f8fafc;border:2px solid {color}44;"
+                            f"border-radius:10px;padding:10px 6px;text-align:center;margin-bottom:4px;'>"
+                            f"<div style='font-size:1.5rem;font-weight:900;color:{color};'>{n['nota']}</div>"
+                            f"<div style='font-size:0.78rem;color:{color};font-weight:700;'>{letra}</div>"
+                            f"<div style='font-size:0.72rem;color:#333;margin-top:3px;font-weight:600;'>{n['area']}</div>"
+                            f"<div style='font-size:0.63rem;color:#888;'>{sem_ses}</div>"
+                            f"</div>", unsafe_allow_html=True)
     else:
         st.info("📭 No hay calificaciones registradas aún para este estudiante.")
 
