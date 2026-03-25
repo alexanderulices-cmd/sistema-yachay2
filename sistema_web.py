@@ -4013,7 +4013,7 @@ def _portal_padres_familia():
     from pathlib import Path as _Path
 
     # ── Botón volver ──────────────────────────────────────────────
-    if st.button("← Volver al inicio", key="portal_volver"):
+    if st.button("← Volver al inicio", key="portal_volver", type="primary"):
         st.session_state.pop('_portal_padres', None)
         st.session_state.pop('_portal_dni', None)
         st.rerun()
@@ -4030,12 +4030,12 @@ def _portal_padres_familia():
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Buscar por DNI del estudiante ─────────────────────────────
+    # ── Buscar por DNI del apoderado o del estudiante ─────────────
     col_inp, col_btn = st.columns([3, 1])
     with col_inp:
-        dni_input = st.text_input("DNI del estudiante:",
+        dni_input = st.text_input("DNI del apoderado o del estudiante:",
                                    max_chars=8,
-                                   placeholder="Escribe el DNI de 8 dígitos",
+                                   placeholder="Ingresa tu DNI o el DNI de tu hijo/a",
                                    key="portal_dni_input")
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -4048,20 +4048,52 @@ def _portal_padres_familia():
         dni_buscar = dni_input.strip()
 
     if not dni_buscar:
-        st.info("Ingresa el DNI del estudiante para ver su historial.")
+        st.info("Ingresa tu DNI (apoderado) o el DNI de tu hijo/a para ver su historial.")
         return
 
-    # ── Buscar alumno ─────────────────────────────────────────────
+    # ── Buscar alumno por DNI del estudiante O por DNI del apoderado ──
     df_mat = BaseDatos.cargar_matricula()
     alumno = None
-    if not df_mat.empty and 'DNI' in df_mat.columns:
-        df_mat['DNI'] = df_mat['DNI'].astype(str).str.strip()
-        fila = df_mat[df_mat['DNI'] == dni_buscar]
-        if not fila.empty:
-            alumno = fila.iloc[0].to_dict()
+    if not df_mat.empty:
+        # 1) Buscar por DNI del estudiante
+        if 'DNI' in df_mat.columns:
+            df_mat['DNI'] = df_mat['DNI'].astype(str).str.strip()
+            fila = df_mat[df_mat['DNI'] == dni_buscar]
+            if not fila.empty:
+                alumno = fila.iloc[0].to_dict()
+
+        # 2) Si no encontró, buscar por DNI del apoderado
+        if alumno is None and 'DNI_Apoderado' in df_mat.columns:
+            df_mat['DNI_Apoderado'] = df_mat['DNI_Apoderado'].astype(str).str.strip()
+            fila_apo = df_mat[df_mat['DNI_Apoderado'] == dni_buscar]
+            if not fila_apo.empty:
+                # Puede haber varios hijos — tomar el primero y mostrar lista
+                alumno = fila_apo.iloc[0].to_dict()
+                # Si hay más de un hijo, guardar todos para mostrar selector
+                if len(fila_apo) > 1:
+                    st.session_state['_portal_hijos'] = fila_apo['DNI'].tolist()
+                else:
+                    st.session_state.pop('_portal_hijos', None)
+
+    # ── Selector de hijo si hay varios ───────────────────────────
+    hijos = st.session_state.get('_portal_hijos', [])
+    if hijos and alumno is not None:
+        opciones = []
+        for d in hijos:
+            f = df_mat[df_mat['DNI'] == d]
+            if not f.empty:
+                r = f.iloc[0]
+                opciones.append(f"{r.get('Nombre','')} — {r.get('Grado','')} ({d})")
+        sel = st.selectbox("Selecciona a tu hijo/a:", opciones, key="portal_hijo_sel")
+        idx_sel = opciones.index(sel)
+        dni_buscar = hijos[idx_sel]
+        st.session_state['_portal_dni'] = dni_buscar
+        fila2 = df_mat[df_mat['DNI'] == dni_buscar]
+        if not fila2.empty:
+            alumno = fila2.iloc[0].to_dict()
 
     if not alumno:
-        st.error("No se encontró ningún estudiante con ese DNI. Verifica el número.")
+        st.error("No se encontró ningún estudiante con ese DNI. Verifica el número ingresado.")
         return
 
     nombre = str(alumno.get('Nombre', '')).strip()
@@ -4342,6 +4374,46 @@ def pantalla_login():
         border-color: #1a56db !important;
         box-shadow: 0 0 0 3px rgba(26,86,219,0.15) !important;
     }
+
+    /* ── BOTONES LOGIN — máxima especificidad para asegurar visibilidad ── */
+    div[data-testid="stMain"] button,
+    div[data-testid="stVerticalBlock"] button,
+    div[data-testid="column"] button,
+    section[data-testid="stMain"] button,
+    .stButton > button,
+    div[data-testid="stBaseButton-primary"] > button,
+    div[data-testid="stBaseButton-secondary"] > button {
+        background-color: #2563eb !important;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        box-shadow: 0 3px 10px rgba(37,99,235,0.4) !important;
+        min-height: 42px !important;
+        font-size: 0.97rem !important;
+    }
+    div[data-testid="stMain"] button:hover,
+    div[data-testid="stVerticalBlock"] button:hover,
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        background-color: #1d4ed8 !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        box-shadow: 0 5px 16px rgba(37,99,235,0.55) !important;
+        transform: translateY(-2px) !important;
+    }
+    /* Texto dentro del botón también visible */
+    div[data-testid="stMain"] button p,
+    div[data-testid="stVerticalBlock"] button p,
+    .stButton > button p {
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        font-weight: 700 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -4431,7 +4503,7 @@ def pantalla_login():
         """, unsafe_allow_html=True)
         if st.button("📊 CONSULTAR ASISTENCIA Y NOTAS DE MI HIJO/A",
                      use_container_width=True, key="btn_portal_padres",
-                     type="secondary"):
+                     type="primary"):
             st.session_state['_portal_padres'] = True
             st.rerun()
 
