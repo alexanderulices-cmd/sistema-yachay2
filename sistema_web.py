@@ -17324,6 +17324,41 @@ def tab_registrar_notas(config):
                     todos_diag[clave_sal if es_salida else clave_ent] = notas_ingresadas
                     if _guardar_diagnostico(todos_diag):
                         st.success(f"✅ Diagnóstico de {tipo_nombre} guardado.")
+                        # ── Guardar en resultados.json para portal de padres ──
+                        try:
+                            tipo_label = f"Diagnóstico {'Salida' if es_salida else 'Entrada'}"
+                            resultados_act = BaseDatos.cargar_todos_resultados()
+                            for _, row_d in df_diag.iterrows():
+                                nombre_d = str(row_d.get('Nombre', '')).strip()
+                                dni_d    = str(row_d.get('DNI', '')).strip()
+                                notas_d  = notas_ingresadas.get(nombre_d, [])
+                                if not notas_d or all(n == 0 for n in notas_d):
+                                    continue
+                                prom_d = round(sum(notas_d) / len(notas_d), 1) if notas_d else 0
+                                reg_d = {
+                                    'dni':              dni_d,
+                                    'nombre':           nombre_d,
+                                    'grado':            grado_diag,
+                                    'periodo':          tipo_label,
+                                    'titulo':           f"{tipo_label} — {grado_diag}",
+                                    'fecha':            fecha_peru_str(),
+                                    'hora':             hora_peru_str(),
+                                    'docente':          st.session_state.get('usuario_actual',''),
+                                    'docente_nombre':   _nombre_completo_docente(),
+                                    'areas':            [{'nombre': areas_diag[ai],
+                                                          'nota': notas_d[ai]}
+                                                         for ai in range(len(areas_diag))
+                                                         if ai < len(notas_d)],
+                                    'promedio_general': prom_d,
+                                    '_docente':         st.session_state.get('usuario_actual',''),
+                                    'tipo':             'diagnostico',
+                                }
+                                resultados_act.append(reg_d)
+                            with open('resultados.json', 'w', encoding='utf-8') as _fr:
+                                json.dump(resultados_act, _fr,
+                                          ensure_ascii=False, indent=2, default=str)
+                        except Exception:
+                            pass
                     else:
                         st.warning("⚠️ Guardado localmente.")
 
