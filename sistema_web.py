@@ -6628,11 +6628,11 @@ def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
 
         n_col = 2 + len(dias_bloque)*2 + 1
         ancho = 27*cm
-        w_n = 0.55*cm; w_nom = 4.5*cm; w_obs = 1.2*cm
+        w_n = 0.55*cm; w_nom = 6.0*cm; w_obs = 1.0*cm
         w_dia = (ancho - w_n - w_nom - w_obs) / (len(dias_bloque)*2)
         col_ws = [w_n, w_nom] + [w_dia]*(len(dias_bloque)*2) + [w_obs]
 
-        row_hs = [0.5*cm, 0.5*cm] + [0.65*cm]*len(nombres)
+        row_hs = [0.55*cm, 0.55*cm] + [0.7*cm]*len(nombres)
 
         t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
 
@@ -7208,8 +7208,9 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
             rows_comp = [[P(f"<b>{cod}</b>", size=7.5), P(comp_txt, size=7.5), "NIVEL", "EVIDENCIAS"]]
             for ind in indicadores:
                 rows_comp.append(["", P(f"• {ind}", size=7), "L / EP / I / NE", ""])
-            t_comp = Table(rows_comp, colWidths=[1*cm, 8*cm, 2.3*cm, 2.4*cm],
-                           rowHeights=[0.6*cm]*(len(rows_comp)))
+            # A4 con márgenes 1.8cm c/lado: ancho útil = 21 - 3.6 = 17.4cm
+            t_comp = Table(rows_comp, colWidths=[1.2*cm, 9.8*cm, 2.8*cm, 3.6*cm],
+                           rowHeights=[0.65*cm]*(len(rows_comp)))
             t_comp.setStyle(TableStyle([
                 ('GRID',(0,0),(-1,-1),0.3,colors.black),
                 ('FONTSIZE',(0,0),(-1,-1),7),
@@ -8248,8 +8249,8 @@ def tab_carnets(config):
 # TAB: ASISTENCIAS (Alumnos + Docentes)
 # ================================================================
 
-def _generar_pdf_asistencia_dia(fecha_str, asis_data):
-    """PDF de asistencia: pag1=alumnos, pag2=docentes, stats, pie de pagina con numero."""
+def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
+    """PDF de asistencia. tipo='alumnos'|'docentes'|'ambos'"""
     from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
                                      Paragraph, Spacer, HRFlowable, PageBreak)
@@ -8315,7 +8316,6 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data):
     def _pct(n, tot): return f"{round(n/tot*100)}%" if tot else "0%"
 
     def _celda_stat(etiqueta, numero, porcentaje, txt_color, hdr_c):
-        """Celda: cabecera coloreada, numero grande, porcentaje separado abajo."""
         return Table([
             [P(etiqueta, bold=True, size=7.5, color=colors.white)],
             [P(str(numero), bold=True, size=22, color=txt_color)],
@@ -8419,6 +8419,11 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data):
     idx_f = int(hashlib.md5(fecha_str.encode()).hexdigest(), 16) % len(FRASES)
     frase = FRASES[idx_f]
 
+    # Calcular total de páginas según tipo
+    n_pags = 1
+    if tipo == 'ambos':
+        n_pags = 2
+
     def _pie(canvas, doc):
         canvas.saveState()
         canvas.setFont("Helvetica", 6.5)
@@ -8427,27 +8432,32 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data):
             PW/2, 0.45*cm,
             f"Sistema de Gestion Educativa SIGE  |  "
             f"I.E.P. Alternativo YACHAY  |  {fecha_str}  |  "
-            f"Pagina {doc.page} de 2")
+            f"Pagina {doc.page} de {n_pags}")
         canvas.restoreState()
 
     story = []
 
-    # PAGINA 1 — ALUMNOS
-    story += _membrete(f"ALUMNOS  ({len(alumnos)} registros)", C_AZU)
-    story.append(_bloque_stat("ESTADISTICAS DE ALUMNOS",
-                               a_p, a_t, a_a, len(alumnos), C_AZU))
-    story.append(Spacer(1, 0.4*cm))
-    story.append(_tabla_datos(alumnos, C_AZU))
-    story.append(Spacer(1, 0.3*cm))
-    story.append(P(frase, size=7.5, align=TA_CENTER,
-                   color=colors.Color(0.3,0.3,0.5)))
-    story.append(PageBreak())
+    if tipo in ('alumnos', 'ambos'):
+        story += _membrete(f"ALUMNOS  ({len(alumnos)} registros)", C_AZU)
+        story.append(_bloque_stat("ESTADISTICAS DE ALUMNOS",
+                                   a_p, a_t, a_a, len(alumnos), C_AZU))
+        story.append(Spacer(1, 0.4*cm))
+        story.append(_tabla_datos(alumnos, C_AZU))
+        story.append(Spacer(1, 0.3*cm))
+        story.append(P(frase, size=7.5, align=TA_CENTER,
+                       color=colors.Color(0.3,0.3,0.5)))
+        if tipo == 'ambos':
+            story.append(PageBreak())
 
-    # PAGINA 2 — DOCENTES
-    story += _membrete(f"DOCENTES  ({len(docentes)} registros)", C_VER)
-    story.append(_bloque_stat("ESTADISTICAS DE DOCENTES",
-                               d_p, d_t, d_a, len(docentes), C_VER))
-    story.append(Spacer(1, 0.4*cm))
+    if tipo in ('docentes', 'ambos'):
+        story += _membrete(f"DOCENTES  ({len(docentes)} registros)", C_VER)
+        story.append(_bloque_stat("ESTADISTICAS DE DOCENTES",
+                                   d_p, d_t, d_a, len(docentes), C_VER))
+        story.append(Spacer(1, 0.4*cm))
+        story.append(_tabla_datos(docentes, C_VER))
+        story.append(Spacer(1, 0.3*cm))
+        story.append(P(frase, size=7.5, align=TA_CENTER,
+                       color=colors.Color(0.3,0.3,0.5)))
     story.append(_tabla_datos(docentes, C_VER))
     story.append(Spacer(1, 0.3*cm))
     story.append(P(frase, size=7.5, align=TA_CENTER,
@@ -8457,6 +8467,110 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data):
                             topMargin=MT, bottomMargin=MB,
                             leftMargin=ML, rightMargin=MR)
     doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
+    buf.seek(0)
+    return buf.read()
+
+
+def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
+    """PDF: Top 3 estudiantes y docentes puntuales de la semana."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.8*cm, rightMargin=1.8*cm)
+    ss = getSampleStyleSheet()
+    C_AZU = colors.Color(0.10, 0.20, 0.50)
+    C_VER = colors.Color(0.05, 0.40, 0.10)
+    C_ORO = colors.Color(0.85, 0.70, 0.0)
+
+    def P(txt, bold=False, size=9, align=TA_CENTER, color=None, italic=False):
+        fn = "Helvetica-Bold" if bold else ("Helvetica-Oblique" if italic else "Helvetica")
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("_p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
+
+    MEDALLAS = ['🥇 ORO', '🥈 PLATA', '🥉 BRONCE']
+    COL_MED  = [C_ORO, colors.Color(0.6,0.6,0.65), colors.Color(0.70,0.45,0.10)]
+
+    def _tabla_top(lista, titulo, color_hdr):
+        rows = [[P("LUGAR", bold=True, size=8, color=colors.white),
+                 P("APELLIDOS Y NOMBRES", bold=True, size=8, color=colors.white),
+                 P("DÍAS PUNTUAL", bold=True, size=8, color=colors.white),
+                 P("TARDANZAS", bold=True, size=8, color=colors.white),
+                 P("%", bold=True, size=8, color=colors.white)]]
+        for i, p in enumerate(lista):
+            pct = round(p['puntual']/p['total']*100) if p['total'] else 0
+            rows.append([
+                P(MEDALLAS[i], bold=True, size=8.5),
+                P(p['nombre'], size=8, align=TA_LEFT),
+                P(str(p['puntual']), bold=True, size=10, color=colors.Color(0.1,0.5,0.1)),
+                P(str(p['tardanza']), size=9, color=colors.Color(0.6,0.3,0)),
+                P(f"{pct}%", bold=True, size=9),
+            ])
+        if not lista:
+            rows.append([P("Sin registros", size=8), "", "", "", ""])
+
+        t = Table(rows, colWidths=[2.8*cm, 7.5*cm, 2.5*cm, 2.2*cm, 1.8*cm],
+                  rowHeights=[0.7*cm] + [1.0*cm]*max(len(lista),1))
+        cmds = [
+            ('GRID',(0,0),(-1,-1), 0.4, colors.Color(0.8,0.8,0.8)),
+            ('BACKGROUND',(0,0),(-1,0), color_hdr),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('ALIGN',(1,1),(1,-1),'LEFT'),
+            ('LEFTPADDING',(0,0),(-1,-1),4),
+            ('SPAN',(0,len(lista)+1 if not lista else 0),(0,0)),
+        ]
+        for i in range(len(lista)):
+            cmds.append(('BACKGROUND',(0,i+1),(0,i+1), colors.Color(
+                COL_MED[i].red, COL_MED[i].green, COL_MED[i].blue, 0.15)))
+            cmds.append(('ROWBACKGROUNDS',(0,i+1),(-1,i+1),
+                         [colors.Color(0.97,0.97,1.0) if i%2 else colors.white]))
+        t.setStyle(TableStyle(cmds))
+        return t
+
+    story = [
+        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=14),
+        P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educación de Calidad",
+          size=8, color=colors.Color(0.3,0.5,0.1)),
+        HRFlowable(width="100%", thickness=2, color=C_ORO, spaceBefore=4, spaceAfter=8),
+        P("🏆  PUNTUAL DE LA SEMANA", bold=True, size=13, color=C_AZU),
+        P(f"Periodo: {fecha_ini}  al  {fecha_fin}", size=9, color=colors.Color(0.4,0.4,0.4)),
+        Spacer(1, 0.5*cm),
+
+        P("👨‍🎓  TOP 3 ESTUDIANTES MÁS PUNTUALES", bold=True, size=10,
+          align=TA_LEFT, color=C_AZU),
+        Spacer(1, 0.2*cm),
+        _tabla_top(top_alu, "Estudiantes", C_AZU),
+        Spacer(1, 0.6*cm),
+
+        P("👨‍🏫  TOP 3 DOCENTES MÁS PUNTUALES", bold=True, size=10,
+          align=TA_LEFT, color=C_VER),
+        Spacer(1, 0.2*cm),
+        _tabla_top(top_doc, "Docentes", C_VER),
+        Spacer(1, 0.8*cm),
+
+        P("La puntualidad es el primer acto de responsabilidad del día.",
+          size=8, italic=True, color=colors.Color(0.4,0.4,0.5)),
+        Spacer(1, 1.5*cm),
+
+        # Firmas
+        Table([
+            [P("DIRECTOR(A)", bold=True, size=8), P("AUXILIAR / RESPONSABLE", bold=True, size=8)],
+            [P("_"*35, size=8), P("_"*35, size=8)],
+            [P("Firma y Sello", size=7, color=colors.Color(0.5,0.5,0.5)),
+             P("Firma", size=7, color=colors.Color(0.5,0.5,0.5))],
+        ], colWidths=[8.5*cm, 8.5*cm], rowHeights=[0.5*cm, 1.2*cm, 0.4*cm]),
+    ]
+    doc.build(story)
     buf.seek(0)
     return buf.read()
 
@@ -8838,7 +8952,7 @@ def tab_asistencias():
                         if st.button(f"📥 PDF Estudiantes — {_dia_sel}", type="primary",
                                      use_container_width=True, key="btn_pdf_hist_alu"):
                             _asis_solo_alu = {k: v for k, v in _asis_hist_sel.items() if not v.get('es_docente', False)}
-                            _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_alu)
+                            _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_alu, tipo='alumnos')
                             st.session_state['_pdf_hist_bytes_alu'] = _pdf_hist
                             st.session_state['_pdf_hist_fecha'] = _dia_sel
                         if (st.session_state.get('_pdf_hist_bytes_alu')
@@ -8854,7 +8968,7 @@ def tab_asistencias():
                         if st.button(f"📥 PDF Docentes — {_dia_sel}", type="primary",
                                      use_container_width=True, key="btn_pdf_hist_doc"):
                             _asis_solo_doc = {k: v for k, v in _asis_hist_sel.items() if v.get('es_docente', False)}
-                            _pdf_hist_doc = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_doc)
+                            _pdf_hist_doc = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_doc, tipo='docentes')
                             st.session_state['_pdf_hist_bytes_doc'] = _pdf_hist_doc
                             st.session_state['_pdf_hist_fecha_doc'] = _dia_sel
                         if (st.session_state.get('_pdf_hist_bytes_doc')
@@ -8991,6 +9105,103 @@ def tab_asistencias():
             else:
                 st.info("Aún no hay suficientes datos.")
 
+        # ── PUNTUAL DE LA SEMANA ─────────────────────────────────────
+        st.markdown("---")
+        st.subheader("🏆 Puntual de la Semana")
+        st.caption("Top 3 estudiantes y top 3 docentes más puntuales de los últimos 7 días")
+
+        _hoy = hora_peru().date()
+        _dias_semana = [((_hoy - timedelta(days=_d)).strftime('%Y-%m-%d'),
+                         (_hoy - timedelta(days=_d)).strftime('%d/%m/%Y'))
+                        for _d in range(6, -1, -1)]
+
+        _asis_sem = {}
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS,'r',encoding='utf-8') as _fs:
+                _asis_sem = json.load(_fs)
+
+        # Contar días puntuales por persona
+        _conteo_alu = {}  # {dni: {nombre, dias_puntual, dias_tardanza, dias_total}}
+        _conteo_doc = {}
+        for _iso, _disp in _dias_semana:
+            _registros_dia = _asis_sem.get(_iso, _asis_sem.get(_disp, {}))
+            for _dk, _dv in _registros_dia.items():
+                _ent = _dv.get('entrada','') or _dv.get('tardanza','')
+                _tard = bool(_dv.get('tardanza',''))
+                try:
+                    if _ent:
+                        h,m = int(_ent[:2]),int(_ent[3:5])
+                        _tard = _tard or (h*60+m > 8*60+5)
+                except Exception:
+                    pass
+                _dst = _conteo_doc if _dv.get('es_docente',False) else _conteo_alu
+                if _dk not in _dst:
+                    _dst[_dk] = {'nombre': _dv.get('nombre',''), 'puntual':0, 'tardanza':0, 'total':0}
+                _dst[_dk]['total'] += 1
+                if _ent and not _tard:
+                    _dst[_dk]['puntual'] += 1
+                elif _tard:
+                    _dst[_dk]['tardanza'] += 1
+
+        # Top 3 de cada grupo
+        _top_alu = sorted(_conteo_alu.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:3]
+        _top_doc = sorted(_conteo_doc.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:3]
+
+        _medallas = ['🥇','🥈','🥉']
+        _colores_med = ['#FFD700','#94a3b8','#b45309']
+
+        col_sem1, col_sem2 = st.columns(2)
+        with col_sem1:
+            st.markdown("**👨‍🎓 Estudiantes Puntuales**")
+            for _i, _p in enumerate(_top_alu):
+                _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
+                st.markdown(
+                    f"<div style='background:#f0fdf4;border:2px solid {_colores_med[_i]}44;"
+                    f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
+                    f"display:flex;align-items:center;gap:10px;'>"
+                    f"<span style='font-size:1.6rem;'>{_medallas[_i]}</span>"
+                    f"<div style='flex:1;'>"
+                    f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
+                    f"<div style='font-size:0.78rem;color:#16a34a;'>"
+                    f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
+                    f"<div style='font-size:0.72rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"</div></div>", unsafe_allow_html=True)
+            if not _top_alu:
+                st.info("Sin registros esta semana")
+
+        with col_sem2:
+            st.markdown("**👨‍🏫 Docentes Puntuales**")
+            for _i, _p in enumerate(_top_doc):
+                _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
+                st.markdown(
+                    f"<div style='background:#eff6ff;border:2px solid {_colores_med[_i]}44;"
+                    f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
+                    f"display:flex;align-items:center;gap:10px;'>"
+                    f"<span style='font-size:1.6rem;'>{_medallas[_i]}</span>"
+                    f"<div style='flex:1;'>"
+                    f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
+                    f"<div style='font-size:0.78rem;color:#2563eb;'>"
+                    f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
+                    f"<div style='font-size:0.72rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"</div></div>", unsafe_allow_html=True)
+            if not _top_doc:
+                st.info("Sin registros esta semana")
+
+        # Botón PDF Puntual de la semana
+        fecha_ini_sem = _dias_semana[0][1]
+        fecha_fin_sem = _dias_semana[-1][1]
+        if st.button("📥 Descargar PDF — Puntual de la Semana",
+                     type="primary", use_container_width=True, key="btn_pdf_semana"):
+            _pdf_sem = _generar_pdf_puntual_semana(
+                _top_alu, _top_doc, fecha_ini_sem, fecha_fin_sem)
+            st.session_state['_pdf_semana_bytes'] = _pdf_sem
+        if st.session_state.get('_pdf_semana_bytes'):
+            st.download_button(
+                f"⬇️ PDF Puntual Semana ({fecha_ini_sem} — {fecha_fin_sem})",
+                st.session_state['_pdf_semana_bytes'],
+                f"Puntual_Semana_{fecha_fin_sem.replace('/','')}.pdf",
+                "application/pdf", key="dl_pdf_semana"
+            )
 
         # ── HISTORIAL PDF por fecha ──────────────────────────────────
         with st.expander("📅 Historial — Descargar PDF de otro dia", expanded=False):
