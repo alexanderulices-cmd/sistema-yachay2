@@ -4533,14 +4533,12 @@ def _portal_padres_familia():
             total_ses   = notas_ses[0].get('total', '')
             medalla_ses = notas_ses[0].get('medalla', '')
 
-            # Etiqueta de ranking
+            # Etiqueta de ranking — solo el puesto
             if puesto_ses:
-                if puesto_ses == 1:   rank_html = "<span style='color:#FFD700;font-size:1.3rem;'>🥇</span> <b style='color:#FFD700;'>Puesto 1</b>"
-                elif puesto_ses == 2: rank_html = "<span style='font-size:1.3rem;'>🥈</span> <b style='color:#94a3b8;'>Puesto 2</b>"
-                elif puesto_ses == 3: rank_html = "<span style='font-size:1.3rem;'>🥉</span> <b style='color:#b45309;'>Puesto 3</b>"
-                else:                 rank_html = f"<b style='color:#475569;'>#{puesto_ses}</b>"
-                if total_ses:
-                    rank_html += f" <span style='color:#94a3b8;font-size:0.8rem;'>de {total_ses}</span>"
+                if puesto_ses == 1:   rank_html = "🥇 <b style='color:#FFD700;font-size:1.1rem;'>Puesto 1</b>"
+                elif puesto_ses == 2: rank_html = "🥈 <b style='color:#94a3b8;font-size:1.1rem;'>Puesto 2</b>"
+                elif puesto_ses == 3: rank_html = "🥉 <b style='color:#b45309;font-size:1.1rem;'>Puesto 3</b>"
+                else:                 rank_html = f"<b style='color:#475569;font-size:1.1rem;'>#{puesto_ses}</b>"
             else:
                 rank_html = ""
 
@@ -8743,25 +8741,39 @@ def tab_asistencias():
         st.markdown("---")
         st.markdown("### 📅 Historial de Asistencia — Descargar por Fecha")
 
-        # Cargar todas las fechas guardadas
         _hist_todas = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _fh:
                 _hist_todas = json.load(_fh)
 
         if _hist_todas:
-            # Ordenar fechas de más reciente a más antigua
             from datetime import datetime as _dt
-            def _parse_fecha(f):
+            # Normalizar TODAS las fechas a DD/MM/YYYY para display y comparación
+            def _parse_fecha_flex(f):
                 try:
-                    return _dt.strptime(f, '%d/%m/%Y')
+                    if '-' in f and len(f) == 10:
+                        return _dt.strptime(f, '%Y-%m-%d')
+                    elif '/' in f and len(f) == 10:
+                        return _dt.strptime(f, '%d/%m/%Y')
                 except Exception:
-                    return _dt.min
-            # Solo fechas válidas DD/MM/YYYY
-            _fechas_ord = sorted(
-                [f for f in _hist_todas.keys() if len(f.split('/')) == 3],
-                key=_parse_fecha, reverse=True
-            )
+                    pass
+                return _dt.min
+
+            def _to_display(f):
+                """Convierte cualquier formato a DD/MM/YYYY para display"""
+                dt = _parse_fecha_flex(f)
+                if dt == _dt.min:
+                    return None
+                return dt.strftime('%d/%m/%Y')
+
+            # Construir mapa: display_fecha → clave_original
+            _fecha_map = {}
+            for fk in _hist_todas.keys():
+                disp = _to_display(fk)
+                if disp:
+                    _fecha_map[disp] = fk  # display → clave real en JSON
+
+            _fechas_ord = sorted(_fecha_map.keys(), key=_parse_fecha_flex, reverse=True)
 
             if not _fechas_ord:
                 st.info("No hay fechas válidas en el historial aún.")
@@ -8794,11 +8806,12 @@ def tab_asistencias():
                 def _dia_label(f):
                     dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']
                     try:
-                        d = dias[_parse_fecha(f).weekday()]
+                        d = dias[_parse_fecha_flex(f).weekday()]
                     except Exception:
                         d = ''
-                    n_alu = sum(1 for v in _hist_todas.get(f,{}).values() if not v.get('es_docente',False))
-                    n_doc = sum(1 for v in _hist_todas.get(f,{}).values() if v.get('es_docente',False))
+                    clave_real = _fecha_map.get(f, f)
+                    n_alu = sum(1 for v in _hist_todas.get(clave_real,{}).values() if not v.get('es_docente',False))
+                    n_doc = sum(1 for v in _hist_todas.get(clave_real,{}).values() if v.get('es_docente',False))
                     return f"{d} {f} — {n_alu} alum / {n_doc} doc"
 
                 with hc2:
@@ -8814,26 +8827,44 @@ def tab_asistencias():
                         st.info("Sin registros en este mes.")
 
                 if _dia_sel:
-                    _asis_hist_sel = _hist_todas.get(_dia_sel, {})
+                    clave_real_sel = _fecha_map.get(_dia_sel, _dia_sel)
+                    _asis_hist_sel = _hist_todas.get(clave_real_sel, {})
                     _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
                     _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
-                    st.info(f"**{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes")
 
-                    if st.button(f"Generar PDF — {_dia_sel}", type="primary",
-                                 use_container_width=True, key="btn_pdf_hist"):
-                        _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_hist_sel)
-                        st.session_state['_pdf_hist_bytes'] = _pdf_hist
-                        st.session_state['_pdf_hist_fecha'] = _dia_sel
-
-                    if (st.session_state.get('_pdf_hist_bytes')
-                            and st.session_state.get('_pdf_hist_fecha') == _dia_sel):
-                        st.download_button(
-                            f"Descargar PDF — {_dia_sel}",
-                            st.session_state['_pdf_hist_bytes'],
-                            f"Asistencia_{_dia_sel.replace('/','')}.pdf",
-                            "application/pdf",
-                            key="dl_pdf_hist"
-                        )
+                    col_pdf1, col_pdf2 = st.columns(2)
+                    with col_pdf1:
+                        st.info(f"**{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes")
+                        if st.button(f"📥 PDF Estudiantes — {_dia_sel}", type="primary",
+                                     use_container_width=True, key="btn_pdf_hist_alu"):
+                            _asis_solo_alu = {k: v for k, v in _asis_hist_sel.items() if not v.get('es_docente', False)}
+                            _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_alu)
+                            st.session_state['_pdf_hist_bytes_alu'] = _pdf_hist
+                            st.session_state['_pdf_hist_fecha'] = _dia_sel
+                        if (st.session_state.get('_pdf_hist_bytes_alu')
+                                and st.session_state.get('_pdf_hist_fecha') == _dia_sel):
+                            st.download_button(
+                                f"⬇️ Descargar Estudiantes — {_dia_sel}",
+                                st.session_state['_pdf_hist_bytes_alu'],
+                                f"Asistencia_Estudiantes_{_dia_sel.replace('/','')}.pdf",
+                                "application/pdf", key="dl_pdf_hist_alu"
+                            )
+                    with col_pdf2:
+                        st.info(f"**Docentes** — {_n_doc_h} registrados")
+                        if st.button(f"📥 PDF Docentes — {_dia_sel}", type="primary",
+                                     use_container_width=True, key="btn_pdf_hist_doc"):
+                            _asis_solo_doc = {k: v for k, v in _asis_hist_sel.items() if v.get('es_docente', False)}
+                            _pdf_hist_doc = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_doc)
+                            st.session_state['_pdf_hist_bytes_doc'] = _pdf_hist_doc
+                            st.session_state['_pdf_hist_fecha_doc'] = _dia_sel
+                        if (st.session_state.get('_pdf_hist_bytes_doc')
+                                and st.session_state.get('_pdf_hist_fecha_doc') == _dia_sel):
+                            st.download_button(
+                                f"⬇️ Descargar Docentes — {_dia_sel}",
+                                st.session_state['_pdf_hist_bytes_doc'],
+                                f"Asistencia_Docentes_{_dia_sel.replace('/','')}.pdf",
+                                "application/pdf", key="dl_pdf_hist_doc"
+                            )
 
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
@@ -8844,7 +8875,8 @@ def tab_asistencias():
             with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _f:
                 _asis_hist = json.load(_f)
 
-        _dias_anal = [(hora_peru().date() - timedelta(days=_d)).strftime('%d/%m/%Y') for _d in range(13, -1, -1)]
+        _dias_anal = [(hora_peru().date() - timedelta(days=_d)).strftime('%Y-%m-%d') for _d in range(13, -1, -1)]
+        _dias_anal_display = [(hora_peru().date() - timedelta(days=_d)).strftime('%d/%m') for _d in range(13, -1, -1)]
 
         col_an1, col_an2, col_an3 = st.columns(3)
 
@@ -8877,7 +8909,7 @@ def tab_asistencias():
                 f'<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">'
                 f'<div style="font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:8px;">📈 Tendencia 14 días</div>'
                 f'<div style="height:60px;display:flex;align-items:flex-end;">{_bars}</div>'
-                f'<div style="font-size:0.7rem;color:#94a3b8;margin-top:4px;">← {_dias_anal[0]} hasta hoy →</div>'
+                f'<div style="font-size:0.7rem;color:#94a3b8;margin-top:4px;">← {_dias_anal_display[0]} hasta hoy →</div>'
                 f'</div>', unsafe_allow_html=True)
 
         with col_an3:
