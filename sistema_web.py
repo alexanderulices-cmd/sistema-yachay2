@@ -6148,6 +6148,8 @@ def _seccion_documentos_auxiliar(config):
                 ("Asistencia Manual",   "asist_manual"),
                 ("Prestamo de Equipos", "prestamo"),
                 ("Horas Colegiadas",    "horas_col"),
+                ("Control de Sesiones", "ctrl_sesiones"),
+                ("Libro de Incidencias","libro_incidencias"),
             ]
         },
         "Gestion Pedagogica": {
@@ -6165,6 +6167,7 @@ def _seccion_documentos_auxiliar(config):
         "conformidad_material": "#164e63",
         "constancia": "#6d28d9", "compromiso": "#7c3aed", "municipio": "#8b5cf6",
         "asist_manual": "#065f46", "prestamo": "#059669", "horas_col": "#10b981",
+        "ctrl_sesiones": "#0f766e", "libro_incidencias": "#be185d",
         "monitoreo": "#b91c1c", "programacion": "#dc2626",
     }
 
@@ -6546,6 +6549,44 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
                 f"Horas_Colegiadas_{trim_hc.replace(' ','_')}_{anio}.pdf",
                 "application/pdf", type="primary", key="dl_hc")
 
+    # ── CONTROL DE SESIONES DIARIAS ───────────────────────────────────
+    elif key == "ctrl_sesiones":
+        st.markdown("#### 📋 Control Semanal de Sesiones Diarias")
+        st.caption("Registro para la auxiliar — verifica entrega de sesiones por docente.")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            mes_cs = st.selectbox("Mes:", ["Marzo","Abril","Mayo","Junio","Julio","Agosto",
+                                           "Septiembre","Octubre","Noviembre","Diciembre"], key="cs_mes")
+        with col2:
+            semana_cs = st.number_input("Semana N°:", 1, 40, 1, key="cs_semana")
+        with col3:
+            fecha_ini_cs = st.text_input("Fecha inicio semana:", placeholder="ej. 24/03/2026", key="cs_fecha")
+        if st.button("📄 Generar Control Semanal", type="primary",
+                     use_container_width=True, key="btn_cs"):
+            nombres_doc = list(df_doc['Nombre'].dropna()) if not df_doc.empty and 'Nombre' in df_doc.columns else []
+            buf_cs = _generar_control_sesiones_semanal(config, mes_cs, int(semana_cs),
+                                                        fecha_ini_cs, nombres_doc, anio)
+            st.download_button("⬇️ Descargar Control", buf_cs,
+                f"Control_Sesiones_Semana{semana_cs}_{mes_cs}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_cs")
+
+    # ── LIBRO DE INCIDENCIAS ──────────────────────────────────────────
+    elif key == "libro_incidencias":
+        st.markdown("#### 📕 Libro de Incidencias")
+        st.caption("Cuaderno oficial según norma MINEDU — con portada y 20 hojas numeradas.")
+        col1, col2 = st.columns(2)
+        with col1:
+            resp_li = st.text_input("Responsable:", key="li_resp",
+                                     placeholder="Auxiliar / Director(a)")
+        with col2:
+            anio_li = st.text_input("Año lectivo:", value=str(anio), key="li_anio")
+        if st.button("📄 Generar Libro de Incidencias", type="primary",
+                     use_container_width=True, key="btn_li"):
+            buf_li = _generar_libro_incidencias(config, resp_li, anio_li)
+            st.download_button("⬇️ Descargar PDF", buf_li,
+                f"Libro_Incidencias_{anio_li}.pdf",
+                "application/pdf", type="primary", key="dl_li")
+
     # ── MONITOREO ─────────────────────────────────────────────────────
     elif key == "monitoreo":
         st.markdown("#### 🔍 Ficha de Monitoreo Pedagógico")
@@ -6599,6 +6640,269 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
 # ══════════════════════════════════════════════════════════════════════
 # NUEVOS DOCUMENTOS: REGISTROS CONTROL, MONITOREO, PROGRAMACIONES
 # ══════════════════════════════════════════════════════════════════════
+
+def _generar_control_sesiones_semanal(config, mes, semana, fecha_ini, nombres_docentes, anio):
+    """Control semanal de sesiones diarias — hoja horizontal, todos los docentes."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+
+    buf = _io.BytesIO()
+    ie  = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    PW, PH = landscape(A4)
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=0.8*cm, bottomMargin=0.9*cm,
+                            leftMargin=0.7*cm, rightMargin=0.7*cm)
+    ss  = getSampleStyleSheet()
+    C_HDR = colors.Color(0.05, 0.40, 0.10)
+    C_L   = colors.Color(0.93, 0.98, 0.93)
+
+    def P(txt, bold=False, size=8, align=TA_CENTER, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+2,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
+
+    DIAS = ["LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES"]
+    SUBF = ["Tema / Sesión", "Firma"]  # 2 sub-columnas por día
+
+    # Anchos: N°(0.5) + Docente(4.5) + 5días×2subcols(1.9+1.0) + Obs(1.5) = ~27cm
+    W_N   = 0.5*cm
+    W_NOM = 4.8*cm
+    W_TEM = 2.4*cm
+    W_FIR = 1.0*cm
+    W_OBS = 1.4*cm
+    total = W_N + W_NOM + 5*(W_TEM+W_FIR) + W_OBS  # ~24.7cm
+
+    # Fila cabecera nivel 1
+    hdr1 = [P("N°",bold=True,size=7), P("APELLIDOS Y NOMBRES",bold=True,size=7,align=TA_LEFT)]
+    for d in DIAS:
+        hdr1 += [P(d, bold=True, size=7), ""]
+    hdr1.append(P("OBS.", bold=True, size=7))
+
+    # Fila cabecera nivel 2
+    hdr2 = ["", ""]
+    for _ in DIAS:
+        hdr2 += [P("Tema / Sesión", bold=True, size=6.5), P("Firma", bold=True, size=6.5)]
+    hdr2.append("")
+
+    col_ws = [W_N, W_NOM] + [W_TEM, W_FIR]*5 + [W_OBS]
+    rows   = [hdr1, hdr2]
+
+    for i, nombre in enumerate(nombres_docentes or ["(Sin docentes)"]):
+        fila = [str(i+1), P(nombre, size=7, align=TA_LEFT)]
+        fila += ["", ""] * 5   # 5 días vacíos
+        fila.append("")
+        rows.append(fila)
+
+    row_hs = [0.55*cm, 0.45*cm] + [0.85*cm]*max(len(nombres_docentes),1)
+    t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
+
+    cmds = [
+        ("GRID",    (0,0),(-1,-1), 0.3, colors.black),
+        ("FONTSIZE",(0,0),(-1,-1), 7),
+        ("VALIGN",  (0,0),(-1,-1), "MIDDLE"),
+        ("BACKGROUND",(0,0),(-1,1), C_HDR),
+        ("TEXTCOLOR",(0,0),(-1,1), colors.white),
+        ("ALIGN",   (0,0),(-1,1), "CENTER"),
+        ("ALIGN",   (1,2),(1,-1), "LEFT"),
+        ("ROWBACKGROUNDS",(0,2),(-1,-1),[colors.white, C_L]),
+        ("LEFTPADDING",(0,0),(-1,-1), 2),
+        # Span días nivel 1: cada día ocupa 2 celdas
+        *[("SPAN",(2+d*2,0),(3+d*2,0)) for d in range(5)],
+        # Span obs fila 0-1
+        ("SPAN",(len(col_ws)-1,0),(len(col_ws)-1,1)),
+        # Span nro y nombre fila 0-1
+        ("SPAN",(0,0),(0,1)),
+        ("SPAN",(1,0),(1,1)),
+        # Color suave Tema/Firma alternado
+        *[("BACKGROUND",(2+d*2,1),(2+d*2,1),colors.Color(0.7,0.9,0.7)) for d in range(5)],
+        *[("BACKGROUND",(3+d*2,1),(3+d*2,1),colors.Color(0.9,0.7,0.7)) for d in range(5)],
+    ]
+    t.setStyle(TableStyle(cmds))
+
+    st_t = ParagraphStyle("T", fontSize=11, fontName="Helvetica-Bold",
+                           alignment=TA_CENTER, parent=ss["Normal"])
+    st_s = ParagraphStyle("S", fontSize=7.5, alignment=TA_CENTER, parent=ss["Normal"])
+    st_f = ParagraphStyle("F", fontSize=8, alignment=TA_CENTER, parent=ss["Normal"])
+
+    firma_row = Table([[
+        Paragraph("FIRMA AUXILIAR: _______________________", st_f),
+        Paragraph("FIRMA DIRECTOR(A): _______________________", st_f),
+        Paragraph(f"FECHA: ___________", st_f),
+    ]], colWidths=[9*cm, 9*cm, 9*cm])
+
+    story = [
+        Paragraph(f"CONTROL SEMANAL DE SESIONES DIARIAS — {ie}", st_t),
+        Paragraph(f"Mes: {mes} {anio}  |  Semana N° {semana}  |  Inicio: {fecha_ini or '________'}  |  "
+                  f"Responsable de control: Auxiliar de Educación", st_s),
+        HRFlowable(width="100%", thickness=1.5, color=C_HDR, spaceBefore=3, spaceAfter=5),
+        t,
+        Spacer(1, 0.4*cm),
+        firma_row,
+        Spacer(1, 0.2*cm),
+        Paragraph("Nota: Cada docente debe registrar el tema de su sesión al inicio del día y firmar. "
+                  "La auxiliar verifica el cumplimiento y reporta al director(a).", st_s),
+    ]
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+def _generar_libro_incidencias(config, responsable, anio):
+    """Libro de Incidencias con portada oficial MINEDU + 20 hojas numeradas."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, PageBreak, KeepTogether)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+
+    buf = _io.BytesIO()
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    ugel = config.get('ugel', 'Urubamba')
+    dir_ = config.get('directora', '')
+    doc  = SimpleDocTemplate(buf, pagesize=A4,
+                             topMargin=2*cm, bottomMargin=2*cm,
+                             leftMargin=2.5*cm, rightMargin=2.5*cm)
+    ss   = getSampleStyleSheet()
+    C_R  = colors.Color(0.65, 0.05, 0.05)
+    C_L  = colors.Color(0.98, 0.95, 0.95)
+
+    def P(txt, bold=False, size=10, align=TA_CENTER, color=None, space=4):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, spaceAfter=space, parent=ss["Normal"]))
+
+    def _pie(canvas, doc):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7)
+        canvas.setFillColor(colors.Color(0.5,0.5,0.5))
+        if doc.page > 1:
+            canvas.drawCentredString(A4[0]/2, 1.2*cm,
+                f"Libro de Incidencias  |  {ie}  |  {anio}  |  Pág. {doc.page - 1}")
+        canvas.restoreState()
+
+    story = []
+
+    # ── PORTADA ──────────────────────────────────────────────────────
+    story += [
+        Spacer(1, 1.5*cm),
+        P("MINISTERIO DE EDUCACIÓN", bold=True, size=11, color=C_R),
+        P(f"DIRECCIÓN REGIONAL DE EDUCACIÓN CUSCO", size=9,
+          color=colors.Color(0.3,0.3,0.3)),
+        P(f"UGEL {ugel}", size=9, color=colors.Color(0.3,0.3,0.3)),
+        Spacer(1, 0.8*cm),
+        HRFlowable(width="100%", thickness=3, color=C_R, spaceBefore=2, spaceAfter=2),
+        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=10),
+        Spacer(1, 0.5*cm),
+        P("📕", size=40, space=8),
+        P("LIBRO DE INCIDENCIAS", bold=True, size=22, color=C_R, space=6),
+        P("CUADERNO OFICIAL DE REGISTRO DE INCIDENCIAS", bold=True, size=11),
+        Spacer(1, 0.8*cm),
+        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=10),
+        Spacer(1, 0.5*cm),
+    ]
+
+    # Tabla datos portada
+    t_port = Table([
+        [P("INSTITUCIÓN EDUCATIVA:", bold=True, size=10, align=TA_LEFT),
+         P(ie, bold=True, size=10, align=TA_LEFT)],
+        [P("UGEL:", bold=True, size=10, align=TA_LEFT),
+         P(ugel, size=10, align=TA_LEFT)],
+        [P("AÑO LECTIVO:", bold=True, size=10, align=TA_LEFT),
+         P(str(anio), bold=True, size=10, align=TA_LEFT)],
+        [P("RESPONSABLE:", bold=True, size=10, align=TA_LEFT),
+         P(responsable or dir_ or "________________________", size=10, align=TA_LEFT)],
+        [P("FECHA INICIO:", bold=True, size=10, align=TA_LEFT),
+         P("________________________", size=10, align=TA_LEFT)],
+    ], colWidths=[5.5*cm, 9.5*cm], rowHeights=[0.8*cm]*5)
+    t_port.setStyle(TableStyle([
+        ("GRID",     (0,0),(-1,-1), 0.5, colors.Color(0.8,0.5,0.5)),
+        ("BACKGROUND",(0,0),(0,-1), C_L),
+        ("VALIGN",   (0,0),(-1,-1), "MIDDLE"),
+        ("LEFTPADDING",(0,0),(-1,-1), 6),
+    ]))
+    story += [t_port, Spacer(1, 1*cm)]
+
+    story += [
+        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=6),
+        P("BASE LEGAL: R.M. 0547-2012-ED  |  R.M. 0657-2017-MINEDU  |  Ley 28044", size=8,
+          color=colors.Color(0.4,0.4,0.4)),
+        P(f"Chinchero, Cusco — {anio}", size=9, color=colors.Color(0.3,0.3,0.3)),
+        Spacer(1, 0.5*cm),
+        P("INSTRUCCIONES DE USO", bold=True, size=10, color=C_R),
+        Spacer(1, 0.2*cm),
+    ]
+    instrucciones = [
+        "1. Registrar cada incidencia en orden cronológico, sin dejar espacios en blanco.",
+        "2. Consignar fecha, hora, lugar, personas involucradas y descripción detallada.",
+        "3. Indicar las acciones tomadas y el seguimiento realizado.",
+        "4. Toda anotación debe llevar firma del responsable y V°B° del director(a).",
+        "5. No se permite el uso de corrector ni borrado. En caso de error, tachar y refrendar.",
+        "6. Este documento es de carácter oficial y debe conservarse en la institución.",
+        "7. El incumplimiento de estas normas puede acarrear responsabilidad administrativa.",
+    ]
+    for ins in instrucciones:
+        story.append(P(ins, size=8.5, align=TA_LEFT, space=2))
+
+    story.append(PageBreak())
+
+    # ── 20 HOJAS NUMERADAS ───────────────────────────────────────────
+    COLS_INC = ["N°", "FECHA", "HORA", "LUGAR", "INVOLUCRADOS /\nDESCRIPCIÓN",
+                "ACCIONES\nTOMACAS", "FIRMA\nRESP.", "V°B°\nDIR."]
+    CW_INC   = [0.7*cm, 1.8*cm, 1.4*cm, 2.0*cm, 5.5*cm, 3.2*cm, 1.8*cm, 1.6*cm]
+
+    for pag in range(1, 21):
+        hdr = [[P(c, bold=True, size=7) for c in COLS_INC]]
+        # 6 filas por hoja
+        filas = hdr + [
+            [P(str((pag-1)*6 + f), size=7)] + [""]*7
+            for f in range(1, 7)
+        ]
+        t_inc = Table(filas, colWidths=CW_INC,
+                      rowHeights=[0.7*cm] + [2.8*cm]*6)
+        t_inc.setStyle(TableStyle([
+            ("GRID",      (0,0),(-1,-1), 0.4, colors.black),
+            ("BACKGROUND",(0,0),(-1,0),  C_R),
+            ("TEXTCOLOR", (0,0),(-1,0),  colors.white),
+            ("FONTNAME",  (0,0),(-1,0),  "Helvetica-Bold"),
+            ("FONTSIZE",  (0,0),(-1,-1), 7),
+            ("VALIGN",    (0,0),(-1,-1), "TOP"),
+            ("ALIGN",     (0,0),(-1,0),  "CENTER"),
+            ("ALIGN",     (0,1),(0,-1),  "CENTER"),
+            ("TOPPADDING",(0,1),(-1,-1), 3),
+            ("LEFTPADDING",(0,0),(-1,-1), 2),
+            ("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white, C_L]),
+        ]))
+        bloque = KeepTogether([
+            P(f"REGISTRO DE INCIDENCIAS  —  Hoja N° {pag}  |  {ie}  |  Año {anio}",
+              bold=True, size=8, color=C_R, space=3),
+            t_inc,
+            Spacer(1, 0.3*cm),
+            Table([[
+                P(f"Firma del Responsable: ____________________", size=7.5, align=TA_LEFT),
+                P(f"V°B° Director(a): ____________________", size=7.5, align=TA_LEFT),
+                P(f"Fecha: __________", size=7.5),
+            ]], colWidths=[6*cm, 6*cm, 3*cm]),
+        ])
+        story.append(bloque)
+        if pag < 20:
+            story.append(PageBreak())
+
+    doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
+    buf.seek(0)
+    return buf.read()
+
 
 def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
     """Registro de asistencia con columnas ENTRADA/SALIDA por día para firma."""
@@ -7159,13 +7463,19 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
     story += [
         P("FICHA DE MONITOREO Y ACOMPAÑAMIENTO PEDAGÓGICO", bold=True, size=11, align=TA_CENTER, space=4),
         P(f"{ie}  |  UGEL {ugel}  |  Año {anio}", size=8, align=TA_CENTER, space=6),
+        # Ancho útil A4 = 21cm - 2*1.8cm = 17.4cm
         tabla([
             ["I. DATOS GENERALES","","",""],
-            [f"DOCENTE: {docente or '_'*35}", f"ÁREA: {area or '_'*20}",
-             f"GRADO: {grado or '_'*15}", f"FECHA: {' '*20}"],
-            [f"DIRECTOR(A): {director or '_'*30}", f"TIPO: {tipo_mon}","N° SESIÓN: ____","HORA: _____"],
-        ], [4.5*cm, 3.5*cm, 3*cm, 2.7*cm],
-        [0.5*cm, 0.8*cm, 0.8*cm]),
+            [P(f"DOCENTE: {docente or '_'*25}", size=7.5),
+             P(f"ÁREA: {area or '_'*15}", size=7.5),
+             P(f"GRADO: {grado or '_'*12}", size=7.5),
+             P(f"FECHA: {'_'*12}", size=7.5)],
+            [P(f"DIRECTOR(A): {director or '_'*20}", size=7.5),
+             P(f"TIPO: {tipo_mon}", size=7),
+             P("N° SESIÓN: ____", size=7.5),
+             P("HORA: ____", size=7.5)],
+        ], [5.8*cm, 4.5*cm, 3.8*cm, 3.3*cm],
+        [0.5*cm, 0.85*cm, 0.85*cm]),
         Spacer(1, 0.3*cm),
     ]
 
@@ -7223,26 +7533,29 @@ def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, a
             story += [t_comp, Spacer(1, 0.2*cm)]
         story.append(Spacer(1, 0.2*cm))
 
-    # Fortalezas / Aspectos de mejora / Compromisos
+    # Fortalezas / Aspectos de mejora / Compromisos — ancho total 17.4cm
     rows_fm = [
-        [P("<b>FORTALEZAS IDENTIFICADAS:</b>", size=8), P("<b>ASPECTOS DE MEJORA:</b>", size=8)],
-        [P(" "*50+"\n"*3, size=7), P(" "*50+"\n"*3, size=7)],
-        [P("<b>COMPROMISOS DEL DOCENTE:</b>", size=8),
-         P("<b>PRÓXIMA VISITA / ACOMPAÑAMIENTO:</b>", size=8)],
-        [P("\n\n", size=7), P("Fecha: ________________", size=7)],
+        [P("<b>FORTALEZAS IDENTIFICADAS:</b>", size=8, align=TA_LEFT),
+         P("<b>ASPECTOS DE MEJORA:</b>", size=8, align=TA_LEFT)],
+        [P(" ", size=7), P(" ", size=7)],
+        [P("<b>COMPROMISOS DEL DOCENTE:</b>", size=8, align=TA_LEFT),
+         P("<b>PRÓXIMA VISITA /\nACOMPAÑAMIENTO:</b>", size=8, align=TA_LEFT)],
+        [P(" ", size=7), P("Fecha: ________________", size=7, align=TA_LEFT)],
     ]
-    t_fm = Table(rows_fm, colWidths=[8.6*cm, 5.1*cm],
-                 rowHeights=[0.5*cm, 1.8*cm, 0.5*cm, 0.7*cm])
+    t_fm = Table(rows_fm, colWidths=[10.4*cm, 7.0*cm],
+                 rowHeights=[0.5*cm, 2.0*cm, 0.65*cm, 0.9*cm])
     t_fm.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
+        ('GRID',(0,0),(-1,-1), 0.4, colors.black),
         ('VALIGN',(0,0),(-1,-1),'TOP'),
+        ('LEFTPADDING',(0,0),(-1,-1), 4),
+        ('TOPPADDING',(0,0),(-1,-1), 3),
     ]))
     story += [t_fm, Spacer(1, 0.5*cm)]
 
-    # Firmas
+    # Firmas — ancho total 17.4cm
     firmas = [["FIRMA DEL DOCENTE", "FIRMA Y SELLO DEL DIRECTOR(A)"],
               [f"\n{docente or ''}\n", f"\n{director or ''}\n"]]
-    t_f = Table(firmas, colWidths=[8*cm, 5.7*cm], rowHeights=[0.4*cm, 1.5*cm])
+    t_f = Table(firmas, colWidths=[9.0*cm, 8.4*cm], rowHeights=[0.4*cm, 1.5*cm])
     t_f.setStyle(TableStyle([
         ('GRID',(0,0),(-1,-1),0.4,colors.black),
         ('ALIGN',(0,0),(-1,-1),'CENTER'),
@@ -8458,10 +8771,6 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
         story.append(Spacer(1, 0.3*cm))
         story.append(P(frase, size=7.5, align=TA_CENTER,
                        color=colors.Color(0.3,0.3,0.5)))
-    story.append(_tabla_datos(docentes, C_VER))
-    story.append(Spacer(1, 0.3*cm))
-    story.append(P(frase, size=7.5, align=TA_CENTER,
-                   color=colors.Color(0.3,0.3,0.5)))
 
     doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
                             topMargin=MT, bottomMargin=MB,
@@ -9143,18 +9452,26 @@ def tab_asistencias():
                 elif _tard:
                     _dst[_dk]['tardanza'] += 1
 
-        # Top 3 de cada grupo
-        _top_alu = sorted(_conteo_alu.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:3]
-        _top_doc = sorted(_conteo_doc.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:3]
+        # Top 5 de cada grupo
+        _top_alu = sorted(_conteo_alu.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:5]
+        _top_doc = sorted(_conteo_doc.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:5]
 
-        _medallas = ['🥇','🥈','🥉']
-        _colores_med = ['#FFD700','#94a3b8','#b45309']
+        _medallas = ['🥇','🥈','🥉','4️⃣','5️⃣']
+        _colores_med = ['#FFD700','#94a3b8','#b45309','#0f766e','#4f46e5']
+        _frases_sem = [
+            "¡La puntualidad es el primer logro del día! Felicitaciones.",
+            "Llegar a tiempo es respetar el aprendizaje de todos. ¡Excelente!",
+            "La constancia y la puntualidad construyen el éxito. ¡Sigue así!",
+            "Tu disciplina inspira a los demás. ¡Orgullo de Yachay!",
+            "Cada día puntual es un paso más hacia la excelencia. ¡Bravo!",
+        ]
 
         col_sem1, col_sem2 = st.columns(2)
         with col_sem1:
             st.markdown("**👨‍🎓 Estudiantes Puntuales**")
             for _i, _p in enumerate(_top_alu):
                 _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
+                _frase_i = _frases_sem[_i % len(_frases_sem)]
                 st.markdown(
                     f"<div style='background:#f0fdf4;border:2px solid {_colores_med[_i]}44;"
                     f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
@@ -9164,7 +9481,8 @@ def tab_asistencias():
                     f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
                     f"<div style='font-size:0.78rem;color:#16a34a;'>"
                     f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
-                    f"<div style='font-size:0.72rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"<div style='font-size:0.7rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"<div style='font-size:0.68rem;color:#0f766e;font-style:italic;'>{_frase_i}</div>"
                     f"</div></div>", unsafe_allow_html=True)
             if not _top_alu:
                 st.info("Sin registros esta semana")
@@ -9173,6 +9491,7 @@ def tab_asistencias():
             st.markdown("**👨‍🏫 Docentes Puntuales**")
             for _i, _p in enumerate(_top_doc):
                 _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
+                _frase_i = _frases_sem[_i % len(_frases_sem)]
                 st.markdown(
                     f"<div style='background:#eff6ff;border:2px solid {_colores_med[_i]}44;"
                     f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
@@ -9182,7 +9501,8 @@ def tab_asistencias():
                     f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
                     f"<div style='font-size:0.78rem;color:#2563eb;'>"
                     f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
-                    f"<div style='font-size:0.72rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"<div style='font-size:0.7rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
+                    f"<div style='font-size:0.68rem;color:#1d4ed8;font-style:italic;'>{_frase_i}</div>"
                     f"</div></div>", unsafe_allow_html=True)
             if not _top_doc:
                 st.info("Sin registros esta semana")
