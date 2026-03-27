@@ -6755,7 +6755,7 @@ def _generar_control_sesiones_semanal(config, mes, semana, fecha_ini, nombres_do
 
 
 def _generar_libro_incidencias(config, responsable, anio):
-    """Libro de Incidencias con portada oficial MINEDU + 20 hojas numeradas."""
+    """Libro de Incidencias MINEDU — portada + 20 hojas, 1 caso por pagina detallado."""
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
                                      Spacer, HRFlowable, PageBreak, KeepTogether)
@@ -6765,144 +6765,265 @@ def _generar_libro_incidencias(config, responsable, anio):
     from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     import io as _io
 
-    buf = _io.BytesIO()
-    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    ugel = config.get('ugel', 'Urubamba')
-    dir_ = config.get('directora', '')
+    buf  = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel", "Urubamba")
+    dir_ = config.get("directora", "")
     doc  = SimpleDocTemplate(buf, pagesize=A4,
-                             topMargin=2*cm, bottomMargin=2*cm,
-                             leftMargin=2.5*cm, rightMargin=2.5*cm)
+                             topMargin=1.8*cm, bottomMargin=1.8*cm,
+                             leftMargin=2.2*cm, rightMargin=2.2*cm)
     ss   = getSampleStyleSheet()
-    C_R  = colors.Color(0.65, 0.05, 0.05)
-    C_L  = colors.Color(0.98, 0.95, 0.95)
+    C_R  = colors.Color(0.60, 0.05, 0.05)
+    C_RL = colors.Color(0.97, 0.92, 0.92)
+    C_G  = colors.Color(0.12, 0.35, 0.12)
+    C_GL = colors.Color(0.92, 0.97, 0.92)
+    C_B  = colors.Color(0.08, 0.18, 0.45)
+    C_BL = colors.Color(0.92, 0.94, 0.98)
+    W    = A4[0] - 4.4*cm  # ancho util
 
-    def P(txt, bold=False, size=10, align=TA_CENTER, color=None, space=4):
-        fn = "Helvetica-Bold" if bold else "Helvetica"
+    def P(txt, bold=False, size=10, align=TA_CENTER, color=None, space=4, italic=False):
+        fn = "Helvetica-Bold" if bold else ("Helvetica-Oblique" if italic else "Helvetica")
         return Paragraph(f"<b>{txt}</b>" if bold else txt,
-                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                         ParagraphStyle("p", fontSize=size, leading=size+4,
                                         alignment=align, textColor=color or colors.black,
                                         fontName=fn, spaceAfter=space, parent=ss["Normal"]))
+
+    def sec(label, color_bg=C_BL, color_txt=C_B):
+        """Encabezado de seccion coloreado."""
+        t = Table([[P(label, bold=True, size=9, color=color_txt)]],
+                  colWidths=[W], rowHeights=[0.55*cm])
+        t.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0), color_bg),
+            ("LEFTPADDING",(0,0),(0,0), 6),
+            ("VALIGN",(0,0),(0,0), "MIDDLE"),
+            ("BOX",(0,0),(0,0), 0.5, color_txt),
+        ]))
+        return t
+
+    def lineas(n=3, label="", alto=0.75*cm):
+        """Filas de lineas para escribir."""
+        rows = [[P(label, size=8.5, align=TA_LEFT, color=colors.Color(0.4,0.4,0.4))]] if label else []
+        rows += [[""] for _ in range(n)]
+        hs = ([0.4*cm] if label else []) + [alto]*n
+        t = Table(rows, colWidths=[W], rowHeights=hs)
+        cmds = [
+            ("GRID",(0,0 if not label else 1),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
+        ]
+        if label:
+            cmds += [("SPAN",(0,0),(0,0)), ("NOSPLIT",(0,0),(-1,-1))]
+        t.setStyle(TableStyle(cmds))
+        return t
+
+    def fila2(label1, label2):
+        t = Table([
+            [P(label1, size=8.5, align=TA_LEFT, color=colors.Color(0.3,0.3,0.3)),
+             P(label2, size=8.5, align=TA_LEFT, color=colors.Color(0.3,0.3,0.3))],
+            ["", ""],
+        ], colWidths=[W/2, W/2], rowHeights=[0.35*cm, 0.75*cm])
+        t.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
+            ("LINEBELOW",(0,0),(-1,0), 0, colors.white),
+            ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        return t
+
+    def fila3(l1, l2, l3):
+        t = Table([
+            [P(l1,size=8.5,align=TA_LEFT,color=colors.Color(0.3,0.3,0.3)),
+             P(l2,size=8.5,align=TA_LEFT,color=colors.Color(0.3,0.3,0.3)),
+             P(l3,size=8.5,align=TA_LEFT,color=colors.Color(0.3,0.3,0.3))],
+            ["","",""],
+        ], colWidths=[W/3, W/3, W/3], rowHeights=[0.35*cm, 0.75*cm])
+        t.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        return t
 
     def _pie(canvas, doc):
         canvas.saveState()
         canvas.setFont("Helvetica", 7)
         canvas.setFillColor(colors.Color(0.5,0.5,0.5))
-        if doc.page > 1:
-            canvas.drawCentredString(A4[0]/2, 1.2*cm,
-                f"Libro de Incidencias  |  {ie}  |  {anio}  |  Pág. {doc.page - 1}")
+        if doc.page == 1:
+            canvas.drawCentredString(A4[0]/2, 1.0*cm,
+                f"Libro de Incidencias  |  {ie}  |  Ano {anio}  |  Portada")
+        else:
+            n = doc.page - 1
+            canvas.drawCentredString(A4[0]/2, 1.0*cm,
+                f"Libro de Incidencias  |  {ie}  |  Ano {anio}  |  Incidencia N° {n:02d} de 20")
         canvas.restoreState()
 
     story = []
 
-    # ── PORTADA ──────────────────────────────────────────────────────
+    # ══════════════════════════════════════════════════
+    # PORTADA
+    # ══════════════════════════════════════════════════
     story += [
-        Spacer(1, 1.5*cm),
-        P("MINISTERIO DE EDUCACIÓN", bold=True, size=11, color=C_R),
-        P(f"DIRECCIÓN REGIONAL DE EDUCACIÓN CUSCO", size=9,
+        Spacer(1, 0.8*cm),
+        P("MINISTERIO DE EDUCACION DEL PERU", bold=True, size=10, color=C_R),
+        P(f"DIRECCION REGIONAL DE EDUCACION CUSCO  |  UGEL {ugel}", size=8.5,
+          color=colors.Color(0.35,0.35,0.35)),
+        Spacer(1, 0.3*cm),
+        HRFlowable(width="100%", thickness=3, color=C_R, spaceBefore=0, spaceAfter=3),
+        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=0, spaceAfter=12),
+        Spacer(1, 0.6*cm),
+        P("LIBRO DE INCIDENCIAS", bold=True, size=26, color=C_R, space=6),
+        P("Registro Oficial de Incidencias Institucionales", size=11,
           color=colors.Color(0.3,0.3,0.3)),
-        P(f"UGEL {ugel}", size=9, color=colors.Color(0.3,0.3,0.3)),
+        Spacer(1, 0.4*cm),
+        P("Segun R.M. 0547-2012-ED  |  R.M. 0657-2017-MINEDU  |  Ley N° 28044",
+          size=8, color=colors.Color(0.4,0.4,0.4)),
         Spacer(1, 0.8*cm),
-        HRFlowable(width="100%", thickness=3, color=C_R, spaceBefore=2, spaceAfter=2),
-        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=10),
-        Spacer(1, 0.5*cm),
-        P("📕", size=40, space=8),
-        P("LIBRO DE INCIDENCIAS", bold=True, size=22, color=C_R, space=6),
-        P("CUADERNO OFICIAL DE REGISTRO DE INCIDENCIAS", bold=True, size=11),
-        Spacer(1, 0.8*cm),
-        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=10),
-        Spacer(1, 0.5*cm),
     ]
 
-    # Tabla datos portada
     t_port = Table([
-        [P("INSTITUCIÓN EDUCATIVA:", bold=True, size=10, align=TA_LEFT),
-         P(ie, bold=True, size=10, align=TA_LEFT)],
-        [P("UGEL:", bold=True, size=10, align=TA_LEFT),
-         P(ugel, size=10, align=TA_LEFT)],
-        [P("AÑO LECTIVO:", bold=True, size=10, align=TA_LEFT),
-         P(str(anio), bold=True, size=10, align=TA_LEFT)],
-        [P("RESPONSABLE:", bold=True, size=10, align=TA_LEFT),
-         P(responsable or dir_ or "________________________", size=10, align=TA_LEFT)],
-        [P("FECHA INICIO:", bold=True, size=10, align=TA_LEFT),
-         P("________________________", size=10, align=TA_LEFT)],
-    ], colWidths=[5.5*cm, 9.5*cm], rowHeights=[0.8*cm]*5)
+        [P("INSTITUCION EDUCATIVA:", bold=True, size=9.5, align=TA_LEFT),
+         P(ie, bold=True, size=9.5, align=TA_LEFT)],
+        [P("UGEL:", bold=True, size=9.5, align=TA_LEFT),
+         P(ugel, size=9.5, align=TA_LEFT)],
+        [P("ANO LECTIVO:", bold=True, size=9.5, align=TA_LEFT),
+         P(str(anio), bold=True, size=9.5, align=TA_LEFT)],
+        [P("RESPONSABLE:", bold=True, size=9.5, align=TA_LEFT),
+         P(responsable or dir_ or "_"*30, size=9.5, align=TA_LEFT)],
+        [P("CARGO:", bold=True, size=9.5, align=TA_LEFT),
+         P("Auxiliar de Educacion / Director(a)", size=9.5, align=TA_LEFT)],
+        [P("FECHA INICIO:", bold=True, size=9.5, align=TA_LEFT),
+         P("_"*25, size=9.5, align=TA_LEFT)],
+        [P("CODIGO MODULAR:", bold=True, size=9.5, align=TA_LEFT),
+         P("_"*25, size=9.5, align=TA_LEFT)],
+    ], colWidths=[5.0*cm, W-5.0*cm], rowHeights=[0.75*cm]*7)
     t_port.setStyle(TableStyle([
-        ("GRID",     (0,0),(-1,-1), 0.5, colors.Color(0.8,0.5,0.5)),
-        ("BACKGROUND",(0,0),(0,-1), C_L),
-        ("VALIGN",   (0,0),(-1,-1), "MIDDLE"),
+        ("GRID",      (0,0),(-1,-1), 0.5, colors.Color(0.75,0.4,0.4)),
+        ("BACKGROUND",(0,0),(0,-1),  C_RL),
+        ("VALIGN",    (0,0),(-1,-1), "MIDDLE"),
         ("LEFTPADDING",(0,0),(-1,-1), 6),
     ]))
-    story += [t_port, Spacer(1, 1*cm)]
+    story += [t_port, Spacer(1, 0.7*cm),
+              HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=0, spaceAfter=6)]
 
     story += [
-        HRFlowable(width="100%", thickness=1, color=C_R, spaceBefore=2, spaceAfter=6),
-        P("BASE LEGAL: R.M. 0547-2012-ED  |  R.M. 0657-2017-MINEDU  |  Ley 28044", size=8,
-          color=colors.Color(0.4,0.4,0.4)),
-        P(f"Chinchero, Cusco — {anio}", size=9, color=colors.Color(0.3,0.3,0.3)),
-        Spacer(1, 0.5*cm),
-        P("INSTRUCCIONES DE USO", bold=True, size=10, color=C_R),
-        Spacer(1, 0.2*cm),
+        P("INSTRUCCIONES DE USO", bold=True, size=10, color=C_R, space=4),
     ]
-    instrucciones = [
-        "1. Registrar cada incidencia en orden cronológico, sin dejar espacios en blanco.",
-        "2. Consignar fecha, hora, lugar, personas involucradas y descripción detallada.",
-        "3. Indicar las acciones tomadas y el seguimiento realizado.",
-        "4. Toda anotación debe llevar firma del responsable y V°B° del director(a).",
-        "5. No se permite el uso de corrector ni borrado. En caso de error, tachar y refrendar.",
-        "6. Este documento es de carácter oficial y debe conservarse en la institución.",
-        "7. El incumplimiento de estas normas puede acarrear responsabilidad administrativa.",
-    ]
-    for ins in instrucciones:
+    for ins in [
+        "1. Cada incidencia ocupa UNA hoja completa. Llenar todos los campos.",
+        "2. Registrar en orden cronologico. No dejar hojas en blanco intercaladas.",
+        "3. No usar corrector. En caso de error: tachar, escribir la correccion y refrendar con firma.",
+        "4. Toda incidencia debe llevar firma del auxiliar/docente y el Visto Bueno del director(a).",
+        "5. Las acciones de seguimiento deben registrarse en la misma hoja.",
+        "6. Documento de caracter oficial: conservar en secretaria durante 5 anos minimo.",
+        "7. El incumplimiento genera responsabilidad administrativa segun DS 004-2019-MINEDU.",
+    ]:
         story.append(P(ins, size=8.5, align=TA_LEFT, space=2))
 
-    story.append(PageBreak())
+    story += [Spacer(1, 0.8*cm),
+              Table([
+                  [P("FIRMA DEL RESPONSABLE", bold=True, size=8.5),
+                   P("FIRMA Y SELLO DEL DIRECTOR(A)", bold=True, size=8.5)],
+                  [P("_"*28, size=8), P("_"*28, size=8)],
+              ], colWidths=[W/2, W/2], rowHeights=[0.4*cm, 1.3*cm]),
+              PageBreak()]
 
-    # ── 20 HOJAS NUMERADAS ───────────────────────────────────────────
-    COLS_INC = ["N°", "FECHA", "HORA", "LUGAR", "INVOLUCRADOS /\nDESCRIPCIÓN",
-                "ACCIONES\nTOMACAS", "FIRMA\nRESP.", "V°B°\nDIR."]
-    CW_INC   = [0.7*cm, 1.8*cm, 1.4*cm, 2.0*cm, 5.5*cm, 3.2*cm, 1.8*cm, 1.6*cm]
-
-    for pag in range(1, 21):
-        hdr = [[P(c, bold=True, size=7) for c in COLS_INC]]
-        # 6 filas por hoja
-        filas = hdr + [
-            [P(str((pag-1)*6 + f), size=7)] + [""]*7
-            for f in range(1, 7)
-        ]
-        t_inc = Table(filas, colWidths=CW_INC,
-                      rowHeights=[0.7*cm] + [2.8*cm]*6)
-        t_inc.setStyle(TableStyle([
-            ("GRID",      (0,0),(-1,-1), 0.4, colors.black),
-            ("BACKGROUND",(0,0),(-1,0),  C_R),
-            ("TEXTCOLOR", (0,0),(-1,0),  colors.white),
-            ("FONTNAME",  (0,0),(-1,0),  "Helvetica-Bold"),
-            ("FONTSIZE",  (0,0),(-1,-1), 7),
-            ("VALIGN",    (0,0),(-1,-1), "TOP"),
-            ("ALIGN",     (0,0),(-1,0),  "CENTER"),
-            ("ALIGN",     (0,1),(0,-1),  "CENTER"),
-            ("TOPPADDING",(0,1),(-1,-1), 3),
-            ("LEFTPADDING",(0,0),(-1,-1), 2),
-            ("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white, C_L]),
-        ]))
-        bloque = KeepTogether([
-            P(f"REGISTRO DE INCIDENCIAS  —  Hoja N° {pag}  |  {ie}  |  Año {anio}",
-              bold=True, size=8, color=C_R, space=3),
-            t_inc,
-            Spacer(1, 0.3*cm),
+    # ══════════════════════════════════════════════════
+    # 20 HOJAS — 1 CASO POR PAGINA
+    # ══════════════════════════════════════════════════
+    for n in range(1, 21):
+        bloque = [
+            # Cabecera hoja
             Table([[
-                P(f"Firma del Responsable: ____________________", size=7.5, align=TA_LEFT),
-                P(f"V°B° Director(a): ____________________", size=7.5, align=TA_LEFT),
-                P(f"Fecha: __________", size=7.5),
-            ]], colWidths=[6*cm, 6*cm, 3*cm]),
-        ])
-        story.append(bloque)
-        if pag < 20:
+                P(f"INCIDENCIA N° {n:02d}", bold=True, size=11, color=colors.white),
+                P(f"{ie}  |  Ano {anio}", size=8, color=colors.Color(0.9,0.9,0.9)),
+            ]], colWidths=[4.5*cm, W-4.5*cm], rowHeights=[0.65*cm]),
+            Spacer(1, 0.25*cm),
+
+            # I. DATOS GENERALES
+            sec("I. DATOS GENERALES DE LA INCIDENCIA", C_BL, C_B),
+            Spacer(1, 0.1*cm),
+            fila3("Fecha: ___/___/______", "Hora: _____:_____", "Lugar: _________________"),
+            Spacer(1, 0.1*cm),
+            fila2("Tipo de incidencia: Conducta / Academica / Salud / Seguridad / Otro",
+                  "Nivel de gravedad:  Leve   Moderada   Grave"),
+            Spacer(1, 0.2*cm),
+
+            # II. INVOLUCRADOS
+            sec("II. PERSONAS INVOLUCRADAS", C_GL, C_G),
+            Spacer(1, 0.1*cm),
+            fila3("Apellidos y Nombres:", "DNI / Codigo:", "Grado / Cargo:"),
+            Spacer(1, 0.08*cm),
+            Table([["", "", ""]], colWidths=[W*0.45, W*0.2, W*0.35], rowHeights=[0.7*cm]),
+            Spacer(1, 0.08*cm),
+            Table([["", "", ""]], colWidths=[W*0.45, W*0.2, W*0.35], rowHeights=[0.7*cm]),
+            Spacer(1, 0.12*cm),
+            P("Testigos (si hubiera): ________________________________________________________",
+              size=8.5, align=TA_LEFT, space=2),
+            Spacer(1, 0.15*cm),
+
+            # III. DESCRIPCION
+            sec("III. DESCRIPCION DETALLADA DE LA INCIDENCIA", C_RL, C_R),
+            Spacer(1, 0.1*cm),
+            lineas(5, "", alto=0.7*cm),
+            Spacer(1, 0.15*cm),
+
+            # IV. ACCIONES
+            sec("IV. ACCIONES INMEDIATAS TOMADAS", C_GL, C_G),
+            Spacer(1, 0.1*cm),
+            lineas(3, "", alto=0.65*cm),
+            Spacer(1, 0.12*cm),
+
+            # V. SEGUIMIENTO
+            sec("V. SEGUIMIENTO Y COMPROMISOS", C_BL, C_B),
+            Spacer(1, 0.1*cm),
+            lineas(3, "", alto=0.65*cm),
+            Spacer(1, 0.15*cm),
+
+            # VI. COMUNICACION
+            P("VI. Se comunico a los padres/apoderados:  SI  /  NO   "
+              "Fecha: _____/_____/______   Medio: _______________",
+              size=8.5, align=TA_LEFT, space=4),
+
+            # Firmas
+            Spacer(1, 0.2*cm),
+            Table([
+                [P("FIRMA AUXILIAR/DOCENTE", bold=True, size=8),
+                 P("FIRMA PADRE/APODERADO", bold=True, size=8),
+                 P("V.B. DIRECTOR(A)", bold=True, size=8)],
+                ["", "", ""],
+                [P("Nombre: ___________________", size=7.5),
+                 P("Nombre: ___________________", size=7.5),
+                 P("Sello y firma", size=7.5)],
+            ], colWidths=[W/3, W/3, W/3], rowHeights=[0.55*cm, 1.1*cm, 0.4*cm]),
+        ]
+
+        # Estilo cabecera
+        bloque[0].setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(-1,-1), C_R),
+            ("VALIGN",(0,0),(-1,-1), "MIDDLE"),
+            ("LEFTPADDING",(0,0),(-1,-1), 8),
+        ]))
+        # Estilo tabla involucrados
+        for tb in [bloque[8], bloque[9]]:
+            tb.setStyle(TableStyle([
+                ("GRID",(0,0),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
+                ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
+            ]))
+        # Estilo firmas
+        bloque[-1].setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.6,0.6,0.6)),
+            ("BACKGROUND",(0,0),(-1,0), C_BL),
+            ("ALIGN",(0,0),(-1,-1), "CENTER"),
+            ("VALIGN",(0,0),(-1,-1), "MIDDLE"),
+            ("FONTSIZE",(0,0),(-1,-1), 8),
+        ]))
+
+        story += bloque
+        if n < 20:
             story.append(PageBreak())
 
     doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
     buf.seek(0)
     return buf.read()
-
 
 def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
     """Registro de asistencia con columnas ENTRADA/SALIDA por día para firma."""
@@ -8781,7 +8902,7 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
 
 
 def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
-    """PDF: Top 3 estudiantes y docentes puntuales de la semana."""
+    """PDF: Top 5 estudiantes y docentes puntuales de la semana."""
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -8806,72 +8927,72 @@ def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
                                         alignment=align, textColor=color or colors.black,
                                         fontName=fn, parent=ss["Normal"]))
 
-    MEDALLAS = ['🥇 ORO', '🥈 PLATA', '🥉 BRONCE']
-    COL_MED  = [C_ORO, colors.Color(0.6,0.6,0.65), colors.Color(0.70,0.45,0.10)]
+    MEDALLAS = ["1 ORO", "2 PLATA", "3 BRONCE", "4 Lugar", "5 Lugar"]
+    COL_MED  = [
+        C_ORO,
+        colors.Color(0.6, 0.6, 0.65),
+        colors.Color(0.70, 0.45, 0.10),
+        colors.Color(0.05, 0.47, 0.43),
+        colors.Color(0.31, 0.28, 0.60),
+    ]
 
-    def _tabla_top(lista, titulo, color_hdr):
+    def _tabla_top(lista, color_hdr):
         rows = [[P("LUGAR", bold=True, size=8, color=colors.white),
                  P("APELLIDOS Y NOMBRES", bold=True, size=8, color=colors.white),
-                 P("DÍAS PUNTUAL", bold=True, size=8, color=colors.white),
+                 P("DIAS PUNTUAL", bold=True, size=8, color=colors.white),
                  P("TARDANZAS", bold=True, size=8, color=colors.white),
                  P("%", bold=True, size=8, color=colors.white)]]
         for i, p in enumerate(lista):
-            pct = round(p['puntual']/p['total']*100) if p['total'] else 0
+            pct = round(p["puntual"]/p["total"]*100) if p["total"] else 0
+            med = MEDALLAS[i] if i < len(MEDALLAS) else f"{i+1} Lugar"
             rows.append([
-                P(MEDALLAS[i], bold=True, size=8.5),
-                P(p['nombre'], size=8, align=TA_LEFT),
-                P(str(p['puntual']), bold=True, size=10, color=colors.Color(0.1,0.5,0.1)),
-                P(str(p['tardanza']), size=9, color=colors.Color(0.6,0.3,0)),
+                P(med, bold=True, size=8),
+                P(p["nombre"], size=8, align=TA_LEFT),
+                P(str(p["puntual"]), bold=True, size=10, color=colors.Color(0.1,0.5,0.1)),
+                P(str(p["tardanza"]), size=9, color=colors.Color(0.6,0.3,0)),
                 P(f"{pct}%", bold=True, size=9),
             ])
         if not lista:
-            rows.append([P("Sin registros", size=8), "", "", "", ""])
+            rows.append([P("Sin registros esta semana", size=8), "", "", "", ""])
 
-        t = Table(rows, colWidths=[2.8*cm, 7.5*cm, 2.5*cm, 2.2*cm, 1.8*cm],
-                  rowHeights=[0.7*cm] + [1.0*cm]*max(len(lista),1))
+        t = Table(rows, colWidths=[2.6*cm, 7.5*cm, 2.5*cm, 2.2*cm, 2.0*cm],
+                  rowHeights=[0.7*cm] + [0.9*cm]*max(len(lista), 1))
         cmds = [
-            ('GRID',(0,0),(-1,-1), 0.4, colors.Color(0.8,0.8,0.8)),
-            ('BACKGROUND',(0,0),(-1,0), color_hdr),
-            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('ALIGN',(0,0),(-1,-1),'CENTER'),
-            ('ALIGN',(1,1),(1,-1),'LEFT'),
-            ('LEFTPADDING',(0,0),(-1,-1),4),
-            ('SPAN',(0,len(lista)+1 if not lista else 0),(0,0)),
+            ("GRID",   (0,0),(-1,-1), 0.4, colors.Color(0.8,0.8,0.8)),
+            ("BACKGROUND",(0,0),(-1,0), color_hdr),
+            ("VALIGN", (0,0),(-1,-1), "MIDDLE"),
+            ("ALIGN",  (0,0),(-1,-1), "CENTER"),
+            ("ALIGN",  (1,1),(1,-1),  "LEFT"),
+            ("LEFTPADDING",(0,0),(-1,-1), 4),
         ]
         for i in range(len(lista)):
-            cmds.append(('BACKGROUND',(0,i+1),(0,i+1), colors.Color(
-                COL_MED[i].red, COL_MED[i].green, COL_MED[i].blue, 0.15)))
-            cmds.append(('ROWBACKGROUNDS',(0,i+1),(-1,i+1),
-                         [colors.Color(0.97,0.97,1.0) if i%2 else colors.white]))
+            c = COL_MED[i] if i < len(COL_MED) else colors.Color(0.5,0.5,0.5)
+            cmds.append(("BACKGROUND",(0,i+1),(0,i+1),
+                         colors.Color(c.red, c.green, c.blue, 0.18)))
+            bg = colors.Color(0.97,0.97,1.0) if i % 2 else colors.white
+            cmds.append(("BACKGROUND",(1,i+1),(-1,i+1), bg))
         t.setStyle(TableStyle(cmds))
         return t
 
     story = [
         P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=14),
-        P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educación de Calidad",
+        P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educacion de Calidad",
           size=8, color=colors.Color(0.3,0.5,0.1)),
         HRFlowable(width="100%", thickness=2, color=C_ORO, spaceBefore=4, spaceAfter=8),
-        P("🏆  PUNTUAL DE LA SEMANA", bold=True, size=13, color=C_AZU),
+        P("PUNTUAL DE LA SEMANA", bold=True, size=13, color=C_AZU),
         P(f"Periodo: {fecha_ini}  al  {fecha_fin}", size=9, color=colors.Color(0.4,0.4,0.4)),
         Spacer(1, 0.5*cm),
-
-        P("👨‍🎓  TOP 3 ESTUDIANTES MÁS PUNTUALES", bold=True, size=10,
-          align=TA_LEFT, color=C_AZU),
+        P("TOP 5 ESTUDIANTES MAS PUNTUALES", bold=True, size=10, align=TA_LEFT, color=C_AZU),
         Spacer(1, 0.2*cm),
-        _tabla_top(top_alu, "Estudiantes", C_AZU),
+        _tabla_top(top_alu, C_AZU),
         Spacer(1, 0.6*cm),
-
-        P("👨‍🏫  TOP 3 DOCENTES MÁS PUNTUALES", bold=True, size=10,
-          align=TA_LEFT, color=C_VER),
+        P("TOP 5 DOCENTES MAS PUNTUALES", bold=True, size=10, align=TA_LEFT, color=C_VER),
         Spacer(1, 0.2*cm),
-        _tabla_top(top_doc, "Docentes", C_VER),
+        _tabla_top(top_doc, C_VER),
         Spacer(1, 0.8*cm),
-
-        P("La puntualidad es el primer acto de responsabilidad del día.",
+        P("La puntualidad es el primer acto de responsabilidad del dia.",
           size=8, italic=True, color=colors.Color(0.4,0.4,0.5)),
         Spacer(1, 1.5*cm),
-
-        # Firmas
         Table([
             [P("DIRECTOR(A)", bold=True, size=8), P("AUXILIAR / RESPONSABLE", bold=True, size=8)],
             [P("_"*35, size=8), P("_"*35, size=8)],
@@ -8879,10 +9000,10 @@ def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
              P("Firma", size=7, color=colors.Color(0.5,0.5,0.5))],
         ], colWidths=[8.5*cm, 8.5*cm], rowHeights=[0.5*cm, 1.2*cm, 0.4*cm]),
     ]
+
     doc.build(story)
     buf.seek(0)
     return buf.read()
-
 
 def tab_asistencias():
     st.header("📋 Control de Asistencia")
