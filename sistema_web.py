@@ -6815,6 +6815,15 @@ def _generar_libro_incidencias(config, responsable, anio):
         t.setStyle(TableStyle(cmds))
         return t
 
+    def fila_inv(data, col_ws):
+        """Fila de tabla con grid para involucrados."""
+        t = Table(data, colWidths=col_ws, rowHeights=[0.7*cm])
+        t.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
+        ]))
+        return t
+
     def fila2(label1, label2):
         t = Table([
             [P(label1, size=8.5, align=TA_LEFT, color=colors.Color(0.3,0.3,0.3)),
@@ -6952,9 +6961,9 @@ def _generar_libro_incidencias(config, responsable, anio):
             Spacer(1, 0.1*cm),
             fila3("Apellidos y Nombres:", "DNI / Codigo:", "Grado / Cargo:"),
             Spacer(1, 0.08*cm),
-            Table([["", "", ""]], colWidths=[W*0.45, W*0.2, W*0.35], rowHeights=[0.7*cm]),
+            fila_inv([["", "", ""]], [W*0.45, W*0.2, W*0.35]),
             Spacer(1, 0.08*cm),
-            Table([["", "", ""]], colWidths=[W*0.45, W*0.2, W*0.35], rowHeights=[0.7*cm]),
+            fila_inv([["", "", ""]], [W*0.45, W*0.2, W*0.35]),
             Spacer(1, 0.12*cm),
             P("Testigos (si hubiera): ________________________________________________________",
               size=8.5, align=TA_LEFT, space=2),
@@ -7002,12 +7011,6 @@ def _generar_libro_incidencias(config, responsable, anio):
             ("VALIGN",(0,0),(-1,-1), "MIDDLE"),
             ("LEFTPADDING",(0,0),(-1,-1), 8),
         ]))
-        # Estilo tabla involucrados
-        for tb in [bloque[8], bloque[9]]:
-            tb.setStyle(TableStyle([
-                ("GRID",(0,0),(-1,-1), 0.4, colors.Color(0.75,0.75,0.75)),
-                ("VALIGN",(0,0),(-1,-1), "BOTTOM"),
-            ]))
         # Estilo firmas
         bloque[-1].setStyle(TableStyle([
             ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.6,0.6,0.6)),
@@ -7016,7 +7019,6 @@ def _generar_libro_incidencias(config, responsable, anio):
             ("VALIGN",(0,0),(-1,-1), "MIDDLE"),
             ("FONTSIZE",(0,0),(-1,-1), 8),
         ]))
-
         story += bloque
         if n < 20:
             story.append(PageBreak())
