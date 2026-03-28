@@ -4829,39 +4829,58 @@ def pantalla_login():
         # Libro de reclamaciones
         st.markdown("---")
         with st.expander("📕 Libro de Reclamaciones Virtual"):
-            st.markdown("*Según normativa MINEDU*")
-            with st.form("form_reclamo_login", clear_on_submit=True):
-                r_nombre = st.text_input("Nombre completo:", key="rl_nombre")
-                r_dni = st.text_input("DNI:", key="rl_dni")
-                r_cel = st.text_input("Celular:", key="rl_cel")
-                r_tipo = st.selectbox("Tipo:", ["Queja", "Reclamo", "Sugerencia"], key="rl_tipo")
-                r_detalle = st.text_area("Detalle:", key="rl_detalle")
-                if st.form_submit_button("📩 ENVIAR", type="primary",
-                                          use_container_width=True):
-                    if r_nombre and r_dni and r_detalle:
-                        gs = _gs()
-                        if gs:
-                            try:
-                                ws = gs._get_hoja('config')
-                                if ws:
-                                    codigo_rec = f"REC-{hora_peru().year}-{int(time.time()) % 10000:04d}"
-                                    ws.append_row([
-                                        f"reclamo_{codigo_rec}",
-                                        json.dumps({
-                                            'codigo': codigo_rec, 'nombre': r_nombre,
-                                            'dni': r_dni, 'celular': r_cel,
-                                            'tipo': r_tipo, 'detalle': r_detalle,
-                                            'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
-                                            'estado': 'Pendiente'
-                                        }, ensure_ascii=False)
-                                    ])
-                                    st.success(f"✅ Reclamo registrado. Código: **{codigo_rec}**")
-                            except Exception:
-                                st.error("Error al enviar. Intente más tarde.")
+            st.markdown("*Según normativa MINEDU — Complete sus datos para continuar*")
+
+            # PASO 1: Verificar identidad
+            r_dni   = st.text_input("🔑 DNI (requerido):", key="rl_dni", max_chars=8,
+                                     placeholder="8 dígitos")
+            r_email = st.text_input("📧 Correo electrónico (requerido):", key="rl_email",
+                                     placeholder="ejemplo@correo.com")
+
+            _dni_ok   = r_dni.strip().isdigit() and len(r_dni.strip()) == 8
+            _email_ok = "@" in r_email and "." in r_email.split("@")[-1]
+
+            if not _dni_ok or not _email_ok:
+                if r_dni or r_email:
+                    st.warning("⚠️ Ingresa un DNI de 8 dígitos y un correo con formato válido (ej: nombre@correo.com).")
+                else:
+                    st.info("📌 Ingresa tu DNI y correo para identificarte y continuar con el reclamo.")
+            else:
+                st.success("✅ Identidad verificada — completa tu reclamo:")
+                with st.form("form_reclamo_login", clear_on_submit=True):
+                    r_nombre = st.text_input("Nombre completo:", key="rl_nombre")
+                    r_cel    = st.text_input("Celular:", key="rl_cel")
+                    r_tipo   = st.selectbox("Tipo:", ["Queja", "Reclamo", "Sugerencia"], key="rl_tipo")
+                    r_detalle = st.text_area("Detalle del reclamo:", key="rl_detalle",
+                                              placeholder="Describe con detalle tu situación...")
+                    if st.form_submit_button("📩 ENVIAR RECLAMO", type="primary",
+                                              use_container_width=True):
+                        if r_nombre and r_detalle:
+                            gs = _gs()
+                            if gs:
+                                try:
+                                    ws = gs._get_hoja('config')
+                                    if ws:
+                                        codigo_rec = f"REC-{hora_peru().year}-{int(time.time()) % 10000:04d}"
+                                        ws.append_row([
+                                            f"reclamo_{codigo_rec}",
+                                            json.dumps({
+                                                'codigo': codigo_rec, 'nombre': r_nombre,
+                                                'dni': r_dni.strip(), 'email': r_email.strip(),
+                                                'celular': r_cel, 'tipo': r_tipo,
+                                                'detalle': r_detalle,
+                                                'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
+                                                'estado': 'Pendiente'
+                                            }, ensure_ascii=False)
+                                        ])
+                                        st.success(f"✅ Reclamo registrado. Código: **{codigo_rec}**")
+                                        st.info(f"📧 Se enviará respuesta al correo: {r_email.strip()}")
+                                except Exception:
+                                    st.error("Error al enviar. Intente más tarde.")
+                            else:
+                                st.warning("Sistema en modo local.")
                         else:
-                            st.warning("Sistema en modo local.")
-                    else:
-                        st.error("Complete todos los campos.")
+                            st.error("Complete nombre y detalle del reclamo.")
 
 
 # ================================================================
@@ -6157,6 +6176,7 @@ def _seccion_documentos_auxiliar(config):
             "docs": [
                 ("Ficha de Monitoreo",  "monitoreo"),
                 ("Programaciones Word", "programacion"),
+                ("Tarjeta Onomástico",  "onomastico"),
             ]
         },
     }
@@ -6168,7 +6188,7 @@ def _seccion_documentos_auxiliar(config):
         "constancia": "#6d28d9", "compromiso": "#7c3aed", "municipio": "#8b5cf6",
         "asist_manual": "#065f46", "prestamo": "#059669", "horas_col": "#10b981",
         "ctrl_sesiones": "#0f766e", "libro_incidencias": "#be185d",
-        "monitoreo": "#b91c1c", "programacion": "#dc2626",
+        "monitoreo": "#b91c1c", "programacion": "#dc2626", "onomastico": "#be185d",
     }
 
     if st.session_state[_KEY] is None:
@@ -6635,6 +6655,50 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
                 st.success("Listo — abre en Word o Google Docs y completa los campos.")
             else:
                 st.error("Error al generar el archivo.")
+
+    # ── TARJETA DE ONOMÁSTICO ────────────────────────────────────────
+    elif key == "onomastico":
+        st.markdown("#### 🎂 Tarjeta de Onomástico para Docentes")
+        st.caption("Tarjeta colorida A5 horizontal — con espacio para firmas de todos los colegas")
+        FRASES_ONO = [
+            "Que cada año que pasa te traiga más sabiduría, alegría y éxito en tu hermosa labor.",
+            "Tu vocación ilumina el camino de muchos estudiantes. ¡Feliz día especial!",
+            "Eres la semilla que siembra conocimiento y cosecha futuros. ¡Muchas felicidades!",
+            "Gracias por tu dedicación y entrega diaria. Hoy celebramos tu vida con alegría.",
+            "Un maestro como tú vale más que mil libros. ¡Que cumplas muchos más!",
+            "Tu sonrisa en el aula es el mejor regalo para tus estudiantes. ¡Feliz onomástico!",
+            "Cada día nos enseñas que educar es el acto de amor más grande. ¡Felicidades!",
+            "La educación necesita corazones como el tuyo. ¡Que este día sea extraordinario!",
+        ]
+        ESTILOS = ["🌟 Dorado", "🌿 Verde", "💙 Azul", "💜 Morado", "🧡 Naranja"]
+
+        col1, col2 = st.columns(2)
+        with col1:
+            doc_ono  = st.text_input("Nombre del docente:", key="ono_doc",
+                                      placeholder="Prof. Apellidos y Nombres")
+            cargo_ono = st.text_input("Cargo:", key="ono_cargo",
+                                       placeholder="Docente / Auxiliar / Director(a)")
+        with col2:
+            estilo_ono = st.selectbox("Estilo de tarjeta:", ESTILOS, key="ono_estilo")
+            frase_ono  = st.selectbox("Frase:", FRASES_ONO, key="ono_frase")
+
+        frase_custom = st.text_input("O escribe una frase personalizada (opcional):",
+                                      key="ono_custom", placeholder="Tu frase aquí...")
+        frase_final  = frase_custom.strip() if frase_custom.strip() else frase_ono
+        estilo_idx   = ESTILOS.index(estilo_ono)
+
+        if st.button("🎨 Generar Tarjeta", type="primary",
+                     use_container_width=True, key="btn_ono"):
+            buf_ono = _generar_pdf_onomastico(
+                doc_ono or "Estimado(a) Docente", cargo_ono, anio, frase_final, estilo_idx)
+            st.session_state['_pdf_ono'] = buf_ono
+            st.session_state['_ono_doc'] = doc_ono
+        if st.session_state.get('_pdf_ono'):
+            nombre_arch = (st.session_state.get('_ono_doc') or 'Docente').replace(' ','_')[:20]
+            st.download_button("⬇️ Descargar Tarjeta PDF", st.session_state['_pdf_ono'],
+                f"Onomastico_{nombre_arch}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_ono")
+            st.info("💡 Imprime en A5 o recorta desde A4. Puedes imprimir varias en una hoja.")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -9007,6 +9071,229 @@ def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
     buf.seek(0)
     return buf.read()
 
+def _generar_pdf_ausentes(ausentes, fecha_str):
+    """PDF lista de ausentes del día con celular del apoderado para llamadas."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+
+    buf = _io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=1.8*cm, rightMargin=1.8*cm)
+    ss  = getSampleStyleSheet()
+    C_R = colors.Color(0.65, 0.05, 0.05)
+    C_L = colors.Color(0.98, 0.93, 0.93)
+    C_B = colors.Color(0.08, 0.18, 0.45)
+    W   = A4[0] - 3.6*cm
+
+    def P(txt, bold=False, size=9, align=TA_CENTER, color=None):
+        return Paragraph(f"<b>{txt}</b>" if bold else str(txt),
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName="Helvetica-Bold" if bold else "Helvetica",
+                                        parent=ss["Normal"]))
+
+    # Agrupar por grado
+    from collections import defaultdict as _dd
+    por_grado = _dd(list)
+    for a in sorted(ausentes, key=lambda x: (x['Grado'], x['Nombre'])):
+        por_grado[a['Grado']].append(a)
+
+    story = [
+        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=13),
+        P("UGEL Urubamba  |  Chinchero, Cusco", size=8, color=colors.Color(0.4,0.4,0.4)),
+        HRFlowable(width="100%", thickness=2, color=C_R, spaceBefore=4, spaceAfter=6),
+        P(f"LISTA DE AUSENTES — {fecha_str}", bold=True, size=12, color=C_R),
+        P(f"Total: {len(ausentes)} estudiantes sin registro de entrada",
+          size=9, color=colors.Color(0.4,0.4,0.4)),
+        Spacer(1, 0.3*cm),
+        P("Para uso de la Auxiliar — Comunicarse con los apoderados",
+          size=8.5, color=C_B),
+        Spacer(1, 0.4*cm),
+    ]
+
+    HDRS = ["N°", "Apellidos y Nombres", "Grado", "Apoderado", "Celular", "¿Llamó?", "Obs."]
+    CWS  = [0.6*cm, 5.8*cm, 2.5*cm, 4.0*cm, 2.4*cm, 1.4*cm, 1.3*cm]
+    n = 0
+    for grado, lista in por_grado.items():
+        story.append(P(f"  {grado}  ({len(lista)} ausentes)", bold=True, size=9,
+                       align=TA_LEFT, color=colors.white))
+        rows = [HDRS]
+        for al in lista:
+            n += 1
+            cel = al['Celular'] if al['Celular'] and al['Celular'] not in ('nan','None','') else '—'
+            apo = al['Apoderado'] if al['Apoderado'] and al['Apoderado'] not in ('nan','None','') else '—'
+            rows.append([str(n), al['Nombre'], al['Grado'], apo, cel, '', ''])
+        t = Table(rows, colWidths=CWS, rowHeights=[0.55*cm]+[0.65*cm]*(len(rows)-1))
+        t.setStyle(TableStyle([
+            ('GRID',       (0,0),(-1,-1), 0.3, colors.Color(0.75,0.75,0.75)),
+            ('BACKGROUND', (0,0),(-1,0),  C_B),
+            ('TEXTCOLOR',  (0,0),(-1,0),  colors.white),
+            ('FONTNAME',   (0,0),(-1,0),  'Helvetica-Bold'),
+            ('FONTSIZE',   (0,0),(-1,-1), 7.5),
+            ('ALIGN',      (0,0),(-1,0),  'CENTER'),
+            ('ALIGN',      (1,1),(1,-1),  'LEFT'),
+            ('ALIGN',      (3,1),(3,-1),  'LEFT'),
+            ('VALIGN',     (0,0),(-1,-1), 'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1), 3),
+            ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, C_L]),
+        ]))
+        # Encabezado del grado
+        t_hdr = Table([[P(f"  {grado}  ({len(lista)} ausentes)", bold=True, size=9,
+                          align=TA_LEFT, color=colors.white)]],
+                      colWidths=[W], rowHeights=[0.5*cm])
+        t_hdr.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(0,0), C_R),
+            ('LEFTPADDING',(0,0),(0,0), 6),
+            ('VALIGN',(0,0),(0,0),'MIDDLE'),
+        ]))
+        story.pop()  # quitar el P que agregamos antes
+        story += [t_hdr, t, Spacer(1, 0.3*cm)]
+
+    if not ausentes:
+        story.append(P("¡Todos los estudiantes están presentes hoy! 🎉",
+                       bold=True, size=12, color=colors.Color(0.1,0.5,0.1)))
+
+    story += [
+        Spacer(1, 0.5*cm),
+        Table([[
+            P("Auxiliar responsable: _________________________", size=8, align=TA_LEFT),
+            P(f"Fecha: {fecha_str}", size=8),
+            P("Firma: ________________", size=8),
+        ]], colWidths=[8*cm, 3.5*cm, 3.5*cm]),
+    ]
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
+def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx):
+    """Tarjeta de onomástico para docente — A4 horizontal, colorida, 14 espacios de firma."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io
+
+    buf = _io.BytesIO()
+    PW, PH = landscape(A4)
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1.0*cm, bottomMargin=0.8*cm,
+                            leftMargin=1.5*cm, rightMargin=1.5*cm)
+    ss  = getSampleStyleSheet()
+
+    # Paletas de colores por estilo
+    PALETAS = [
+        {'bg': colors.Color(0.98,0.93,0.40), 'acento': colors.Color(0.80,0.10,0.10),
+         'texto': colors.Color(0.40,0.05,0.05), 'borde': colors.Color(0.90,0.70,0.10)},
+        {'bg': colors.Color(0.85,0.95,0.85), 'acento': colors.Color(0.08,0.45,0.20),
+         'texto': colors.Color(0.05,0.30,0.10), 'borde': colors.Color(0.20,0.65,0.35)},
+        {'bg': colors.Color(0.88,0.92,1.00), 'acento': colors.Color(0.08,0.18,0.65),
+         'texto': colors.Color(0.05,0.12,0.50), 'borde': colors.Color(0.25,0.45,0.85)},
+        {'bg': colors.Color(0.97,0.88,0.98), 'acento': colors.Color(0.55,0.08,0.65),
+         'texto': colors.Color(0.40,0.05,0.50), 'borde': colors.Color(0.70,0.30,0.80)},
+        {'bg': colors.Color(0.98,0.92,0.88), 'acento': colors.Color(0.70,0.25,0.05),
+         'texto': colors.Color(0.50,0.15,0.05), 'borde': colors.Color(0.85,0.50,0.15)},
+    ]
+    pal = PALETAS[estilo_idx % len(PALETAS)]
+    W   = PW - 3.0*cm
+
+    def P(txt, bold=False, size=10, color=None, space=4):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+4,
+                                        alignment=TA_CENTER,
+                                        textColor=color or colors.black,
+                                        fontName="Helvetica-Bold" if bold else "Helvetica",
+                                        spaceAfter=space, parent=ss["Normal"]))
+
+    # Decoración: línea de estrellas
+    estrellas = "✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦"
+
+    # Tarjeta exterior con fondo
+    story = [
+        # Banda superior
+        Table([[P(f"🎂  FELIZ ONOMÁSTICO  🎂", bold=True, size=14, color=colors.white)]],
+              colWidths=[W], rowHeights=[1.1*cm]),
+        Spacer(1, 0.15*cm),
+        P(estrellas, size=9, color=pal['borde'], space=6),
+        P(docente_nombre.upper(), bold=True, size=15, color=pal['acento'], space=4),
+        P(cargo or "Docente", size=9.5, color=pal['texto'], space=2),
+        P("I.E.P. ALTERNATIVO YACHAY", size=8.5, color=pal['texto'], space=10),
+        P(f'"{frase}"', size=9, color=pal['texto'], space=6),
+        P(estrellas, size=9, color=pal['borde'], space=8),
+        # Fecha de cumpleaños
+        Table([[
+            P("🎂 Fecha de Onomástico:", bold=True, size=9, color=pal['acento']),
+            Table([[""]], colWidths=[4.5*cm], rowHeights=[0.55*cm]),
+        ]], colWidths=[W*0.45, W*0.55]),
+        Spacer(1, 0.3*cm),
+        P("Recuerdo con el afecto de mis colegas:", size=8.5, color=pal['texto'], space=4),
+    ]
+
+    # Firmas — 14 espacios en 2 columnas × 7 filas
+    _firma_fila = ["_______________", "_______________"]
+    _firma_rows = []
+    for _ in range(7):
+        _firma_rows.append([P("Firma:", size=7, color=pal['texto']),
+                             P("Firma:", size=7, color=pal['texto'])])
+        _firma_rows.append(["", ""])
+        _firma_rows.append([P("___________________", size=7.5, color=pal['borde']),
+                             P("___________________", size=7.5, color=pal['borde'])])
+    firmas = Table(_firma_rows,
+                   colWidths=[W/2, W/2],
+                   rowHeights=[0.22*cm, 0.52*cm, 0.22*cm] * 7)
+    firmas.setStyle(TableStyle([
+        ('FONTSIZE',  (0,0),(-1,-1), 7.5),
+        ('ALIGN',     (0,0),(-1,-1), 'CENTER'),
+        ('VALIGN',    (0,0),(-1,-1), 'BOTTOM'),
+        ('TEXTCOLOR', (0,0),(-1,-1), pal['texto']),
+        ('LINEBELOW', (0,1),(-1,1),  0.5, pal['borde']),
+        ('LINEBELOW', (0,4),(-1,4),  0.5, pal['borde']),
+        ('LINEBELOW', (0,7),(-1,7),  0.5, pal['borde']),
+        ('LINEBELOW', (0,10),(-1,10),0.5, pal['borde']),
+        ('LINEBELOW', (0,13),(-1,13),0.5, pal['borde']),
+        ('LINEBELOW', (0,16),(-1,16),0.5, pal['borde']),
+        ('LINEBELOW', (0,19),(-1,19),0.5, pal['borde']),
+        ('GRID',      (0,0),(-1,-1), 0, colors.white),
+    ]))
+    story.append(firmas)
+
+    # Pie
+    story.append(P(f"Con cariño — Familia Yachay {anio}", size=7.5,
+                   color=pal['texto'], space=0))
+
+    # Aplicar fondo y borde a la banda superior
+    story[0].setStyle(TableStyle([
+        ('BACKGROUND', (0,0),(0,0), pal['acento']),
+        ('VALIGN',     (0,0),(0,0), 'MIDDLE'),
+        ('ALIGN',      (0,0),(0,0), 'CENTER'),
+        ('ROUNDEDCORNERS', [4]),
+    ]))
+    # Tabla fecha
+    story[8]._cellvalues  # touch to avoid attribute error
+    story[8].setStyle(TableStyle([
+        ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
+        ('ALIGN',        (0,0),(0,0),   'RIGHT'),
+        ('LEFTPADDING',  (0,0),(-1,-1), 6),
+    ]))
+    story[8]._argCells[0][1].setStyle(TableStyle([
+        ('BOX',       (0,0),(0,0), 1.0, pal['borde']),
+        ('BACKGROUND',(0,0),(0,0), colors.Color(1,1,1,0.7)),
+    ]))
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
 def tab_asistencias():
     st.header("📋 Control de Asistencia")
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
@@ -9271,17 +9558,46 @@ def tab_asistencias():
 
         # ── Botón PDF del día ─────────────────────────────────────
         _fecha_hoy_pdf = hora_peru().strftime('%d/%m/%Y')
-        if st.button("📥 Descargar PDF del dia", type="primary",
-                     use_container_width=True, key="btn_pdf_dia"):
-            _pdf_bytes = _generar_pdf_asistencia_dia(_fecha_hoy_pdf, asis)
-            st.session_state['_pdf_dia_bytes'] = _pdf_bytes
-            st.session_state['_pdf_dia_fecha'] = _fecha_hoy_pdf
-        if st.session_state.get('_pdf_dia_bytes'):
-            _fec = st.session_state.get('_pdf_dia_fecha', _fecha_hoy_pdf)
-            _fname = "Asistencia_" + _fec.replace('/','') + ".pdf"
-            st.download_button("⬇️ Descargar PDF — " + _fec,
-                               st.session_state['_pdf_dia_bytes'],
-                               _fname, "application/pdf", key="dl_pdf_dia")
+        col_pdf1, col_pdf2 = st.columns(2)
+        with col_pdf1:
+            if st.button("📥 PDF Asistencia del día", type="primary",
+                         use_container_width=True, key="btn_pdf_dia"):
+                _pdf_bytes = _generar_pdf_asistencia_dia(_fecha_hoy_pdf, asis)
+                st.session_state['_pdf_dia_bytes'] = _pdf_bytes
+                st.session_state['_pdf_dia_fecha'] = _fecha_hoy_pdf
+            if st.session_state.get('_pdf_dia_bytes'):
+                _fec = st.session_state.get('_pdf_dia_fecha', _fecha_hoy_pdf)
+                st.download_button("⬇️ Descargar PDF — " + _fec,
+                                   st.session_state['_pdf_dia_bytes'],
+                                   "Asistencia_" + _fec.replace('/','') + ".pdf",
+                                   "application/pdf", key="dl_pdf_dia")
+        with col_pdf2:
+            if st.button("📋 Lista Ausentes + Celular", type="primary",
+                         use_container_width=True, key="btn_pdf_ausentes"):
+                # Obtener todos los matriculados y cruzar con los que SÍ vinieron
+                df_mat_hoy = BaseDatos.cargar_matricula()
+                dnis_presentes = set(asis.keys())
+                ausentes = []
+                if not df_mat_hoy.empty:
+                    for _, row in df_mat_hoy.iterrows():
+                        dni_a = str(row.get('DNI','')).strip()
+                        if dni_a and dni_a not in dnis_presentes:
+                            ausentes.append({
+                                'DNI':       dni_a,
+                                'Nombre':    str(row.get('Nombre','')).strip(),
+                                'Grado':     str(row.get('Grado','')).strip(),
+                                'Celular':   str(row.get('Celular_Apoderado','')).strip(),
+                                'Apoderado': str(row.get('Apoderado','')).strip(),
+                            })
+                _pdf_aus = _generar_pdf_ausentes(ausentes, _fecha_hoy_pdf)
+                st.session_state['_pdf_aus_bytes'] = _pdf_aus
+                st.session_state['_pdf_aus_fecha'] = _fecha_hoy_pdf
+            if st.session_state.get('_pdf_aus_bytes'):
+                _fec2 = st.session_state.get('_pdf_aus_fecha', _fecha_hoy_pdf)
+                st.download_button("⬇️ Ausentes — " + _fec2,
+                                   st.session_state['_pdf_aus_bytes'],
+                                   "Ausentes_" + _fec2.replace('/','') + ".pdf",
+                                   "application/pdf", key="dl_pdf_aus")
 
         # ── Historial — cualquier día guardado ───────────────────────
         st.markdown("---")
