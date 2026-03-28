@@ -9229,11 +9229,11 @@ def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx):
         P("I.E.P. ALTERNATIVO YACHAY", size=8.5, color=pal['texto'], space=10),
         P(f'"{frase}"', size=9, color=pal['texto'], space=6),
         P(estrellas, size=9, color=pal['borde'], space=8),
-        # Fecha de cumpleaños
+        # Fecha de cumpleaños - texto simple sin tabla anidada
         Table([[
-            P("🎂 Fecha de Onomástico:", bold=True, size=9, color=pal['acento']),
-            Table([[""]], colWidths=[4.5*cm], rowHeights=[0.55*cm]),
-        ]], colWidths=[W*0.45, W*0.55]),
+            P("🎂 Fecha de Onomastico:", bold=True, size=9, color=pal['acento']),
+            P("_" * 30, size=9, color=pal['borde']),
+        ]], colWidths=[W*0.45, W*0.55], rowHeights=[0.6*cm]),
         Spacer(1, 0.3*cm),
         P("Recuerdo con el afecto de mis colegas:", size=8.5, color=pal['texto'], space=4),
     ]
@@ -9275,18 +9275,6 @@ def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx):
         ('BACKGROUND', (0,0),(0,0), pal['acento']),
         ('VALIGN',     (0,0),(0,0), 'MIDDLE'),
         ('ALIGN',      (0,0),(0,0), 'CENTER'),
-        ('ROUNDEDCORNERS', [4]),
-    ]))
-    # Tabla fecha
-    story[8]._cellvalues  # touch to avoid attribute error
-    story[8].setStyle(TableStyle([
-        ('VALIGN',       (0,0),(-1,-1), 'MIDDLE'),
-        ('ALIGN',        (0,0),(0,0),   'RIGHT'),
-        ('LEFTPADDING',  (0,0),(-1,-1), 6),
-    ]))
-    story[8]._argCells[0][1].setStyle(TableStyle([
-        ('BOX',       (0,0),(0,0), 1.0, pal['borde']),
-        ('BACKGROUND',(0,0),(0,0), colors.Color(1,1,1,0.7)),
     ]))
 
     doc.build(story)
