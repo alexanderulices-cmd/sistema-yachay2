@@ -6694,11 +6694,14 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
         frase_final  = frase_custom.strip() if frase_custom.strip() else frase_ono
         estilo_idx   = ESTILOS.index(estilo_ono)
 
+        fecha_cumple = st.text_input("📅 Fecha de cumpleaños (opcional — aparece en la tarjeta):",
+                                      key="ono_fecha", placeholder="ej. 28 de Marzo")
+
         if st.button("🎨 Generar Tarjeta", type="primary",
                      use_container_width=True, key="btn_ono"):
             buf_ono = _generar_pdf_onomastico(
                 doc_ono or "Estimado(a) Docente", cargo_ono, anio,
-                frase_final, estilo_idx, foto_bytes)
+                frase_final, estilo_idx, foto_bytes, fecha_cumple.strip())
             st.session_state['_pdf_ono'] = buf_ono
             st.session_state['_ono_doc'] = doc_ono
         if st.session_state.get('_pdf_ono'):
@@ -6947,12 +6950,19 @@ def _generar_libro_incidencias(config, responsable, anio):
         "5. Documento oficial — conservar en secretaria durante 5 anos minimo.",
     ]:
         story.append(P(ins, size=8.5, align=TA_LEFT, space=2))
-    story += [Spacer(1, 0.7*cm),
-              Table([[P("FIRMA RESPONSABLE", bold=True, size=8),
-                      P("FIRMA Y SELLO DIRECTOR(A)", bold=True, size=8)],
-                     ["", ""]],
-                    colWidths=[W/2, W/2], rowHeights=[0.4*cm, 1.2*cm]),
-              PageBreak()]
+    story.append(Spacer(1, 0.7*cm))
+    t_firmas_port = Table([
+        [P("FIRMA RESPONSABLE", bold=True, size=8),
+         P("FIRMA Y SELLO DIRECTOR(A)", bold=True, size=8)],
+        ["", ""],
+    ], colWidths=[W/2, W/2], rowHeights=[0.4*cm, 1.2*cm])
+    t_firmas_port.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.75,0.4,0.4)),
+        ("BACKGROUND",(0,0),(-1,0), C_RL),
+        ("ALIGN",(0,0),(-1,-1),"CENTER"),
+        ("VALIGN",(0,1),(-1,-1),"BOTTOM"),
+    ]))
+    story += [t_firmas_port, PageBreak()]
 
     # ═══════════════ 20 HOJAS ═══════════════
     for n in range(1, 21):
@@ -6991,24 +7001,25 @@ def _generar_libro_incidencias(config, responsable, anio):
               P("DNI / Codigo", bold=True, size=7.5),
               P("Grado / Cargo", bold=True, size=7.5)]]
         ))
-        story.append(campo([W*0.45, W*0.20, W*0.35], [0.7*cm, 0.7*cm, 0.7*cm]))
+        story.append(campo([W*0.45, W*0.20, W*0.35], [0.7*cm, 0.7*cm, 0.7*cm],
+                           [["","",""],["","",""],["","",""]]))
         story.append(campo([W], [0.65*cm],
             [[P("Testigos (si hubiera): _____________________________________________", size=8, align=TA_LEFT)]]))
         story.append(Spacer(1, 0.12*cm))
 
         # III. DESCRIPCION
         story.append(hdr_sec("III. DESCRIPCION DETALLADA DE LA INCIDENCIA", C_R))
-        story.append(campo([W], [0.75*cm]*5))
+        story.append(campo([W], [0.75*cm]*5, [[""]]*5))
         story.append(Spacer(1, 0.12*cm))
 
         # IV. ACCIONES INMEDIATAS
         story.append(hdr_sec("IV. ACCIONES INMEDIATAS TOMADAS", C_G))
-        story.append(campo([W], [0.72*cm]*3))
+        story.append(campo([W], [0.72*cm]*3, [[""]]*3))
         story.append(Spacer(1, 0.12*cm))
 
         # V. SEGUIMIENTO
         story.append(hdr_sec("V. SEGUIMIENTO Y COMPROMISOS", C_B))
-        story.append(campo([W], [0.72*cm]*2))
+        story.append(campo([W], [0.72*cm]*2, [[""]]*2))
         story.append(Spacer(1, 0.1*cm))
 
         # VI. COMUNICACION
@@ -7039,14 +7050,6 @@ def _generar_libro_incidencias(config, responsable, anio):
 
         if n < 20:
             story.append(PageBreak())
-
-    # Fix firma tabla portada
-    story[15].setStyle(TableStyle([
-        ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.75,0.4,0.4)),
-        ("BACKGROUND",(0,0),(-1,0), C_RL),
-        ("ALIGN",(0,0),(-1,-1),"CENTER"),
-        ("VALIGN",(0,1),(-1,-1),"BOTTOM"),
-    ]))
 
     doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
     buf.seek(0)
@@ -9134,223 +9137,207 @@ def _generar_pdf_ausentes(ausentes, fecha_str):
     return buf.read()
 
 
-def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx, foto_bytes=None):
-    """Tarjeta de onomastico creativa — media hoja A4 vertical, globos, confeti, foto."""
+def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx,
+                            foto_bytes=None, fecha_cumple=''):
+    """Tarjeta onomastico creativa — media hoja A4 vertical, globos, confeti, foto cuadrada."""
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
-    from reportlab.lib.units import cm, mm
+    from reportlab.lib.units import cm
     from reportlab.pdfgen import canvas as rl_canvas
     from reportlab.lib.utils import ImageReader
-    import io as _io, math, random
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.enums import TA_CENTER
+    import io as _io, random
 
-    buf = _io.BytesIO()
-    W_pag, H_pag = A4[0], A4[1] / 2   # media hoja A4 vertical: 21 x 14.85 cm
-    c = rl_canvas.Canvas(buf, pagesize=(W_pag, H_pag))
+    buf  = _io.BytesIO()
+    W_p  = A4[0]
+    H_p  = A4[1] / 2     # media hoja A4: 21 x 14.85 cm aprox
+    c    = rl_canvas.Canvas(buf, pagesize=(W_p, H_p))
 
     PALETAS = [
-        {'top':(0.72,0.06,0.06), 'mid':(0.95,0.82,0.10), 'acc':(0.90,0.50,0.05),
-         'txt':(0.50,0.03,0.03), 'brd':(0.88,0.60,0.08), 'light':(1.0,0.96,0.88),
+        {'top':(0.72,0.06,0.06),'mid':(0.95,0.82,0.10),'acc':(0.88,0.50,0.05),
+         'txt':(0.50,0.03,0.03),'brd':(0.88,0.58,0.08),'light':(1.0,0.97,0.90),
          'globos':[(0.85,0.10,0.10),(0.95,0.75,0.05),(0.90,0.35,0.05),(0.75,0.05,0.20),(0.98,0.55,0.10)]},
-        {'top':(0.05,0.40,0.12), 'mid':(0.65,0.92,0.55), 'acc':(0.10,0.60,0.25),
-         'txt':(0.04,0.28,0.10), 'brd':(0.18,0.65,0.30), 'light':(0.92,0.99,0.92),
+        {'top':(0.05,0.40,0.12),'mid':(0.65,0.92,0.55),'acc':(0.10,0.58,0.25),
+         'txt':(0.04,0.28,0.10),'brd':(0.18,0.65,0.30),'light':(0.92,0.99,0.92),
          'globos':[(0.10,0.65,0.20),(0.55,0.88,0.20),(0.05,0.45,0.05),(0.30,0.80,0.10),(0.08,0.55,0.30)]},
-        {'top':(0.08,0.16,0.58), 'mid':(0.65,0.78,0.98), 'acc':(0.20,0.45,0.90),
-         'txt':(0.05,0.12,0.48), 'brd':(0.28,0.48,0.88), 'light':(0.92,0.95,1.00),
+        {'top':(0.08,0.16,0.58),'mid':(0.65,0.78,0.98),'acc':(0.20,0.45,0.90),
+         'txt':(0.05,0.12,0.48),'brd':(0.28,0.48,0.88),'light':(0.92,0.95,1.00),
          'globos':[(0.15,0.30,0.85),(0.35,0.55,0.95),(0.05,0.20,0.70),(0.55,0.70,1.0),(0.10,0.40,0.90)]},
-        {'top':(0.45,0.05,0.62), 'mid':(0.88,0.70,0.98), 'acc':(0.60,0.15,0.80),
-         'txt':(0.35,0.03,0.52), 'brd':(0.62,0.22,0.78), 'light':(0.97,0.93,1.00),
+        {'top':(0.45,0.05,0.62),'mid':(0.88,0.70,0.98),'acc':(0.60,0.15,0.80),
+         'txt':(0.35,0.03,0.52),'brd':(0.62,0.22,0.78),'light':(0.97,0.93,1.00),
          'globos':[(0.60,0.10,0.75),(0.80,0.40,0.90),(0.45,0.05,0.60),(0.72,0.25,0.85),(0.50,0.15,0.70)]},
-        {'top':(0.68,0.22,0.02), 'mid':(0.98,0.85,0.42), 'acc':(0.80,0.35,0.05),
-         'txt':(0.52,0.16,0.02), 'brd':(0.85,0.48,0.08), 'light':(1.00,0.96,0.88),
+        {'top':(0.68,0.22,0.02),'mid':(0.98,0.85,0.42),'acc':(0.80,0.35,0.05),
+         'txt':(0.52,0.16,0.02),'brd':(0.85,0.48,0.08),'light':(1.00,0.96,0.88),
          'globos':[(0.85,0.30,0.05),(0.98,0.65,0.10),(0.70,0.18,0.05),(0.92,0.50,0.08),(0.78,0.25,0.02)]},
     ]
     pal = PALETAS[estilo_idx % len(PALETAS)]
 
-    def rgb(t): return t[0], t[1], t[2]
+    rng = random.Random(42 + estilo_idx)
 
-    # ── FONDO DEGRADADO SUAVE ─────────────────────────────────────
+    # ── FONDO DEGRADADO ───────────────────────────────────────────
     steps = 40
     for i in range(steps):
         frac = i / steps
-        r = 1.0 - frac * (1.0 - pal['light'][0])
-        g = 1.0 - frac * (1.0 - pal['light'][1])
-        b = 1.0 - frac * (1.0 - pal['light'][2])
-        c.setFillColorRGB(r, g, b)
-        c.rect(0, H_pag * i / steps, W_pag, H_pag / steps + 1, fill=1, stroke=0)
+        r = 1.0 - frac*(1.0-pal['light'][0])
+        g = 1.0 - frac*(1.0-pal['light'][1])
+        b = 1.0 - frac*(1.0-pal['light'][2])
+        c.setFillColorRGB(r,g,b)
+        c.rect(0, H_p*i/steps, W_p, H_p/steps+1, fill=1, stroke=0)
 
-    # ── CONFETI DISPERSO (puntos de colores) ──────────────────────
-    rng = random.Random(42 + estilo_idx)
-    confeti_colors = pal['globos'] + [(0.98,0.85,0.10),(0.10,0.75,0.85),(0.95,0.95,0.30)]
-    for _ in range(55):
-        cx = rng.uniform(0.5*cm, W_pag - 0.5*cm)
-        cy = rng.uniform(0.5*cm, H_pag - 0.5*cm)
-        sz = rng.uniform(0.12*cm, 0.32*cm)
-        col = confeti_colors[rng.randint(0, len(confeti_colors)-1)]
+    # ── CONFETI ───────────────────────────────────────────────────
+    confcols = pal['globos']+[(0.98,0.85,0.10),(0.10,0.75,0.85),(0.95,0.95,0.30)]
+    for _ in range(60):
+        cx = rng.uniform(0.3*cm, W_p-0.3*cm)
+        cy = rng.uniform(0.3*cm, H_p-0.3*cm)
+        sz = rng.uniform(0.1*cm, 0.3*cm)
+        col = confcols[rng.randint(0,len(confcols)-1)]
         c.setFillColorRGB(*col)
-        shape = rng.randint(0, 2)
-        if shape == 0:
-            c.circle(cx, cy, sz/2, fill=1, stroke=0)
-        elif shape == 1:
-            c.rect(cx-sz/2, cy-sz/3, sz, sz*0.6, fill=1, stroke=0)
+        shp = rng.randint(0,2)
+        if shp==0:
+            c.circle(cx,cy,sz/2,fill=1,stroke=0)
+        elif shp==1:
+            c.rect(cx-sz/2,cy-sz/3,sz,sz*0.6,fill=1,stroke=0)
         else:
-            c.saveState()
-            c.translate(cx, cy)
-            c.rotate(rng.uniform(0, 360))
-            c.rect(-sz/2, -sz/6, sz, sz/3, fill=1, stroke=0)
-            c.restoreState()
+            c.saveState(); c.translate(cx,cy); c.rotate(rng.uniform(0,360))
+            c.rect(-sz/2,-sz/6,sz,sz/3,fill=1,stroke=0); c.restoreState()
 
-    # ── GLOBOS (circulos con hilo) ────────────────────────────────
-    GLOBOS = [
-        (1.0*cm, H_pag-1.5*cm, 0),  (2.2*cm, H_pag-2.0*cm, 1),
-        (W_pag-1.0*cm, H_pag-1.5*cm, 2), (W_pag-2.2*cm, H_pag-2.0*cm, 3),
-        (1.5*cm, H_pag-3.5*cm, 4), (W_pag-1.5*cm, H_pag-3.5*cm, 0),
-    ]
-    for bx, by, ci in GLOBOS:
-        bc = pal['globos'][ci % len(pal['globos'])]
-        # Cuerpo del globo
-        c.setFillColorRGB(*bc)
-        c.setStrokeColorRGB(bc[0]*0.7, bc[1]*0.7, bc[2]*0.7)
+    # ── GLOBOS ────────────────────────────────────────────────────
+    BPOS = [(0.9*cm,H_p-1.4*cm,0),(2.2*cm,H_p-2.1*cm,1),
+            (W_p-0.9*cm,H_p-1.4*cm,2),(W_p-2.2*cm,H_p-2.1*cm,3),
+            (1.4*cm,H_p-3.6*cm,4),(W_p-1.4*cm,H_p-3.6*cm,0)]
+    for bx,by,ci in BPOS:
+        bc = pal['globos'][ci%len(pal['globos'])]
+        c.setFillColorRGB(*bc); c.setStrokeColorRGB(bc[0]*.7,bc[1]*.7,bc[2]*.7)
         c.setLineWidth(0.5)
-        c.ellipse(bx-0.55*cm, by-0.7*cm, bx+0.55*cm, by+0.7*cm, fill=1, stroke=1)
-        # Brillo
-        c.setFillColorRGB(1,1,1)
-        c.circle(bx-0.15*cm, by+0.3*cm, 0.1*cm, fill=1, stroke=0)
-        # Hilo ondulado
-        c.setStrokeColorRGB(*bc)
-        c.setLineWidth(0.6)
-        p2 = c.beginPath()
-        p2.moveTo(bx, by-0.75*cm)
-        p2.curveTo(bx+0.2*cm, by-1.2*cm, bx-0.2*cm, by-1.7*cm, bx, by-2.2*cm)
-        c.drawPath(p2, fill=0, stroke=1)
+        c.ellipse(bx-.55*cm,by-.72*cm,bx+.55*cm,by+.72*cm,fill=1,stroke=1)
+        c.setFillColorRGB(1,1,1); c.circle(bx-.15*cm,by+.28*cm,.1*cm,fill=1,stroke=0)
+        c.setStrokeColorRGB(*bc); c.setLineWidth(0.6)
+        ph=c.beginPath(); ph.moveTo(bx,by-.75*cm)
+        ph.curveTo(bx+.2*cm,by-1.2*cm,bx-.2*cm,by-1.7*cm,bx,by-2.2*cm)
+        c.drawPath(ph,fill=0,stroke=1)
 
     # ── BANDA SUPERIOR ────────────────────────────────────────────
-    c.setFillColorRGB(*rgb(pal['top']))
-    c.roundRect(0.4*cm, H_pag-1.85*cm, W_pag-0.8*cm, 1.25*cm, 0.3*cm, fill=1, stroke=0)
-    # Texto banda
-    c.setFillColorRGB(1, 1, 1)
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(W_pag/2, H_pag-1.30*cm, "🎉  ¡FELIZ ONOMÁSTICO!  🎉")
+    c.setFillColorRGB(*pal['top'])
+    c.roundRect(0.4*cm,H_p-1.85*cm,W_p-0.8*cm,1.25*cm,0.3*cm,fill=1,stroke=0)
+    # ✨ Estrellas en banda
+    c.setFillColorRGB(1,1,0.5)
+    for sx in [1.2*cm,2.0*cm,W_p-1.2*cm,W_p-2.0*cm]:
+        c.circle(sx,H_p-1.22*cm,.12*cm,fill=1,stroke=0)
+    c.setFillColorRGB(1,1,1)
+    c.setFont("Helvetica-Bold",16)
+    # Título festivo
+    c.drawCentredString(W_p/2, H_p-1.30*cm,
+        "🎉  ¡FELIZ CUMPLEAÑOS DOCENTE YACHAINO!  🎉")
 
-    # ── ESTRELLAS DECORATIVAS ─────────────────────────────────────
-    c.setFillColorRGB(*rgb(pal['brd']))
-    c.setFont("Helvetica", 9)
-    c.drawCentredString(W_pag/2, H_pag-2.1*cm, "✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦")
+    # ── ESTRELLAS SEPARADOR ───────────────────────────────────────
+    c.setFillColorRGB(*pal['brd'])
+    c.setFont("Helvetica",9)
+    c.drawCentredString(W_p/2, H_p-2.10*cm, "✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦")
 
-    y_cursor = H_pag - 2.5*cm
+    y = H_p - 2.55*cm
 
-    # ── FOTO O EMOJI ──────────────────────────────────────────────
+    # ── FOTO CUADRADA ─────────────────────────────────────────────
     if foto_bytes:
         try:
             img_buf = _io.BytesIO(foto_bytes)
-            img_r = ImageReader(img_buf)
-            foto_w = 2.8*cm; foto_h = 2.8*cm
-            foto_x = (W_pag - foto_w) / 2
-            foto_y = y_cursor - foto_h
-            # Marco circular decorativo
-            c.setFillColorRGB(*rgb(pal['brd']))
-            c.circle(W_pag/2, foto_y + foto_h/2, foto_w/2 + 0.15*cm, fill=1, stroke=0)
-            c.drawImage(img_r, foto_x, foto_y, foto_w, foto_h,
-                        preserveAspectRatio=True, mask='auto')
-            y_cursor = foto_y - 0.25*cm
+            img_r   = ImageReader(img_buf)
+            fw = fh = 2.8*cm
+            fx = (W_p-fw)/2; fy = y-fh
+            # Marco cuadrado con sombra
+            c.setFillColorRGB(0.3,0.3,0.3)
+            c.rect(fx+0.08*cm, fy-0.08*cm, fw, fh, fill=1, stroke=0)
+            c.setFillColorRGB(*pal['brd'])
+            c.setLineWidth(2.5); c.setStrokeColorRGB(*pal['brd'])
+            c.rect(fx, fy, fw, fh, fill=0, stroke=1)
+            c.drawImage(img_r, fx, fy, fw, fh, preserveAspectRatio=True, mask='auto')
+            y = fy - 0.28*cm
         except Exception:
-            c.setFont("Helvetica", 32)
-            c.setFillColorRGB(*rgb(pal['top']))
-            c.drawCentredString(W_pag/2, y_cursor - 0.9*cm, "🎂")
-            y_cursor -= 1.3*cm
+            c.setFont("Helvetica",28); c.setFillColorRGB(*pal['top'])
+            c.drawCentredString(W_p/2, y-0.85*cm, "🎂"); y -= 1.25*cm
     else:
-        c.setFont("Helvetica", 30)
-        c.setFillColorRGB(*rgb(pal['top']))
-        c.drawCentredString(W_pag/2, y_cursor - 0.85*cm, "🎂")
-        y_cursor -= 1.2*cm
+        c.setFont("Helvetica",28); c.setFillColorRGB(*pal['top'])
+        c.drawCentredString(W_p/2, y-0.85*cm, "🎂"); y -= 1.25*cm
 
     # ── NOMBRE ────────────────────────────────────────────────────
-    c.setFillColorRGB(*rgb(pal['top']))
-    c.setFont("Helvetica-Bold", 15)
-    c.drawCentredString(W_pag/2, y_cursor - 0.2*cm, docente_nombre.upper())
-    y_cursor -= 0.6*cm
+    c.setFillColorRGB(*pal['top']); c.setFont("Helvetica-Bold",15)
+    c.drawCentredString(W_p/2, y-0.22*cm, docente_nombre.upper()); y -= 0.62*cm
+    c.setFillColorRGB(*pal['acc']); c.setFont("Helvetica-Bold",9.5)
+    c.drawCentredString(W_p/2, y, cargo or "Docente"); y -= 0.38*cm
+    c.setFillColorRGB(0.4,0.4,0.4); c.setFont("Helvetica",8)
+    c.drawCentredString(W_p/2, y, "I.E.P. ALTERNATIVO YACHAY"); y -= 0.45*cm
 
-    c.setFillColorRGB(*rgb(pal['acc']))
-    c.setFont("Helvetica-Bold", 9.5)
-    c.drawCentredString(W_pag/2, y_cursor, cargo or "Docente")
-    y_cursor -= 0.38*cm
+    # ── FECHA (con valor si se proporcionó) ───────────────────────
+    c.setFillColorRGB(*pal['brd'])
+    c.roundRect(1.3*cm, y-0.52*cm, W_p-2.6*cm, 0.52*cm, 0.2*cm, fill=1, stroke=0)
+    c.setFillColorRGB(*pal['txt']); c.setFont("Helvetica-Bold",8.5)
+    c.drawString(1.6*cm, y-0.30*cm, "📅 Fecha:")
+    c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",8.5)
+    fecha_txt = fecha_cumple if fecha_cumple else "____________________"
+    c.drawString(4.0*cm, y-0.30*cm, fecha_txt)
+    c.setFont("Helvetica",8)
+    c.drawRightString(W_p-1.6*cm, y-0.30*cm, f"Ano {anio}")
+    y -= 0.72*cm
 
-    c.setFillColorRGB(0.4, 0.4, 0.4)
-    c.setFont("Helvetica", 8)
-    c.drawCentredString(W_pag/2, y_cursor, "I.E.P. ALTERNATIVO YACHAY")
-    y_cursor -= 0.5*cm
+    # ── SEPARADOR ────────────────────────────────────────────────
+    c.setStrokeColorRGB(*pal['brd']); c.setLineWidth(1.5)
+    c.line(1.0*cm, y, W_p-1.0*cm, y); y -= 0.22*cm
 
-    # ── FECHA ────────────────────────────────────────────────────
-    c.setFillColorRGB(*rgb(pal['brd']))
-    c.roundRect(1.5*cm, y_cursor - 0.5*cm, W_pag - 3.0*cm, 0.52*cm, 0.2*cm, fill=1, stroke=0)
-    c.setFillColorRGB(*rgb(pal['txt']))
-    c.setFont("Helvetica-Bold", 8.5)
-    c.drawString(1.8*cm, y_cursor - 0.28*cm, "📅 Fecha de onomástico:")
-    c.setFillColorRGB(1,1,1)
-    c.setFont("Helvetica", 8.5)
-    c.drawString(7.8*cm, y_cursor - 0.28*cm, f"_________________________  Año {anio}")
-    y_cursor -= 0.75*cm
+    # ── FRASES: saludo completo, personalizada, quechua, inglés ──
+    SALUDO = ("Toda la comunidad educativa de I.E.P. Alternativo Yachay "
+              "te desea un dia lleno de alegria, salud y bendiciones.")
+    fr_qu  = "Yachay llaqtamanta tukuy munakuyki — Kusikuy kawsaypi!"
+    fr_en  = "The entire Yachay educational community wishes you joy, health and success!"
+    fr_per = frase if frase else "Eres la semilla que siembra conocimiento y cosecha futuros. iMuchas felicidades!"
 
-    # ── LINEA DECORATIVA ─────────────────────────────────────────
-    c.setStrokeColorRGB(*rgb(pal['brd']))
-    c.setLineWidth(1.5)
-    c.line(1.0*cm, y_cursor, W_pag-1.0*cm, y_cursor)
-    y_cursor -= 0.25*cm
+    st_sal = ParagraphStyle("fs",fontSize=8.5,leading=12,alignment=TA_CENTER,
+                             textColor=colors.Color(*pal['top']),fontName="Helvetica-Bold")
+    st_per = ParagraphStyle("fp",fontSize=8.2,leading=11,alignment=TA_CENTER,
+                             textColor=colors.Color(*pal['txt']),fontName="Helvetica-Oblique")
+    st_que = ParagraphStyle("fq",fontSize=7.5,leading=10,alignment=TA_CENTER,
+                             textColor=colors.Color(*pal['acc']),fontName="Helvetica-BoldOblique")
+    st_eng = ParagraphStyle("fen",fontSize=7.5,leading=10,alignment=TA_CENTER,
+                             textColor=colors.Color(0.3,0.3,0.5),fontName="Helvetica-Oblique")
 
-    # ── FRASE ────────────────────────────────────────────────────
-    from reportlab.lib.styles import ParagraphStyle
-    from reportlab.platypus import Paragraph
-    from reportlab.lib.enums import TA_CENTER
+    frase_w = W_p - 2.4*cm
+    for st, txt in [(st_sal, SALUDO),
+                    (st_per, f"\u275d {fr_per} \u275e"),
+                    (st_que, f"\U0001f33f  {fr_qu}"),
+                    (st_eng, f"\U0001f30d  {fr_en}")]:
+        para = Paragraph(txt, st)
+        pw, ph = para.wrap(frase_w, 2.5*cm)
+        para.drawOn(c, 1.2*cm, y-ph); y -= ph+0.08*cm
 
-    fr_style = ParagraphStyle("fr", fontSize=8.5, leading=12, alignment=TA_CENTER,
-                               textColor=colors.Color(*rgb(pal['txt'])),
-                               fontName="Helvetica-Oblique")
-    fr_para  = Paragraph(f'❝  {frase}  ❞', fr_style)
-    fr_w, fr_h = fr_para.wrap(W_pag - 2.4*cm, 2.0*cm)
-    fr_para.drawOn(c, 1.2*cm, y_cursor - fr_h - 0.05*cm)
-    y_cursor -= fr_h + 0.35*cm
+    # ── SEPARADOR ────────────────────────────────────────────────
+    c.setStrokeColorRGB(*pal['brd']); c.setLineWidth(1.5)
+    c.line(1.0*cm, y, W_p-1.0*cm, y); y -= 0.30*cm
 
-    # ── LINEA DECORATIVA ─────────────────────────────────────────
-    c.setStrokeColorRGB(*rgb(pal['brd']))
-    c.setLineWidth(1.5)
-    c.line(1.0*cm, y_cursor, W_pag-1.0*cm, y_cursor)
-    y_cursor -= 0.35*cm
+    # ── FIRMAS 14 NUMERADAS ───────────────────────────────────────
+    c.setFillColorRGB(*pal['top']); c.setFont("Helvetica-Bold",8)
+    c.drawCentredString(W_p/2, y, "Con el afecto y carino de todos mis colegas:")
+    y -= 0.32*cm
 
-    # ── FIRMAS — 14 numeradas en 2 columnas ──────────────────────
-    c.setFillColorRGB(*rgb(pal['top']))
-    c.setFont("Helvetica-Bold", 8)
-    c.drawCentredString(W_pag/2, y_cursor, "Con el afecto y cariño de todos mis colegas:")
-    y_cursor -= 0.32*cm
-
-    firma_h = 0.55*cm
-    col_w   = (W_pag - 2.2*cm) / 2
-    x_l     = 1.1*cm
-    x_r     = 1.1*cm + col_w + 0.2*cm
-    c.setFont("Helvetica", 7.5)
+    fh2   = 0.55*cm
+    cw2   = (W_p-2.4*cm)/2
+    xl    = 1.2*cm
+    xr    = 1.2*cm + cw2 + 0.2*cm
+    c.setFont("Helvetica-Bold",7)
     for i in range(7):
-        fy = y_cursor - (i + 1) * firma_h
-        # Columna izquierda
-        c.setFillColorRGB(*rgb(pal['acc']))
-        c.setFont("Helvetica-Bold", 7)
-        c.drawString(x_l, fy + 0.08*cm, f"{i*2+1}.")
-        c.setStrokeColorRGB(*rgb(pal['brd']))
-        c.setLineWidth(0.5)
-        c.line(x_l + 0.4*cm, fy, x_l + col_w - 0.1*cm, fy)
-        # Columna derecha
-        c.drawString(x_r, fy + 0.08*cm, f"{i*2+2}.")
-        c.line(x_r + 0.4*cm, fy, x_r + col_w - 0.1*cm, fy)
-
-    y_cursor -= 7 * firma_h + 0.2*cm
+        fy2 = y - (i+1)*fh2
+        for xi, num in [(xl, i*2+1),(xr, i*2+2)]:
+            c.setFillColorRGB(*pal['acc'])
+            c.drawString(xi, fy2+0.08*cm, f"{num}.")
+            c.setStrokeColorRGB(*pal['brd']); c.setLineWidth(0.5)
+            c.line(xi+0.38*cm, fy2, xi+cw2-0.1*cm, fy2)
 
     # ── PIE ───────────────────────────────────────────────────────
-    c.setStrokeColorRGB(*rgb(pal['brd']))
-    c.setLineWidth(1.0)
-    c.line(0.4*cm, 0.55*cm, W_pag-0.4*cm, 0.55*cm)
-    c.setFillColorRGB(*rgb(pal['acc']))
-    c.setFont("Helvetica-Oblique", 7.5)
-    c.drawCentredString(W_pag/2, 0.25*cm, f"— Con cariño, Familia Yachay {anio} —")
+    c.setStrokeColorRGB(*pal['brd']); c.setLineWidth(1.0)
+    c.line(0.4*cm, 0.55*cm, W_p-0.4*cm, 0.55*cm)
+    c.setFillColorRGB(*pal['acc']); c.setFont("Helvetica-Oblique",7.5)
+    c.drawCentredString(W_p/2, 0.28*cm, f"— Con carino, Familia Yachay {anio} —")
 
-    c.save()
-    buf.seek(0)
+    c.save(); buf.seek(0)
     return buf.read()
 
 def tab_asistencias():
