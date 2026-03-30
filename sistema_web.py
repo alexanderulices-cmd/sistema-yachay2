@@ -4189,6 +4189,7 @@ def _portal_padres_familia():
     # ══════════════════════════════════════════════════════════════
     # SECCIÓN 1: ASISTENCIA
     # ══════════════════════════════════════════════════════════════
+    st.markdown("---")
     st.markdown("## 📅 Registro de Asistencia")
 
     asis_hist = {}
@@ -4281,36 +4282,37 @@ def _portal_padres_familia():
 
     st.markdown("**📋 Historial detallado**")
     if registros:
-        for r in registros[:30]:
-            try:
-                dia_sem = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][r['fecha_dt'].weekday()]
-            except Exception:
-                dia_sem = ''
-            if r['tardanza']:
-                icon = "🟡"; estado = "TARDANZA"; bg = "#fffbeb"; bc = "#fbbf24"
-            elif r['entrada']:
-                icon = "✅"; estado = "PUNTUAL";  bg = "#f0fdf4"; bc = "#86efac"
-            else:
-                icon = "⚪"; estado = "—";        bg = "#f9fafb"; bc = "#e5e7eb"
+        with st.expander(f"Ver {len(registros)} registros", expanded=len(registros)<=7):
+            for r in registros[:30]:
+                try:
+                    dia_sem = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][r['fecha_dt'].weekday()]
+                except Exception:
+                    dia_sem = ''
+                if r['tardanza']:
+                    icon = "🟡"; estado = "TARDANZA"; bg = "#fffbeb"; bc = "#fbbf24"
+                elif r['entrada']:
+                    icon = "✅"; estado = "PUNTUAL";  bg = "#f0fdf4"; bc = "#86efac"
+                else:
+                    icon = "⚪"; estado = "—";        bg = "#f9fafb"; bc = "#e5e7eb"
 
-            detalles = []
-            if r['entrada']:  detalles.append(f"🕐 Entrada: <b>{r['entrada']}</b>")
-            if r['sal_man']:  detalles.append(f"🕐 Salida mañana: <b>{r['sal_man']}</b>")
-            if r['ent_tar']:  detalles.append(f"🕑 Entrada tarde: <b>{r['ent_tar']}</b>")
-            if r['sal_tar']:  detalles.append(f"🕑 Salida tarde: <b>{r['sal_tar']}</b>")
+                detalles = []
+                if r['entrada']:  detalles.append(f"🕐 Entrada: <b>{r['entrada']}</b>")
+                if r['sal_man']:  detalles.append(f"🕐 Salida mañana: <b>{r['sal_man']}</b>")
+                if r['ent_tar']:  detalles.append(f"🕑 Entrada tarde: <b>{r['ent_tar']}</b>")
+                if r['sal_tar']:  detalles.append(f"🕑 Salida tarde: <b>{r['sal_tar']}</b>")
 
-            st.markdown(
-                f"<div style='background:{bg};border:1px solid {bc};"
-                f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
-                f"display:flex;align-items:center;gap:12px;'>"
-                f"<span style='font-size:1.4rem;'>{icon}</span>"
-                f"<div style='flex:1;'>"
-                f"<b style='font-size:0.95rem;'>{dia_sem} {r['fecha']}</b>"
-                f"<span style='margin-left:10px;font-size:0.8rem;color:#555;'>{estado}</span>"
-                f"<div style='font-size:0.8rem;color:#444;margin-top:3px;'>"
-                f"{'&nbsp;&nbsp;|&nbsp;&nbsp;'.join(detalles) if detalles else 'Sin detalle de hora'}"
-                f"</div></div></div>",
-                unsafe_allow_html=True)
+                st.markdown(
+                    f"<div style='background:{bg};border:1px solid {bc};"
+                    f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
+                    f"display:flex;align-items:center;gap:12px;'>"
+                    f"<span style='font-size:1.4rem;'>{icon}</span>"
+                    f"<div style='flex:1;'>"
+                    f"<b style='font-size:0.95rem;'>{dia_sem} {r['fecha']}</b>"
+                    f"<span style='margin-left:10px;font-size:0.8rem;color:#555;'>{estado}</span>"
+                    f"<div style='font-size:0.8rem;color:#444;margin-top:3px;'>"
+                    f"{'&nbsp;&nbsp;|&nbsp;&nbsp;'.join(detalles) if detalles else 'Sin detalle de hora'}"
+                    f"</div></div></div>",
+                    unsafe_allow_html=True)
     else:
         st.info("📭 No hay registros de asistencia aún para este estudiante.")
 
@@ -4320,6 +4322,7 @@ def _portal_padres_familia():
     # SECCIÓN 2: CALIFICACIONES
     # ══════════════════════════════════════════════════════════════
     escala_texto = "Escala vigesimal 0–20" if es_vigesimal else "Escala literal AD / A / B / C"
+    st.markdown("---")
     st.markdown(f"## 📚 Calificaciones")
     st.caption(f"📏 {escala_texto} · {grado}")
 
@@ -6125,7 +6128,7 @@ def _generar_pdf_junta_directiva_aula(config, grado, seccion, anio):
 
 
 
-def _seccion_documentos_auxiliar(config):
+def _seccion_documentos_auxiliar(config, solo_asistencia=False):
     """Módulo de documentos administrativos — navegación por botones, sin tabs."""
     st.subheader("📄 Documentos Administrativos")
     st.caption("Selecciona el documento que necesitas generar.")
@@ -6176,6 +6179,8 @@ def _seccion_documentos_auxiliar(config):
                 ("Papeleta Uso Aula",   "papeleta_aula"),
                 ("Atención de Padres",  "atencion_padres"),
                 ("Stickers Inventario", "stickers_inv"),
+                ("Inventario Salones",  "inventario_salon"),
+                ("Inventario Completo", "inventario_pdf"),
             ]
         },
         "Gestion Pedagogica": {
@@ -6197,10 +6202,16 @@ def _seccion_documentos_auxiliar(config):
         "asist_manual": "#065f46", "prestamo": "#059669", "horas_col": "#10b981",
         "ctrl_sesiones": "#0f766e", "libro_incidencias": "#be185d",
         "papeleta_aula": "#0369a1", "atencion_padres": "#7c3aed",
-        "stickers_inv":  "#065f46",
+        "stickers_inv":  "#065f46", "inventario_salon": "#0f766e", "inventario_pdf": "#0369a1",
         "monitoreo": "#b91c1c", "programacion": "#dc2626",
         "onomastico": "#be185d", "memorandum": "#92400e",
     }
+
+    # Filtrar grupos por rol
+    _SOLO_CTRL = {"Registros de Control"}
+    _grupos_mostrar = set(GRUPOS.keys()) if not solo_asistencia else _SOLO_CTRL
+    # Dentro de Registros de Control, aux solo ve asist_manual
+    _docs_aux = {"asist_manual"}
 
     if st.session_state[_KEY] is None:
         import streamlit.components.v1 as _css_d
@@ -6743,6 +6754,20 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
                 f"Atencion_Padres_{grado_atp.replace(' ','_')}_{anio}.pdf",
                 "application/pdf", type="primary", key="dl_atp")
 
+    # ── INVENTARIO SALONES PDF ──────────────────────────────────────
+    elif key == "inventario_salon":
+        st.markdown("#### 📋 Inventario por Salón")
+        st.caption("PDF con tabla de inventario de todos los salones — con código y cantidad")
+        if st.button("📄 Generar Inventario Completo", type="primary",
+                     use_container_width=True, key="btn_invsalon"):
+            with st.spinner("Generando inventario..."):
+                buf_inv = _generar_inventario_salones(config, anio)
+            st.session_state['_pdf_invsalon'] = buf_inv
+        if st.session_state.get('_pdf_invsalon'):
+            st.download_button("⬇️ Descargar Inventario PDF", st.session_state['_pdf_invsalon'],
+                f"Inventario_Salones_{anio}.pdf", "application/pdf",
+                type="primary", key="dl_invsalon")
+
     # ── STICKERS INVENTARIO ──────────────────────────────────────────
     elif key == "stickers_inv":
         st.markdown("#### 🏷️ Stickers de Inventario con QR")
@@ -7271,96 +7296,131 @@ def _generar_memorandum(config, tipo, destinatario, cargo, numero, referencia, n
 
 
 def _generar_papeleta_aula(config, n_hojas, anio):
-    """3 papeletas por hoja A4 horizontal para solicitar uso de aula."""
+    """3 papeletas iguales por hoja A4 vertical para solicitar uso de aula."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                     Paragraph, Spacer)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
     import io as _io
 
     buf = _io.BytesIO()
     ie  = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
     W, H = A4
-    c   = rl_canvas.Canvas(buf, pagesize=A4)
-    C_AZ = colors.Color(0.25, 0.45, 0.72)
+    ML = MR = 1.0*cm
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=0.5*cm, bottomMargin=0.5*cm,
+                            leftMargin=ML, rightMargin=MR)
+    ss  = getSampleStyleSheet()
+    PW  = W - ML - MR  # 19cm
+    C_AZ= colors.Color(0.25, 0.45, 0.72)
+    C_AL= colors.Color(0.90, 0.94, 0.99)
 
-    PAP_H = (H - 1.5*cm) / 3
+    def P(txt, bold=False, size=8, align=TA_CENTER, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
 
+    def _una_papeleta():
+        """Construye una papeleta como lista de elementos."""
+        elems = []
+        # Encabezado
+        t_hdr = Table([[P("PAPELETA DE SOLICITUD DE USO DE AULA", bold=True,
+                          size=10.5, color=colors.white)],
+                       [P(f"{ie}  |  Año {anio}", size=7.5, color=colors.Color(0.85,0.90,1.0))]],
+                      colWidths=[PW], rowHeights=[0.75*cm, 0.45*cm])
+        t_hdr.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(-1,-1), C_AZ),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        elems.append(t_hdr)
+
+        # Fila 1: Docente | Área/Actividad
+        t1 = Table([
+            [P("Docente solicitante:", bold=True, size=8, align=TA_LEFT),
+             P("Área / Actividad:", bold=True, size=8, align=TA_LEFT)],
+            ["", ""],
+        ], colWidths=[PW*0.5, PW*0.5], rowHeights=[0.28*cm, 0.65*cm])
+        t1.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.6,0.6,0.8)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1),3),
+        ]))
+        elems.append(t1)
+
+        # Fila 2: Fecha | Hora inicio | Hora fin | Aula | Grado/Sec
+        t2 = Table([
+            [P("Fecha:", bold=True, size=8, align=TA_LEFT),
+             P("Hora inicio:", bold=True, size=8, align=TA_LEFT),
+             P("Hora fin:", bold=True, size=8, align=TA_LEFT),
+             P("Aula:", bold=True, size=8, align=TA_LEFT),
+             P("Grado/Sec:", bold=True, size=8, align=TA_LEFT)],
+            ["", "", "", "", ""],
+        ], colWidths=[PW*0.22, PW*0.20, PW*0.18, PW*0.20, PW*0.20],
+           rowHeights=[0.28*cm, 0.65*cm])
+        t2.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.6,0.6,0.8)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1),3),
+        ]))
+        elems.append(t2)
+
+        # Fila 3: Motivo
+        t3 = Table([
+            [P("Motivo de la reunión:", bold=True, size=8, align=TA_LEFT)],
+            [""],
+            [""],
+        ], colWidths=[PW], rowHeights=[0.28*cm, 0.60*cm, 0.60*cm])
+        t3.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,-1), 0.5, colors.Color(0.6,0.6,0.8)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1),3),
+        ]))
+        elems.append(t3)
+
+        # Firmas
+        t4 = Table([
+            [P("V°B° Dirección", bold=True, size=8, color=C_AZ),
+             P("Firma del Docente", bold=True, size=8, color=C_AZ)],
+            ["", ""],
+        ], colWidths=[PW*0.45, PW*0.55], rowHeights=[0.35*cm, 1.0*cm])
+        t4.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.6,0.6,0.8)),
+            ("BACKGROUND",(0,0),(-1,0), C_AL),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        elems.append(t4)
+        return elems
+
+    # Separador de corte
+    def _corte():
+        t = Table([[P("- - - - - - - - - - - - - - - - recortar aqui - - - - - - - - - - - - - - - -",
+                      size=6, color=colors.Color(0.6,0.6,0.6))]],
+                  colWidths=[PW], rowHeights=[0.22*cm])
+        t.setStyle(TableStyle([("ALIGN",(0,0),(0,0),"CENTER"), ("VALIGN",(0,0),(0,0),"MIDDLE")]))
+        return t
+
+    story = []
     for pag in range(n_hojas):
         if pag > 0:
-            c.showPage()
+            from reportlab.platypus import PageBreak
+            story.append(PageBreak())
         for i in range(3):
-            y0 = H - 0.7*cm - (i+1)*PAP_H - i*0.1*cm
+            story.extend(_una_papeleta())
+            if i < 2:
+                story.append(Spacer(1, 0.08*cm))
+                story.append(_corte())
+                story.append(Spacer(1, 0.08*cm))
 
-            # Linea de corte
-            if i > 0:
-                c.setStrokeColorRGB(0.6,0.6,0.6)
-                c.setLineWidth(0.4); c.setDash(4,4)
-                c.line(0.8*cm, y0+PAP_H+0.08*cm, W-0.8*cm, y0+PAP_H+0.08*cm)
-                c.setDash()
-                c.setFont("Helvetica",5.5); c.setFillColorRGB(0.6,0.6,0.6)
-                c.drawCentredString(W/2, y0+PAP_H+0.11*cm, "- - - recortar aqui - - -")
-
-            # Fondo
-            c.setFillColorRGB(0.95,0.96,1.0)
-            c.roundRect(0.8*cm, y0+0.05*cm, W-1.6*cm, PAP_H-0.1*cm, 0.25*cm, fill=1, stroke=0)
-
-            # Banda superior
-            c.setFillColorRGB(*[x for x in (0.25, 0.45, 0.72)])
-            c.roundRect(0.8*cm, y0+PAP_H-0.9*cm, W-1.6*cm, 0.82*cm, 0.25*cm, fill=1, stroke=0)
-            c.setFillColorRGB(1,1,1)
-            c.setFont("Helvetica-Bold",10)
-            c.drawCentredString(W/2, y0+PAP_H-0.52*cm, "PAPELETA DE SOLICITUD DE USO DE AULA")
-            c.setFont("Helvetica",7.5)
-            c.drawCentredString(W/2, y0+PAP_H-0.78*cm, f"{ie}  |  Año {anio}")
-
-            # Campos — fila 1
-            fy = y0 + PAP_H - 1.15*cm
-            campos_f1 = [
-                ("Docente solicitante:", 1.0*cm, 6.5*cm),
-                ("Area / Actividad:", 9.0*cm, 6.5*cm),
-            ]
-            for lbl, lx, lw in campos_f1:
-                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
-                c.drawString(lx, fy, lbl)
-                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
-                c.line(lx+len(lbl)*0.043*cm*10, fy-0.02*cm, lx+lw, fy-0.02*cm)
-
-            # Fila 2
-            fy -= 0.65*cm
-            campos_f2 = [
-                ("Fecha:", 1.0*cm, 2.8*cm),
-                ("Hora inicio:", 4.5*cm, 2.2*cm),
-                ("Hora fin:", 7.5*cm, 2.2*cm),
-                ("Aula:", 10.3*cm, 2.5*cm),
-                ("Grado:", 13.5*cm, 2.0*cm),
-            ]
-            for lbl, lx, lw in campos_f2:
-                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
-                c.drawString(lx, fy, lbl)
-                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
-                c.line(lx+len(lbl)*0.043*cm*10, fy-0.02*cm, lx+lw, fy-0.02*cm)
-
-            # Fila 3 - Motivo
-            fy -= 0.65*cm
-            c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
-            c.drawString(1.0*cm, fy, "Motivo de la reunion:")
-            c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
-            c.line(4.2*cm, fy-0.02*cm, W-1.0*cm, fy-0.02*cm)
-            fy -= 0.50*cm
-            c.line(1.0*cm, fy-0.02*cm, W-1.0*cm, fy-0.02*cm)
-
-            # Firmas
-            fy -= 0.55*cm
-            for lbl, fx in [("V B Direccion:", 1.0*cm), ("Firma Docente:", W/2+0.5*cm)]:
-                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7)
-                c.drawString(fx, fy+0.18*cm, lbl)
-                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
-                c.line(fx+2.5*cm, fy+0.12*cm, fx+5.5*cm, fy+0.12*cm)
-
-    c.save(); buf.seek(0)
+    doc.build(story)
+    buf.seek(0)
     return buf.read()
-
 
 def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
     """Formato atencion padres de familia con compromiso y firmas segun MINEDU."""
@@ -7546,6 +7606,288 @@ def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
     return buf.read()
 
 
+
+def _generar_inventario_completo(config, anio):
+    """Inventario completo de todos los salones con codigos — tabla para archivo."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, PageBreak)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+
+    buf  = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    PW, PH = landscape(A4)
+    doc  = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                             topMargin=0.8*cm, bottomMargin=0.8*cm,
+                             leftMargin=0.8*cm, rightMargin=0.8*cm)
+    ss   = getSampleStyleSheet()
+    C_AZ = colors.Color(0.25, 0.45, 0.72)
+    C_AL = colors.Color(0.88, 0.92, 0.98)
+    C_VD = colors.Color(0.05, 0.38, 0.12)
+    C_VL = colors.Color(0.88, 0.97, 0.88)
+    W    = PW - 1.6*cm
+
+    def P(txt, bold=False, size=8.5, align=TA_CENTER, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
+
+    SALONES = [
+        ("Inicial 3 anos",  "INI-3", "Inicial"),
+        ("Inicial 4 anos",  "INI-4", "Inicial"),
+        ("Inicial 5 anos",  "INI-5", "Inicial"),
+        ("1 Primaria A",    "1P-A",  "Primaria"),
+        ("1 Primaria B",    "1P-B",  "Primaria"),
+        ("2 Primaria A",    "2P-A",  "Primaria"),
+        ("3 Primaria A",    "3P-A",  "Primaria"),
+        ("3 Primaria B",    "3P-B",  "Primaria"),
+        ("4 Primaria",      "4P",    "Primaria"),
+        ("5 Primaria",      "5P",    "Primaria"),
+        ("6 Primaria",      "6P",    "Primaria"),
+        ("Preuniv. Grupo AB","PREU-AB","Preuniversitario"),
+        ("Preuniv. Grupo CD","PREU-CD","Preuniversitario"),
+    ]
+    ITEMS = [
+        ("Silla alumno",    20, "SILLA"),
+        ("Mesa alumno",     20, "MESA"),
+        ("Mesa docente",     1, "MESDOC"),
+        ("Silla docente",    1, "SILDOC"),
+        ("Television",       1, "TV"),
+        ("Proyector",        3, "PROY"),
+        ("Roller proyector", 1, "ROLLER"),
+        ("Librero",          2, "LIB"),
+        ("Puerta",           1, "PUERTA"),
+    ]
+
+    story = [
+        P(f"INVENTARIO DE MOBILIARIO Y EQUIPOS — {ie} — Año {anio}",
+          bold=True, size=11, align=TA_CENTER),
+        P("Registro oficial de activos por salon. Verificar presencia y estado al inicio y fin de cada periodo.",
+          size=8, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+        HRFlowable(width="100%", thickness=2, color=C_AZ, spaceBefore=4, spaceAfter=6),
+        Spacer(1, 0.2*cm),
+    ]
+
+    # Una tabla por nivel
+    NIVELES_ORDEN = ["Inicial", "Primaria", "Preuniversitario"]
+    for nivel in NIVELES_ORDEN:
+        salones_nivel = [(n,c,nv) for n,c,nv in SALONES if nv == nivel]
+        if not salones_nivel:
+            continue
+
+        story.append(P(f"NIVEL: {nivel.upper()}", bold=True, size=9.5,
+                       align=TA_LEFT, color=C_VD))
+
+        # Cabeceras: Articulo | Cant | [Salon1 Cod/Estado] | [Salon2 ...] ...
+        n_sal = len(salones_nivel)
+        sal_w = (W - 4.5*cm - 1.0*cm) / n_sal  # ancho por salon
+
+        hdr1 = [P("ARTICULO", bold=True, size=7.5, color=colors.white),
+                P("CANT. TOTAL", bold=True, size=7.5, color=colors.white)]
+        for sn, sc, _ in salones_nivel:
+            hdr1.append(P(f"{sn} [{sc}]", bold=True, size=6.5, color=colors.white))
+
+        hdr2 = [P("", bold=True, size=6.5), P("", bold=True, size=6.5)]
+        for _ in salones_nivel:
+            hdr2.append(P("Codigo Sticker - Estado", bold=True, size=6, color=colors.Color(0.8,0.8,1.0)))
+
+        col_ws = [3.5*cm, 1.0*cm] + [sal_w]*n_sal
+
+        rows = [hdr1, hdr2]
+        for art, qty, cod in ITEMS:
+            row = [P(art, size=7.5, align=TA_LEFT), P(str(qty), bold=True, size=8)]
+            for _, sc, _ in salones_nivel:
+                if qty > 1:
+                    cell = ""
+                    for k in range(qty):
+                        cell += f"{sc}-{cod}{k+1:02d}: ___  "
+                    row.append(P(cell[:40], size=5.5))
+                else:
+                    row.append(P(f"{sc}-{cod}01: ___________", size=6))
+            rows.append(row)
+
+        row_hs = [0.70*cm, 0.40*cm] + [max(0.55*cm, 0.18*cm*min(qty,5)) for art,qty,cod in ITEMS]
+        t = Table(rows, colWidths=col_ws, rowHeights=row_hs)
+        cmds = [
+            ("GRID",        (0,0),(-1,-1), 0.3, colors.black),
+            ("BACKGROUND",  (0,0),(-1,0),  C_AZ),
+            ("BACKGROUND",  (0,1),(-1,1),  colors.Color(0.40,0.55,0.78)),
+            ("TEXTCOLOR",   (0,0),(-1,1),  colors.white),
+            ("FONTSIZE",    (0,0),(-1,-1), 6.5),
+            ("VALIGN",      (0,0),(-1,-1), "MIDDLE"),
+            ("ALIGN",       (0,0),(-1,-1), "CENTER"),
+            ("ALIGN",       (0,2),(0,-1),  "LEFT"),
+            ("LEFTPADDING", (0,0),(-1,-1), 2),
+            ("ROWBACKGROUNDS",(0,2),(-1,-1),[colors.white, C_AL]),
+        ]
+        t.setStyle(TableStyle(cmds))
+        story += [t, Spacer(1, 0.4*cm)]
+
+    # Firma
+    story += [
+        HRFlowable(width="100%", thickness=1, color=C_AZ, spaceBefore=4, spaceAfter=6),
+        Table([[
+            P("Responsable inventario: _______________________", size=8),
+            P(f"Fecha de verificacion: ___/___/{anio}", size=8),
+            P("V.B. Director(a): _______________________", size=8),
+        ]], colWidths=[W/3, W/3, W/3]),
+    ]
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
+def _generar_inventario_salones(config, anio):
+    """PDF inventario completo de todos los salones con codigos."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, PageBreak)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io
+
+    buf  = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel", "Urubamba")
+    doc  = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                             topMargin=0.8*cm, bottomMargin=0.8*cm,
+                             leftMargin=0.8*cm, rightMargin=0.8*cm)
+    ss   = getSampleStyleSheet()
+    C_AZ = colors.Color(0.08, 0.18, 0.48)
+    C_AL = colors.Color(0.88, 0.92, 0.98)
+    C_VE = colors.Color(0.05, 0.38, 0.12)
+    C_VL = colors.Color(0.88, 0.97, 0.90)
+    W    = landscape(A4)[0] - 1.6*cm
+
+    def P(txt, bold=False, size=8, align=TA_CENTER, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
+
+    SALONES = [
+        ("Inicial 3 anos",  "INI-3"),("Inicial 4 anos",   "INI-4"),("Inicial 5 anos",  "INI-5"),
+        ("1 Primaria A",    "1P-A"), ("1 Primaria B",      "1P-B"), ("2 Primaria A",    "2P-A"),
+        ("3 Primaria A",    "3P-A"), ("3 Primaria B",      "3P-B"), ("4 Primaria",      "4P"),
+        ("5 Primaria",      "5P"),   ("6 Primaria",        "6P"),
+        ("Preuniv AB",      "PREU-AB"),("Preuniv CD",      "PREU-CD"),
+    ]
+    ARTICULOS = [
+        ("Silla alumno",      20, "SILL"),("Mesa alumno",       20, "MESA"),
+        ("Mesa docente",       1, "MESD"),("Silla docente",       1, "SILD"),
+        ("Television",         1, "TELE"),("Librero",             2, "LIBR"),
+        ("Proyector",          1, "PROY"),("Roller Proyector",    1, "ROLL"),
+        ("Puerta",             1, "PUER"),
+    ]
+
+    story = [
+        P(f"INVENTARIO GENERAL DE EQUIPOS Y MOBILIARIO — {ie}", bold=True, size=11),
+        P(f"UGEL {ugel}  |  Año {anio}  |  Generado con YACHAY PRO", size=8,
+          color=colors.Color(0.4,0.4,0.4)),
+        HRFlowable(width="100%", thickness=2, color=C_AZ, spaceBefore=4, spaceAfter=6),
+        Spacer(1, 0.1*cm),
+    ]
+
+    # Header tabla
+    HDRS = [P("N", bold=True, size=7.5, color=colors.white),
+            P("SALON", bold=True, size=7.5, color=colors.white),
+            P("COD.", bold=True, size=7.5, color=colors.white)] + \
+           [P(art[:8], bold=True, size=6.5, color=colors.white) for art,_,_ in ARTICULOS] + \
+           [P("TOTAL", bold=True, size=7.5, color=colors.white),
+            P("RESPONSABLE", bold=True, size=7.5, color=colors.white),
+            P("FIRMA", bold=True, size=7.5, color=colors.white)]
+
+    # Calcular anchos
+    W_N    = 0.55*cm; W_SAL = 3.5*cm; W_COD = 1.6*cm
+    W_ART  = (W - W_N - W_SAL - W_COD - 4.5*cm - 3.0*cm - 1.8*cm) / len(ARTICULOS)
+    W_ART  = max(0.9*cm, W_ART)
+    CWS    = [W_N, W_SAL, W_COD] + [W_ART]*len(ARTICULOS) + [1.5*cm, 3.0*cm, 1.8*cm]
+
+    rows = [HDRS]
+    total_row = ["", P("TOTALES", bold=True, size=7), ""]
+    art_totals = [0]*len(ARTICULOS)
+
+    for ni, (salon, cod) in enumerate(SALONES):
+        fila = [P(str(ni+1), size=7), P(salon, size=7, align=TA_LEFT), P(cod, size=7)]
+        row_total = 0
+        for ai, (art, qty, _) in enumerate(ARTICULOS):
+            fila.append(P(str(qty), bold=True, size=8))
+            art_totals[ai] += qty
+            row_total += qty
+        fila += [P(str(row_total), bold=True, size=8, color=C_VE),
+                 P("", size=7), P("", size=7)]
+        rows.append(fila)
+
+    # Fila totales
+    total_row = [P("", size=7), P("TOTALES", bold=True, size=7.5, color=colors.white), P("", size=7)]
+    gran_total = 0
+    for ai, tot in enumerate(art_totals):
+        total_row.append(P(str(tot), bold=True, size=8, color=colors.white))
+        gran_total += tot
+    total_row += [P(str(gran_total), bold=True, size=8, color=colors.white),
+                  P("", size=7), P("", size=7)]
+    rows.append(total_row)
+
+    row_hs = [0.75*cm] + [0.65*cm]*len(SALONES) + [0.65*cm]
+    t = Table(rows, colWidths=CWS, rowHeights=row_hs)
+    cmds = [
+        ("GRID",         (0,0),(-1,-1), 0.4, colors.Color(0.6,0.6,0.6)),
+        ("BACKGROUND",   (0,0),(-1,0),  C_AZ),
+        ("BACKGROUND",   (0,-1),(-1,-1),C_VE),
+        ("ALIGN",        (0,0),(-1,-1), "CENTER"),
+        ("VALIGN",       (0,0),(-1,-1), "MIDDLE"),
+        ("FONTSIZE",     (0,0),(-1,-1), 7),
+        ("ROWBACKGROUNDS",(0,1),(-1,-2),[colors.white, C_AL]),
+        ("ALIGN",        (1,1),(1,-2),  "LEFT"),
+        ("LEFTPADDING",  (1,0),(1,-1),  3),
+        ("FONTNAME",     (0,-1),(-1,-1),"Helvetica-Bold"),
+    ]
+    # Resaltar columnas articulos
+    for ai in range(len(ARTICULOS)):
+        if ai % 2 == 0:
+            cmds.append(("BACKGROUND",(3+ai,0),(3+ai,0), colors.Color(0.15,0.28,0.55)))
+    t.setStyle(TableStyle(cmds))
+    story.append(t)
+    story.append(Spacer(1, 0.4*cm))
+
+    # Leyenda articulos
+    ley_data = [[P(f"{art} ({cod}): {qty} ud. por salon", size=7.5, align=TA_LEFT)
+                 for art,qty,cod in ARTICULOS[i:i+3]]
+                for i in range(0,len(ARTICULOS),3)]
+    # Pad last row
+    while len(ley_data[-1]) < 3:
+        ley_data[-1].append(P("", size=7))
+    t_ley = Table(ley_data, colWidths=[W/3]*3)
+    t_ley.setStyle(TableStyle([
+        ("FONTSIZE",(0,0),(-1,-1),7),
+        ("LEFTPADDING",(0,0),(-1,-1),4),
+        ("BACKGROUND",(0,0),(-1,-1),colors.Color(0.95,0.95,0.98)),
+        ("BOX",(0,0),(-1,-1),0.5,C_AZ),
+    ]))
+    story += [P("LEYENDA DE ARTICULOS:", bold=True, size=8, align=TA_LEFT), t_ley,
+              Spacer(1, 0.4*cm)]
+
+    # Firma
+    story.append(Table([[
+        P("Director(a): _________________________", size=8, align=TA_LEFT),
+        P("Auxiliar: _________________________", size=8, align=TA_LEFT),
+        P(f"Fecha: ___/___/{anio}", size=8),
+    ]], colWidths=[W/3]*3))
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
 def _generar_stickers_inventario(config, anio):
     """Stickers inventario QR — todos los salones en un PDF con lineas de corte."""
     from reportlab.lib.pagesizes import A4
@@ -7574,7 +7916,8 @@ def _generar_stickers_inventario(config, anio):
     ]
     ITEMS = [
         ("Silla alumno",20),("Mesa alumno",20),("Mesa docente",1),
-        ("Silla docente",1),("Television",1),("Librero",2),("Puerta",1),
+        ("Silla docente",1),("Television",1),("Librero",2),
+        ("Proyector",1),("Roller Proyector",1),("Puerta",1),
     ]
 
     STK_W = 6.3*cm; STK_H = 3.2*cm
@@ -7743,88 +8086,69 @@ def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
 
 
 def _generar_control_prestamo_equipos(config):
-    """Control de préstamo de equipos e implementos institucionales."""
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, KeepTogether
+    """Control prestamo equipos — landscape A4, filas en blanco para llenar."""
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     from reportlab.lib.enums import TA_CENTER
     import io as _io
-    buf = _io.BytesIO()
+    buf  = _io.BytesIO()
     anio = config.get('anio', 2026)
-    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
-    doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=1.5*cm, bottomMargin=1.5*cm,
-                            leftMargin=1.8*cm, rightMargin=1.8*cm)
-    styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('T', fontSize=12, fontName='Helvetica-Bold',
-                           alignment=TA_CENTER, spaceAfter=4, parent=styles['Normal'])
-    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER, spaceAfter=6, parent=styles['Normal'])
-    st_h = ParagraphStyle('H', fontSize=9, fontName='Helvetica-Bold',
-                           spaceAfter=4, parent=styles['Normal'])
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    PW, PH = landscape(A4)
+    doc  = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                             topMargin=0.8*cm, bottomMargin=0.8*cm,
+                             leftMargin=1.0*cm, rightMargin=1.0*cm)
+    ss   = getSampleStyleSheet()
+    C_AZ = colors.Color(0.25, 0.45, 0.72)
+    C_AL = colors.Color(0.88, 0.92, 0.98)
+    st_t = ParagraphStyle('T', fontSize=11, fontName='Helvetica-Bold',
+                           alignment=TA_CENTER, spaceAfter=3, parent=ss['Normal'])
+    st_s = ParagraphStyle('S', fontSize=8, alignment=TA_CENTER,
+                           spaceAfter=5, parent=ss['Normal'])
 
-    EQUIPOS = [
-        "Equipo de sonido / parlantes",
-        "Micrófono inalámbrico",
-        "Proyector / cañón",
-        "Pantalla de proyección",
-        "Laptop institucional",
-        "Extensión eléctrica",
-        "Cámara fotográfica",
-        "Sillas plegables",
-        "Mesas plegables",
-        "Otros: _______________",
-    ]
     story = [
-        Paragraph(f"CONTROL DE PRÉSTAMO DE EQUIPOS E IMPLEMENTOS", st_t),
-        Paragraph(f"{ie}  |  Año {anio}  |  Responsable Auxiliar: _________________________", st_s),
-        Spacer(1, 0.3*cm),
+        Paragraph("CONTROL DE PRESTAMO DE EQUIPOS E IMPLEMENTOS", st_t),
+        Paragraph(f"{ie}  |  Ano {anio}  |  Responsable Auxiliar: _________________________", st_s),
+        Spacer(1, 0.2*cm),
     ]
 
-    # Tabla de préstamos
-    header = ["N\u00b0", "EQUIPO / MATERIAL", "FECHA SALIDA", "HORA SALIDA", "RESPONSABLE / DOCENTE", "DESTINO", "FECHA DEVOL.", "HORA DEVOL.", "ESTADO DEVOL.", "VB AUXILIAR"]
-    rows = [header] + [[str(i+1), EQUIPOS[i % len(EQUIPOS)]] + [""]*8 for i in range(25)]
-    col_ws = [0.7*cm, 3.5*cm, 1.5*cm, 1.2*cm, 3.8*cm, 2*cm, 1.5*cm, 1.2*cm, 1.5*cm, 1.5*cm]
-    t = Table(rows, colWidths=col_ws,
-              rowHeights=[1.1*cm] + [0.7*cm]*25)
+    # Columnas ajustadas a landscape A4 (27cm util aprox)
+    HDRS = ["N","EQUIPO / MATERIAL","FECHA SALIDA","HORA SALIDA",
+            "RESPONSABLE / DOCENTE","DESTINO","FECHA DEVOL.","HORA DEVOL.",
+            "ESTADO","VB AUXILIAR"]
+    CWS  = [0.65*cm, 5.5*cm, 1.6*cm, 1.3*cm, 5.0*cm, 2.5*cm, 1.6*cm, 1.3*cm, 1.8*cm, 2.0*cm]
+
+    # 30 filas totalmente en blanco para que el auxiliar llene a mano
+    rows = [HDRS] + [[str(i+1)] + [""]*9 for i in range(30)]
+    row_hs = [0.9*cm] + [0.65*cm]*30
+    t = Table(rows, colWidths=CWS, rowHeights=row_hs)
     t.setStyle(TableStyle([
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,-1),7),
-        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.1,0.2,0.5)),
-        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-        ('ALIGN',(0,0),(-1,-1),'CENTER'),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.95,0.95,1)]),
-        ('ALIGN',(1,0),(1,-1),'LEFT'),
-        ('ALIGN',(4,0),(4,-1),'LEFT'),
+        ('FONTNAME',    (0,0),(-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE',    (0,0),(-1,-1), 7),
+        ('BACKGROUND',  (0,0),(-1,0), C_AZ),
+        ('TEXTCOLOR',   (0,0),(-1,0), colors.white),
+        ('ALIGN',       (0,0),(-1,-1), 'CENTER'),
+        ('VALIGN',      (0,0),(-1,-1), 'MIDDLE'),
+        ('GRID',        (0,0),(-1,-1), 0.4, colors.black),
+        ('ROWBACKGROUNDS',(0,1),(-1,-1), [colors.white, C_AL]),
+        ('ALIGN',       (1,0),(1,-1), 'LEFT'),
+        ('ALIGN',       (4,0),(4,-1), 'LEFT'),
+        ('LEFTPADDING', (1,0),(1,-1), 3),
+        ('LEFTPADDING', (4,0),(4,-1), 3),
     ]))
     story.append(t)
-    story.append(Spacer(1, 0.5*cm))
-
-    # Inventario de equipos disponibles
-    story.append(Paragraph("INVENTARIO DE EQUIPOS DISPONIBLES:", st_h))
-    inv_data = [["N°","EQUIPO / IMPLEMENTO","CANTIDAD","ESTADO","OBSERVACIONES"]]
-    for i, eq in enumerate(EQUIPOS[:-1]):
-        inv_data.append([str(i+1), eq, "___", "Bueno / Regular / Malo", ""])
-    t2 = Table(inv_data, colWidths=[0.7*cm, 5*cm, 1.5*cm, 3.5*cm, 4.3*cm],
-               rowHeights=[0.7*cm]*len(inv_data))
-    t2.setStyle(TableStyle([
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,-1),7.5),
-        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.2,0.2,0.5)),
-        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-        ('ALIGN',(0,0),(-1,-1),'CENTER'),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('ALIGN',(1,0),(1,-1),'LEFT'),
-    ]))
-    story.append(t2)
+    story.append(Spacer(1, 0.4*cm))
+    story.append(Paragraph(
+        "Firma del auxiliar: _____________________   "
+        "Firma del director(a): _____________________   "
+        f"Fecha: ___/___/{anio}",
+        st_s))
     doc.build(story)
     buf.seek(0)
     return buf
-
 
 def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_docentes):
     """
@@ -9176,7 +9500,14 @@ def tab_documentos(config):
                                        use_container_width=True, key="dd2")
 
     with doc_main_tab2:
-        _seccion_documentos_auxiliar(config)
+        _rol_act = st.session_state.get('rol', '')
+        if _rol_act == 'auxiliar':
+            st.info("📌 El auxiliar tiene acceso solo a los documentos de **Control de Asistencia**.")
+            _seccion_documentos_auxiliar(config, solo_asistencia=True)
+        elif _rol_act in ('admin', 'directivo', 'docente'):
+            _seccion_documentos_auxiliar(config)
+        else:
+            _seccion_documentos_auxiliar(config)
 
 
 # ================================================================
@@ -10236,134 +10567,137 @@ def tab_asistencias():
                                    "Ausentes_" + _fec2.replace('/','') + ".pdf",
                                    "application/pdf", key="dl_pdf_aus")
 
-        # ── Historial — cualquier día guardado ───────────────────────
-        st.markdown("---")
-        st.markdown("### 📅 Historial de Asistencia — Descargar por Fecha")
+    # ── Historial — siempre visible, incluso sin registro de hoy ────
+    st.markdown("---")
+    st.markdown("### 📅 Historial de Asistencia — Descargar por Fecha")
 
-        _hist_todas = {}
-        if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _fh:
+    _hist_todas = {}
+    if Path(ARCHIVO_ASISTENCIAS).exists():
+        with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _fh:
+            try:
                 _hist_todas = json.load(_fh)
+            except Exception:
+                _hist_todas = {}
 
-        if _hist_todas:
-            from datetime import datetime as _dt
-            # Normalizar TODAS las fechas a DD/MM/YYYY para display y comparación
-            def _parse_fecha_flex(f):
+    if _hist_todas:
+        from datetime import datetime as _dt
+        # Normalizar TODAS las fechas a DD/MM/YYYY para display y comparacion
+        def _parse_fecha_flex(f):
+            try:
+                if '-' in f and len(f) == 10:
+                    return _dt.strptime(f, '%Y-%m-%d')
+                elif '/' in f and len(f) == 10:
+                    return _dt.strptime(f, '%d/%m/%Y')
+            except Exception:
+                pass
+            return _dt.min
+
+        def _to_display(f):
+            """Convierte cualquier formato a DD/MM/YYYY para display"""
+            dt = _parse_fecha_flex(f)
+            if dt == _dt.min:
+                return None
+            return dt.strftime('%d/%m/%Y')
+
+        # Construir mapa: display_fecha → clave_original
+        _fecha_map = {}
+        for fk in _hist_todas.keys():
+            disp = _to_display(fk)
+            if disp:
+                _fecha_map[disp] = fk  # display → clave real en JSON
+
+        _fechas_ord = sorted(_fecha_map.keys(), key=_parse_fecha_flex, reverse=True)
+
+        if not _fechas_ord:
+            st.info("No hay fechas válidas en el historial aún.")
+        else:
+            _mes_nombres = {
+                '01':'Enero','02':'Febrero','03':'Marzo','04':'Abril',
+                '05':'Mayo','06':'Junio','07':'Julio','08':'Agosto',
+                '09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'
+            }
+            _meses_disp = sorted(set(
+                f.split('/')[1] + '/' + f.split('/')[2]
+                for f in _fechas_ord
+            ), reverse=True)
+            _meses_labels = {
+                m: f"{_mes_nombres.get(m.split('/')[0], m.split('/')[0])} {m.split('/')[1]}"
+                for m in _meses_disp
+            }
+
+            hc1, hc2 = st.columns([2, 3])
+            with hc1:
+                _mes_sel = st.selectbox(
+                    "Mes:",
+                    options=list(_meses_labels.keys()),
+                    format_func=lambda m: _meses_labels[m],
+                    key="hist_mes_sel"
+                )
+            _fechas_mes = [f for f in _fechas_ord
+                           if f.split('/')[1] + '/' + f.split('/')[2] == _mes_sel]
+
+            def _dia_label(f):
+                dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']
                 try:
-                    if '-' in f and len(f) == 10:
-                        return _dt.strptime(f, '%Y-%m-%d')
-                    elif '/' in f and len(f) == 10:
-                        return _dt.strptime(f, '%d/%m/%Y')
+                    d = dias[_parse_fecha_flex(f).weekday()]
                 except Exception:
-                    pass
-                return _dt.min
+                    d = ''
+                clave_real = _fecha_map.get(f, f)
+                n_alu = sum(1 for v in _hist_todas.get(clave_real,{}).values() if not v.get('es_docente',False))
+                n_doc = sum(1 for v in _hist_todas.get(clave_real,{}).values() if v.get('es_docente',False))
+                return f"{d} {f} — {n_alu} alum / {n_doc} doc"
 
-            def _to_display(f):
-                """Convierte cualquier formato a DD/MM/YYYY para display"""
-                dt = _parse_fecha_flex(f)
-                if dt == _dt.min:
-                    return None
-                return dt.strftime('%d/%m/%Y')
-
-            # Construir mapa: display_fecha → clave_original
-            _fecha_map = {}
-            for fk in _hist_todas.keys():
-                disp = _to_display(fk)
-                if disp:
-                    _fecha_map[disp] = fk  # display → clave real en JSON
-
-            _fechas_ord = sorted(_fecha_map.keys(), key=_parse_fecha_flex, reverse=True)
-
-            if not _fechas_ord:
-                st.info("No hay fechas válidas en el historial aún.")
-            else:
-                _mes_nombres = {
-                    '01':'Enero','02':'Febrero','03':'Marzo','04':'Abril',
-                    '05':'Mayo','06':'Junio','07':'Julio','08':'Agosto',
-                    '09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'
-                }
-                _meses_disp = sorted(set(
-                    f.split('/')[1] + '/' + f.split('/')[2]
-                    for f in _fechas_ord
-                ), reverse=True)
-                _meses_labels = {
-                    m: f"{_mes_nombres.get(m.split('/')[0], m.split('/')[0])} {m.split('/')[1]}"
-                    for m in _meses_disp
-                }
-
-                hc1, hc2 = st.columns([2, 3])
-                with hc1:
-                    _mes_sel = st.selectbox(
-                        "Mes:",
-                        options=list(_meses_labels.keys()),
-                        format_func=lambda m: _meses_labels[m],
-                        key="hist_mes_sel"
+            with hc2:
+                if _fechas_mes:
+                    _dia_sel = st.selectbox(
+                        "Dia:",
+                        options=_fechas_mes,
+                        format_func=_dia_label,
+                        key="hist_dia_sel"
                     )
-                _fechas_mes = [f for f in _fechas_ord
-                               if f.split('/')[1] + '/' + f.split('/')[2] == _mes_sel]
+                else:
+                    _dia_sel = None
+                    st.info("Sin registros en este mes.")
 
-                def _dia_label(f):
-                    dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']
-                    try:
-                        d = dias[_parse_fecha_flex(f).weekday()]
-                    except Exception:
-                        d = ''
-                    clave_real = _fecha_map.get(f, f)
-                    n_alu = sum(1 for v in _hist_todas.get(clave_real,{}).values() if not v.get('es_docente',False))
-                    n_doc = sum(1 for v in _hist_todas.get(clave_real,{}).values() if v.get('es_docente',False))
-                    return f"{d} {f} — {n_alu} alum / {n_doc} doc"
+            if _dia_sel:
+                clave_real_sel = _fecha_map.get(_dia_sel, _dia_sel)
+                _asis_hist_sel = _hist_todas.get(clave_real_sel, {})
+                _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
+                _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
 
-                with hc2:
-                    if _fechas_mes:
-                        _dia_sel = st.selectbox(
-                            "Dia:",
-                            options=_fechas_mes,
-                            format_func=_dia_label,
-                            key="hist_dia_sel"
+                col_pdf1, col_pdf2 = st.columns(2)
+                with col_pdf1:
+                    st.info(f"**{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes")
+                    if st.button(f"📥 PDF Estudiantes — {_dia_sel}", type="primary",
+                                 use_container_width=True, key="btn_pdf_hist_alu"):
+                        _asis_solo_alu = {k: v for k, v in _asis_hist_sel.items() if not v.get('es_docente', False)}
+                        _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_alu, tipo='alumnos')
+                        st.session_state['_pdf_hist_bytes_alu'] = _pdf_hist
+                        st.session_state['_pdf_hist_fecha'] = _dia_sel
+                    if (st.session_state.get('_pdf_hist_bytes_alu')
+                            and st.session_state.get('_pdf_hist_fecha') == _dia_sel):
+                        st.download_button(
+                            f"⬇️ Descargar Estudiantes — {_dia_sel}",
+                            st.session_state['_pdf_hist_bytes_alu'],
+                            f"Asistencia_Estudiantes_{_dia_sel.replace('/','')}.pdf",
+                            "application/pdf", key="dl_pdf_hist_alu"
                         )
-                    else:
-                        _dia_sel = None
-                        st.info("Sin registros en este mes.")
-
-                if _dia_sel:
-                    clave_real_sel = _fecha_map.get(_dia_sel, _dia_sel)
-                    _asis_hist_sel = _hist_todas.get(clave_real_sel, {})
-                    _n_alu_h = sum(1 for v in _asis_hist_sel.values() if not v.get('es_docente',False))
-                    _n_doc_h = sum(1 for v in _asis_hist_sel.values() if v.get('es_docente',False))
-
-                    col_pdf1, col_pdf2 = st.columns(2)
-                    with col_pdf1:
-                        st.info(f"**{_dia_sel}** — {_n_alu_h} alumnos + {_n_doc_h} docentes")
-                        if st.button(f"📥 PDF Estudiantes — {_dia_sel}", type="primary",
-                                     use_container_width=True, key="btn_pdf_hist_alu"):
-                            _asis_solo_alu = {k: v for k, v in _asis_hist_sel.items() if not v.get('es_docente', False)}
-                            _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_alu, tipo='alumnos')
-                            st.session_state['_pdf_hist_bytes_alu'] = _pdf_hist
-                            st.session_state['_pdf_hist_fecha'] = _dia_sel
-                        if (st.session_state.get('_pdf_hist_bytes_alu')
-                                and st.session_state.get('_pdf_hist_fecha') == _dia_sel):
-                            st.download_button(
-                                f"⬇️ Descargar Estudiantes — {_dia_sel}",
-                                st.session_state['_pdf_hist_bytes_alu'],
-                                f"Asistencia_Estudiantes_{_dia_sel.replace('/','')}.pdf",
-                                "application/pdf", key="dl_pdf_hist_alu"
-                            )
-                    with col_pdf2:
-                        st.info(f"**Docentes** — {_n_doc_h} registrados")
-                        if st.button(f"📥 PDF Docentes — {_dia_sel}", type="primary",
-                                     use_container_width=True, key="btn_pdf_hist_doc"):
-                            _asis_solo_doc = {k: v for k, v in _asis_hist_sel.items() if v.get('es_docente', False)}
-                            _pdf_hist_doc = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_doc, tipo='docentes')
-                            st.session_state['_pdf_hist_bytes_doc'] = _pdf_hist_doc
-                            st.session_state['_pdf_hist_fecha_doc'] = _dia_sel
-                        if (st.session_state.get('_pdf_hist_bytes_doc')
-                                and st.session_state.get('_pdf_hist_fecha_doc') == _dia_sel):
-                            st.download_button(
-                                f"⬇️ Descargar Docentes — {_dia_sel}",
-                                st.session_state['_pdf_hist_bytes_doc'],
-                                f"Asistencia_Docentes_{_dia_sel.replace('/','')}.pdf",
-                                "application/pdf", key="dl_pdf_hist_doc"
-                            )
+                with col_pdf2:
+                    st.info(f"**Docentes** — {_n_doc_h} registrados")
+                    if st.button(f"📥 PDF Docentes — {_dia_sel}", type="primary",
+                                 use_container_width=True, key="btn_pdf_hist_doc"):
+                        _asis_solo_doc = {k: v for k, v in _asis_hist_sel.items() if v.get('es_docente', False)}
+                        _pdf_hist_doc = _generar_pdf_asistencia_dia(_dia_sel, _asis_solo_doc, tipo='docentes')
+                        st.session_state['_pdf_hist_bytes_doc'] = _pdf_hist_doc
+                        st.session_state['_pdf_hist_fecha_doc'] = _dia_sel
+                    if (st.session_state.get('_pdf_hist_bytes_doc')
+                            and st.session_state.get('_pdf_hist_fecha_doc') == _dia_sel):
+                        st.download_button(
+                            f"⬇️ Descargar Docentes — {_dia_sel}",
+                            st.session_state['_pdf_hist_bytes_doc'],
+                            f"Asistencia_Docentes_{_dia_sel.replace('/','')}.pdf",
+                            "application/pdf", key="dl_pdf_hist_doc"
+                        )
 
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
@@ -11956,10 +12290,14 @@ def tab_calificacion_yachay(config):
                             st.write(f"**Áreas:** {', '.join([a['nombre'] for a in eval_data.get('areas', [])] if isinstance(eval_data.get('areas', []), list) else eval_data.get('areas', []))}")
                             
                             col_ver, col_del = st.columns([3, 1])
+                            col_ver, col_wa, col_del = st.columns([3, 2, 1])
                             with col_ver:
                                 if st.button("📊 Ver Ranking", key=f"ver_rank_{clave}", type="primary"):
                                     df_hist = pd.DataFrame(eval_data.get('ranking', []))
                                     st.dataframe(df_hist, use_container_width=True)
+                            with col_wa:
+                                if st.button("📱 Enviar WA", key=f"wa_hist_{clave}", type="primary"):
+                                    st.session_state[f'_wa_hist_{clave}'] = True
                             with col_del:
                                 if st.button("🗑️ Eliminar", key=f"del_eval_{clave}", type="primary"):
                                     del hist_data[clave]
@@ -11967,6 +12305,27 @@ def tab_calificacion_yachay(config):
                                         json.dump(hist_data, f, ensure_ascii=False, indent=2)
                                     st.success("✅ Evaluación eliminada")
                                     st.rerun()
+                            if st.session_state.get(f'_wa_hist_{clave}'):
+                                areas_h = [a['nombre'] if isinstance(a,dict) else str(a)
+                                           for a in eval_data.get('areas', [])]
+                                for fila_h in eval_data.get('ranking', []):
+                                    alum_wa = BaseDatos.buscar_por_dni(fila_h.get('DNI',''))
+                                    cel_wa  = str((alum_wa or {}).get('Celular_Apoderado','')).strip()
+                                    if cel_wa and cel_wa not in ('nan','None',''):
+                                        cel_c = cel_wa.replace(' ','').replace('+','').replace('-','')
+                                        if not cel_c.startswith('51'): cel_c = '51'+cel_c
+                                        msg = f"🏫 *I.E.P. YACHAY*\n📊 *REPORTE DE NOTAS*\n\n"
+                                        msg += f"👤 Alumno: {fila_h.get('Nombre','')}\n"
+                                        msg += f"📚 Grado: {eval_data.get('grado','')}\n"
+                                        msg += f"📅 Periodo: {eval_data.get('periodo','')}\n"
+                                        msg += f"📝 Evaluacion: {eval_data.get('titulo','')}\n━━━━━━━━━━━━━━━━━\n"
+                                        for an in areas_h:
+                                            nota_w = fila_h.get(an, 0)
+                                            msg += f"📖 {an}: *{nota_w}* ({nota_a_letra(nota_w)})\n"
+                                        msg += f"━━━━━━━━━━━━━━━━━\n📊 *PROMEDIO: {fila_h.get('Promedio',0)}*"
+                                        import urllib.parse as _up
+                                        url_wa = f"https://wa.me/{cel_c}?text={_up.quote(msg)}"
+                                        st.markdown(f'<a href="{url_wa}" target="_blank" style="background:#25D366;color:white;padding:4px 10px;border-radius:6px;text-decoration:none;font-size:0.8rem;">📱 WA {fila_h.get("Nombre","")[:20]}</a>', unsafe_allow_html=True)
                 else:
                     st.info("No hay evaluaciones guardadas en historial")
             else:
