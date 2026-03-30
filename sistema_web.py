@@ -2492,9 +2492,12 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     estructura = []   # [(curso, comp_abrev, comp_full, [caps])]
     for curso in cursos:
         comps_full = COMPETENCIAS_CN.get(curso, ['Competencia 1'])
-        for cf in comps_full:
-            caps = CAPACIDADES_REG.get(cf, ['C1', 'C2', 'C3'])
-            ca   = COMP_ABREV_REG.get(cf, cf[:12])
+        for ci_c, cf in enumerate(comps_full):
+            # Desempeños como D1, D2... en vez de capacidades
+            n_des = len(CAPACIDADES_REG.get(cf, ['D1','D2','D3']))
+            caps  = [f"D{j+1}" for j in range(n_des)]
+            # Competencia completa como abreviatura (texto completo, fuente pequeña)
+            ca    = cf  # texto completo — se mostrará pequeño y rotado
             estructura.append((curso, ca, cf, caps))
 
     # total de columnas de datos
@@ -2521,7 +2524,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 
     # ── Alturas ────────────────────────────────────────────────────
     H_CURSO = 0.48*cm
-    H_COMP  = 1.10*cm   # rotado: texto vertical necesita espacio
+    H_COMP  = 1.60*cm   # texto completo de competencia, fuente 4.5
     H_CAP   = 0.82*cm
     H_EST   = 0.55*cm
 
@@ -2569,7 +2572,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
     # ── Estilos base ──────────────────────────────────────────────
     styles_cmds = [
         ('FONTNAME',      (0,0),(-1,-1), 'Helvetica'),
-        ('FONTSIZE',      (0,0),(-1,-1), 5.2),
+        ('FONTSIZE',      (0,0),(-1,-1), 4.8),
         ('ALIGN',         (0,0),(-1,-1), 'CENTER'),
         ('VALIGN',        (0,0),(-1,-1), 'MIDDLE'),
         ('GRID',          (0,0),(-1,-1), 0.25, colors.black),
@@ -2675,9 +2678,10 @@ def generar_registro_auxiliar_docx(grado, seccion, anio, bimestre, estudiantes_d
     estructura = []  # (curso, comp_abrev, comp_full, [caps])
     for curso in cursos:
         comps_full = COMPETENCIAS_CN.get(curso, ['Competencia 1'])
-        for cf in comps_full:
-            caps = CAPACIDADES_REG.get(cf, ['C1', 'C2', 'C3'])
-            ca   = COMP_ABREV_REG.get(cf, cf[:14])
+        for ci_c, cf in enumerate(comps_full):
+            n_des = len(CAPACIDADES_REG.get(cf, ['D1','D2','D3']))
+            caps  = [f"D{j+1}" for j in range(n_des)]
+            ca    = cf
             estructura.append((curso, ca, cf, caps))
 
     total_caps = sum(len(caps) for _,_,_,caps in estructura)
@@ -6169,6 +6173,9 @@ def _seccion_documentos_auxiliar(config):
                 ("Horas Colegiadas",    "horas_col"),
                 ("Control de Sesiones", "ctrl_sesiones"),
                 ("Libro de Incidencias","libro_incidencias"),
+                ("Papeleta Uso Aula",   "papeleta_aula"),
+                ("Atención de Padres",  "atencion_padres"),
+                ("Stickers Inventario", "stickers_inv"),
             ]
         },
         "Gestion Pedagogica": {
@@ -6177,6 +6184,7 @@ def _seccion_documentos_auxiliar(config):
                 ("Ficha de Monitoreo",  "monitoreo"),
                 ("Programaciones Word", "programacion"),
                 ("Tarjeta Onomástico",  "onomastico"),
+                ("Memorándum",          "memorandum"),
             ]
         },
     }
@@ -6188,7 +6196,10 @@ def _seccion_documentos_auxiliar(config):
         "constancia": "#6d28d9", "compromiso": "#7c3aed", "municipio": "#8b5cf6",
         "asist_manual": "#065f46", "prestamo": "#059669", "horas_col": "#10b981",
         "ctrl_sesiones": "#0f766e", "libro_incidencias": "#be185d",
-        "monitoreo": "#b91c1c", "programacion": "#dc2626", "onomastico": "#be185d",
+        "papeleta_aula": "#0369a1", "atencion_padres": "#7c3aed",
+        "stickers_inv":  "#065f46",
+        "monitoreo": "#b91c1c", "programacion": "#dc2626",
+        "onomastico": "#be185d", "memorandum": "#92400e",
     }
 
     if st.session_state[_KEY] is None:
@@ -6656,8 +6667,96 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             else:
                 st.error("Error al generar el archivo.")
 
-    # ── TARJETA DE ONOMÁSTICO ────────────────────────────────────────
-    elif key == "onomastico":
+    # ── MEMORÁNDUM ───────────────────────────────────────────────────
+    elif key == "memorandum":
+        st.markdown("#### 📋 Memorándum Oficial")
+        st.caption("Según estructura MINEDU — para faltas, tardanzas, informes, programación")
+        TIPOS_MEM = [
+            "Por inasistencia injustificada",
+            "Por exceso de tardanzas",
+            "Para solicitar informe de atención de padres y tutoría",
+            "Para solicitar entrega de Programación Anual",
+            "Para solicitar entrega de Unidades Didácticas",
+            "Para solicitar entrega de Sesiones de Aprendizaje",
+            "Para solicitar informe de avance académico",
+        ]
+        col1, col2 = st.columns(2)
+        with col1:
+            tipo_mem  = st.selectbox("Tipo de memorándum:", TIPOS_MEM, key="mem_tipo")
+            dest_mem  = st.text_input("Destinatario (docente):", key="mem_dest",
+                                       placeholder="Apellidos y Nombres completos")
+            cargo_mem = st.text_input("Cargo:", key="mem_cargo",
+                                       placeholder="Docente de Comunicación — 3° Primaria")
+        with col2:
+            num_mem   = st.text_input("N° Memorándum:", key="mem_num",
+                                       placeholder="001-2026-DIRYACHAY")
+            ref_mem   = st.text_input("Referencia (asunto específico):", key="mem_ref",
+                                       placeholder="Ej: inasistencias del 10 al 14 de marzo")
+            n_dias    = st.number_input("N° días/tardanzas (si aplica):", 0, 60, 0, key="mem_ndias")
+        if st.button("📄 Generar Memorándum", type="primary",
+                     use_container_width=True, key="btn_mem"):
+            buf_mem = _generar_memorandum(config, tipo_mem, dest_mem, cargo_mem,
+                                           num_mem, ref_mem, int(n_dias), anio)
+            st.session_state['_pdf_mem'] = buf_mem
+        if st.session_state.get('_pdf_mem'):
+            st.download_button("⬇️ Descargar Memorándum", st.session_state['_pdf_mem'],
+                f"Memorandum_{num_mem.replace('-','_') if num_mem else 'doc'}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_mem")
+
+    # ── PAPELETA USO DE AULA ─────────────────────────────────────────
+    elif key == "papeleta_aula":
+        st.markdown("#### 📝 Papeleta de Solicitud de Uso de Aula")
+        st.caption("3 papeletas por hoja A4 — para recortar")
+        col1, col2 = st.columns(2)
+        with col1:
+            ie_pap = config.get('nombre_ie','I.E.P. ALTERNATIVO YACHAY')
+            n_pap  = st.number_input("Cantidad de hojas (3 papeletas c/u):", 1, 5, 1, key="pap_n")
+        with col2:
+            st.info("Cada hoja contiene 3 papeletas iguales para recortar con línea punteada.")
+        if st.button("📄 Generar Papeletas", type="primary",
+                     use_container_width=True, key="btn_pap"):
+            buf_pap = _generar_papeleta_aula(config, int(n_pap), anio)
+            st.session_state['_pdf_pap'] = buf_pap
+        if st.session_state.get('_pdf_pap'):
+            st.download_button("⬇️ Descargar Papeletas", st.session_state['_pdf_pap'],
+                f"Papeleta_Uso_Aula_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_pap")
+
+    # ── ATENCIÓN DE PADRES ───────────────────────────────────────────
+    elif key == "atencion_padres":
+        st.markdown("#### 👨‍👩‍👧 Formato de Atención a Padres de Familia")
+        st.caption("Con compromiso, firma del padre/madre/estudiante — según MINEDU")
+        col1, col2 = st.columns(2)
+        with col1:
+            doc_atp  = st.text_input("Docente/Tutor:", key="atp_doc",
+                                      placeholder="Apellidos y Nombres")
+            grado_atp = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="atp_grado")
+        with col2:
+            n_atp = st.number_input("N° formatos a generar:", 1, 10, 1, key="atp_n")
+        if st.button("📄 Generar Formato", type="primary",
+                     use_container_width=True, key="btn_atp"):
+            buf_atp = _generar_formato_atencion_padres(config, doc_atp, grado_atp,
+                                                        int(n_atp), anio)
+            st.session_state['_pdf_atp'] = buf_atp
+        if st.session_state.get('_pdf_atp'):
+            st.download_button("⬇️ Descargar Formato", st.session_state['_pdf_atp'],
+                f"Atencion_Padres_{grado_atp.replace(' ','_')}_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_atp")
+
+    # ── STICKERS INVENTARIO ──────────────────────────────────────────
+    elif key == "stickers_inv":
+        st.markdown("#### 🏷️ Stickers de Inventario con QR")
+        st.caption("Todos los salones en un PDF — con líneas de corte")
+        st.info("Genera stickers para: 20 sillas alumnos, 20 mesas alumnos, mesa profe, silla profe, TV, 2 libreros, puerta — para cada salón desde Inicial hasta Preuniversitario.")
+        if st.button("📄 Generar Todos los Stickers", type="primary",
+                     use_container_width=True, key="btn_stk"):
+            with st.spinner("Generando stickers QR para todos los salones..."):
+                buf_stk = _generar_stickers_inventario(config, anio)
+            st.session_state['_pdf_stk'] = buf_stk
+        if st.session_state.get('_pdf_stk'):
+            st.download_button("⬇️ Descargar Stickers PDF", st.session_state['_pdf_stk'],
+                f"Stickers_Inventario_{anio}.pdf",
+                "application/pdf", type="primary", key="dl_stk")
         st.markdown("#### 🎂 Tarjeta de Onomástico para Docentes")
         st.caption("Tarjeta colorida A5 horizontal — con espacio para firmas de todos los colegas")
         FRASES_ONO = [
@@ -7053,6 +7152,498 @@ def _generar_libro_incidencias(config, responsable, anio):
 
     doc.build(story, onFirstPage=_pie, onLaterPages=_pie)
     buf.seek(0)
+    return buf.read()
+
+
+def _generar_memorandum(config, tipo, destinatario, cargo, numero, referencia, n_dias, anio):
+    """Memorandum oficial segun estructura MINEDU."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+
+    buf = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel", "Urubamba")
+    dir_ = config.get("directora", "________________________")
+    W    = A4[0] - 4.4*cm
+    doc  = SimpleDocTemplate(buf, pagesize=A4,
+                             topMargin=2.0*cm, bottomMargin=2.0*cm,
+                             leftMargin=2.2*cm, rightMargin=2.2*cm)
+    ss   = getSampleStyleSheet()
+    C_AZ = colors.Color(0.30, 0.50, 0.75)
+    C_AL = colors.Color(0.88, 0.92, 0.98)
+
+    def P(txt, bold=False, size=10, align=TA_LEFT, space=4, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+4,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, spaceAfter=space, parent=ss["Normal"]))
+
+    CUERPOS = {
+        "Por inasistencia injustificada": (
+            "INASISTENCIAS INJUSTIFICADAS",
+            f"Mediante el presente, me dirijo a usted para comunicarle que segun el control de asistencia institucional, usted ha registrado {n_dias if n_dias else '___'} dia(s) de inasistencia injustificada durante el presente periodo escolar {anio}.\n\nAl respecto, le recuerdo que segun el Articulo 48 del D.S. 004-2013-ED y el Reglamento Interno Institucional, las inasistencias sin justificacion constituyen falta grave que puede derivar en proceso administrativo disciplinario.\n\nSe le exhorta a regularizar su situacion presentando la documentacion sustentatoria en un plazo no mayor de 48 horas. De persistir la situacion, la institucion elevara el informe a la UGEL {ugel}."
+        ),
+        "Por exceso de tardanzas": (
+            "EXCESO DE TARDANZAS",
+            f"A traves del presente, pongo a su conocimiento que segun el registro de asistencia institucional, usted ha incurrido en {n_dias if n_dias else '___'} tardanza(s) durante el periodo escolar {anio}.\n\nEn virtud del Reglamento Interno Institucional y el D.S. 004-2013-ED, se considera tardanza al ingreso despues de la hora establecida. La acumulacion de tardanzas injustificadas constituye falta de caracter administrativo.\n\nSe le solicita enmendar esta situacion y cumplir puntualmente con el horario establecido. La reincidencia podra derivar en descuento de haberes y proceso disciplinario."
+        ),
+        "Para solicitar informe de atención de padres y tutoría": (
+            "INFORME DE ATENCION A PADRES Y TUTORIA",
+            f"En el marco del Plan de Tutoria y Orientacion Educativa {anio}, solicito a usted presentar en Direccion el informe de: (1) Registro de citas de atencion a padres realizadas, (2) Acuerdos y compromisos suscritos, (3) Seguimiento a casos de estudiantes con dificultades, (4) Actividades de tutoria grupal desarrolladas.\n\nEl informe debera ser entregado en fisico y digital en un plazo de 5 dias habiles."
+        ),
+        "Para solicitar entrega de Programación Anual": (
+            "ENTREGA DE PROGRAMACION CURRICULAR ANUAL",
+            f"En el marco del proceso de planificacion curricular {anio} y en cumplimiento del INSTRUCTIVO N 001-2026-GEREDU-Cusco, solicito la presentacion de la Programacion Curricular Anual del area a su cargo.\n\nEl documento debe contener: competencias, capacidades, desempenos, situaciones significativas, criterios de evaluacion y cronograma de unidades didacticas.\n\nPlazo de entrega: 3 dias habiles."
+        ),
+        "Para solicitar entrega de Unidades Didácticas": (
+            "ENTREGA DE UNIDADES DIDACTICAS",
+            f"En atencion al cronograma de supervision pedagogica {anio}, solicito la presentacion de la Unidad Didactica correspondiente al periodo en curso, incluyendo: titulo, situacion significativa, propositos de aprendizaje, secuencia de sesiones, recursos y evidencias de evaluacion.\n\nEl documento debe estar alineado al CNEB vigente. Plazo de entrega: 2 dias habiles."
+        ),
+        "Para solicitar entrega de Sesiones de Aprendizaje": (
+            "ENTREGA DE SESIONES DE APRENDIZAJE",
+            f"A efectos del monitoreo pedagogico programado, solicito la presentacion de las Sesiones de Aprendizaje de la semana en curso, las cuales deben incluir: proposito, momentos didacticos (inicio, desarrollo, cierre), criterios de evaluacion y recursos didacticos.\n\nPlazo de entrega: inicio de cada semana academica."
+        ),
+        "Para solicitar informe de avance académico": (
+            "INFORME DE AVANCE ACADEMICO",
+            f"Con la finalidad de supervisar el proceso de ensenanza-aprendizaje {anio}, solicito el informe de: (1) Avance curricular por area, (2) Resultados de evaluaciones formativas y sumativas, (3) Estudiantes con rendimiento bajo y estrategias de recuperacion, (4) Logros y dificultades identificadas.\n\nPlazo de entrega: 3 dias habiles."
+        ),
+    }
+
+    asunto, cuerpo = CUERPOS.get(tipo, ("ASUNTO GENERAL", referencia or ""))
+    asunto_final = asunto + (f" - {referencia}" if referencia else "")
+    fecha_hoy = fecha_peru_str()
+
+    story = [
+        P(ie, bold=True, size=12, align=TA_CENTER, space=2),
+        P(f"UGEL {ugel}  |  Chinchero, Cusco", size=8.5, align=TA_CENTER,
+          space=2, color=colors.Color(0.3,0.3,0.3)),
+        HRFlowable(width="100%", thickness=2, color=C_AZ, spaceBefore=4, spaceAfter=4),
+        P("M E M O R A N D U M", bold=True, size=14, align=TA_CENTER, space=2, color=C_AZ),
+        HRFlowable(width="100%", thickness=1, color=C_AZ, spaceBefore=2, spaceAfter=8),
+        Spacer(1, 0.2*cm),
+    ]
+
+    t_datos = Table([
+        [P("N de Memo:", bold=True, size=9), P(numero or f"___-{anio}-DIR-YACHAY", size=9)],
+        [P("PARA:", bold=True, size=9), P(destinatario or "________________________", size=9)],
+        [P("CARGO:", bold=True, size=9), P(cargo or "________________________", size=9)],
+        [P("DE:", bold=True, size=9), P(f"Direccion - {dir_}", size=9)],
+        [P("ASUNTO:", bold=True, size=9), P(asunto_final, bold=True, size=9)],
+        [P("FECHA:", bold=True, size=9), P(f"Chinchero, {fecha_hoy}", size=9)],
+    ], colWidths=[2.8*cm, W-2.8*cm], rowHeights=[0.68*cm]*6)
+    t_datos.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1), 0.4, colors.Color(0.8,0.8,0.8)),
+        ("BACKGROUND",(0,0),(0,-1), C_AL),
+        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ("LEFTPADDING",(0,0),(-1,-1), 5),
+    ]))
+    story += [t_datos, Spacer(1, 0.5*cm)]
+
+    story.append(P("Estimado/a docente:", bold=True, size=10, space=6))
+    for parrafo in cuerpo.split("\n\n"):
+        if parrafo.strip():
+            story.append(P(parrafo.strip(), size=9.5, align=TA_JUSTIFY, space=6))
+
+    story += [
+        Spacer(1, 0.4*cm),
+        P("En espera de su pronta atencion, hago propicia la ocasion para expresarle las muestras de mi consideracion.", size=9.5, align=TA_JUSTIFY, space=8),
+        Spacer(1, 0.3*cm),
+        P("Atentamente,", size=9.5, align=TA_CENTER, space=3),
+        Spacer(1, 1.5*cm),
+        P("_" * 35, size=9.5, align=TA_CENTER, space=2),
+        P(dir_, bold=True, size=9.5, align=TA_CENTER, space=2),
+        P("Directora - I.E.P. Alternativo Yachay", size=8.5, align=TA_CENTER, space=6),
+        Spacer(1, 0.8*cm),
+        P(f"c.c.: Archivo  |  Fecha recepcion: ___/___/{anio}  |  Firma: ___________________",
+          size=7.5, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+    ]
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
+def _generar_papeleta_aula(config, n_hojas, anio):
+    """3 papeletas por hoja A4 horizontal para solicitar uso de aula."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io as _io
+
+    buf = _io.BytesIO()
+    ie  = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    W, H = A4
+    c   = rl_canvas.Canvas(buf, pagesize=A4)
+    C_AZ = colors.Color(0.25, 0.45, 0.72)
+
+    PAP_H = (H - 1.5*cm) / 3
+
+    for pag in range(n_hojas):
+        if pag > 0:
+            c.showPage()
+        for i in range(3):
+            y0 = H - 0.7*cm - (i+1)*PAP_H - i*0.1*cm
+
+            # Linea de corte
+            if i > 0:
+                c.setStrokeColorRGB(0.6,0.6,0.6)
+                c.setLineWidth(0.4); c.setDash(4,4)
+                c.line(0.8*cm, y0+PAP_H+0.08*cm, W-0.8*cm, y0+PAP_H+0.08*cm)
+                c.setDash()
+                c.setFont("Helvetica",5.5); c.setFillColorRGB(0.6,0.6,0.6)
+                c.drawCentredString(W/2, y0+PAP_H+0.11*cm, "- - - recortar aqui - - -")
+
+            # Fondo
+            c.setFillColorRGB(0.95,0.96,1.0)
+            c.roundRect(0.8*cm, y0+0.05*cm, W-1.6*cm, PAP_H-0.1*cm, 0.25*cm, fill=1, stroke=0)
+
+            # Banda superior
+            c.setFillColorRGB(*[x for x in (0.25, 0.45, 0.72)])
+            c.roundRect(0.8*cm, y0+PAP_H-0.9*cm, W-1.6*cm, 0.82*cm, 0.25*cm, fill=1, stroke=0)
+            c.setFillColorRGB(1,1,1)
+            c.setFont("Helvetica-Bold",10)
+            c.drawCentredString(W/2, y0+PAP_H-0.52*cm, "PAPELETA DE SOLICITUD DE USO DE AULA")
+            c.setFont("Helvetica",7.5)
+            c.drawCentredString(W/2, y0+PAP_H-0.78*cm, f"{ie}  |  Año {anio}")
+
+            # Campos — fila 1
+            fy = y0 + PAP_H - 1.15*cm
+            campos_f1 = [
+                ("Docente solicitante:", 1.0*cm, 6.5*cm),
+                ("Area / Actividad:", 9.0*cm, 6.5*cm),
+            ]
+            for lbl, lx, lw in campos_f1:
+                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
+                c.drawString(lx, fy, lbl)
+                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
+                c.line(lx+len(lbl)*0.043*cm*10, fy-0.02*cm, lx+lw, fy-0.02*cm)
+
+            # Fila 2
+            fy -= 0.65*cm
+            campos_f2 = [
+                ("Fecha:", 1.0*cm, 2.8*cm),
+                ("Hora inicio:", 4.5*cm, 2.2*cm),
+                ("Hora fin:", 7.5*cm, 2.2*cm),
+                ("Aula:", 10.3*cm, 2.5*cm),
+                ("Grado:", 13.5*cm, 2.0*cm),
+            ]
+            for lbl, lx, lw in campos_f2:
+                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
+                c.drawString(lx, fy, lbl)
+                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
+                c.line(lx+len(lbl)*0.043*cm*10, fy-0.02*cm, lx+lw, fy-0.02*cm)
+
+            # Fila 3 - Motivo
+            fy -= 0.65*cm
+            c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7.5)
+            c.drawString(1.0*cm, fy, "Motivo de la reunion:")
+            c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
+            c.line(4.2*cm, fy-0.02*cm, W-1.0*cm, fy-0.02*cm)
+            fy -= 0.50*cm
+            c.line(1.0*cm, fy-0.02*cm, W-1.0*cm, fy-0.02*cm)
+
+            # Firmas
+            fy -= 0.55*cm
+            for lbl, fx in [("V B Direccion:", 1.0*cm), ("Firma Docente:", W/2+0.5*cm)]:
+                c.setFillColorRGB(0.25,0.45,0.72); c.setFont("Helvetica-Bold",7)
+                c.drawString(fx, fy+0.18*cm, lbl)
+                c.setStrokeColorRGB(0.5,0.5,0.7); c.setLineWidth(0.5)
+                c.line(fx+2.5*cm, fy+0.12*cm, fx+5.5*cm, fy+0.12*cm)
+
+    c.save(); buf.seek(0)
+    return buf.read()
+
+
+def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
+    """Formato atencion padres de familia con compromiso y firmas segun MINEDU."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, PageBreak)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import io as _io
+
+    buf  = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel", "Urubamba")
+    W    = A4[0] - 4.0*cm
+    doc  = SimpleDocTemplate(buf, pagesize=A4,
+                             topMargin=1.5*cm, bottomMargin=1.5*cm,
+                             leftMargin=2.0*cm, rightMargin=2.0*cm)
+    ss   = getSampleStyleSheet()
+    C_MO = colors.Color(0.42, 0.08, 0.55)
+    C_ML = colors.Color(0.94, 0.88, 0.98)
+
+    def P(txt, bold=False, size=9, align=TA_LEFT, space=3, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+4,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, spaceAfter=space, parent=ss["Normal"]))
+
+    def sec(lbl):
+        t = Table([[P(lbl, bold=True, size=8.5, color=C_MO)]],
+                  colWidths=[W], rowHeights=[0.45*cm])
+        t.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0), C_ML),
+            ("GRID",(0,0),(0,0), 0.5, C_MO),
+            ("LEFTPADDING",(0,0),(0,0), 5),
+            ("VALIGN",(0,0),(0,0),"MIDDLE"),
+        ]))
+        return t
+
+    def lineas(n, alto=0.75*cm):
+        t = Table([[""]]*n, colWidths=[W], rowHeights=[alto]*n)
+        t.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("TOPPADDING",(0,0),(-1,-1), 2),
+        ]))
+        return t
+
+    def fila(*pares):
+        ws = [w for _,w in pares]
+        t  = Table(
+            [[P(l, bold=True, size=8), ""] for l,w in pares] if len(pares)==1
+            else [[P(l, bold=True, size=8) for l,_ in pares],
+                  [""]*len(pares)],
+            colWidths=ws if len(pares)>1 else [ws[0]],
+            rowHeights=[0.30*cm, 0.65*cm] if len(pares)>0 else [0.65*cm]
+        )
+        if len(pares) == 1:
+            rows = [[P(pares[0][0], bold=True, size=8)], [""]]
+            t = Table(rows, colWidths=[pares[0][1]], rowHeights=[0.28*cm, 0.65*cm])
+        else:
+            rows = [[P(l, bold=True, size=8) for l,_ in pares],
+                    [""]*len(pares)]
+            t = Table(rows, colWidths=ws, rowHeights=[0.28*cm, 0.65*cm])
+        t.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        return t
+
+    story = []
+    for n in range(n_formatos):
+        if n > 0:
+            story.append(PageBreak())
+
+        story += [
+            P(ie, bold=True, size=11, align=TA_CENTER, space=2),
+            P(f"UGEL {ugel}  |  {grado}", size=8, align=TA_CENTER,
+              color=colors.Color(0.4,0.4,0.4)),
+            HRFlowable(width="100%", thickness=2, color=C_MO, spaceBefore=4, spaceAfter=4),
+            P("REGISTRO DE ATENCION A PADRES DE FAMILIA", bold=True, size=12,
+              align=TA_CENTER, color=C_MO, space=2),
+            P("R.M. 0657-2017-MINEDU - Plan de Tutoria y Orientacion Educativa",
+              size=7.5, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+            HRFlowable(width="100%", thickness=1, color=C_MO, spaceBefore=3, spaceAfter=6),
+            Spacer(1, 0.15*cm),
+        ]
+
+        # Datos generales
+        t_gen = Table([
+            [P("N de registro:", bold=True, size=8), "",
+             P("Fecha:", bold=True, size=8), "",
+             P("Hora:", bold=True, size=8), ""],
+            ["", "",  "", "", "", ""],
+        ], colWidths=[2.5*cm, 2.5*cm, 1.5*cm, 2.5*cm, 1.3*cm, W-10.3*cm],
+           rowHeights=[0.28*cm, 0.65*cm])
+        t_gen.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        story += [t_gen, Spacer(1, 0.1*cm)]
+
+        t_doc = Table([
+            [P("Docente/Tutor:", bold=True, size=8),
+             P("Modalidad: Presencial / Virtual", bold=True, size=8)],
+            ["", ""],
+        ], colWidths=[W*0.6, W*0.4], rowHeights=[0.28*cm, 0.65*cm])
+        t_doc.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        story += [t_doc, Spacer(1, 0.12*cm)]
+
+        # Datos estudiante y padre
+        story.append(sec("DATOS DEL ESTUDIANTE Y DEL PADRE/MADRE/APODERADO"))
+        t_est = Table([
+            [P("Apellidos y Nombres del estudiante:", bold=True, size=8),
+             P("Apellidos y Nombres del apoderado:", bold=True, size=8)],
+            ["", ""],
+            [P("DNI estudiante:", bold=True, size=8),
+             P("DNI apoderado:", bold=True, size=8)],
+            ["", ""],
+        ], colWidths=[W/2, W/2],
+           rowHeights=[0.28*cm, 0.65*cm, 0.28*cm, 0.65*cm])
+        t_est.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("GRID",(0,3),(-1,3), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        story += [t_est, Spacer(1, 0.12*cm)]
+
+        for lbl, alto in [
+            ("MOTIVO DE LA ATENCION:", 0.75*cm),
+            ("DESARROLLO Y ACUERDOS TOMADOS:", 2.0*cm),
+            ("COMPROMISOS ASUMIDOS (firmados por el apoderado):", 1.5*cm),
+        ]:
+            story.append(sec(lbl))
+            story.append(lineas(1 if alto < 1.0*cm else (2 if alto < 1.8*cm else 3),
+                                alto=alto/max(1, int(alto/(0.7*cm)))))
+            story.append(Spacer(1, 0.1*cm))
+
+        story.append(sec("PROXIMA CITA"))
+        t_cita = Table([
+            [P("Fecha:", bold=True, size=8), "",
+             P("Hora:", bold=True, size=8), "",
+             P("Lugar:", bold=True, size=8), ""],
+            ["", "", "", "", "", ""],
+        ], colWidths=[1.5*cm, 3.5*cm, 1.2*cm, 2.2*cm, 1.5*cm, W-9.9*cm],
+           rowHeights=[0.28*cm, 0.65*cm])
+        t_cita.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, colors.Color(0.75,0.75,0.75)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1), 3),
+        ]))
+        story += [t_cita, Spacer(1, 0.3*cm)]
+
+        t_f = Table([
+            [P("FIRMA DOCENTE/TUTOR", bold=True, size=8, color=C_MO),
+             P("FIRMA PADRE/MADRE", bold=True, size=8, color=C_MO),
+             P("FIRMA ESTUDIANTE", bold=True, size=8, color=C_MO)],
+            ["", "", ""],
+            [P("Nombre:_______________", size=7.5, align=TA_CENTER),
+             P("Nombre:_______________", size=7.5, align=TA_CENTER),
+             P("Nombre:_______________", size=7.5, align=TA_CENTER)],
+        ], colWidths=[W/3]*3, rowHeights=[0.40*cm, 1.1*cm, 0.35*cm])
+        t_f.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1), 0.5, colors.Color(0.7,0.7,0.7)),
+            ("BACKGROUND",(0,0),(-1,0), C_ML),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        story += [t_f, Spacer(1, 0.15*cm),
+                  P(f"Documento segun R.M. 0657-2017-MINEDU. Conservar en file de tutoria.",
+                    size=7, align=TA_CENTER, color=colors.Color(0.5,0.5,0.5))]
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.read()
+
+
+def _generar_stickers_inventario(config, anio):
+    """Stickers inventario QR — todos los salones en un PDF con lineas de corte."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io as _io
+
+    try:
+        import qrcode as _qrcode
+        HAS_QR = True
+    except ImportError:
+        HAS_QR = False
+
+    buf = _io.BytesIO()
+    ie  = config.get("nombre_ie", "IEP YACHAY")
+    W, H = A4
+    c   = rl_canvas.Canvas(buf, pagesize=A4)
+
+    SALONES = [
+        ("Inicial 3 anos", "INI-3"),("Inicial 4 anos","INI-4"),("Inicial 5 anos","INI-5"),
+        ("1 Primaria A","1P-A"),("1 Primaria B","1P-B"),("2 Primaria A","2P-A"),
+        ("3 Primaria A","3P-A"),("3 Primaria B","3P-B"),("4 Primaria","4P"),
+        ("5 Primaria","5P"),("6 Primaria","6P"),
+        ("Preuniv AB","PREU-AB"),("Preuniv CD","PREU-CD"),
+    ]
+    ITEMS = [
+        ("Silla alumno",20),("Mesa alumno",20),("Mesa docente",1),
+        ("Silla docente",1),("Television",1),("Librero",2),("Puerta",1),
+    ]
+
+    STK_W = 6.3*cm; STK_H = 3.2*cm
+    COL_N = 3; ROW_N = 7
+    MAR_X = (W - COL_N*STK_W) / (COL_N+1)
+    MAR_Y = (H - ROW_N*STK_H) / (ROW_N+1)
+
+    stk_list = []
+    for grado_n, cod in SALONES:
+        for art, qty in ITEMS:
+            for k in range(qty):
+                stk_list.append((grado_n, cod, art, k+1, qty))
+
+    pps = COL_N * ROW_N
+    for si, (grado_n, cod, art, num_k, total_k) in enumerate(stk_list):
+        if si > 0 and si % pps == 0:
+            c.showPage()
+        pos = si % pps
+        col = pos % COL_N; row = pos // COL_N
+        x0 = MAR_X + col*(STK_W+MAR_X)
+        y0 = H - MAR_Y - (row+1)*STK_H - row*MAR_Y
+
+        # Corte
+        c.setStrokeColorRGB(0.7,0.7,0.7); c.setLineWidth(0.3); c.setDash(3,3)
+        c.rect(x0, y0, STK_W, STK_H, fill=0, stroke=1); c.setDash()
+
+        # Fondo
+        c.setFillColorRGB(0.96,0.97,1.0)
+        c.rect(x0+0.04*cm, y0+0.04*cm, STK_W-0.08*cm, STK_H-0.08*cm, fill=1, stroke=0)
+
+        # Banda
+        c.setFillColorRGB(0.25,0.45,0.72)
+        c.rect(x0+0.04*cm, y0+STK_H-0.68*cm, STK_W-0.08*cm, 0.62*cm, fill=1, stroke=0)
+        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",6)
+        c.drawCentredString(x0+STK_W/2, y0+STK_H-0.38*cm, f"{ie} | Ano {anio}")
+
+        # QR
+        qs = STK_H - 0.82*cm
+        qx = x0+0.12*cm; qy = y0+0.08*cm
+        if HAS_QR:
+            try:
+                qr_d = f"YACHAY|{cod}|{art[:6].upper()}|{num_k:02d}|{anio}"
+                qr = _qrcode.QRCode(version=1, box_size=3, border=1)
+                qr.add_data(qr_d); qr.make(fit=True)
+                qi = qr.make_image(fill_color="black", back_color="white")
+                qb = _io.BytesIO(); qi.save(qb, format='PNG'); qb.seek(0)
+                from reportlab.lib.utils import ImageReader as _IR
+                c.drawImage(_IR(qb), qx, qy, qs, qs)
+            except Exception:
+                c.setFillColorRGB(0.9,0.9,0.9); c.rect(qx,qy,qs,qs,fill=1,stroke=1)
+        else:
+            c.setFillColorRGB(0.9,0.9,0.9); c.rect(qx,qy,qs,qs,fill=1,stroke=1)
+            c.setFillColorRGB(0.5,0.5,0.5); c.setFont("Helvetica",5)
+            c.drawCentredString(qx+qs/2, qy+qs/2, "QR")
+
+        # Texto
+        tx = qx+qs+0.18*cm
+        ty = y0+STK_H-0.90*cm
+        c.setFillColorRGB(0.15,0.35,0.65); c.setFont("Helvetica-Bold",7)
+        c.drawString(tx, ty, grado_n[:18]); ty -= 0.28*cm
+        c.setFillColorRGB(0.05,0.05,0.05); c.setFont("Helvetica-Bold",8)
+        c.drawString(tx, ty, art[:16]); ty -= 0.28*cm
+        if total_k > 1:
+            c.setFont("Helvetica",6.5); c.setFillColorRGB(0.4,0.4,0.4)
+            c.drawString(tx, ty, f"N {num_k:02d} de {total_k:02d}"); ty -= 0.25*cm
+        c.setFont("Helvetica-Bold",6.5); c.setFillColorRGB(0.25,0.45,0.72)
+        c.drawString(tx, ty, f"Cod: {cod}-{art[:4].upper()}{num_k:02d}")
+
+    c.save(); buf.seek(0)
     return buf.read()
 
 def _generar_registro_asistencia_manual(config, mes, n_dias, nombres_docentes):
