@@ -6782,8 +6782,11 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             st.download_button("⬇️ Descargar Stickers PDF", st.session_state['_pdf_stk'],
                 f"Stickers_Inventario_{anio}.pdf",
                 "application/pdf", type="primary", key="dl_stk")
+
+    # ── TARJETA ONOMÁSTICO ──────────────────────────────────────────
+    elif key == "onomastico":
         st.markdown("#### 🎂 Tarjeta de Onomástico para Docentes")
-        st.caption("Tarjeta colorida A5 horizontal — con espacio para firmas de todos los colegas")
+        st.caption("Media hoja A4 vertical — colorida, con foto, globos y firmas")
         FRASES_ONO = [
             "Que cada año que pasa te traiga más sabiduría, alegría y éxito en tu hermosa labor.",
             "Tu vocación ilumina el camino de muchos estudiantes. ¡Feliz día especial!",
@@ -7344,7 +7347,7 @@ def _generar_papeleta_aula(config, n_hojas, anio):
             [[P("Docente solicitante:",bold=True,size=8), P("Área / Actividad:",bold=True,size=8)],
              [" ", " "]],
             colWidths=[PW*0.50, PW*0.50],
-            rowHeights=[0.28*cm, 0.68*cm]
+            rowHeights=[0.36*cm, 0.65*cm]
         )
         t1.setStyle(TableStyle([
             ("BOX",(0,1),(0,1),0.6,C_GR),("BOX",(1,1),(1,1),0.6,C_GR),
@@ -7361,7 +7364,7 @@ def _generar_papeleta_aula(config, n_hojas, anio):
               P("Grado/Sec.:",bold=True,size=8)],
              [" "," "," "," "," "]],
             colWidths=[PW*0.22, PW*0.19, PW*0.17, PW*0.20, PW*0.22],
-            rowHeights=[0.28*cm, 0.68*cm]
+            rowHeights=[0.36*cm, 0.62*cm]
         )
         t2.setStyle(TableStyle([
             ("GRID",(0,0),(-1,-1),0.4,C_GR),
@@ -7391,7 +7394,7 @@ def _generar_papeleta_aula(config, n_hojas, anio):
               P("Firma del Docente Solicitante",bold=True,size=8,align=TA_CENTER,color=C_AZ)],
              [" "," "]],
             colWidths=[PW*0.40, PW*0.60],
-            rowHeights=[0.35*cm, 0.95*cm]
+            rowHeights=[0.40*cm, 0.95*cm]
         )
         t4.setStyle(TableStyle([
             ("GRID",(0,0),(-1,-1),0.5,C_GR),
@@ -7472,7 +7475,7 @@ def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
         blanks = [" "] * len(pares)
         ws = [w for _,w in pares]
         t = Table([labels, blanks], colWidths=ws,
-                  rowHeights=[0.26*cm, alto])
+                  rowHeights=[0.38*cm, alto])
         t.setStyle(TableStyle([
             ("GRID",(0,1),(-1,1), 0.5, C_GR),
             ("BACKGROUND",(0,0),(-1,0), C_ML),
@@ -18890,7 +18893,7 @@ def tab_registrar_notas(config):
 
     # ─── PESTAÑA: Historial / Nueva Evaluación / Diagnóstico ─────────────────
     vista = st.radio("", ["📋 Nueva Evaluación", "📂 Historial de Evaluaciones",
-                          "🔬 Examen Diagnóstico"],
+                          "🔬 Examen Diagnóstico", "📊 Cargar Respuestas por Clave"],
                      horizontal=True, key="rn_vista")
 
     # ── DIAGNÓSTICO ───────────────────────────────────────────────────────────
@@ -19223,11 +19226,235 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
-                        pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
-                        st.download_button("⬇️ Descargar", pdf_h,
-                                           f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
-                                           "application/pdf", key=f"dl_hist_{clave}")
+                    col_pdf_h, col_wa_h = st.columns(2)
+                    with col_pdf_h:
+                        if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
+                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                            st.download_button("⬇️ Descargar PDF",pdf_h,
+                                               f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
+                                               "application/pdf", key=f"dl_hist_{clave}")
+                    with col_wa_h:
+                        # WA siempre visible — links directos sin estado
+                        _wa_h = []
+                        for _fh in ranking_h:
+                            _al = BaseDatos.buscar_por_dni(_fh.get('DNI',''))
+                            _cel = str((_al or {}).get('Celular_Apoderado','')).strip()
+                            if _cel and _cel not in ('nan','None',''):
+                                _cc = _cel.replace(' ','').replace('+','').replace('-','')
+                                if not _cc.startswith('51'): _cc = '51'+_cc
+                                _m = (f"I.E.P.YACHAY NOTAS\n{_fh.get('Nombre','')}\n"
+                                      f"{ev.get('grado','')} | {ev.get('periodo','')}\n")
+                                for _an in areas_nombres:
+                                    _m += f"{_an}: {_fh.get(_an,0)} ({nota_a_letra(_fh.get(_an,0))})\n" 
+                                _m += f"PROMEDIO: {_fh.get('Promedio',0)}"
+                                import urllib.parse as _up2
+                                _url = f"https://wa.me/{_cc}?text={_up2.quote(_m)}"
+                                _wa_h.append(f'<a href="{_url}" target="_blank" style="background:#25D366;color:white;padding:2px 7px;border-radius:5px;text-decoration:none;font-size:0.72rem;margin:1px;display:inline-block;">📱 {_fh.get("Nombre","")[:14]}</a>')
+                        if _wa_h:
+                            st.markdown("📱 **WA:**", unsafe_allow_html=False)
+                            st.markdown(" ".join(_wa_h), unsafe_allow_html=True)
+        return
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CARGAR RESPUESTAS POR CLAVE
+    # ═══════════════════════════════════════════════════════════════════════════
+    if vista == "📊 Cargar Respuestas por Clave":
+        st.markdown("### 📊 Evaluación por Clave de Respuestas")
+        st.caption("Define las claves correctas por curso, carga las respuestas de cada estudiante y obtén notas automáticas.")
+
+        # ── Configuración general ──────────────────────────────────
+        col_gc1, col_gc2, col_gc3 = st.columns(3)
+        with col_gc1:
+            if grado_doc and grado_doc not in ('ALL_NIVELES','ALL_SEC_PREU','N/A',''):
+                grado_cl = grado_doc
+                st.info(f"Grado: **{grado_cl}**")
+            else:
+                grado_cl = st.selectbox("Grado:", GRADOS_OPCIONES, key="cl_grado")
+        with col_gc2:
+            bim_cl = st.selectbox("Período:", [
+                "Bimestre 1","Bimestre 2","Bimestre 3","Bimestre 4",
+                "Semana 1","Semana 2","Semana 3","Semana 4","Semana 5",
+                "Semana 6","Semana 7","Semana 8","Semana 9","Semana 10",
+                "Mensual","Trimestral","Diagnóstico"], key="cl_bim")
+        with col_gc3:
+            titulo_cl = st.text_input("Título evaluación:", key="cl_titulo",
+                                       placeholder="Ej: Examen Parcial Sem 3")
+
+        st.markdown("---")
+
+        # ── Definir cursos y claves ────────────────────────────────
+        st.markdown("#### 📚 Paso 1: Define los cursos y sus claves")
+        n_cursos = st.number_input("N° de cursos:", 1, 8, 1, key="cl_ncursos")
+
+        OPCIONES_RESP = ["A","B","C","D","E"]
+        cursos_config = []  # [{nombre, n_preguntas, claves:[]}]
+
+        cols_cur = st.columns(min(int(n_cursos), 3))
+        for ci in range(int(n_cursos)):
+            with cols_cur[ci % 3]:
+                with st.container(border=True):
+                    nom_c = st.text_input(f"Curso {ci+1}:", key=f"cl_nom_{ci}",
+                                           placeholder="Matemática")
+                    n_preg = st.number_input(f"N° preguntas:", 1, 30, 10,
+                                              key=f"cl_npreg_{ci}")
+                    st.caption("Clave de respuestas:")
+                    claves_c = []
+                    cols_clv = st.columns(5)
+                    for pi in range(int(n_preg)):
+                        with cols_clv[pi % 5]:
+                            clave_p = st.selectbox(
+                                f"P{pi+1}", OPCIONES_RESP,
+                                key=f"cl_clave_{ci}_{pi}",
+                                label_visibility="collapsed")
+                            claves_c.append(clave_p)
+                    cursos_config.append({
+                        'nombre': nom_c or f"Curso {ci+1}",
+                        'n_preguntas': int(n_preg),
+                        'claves': claves_c,
+                    })
+
+        st.markdown("---")
+        st.markdown("#### 👤 Paso 2: Ingresa las respuestas de cada estudiante")
+
+        # Cargar estudiantes del grado
+        df_cl = BaseDatos.obtener_estudiantes_grado(grado_cl)
+        if df_cl.empty:
+            st.warning("No hay estudiantes en este grado.")
+            return
+
+        st.caption(f"{len(df_cl)} estudiantes · Selecciona las respuestas marcadas por cada uno")
+
+        # Tabla de respuestas — un expander por estudiante
+        notas_cl = {}  # {dni: {nombre, areas:{curso:nota}, promedio}}
+
+        for _, est_row in df_cl.iterrows():
+            nom_e = str(est_row.get('Nombre','')).strip()
+            dni_e = str(est_row.get('DNI','')).strip()
+            with st.expander(f"👤 {nom_e}", expanded=False):
+                nota_cursos = {}
+                total_puntaje = 0
+                for ci2, cur in enumerate(cursos_config):
+                    st.markdown(f"**{cur['nombre']}** — {cur['n_preguntas']} preguntas")
+                    cols_resp = st.columns(min(cur['n_preguntas'], 10))
+                    correctas = 0
+                    for pi2 in range(cur['n_preguntas']):
+                        with cols_resp[pi2 % 10]:
+                            resp_e = st.selectbox(
+                                f"P{pi2+1}",
+                                ["—"] + OPCIONES_RESP,
+                                key=f"resp_{dni_e}_{ci2}_{pi2}",
+                                label_visibility="visible")
+                            if resp_e != "—" and resp_e == cur['claves'][pi2]:
+                                correctas += 1
+                    nota_cur = round(correctas / cur['n_preguntas'] * 20, 1) if cur['n_preguntas'] > 0 else 0
+                    nota_cursos[cur['nombre']] = nota_cur
+                    total_puntaje += nota_cur
+                    st.caption(f"✅ {correctas}/{cur['n_preguntas']} correctas → **{nota_cur}/20**")
+
+                prom_e = round(total_puntaje / max(len(cursos_config), 1), 1)
+                st.success(f"Promedio: **{prom_e}** ({nota_a_letra(prom_e)})")
+                notas_cl[dni_e] = {
+                    'nombre': nom_e, 'dni': dni_e,
+                    'areas': nota_cursos,
+                    'promedio': prom_e,
+                }
+
+        st.markdown("---")
+        st.markdown("#### 🏆 Ranking y Guardado")
+
+        # Calcular ranking con los datos actuales
+        areas_cl_names = [c['nombre'] for c in cursos_config]
+        ranking_cl = []
+        for dni_r, dat in notas_cl.items():
+            if dat['promedio'] > 0:
+                fila_r = {'DNI': dni_r, 'Nombre': dat['nombre']}
+                for an in areas_cl_names:
+                    fila_r[an] = dat['areas'].get(an, 0)
+                fila_r['Promedio'] = dat['promedio']
+                ranking_cl.append(fila_r)
+        ranking_cl.sort(key=lambda x: x['Promedio'], reverse=True)
+        for ri, fr in enumerate(ranking_cl):
+            fr['Puesto'] = ri + 1
+            fr['Medalla'] = ['🥇','🥈','🥉'][ri] if ri < 3 else f"#{ri+1}"
+
+        if ranking_cl:
+            df_rank_cl = pd.DataFrame(ranking_cl)
+            cols_show = ['Puesto','Medalla','Nombre'] + areas_cl_names + ['Promedio']
+            cols_show = [c for c in cols_show if c in df_rank_cl.columns]
+            st.dataframe(df_rank_cl[cols_show], use_container_width=True, hide_index=True)
+
+            col_save_cl, col_pdf_cl = st.columns(2)
+            with col_save_cl:
+                if st.button("💾 Guardar Evaluación", type="primary",
+                             use_container_width=True, key="btn_save_cl"):
+                    # Guardar igual que evaluación normal
+                    areas_obj = [{'nombre': c['nombre'], 'id': f"cl_{i}",
+                                  'n_preguntas': c['n_preguntas']} for i,c in enumerate(cursos_config)]
+                    hist_cl = _cargar_historial_evaluaciones()
+                    clave_cl = f"{grado_cl}_{bim_cl}_claves_{fecha_peru_str()}"
+                    hist_cl[clave_cl] = {
+                        'id': clave_cl, 'grado': grado_cl, 'periodo': bim_cl,
+                        'titulo': titulo_cl or f"Claves {bim_cl}",
+                        'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
+                        'docente': usuario, 'docente_nombre': nombre_completo_doc,
+                        'areas': areas_obj, 'ranking': ranking_cl,
+                        'tipo_evaluacion': 'Por Claves',
+                    }
+                    _guardar_historial_evaluaciones(hist_cl)
+                    # También en resultados.json
+                    try:
+                        res_act = BaseDatos.cargar_todos_resultados()
+                        for dni_r2, dat2 in notas_cl.items():
+                            if dat2['promedio'] > 0:
+                                res_act.append({
+                                    'dni': dni_r2, 'nombre': dat2['nombre'],
+                                    'grado': grado_cl, 'periodo': bim_cl,
+                                    'titulo': titulo_cl or f"Claves {bim_cl}",
+                                    'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
+                                    'docente': usuario, 'docente_nombre': nombre_completo_doc,
+                                    'areas': [{'nombre': k, 'nota': v}
+                                              for k, v in dat2['areas'].items()],
+                                    'promedio_general': dat2['promedio'],
+                                    '_docente': usuario,
+                                })
+                        with open('resultados.json','w',encoding='utf-8') as _fr:
+                            import json as _js
+                            _js.dump(res_act, _fr, ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
+                    st.success("✅ Evaluación guardada en historial")
+                    st.balloons()
+
+            with col_pdf_cl:
+                if st.button("📥 PDF Ranking", type="primary",
+                             use_container_width=True, key="btn_pdf_cl"):
+                    pdf_cl = _generar_ranking_pdf(ranking_cl, areas_cl_names,
+                                                   grado_cl, bim_cl, config)
+                    st.download_button("⬇️ Descargar PDF", pdf_cl,
+                                       f"Ranking_Claves_{grado_cl}_{bim_cl}.pdf",
+                                       "application/pdf", key="dl_pdf_cl")
+
+            # WhatsApp
+            st.markdown("**📱 Enviar notas por WhatsApp:**")
+            wa_cl = []
+            for fr2 in ranking_cl:
+                al2 = BaseDatos.buscar_por_dni(fr2.get('DNI',''))
+                cel2 = str((al2 or {}).get('Celular_Apoderado','')).strip()
+                if cel2 and cel2 not in ('nan','None',''):
+                    cc2 = cel2.replace(' ','').replace('+','').replace('-','')
+                    if not cc2.startswith('51'): cc2 = '51'+cc2
+                    msg2 = (f"I.E.P.YACHAY\n{fr2.get('Nombre','')}\n"
+                            f"{grado_cl} | {bim_cl}\n")
+                    for an2 in areas_cl_names:
+                        msg2 += f"{an2}: {fr2.get(an2,0)} ({nota_a_letra(fr2.get(an2,0))})\n"
+                    msg2 += f"PROMEDIO: {fr2.get('Promedio',0)}"
+                    import urllib.parse as _up3
+                    url2 = f"https://wa.me/{cc2}?text={_up3.quote(msg2)}"
+                    wa_cl.append(f'<a href="{url2}" target="_blank" style="background:#25D366;color:white;padding:3px 8px;border-radius:5px;text-decoration:none;font-size:0.78rem;margin:2px;display:inline-block;">📱 {fr2.get("Nombre","")[:16]}</a>')
+            if wa_cl:
+                st.markdown(" ".join(wa_cl), unsafe_allow_html=True)
+        else:
+            st.info("📭 Ingresa las respuestas de los estudiantes para ver el ranking.")
         return
 
     # ═══════════════════════════════════════════════════════════════════════════
