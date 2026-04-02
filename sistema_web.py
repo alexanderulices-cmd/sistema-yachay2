@@ -6746,7 +6746,7 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             n_atp = st.number_input("N° formatos a generar:", 1, 10, 1, key="atp_n")
         if st.button("📄 Generar Formato", type="primary",
                      use_container_width=True, key="btn_atp"):
-            buf_atp = _generar_formato_atencion_padres(config, doc_atp, grado_atp,
+            buf_atp = _generar_formato_atencion_padres(config, doc_atp, "",
                                                         int(n_atp), anio)
             st.session_state['_pdf_atp'] = buf_atp
         if st.session_state.get('_pdf_atp'):
@@ -7299,290 +7299,226 @@ def _generar_memorandum(config, tipo, destinatario, cargo, numero, referencia, n
 
 
 def _generar_papeleta_aula(config, n_hojas, anio):
-    """3 papeletas iguales por hoja A4 para solicitar uso de aula — cuadros limpios."""
+    """3 papeletas A4 — labels DENTRO de cada celda, cuadros limpios."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
-                                     Paragraph, Spacer, HRFlowable)
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.pdfgen import canvas as rl_canvas
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.enums import TA_LEFT, TA_CENTER
     import io as _io
 
     buf = _io.BytesIO()
-    ie  = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
-    doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=0.4*cm, bottomMargin=0.4*cm,
-                            leftMargin=0.8*cm, rightMargin=0.8*cm)
-    ss  = getSampleStyleSheet()
-    PW  = A4[0] - 1.6*cm
-    C_AZ= colors.Color(0.20, 0.38, 0.68)
-    C_AL= colors.Color(0.90, 0.94, 0.99)
-    C_GR= colors.Color(0.65, 0.65, 0.70)
+    ie  = config.get("nombre_ie","I.E.P. ALTERNATIVO YACHAY")
+    W, H = A4
+    c   = rl_canvas.Canvas(buf, pagesize=A4)
+    C_AZ = colors.Color(0.20,0.38,0.68)
+    C_AL = colors.Color(0.90,0.94,0.99)
 
-    def P(txt, bold=False, size=8, align=TA_LEFT, color=None):
-        fn = "Helvetica-Bold" if bold else "Helvetica"
-        return Paragraph(f"<b>{txt}</b>" if bold else txt,
-                         ParagraphStyle("p", fontSize=size, leading=size+3,
-                                        alignment=align, textColor=color or colors.black,
-                                        fontName=fn, parent=ss["Normal"]))
+    PAP_H = (H - 1.0*cm) / 3.0
 
-    def papeleta():
-        els = []
+    def draw_papeleta(y0):
         # Cabecera
-        t0 = Table([
-            [P("PAPELETA DE SOLICITUD DE USO DE AULA",
-               bold=True, size=11, align=TA_CENTER, color=colors.white)],
-            [P(f"{ie}  |  Año {anio}", size=8, align=TA_CENTER,
-               color=colors.Color(0.85,0.90,1.0))],
-        ], colWidths=[PW], rowHeights=[0.70*cm, 0.38*cm])
-        t0.setStyle(TableStyle([
-            ("BACKGROUND",(0,0),(-1,-1),C_AZ),
-            ("ALIGN",(0,0),(-1,-1),"CENTER"),("VALIGN",(0,0),(-1,-1),"MIDDLE"),
-        ]))
-        els.append(t0)
+        c.setFillColorRGB(0.20,0.38,0.68)
+        c.roundRect(0.7*cm, y0+PAP_H-0.88*cm, W-1.4*cm, 0.80*cm, 0.18*cm, fill=1, stroke=0)
+        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10.5)
+        c.drawCentredString(W/2, y0+PAP_H-0.55*cm, "PAPELETA DE SOLICITUD DE USO DE AULA")
+        c.setFont("Helvetica",7.5)
+        c.drawCentredString(W/2, y0+PAP_H-0.78*cm, f"{ie}  |  Año {anio}")
 
-        # Fila 1: Docente | Área
-        t1 = Table(
-            [[P("Docente solicitante:",bold=True,size=8), P("Área / Actividad:",bold=True,size=8)],
-             [" ", " "]],
-            colWidths=[PW*0.50, PW*0.50],
-            rowHeights=[0.36*cm, 0.65*cm]
-        )
-        t1.setStyle(TableStyle([
-            ("BOX",(0,1),(0,1),0.6,C_GR),("BOX",(1,1),(1,1),0.6,C_GR),
-            ("GRID",(0,0),(-1,-1),0.3,colors.Color(0.88,0.88,0.88)),
-            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
-            ("BACKGROUND",(0,0),(-1,0),C_AL),
-        ]))
-        els.append(t1)
+        def box(lbl, bx, by, bw, bh):
+            """Dibuja un recuadro con label pequeño en la esquina superior izquierda."""
+            # Fondo label strip
+            c.setFillColorRGB(0.90,0.94,0.99)
+            c.rect(bx, by+bh-0.28*cm, bw, 0.28*cm, fill=1, stroke=0)
+            # Borde general
+            c.setStrokeColorRGB(0.55,0.60,0.72); c.setLineWidth(0.5)
+            c.rect(bx, by, bw, bh, fill=0, stroke=1)
+            # Label
+            c.setFillColorRGB(0.20,0.38,0.68); c.setFont("Helvetica-Bold",7)
+            c.drawString(bx+0.12*cm, by+bh-0.22*cm, lbl)
 
-        # Fila 2: Fecha | H.Inicio | H.Fin | Aula | Grado
-        t2 = Table(
-            [[P("Fecha:",bold=True,size=8), P("Hora inicio:",bold=True,size=8),
-              P("Hora fin:",bold=True,size=8), P("Aula:",bold=True,size=8),
-              P("Grado/Sec.:",bold=True,size=8)],
-             [" "," "," "," "," "]],
-            colWidths=[PW*0.22, PW*0.19, PW*0.17, PW*0.20, PW*0.22],
-            rowHeights=[0.36*cm, 0.62*cm]
-        )
-        t2.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),0.4,C_GR),
-            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
-            ("BACKGROUND",(0,0),(-1,0),C_AL),
-        ]))
-        els.append(t2)
+        ym = y0 + PAP_H - 1.10*cm  # y desde donde empezamos
+        LH = 0.85*cm  # alto de cada fila de campos
+        MX = 0.7*cm; MW = W - 1.4*cm
 
-        # Fila 3: Motivo (2 líneas)
-        t3 = Table(
-            [[P("Motivo / Actividad a desarrollar:",bold=True,size=8)],
-             [" "],["  "]],
-            colWidths=[PW],
-            rowHeights=[0.28*cm, 0.62*cm, 0.62*cm]
-        )
-        t3.setStyle(TableStyle([
-            ("BOX",(0,1),(0,1),0.6,C_GR),("BOX",(0,2),(0,2),0.6,C_GR),
-            ("GRID",(0,0),(-1,-1),0.3,colors.Color(0.88,0.88,0.88)),
-            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
-            ("BACKGROUND",(0,0),(0,0),C_AL),
-        ]))
-        els.append(t3)
+        # Fila 1: Docente (55%) | Área (45%)
+        box("Docente solicitante:", MX, ym-LH, MW*0.55, LH)
+        box("Área / Actividad:", MX+MW*0.55+0.05*cm, ym-LH, MW*0.45-0.05*cm, LH)
+        ym -= LH + 0.06*cm
+
+        # Fila 2: Fecha | H.inicio | H.fin | Aula | Grado/Sec.
+        ws2 = [MW*0.20, MW*0.18, MW*0.16, MW*0.22, MW*0.24]
+        lbls2 = ["Fecha:", "Hora inicio:", "Hora fin:", "Aula/Ambiente:", "Grado / Sección:"]
+        xc = MX
+        for lbl, w in zip(lbls2, ws2):
+            box(lbl, xc, ym-LH, w-0.04*cm, LH)
+            xc += w
+        ym -= LH + 0.06*cm
+
+        # Fila 3: Motivo (2 líneas de altura)
+        box("Motivo / Actividad a desarrollar:", MX, ym-LH*2, MW, LH*2)
+        ym -= LH*2 + 0.06*cm
 
         # Firmas
-        t4 = Table(
-            [[P("V°B° Dirección",bold=True,size=8,align=TA_CENTER,color=C_AZ),
-              P("Firma del Docente Solicitante",bold=True,size=8,align=TA_CENTER,color=C_AZ)],
-             [" "," "]],
-            colWidths=[PW*0.40, PW*0.60],
-            rowHeights=[0.40*cm, 0.95*cm]
-        )
-        t4.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),0.5,C_GR),
-            ("BACKGROUND",(0,0),(-1,0),C_AL),
-            ("ALIGN",(0,0),(-1,-1),"CENTER"),("VALIGN",(0,0),(-1,-1),"MIDDLE"),
-        ]))
-        els.append(t4)
-        return els
+        fw = MW*0.40; fw2 = MW-fw
+        box("V°B° Dirección:", MX, ym-LH*1.1, fw-0.04*cm, LH*1.1)
+        box("Firma del Docente Solicitante:", MX+fw, ym-LH*1.1, fw2, LH*1.1)
 
-    def corte():
-        t = Table([[P("- - - - - - - - - - - - - - - recortar aqui - - - - - - - - - - - - - - -",
-                      size=6, align=TA_CENTER, color=colors.Color(0.6,0.6,0.6))]],
-                  colWidths=[PW], rowHeights=[0.22*cm])
-        t.setStyle(TableStyle([("ALIGN",(0,0),(0,0),"CENTER")]))
-        return t
-
-    from reportlab.platypus import PageBreak
-    story = []
     for pag in range(n_hojas):
         if pag > 0:
-            story.append(PageBreak())
+            c.showPage()
         for i in range(3):
-            story.extend(papeleta())
-            if i < 2:
-                story.append(Spacer(1, 0.06*cm))
-                story.append(corte())
-                story.append(Spacer(1, 0.06*cm))
+            y0 = H - 0.4*cm - (i+1)*PAP_H
 
-    doc.build(story)
-    buf.seek(0)
+            # Línea de corte
+            if i > 0:
+                c.setStrokeColorRGB(0.6,0.6,0.6); c.setLineWidth(0.3); c.setDash(4,4)
+                c.line(0.5*cm, y0+PAP_H, W-0.5*cm, y0+PAP_H)
+                c.setDash(); c.setFont("Helvetica",5.5); c.setFillColorRGB(0.6,0.6,0.6)
+                c.drawCentredString(W/2, y0+PAP_H+0.08*cm, "- - - recortar - - -")
+
+            # Fondo suave
+            c.setFillColorRGB(0.97,0.98,1.0)
+            c.roundRect(0.55*cm, y0+0.06*cm, W-1.1*cm, PAP_H-0.10*cm, 0.2*cm, fill=1, stroke=0)
+            draw_papeleta(y0)
+
+    c.save(); buf.seek(0)
     return buf.read()
 
 def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
-    """Formato atencion padres con todos los cuadros correctamente alineados."""
+    """Formato atencion padres — sin grado en header, cuadros con labels embebidos."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table,
-                                     TableStyle, Spacer, HRFlowable, PageBreak)
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.pdfgen import canvas as rl_canvas
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.enums import TA_LEFT, TA_CENTER
     import io as _io
 
-    buf  = _io.BytesIO()
-    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
-    ugel = config.get("ugel", "Urubamba")
-    ML = MR = 1.8*cm
-    W    = A4[0] - ML - MR
-    doc  = SimpleDocTemplate(buf, pagesize=A4,
-                             topMargin=1.3*cm, bottomMargin=1.3*cm,
-                             leftMargin=ML, rightMargin=MR)
-    ss   = getSampleStyleSheet()
-    C_MO = colors.Color(0.40, 0.08, 0.52)
-    C_ML = colors.Color(0.94, 0.88, 0.98)
-    C_GR = colors.Color(0.65, 0.65, 0.70)
+    buf = _io.BytesIO()
+    ie   = config.get("nombre_ie","I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel","Urubamba")
+    W, H = A4
+    C_MO = (0.40,0.08,0.52)
+    C_ML = (0.94,0.88,0.98)
+    MX   = 1.5*cm
+    MW   = W - 3.0*cm
 
-    def P(txt, bold=False, size=8.5, align=TA_LEFT, color=None, space=2):
-        fn = "Helvetica-Bold" if bold else "Helvetica"
-        return Paragraph(f"<b>{txt}</b>" if bold else txt,
-                         ParagraphStyle("p", fontSize=size, leading=size+3,
-                                        alignment=align, textColor=color or colors.black,
-                                        fontName=fn, spaceAfter=space, parent=ss["Normal"]))
+    c = rl_canvas.Canvas(buf, pagesize=A4)
 
-    def sec(lbl):
-        t = Table([[P(lbl, bold=True, size=8.5, color=colors.white)]],
-                  colWidths=[W], rowHeights=[0.48*cm])
-        t.setStyle(TableStyle([
-            ("BACKGROUND",(0,0),(0,0),C_MO),
-            ("LEFTPADDING",(0,0),(0,0),5),
-            ("VALIGN",(0,0),(0,0),"MIDDLE"),
-        ]))
-        return t
+    def draw_page():
+        y = H - 1.2*cm
 
-    def fila_campos(pares, alto=0.65*cm):
-        """Lista de (label, ancho) -> tabla con label arriba, espacio abajo."""
-        labels = [P(l, bold=True, size=7.5, color=colors.Color(0.3,0.3,0.3))
-                  for l,_ in pares]
-        blanks = [" "] * len(pares)
-        ws = [w for _,w in pares]
-        t = Table([labels, blanks], colWidths=ws,
-                  rowHeights=[0.38*cm, alto])
-        t.setStyle(TableStyle([
-            ("GRID",(0,1),(-1,1), 0.5, C_GR),
-            ("BACKGROUND",(0,0),(-1,0), C_ML),
-            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
-            ("LEFTPADDING",(0,0),(-1,-1),3),
-            ("TOPPADDING",(0,0),(-1,-1),1),
-        ]))
-        return t
+        # Header
+        c.setFillColorRGB(*C_MO)
+        c.rect(MX, y-0.5*cm, MW, 0.5*cm, fill=1, stroke=0)
+        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10)
+        c.drawCentredString(W/2, y-0.33*cm, "REGISTRO DE ATENCIÓN A PADRES DE FAMILIA")
+        y -= 0.60*cm
+        c.setFillColorRGB(*C_MO); c.setFont("Helvetica",7.5)
+        c.drawCentredString(W/2, y, f"{ie}  |  UGEL {ugel}  |  Tutoría y Orientación Educativa")
+        y -= 0.25*cm
+        c.setFillColorRGB(*C_MO); c.setFont("Helvetica",7)
+        c.drawCentredString(W/2, y, "R.M. 0657-2017-MINEDU — Plan de Tutoría y Orientación Educativa")
+        y -= 0.35*cm
 
-    def lineas_escritura(n, alto=0.72*cm):
-        rows = [[" "]] * n
-        t = Table(rows, colWidths=[W], rowHeights=[alto]*n)
-        t.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),0.5,C_GR),
-            ("VALIGN",(0,0),(-1,-1),"TOP"),
-            ("LEFTPADDING",(0,0),(-1,-1),3),
-            ("TOPPADDING",(0,0),(-1,-1),2),
-        ]))
-        return t
+        # Línea divisora
+        c.setStrokeColorRGB(*C_MO); c.setLineWidth(1.5)
+        c.line(MX, y, MX+MW, y); y -= 0.12*cm
 
-    story = []
-    for n in range(n_formatos):
-        if n > 0:
-            story.append(PageBreak())
+        def box(lbl, bx, by, bw, bh, lbl_size=7):
+            c.setFillColorRGB(*C_ML)
+            c.rect(bx, by+bh-0.30*cm, bw, 0.30*cm, fill=1, stroke=0)
+            c.setStrokeColorRGB(0.65,0.55,0.72); c.setLineWidth(0.5)
+            c.rect(bx, by, bw, bh, fill=0, stroke=1)
+            c.setFillColorRGB(*C_MO); c.setFont("Helvetica-Bold",lbl_size)
+            c.drawString(bx+0.10*cm, by+bh-0.23*cm, lbl)
 
-        story += [
-            P(ie, bold=True, size=11, align=TA_CENTER, space=2),
-            P(f"UGEL {ugel}  |  {grado}  |  Tutoría y Orientación Educativa",
-              size=8, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
-            HRFlowable(width="100%", thickness=2, color=C_MO, spaceBefore=4, spaceAfter=4),
-            P("REGISTRO DE ATENCIÓN A PADRES DE FAMILIA", bold=True, size=12,
-              align=TA_CENTER, color=C_MO, space=2),
-            P("R.M. 0657-2017-MINEDU — Plan de Tutoría y Orientación Educativa",
-              size=7.5, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
-            HRFlowable(width="100%", thickness=1, color=C_MO, spaceBefore=3, spaceAfter=5),
-        ]
+        def sec_hdr(lbl, by, bh=0.42*cm):
+            c.setFillColorRGB(*C_MO)
+            c.rect(MX, by, MW, bh, fill=1, stroke=0)
+            c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",8.5)
+            c.drawString(MX+0.2*cm, by+0.10*cm, lbl)
+            return by - 0.05*cm
 
-        # Datos generales
-        story.append(fila_campos([
-            ("N° Registro:", W*0.15), ("Fecha:", W*0.18),
-            ("Hora inicio:", W*0.18), ("Hora fin:", W*0.16),
-            ("Modalidad: Presencial/Virtual", W*0.33)]))
-        story.append(Spacer(1, 0.08*cm))
-        story.append(fila_campos([
-            ("Docente / Tutor:", W*0.55),
-            ("Grado y Sección:", W*0.45)]))
-        story.append(Spacer(1, 0.10*cm))
+        LH = 0.82*cm
+
+        # Fila 1: N°Registro | Fecha | H.Inicio | H.Fin | Modalidad
+        ws1 = [MW*0.14, MW*0.18, MW*0.16, MW*0.14, MW*0.38]
+        ls1 = ["N° Registro:", "Fecha:", "Hora inicio:", "Hora fin:", "Modalidad: Presencial / Virtual"]
+        xc = MX
+        for l1, w1 in zip(ls1, ws1):
+            box(l1, xc, y-LH, w1-0.04*cm, LH)
+            xc += w1
+        y -= LH + 0.08*cm
+
+        # Fila 2: Docente/Tutor
+        box("Docente / Tutor:", MX, y-LH, MW, LH)
+        y -= LH + 0.10*cm
 
         # Sección involucrados
-        story.append(sec("DATOS DEL ESTUDIANTE Y DEL PADRE / MADRE / APODERADO"))
-        story.append(fila_campos([
-            ("Apellidos y Nombres del estudiante:", W*0.50),
-            ("Apellidos y Nombres del apoderado:", W*0.50)]))
-        story.append(Spacer(1, 0.05*cm))
-        story.append(fila_campos([
-            ("DNI del estudiante:", W*0.25),
-            ("Grado:", W*0.15),
-            ("DNI del apoderado:", W*0.25),
-            ("Teléfono:", W*0.35)]))
-        story.append(Spacer(1, 0.10*cm))
+        y = sec_hdr("DATOS DEL ESTUDIANTE Y DEL PADRE / MADRE / APODERADO", y)
+        # Nombres
+        box("Apellidos y Nombres del estudiante:", MX, y-LH, MW*0.50-0.04*cm, LH)
+        box("Apellidos y Nombres del apoderado:", MX+MW*0.50, y-LH, MW*0.50, LH)
+        y -= LH + 0.06*cm
+        # DNI/Grado/Tel
+        box("DNI estudiante:", MX, y-LH*0.9, MW*0.22-0.04*cm, LH*0.9)
+        box("Grado:", MX+MW*0.22, y-LH*0.9, MW*0.16-0.04*cm, LH*0.9)
+        box("DNI apoderado:", MX+MW*0.38, y-LH*0.9, MW*0.22-0.04*cm, LH*0.9)
+        box("Teléfono:", MX+MW*0.60, y-LH*0.9, MW*0.40, LH*0.9)
+        y -= LH*0.9 + 0.10*cm
 
         # Motivo
-        story.append(sec("MOTIVO DE LA ATENCIÓN"))
-        story.append(lineas_escritura(1, 0.72*cm))
-        story.append(Spacer(1, 0.08*cm))
+        y = sec_hdr("MOTIVO DE LA ATENCIÓN", y)
+        box("", MX, y-LH, MW, LH)
+        y -= LH + 0.10*cm
 
         # Desarrollo
-        story.append(sec("DESARROLLO Y ACUERDOS TOMADOS"))
-        story.append(lineas_escritura(3, 0.68*cm))
-        story.append(Spacer(1, 0.08*cm))
+        y = sec_hdr("DESARROLLO Y ACUERDOS TOMADOS", y)
+        box("", MX, y-LH*2.5, MW, LH*2.5)
+        y -= LH*2.5 + 0.10*cm
 
         # Compromisos
-        story.append(sec("COMPROMISOS ASUMIDOS (firmados por el apoderado)"))
-        story.append(lineas_escritura(2, 0.68*cm))
-        story.append(Spacer(1, 0.08*cm))
+        y = sec_hdr("COMPROMISOS ASUMIDOS (firmados por el apoderado)", y)
+        box("", MX, y-LH*1.8, MW, LH*1.8)
+        y -= LH*1.8 + 0.10*cm
 
         # Próxima cita
-        story.append(sec("PRÓXIMA CITA"))
-        story.append(fila_campos([
-            ("Fecha:", W*0.22), ("Hora:", W*0.18),
-            ("Lugar:", W*0.60)]))
-        story.append(Spacer(1, 0.20*cm))
+        y = sec_hdr("PRÓXIMA CITA", y)
+        box("Fecha:", MX, y-LH*0.9, MW*0.25-0.04*cm, LH*0.9)
+        box("Hora:", MX+MW*0.25, y-LH*0.9, MW*0.18-0.04*cm, LH*0.9)
+        box("Lugar:", MX+MW*0.43, y-LH*0.9, MW*0.57, LH*0.9)
+        y -= LH*0.9 + 0.12*cm
 
         # Firmas
-        t_f = Table(
-            [[P("FIRMA DOCENTE/TUTOR",bold=True,size=8,align=TA_CENTER,color=C_MO),
-              P("FIRMA PADRE/MADRE",bold=True,size=8,align=TA_CENTER,color=C_MO),
-              P("FIRMA ESTUDIANTE",bold=True,size=8,align=TA_CENTER,color=C_MO)],
-             [" "," "," "],
-             [P("Nombre:___________________",size=7.5,align=TA_CENTER),
-              P("Nombre:___________________",size=7.5,align=TA_CENTER),
-              P("Nombre:___________________",size=7.5,align=TA_CENTER)]],
-            colWidths=[W/3, W/3, W/3],
-            rowHeights=[0.42*cm, 1.0*cm, 0.35*cm]
-        )
-        t_f.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),0.5,C_GR),
-            ("BACKGROUND",(0,0),(-1,0),C_ML),
-            ("ALIGN",(0,0),(-1,-1),"CENTER"),
-            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
-        ]))
-        story += [t_f, Spacer(1, 0.15*cm),
-                  P("Documento según R.M. 0657-2017-MINEDU. Conservar en el file de tutoría del docente.",
-                    size=7, align=TA_CENTER, color=colors.Color(0.5,0.5,0.5))]
+        fw = MW/3
+        for i_f, lbl_f in enumerate(["FIRMA DOCENTE/TUTOR","FIRMA PADRE/MADRE","FIRMA ESTUDIANTE"]):
+            bx_f = MX + i_f*fw
+            c.setFillColorRGB(*C_ML)
+            c.rect(bx_f, y-LH*1.3, fw-0.04*cm, LH*1.3, fill=1, stroke=0)
+            c.setFillColorRGB(*C_MO); c.setFont("Helvetica-Bold",8)
+            c.drawCentredString(bx_f+fw/2-0.02*cm, y-0.28*cm, lbl_f)
+            c.setStrokeColorRGB(0.65,0.55,0.72); c.setLineWidth(0.5)
+            c.rect(bx_f, y-LH*1.3, fw-0.04*cm, LH*1.3, fill=0, stroke=1)
+            c.setFont("Helvetica",7); c.setFillColorRGB(0.3,0.3,0.3)
+            c.drawCentredString(bx_f+fw/2-0.02*cm, y-LH*1.3+0.12*cm, "Nombre:___________________")
+        y -= LH*1.3 + 0.15*cm
 
-    doc.build(story)
-    buf.seek(0)
+        # Pie
+        c.setFont("Helvetica",6.5); c.setFillColorRGB(0.5,0.5,0.5)
+        c.drawCentredString(W/2, y,
+            "Documento segun R.M. 0657-2017-MINEDU. Conservar en el file de tutoria del docente.")
+
+    for n in range(n_formatos):
+        if n > 0:
+            c.showPage()
+        draw_page()
+
+    c.save(); buf.seek(0)
     return buf.read()
 
 def _generar_inventario_completo(config, anio):
@@ -12626,6 +12562,35 @@ def tab_base_datos():
                                 st.error("El nombre no puede estar vacío")
                     else:
                         st.warning("No se encontró ningún alumno con ese DNI o nombre")
+            # Editar celular apoderado
+            with st.expander("📱 Editar Celular / Apoderado", expanded=False):
+                st.caption("Busque al alumno por DNI para actualizar celular y datos del apoderado")
+                edit_dni_cel = st.text_input("DNI del alumno:", key="edit_dni_cel", max_chars=8, placeholder="12345678")
+                if edit_dni_cel and len(edit_dni_cel.strip()) == 8:
+                    al_cel = BaseDatos.buscar_por_dni(edit_dni_cel.strip())
+                    if al_cel:
+                        st.info(f"**{al_cel.get('Nombre','')}** — {al_cel.get('Grado','')}")
+                        cc1, cc2 = st.columns(2)
+                        with cc1:
+                            nuevo_cel = st.text_input("Celular apoderado:", value=str(al_cel.get('Celular_Apoderado','')).replace('nan',''), key="edit_cel_nuevo", max_chars=9, placeholder="987654321")
+                            nuevo_apo = st.text_input("Nombre apoderado:", value=str(al_cel.get('Apoderado','')).replace('nan',''), key="edit_apo_nuevo")
+                        with cc2:
+                            nuevo_dni_apo = st.text_input("DNI apoderado:", value=str(al_cel.get('DNI_Apoderado','')).replace('nan',''), key="edit_dni_apo_nuevo", max_chars=8)
+                        if st.button("💾 GUARDAR CELULAR/APODERADO", type="primary", key="btn_guardar_cel"):
+                            df_cel = BaseDatos.cargar_matricula()
+                            df_cel['DNI'] = df_cel['DNI'].astype(str).str.strip()
+                            mask_cel = df_cel['DNI'] == edit_dni_cel.strip()
+                            if mask_cel.any():
+                                if nuevo_cel.strip(): df_cel.loc[mask_cel,'Celular_Apoderado'] = nuevo_cel.strip()
+                                if nuevo_apo.strip(): df_cel.loc[mask_cel,'Apoderado'] = nuevo_apo.strip().upper()
+                                if nuevo_dni_apo.strip(): df_cel.loc[mask_cel,'DNI_Apoderado'] = nuevo_dni_apo.strip()
+                                BaseDatos.guardar_matricula(df_cel)
+                                st.success("✅ Datos actualizados correctamente")
+                                import time as _t; _t.sleep(1)
+                                st.rerun()
+                    else:
+                        st.error("No se encontró alumno con ese DNI")
+
             # Cambiar Grado/Seccion de alumno
             with st.expander("✏️ Cambiar Grado / Sección de Alumno", expanded=False):
                 st.caption("Busque al alumno por DNI para cambiar su grado o sección (ej: Ciclo Intensivo → Ciclo Ordinario)")
@@ -12788,28 +12753,34 @@ def tab_base_datos():
                         df_full = BaseDatos.cargar_matricula()
                         df_full['DNI'] = df_full['DNI'].astype(str).str.strip()
                         n_cambios = 0
-                        for idx_e, row_e in edited.iterrows():
-                            # Identificar por índice original en df_vista
-                            if idx_e < len(df_vista):
-                                orig_row = df_vista.iloc[idx_e]
-                                orig_dni = str(orig_row.get('DNI','')).strip()
-                                orig_nom = str(orig_row.get('Nombre','')).strip()
-                                # Buscar en df_full
-                                mask = df_full['DNI'] == orig_dni
-                                if not mask.any():
-                                    mask = df_full['Nombre'].astype(str).str.strip() == orig_nom
-                                if mask.any():
-                                    for col in COLS_EDIT:
-                                        val = str(row_e.get(col,'')).strip()
-                                        if val and val != 'nan':
-                                            df_full.loc[mask, col] = val.upper() if col in ('Nombre','Apoderado') else val
-                                    # Limpiar provisional si DNI real
-                                    new_dni = str(row_e.get('DNI','')).strip()
-                                    if new_dni and len(new_dni)==8 and new_dni.isdigit():
-                                        df_full.loc[mask, '_provisional'] = 'NO'
-                                    n_cambios += 1
+                        # edited has same length as df_vista — iterate positionally
+                        df_vista_reset = df_vista.reset_index(drop=True)
+                        edited_reset = edited.reset_index(drop=True)
+                        for pos in range(len(edited_reset)):
+                            orig_row = df_vista_reset.iloc[pos]
+                            row_e   = edited_reset.iloc[pos]
+                            orig_dni = str(orig_row.get('DNI','')).strip()
+                            orig_nom = str(orig_row.get('Nombre','')).strip()
+                            mask = df_full['DNI'] == orig_dni
+                            if not mask.any() and orig_nom:
+                                mask = df_full['Nombre'].astype(str).str.strip() == orig_nom
+                            if mask.any():
+                                for col in COLS_EDIT:
+                                    val = str(row_e.get(col,'')).strip()
+                                    if val and val not in ('nan','None',''):
+                                        if col in ('Nombre','Apoderado'):
+                                            df_full.loc[mask, col] = val.upper()
+                                        else:
+                                            df_full.loc[mask, col] = val
+                                new_dni = str(row_e.get('DNI','')).strip()
+                                if new_dni and len(new_dni)==8 and new_dni.isdigit():
+                                    df_full.loc[mask, '_provisional'] = 'NO'
+                                n_cambios += 1
                         BaseDatos.guardar_matricula(df_full)
-                    st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
+                    if n_cambios > 0:
+                        st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
+                    else:
+                        st.warning("⚠️ No se encontraron registros para actualizar. Verifica los DNI.")
                     st.rerun()
 
     with tab_dc:
@@ -19401,28 +19372,45 @@ def tab_registrar_notas(config):
                         'tipo_evaluacion': 'Por Claves',
                     }
                     _guardar_historial_evaluaciones(hist_cl)
-                    # También en resultados.json
+                    # Guardar en resultados.json para portal padres y reporte integral
                     try:
-                        res_act = BaseDatos.cargar_todos_resultados()
-                        for dni_r2, dat2 in notas_cl.items():
-                            if dat2['promedio'] > 0:
-                                res_act.append({
-                                    'dni': dni_r2, 'nombre': dat2['nombre'],
-                                    'grado': grado_cl, 'periodo': bim_cl,
+                        import json as _js2
+                        _res_path = 'resultados.json'
+                        _res_act = []
+                        if Path(_res_path).exists():
+                            with open(_res_path,'r',encoding='utf-8') as _fr2:
+                                _res_act = _js2.load(_fr2)
+                        for _dnir, _datr in notas_cl.items():
+                            if _datr['promedio'] > 0:
+                                _res_act.append({
+                                    'dni': _dnir,
+                                    'nombre': _datr['nombre'],
+                                    'grado': grado_cl,
+                                    'periodo': bim_cl,
                                     'titulo': titulo_cl or f"Claves {bim_cl}",
-                                    'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
-                                    'docente': usuario, 'docente_nombre': nombre_completo_doc,
+                                    'fecha': fecha_peru_str(),
+                                    'hora': hora_peru_str(),
+                                    'docente': usuario,
+                                    'docente_nombre': nombre_completo_doc,
                                     'areas': [{'nombre': k, 'nota': v}
-                                              for k, v in dat2['areas'].items()],
-                                    'promedio_general': dat2['promedio'],
+                                              for k, v in _datr['areas'].items()],
+                                    'promedio_general': _datr['promedio'],
                                     '_docente': usuario,
                                 })
-                        with open('resultados.json','w',encoding='utf-8') as _fr:
-                            import json as _js
-                            _js.dump(res_act, _fr, ensure_ascii=False, indent=2)
-                    except Exception:
-                        pass
-                    st.success("✅ Evaluación guardada en historial")
+                        with open(_res_path,'w',encoding='utf-8') as _fw2:
+                            _js2.dump(_res_act, _fw2, ensure_ascii=False, indent=2)
+                        # También en historial_evaluaciones por DNI para portal padres
+                        _hev_path = 'historial_evaluaciones.json'
+                        _hev = {}
+                        if Path(_hev_path).exists():
+                            with open(_hev_path,'r',encoding='utf-8') as _fhev:
+                                _hev = _js2.load(_fhev)
+                        _hev[clave_cl] = hist_cl[clave_cl]
+                        with open(_hev_path,'w',encoding='utf-8') as _fhev2:
+                            _js2.dump(_hev, _fhev2, ensure_ascii=False, indent=2)
+                    except Exception as _erc:
+                        st.warning(f"Historial guardado pero error en resultados.json: {_erc}")
+                    st.success("✅ Evaluación guardada — visible en portal padres y reporte integral")
                     st.balloons()
 
             with col_pdf_cl:
@@ -19499,23 +19487,23 @@ def tab_registrar_notas(config):
 
         # Determinar áreas disponibles según el grado seleccionado
         grado_str_cfg = str(grado_cfg)
-        if 'Inicial' in grado_str_cfg:
-            areas_disp = AREAS_MINEDU.get('INICIAL', AREAS_MINEDU.get('PRIMARIA', []))
-        elif any(x in grado_str_cfg for x in ['1° Sec','2° Sec','3° Sec','4° Sec','5° Sec']):
-            areas_cepre_all = sorted(set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])))
-            areas_disp = AREAS_MINEDU.get('SECUNDARIA', []) + areas_cepre_all
-        elif 'GRUPO AB' in grado_str_cfg:
+        if 'Inicial' in grado_str_cfg or '3 años' in grado_str_cfg or '4 años' in grado_str_cfg or '5 años' in grado_str_cfg:
+            areas_disp = AREAS_MINEDU.get('INICIAL', [])
+        elif any(x in grado_str_cfg for x in ['Secundaria','° Sec']):
+            areas_disp = AREAS_MINEDU.get('SECUNDARIA', [])
+        elif 'GRUPO AB' in grado_str_cfg or 'Grupo AB' in grado_str_cfg:
             areas_disp = AREAS_CEPRE_UNSAAC.get('GRUPO AB', [])
-        elif 'GRUPO CD' in grado_str_cfg:
+        elif 'GRUPO CD' in grado_str_cfg or 'Grupo CD' in grado_str_cfg:
             areas_disp = AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-        elif any(x in grado_str_cfg for x in ['Ciclo','Reforzamiento','Preu','PREU']):
-            areas_preu = AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-            areas_disp = sorted(set(areas_preu))
+        elif any(x in grado_str_cfg for x in ['CEPRE','Ciclo','Reforzamiento','Preu','PREU','UNSAAC']):
+            _areas_preu = AREAS_CEPRE_UNSAAC.get('GRUPO AB',[]) + AREAS_CEPRE_UNSAAC.get('GRUPO CD',[])
+            areas_disp = sorted(set(_areas_preu))
+        elif any(x in grado_str_cfg for x in ['Primaria','° Primaria','1°','2°','3°','4°','5°','6°']):
+            areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
         else:
-            # Primaria (y cualquier otro)
             areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
 
-        # Si no hay áreas definidas, permitir texto libre
+        # Si no hay áreas definidas, usar básicas
         if not areas_disp:
             areas_disp = ["Matemática", "Comunicación", "Ciencias", "Historia", "Arte", "Educación Física"]
 
