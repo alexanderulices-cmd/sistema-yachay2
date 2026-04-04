@@ -9728,14 +9728,17 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
     def _membrete(seccion, hdr_c):
         return [
             P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=13),
-            P("UGEL Urubamba  |  Chinchero, Cusco  |  "
-              "Pioneros en la Educacion de Calidad",
+            P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educacion de Calidad",
               size=8.5, color=colors.Color(0.3,0.5,0.1)),
             HRFlowable(width="100%", thickness=1.5, color=hdr_c,
-                       spaceBefore=3, spaceAfter=6),
-            P(f"REGISTRO DE ASISTENCIA  {fecha_str}  —  {seccion}",
+                       spaceBefore=3, spaceAfter=3),
+            P(f"REGISTRO DE ASISTENCIA  —  {fecha_str}  —  {seccion}",
               bold=True, size=11),
-            Spacer(1, 0.25*cm),
+            P("Inicial: entrada 08:00 | salida 13:00–13:20  •  "
+              "Primaria: entrada 08:00 | salida 13:00–14:20  •  "
+              "Secundaria/Preu: entrada 07:30 | mañana y tarde hasta 19:30",
+              size=7, color=colors.Color(0.35,0.35,0.35)),
+            Spacer(1, 0.20*cm),
         ]
 
     FRASES = [
@@ -9774,8 +9777,18 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
         story.append(Spacer(1, 0.4*cm))
         story.append(_tabla_datos(alumnos, C_AZU))
         story.append(Spacer(1, 0.3*cm))
-        story.append(P(frase, size=7.5, align=TA_CENTER,
-                       color=colors.Color(0.3,0.3,0.5)))
+        # Frase motivacional con color
+        story.append(Spacer(1, 0.1*cm))
+        t_frase = Table([[P(f'❝  {frase}  ❞', size=8, align=TA_CENTER,
+                            color=colors.Color(0.2,0.2,0.5))]],
+                        colWidths=[PW - ML - MR])
+        t_frase.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0), colors.Color(0.95,0.95,1.0)),
+            ("BOX",(0,0),(0,0), 0.5, colors.Color(0.6,0.6,0.8)),
+            ("TOPPADDING",(0,0),(0,0), 5),
+            ("BOTTOMPADDING",(0,0),(0,0), 5),
+        ]))
+        story.append(t_frase)
         if tipo == 'ambos':
             story.append(PageBreak())
 
@@ -9786,8 +9799,16 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
         story.append(Spacer(1, 0.4*cm))
         story.append(_tabla_datos(docentes, C_VER))
         story.append(Spacer(1, 0.3*cm))
-        story.append(P(frase, size=7.5, align=TA_CENTER,
-                       color=colors.Color(0.3,0.3,0.5)))
+        t_frase2 = Table([[P(f'❝  {frase}  ❞', size=8, align=TA_CENTER,
+                             color=colors.Color(0.1,0.3,0.2))]],
+                         colWidths=[PW - ML - MR])
+        t_frase2.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0), colors.Color(0.94,0.99,0.95)),
+            ("BOX",(0,0),(0,0), 0.5, colors.Color(0.4,0.7,0.5)),
+            ("TOPPADDING",(0,0),(0,0), 5),
+            ("BOTTOMPADDING",(0,0),(0,0), 5),
+        ]))
+        story.append(t_frase2)
 
     doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
                             topMargin=MT, bottomMargin=MB,
@@ -10267,28 +10288,36 @@ def tab_asistencias():
         st.caption(f"Límite puntualidad: **{limite}**")
 
     with col_modo:
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button("ENTRADA", use_container_width=True, key="be", type="primary"):
-                st.session_state.tipo_asistencia = "Entrada"
-                st.rerun()
-        with c2:
-            if st.button("SALIDA", use_container_width=True, key="bs", type="primary"):
-                st.session_state.tipo_asistencia = "Salida"
-                st.rerun()
-        st.caption("El sistema detecta automáticamente mañana o tarde")
+        # El sistema detecta modo automáticamente según la hora actual
+        import datetime as _dt_asis
+        _dia_semana  = hora_peru().weekday()
+        _es_sabado   = (_dia_semana == 5)
+        _mins_actual = hora_peru().hour * 60 + hora_peru().minute
+        # Auto-detección: antes de 14:30 = Entrada mañana/tardanza, desde 14:30 = Entrada tarde o Salida
+        if _mins_actual < HORA_ENTRADA_TARDE_MIN:
+            _auto_modo   = "Entrada"
+            _auto_color  = "#16a34a"
+            _auto_icon   = "🟢"
+            _auto_label  = "MODO: ENTRADA MAÑANA — automático"
+        else:
+            _auto_modo   = "Salida"
+            _auto_color  = "#2563eb"
+            _auto_icon   = "🔵"
+            _auto_label  = "MODO: TARDE — automático (entrada tarde / salida)"
+        # Forzar modo en session_state según hora
+        st.session_state.tipo_asistencia = _auto_modo
+        _info_horario = (
+            f"{_auto_icon} {_auto_label} | {HORARIOS[horario_sel]['nombre']} | Tardanza después de {limite} | "
+            f"{'📅 SÁBADO' if _es_sabado else '⏰ E.Mañ 7:30–8:05 | S.Mañ 13:00–14:20 | Tarde 14:30–19:30'}"
+        )
+        st.markdown(
+            f"<div style='background:{_auto_color};color:white;padding:8px 14px;"
+            f"border-radius:8px;font-weight:bold;font-size:0.92rem;'>{_info_horario}</div>",
+            unsafe_allow_html=True)
+        st.caption("✅ El modo se detecta automáticamente según la hora del reloj — no necesita botones.")
 
-    _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb"}
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
     modo_label = _modo.replace('_', ' ')
-    import datetime as _dt_asis
-    _dia_semana = hora_peru().weekday()  # 5=sábado, 6=domingo
-    _es_sabado  = (_dia_semana == 5)
-    _info_horario = (
-        f"📌 Modo: {modo_label} | {HORARIOS[horario_sel]['nombre']} — Tardanza después de {limite} | "
-        f"{'📅 SÁBADO — Solo Entrada Mañana y Salida Tarde (sin hora fija)' if _es_sabado else '⏰ Lunes–Viernes: E.Mañana 7:30–8:05 | S.Mañana 13:00–14:20 | E.Tarde 14:30–15:10 | S.Tarde 18:40–19:30'}"
-    )
-    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>{_info_horario}</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -10771,12 +10800,16 @@ def tab_asistencias():
         # ── PUNTUAL DE LA SEMANA ─────────────────────────────────────
         st.markdown("---")
         st.subheader("🏆 Puntual de la Semana")
-        st.caption("Top 3 estudiantes y top 3 docentes más puntuales de los últimos 7 días")
+        st.caption("Top 5 estudiantes y docentes más puntuales — Lunes a Viernes de la semana actual")
 
         _hoy = hora_peru().date()
-        _dias_semana = [((_hoy - timedelta(days=_d)).strftime('%Y-%m-%d'),
-                         (_hoy - timedelta(days=_d)).strftime('%d/%m/%Y'))
-                        for _d in range(6, -1, -1)]
+        # Solo dias habiles: lunes(0) a viernes(4), semana actual
+        _dias_semana = []
+        for _d in range(13, -1, -1):
+            _dia = _hoy - timedelta(days=_d)
+            if _dia.weekday() < 5:
+                _dias_semana.append((_dia.strftime('%Y-%m-%d'), _dia.strftime('%d/%m/%Y')))
+        _dias_semana = _dias_semana[-5:]  # solo los 5 dias habiles mas recientes
 
         _asis_sem = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
@@ -20753,6 +20786,30 @@ HORA_ENTRADA_TARDE_MIN  = 14 * 60 + 30   # 14:30 → inicio turno tarde
 HORA_FIN_ENTRADA_TARDE  = 15 * 60 + 10   # 15:10
 HORA_INICIO_SALIDA_TARDE= 18 * 60 + 40   # 18:40
 HORA_FIN_SALIDA_TARDE   = 19 * 60 + 30   # 19:30
+
+# ── Horarios de salida por nivel ─────────────────────────────────────
+# Inicial:    entrada 08:00 | salida 13:00 – 13:20
+# Primaria:   entrada 08:00 | salida 13:00 – 14:20
+# Secundaria: entrada 07:30 | salida 14:30 (tarde hasta 19:30)
+# Preuniversitario: igual que secundaria
+HORARIOS_NIVEL = {
+    'INICIAL':          {'entrada': '08:00', 'salida_min': '13:00', 'salida_max': '13:20', 'turno': 'solo mañana'},
+    'PRIMARIA':         {'entrada': '08:00', 'salida_min': '13:00', 'salida_max': '14:20', 'turno': 'solo mañana'},
+    'SECUNDARIA':       {'entrada': '07:30', 'salida_min': '14:30', 'salida_max': '19:30', 'turno': 'mañana y tarde'},
+    'PREUNIVERSITARIO': {'entrada': '07:30', 'salida_min': '14:30', 'salida_max': '19:30', 'turno': 'mañana y tarde'},
+}
+
+def _horario_nivel(grado_str):
+    """Devuelve el dict de horario según el nivel del grado."""
+    g = str(grado_str).upper()
+    if 'INICIAL' in g or 'AÑOS' in g:
+        return HORARIOS_NIVEL['INICIAL']
+    elif 'SECUNDARIA' in g or '° SEC' in g:
+        return HORARIOS_NIVEL['SECUNDARIA']
+    elif 'PREU' in g or 'CEPRE' in g or 'GRUPO' in g or 'UNSAAC' in g:
+        return HORARIOS_NIVEL['PREUNIVERSITARIO']
+    else:
+        return HORARIOS_NIVEL['PRIMARIA']
 
 
 def _horario_activo():
