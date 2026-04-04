@@ -2000,28 +2000,64 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # PASO 3c: FALLBACK — usuarios con rol docente que tengan DNI registrado
-    # Esto cubre el caso donde GSheets falla o la hoja docentes esta vacia
+    # PASO 3c: FALLBACK — usuarios con rol docente/directivo que tengan DNI registrado
     try:
         gs = _gs()
         if gs:
             usuarios = gs.leer_usuarios()
             for uname, ud in usuarios.items():
                 rol = str(ud.get('rol', '')).lower()
-                if not any(r in rol for r in ['docente','director','auxiliar','promotor']):
+                # Solo incluir si tiene algún rol del colegio
+                if not any(r in rol for r in ['docente','directivo','auxiliar','promotor','admin']):
                     continue
                 dni_u = str(ud.get('dni', '')).strip().replace('.0','')
-                if not dni_u or len(dni_u) < 7:
+                if not dni_u or len(dni_u) < 6:
                     continue
+                # Completar a 8 dígitos si es número corto
+                if dni_u.isdigit() and len(dni_u) < 8:
+                    dni_u = dni_u.zfill(8)
                 if dni_u not in indice:
                     nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
+                    if not nombre_u or nombre_u in ('', 'NAN', 'NONE'):
+                        nombre_u = uname.upper()
+                    cargo = 'DIRECTORA' if 'directivo' in rol else ('AUXILIAR' if 'auxiliar' in rol else 'DOCENTE')
                     indice[dni_u] = {
                         'DNI': dni_u, '_tipo': 'docente',
-                        'Nombre': nombre_u, 'Cargo': rol.upper(),
+                        'Nombre': nombre_u, 'Cargo': cargo,
                         'Grado': str(ud.get('grado','')).strip(),
+                        'Celular': str(ud.get('celular','')).strip(),
                     }
     except Exception:
         pass
+
+    # PASO 3d: FALLBACK FINAL — si aún no hay docentes, leer hoja config de GSheets
+    n_doc_check = sum(1 for v in indice.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
+    if n_doc_check == 0:
+        try:
+            gs = _gs()
+            if gs and hasattr(gs, '_get_hoja'):
+                ws_d = gs._get_hoja('docentes')
+                if ws_d:
+                    rows_d = ws_d.get_all_records()
+                    for row_d in rows_d:
+                        # Try multiple column name variations
+                        dni_d = str(row_d.get('DNI', row_d.get('dni', row_d.get('Dni', '')))).strip().replace('.0','')
+                        if not dni_d or len(dni_d) < 6:
+                            continue
+                        if dni_d.isdigit() and len(dni_d) < 8:
+                            dni_d = dni_d.zfill(8)
+                        nom_d = str(row_d.get('Nombre', row_d.get('nombre', row_d.get('NOMBRE', '')))).strip().upper()
+                        if not nom_d:
+                            nom_d = f'DOCENTE {dni_d}'
+                        indice[dni_d] = {
+                            'DNI': dni_d, '_tipo': 'docente',
+                            'Nombre': nom_d,
+                            'Cargo': str(row_d.get('Cargo', row_d.get('cargo', 'DOCENTE'))).strip(),
+                            'Grado': str(row_d.get('Grado', row_d.get('grado_asignado', ''))).strip(),
+                            'Celular': str(row_d.get('Celular', row_d.get('celular', ''))).strip(),
+                        }
+        except Exception:
+            pass
 
     # Guardar en RAM
     st.session_state['_indice_dni']    = indice
@@ -10288,33 +10324,74 @@ def tab_asistencias():
         st.caption(f"Límite puntualidad: **{limite}**")
 
     with col_modo:
-        # El sistema detecta modo automáticamente según la hora actual
         import datetime as _dt_asis
         _dia_semana  = hora_peru().weekday()
         _es_sabado   = (_dia_semana == 5)
         _mins_actual = hora_peru().hour * 60 + hora_peru().minute
-        # Auto-detección: antes de 14:30 = Entrada mañana/tardanza, desde 14:30 = Entrada tarde o Salida
-        if _mins_actual < HORA_ENTRADA_TARDE_MIN:
-            _auto_modo   = "Entrada"
-            _auto_color  = "#16a34a"
-            _auto_icon   = "🟢"
-            _auto_label  = "MODO: ENTRADA MAÑANA — automático"
-        else:
-            _auto_modo   = "Salida"
-            _auto_color  = "#2563eb"
-            _auto_icon   = "🔵"
-            _auto_label  = "MODO: TARDE — automático (entrada tarde / salida)"
-        # Forzar modo en session_state según hora
+        _hora_txt    = hora_peru().strftime("%H:%M")
+
+        # Determinar modo actual y próximo evento
+        if _mins_actual < 8*60+5:          # antes de 08:05
+            _auto_modo = "Entrada"
+            _bg1 = "#15803d"; _bg2 = "#16a34a"
+            _icono = "🌅"; _titulo = "ENTRADA MAÑANA"
+            _sub   = f"Puntual hasta {limite} · Tardanza desde {limite}"
+            _prox  = f"Salida mañana: 13:00"
+        elif _mins_actual < 13*60:          # 08:05 – 13:00
+            _auto_modo = "Entrada"
+            _bg1 = "#b45309"; _bg2 = "#d97706"
+            _icono = "⏰"; _titulo = "REGISTRO TARDANZA"
+            _sub   = f"Hora actual: {_hora_txt} — entrada tardía"
+            _prox  = "Salida mañana: 13:00–14:20"
+        elif _mins_actual < HORA_ENTRADA_TARDE_MIN:   # 13:00 – 14:30
+            _auto_modo = "Salida"
+            _bg1 = "#1d4ed8"; _bg2 = "#2563eb"
+            _icono = "🔵"; _titulo = "SALIDA MAÑANA"
+            _sub   = f"Turno mañana finalizando · {_hora_txt}"
+            _prox  = "Entrada tarde: 14:30"
+        elif _mins_actual < 15*60+10:       # 14:30 – 15:10
+            _auto_modo = "Entrada"
+            _bg1 = "#7c3aed"; _bg2 = "#8b5cf6"
+            _icono = "🌤️"; _titulo = "ENTRADA TARDE"
+            _sub   = f"Turno tarde en curso · {_hora_txt}"
+            _prox  = "Salida tarde: 18:40"
+        elif _mins_actual < 18*60+40:       # 15:10 – 18:40
+            _auto_modo = "Salida"
+            _bg1 = "#be185d"; _bg2 = "#db2777"
+            _icono = "🎓"; _titulo = "TURNO TARDE ACTIVO"
+            _sub   = f"Clases en curso · {_hora_txt}"
+            _prox  = "Salida tarde: 18:40–19:30"
+        else:                               # desde 18:40
+            _auto_modo = "Salida"
+            _bg1 = "#0f766e"; _bg2 = "#0d9488"
+            _icono = "🌙"; _titulo = "SALIDA TARDE"
+            _sub   = f"Finalizando jornada · {_hora_txt}"
+            _prox  = "Fin de jornada"
+
+        if _es_sabado:
+            _bg1 = "#92400e"; _bg2 = "#b45309"
+            _icono = "📅"; _titulo = "SÁBADO"
+            _sub   = "Solo entrada mañana y salida (sin hora fija)"
+            _prox  = ""
+
         st.session_state.tipo_asistencia = _auto_modo
-        _info_horario = (
-            f"{_auto_icon} {_auto_label} | {HORARIOS[horario_sel]['nombre']} | Tardanza después de {limite} | "
-            f"{'📅 SÁBADO' if _es_sabado else '⏰ E.Mañ 7:30–8:05 | S.Mañ 13:00–14:20 | Tarde 14:30–19:30'}"
-        )
-        st.markdown(
-            f"<div style='background:{_auto_color};color:white;padding:8px 14px;"
-            f"border-radius:8px;font-weight:bold;font-size:0.92rem;'>{_info_horario}</div>",
-            unsafe_allow_html=True)
-        st.caption("✅ El modo se detecta automáticamente según la hora del reloj — no necesita botones.")
+
+        # Banner gradiente animado
+        _prox_html = f"<span style='font-size:0.75rem;opacity:0.85;'>→ Próximo: {_prox}</span>" if _prox else ""
+        st.markdown(f"""
+        <div style='background:linear-gradient(135deg,{_bg1},{_bg2});
+                    color:white;padding:12px 16px;border-radius:12px;
+                    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+                    border-left:5px solid white;'>
+          <div style='font-size:1.4rem;margin-bottom:2px;'>{_icono}
+            <b style='font-size:1.05rem;letter-spacing:0.5px;'>{_titulo}</b>
+          </div>
+          <div style='font-size:0.82rem;opacity:0.92;'>{_sub}</div>
+          {_prox_html}
+        </div>
+        <div style='margin-top:5px;font-size:0.73rem;color:#64748b;'>
+          ✅ Modo automático · Límite puntualidad: <b>{limite}</b>
+        </div>""", unsafe_allow_html=True)
 
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
     modo_label = _modo.replace('_', ' ')
