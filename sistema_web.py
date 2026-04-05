@@ -2001,6 +2001,7 @@ def _construir_indice_dni():
             pass
 
     # PASO 3c: FALLBACK — leer usuarios.json local (siempre existe en Streamlit Cloud)
+    # DNI se guarda en docente_info.dni, NO en el nivel raíz
     try:
         _upath = Path("usuarios.json")
         if _upath.exists():
@@ -2010,7 +2011,10 @@ def _construir_indice_dni():
                 _rol = str(_ud.get('rol', '')).lower()
                 if not any(r in _rol for r in ['docente','directivo','auxiliar','promotor']):
                     continue
-                _dni_u = str(_ud.get('dni', '')).strip().replace('.0','')
+                # DNI puede estar en docente_info.dni o en nivel raíz
+                _di   = _ud.get('docente_info') or {}
+                _dni_u = (str(_di.get('dni', '')).strip().replace('.0','') or
+                          str(_ud.get('dni', '')).strip().replace('.0',''))
                 if not _dni_u or len(_dni_u) < 6:
                     continue
                 if _dni_u.isdigit() and len(_dni_u) < 8:
@@ -2037,7 +2041,7 @@ def _construir_indice_dni():
     except Exception:
         pass
 
-    # PASO 3c2: también intentar desde GSheets leer_usuarios
+    # PASO 3c2: GSheets leer_usuarios — ahora incluye DNI en columna G
     try:
         gs = _gs()
         if gs:
@@ -2046,7 +2050,10 @@ def _construir_indice_dni():
                 _rol2 = str(_ud2.get('rol', '')).lower()
                 if not any(r in _rol2 for r in ['docente','directivo','auxiliar','promotor']):
                     continue
-                _dni2 = str(_ud2.get('dni', '')).strip().replace('.0','')
+                # DNI ahora viene en el campo 'dni' de leer_usuarios (columna G)
+                _di2   = _ud2.get('docente_info') or {}
+                _dni2  = (str(_ud2.get('dni', '')).strip().replace('.0','') or
+                          str(_di2.get('dni','') if isinstance(_di2,dict) else '').strip())
                 if not _dni2 or len(_dni2) < 6:
                     continue
                 if _dni2.isdigit() and len(_dni2) < 8:
@@ -10485,6 +10492,13 @@ def tab_asistencias():
                 except Exception:
                     pass
                 with st.spinner("Recargando docentes y alumnos..."):
+                    # Invalidar cache de GSheets para forzar re-lectura fresca
+                    try:
+                        _gs_inst = _gs()
+                        if _gs_inst:
+                            _gs_inst.invalidar_cache()
+                    except Exception:
+                        pass
                     _construir_indice_dni()
                 st.success("✅ Índice recargado")
                 st.rerun()
