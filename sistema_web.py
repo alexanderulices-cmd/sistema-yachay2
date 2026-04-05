@@ -2000,10 +2000,8 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # PASO 3c: FALLBACK — usuarios con rol docente
-    # La hoja Usuarios tiene columnas: username, password_hash, nombre, rol, grado_asignado, nivel_asignado
-    # El DNI NO está como columna separada — pero por convención la contraseña ES el DNI
-    # Por eso usamos ud.get('password') como DNI cuando mide 8 dígitos
+    # PASO 3c: FALLBACK — usuarios con rol docente que tengan DNI registrado
+    # Esto cubre el caso donde GSheets falla o la hoja docentes esta vacia
     try:
         gs = _gs()
         if gs:
@@ -2012,59 +2010,16 @@ def _construir_indice_dni():
                 rol = str(ud.get('rol', '')).lower()
                 if not any(r in rol for r in ['docente','director','auxiliar','promotor']):
                     continue
-                # Intentar DNI desde docente_info primero, luego password (= DNI por defecto)
-                _di   = ud.get('docente_info') or {}
-                dni_u = (str(_di.get('dni','') if isinstance(_di,dict) else '').strip() or
-                         str(ud.get('dni','')).strip())
-                # Si no, usar password que por convención es el DNI
-                if not dni_u or len(dni_u) < 7:
-                    _pwd = str(ud.get('password','')).strip().replace('.0','')
-                    if _pwd.isdigit() and 7 <= len(_pwd) <= 8:
-                        dni_u = _pwd.zfill(8)
+                dni_u = str(ud.get('dni', '')).strip().replace('.0','')
                 if not dni_u or len(dni_u) < 7:
                     continue
-                dni_u = dni_u.replace('.0','')
                 if dni_u not in indice:
                     nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
-                    if not nombre_u or nombre_u in ('NAN','NONE',''):
-                        nombre_u = uname.replace('.',' ').upper()
-                    cargo = ('DIRECTORA' if 'directiv' in rol else
-                             'AUXILIAR'  if 'auxiliar' in rol else 'DOCENTE')
                     indice[dni_u] = {
                         'DNI': dni_u, '_tipo': 'docente',
-                        'Nombre': nombre_u, 'Cargo': cargo,
+                        'Nombre': nombre_u, 'Cargo': rol.upper(),
                         'Grado': str(ud.get('grado','')).strip(),
                     }
-    except Exception:
-        pass
-
-    # PASO 3c2: también desde usuarios.json local (si existe)
-    try:
-        import json as _jloc
-        _uloc = _jloc.loads(Path('usuarios.json').read_text(encoding='utf-8')) if Path('usuarios.json').exists() else {}
-        for _un, _ud in _uloc.items():
-            _rol = str(_ud.get('rol','')).lower()
-            if not any(r in _rol for r in ['docente','director','auxiliar','promotor']):
-                continue
-            _diloc = _ud.get('docente_info') or {}
-            _dniloc = (str(_diloc.get('dni','') if isinstance(_diloc,dict) else '').strip() or
-                       str(_ud.get('password','')).strip().replace('.0',''))
-            if not _dniloc or len(_dniloc) < 7:
-                continue
-            if _dniloc.isdigit() and len(_dniloc) < 8:
-                _dniloc = _dniloc.zfill(8)
-            if _dniloc not in indice:
-                _nomloc = str(_ud.get('label', _ud.get('nombre', _un))).strip().upper()
-                if not _nomloc or _nomloc in ('NAN','NONE',''):
-                    _nomloc = _un.replace('.',' ').upper()
-                indice[_dniloc] = {
-                    'DNI': _dniloc, '_tipo': 'docente',
-                    'Nombre': _nomloc,
-                    'Cargo': ('DIRECTORA' if 'directiv' in _rol else
-                              'AUXILIAR'  if 'auxiliar' in _rol else 'DOCENTE'),
-                    'Grado': str((_diloc.get('grado','') if isinstance(_diloc,dict) else '') or
-                                 _ud.get('grado','')).strip(),
-                }
     except Exception:
         pass
 
@@ -2541,10 +2496,8 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
             # Desempeños como D1, D2... en vez de capacidades
             n_des = len(CAPACIDADES_REG.get(cf, ['D1','D2','D3']))
             caps  = [f"D{j+1}" for j in range(n_des)]
-            # Abreviatura de competencia: primeras 2 palabras significativas
-            _stop = {'de','la','el','los','las','su','y','a','en','por','con','del','al'}
-            _words = [w for w in cf.split() if w.lower() not in _stop and len(w) > 2]
-            ca = ' '.join(_words[:3]) if _words else cf[:18]
+            # Competencia completa como abreviatura (texto completo, fuente pequeña)
+            ca    = cf  # texto completo — se mostrará pequeño y rotado
             estructura.append((curso, ca, cf, caps))
 
     # total de columnas de datos
@@ -2571,7 +2524,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 
     # ── Alturas ────────────────────────────────────────────────────
     H_CURSO = 0.48*cm
-    H_COMP  = 1.80*cm   # texto abreviado de competencia, fuente 4.8
+    H_COMP  = 1.60*cm   # texto completo de competencia, fuente 4.5
     H_CAP   = 0.82*cm
     H_EST   = 0.55*cm
 
@@ -2660,14 +2613,13 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
         # Comp span y color
         styles_cmds.append(('SPAN',       (cs,1),(ce,1)))
         styles_cmds.append(('BACKGROUND', (cs,1),(ce,1), bg_comp))
-        styles_cmds.append(('TEXTCOLOR',  (cs,1),(ce,1), colors.white))
         # Caps color
         styles_cmds.append(('BACKGROUND', (cs,2),(ce,2), bg_cap))
-        # Estudiantes color — TODAS las columnas de esta competencia (cs a ce)
-        styles_cmds.append(('BACKGROUND', (cs,3),(ce,-1), bg_est))
+        # Estudiantes color
+        styles_cmds.append(('BACKGROUND', (cs,3),(cs,-1), bg_est))
         # Línea vertical gruesa al inicio de cada competencia
         if cs > 2:
-            styles_cmds.append(('LINEBEFORE', (cs,0),(cs,-1), 0.8, colors.Color(0.25,0.25,0.25)))
+            styles_cmds.append(('LINEBEFORE', (cs,0),(cs,-1), 0.7, colors.Color(0.3,0.3,0.3)))
 
         col_idx += len(caps)
 
@@ -6794,7 +6746,7 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             n_atp = st.number_input("N° formatos a generar:", 1, 10, 1, key="atp_n")
         if st.button("📄 Generar Formato", type="primary",
                      use_container_width=True, key="btn_atp"):
-            buf_atp = _generar_formato_atencion_padres(config, doc_atp, "",
+            buf_atp = _generar_formato_atencion_padres(config, doc_atp, grado_atp,
                                                         int(n_atp), anio)
             st.session_state['_pdf_atp'] = buf_atp
         if st.session_state.get('_pdf_atp'):
@@ -6830,11 +6782,8 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             st.download_button("⬇️ Descargar Stickers PDF", st.session_state['_pdf_stk'],
                 f"Stickers_Inventario_{anio}.pdf",
                 "application/pdf", type="primary", key="dl_stk")
-
-    # ── TARJETA ONOMÁSTICO ──────────────────────────────────────────
-    elif key == "onomastico":
         st.markdown("#### 🎂 Tarjeta de Onomástico para Docentes")
-        st.caption("Media hoja A4 vertical — colorida, con foto, globos y firmas")
+        st.caption("Tarjeta colorida A5 horizontal — con espacio para firmas de todos los colegas")
         FRASES_ONO = [
             "Que cada año que pasa te traiga más sabiduría, alegría y éxito en tu hermosa labor.",
             "Tu vocación ilumina el camino de muchos estudiantes. ¡Feliz día especial!",
@@ -7347,226 +7296,290 @@ def _generar_memorandum(config, tipo, destinatario, cargo, numero, referencia, n
 
 
 def _generar_papeleta_aula(config, n_hojas, anio):
-    """3 papeletas A4 — labels DENTRO de cada celda, cuadros limpios."""
+    """3 papeletas iguales por hoja A4 para solicitar uso de aula — cuadros limpios."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                     Paragraph, Spacer, HRFlowable)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.platypus import Paragraph
-    from reportlab.lib.enums import TA_LEFT, TA_CENTER
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
     import io as _io
 
     buf = _io.BytesIO()
-    ie  = config.get("nombre_ie","I.E.P. ALTERNATIVO YACHAY")
-    W, H = A4
-    c   = rl_canvas.Canvas(buf, pagesize=A4)
-    C_AZ = colors.Color(0.20,0.38,0.68)
-    C_AL = colors.Color(0.90,0.94,0.99)
+    ie  = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            topMargin=0.4*cm, bottomMargin=0.4*cm,
+                            leftMargin=0.8*cm, rightMargin=0.8*cm)
+    ss  = getSampleStyleSheet()
+    PW  = A4[0] - 1.6*cm
+    C_AZ= colors.Color(0.20, 0.38, 0.68)
+    C_AL= colors.Color(0.90, 0.94, 0.99)
+    C_GR= colors.Color(0.65, 0.65, 0.70)
 
-    PAP_H = (H - 1.0*cm) / 3.0
+    def P(txt, bold=False, size=8, align=TA_LEFT, color=None):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, parent=ss["Normal"]))
 
-    def draw_papeleta(y0):
+    def papeleta():
+        els = []
         # Cabecera
-        c.setFillColorRGB(0.20,0.38,0.68)
-        c.roundRect(0.7*cm, y0+PAP_H-0.88*cm, W-1.4*cm, 0.80*cm, 0.18*cm, fill=1, stroke=0)
-        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10.5)
-        c.drawCentredString(W/2, y0+PAP_H-0.55*cm, "PAPELETA DE SOLICITUD DE USO DE AULA")
-        c.setFont("Helvetica",7.5)
-        c.drawCentredString(W/2, y0+PAP_H-0.78*cm, f"{ie}  |  Año {anio}")
+        t0 = Table([
+            [P("PAPELETA DE SOLICITUD DE USO DE AULA",
+               bold=True, size=11, align=TA_CENTER, color=colors.white)],
+            [P(f"{ie}  |  Año {anio}", size=8, align=TA_CENTER,
+               color=colors.Color(0.85,0.90,1.0))],
+        ], colWidths=[PW], rowHeights=[0.70*cm, 0.38*cm])
+        t0.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(-1,-1),C_AZ),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        els.append(t0)
 
-        def box(lbl, bx, by, bw, bh):
-            """Dibuja un recuadro con label pequeño en la esquina superior izquierda."""
-            # Fondo label strip
-            c.setFillColorRGB(0.90,0.94,0.99)
-            c.rect(bx, by+bh-0.28*cm, bw, 0.28*cm, fill=1, stroke=0)
-            # Borde general
-            c.setStrokeColorRGB(0.55,0.60,0.72); c.setLineWidth(0.5)
-            c.rect(bx, by, bw, bh, fill=0, stroke=1)
-            # Label
-            c.setFillColorRGB(0.20,0.38,0.68); c.setFont("Helvetica-Bold",7)
-            c.drawString(bx+0.12*cm, by+bh-0.22*cm, lbl)
+        # Fila 1: Docente | Área
+        t1 = Table(
+            [[P("Docente solicitante:",bold=True,size=8), P("Área / Actividad:",bold=True,size=8)],
+             [" ", " "]],
+            colWidths=[PW*0.50, PW*0.50],
+            rowHeights=[0.28*cm, 0.68*cm]
+        )
+        t1.setStyle(TableStyle([
+            ("BOX",(0,1),(0,1),0.6,C_GR),("BOX",(1,1),(1,1),0.6,C_GR),
+            ("GRID",(0,0),(-1,-1),0.3,colors.Color(0.88,0.88,0.88)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
+            ("BACKGROUND",(0,0),(-1,0),C_AL),
+        ]))
+        els.append(t1)
 
-        ym = y0 + PAP_H - 1.10*cm  # y desde donde empezamos
-        LH = 0.85*cm  # alto de cada fila de campos
-        MX = 0.7*cm; MW = W - 1.4*cm
+        # Fila 2: Fecha | H.Inicio | H.Fin | Aula | Grado
+        t2 = Table(
+            [[P("Fecha:",bold=True,size=8), P("Hora inicio:",bold=True,size=8),
+              P("Hora fin:",bold=True,size=8), P("Aula:",bold=True,size=8),
+              P("Grado/Sec.:",bold=True,size=8)],
+             [" "," "," "," "," "]],
+            colWidths=[PW*0.22, PW*0.19, PW*0.17, PW*0.20, PW*0.22],
+            rowHeights=[0.28*cm, 0.68*cm]
+        )
+        t2.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),0.4,C_GR),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
+            ("BACKGROUND",(0,0),(-1,0),C_AL),
+        ]))
+        els.append(t2)
 
-        # Fila 1: Docente (55%) | Área (45%)
-        box("Docente solicitante:", MX, ym-LH, MW*0.55, LH)
-        box("Área / Actividad:", MX+MW*0.55+0.05*cm, ym-LH, MW*0.45-0.05*cm, LH)
-        ym -= LH + 0.06*cm
-
-        # Fila 2: Fecha | H.inicio | H.fin | Aula | Grado/Sec.
-        ws2 = [MW*0.20, MW*0.18, MW*0.16, MW*0.22, MW*0.24]
-        lbls2 = ["Fecha:", "Hora inicio:", "Hora fin:", "Aula/Ambiente:", "Grado / Sección:"]
-        xc = MX
-        for lbl, w in zip(lbls2, ws2):
-            box(lbl, xc, ym-LH, w-0.04*cm, LH)
-            xc += w
-        ym -= LH + 0.06*cm
-
-        # Fila 3: Motivo (2 líneas de altura)
-        box("Motivo / Actividad a desarrollar:", MX, ym-LH*2, MW, LH*2)
-        ym -= LH*2 + 0.06*cm
+        # Fila 3: Motivo (2 líneas)
+        t3 = Table(
+            [[P("Motivo / Actividad a desarrollar:",bold=True,size=8)],
+             [" "],["  "]],
+            colWidths=[PW],
+            rowHeights=[0.28*cm, 0.62*cm, 0.62*cm]
+        )
+        t3.setStyle(TableStyle([
+            ("BOX",(0,1),(0,1),0.6,C_GR),("BOX",(0,2),(0,2),0.6,C_GR),
+            ("GRID",(0,0),(-1,-1),0.3,colors.Color(0.88,0.88,0.88)),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),("LEFTPADDING",(0,0),(-1,-1),4),
+            ("BACKGROUND",(0,0),(0,0),C_AL),
+        ]))
+        els.append(t3)
 
         # Firmas
-        fw = MW*0.40; fw2 = MW-fw
-        box("V°B° Dirección:", MX, ym-LH*1.1, fw-0.04*cm, LH*1.1)
-        box("Firma del Docente Solicitante:", MX+fw, ym-LH*1.1, fw2, LH*1.1)
+        t4 = Table(
+            [[P("V°B° Dirección",bold=True,size=8,align=TA_CENTER,color=C_AZ),
+              P("Firma del Docente Solicitante",bold=True,size=8,align=TA_CENTER,color=C_AZ)],
+             [" "," "]],
+            colWidths=[PW*0.40, PW*0.60],
+            rowHeights=[0.35*cm, 0.95*cm]
+        )
+        t4.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),0.5,C_GR),
+            ("BACKGROUND",(0,0),(-1,0),C_AL),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        els.append(t4)
+        return els
 
+    def corte():
+        t = Table([[P("- - - - - - - - - - - - - - - recortar aqui - - - - - - - - - - - - - - -",
+                      size=6, align=TA_CENTER, color=colors.Color(0.6,0.6,0.6))]],
+                  colWidths=[PW], rowHeights=[0.22*cm])
+        t.setStyle(TableStyle([("ALIGN",(0,0),(0,0),"CENTER")]))
+        return t
+
+    from reportlab.platypus import PageBreak
+    story = []
     for pag in range(n_hojas):
         if pag > 0:
-            c.showPage()
+            story.append(PageBreak())
         for i in range(3):
-            y0 = H - 0.4*cm - (i+1)*PAP_H
+            story.extend(papeleta())
+            if i < 2:
+                story.append(Spacer(1, 0.06*cm))
+                story.append(corte())
+                story.append(Spacer(1, 0.06*cm))
 
-            # Línea de corte
-            if i > 0:
-                c.setStrokeColorRGB(0.6,0.6,0.6); c.setLineWidth(0.3); c.setDash(4,4)
-                c.line(0.5*cm, y0+PAP_H, W-0.5*cm, y0+PAP_H)
-                c.setDash(); c.setFont("Helvetica",5.5); c.setFillColorRGB(0.6,0.6,0.6)
-                c.drawCentredString(W/2, y0+PAP_H+0.08*cm, "- - - recortar - - -")
-
-            # Fondo suave
-            c.setFillColorRGB(0.97,0.98,1.0)
-            c.roundRect(0.55*cm, y0+0.06*cm, W-1.1*cm, PAP_H-0.10*cm, 0.2*cm, fill=1, stroke=0)
-            draw_papeleta(y0)
-
-    c.save(); buf.seek(0)
+    doc.build(story)
+    buf.seek(0)
     return buf.read()
 
 def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
-    """Formato atencion padres — sin grado en header, cuadros con labels embebidos."""
+    """Formato atencion padres con todos los cuadros correctamente alineados."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table,
+                                     TableStyle, Spacer, HRFlowable, PageBreak)
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.platypus import Paragraph
-    from reportlab.lib.enums import TA_LEFT, TA_CENTER
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     import io as _io
 
-    buf = _io.BytesIO()
-    ie   = config.get("nombre_ie","I.E.P. ALTERNATIVO YACHAY")
-    ugel = config.get("ugel","Urubamba")
-    W, H = A4
-    C_MO = (0.40,0.08,0.52)
-    C_ML = (0.94,0.88,0.98)
-    MX   = 1.5*cm
-    MW   = W - 3.0*cm
+    buf  = _io.BytesIO()
+    ie   = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel", "Urubamba")
+    ML = MR = 1.8*cm
+    W    = A4[0] - ML - MR
+    doc  = SimpleDocTemplate(buf, pagesize=A4,
+                             topMargin=1.3*cm, bottomMargin=1.3*cm,
+                             leftMargin=ML, rightMargin=MR)
+    ss   = getSampleStyleSheet()
+    C_MO = colors.Color(0.40, 0.08, 0.52)
+    C_ML = colors.Color(0.94, 0.88, 0.98)
+    C_GR = colors.Color(0.65, 0.65, 0.70)
 
-    c = rl_canvas.Canvas(buf, pagesize=A4)
+    def P(txt, bold=False, size=8.5, align=TA_LEFT, color=None, space=2):
+        fn = "Helvetica-Bold" if bold else "Helvetica"
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle("p", fontSize=size, leading=size+3,
+                                        alignment=align, textColor=color or colors.black,
+                                        fontName=fn, spaceAfter=space, parent=ss["Normal"]))
 
-    def draw_page():
-        y = H - 1.2*cm
+    def sec(lbl):
+        t = Table([[P(lbl, bold=True, size=8.5, color=colors.white)]],
+                  colWidths=[W], rowHeights=[0.48*cm])
+        t.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(0,0),C_MO),
+            ("LEFTPADDING",(0,0),(0,0),5),
+            ("VALIGN",(0,0),(0,0),"MIDDLE"),
+        ]))
+        return t
 
-        # Header
-        c.setFillColorRGB(*C_MO)
-        c.rect(MX, y-0.5*cm, MW, 0.5*cm, fill=1, stroke=0)
-        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10)
-        c.drawCentredString(W/2, y-0.33*cm, "REGISTRO DE ATENCIÓN A PADRES DE FAMILIA")
-        y -= 0.60*cm
-        c.setFillColorRGB(*C_MO); c.setFont("Helvetica",7.5)
-        c.drawCentredString(W/2, y, f"{ie}  |  UGEL {ugel}  |  Tutoría y Orientación Educativa")
-        y -= 0.25*cm
-        c.setFillColorRGB(*C_MO); c.setFont("Helvetica",7)
-        c.drawCentredString(W/2, y, "R.M. 0657-2017-MINEDU — Plan de Tutoría y Orientación Educativa")
-        y -= 0.35*cm
+    def fila_campos(pares, alto=0.65*cm):
+        """Lista de (label, ancho) -> tabla con label arriba, espacio abajo."""
+        labels = [P(l, bold=True, size=7.5, color=colors.Color(0.3,0.3,0.3))
+                  for l,_ in pares]
+        blanks = [" "] * len(pares)
+        ws = [w for _,w in pares]
+        t = Table([labels, blanks], colWidths=ws,
+                  rowHeights=[0.26*cm, alto])
+        t.setStyle(TableStyle([
+            ("GRID",(0,1),(-1,1), 0.5, C_GR),
+            ("BACKGROUND",(0,0),(-1,0), C_ML),
+            ("VALIGN",(0,0),(-1,-1),"BOTTOM"),
+            ("LEFTPADDING",(0,0),(-1,-1),3),
+            ("TOPPADDING",(0,0),(-1,-1),1),
+        ]))
+        return t
 
-        # Línea divisora
-        c.setStrokeColorRGB(*C_MO); c.setLineWidth(1.5)
-        c.line(MX, y, MX+MW, y); y -= 0.12*cm
+    def lineas_escritura(n, alto=0.72*cm):
+        rows = [[" "]] * n
+        t = Table(rows, colWidths=[W], rowHeights=[alto]*n)
+        t.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),0.5,C_GR),
+            ("VALIGN",(0,0),(-1,-1),"TOP"),
+            ("LEFTPADDING",(0,0),(-1,-1),3),
+            ("TOPPADDING",(0,0),(-1,-1),2),
+        ]))
+        return t
 
-        def box(lbl, bx, by, bw, bh, lbl_size=7):
-            c.setFillColorRGB(*C_ML)
-            c.rect(bx, by+bh-0.30*cm, bw, 0.30*cm, fill=1, stroke=0)
-            c.setStrokeColorRGB(0.65,0.55,0.72); c.setLineWidth(0.5)
-            c.rect(bx, by, bw, bh, fill=0, stroke=1)
-            c.setFillColorRGB(*C_MO); c.setFont("Helvetica-Bold",lbl_size)
-            c.drawString(bx+0.10*cm, by+bh-0.23*cm, lbl)
-
-        def sec_hdr(lbl, by, bh=0.42*cm):
-            c.setFillColorRGB(*C_MO)
-            c.rect(MX, by, MW, bh, fill=1, stroke=0)
-            c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",8.5)
-            c.drawString(MX+0.2*cm, by+0.10*cm, lbl)
-            return by - 0.05*cm
-
-        LH = 0.82*cm
-
-        # Fila 1: N°Registro | Fecha | H.Inicio | H.Fin | Modalidad
-        ws1 = [MW*0.14, MW*0.18, MW*0.16, MW*0.14, MW*0.38]
-        ls1 = ["N° Registro:", "Fecha:", "Hora inicio:", "Hora fin:", "Modalidad: Presencial / Virtual"]
-        xc = MX
-        for l1, w1 in zip(ls1, ws1):
-            box(l1, xc, y-LH, w1-0.04*cm, LH)
-            xc += w1
-        y -= LH + 0.08*cm
-
-        # Fila 2: Docente/Tutor
-        box("Docente / Tutor:", MX, y-LH, MW, LH)
-        y -= LH + 0.10*cm
-
-        # Sección involucrados
-        y = sec_hdr("DATOS DEL ESTUDIANTE Y DEL PADRE / MADRE / APODERADO", y)
-        # Nombres
-        box("Apellidos y Nombres del estudiante:", MX, y-LH, MW*0.50-0.04*cm, LH)
-        box("Apellidos y Nombres del apoderado:", MX+MW*0.50, y-LH, MW*0.50, LH)
-        y -= LH + 0.06*cm
-        # DNI/Grado/Tel
-        box("DNI estudiante:", MX, y-LH*0.9, MW*0.22-0.04*cm, LH*0.9)
-        box("Grado:", MX+MW*0.22, y-LH*0.9, MW*0.16-0.04*cm, LH*0.9)
-        box("DNI apoderado:", MX+MW*0.38, y-LH*0.9, MW*0.22-0.04*cm, LH*0.9)
-        box("Teléfono:", MX+MW*0.60, y-LH*0.9, MW*0.40, LH*0.9)
-        y -= LH*0.9 + 0.10*cm
-
-        # Motivo
-        y = sec_hdr("MOTIVO DE LA ATENCIÓN", y)
-        box("", MX, y-LH, MW, LH)
-        y -= LH + 0.10*cm
-
-        # Desarrollo
-        y = sec_hdr("DESARROLLO Y ACUERDOS TOMADOS", y)
-        box("", MX, y-LH*2.5, MW, LH*2.5)
-        y -= LH*2.5 + 0.10*cm
-
-        # Compromisos
-        y = sec_hdr("COMPROMISOS ASUMIDOS (firmados por el apoderado)", y)
-        box("", MX, y-LH*1.8, MW, LH*1.8)
-        y -= LH*1.8 + 0.10*cm
-
-        # Próxima cita
-        y = sec_hdr("PRÓXIMA CITA", y)
-        box("Fecha:", MX, y-LH*0.9, MW*0.25-0.04*cm, LH*0.9)
-        box("Hora:", MX+MW*0.25, y-LH*0.9, MW*0.18-0.04*cm, LH*0.9)
-        box("Lugar:", MX+MW*0.43, y-LH*0.9, MW*0.57, LH*0.9)
-        y -= LH*0.9 + 0.12*cm
-
-        # Firmas
-        fw = MW/3
-        for i_f, lbl_f in enumerate(["FIRMA DOCENTE/TUTOR","FIRMA PADRE/MADRE","FIRMA ESTUDIANTE"]):
-            bx_f = MX + i_f*fw
-            c.setFillColorRGB(*C_ML)
-            c.rect(bx_f, y-LH*1.3, fw-0.04*cm, LH*1.3, fill=1, stroke=0)
-            c.setFillColorRGB(*C_MO); c.setFont("Helvetica-Bold",8)
-            c.drawCentredString(bx_f+fw/2-0.02*cm, y-0.28*cm, lbl_f)
-            c.setStrokeColorRGB(0.65,0.55,0.72); c.setLineWidth(0.5)
-            c.rect(bx_f, y-LH*1.3, fw-0.04*cm, LH*1.3, fill=0, stroke=1)
-            c.setFont("Helvetica",7); c.setFillColorRGB(0.3,0.3,0.3)
-            c.drawCentredString(bx_f+fw/2-0.02*cm, y-LH*1.3+0.12*cm, "Nombre:___________________")
-        y -= LH*1.3 + 0.15*cm
-
-        # Pie
-        c.setFont("Helvetica",6.5); c.setFillColorRGB(0.5,0.5,0.5)
-        c.drawCentredString(W/2, y,
-            "Documento segun R.M. 0657-2017-MINEDU. Conservar en el file de tutoria del docente.")
-
+    story = []
     for n in range(n_formatos):
         if n > 0:
-            c.showPage()
-        draw_page()
+            story.append(PageBreak())
 
-    c.save(); buf.seek(0)
+        story += [
+            P(ie, bold=True, size=11, align=TA_CENTER, space=2),
+            P(f"UGEL {ugel}  |  {grado}  |  Tutoría y Orientación Educativa",
+              size=8, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+            HRFlowable(width="100%", thickness=2, color=C_MO, spaceBefore=4, spaceAfter=4),
+            P("REGISTRO DE ATENCIÓN A PADRES DE FAMILIA", bold=True, size=12,
+              align=TA_CENTER, color=C_MO, space=2),
+            P("R.M. 0657-2017-MINEDU — Plan de Tutoría y Orientación Educativa",
+              size=7.5, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+            HRFlowable(width="100%", thickness=1, color=C_MO, spaceBefore=3, spaceAfter=5),
+        ]
+
+        # Datos generales
+        story.append(fila_campos([
+            ("N° Registro:", W*0.15), ("Fecha:", W*0.18),
+            ("Hora inicio:", W*0.18), ("Hora fin:", W*0.16),
+            ("Modalidad: Presencial/Virtual", W*0.33)]))
+        story.append(Spacer(1, 0.08*cm))
+        story.append(fila_campos([
+            ("Docente / Tutor:", W*0.55),
+            ("Grado y Sección:", W*0.45)]))
+        story.append(Spacer(1, 0.10*cm))
+
+        # Sección involucrados
+        story.append(sec("DATOS DEL ESTUDIANTE Y DEL PADRE / MADRE / APODERADO"))
+        story.append(fila_campos([
+            ("Apellidos y Nombres del estudiante:", W*0.50),
+            ("Apellidos y Nombres del apoderado:", W*0.50)]))
+        story.append(Spacer(1, 0.05*cm))
+        story.append(fila_campos([
+            ("DNI del estudiante:", W*0.25),
+            ("Grado:", W*0.15),
+            ("DNI del apoderado:", W*0.25),
+            ("Teléfono:", W*0.35)]))
+        story.append(Spacer(1, 0.10*cm))
+
+        # Motivo
+        story.append(sec("MOTIVO DE LA ATENCIÓN"))
+        story.append(lineas_escritura(1, 0.72*cm))
+        story.append(Spacer(1, 0.08*cm))
+
+        # Desarrollo
+        story.append(sec("DESARROLLO Y ACUERDOS TOMADOS"))
+        story.append(lineas_escritura(3, 0.68*cm))
+        story.append(Spacer(1, 0.08*cm))
+
+        # Compromisos
+        story.append(sec("COMPROMISOS ASUMIDOS (firmados por el apoderado)"))
+        story.append(lineas_escritura(2, 0.68*cm))
+        story.append(Spacer(1, 0.08*cm))
+
+        # Próxima cita
+        story.append(sec("PRÓXIMA CITA"))
+        story.append(fila_campos([
+            ("Fecha:", W*0.22), ("Hora:", W*0.18),
+            ("Lugar:", W*0.60)]))
+        story.append(Spacer(1, 0.20*cm))
+
+        # Firmas
+        t_f = Table(
+            [[P("FIRMA DOCENTE/TUTOR",bold=True,size=8,align=TA_CENTER,color=C_MO),
+              P("FIRMA PADRE/MADRE",bold=True,size=8,align=TA_CENTER,color=C_MO),
+              P("FIRMA ESTUDIANTE",bold=True,size=8,align=TA_CENTER,color=C_MO)],
+             [" "," "," "],
+             [P("Nombre:___________________",size=7.5,align=TA_CENTER),
+              P("Nombre:___________________",size=7.5,align=TA_CENTER),
+              P("Nombre:___________________",size=7.5,align=TA_CENTER)]],
+            colWidths=[W/3, W/3, W/3],
+            rowHeights=[0.42*cm, 1.0*cm, 0.35*cm]
+        )
+        t_f.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),0.5,C_GR),
+            ("BACKGROUND",(0,0),(-1,0),C_ML),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+            ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ]))
+        story += [t_f, Spacer(1, 0.15*cm),
+                  P("Documento según R.M. 0657-2017-MINEDU. Conservar en el file de tutoría del docente.",
+                    size=7, align=TA_CENTER, color=colors.Color(0.5,0.5,0.5))]
+
+    doc.build(story)
+    buf.seek(0)
     return buf.read()
 
 def _generar_inventario_completo(config, anio):
@@ -9776,17 +9789,14 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
     def _membrete(seccion, hdr_c):
         return [
             P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=13),
-            P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educacion de Calidad",
+            P("UGEL Urubamba  |  Chinchero, Cusco  |  "
+              "Pioneros en la Educacion de Calidad",
               size=8.5, color=colors.Color(0.3,0.5,0.1)),
             HRFlowable(width="100%", thickness=1.5, color=hdr_c,
-                       spaceBefore=3, spaceAfter=3),
-            P(f"REGISTRO DE ASISTENCIA  —  {fecha_str}  —  {seccion}",
+                       spaceBefore=3, spaceAfter=6),
+            P(f"REGISTRO DE ASISTENCIA  {fecha_str}  —  {seccion}",
               bold=True, size=11),
-            P("Inicial: entrada 08:00 | salida 13:00–13:20  •  "
-              "Primaria: entrada 08:00 | salida 13:00–14:20  •  "
-              "Secundaria/Preu: entrada 07:30 | mañana y tarde hasta 19:30",
-              size=7, color=colors.Color(0.35,0.35,0.35)),
-            Spacer(1, 0.20*cm),
+            Spacer(1, 0.25*cm),
         ]
 
     FRASES = [
@@ -9825,18 +9835,8 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
         story.append(Spacer(1, 0.4*cm))
         story.append(_tabla_datos(alumnos, C_AZU))
         story.append(Spacer(1, 0.3*cm))
-        # Frase motivacional con color
-        story.append(Spacer(1, 0.1*cm))
-        t_frase = Table([[P(f'❝  {frase}  ❞', size=8, align=TA_CENTER,
-                            color=colors.Color(0.2,0.2,0.5))]],
-                        colWidths=[PW - ML - MR])
-        t_frase.setStyle(TableStyle([
-            ("BACKGROUND",(0,0),(0,0), colors.Color(0.95,0.95,1.0)),
-            ("BOX",(0,0),(0,0), 0.5, colors.Color(0.6,0.6,0.8)),
-            ("TOPPADDING",(0,0),(0,0), 5),
-            ("BOTTOMPADDING",(0,0),(0,0), 5),
-        ]))
-        story.append(t_frase)
+        story.append(P(frase, size=7.5, align=TA_CENTER,
+                       color=colors.Color(0.3,0.3,0.5)))
         if tipo == 'ambos':
             story.append(PageBreak())
 
@@ -9847,16 +9847,8 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
         story.append(Spacer(1, 0.4*cm))
         story.append(_tabla_datos(docentes, C_VER))
         story.append(Spacer(1, 0.3*cm))
-        t_frase2 = Table([[P(f'❝  {frase}  ❞', size=8, align=TA_CENTER,
-                             color=colors.Color(0.1,0.3,0.2))]],
-                         colWidths=[PW - ML - MR])
-        t_frase2.setStyle(TableStyle([
-            ("BACKGROUND",(0,0),(0,0), colors.Color(0.94,0.99,0.95)),
-            ("BOX",(0,0),(0,0), 0.5, colors.Color(0.4,0.7,0.5)),
-            ("TOPPADDING",(0,0),(0,0), 5),
-            ("BOTTOMPADDING",(0,0),(0,0), 5),
-        ]))
-        story.append(t_frase2)
+        story.append(P(frase, size=7.5, align=TA_CENTER,
+                       color=colors.Color(0.3,0.3,0.5)))
 
     doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
                             topMargin=MT, bottomMargin=MB,
@@ -10336,77 +10328,28 @@ def tab_asistencias():
         st.caption(f"Límite puntualidad: **{limite}**")
 
     with col_modo:
-        import datetime as _dt_asis
-        _dia_semana  = hora_peru().weekday()
-        _es_sabado   = (_dia_semana == 5)
-        _mins_actual = hora_peru().hour * 60 + hora_peru().minute
-        _hora_txt    = hora_peru().strftime("%H:%M")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("ENTRADA", use_container_width=True, key="be", type="primary"):
+                st.session_state.tipo_asistencia = "Entrada"
+                st.rerun()
+        with c2:
+            if st.button("SALIDA", use_container_width=True, key="bs", type="primary"):
+                st.session_state.tipo_asistencia = "Salida"
+                st.rerun()
+        st.caption("El sistema detecta automáticamente mañana o tarde")
 
-        # Determinar modo actual y próximo evento
-        if _mins_actual < 8*60+5:          # antes de 08:05
-            _auto_modo = "Entrada"
-            _bg1 = "#15803d"; _bg2 = "#16a34a"
-            _icono = "🌅"; _titulo = "ENTRADA MAÑANA"
-            _sub   = f"Puntual hasta {limite} · Tardanza desde {limite}"
-            _prox  = f"Salida mañana: 13:00"
-        elif _mins_actual < 13*60:          # 08:05 – 13:00
-            _auto_modo = "Entrada"
-            _bg1 = "#b45309"; _bg2 = "#d97706"
-            _icono = "⏰"; _titulo = "REGISTRO TARDANZA"
-            _sub   = f"Hora actual: {_hora_txt} — entrada tardía"
-            _prox  = "Salida mañana: 13:00–14:20"
-        elif _mins_actual < HORA_ENTRADA_TARDE_MIN:   # 13:00 – 14:30
-            _auto_modo = "Salida"
-            _bg1 = "#1d4ed8"; _bg2 = "#2563eb"
-            _icono = "🔵"; _titulo = "SALIDA MAÑANA"
-            _sub   = f"Turno mañana finalizando · {_hora_txt}"
-            _prox  = "Entrada tarde: 14:30"
-        elif _mins_actual < 15*60+10:       # 14:30 – 15:10
-            _auto_modo = "Entrada"
-            _bg1 = "#7c3aed"; _bg2 = "#8b5cf6"
-            _icono = "🌤️"; _titulo = "ENTRADA TARDE"
-            _sub   = f"Turno tarde en curso · {_hora_txt}"
-            _prox  = "Salida tarde: 18:40"
-        elif _mins_actual < 18*60+40:       # 15:10 – 18:40
-            _auto_modo = "Salida"
-            _bg1 = "#be185d"; _bg2 = "#db2777"
-            _icono = "🎓"; _titulo = "TURNO TARDE ACTIVO"
-            _sub   = f"Clases en curso · {_hora_txt}"
-            _prox  = "Salida tarde: 18:40–19:30"
-        else:                               # desde 18:40
-            _auto_modo = "Salida"
-            _bg1 = "#0f766e"; _bg2 = "#0d9488"
-            _icono = "🌙"; _titulo = "SALIDA TARDE"
-            _sub   = f"Finalizando jornada · {_hora_txt}"
-            _prox  = "Fin de jornada"
-
-        if _es_sabado:
-            _bg1 = "#92400e"; _bg2 = "#b45309"
-            _icono = "📅"; _titulo = "SÁBADO"
-            _sub   = "Solo entrada mañana y salida (sin hora fija)"
-            _prox  = ""
-
-        st.session_state.tipo_asistencia = _auto_modo
-
-        # Banner gradiente animado
-        _prox_html = f"<span style='font-size:0.75rem;opacity:0.85;'>→ Próximo: {_prox}</span>" if _prox else ""
-        st.markdown(f"""
-        <div style='background:linear-gradient(135deg,{_bg1},{_bg2});
-                    color:white;padding:12px 16px;border-radius:12px;
-                    box-shadow:0 4px 12px rgba(0,0,0,0.25);
-                    border-left:5px solid white;'>
-          <div style='font-size:1.4rem;margin-bottom:2px;'>{_icono}
-            <b style='font-size:1.05rem;letter-spacing:0.5px;'>{_titulo}</b>
-          </div>
-          <div style='font-size:0.82rem;opacity:0.92;'>{_sub}</div>
-          {_prox_html}
-        </div>
-        <div style='margin-top:5px;font-size:0.73rem;color:#64748b;'>
-          ✅ Modo automático · Límite puntualidad: <b>{limite}</b>
-        </div>""", unsafe_allow_html=True)
-
+    _color_modo = {"Entrada": "#16a34a", "Salida": "#2563eb"}
     _modo = st.session_state.get('tipo_asistencia', 'Entrada')
     modo_label = _modo.replace('_', ' ')
+    import datetime as _dt_asis
+    _dia_semana = hora_peru().weekday()  # 5=sábado, 6=domingo
+    _es_sabado  = (_dia_semana == 5)
+    _info_horario = (
+        f"📌 Modo: {modo_label} | {HORARIOS[horario_sel]['nombre']} — Tardanza después de {limite} | "
+        f"{'📅 SÁBADO — Solo Entrada Mañana y Salida Tarde (sin hora fija)' if _es_sabado else '⏰ Lunes–Viernes: E.Mañana 7:30–8:05 | S.Mañana 13:00–14:20 | E.Tarde 14:30–15:10 | S.Tarde 18:40–19:30'}"
+    )
+    st.markdown(f"<div style='background:{_color_modo.get(_modo,'#2563eb')};color:white;padding:8px 14px;border-radius:8px;font-weight:bold;'>{_info_horario}</div>", unsafe_allow_html=True)
     st.markdown("---")
 
     # ===== ZONA DE REGISTRO RÁPIDO =====
@@ -10430,49 +10373,42 @@ def tab_asistencias():
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
 
-        # ── CARGA AUTOMÁTICA SIEMPRE — sin botón, sin intervención ──────────
-    # SIEMPRE reconstruye el índice al entrar, garantizando docentes + alumnos
-    _idx = st.session_state.get('_indice_dni', {})
-    _idx_ts = st.session_state.get('_indice_dni_ts', 0)
-    _edad = _t_asis.time() - _idx_ts
+        # Diagnóstico del índice — muestra cuántos docentes y alumnos cargados
+        _stats = st.session_state.get('_indice_stats', {})
+        _n_doc = _stats.get('docentes', 0)
+        _n_alu = _stats.get('alumnos', 0)
+        _idx   = st.session_state.get('_indice_dni', {})
+        if not _stats:
+            _n_doc = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
+            _n_alu = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='alumno')
 
-    # Contar antes de decidir
-    _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
-    _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+        col_stat1, col_stat2, col_stat3 = st.columns([2, 2, 2])
+        with col_stat1:
+            st.metric("Alumnos en índice", _n_alu)
+        with col_stat2:
+            color_doc = "normal" if _n_doc > 0 else "off"
+            st.metric("Docentes en índice", _n_doc,
+                      delta="OK" if _n_doc > 0 else "⚠️ Sin cargar",
+                      delta_color=color_doc)
+        with col_stat3:
+            if st.button("🔄 Recargar índice", key="btn_reload_indice",
+                         help="Si docentes no aparecen, presiona aquí"):
+                # Borrar cache y reconstruir
+                st.session_state.pop('_indice_dni', None)
+                st.session_state.pop('_indice_dni_ts', None)
+                st.session_state.pop('_indice_stats', None)
+                try:
+                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+                except Exception:
+                    pass
+                with st.spinner("Recargando docentes y alumnos..."):
+                    _construir_indice_dni()
+                st.success("✅ Índice recargado")
+                st.rerun()
 
-    # Reconstruir si: vacío, viejo (>3min), o faltan docentes
-    if (not _idx) or (_edad > 180) or (_n_doc == 0):
-        _construir_indice_dni()
-        _idx  = st.session_state.get('_indice_dni', {})
-        _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
-        _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+        if _n_doc == 0:
+            st.warning("⚠️ **No hay docentes en el índice.** Verifica que los docentes tengan DNI registrado en Google Sheets (hoja 'docentes'). Presiona 🔄 Recargar para intentar de nuevo.")
 
-    # ── Estado visual ──────────────────────────────────────────────────
-    _col_a, _col_b = st.columns(2)
-    with _col_a:
-        st.metric("Alumnos listos", _n_alu)
-    with _col_b:
-        st.metric("Docentes listos", _n_doc,
-                  delta="OK" if _n_doc > 0 else "Sin DNI registrado",
-                  delta_color="normal" if _n_doc > 0 else "inverse")
-
-    if _n_alu == 0 and _n_doc == 0:
-        st.error("❌ No se cargaron datos. Verifica tu conexión a Google Sheets o que el Excel de matrícula esté subido.")
-        if st.button("Intentar cargar de nuevo", type="primary", key="btn_force_reload"):
-            st.session_state.pop('_indice_dni', None)
-            st.session_state.pop('_indice_dni_ts', None)
-            try:
-                Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
-            except Exception:
-                pass
-            st.rerun()
-        return  # No mostrar el resto si no hay datos
-
-    # Inicializar tracking de WhatsApp enviados
-    if 'wa_enviados' not in st.session_state:
-        st.session_state.wa_enviados = set()
-
-    # ── Horario y Modo ──────────────────────────────────────────
         # Callback que se ejecuta al cambiar el campo (Enter o scanner)
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
@@ -10896,16 +10832,12 @@ def tab_asistencias():
         # ── PUNTUAL DE LA SEMANA ─────────────────────────────────────
         st.markdown("---")
         st.subheader("🏆 Puntual de la Semana")
-        st.caption("Top 5 estudiantes y docentes más puntuales — Lunes a Viernes de la semana actual")
+        st.caption("Top 3 estudiantes y top 3 docentes más puntuales de los últimos 7 días")
 
         _hoy = hora_peru().date()
-        # Solo dias habiles: lunes(0) a viernes(4), semana actual
-        _dias_semana = []
-        for _d in range(13, -1, -1):
-            _dia = _hoy - timedelta(days=_d)
-            if _dia.weekday() < 5:
-                _dias_semana.append((_dia.strftime('%Y-%m-%d'), _dia.strftime('%d/%m/%Y')))
-        _dias_semana = _dias_semana[-5:]  # solo los 5 dias habiles mas recientes
+        _dias_semana = [((_hoy - timedelta(days=_d)).strftime('%Y-%m-%d'),
+                         (_hoy - timedelta(days=_d)).strftime('%d/%m/%Y'))
+                        for _d in range(6, -1, -1)]
 
         _asis_sem = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
@@ -12691,35 +12623,6 @@ def tab_base_datos():
                                 st.error("El nombre no puede estar vacío")
                     else:
                         st.warning("No se encontró ningún alumno con ese DNI o nombre")
-            # Editar celular apoderado
-            with st.expander("📱 Editar Celular / Apoderado", expanded=False):
-                st.caption("Busque al alumno por DNI para actualizar celular y datos del apoderado")
-                edit_dni_cel = st.text_input("DNI del alumno:", key="edit_dni_cel", max_chars=8, placeholder="12345678")
-                if edit_dni_cel and len(edit_dni_cel.strip()) == 8:
-                    al_cel = BaseDatos.buscar_por_dni(edit_dni_cel.strip())
-                    if al_cel:
-                        st.info(f"**{al_cel.get('Nombre','')}** — {al_cel.get('Grado','')}")
-                        cc1, cc2 = st.columns(2)
-                        with cc1:
-                            nuevo_cel = st.text_input("Celular apoderado:", value=str(al_cel.get('Celular_Apoderado','')).replace('nan',''), key="edit_cel_nuevo", max_chars=9, placeholder="987654321")
-                            nuevo_apo = st.text_input("Nombre apoderado:", value=str(al_cel.get('Apoderado','')).replace('nan',''), key="edit_apo_nuevo")
-                        with cc2:
-                            nuevo_dni_apo = st.text_input("DNI apoderado:", value=str(al_cel.get('DNI_Apoderado','')).replace('nan',''), key="edit_dni_apo_nuevo", max_chars=8)
-                        if st.button("💾 GUARDAR CELULAR/APODERADO", type="primary", key="btn_guardar_cel"):
-                            df_cel = BaseDatos.cargar_matricula()
-                            df_cel['DNI'] = df_cel['DNI'].astype(str).str.strip()
-                            mask_cel = df_cel['DNI'] == edit_dni_cel.strip()
-                            if mask_cel.any():
-                                if nuevo_cel.strip(): df_cel.loc[mask_cel,'Celular_Apoderado'] = nuevo_cel.strip()
-                                if nuevo_apo.strip(): df_cel.loc[mask_cel,'Apoderado'] = nuevo_apo.strip().upper()
-                                if nuevo_dni_apo.strip(): df_cel.loc[mask_cel,'DNI_Apoderado'] = nuevo_dni_apo.strip()
-                                BaseDatos.guardar_matricula(df_cel)
-                                st.success("✅ Datos actualizados correctamente")
-                                import time as _t; _t.sleep(1)
-                                st.rerun()
-                    else:
-                        st.error("No se encontró alumno con ese DNI")
-
             # Cambiar Grado/Seccion de alumno
             with st.expander("✏️ Cambiar Grado / Sección de Alumno", expanded=False):
                 st.caption("Busque al alumno por DNI para cambiar su grado o sección (ej: Ciclo Intensivo → Ciclo Ordinario)")
@@ -12882,34 +12785,28 @@ def tab_base_datos():
                         df_full = BaseDatos.cargar_matricula()
                         df_full['DNI'] = df_full['DNI'].astype(str).str.strip()
                         n_cambios = 0
-                        # edited has same length as df_vista — iterate positionally
-                        df_vista_reset = df_vista.reset_index(drop=True)
-                        edited_reset = edited.reset_index(drop=True)
-                        for pos in range(len(edited_reset)):
-                            orig_row = df_vista_reset.iloc[pos]
-                            row_e   = edited_reset.iloc[pos]
-                            orig_dni = str(orig_row.get('DNI','')).strip()
-                            orig_nom = str(orig_row.get('Nombre','')).strip()
-                            mask = df_full['DNI'] == orig_dni
-                            if not mask.any() and orig_nom:
-                                mask = df_full['Nombre'].astype(str).str.strip() == orig_nom
-                            if mask.any():
-                                for col in COLS_EDIT:
-                                    val = str(row_e.get(col,'')).strip()
-                                    if val and val not in ('nan','None',''):
-                                        if col in ('Nombre','Apoderado'):
-                                            df_full.loc[mask, col] = val.upper()
-                                        else:
-                                            df_full.loc[mask, col] = val
-                                new_dni = str(row_e.get('DNI','')).strip()
-                                if new_dni and len(new_dni)==8 and new_dni.isdigit():
-                                    df_full.loc[mask, '_provisional'] = 'NO'
-                                n_cambios += 1
+                        for idx_e, row_e in edited.iterrows():
+                            # Identificar por índice original en df_vista
+                            if idx_e < len(df_vista):
+                                orig_row = df_vista.iloc[idx_e]
+                                orig_dni = str(orig_row.get('DNI','')).strip()
+                                orig_nom = str(orig_row.get('Nombre','')).strip()
+                                # Buscar en df_full
+                                mask = df_full['DNI'] == orig_dni
+                                if not mask.any():
+                                    mask = df_full['Nombre'].astype(str).str.strip() == orig_nom
+                                if mask.any():
+                                    for col in COLS_EDIT:
+                                        val = str(row_e.get(col,'')).strip()
+                                        if val and val != 'nan':
+                                            df_full.loc[mask, col] = val.upper() if col in ('Nombre','Apoderado') else val
+                                    # Limpiar provisional si DNI real
+                                    new_dni = str(row_e.get('DNI','')).strip()
+                                    if new_dni and len(new_dni)==8 and new_dni.isdigit():
+                                        df_full.loc[mask, '_provisional'] = 'NO'
+                                    n_cambios += 1
                         BaseDatos.guardar_matricula(df_full)
-                    if n_cambios > 0:
-                        st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
-                    else:
-                        st.warning("⚠️ No se encontraron registros para actualizar. Verifica los DNI.")
+                    st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
                     st.rerun()
 
     with tab_dc:
@@ -18993,7 +18890,7 @@ def tab_registrar_notas(config):
 
     # ─── PESTAÑA: Historial / Nueva Evaluación / Diagnóstico ─────────────────
     vista = st.radio("", ["📋 Nueva Evaluación", "📂 Historial de Evaluaciones",
-                          "🔬 Examen Diagnóstico", "📊 Cargar Respuestas por Clave"],
+                          "🔬 Examen Diagnóstico"],
                      horizontal=True, key="rn_vista")
 
     # ── DIAGNÓSTICO ───────────────────────────────────────────────────────────
@@ -19326,252 +19223,11 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    col_pdf_h, col_wa_h = st.columns(2)
-                    with col_pdf_h:
-                        if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
-                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
-                            st.download_button("⬇️ Descargar PDF",pdf_h,
-                                               f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
-                                               "application/pdf", key=f"dl_hist_{clave}")
-                    with col_wa_h:
-                        # WA siempre visible — links directos sin estado
-                        _wa_h = []
-                        for _fh in ranking_h:
-                            _al = BaseDatos.buscar_por_dni(_fh.get('DNI',''))
-                            _cel = str((_al or {}).get('Celular_Apoderado','')).strip()
-                            if _cel and _cel not in ('nan','None',''):
-                                _cc = _cel.replace(' ','').replace('+','').replace('-','')
-                                if not _cc.startswith('51'): _cc = '51'+_cc
-                                _m = (f"I.E.P.YACHAY NOTAS\n{_fh.get('Nombre','')}\n"
-                                      f"{ev.get('grado','')} | {ev.get('periodo','')}\n")
-                                for _an in areas_nombres:
-                                    _m += f"{_an}: {_fh.get(_an,0)} ({nota_a_letra(_fh.get(_an,0))})\n" 
-                                _m += f"PROMEDIO: {_fh.get('Promedio',0)}"
-                                import urllib.parse as _up2
-                                _url = f"https://wa.me/{_cc}?text={_up2.quote(_m)}"
-                                _wa_h.append(f'<a href="{_url}" target="_blank" style="background:#25D366;color:white;padding:2px 7px;border-radius:5px;text-decoration:none;font-size:0.72rem;margin:1px;display:inline-block;">📱 {_fh.get("Nombre","")[:14]}</a>')
-                        if _wa_h:
-                            st.markdown("📱 **WA:**", unsafe_allow_html=False)
-                            st.markdown(" ".join(_wa_h), unsafe_allow_html=True)
-        return
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # CARGAR RESPUESTAS POR CLAVE
-    # ═══════════════════════════════════════════════════════════════════════════
-    if vista == "📊 Cargar Respuestas por Clave":
-        st.markdown("### 📊 Evaluación por Clave de Respuestas")
-        st.caption("Define las claves correctas por curso, carga las respuestas de cada estudiante y obtén notas automáticas.")
-
-        # ── Configuración general ──────────────────────────────────
-        col_gc1, col_gc2, col_gc3 = st.columns(3)
-        with col_gc1:
-            if grado_doc and grado_doc not in ('ALL_NIVELES','ALL_SEC_PREU','N/A',''):
-                grado_cl = grado_doc
-                st.info(f"Grado: **{grado_cl}**")
-            else:
-                grado_cl = st.selectbox("Grado:", GRADOS_OPCIONES, key="cl_grado")
-        with col_gc2:
-            bim_cl = st.selectbox("Período:", [
-                "Bimestre 1","Bimestre 2","Bimestre 3","Bimestre 4",
-                "Semana 1","Semana 2","Semana 3","Semana 4","Semana 5",
-                "Semana 6","Semana 7","Semana 8","Semana 9","Semana 10",
-                "Mensual","Trimestral","Diagnóstico"], key="cl_bim")
-        with col_gc3:
-            titulo_cl = st.text_input("Título evaluación:", key="cl_titulo",
-                                       placeholder="Ej: Examen Parcial Sem 3")
-
-        st.markdown("---")
-
-        # ── Definir cursos y claves ────────────────────────────────
-        st.markdown("#### 📚 Paso 1: Define los cursos y sus claves")
-        n_cursos = st.number_input("N° de cursos:", 1, 8, 1, key="cl_ncursos")
-
-        OPCIONES_RESP = ["A","B","C","D","E"]
-        cursos_config = []  # [{nombre, n_preguntas, claves:[]}]
-
-        cols_cur = st.columns(min(int(n_cursos), 3))
-        for ci in range(int(n_cursos)):
-            with cols_cur[ci % 3]:
-                with st.container(border=True):
-                    nom_c = st.text_input(f"Curso {ci+1}:", key=f"cl_nom_{ci}",
-                                           placeholder="Matemática")
-                    n_preg = st.number_input(f"N° preguntas:", 1, 30, 10,
-                                              key=f"cl_npreg_{ci}")
-                    st.caption("Clave de respuestas:")
-                    claves_c = []
-                    cols_clv = st.columns(5)
-                    for pi in range(int(n_preg)):
-                        with cols_clv[pi % 5]:
-                            clave_p = st.selectbox(
-                                f"P{pi+1}", OPCIONES_RESP,
-                                key=f"cl_clave_{ci}_{pi}",
-                                label_visibility="collapsed")
-                            claves_c.append(clave_p)
-                    cursos_config.append({
-                        'nombre': nom_c or f"Curso {ci+1}",
-                        'n_preguntas': int(n_preg),
-                        'claves': claves_c,
-                    })
-
-        st.markdown("---")
-        st.markdown("#### 👤 Paso 2: Ingresa las respuestas de cada estudiante")
-
-        # Cargar estudiantes del grado
-        df_cl = BaseDatos.obtener_estudiantes_grado(grado_cl)
-        if df_cl.empty:
-            st.warning("No hay estudiantes en este grado.")
-            return
-
-        st.caption(f"{len(df_cl)} estudiantes · Selecciona las respuestas marcadas por cada uno")
-
-        # Tabla de respuestas — un expander por estudiante
-        notas_cl = {}  # {dni: {nombre, areas:{curso:nota}, promedio}}
-
-        for _, est_row in df_cl.iterrows():
-            nom_e = str(est_row.get('Nombre','')).strip()
-            dni_e = str(est_row.get('DNI','')).strip()
-            with st.expander(f"👤 {nom_e}", expanded=False):
-                nota_cursos = {}
-                total_puntaje = 0
-                for ci2, cur in enumerate(cursos_config):
-                    st.markdown(f"**{cur['nombre']}** — {cur['n_preguntas']} preguntas")
-                    cols_resp = st.columns(min(cur['n_preguntas'], 10))
-                    correctas = 0
-                    for pi2 in range(cur['n_preguntas']):
-                        with cols_resp[pi2 % 10]:
-                            resp_e = st.selectbox(
-                                f"P{pi2+1}",
-                                ["—"] + OPCIONES_RESP,
-                                key=f"resp_{dni_e}_{ci2}_{pi2}",
-                                label_visibility="visible")
-                            if resp_e != "—" and resp_e == cur['claves'][pi2]:
-                                correctas += 1
-                    nota_cur = round(correctas / cur['n_preguntas'] * 20, 1) if cur['n_preguntas'] > 0 else 0
-                    nota_cursos[cur['nombre']] = nota_cur
-                    total_puntaje += nota_cur
-                    st.caption(f"✅ {correctas}/{cur['n_preguntas']} correctas → **{nota_cur}/20**")
-
-                prom_e = round(total_puntaje / max(len(cursos_config), 1), 1)
-                st.success(f"Promedio: **{prom_e}** ({nota_a_letra(prom_e)})")
-                notas_cl[dni_e] = {
-                    'nombre': nom_e, 'dni': dni_e,
-                    'areas': nota_cursos,
-                    'promedio': prom_e,
-                }
-
-        st.markdown("---")
-        st.markdown("#### 🏆 Ranking y Guardado")
-
-        # Calcular ranking con los datos actuales
-        areas_cl_names = [c['nombre'] for c in cursos_config]
-        ranking_cl = []
-        for dni_r, dat in notas_cl.items():
-            if dat['promedio'] > 0:
-                fila_r = {'DNI': dni_r, 'Nombre': dat['nombre']}
-                for an in areas_cl_names:
-                    fila_r[an] = dat['areas'].get(an, 0)
-                fila_r['Promedio'] = dat['promedio']
-                ranking_cl.append(fila_r)
-        ranking_cl.sort(key=lambda x: x['Promedio'], reverse=True)
-        for ri, fr in enumerate(ranking_cl):
-            fr['Puesto'] = ri + 1
-            fr['Medalla'] = ['🥇','🥈','🥉'][ri] if ri < 3 else f"#{ri+1}"
-
-        if ranking_cl:
-            df_rank_cl = pd.DataFrame(ranking_cl)
-            cols_show = ['Puesto','Medalla','Nombre'] + areas_cl_names + ['Promedio']
-            cols_show = [c for c in cols_show if c in df_rank_cl.columns]
-            st.dataframe(df_rank_cl[cols_show], use_container_width=True, hide_index=True)
-
-            col_save_cl, col_pdf_cl = st.columns(2)
-            with col_save_cl:
-                if st.button("💾 Guardar Evaluación", type="primary",
-                             use_container_width=True, key="btn_save_cl"):
-                    # Guardar igual que evaluación normal
-                    areas_obj = [{'nombre': c['nombre'], 'id': f"cl_{i}",
-                                  'n_preguntas': c['n_preguntas']} for i,c in enumerate(cursos_config)]
-                    hist_cl = _cargar_historial_evaluaciones()
-                    clave_cl = f"{grado_cl}_{bim_cl}_claves_{fecha_peru_str()}"
-                    hist_cl[clave_cl] = {
-                        'id': clave_cl, 'grado': grado_cl, 'periodo': bim_cl,
-                        'titulo': titulo_cl or f"Claves {bim_cl}",
-                        'fecha': fecha_peru_str(), 'hora': hora_peru_str(),
-                        'docente': usuario, 'docente_nombre': nombre_completo_doc,
-                        'areas': areas_obj, 'ranking': ranking_cl,
-                        'tipo_evaluacion': 'Por Claves',
-                    }
-                    _guardar_historial_evaluaciones(hist_cl)
-                    # Guardar en resultados.json para portal padres y reporte integral
-                    try:
-                        import json as _js2
-                        _res_path = 'resultados.json'
-                        _res_act = []
-                        if Path(_res_path).exists():
-                            with open(_res_path,'r',encoding='utf-8') as _fr2:
-                                _res_act = _js2.load(_fr2)
-                        for _dnir, _datr in notas_cl.items():
-                            if _datr['promedio'] > 0:
-                                _res_act.append({
-                                    'dni': _dnir,
-                                    'nombre': _datr['nombre'],
-                                    'grado': grado_cl,
-                                    'periodo': bim_cl,
-                                    'titulo': titulo_cl or f"Claves {bim_cl}",
-                                    'fecha': fecha_peru_str(),
-                                    'hora': hora_peru_str(),
-                                    'docente': usuario,
-                                    'docente_nombre': nombre_completo_doc,
-                                    'areas': [{'nombre': k, 'nota': v}
-                                              for k, v in _datr['areas'].items()],
-                                    'promedio_general': _datr['promedio'],
-                                    '_docente': usuario,
-                                })
-                        with open(_res_path,'w',encoding='utf-8') as _fw2:
-                            _js2.dump(_res_act, _fw2, ensure_ascii=False, indent=2)
-                        # También en historial_evaluaciones por DNI para portal padres
-                        _hev_path = 'historial_evaluaciones.json'
-                        _hev = {}
-                        if Path(_hev_path).exists():
-                            with open(_hev_path,'r',encoding='utf-8') as _fhev:
-                                _hev = _js2.load(_fhev)
-                        _hev[clave_cl] = hist_cl[clave_cl]
-                        with open(_hev_path,'w',encoding='utf-8') as _fhev2:
-                            _js2.dump(_hev, _fhev2, ensure_ascii=False, indent=2)
-                    except Exception as _erc:
-                        st.warning(f"Historial guardado pero error en resultados.json: {_erc}")
-                    st.success("✅ Evaluación guardada — visible en portal padres y reporte integral")
-                    st.balloons()
-
-            with col_pdf_cl:
-                if st.button("📥 PDF Ranking", type="primary",
-                             use_container_width=True, key="btn_pdf_cl"):
-                    pdf_cl = _generar_ranking_pdf(ranking_cl, areas_cl_names,
-                                                   grado_cl, bim_cl, config)
-                    st.download_button("⬇️ Descargar PDF", pdf_cl,
-                                       f"Ranking_Claves_{grado_cl}_{bim_cl}.pdf",
-                                       "application/pdf", key="dl_pdf_cl")
-
-            # WhatsApp
-            st.markdown("**📱 Enviar notas por WhatsApp:**")
-            wa_cl = []
-            for fr2 in ranking_cl:
-                al2 = BaseDatos.buscar_por_dni(fr2.get('DNI',''))
-                cel2 = str((al2 or {}).get('Celular_Apoderado','')).strip()
-                if cel2 and cel2 not in ('nan','None',''):
-                    cc2 = cel2.replace(' ','').replace('+','').replace('-','')
-                    if not cc2.startswith('51'): cc2 = '51'+cc2
-                    msg2 = (f"I.E.P.YACHAY\n{fr2.get('Nombre','')}\n"
-                            f"{grado_cl} | {bim_cl}\n")
-                    for an2 in areas_cl_names:
-                        msg2 += f"{an2}: {fr2.get(an2,0)} ({nota_a_letra(fr2.get(an2,0))})\n"
-                    msg2 += f"PROMEDIO: {fr2.get('Promedio',0)}"
-                    import urllib.parse as _up3
-                    url2 = f"https://wa.me/{cc2}?text={_up3.quote(msg2)}"
-                    wa_cl.append(f'<a href="{url2}" target="_blank" style="background:#25D366;color:white;padding:3px 8px;border-radius:5px;text-decoration:none;font-size:0.78rem;margin:2px;display:inline-block;">📱 {fr2.get("Nombre","")[:16]}</a>')
-            if wa_cl:
-                st.markdown(" ".join(wa_cl), unsafe_allow_html=True)
-        else:
-            st.info("📭 Ingresa las respuestas de los estudiantes para ver el ranking.")
+                    if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
+                        pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                        st.download_button("⬇️ Descargar", pdf_h,
+                                           f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
+                                           "application/pdf", key=f"dl_hist_{clave}")
         return
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -19616,23 +19272,23 @@ def tab_registrar_notas(config):
 
         # Determinar áreas disponibles según el grado seleccionado
         grado_str_cfg = str(grado_cfg)
-        if 'Inicial' in grado_str_cfg or '3 años' in grado_str_cfg or '4 años' in grado_str_cfg or '5 años' in grado_str_cfg:
-            areas_disp = AREAS_MINEDU.get('INICIAL', [])
-        elif any(x in grado_str_cfg for x in ['Secundaria','° Sec']):
-            areas_disp = AREAS_MINEDU.get('SECUNDARIA', [])
-        elif 'GRUPO AB' in grado_str_cfg or 'Grupo AB' in grado_str_cfg:
+        if 'Inicial' in grado_str_cfg:
+            areas_disp = AREAS_MINEDU.get('INICIAL', AREAS_MINEDU.get('PRIMARIA', []))
+        elif any(x in grado_str_cfg for x in ['1° Sec','2° Sec','3° Sec','4° Sec','5° Sec']):
+            areas_cepre_all = sorted(set(AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])))
+            areas_disp = AREAS_MINEDU.get('SECUNDARIA', []) + areas_cepre_all
+        elif 'GRUPO AB' in grado_str_cfg:
             areas_disp = AREAS_CEPRE_UNSAAC.get('GRUPO AB', [])
-        elif 'GRUPO CD' in grado_str_cfg or 'Grupo CD' in grado_str_cfg:
+        elif 'GRUPO CD' in grado_str_cfg:
             areas_disp = AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
-        elif any(x in grado_str_cfg for x in ['CEPRE','Ciclo','Reforzamiento','Preu','PREU','UNSAAC']):
-            _areas_preu = AREAS_CEPRE_UNSAAC.get('GRUPO AB',[]) + AREAS_CEPRE_UNSAAC.get('GRUPO CD',[])
-            areas_disp = sorted(set(_areas_preu))
-        elif any(x in grado_str_cfg for x in ['Primaria','° Primaria','1°','2°','3°','4°','5°','6°']):
-            areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
+        elif any(x in grado_str_cfg for x in ['Ciclo','Reforzamiento','Preu','PREU']):
+            areas_preu = AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) + AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
+            areas_disp = sorted(set(areas_preu))
         else:
+            # Primaria (y cualquier otro)
             areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
 
-        # Si no hay áreas definidas, usar básicas
+        # Si no hay áreas definidas, permitir texto libre
         if not areas_disp:
             areas_disp = ["Matemática", "Comunicación", "Ciencias", "Historia", "Arte", "Educación Física"]
 
@@ -20882,30 +20538,6 @@ HORA_ENTRADA_TARDE_MIN  = 14 * 60 + 30   # 14:30 → inicio turno tarde
 HORA_FIN_ENTRADA_TARDE  = 15 * 60 + 10   # 15:10
 HORA_INICIO_SALIDA_TARDE= 18 * 60 + 40   # 18:40
 HORA_FIN_SALIDA_TARDE   = 19 * 60 + 30   # 19:30
-
-# ── Horarios de salida por nivel ─────────────────────────────────────
-# Inicial:    entrada 08:00 | salida 13:00 – 13:20
-# Primaria:   entrada 08:00 | salida 13:00 – 14:20
-# Secundaria: entrada 07:30 | salida 14:30 (tarde hasta 19:30)
-# Preuniversitario: igual que secundaria
-HORARIOS_NIVEL = {
-    'INICIAL':          {'entrada': '08:00', 'salida_min': '13:00', 'salida_max': '13:20', 'turno': 'solo mañana'},
-    'PRIMARIA':         {'entrada': '08:00', 'salida_min': '13:00', 'salida_max': '14:20', 'turno': 'solo mañana'},
-    'SECUNDARIA':       {'entrada': '07:30', 'salida_min': '14:30', 'salida_max': '19:30', 'turno': 'mañana y tarde'},
-    'PREUNIVERSITARIO': {'entrada': '07:30', 'salida_min': '14:30', 'salida_max': '19:30', 'turno': 'mañana y tarde'},
-}
-
-def _horario_nivel(grado_str):
-    """Devuelve el dict de horario según el nivel del grado."""
-    g = str(grado_str).upper()
-    if 'INICIAL' in g or 'AÑOS' in g:
-        return HORARIOS_NIVEL['INICIAL']
-    elif 'SECUNDARIA' in g or '° SEC' in g:
-        return HORARIOS_NIVEL['SECUNDARIA']
-    elif 'PREU' in g or 'CEPRE' in g or 'GRUPO' in g or 'UNSAAC' in g:
-        return HORARIOS_NIVEL['PREUNIVERSITARIO']
-    else:
-        return HORARIOS_NIVEL['PRIMARIA']
 
 
 def _horario_activo():
