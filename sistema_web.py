@@ -2000,32 +2000,67 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # PASO 3c: FALLBACK — usuarios con rol docente/directivo que tengan DNI registrado
+    # PASO 3c: FALLBACK — leer usuarios.json local (siempre existe en Streamlit Cloud)
+    try:
+        _upath = Path("usuarios.json")
+        if _upath.exists():
+            import json as _jj
+            _udata = _jj.loads(_upath.read_text(encoding='utf-8'))
+            for _uname, _ud in _udata.items():
+                _rol = str(_ud.get('rol', '')).lower()
+                if not any(r in _rol for r in ['docente','directivo','auxiliar','promotor']):
+                    continue
+                _dni_u = str(_ud.get('dni', '')).strip().replace('.0','')
+                if not _dni_u or len(_dni_u) < 6:
+                    continue
+                if _dni_u.isdigit() and len(_dni_u) < 8:
+                    _dni_u = _dni_u.zfill(8)
+                if _dni_u not in indice:
+                    # Get best name: label > nombre > docente_info.label > username
+                    _nom = (str(_ud.get('label','')).strip() or
+                            str(_ud.get('nombre','')).strip() or
+                            str((_ud.get('docente_info') or {}).get('label','')).strip() or
+                            _uname.replace('.',' ').title())
+                    _nom = _nom.upper()
+                    if not _nom or _nom in ('NAN','NONE',''):
+                        _nom = _uname.upper()
+                    _cargo = ('DIRECTORA' if 'directivo' in _rol else
+                              'AUXILIAR'  if 'auxiliar'  in _rol else 'DOCENTE')
+                    _grado_u = (str(_ud.get('grado','')).strip() or
+                                str((_ud.get('docente_info') or {}).get('grado','')).strip())
+                    indice[_dni_u] = {
+                        'DNI': _dni_u, '_tipo': 'docente',
+                        'Nombre': _nom, 'Cargo': _cargo,
+                        'Grado': _grado_u,
+                        'Celular': str(_ud.get('celular','')).strip(),
+                    }
+    except Exception:
+        pass
+
+    # PASO 3c2: también intentar desde GSheets leer_usuarios
     try:
         gs = _gs()
         if gs:
-            usuarios = gs.leer_usuarios()
-            for uname, ud in usuarios.items():
-                rol = str(ud.get('rol', '')).lower()
-                # Solo incluir si tiene algún rol del colegio
-                if not any(r in rol for r in ['docente','directivo','auxiliar','promotor','admin']):
+            _gu = gs.leer_usuarios()
+            for _uname2, _ud2 in _gu.items():
+                _rol2 = str(_ud2.get('rol', '')).lower()
+                if not any(r in _rol2 for r in ['docente','directivo','auxiliar','promotor']):
                     continue
-                dni_u = str(ud.get('dni', '')).strip().replace('.0','')
-                if not dni_u or len(dni_u) < 6:
+                _dni2 = str(_ud2.get('dni', '')).strip().replace('.0','')
+                if not _dni2 or len(_dni2) < 6:
                     continue
-                # Completar a 8 dígitos si es número corto
-                if dni_u.isdigit() and len(dni_u) < 8:
-                    dni_u = dni_u.zfill(8)
-                if dni_u not in indice:
-                    nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
-                    if not nombre_u or nombre_u in ('', 'NAN', 'NONE'):
-                        nombre_u = uname.upper()
-                    cargo = 'DIRECTORA' if 'directivo' in rol else ('AUXILIAR' if 'auxiliar' in rol else 'DOCENTE')
-                    indice[dni_u] = {
-                        'DNI': dni_u, '_tipo': 'docente',
-                        'Nombre': nombre_u, 'Cargo': cargo,
-                        'Grado': str(ud.get('grado','')).strip(),
-                        'Celular': str(ud.get('celular','')).strip(),
+                if _dni2.isdigit() and len(_dni2) < 8:
+                    _dni2 = _dni2.zfill(8)
+                if _dni2 not in indice:
+                    _nom2 = (str(_ud2.get('label','')).strip() or
+                             str(_ud2.get('nombre','')).strip() or
+                             _uname2.replace('.',' ').title()).upper()
+                    _cargo2 = ('DIRECTORA' if 'directivo' in _rol2 else
+                               'AUXILIAR'  if 'auxiliar'  in _rol2 else 'DOCENTE')
+                    indice[_dni2] = {
+                        'DNI': _dni2, '_tipo': 'docente',
+                        'Nombre': _nom2, 'Cargo': _cargo2,
+                        'Grado': str(_ud2.get('grado','')).strip(),
                     }
     except Exception:
         pass
@@ -2532,8 +2567,10 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
             # Desempeños como D1, D2... en vez de capacidades
             n_des = len(CAPACIDADES_REG.get(cf, ['D1','D2','D3']))
             caps  = [f"D{j+1}" for j in range(n_des)]
-            # Competencia completa como abreviatura (texto completo, fuente pequeña)
-            ca    = cf  # texto completo — se mostrará pequeño y rotado
+            # Abreviatura de competencia: primeras 2 palabras significativas
+            _stop = {'de','la','el','los','las','su','y','a','en','por','con','del','al'}
+            _words = [w for w in cf.split() if w.lower() not in _stop and len(w) > 2]
+            ca = ' '.join(_words[:3]) if _words else cf[:18]
             estructura.append((curso, ca, cf, caps))
 
     # total de columnas de datos
@@ -2560,7 +2597,7 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
 
     # ── Alturas ────────────────────────────────────────────────────
     H_CURSO = 0.48*cm
-    H_COMP  = 1.60*cm   # texto completo de competencia, fuente 4.5
+    H_COMP  = 1.80*cm   # texto abreviado de competencia, fuente 4.8
     H_CAP   = 0.82*cm
     H_EST   = 0.55*cm
 
@@ -2649,13 +2686,14 @@ def generar_registro_auxiliar_pdf(grado, seccion, anio, bimestre,
         # Comp span y color
         styles_cmds.append(('SPAN',       (cs,1),(ce,1)))
         styles_cmds.append(('BACKGROUND', (cs,1),(ce,1), bg_comp))
+        styles_cmds.append(('TEXTCOLOR',  (cs,1),(ce,1), colors.white))
         # Caps color
         styles_cmds.append(('BACKGROUND', (cs,2),(ce,2), bg_cap))
-        # Estudiantes color
-        styles_cmds.append(('BACKGROUND', (cs,3),(cs,-1), bg_est))
+        # Estudiantes color — TODAS las columnas de esta competencia (cs a ce)
+        styles_cmds.append(('BACKGROUND', (cs,3),(ce,-1), bg_est))
         # Línea vertical gruesa al inicio de cada competencia
         if cs > 2:
-            styles_cmds.append(('LINEBEFORE', (cs,0),(cs,-1), 0.7, colors.Color(0.3,0.3,0.3)))
+            styles_cmds.append(('LINEBEFORE', (cs,0),(cs,-1), 0.8, colors.Color(0.25,0.25,0.25)))
 
         col_idx += len(caps)
 
