@@ -34,7 +34,7 @@ COLUMNAS = {
     'docentes': ['nombre', 'dni', 'cargo', 'especialidad', 'celular',
                   'grado_asignado', 'fecha_registro'],
     'usuarios': ['username', 'password_hash', 'nombre', 'rol',
-                  'grado_asignado', 'nivel_asignado'],
+                  'grado_asignado', 'nivel_asignado', 'dni'],
     'asistencias': ['fecha', 'dni', 'nombre', 'tipo_persona',
                      'hora_entrada', 'hora_salida', 'grado', 'nivel'],
     'resultados': ['eval_id', 'eval_titulo', 'fecha', 'docente',
@@ -187,6 +187,7 @@ class GoogleSync:
                 # Limpiar .0 si GS lo convirtió a float
                 if pwd.endswith('.0'):
                     pwd = pwd[:-2]
+                _dni_gs = str(row.get('dni', '')).strip().replace('.0','')
                 usuarios[uname] = {
                     'password': pwd,
                     'label': str(row.get('nombre', uname)).strip(),
@@ -194,6 +195,7 @@ class GoogleSync:
                     'rol': str(row.get('rol', 'docente')).strip(),
                     'grado': str(row.get('grado_asignado', '')).strip(),
                     'nivel': str(row.get('nivel_asignado', '')).strip(),
+                    'dni': _dni_gs,
                 }
             return usuarios
         except Exception:
@@ -330,12 +332,16 @@ class GoogleSync:
         if ws is None:
             return False
         try:
+            _dni_g = datos.get('dni', '')
+            if not _dni_g:
+                _di_g = datos.get('docente_info') or {}
+                _dni_g = _di_g.get('dni', '') if isinstance(_di_g, dict) else ''
             row = [username, datos.get('password', ''),
                    datos.get('nombre', ''), datos.get('rol', 'docente'),
-                   datos.get('grado', ''), datos.get('nivel', '')]
+                   datos.get('grado', ''), datos.get('nivel', ''), str(_dni_g)]
             cell = ws.find(str(username))
             if cell:
-                ws.update(f'A{cell.row}:F{cell.row}', [row])
+                ws.update(f'A{cell.row}:G{cell.row}', [row])
             else:
                 ws.append_row(row)
             return True
@@ -516,8 +522,11 @@ class GoogleSync:
                 nivel = di.get('nivel', '') if isinstance(di, dict) else ''
                 nombre = datos.get('label', datos.get('nombre', ''))
                 password = str(datos.get('password', ''))
+                di_s = datos.get('docente_info') or {}
+                dni_s = (datos.get('dni','') or
+                         (di_s.get('dni','') if isinstance(di_s,dict) else ''))
                 row = [username, password, nombre,
-                       datos.get('rol', 'docente'), grado, nivel]
+                       datos.get('rol', 'docente'), grado, nivel, str(dni_s)]
                 ws.append_row(row, value_input_option='RAW')
             return True
         except Exception:
