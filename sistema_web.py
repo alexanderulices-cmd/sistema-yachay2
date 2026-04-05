@@ -2000,8 +2000,10 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # PASO 3c: FALLBACK — usuarios con rol docente que tengan DNI registrado
-    # Esto cubre el caso donde GSheets falla o la hoja docentes esta vacia
+    # PASO 3c: FALLBACK — usuarios con rol docente
+    # La hoja Usuarios tiene columnas: username, password_hash, nombre, rol, grado_asignado, nivel_asignado
+    # El DNI NO está como columna separada — pero por convención la contraseña ES el DNI
+    # Por eso usamos ud.get('password') como DNI cuando mide 8 dígitos
     try:
         gs = _gs()
         if gs:
@@ -2010,16 +2012,59 @@ def _construir_indice_dni():
                 rol = str(ud.get('rol', '')).lower()
                 if not any(r in rol for r in ['docente','director','auxiliar','promotor']):
                     continue
-                dni_u = str(ud.get('dni', '')).strip().replace('.0','')
+                # Intentar DNI desde docente_info primero, luego password (= DNI por defecto)
+                _di   = ud.get('docente_info') or {}
+                dni_u = (str(_di.get('dni','') if isinstance(_di,dict) else '').strip() or
+                         str(ud.get('dni','')).strip())
+                # Si no, usar password que por convención es el DNI
+                if not dni_u or len(dni_u) < 7:
+                    _pwd = str(ud.get('password','')).strip().replace('.0','')
+                    if _pwd.isdigit() and 7 <= len(_pwd) <= 8:
+                        dni_u = _pwd.zfill(8)
                 if not dni_u or len(dni_u) < 7:
                     continue
+                dni_u = dni_u.replace('.0','')
                 if dni_u not in indice:
                     nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
+                    if not nombre_u or nombre_u in ('NAN','NONE',''):
+                        nombre_u = uname.replace('.',' ').upper()
+                    cargo = ('DIRECTORA' if 'directiv' in rol else
+                             'AUXILIAR'  if 'auxiliar' in rol else 'DOCENTE')
                     indice[dni_u] = {
                         'DNI': dni_u, '_tipo': 'docente',
-                        'Nombre': nombre_u, 'Cargo': rol.upper(),
+                        'Nombre': nombre_u, 'Cargo': cargo,
                         'Grado': str(ud.get('grado','')).strip(),
                     }
+    except Exception:
+        pass
+
+    # PASO 3c2: también desde usuarios.json local (si existe)
+    try:
+        import json as _jloc
+        _uloc = _jloc.loads(Path('usuarios.json').read_text(encoding='utf-8')) if Path('usuarios.json').exists() else {}
+        for _un, _ud in _uloc.items():
+            _rol = str(_ud.get('rol','')).lower()
+            if not any(r in _rol for r in ['docente','director','auxiliar','promotor']):
+                continue
+            _diloc = _ud.get('docente_info') or {}
+            _dniloc = (str(_diloc.get('dni','') if isinstance(_diloc,dict) else '').strip() or
+                       str(_ud.get('password','')).strip().replace('.0',''))
+            if not _dniloc or len(_dniloc) < 7:
+                continue
+            if _dniloc.isdigit() and len(_dniloc) < 8:
+                _dniloc = _dniloc.zfill(8)
+            if _dniloc not in indice:
+                _nomloc = str(_ud.get('label', _ud.get('nombre', _un))).strip().upper()
+                if not _nomloc or _nomloc in ('NAN','NONE',''):
+                    _nomloc = _un.replace('.',' ').upper()
+                indice[_dniloc] = {
+                    'DNI': _dniloc, '_tipo': 'docente',
+                    'Nombre': _nomloc,
+                    'Cargo': ('DIRECTORA' if 'directiv' in _rol else
+                              'AUXILIAR'  if 'auxiliar' in _rol else 'DOCENTE'),
+                    'Grado': str((_diloc.get('grado','') if isinstance(_diloc,dict) else '') or
+                                 _ud.get('grado','')).strip(),
+                }
     except Exception:
         pass
 
