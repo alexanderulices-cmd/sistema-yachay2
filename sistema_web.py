@@ -2000,106 +2000,28 @@ def _construir_indice_dni():
         except Exception:
             pass
 
-    # PASO 3c: FALLBACK — leer usuarios.json local (siempre existe en Streamlit Cloud)
-    # DNI se guarda en docente_info.dni, NO en el nivel raíz
-    try:
-        _upath = Path("usuarios.json")
-        if _upath.exists():
-            import json as _jj
-            _udata = _jj.loads(_upath.read_text(encoding='utf-8'))
-            for _uname, _ud in _udata.items():
-                _rol = str(_ud.get('rol', '')).lower()
-                if not any(r in _rol for r in ['docente','directivo','auxiliar','promotor']):
-                    continue
-                # DNI puede estar en docente_info.dni o en nivel raíz
-                _di   = _ud.get('docente_info') or {}
-                _dni_u = (str(_di.get('dni', '')).strip().replace('.0','') or
-                          str(_ud.get('dni', '')).strip().replace('.0',''))
-                if not _dni_u or len(_dni_u) < 6:
-                    continue
-                if _dni_u.isdigit() and len(_dni_u) < 8:
-                    _dni_u = _dni_u.zfill(8)
-                if _dni_u not in indice:
-                    # Get best name: label > nombre > docente_info.label > username
-                    _nom = (str(_ud.get('label','')).strip() or
-                            str(_ud.get('nombre','')).strip() or
-                            str((_ud.get('docente_info') or {}).get('label','')).strip() or
-                            _uname.replace('.',' ').title())
-                    _nom = _nom.upper()
-                    if not _nom or _nom in ('NAN','NONE',''):
-                        _nom = _uname.upper()
-                    _cargo = ('DIRECTORA' if 'directivo' in _rol else
-                              'AUXILIAR'  if 'auxiliar'  in _rol else 'DOCENTE')
-                    _grado_u = (str(_ud.get('grado','')).strip() or
-                                str((_ud.get('docente_info') or {}).get('grado','')).strip())
-                    indice[_dni_u] = {
-                        'DNI': _dni_u, '_tipo': 'docente',
-                        'Nombre': _nom, 'Cargo': _cargo,
-                        'Grado': _grado_u,
-                        'Celular': str(_ud.get('celular','')).strip(),
-                    }
-    except Exception:
-        pass
-
-    # PASO 3c2: GSheets leer_usuarios — ahora incluye DNI en columna G
+    # PASO 3c: FALLBACK — usuarios con rol docente que tengan DNI registrado
+    # Esto cubre el caso donde GSheets falla o la hoja docentes esta vacia
     try:
         gs = _gs()
         if gs:
-            _gu = gs.leer_usuarios()
-            for _uname2, _ud2 in _gu.items():
-                _rol2 = str(_ud2.get('rol', '')).lower()
-                if not any(r in _rol2 for r in ['docente','directivo','auxiliar','promotor']):
+            usuarios = gs.leer_usuarios()
+            for uname, ud in usuarios.items():
+                rol = str(ud.get('rol', '')).lower()
+                if not any(r in rol for r in ['docente','director','auxiliar','promotor']):
                     continue
-                # DNI ahora viene en el campo 'dni' de leer_usuarios (columna G)
-                _di2   = _ud2.get('docente_info') or {}
-                _dni2  = (str(_ud2.get('dni', '')).strip().replace('.0','') or
-                          str(_di2.get('dni','') if isinstance(_di2,dict) else '').strip())
-                if not _dni2 or len(_dni2) < 6:
+                dni_u = str(ud.get('dni', '')).strip().replace('.0','')
+                if not dni_u or len(dni_u) < 7:
                     continue
-                if _dni2.isdigit() and len(_dni2) < 8:
-                    _dni2 = _dni2.zfill(8)
-                if _dni2 not in indice:
-                    _nom2 = (str(_ud2.get('label','')).strip() or
-                             str(_ud2.get('nombre','')).strip() or
-                             _uname2.replace('.',' ').title()).upper()
-                    _cargo2 = ('DIRECTORA' if 'directivo' in _rol2 else
-                               'AUXILIAR'  if 'auxiliar'  in _rol2 else 'DOCENTE')
-                    indice[_dni2] = {
-                        'DNI': _dni2, '_tipo': 'docente',
-                        'Nombre': _nom2, 'Cargo': _cargo2,
-                        'Grado': str(_ud2.get('grado','')).strip(),
+                if dni_u not in indice:
+                    nombre_u = str(ud.get('nombre', ud.get('label', uname))).strip().upper()
+                    indice[dni_u] = {
+                        'DNI': dni_u, '_tipo': 'docente',
+                        'Nombre': nombre_u, 'Cargo': rol.upper(),
+                        'Grado': str(ud.get('grado','')).strip(),
                     }
     except Exception:
         pass
-
-    # PASO 3d: FALLBACK FINAL — si aún no hay docentes, leer hoja config de GSheets
-    n_doc_check = sum(1 for v in indice.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
-    if n_doc_check == 0:
-        try:
-            gs = _gs()
-            if gs and hasattr(gs, '_get_hoja'):
-                ws_d = gs._get_hoja('docentes')
-                if ws_d:
-                    rows_d = ws_d.get_all_records()
-                    for row_d in rows_d:
-                        # Try multiple column name variations
-                        dni_d = str(row_d.get('DNI', row_d.get('dni', row_d.get('Dni', '')))).strip().replace('.0','')
-                        if not dni_d or len(dni_d) < 6:
-                            continue
-                        if dni_d.isdigit() and len(dni_d) < 8:
-                            dni_d = dni_d.zfill(8)
-                        nom_d = str(row_d.get('Nombre', row_d.get('nombre', row_d.get('NOMBRE', '')))).strip().upper()
-                        if not nom_d:
-                            nom_d = f'DOCENTE {dni_d}'
-                        indice[dni_d] = {
-                            'DNI': dni_d, '_tipo': 'docente',
-                            'Nombre': nom_d,
-                            'Cargo': str(row_d.get('Cargo', row_d.get('cargo', 'DOCENTE'))).strip(),
-                            'Grado': str(row_d.get('Grado', row_d.get('grado_asignado', ''))).strip(),
-                            'Celular': str(row_d.get('Celular', row_d.get('celular', ''))).strip(),
-                        }
-        except Exception:
-            pass
 
     # Guardar en RAM
     st.session_state['_indice_dni']    = indice
@@ -10463,49 +10385,49 @@ def tab_asistencias():
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
 
-        # Diagnóstico del índice — muestra cuántos docentes y alumnos cargados
-        _stats = st.session_state.get('_indice_stats', {})
-        _n_doc = _stats.get('docentes', 0)
-        _n_alu = _stats.get('alumnos', 0)
-        _idx   = st.session_state.get('_indice_dni', {})
-        if not _stats:
-            _n_doc = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='docente')
-            _n_alu = sum(1 for v in _idx.values() if isinstance(v,dict) and v.get('_tipo')=='alumno')
+        # ── CARGA AUTOMÁTICA SIEMPRE — sin botón, sin intervención ──────────
+    # SIEMPRE reconstruye el índice al entrar, garantizando docentes + alumnos
+    _idx = st.session_state.get('_indice_dni', {})
+    _idx_ts = st.session_state.get('_indice_dni_ts', 0)
+    _edad = _t_asis.time() - _idx_ts
 
-        col_stat1, col_stat2, col_stat3 = st.columns([2, 2, 2])
-        with col_stat1:
-            st.metric("Alumnos en índice", _n_alu)
-        with col_stat2:
-            color_doc = "normal" if _n_doc > 0 else "off"
-            st.metric("Docentes en índice", _n_doc,
-                      delta="OK" if _n_doc > 0 else "⚠️ Sin cargar",
-                      delta_color=color_doc)
-        with col_stat3:
-            if st.button("🔄 Recargar índice", key="btn_reload_indice",
-                         help="Si docentes no aparecen, presiona aquí"):
-                # Borrar cache y reconstruir
-                st.session_state.pop('_indice_dni', None)
-                st.session_state.pop('_indice_dni_ts', None)
-                st.session_state.pop('_indice_stats', None)
-                try:
-                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
-                except Exception:
-                    pass
-                with st.spinner("Recargando docentes y alumnos..."):
-                    # Invalidar cache de GSheets para forzar re-lectura fresca
-                    try:
-                        _gs_inst = _gs()
-                        if _gs_inst:
-                            _gs_inst.invalidar_cache()
-                    except Exception:
-                        pass
-                    _construir_indice_dni()
-                st.success("✅ Índice recargado")
-                st.rerun()
+    # Contar antes de decidir
+    _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
+    _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
 
-        if _n_doc == 0:
-            st.warning("⚠️ **No hay docentes en el índice.** Verifica que los docentes tengan DNI registrado en Google Sheets (hoja 'docentes'). Presiona 🔄 Recargar para intentar de nuevo.")
+    # Reconstruir si: vacío, viejo (>3min), o faltan docentes
+    if (not _idx) or (_edad > 180) or (_n_doc == 0):
+        _construir_indice_dni()
+        _idx  = st.session_state.get('_indice_dni', {})
+        _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
+        _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
 
+    # ── Estado visual ──────────────────────────────────────────────────
+    _col_a, _col_b = st.columns(2)
+    with _col_a:
+        st.metric("Alumnos listos", _n_alu)
+    with _col_b:
+        st.metric("Docentes listos", _n_doc,
+                  delta="OK" if _n_doc > 0 else "Sin DNI registrado",
+                  delta_color="normal" if _n_doc > 0 else "inverse")
+
+    if _n_alu == 0 and _n_doc == 0:
+        st.error("❌ No se cargaron datos. Verifica tu conexión a Google Sheets o que el Excel de matrícula esté subido.")
+        if st.button("Intentar cargar de nuevo", type="primary", key="btn_force_reload"):
+            st.session_state.pop('_indice_dni', None)
+            st.session_state.pop('_indice_dni_ts', None)
+            try:
+                Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+            except Exception:
+                pass
+            st.rerun()
+        return  # No mostrar el resto si no hay datos
+
+    # Inicializar tracking de WhatsApp enviados
+    if 'wa_enviados' not in st.session_state:
+        st.session_state.wa_enviados = set()
+
+    # ── Horario y Modo ──────────────────────────────────────────
         # Callback que se ejecuta al cambiar el campo (Enter o scanner)
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
