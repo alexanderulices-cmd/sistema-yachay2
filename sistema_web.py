@@ -10461,32 +10461,7 @@ def tab_asistencias():
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
 
-        # Métricas de índice
-        _col_a, _col_b = st.columns(2)
-        with _col_a:
-            st.metric("Alumnos listos", _n_alu)
-        with _col_b:
-            st.metric("Docentes listos", _n_doc,
-                      delta="OK" if _n_doc > 0 else "Sin DNI registrado",
-                      delta_color="normal" if _n_doc > 0 else "inverse")
-
-        # Botón recargar si docentes = 0
-        if _n_doc == 0:
-            if st.button("🔄 Recargar índice", key="btn_reload_indice",
-                         help="Si docentes no aparecen, presiona aquí"):
-                st.session_state.pop('_indice_dni', None)
-                st.session_state.pop('_indice_dni_ts', None)
-                try:
-                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
-                    _gs_inst = _gs()
-                    if _gs_inst: _gs_inst.invalidar_cache()
-                except Exception:
-                    pass
-                with st.spinner("Recargando..."):
-                    _construir_indice_dni()
-                st.rerun()
-
-        # Callback para Enter/scanner
+        # ── CAMPO DNI — PRIMERO Y SIEMPRE VISIBLE ────────────────────
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
             dni_limpio = ''.join(c for c in val if c.isdigit())
@@ -10494,20 +10469,40 @@ def tab_asistencias():
                 st.session_state['_dni_pendiente'] = dni_limpio[:8]
             st.session_state['dm_input'] = ''
 
-        dm = st.text_input("DNI:", key="dm_input",
-                           placeholder="Escanee código de barras o escriba DNI + Enter",
-                           on_change=_on_dni_submit)
+        dm = st.text_input("🔍 DNI / Código:", key="dm_input",
+                           placeholder="Escanee o escriba el DNI + Enter",
+                           on_change=_on_dni_submit,
+                           label_visibility="visible")
 
         # Procesar DNI pendiente
         _dni_pend = st.session_state.pop('_dni_pendiente', None)
         if _dni_pend:
             _registrar_asistencia_rapida(_dni_pend)
-        
         if dm:
             dni_directo = ''.join(c for c in dm.strip() if c.isdigit())
             if len(dni_directo) == 8:
                 _registrar_asistencia_rapida(dni_directo)
                 st.session_state['dm_input'] = ''
+
+        # ── Métricas e índice ─────────────────────────────────────────
+        _c1, _c2 = st.columns(2)
+        _c1.metric("Alumnos", _n_alu)
+        _c2.metric("Docentes", _n_doc,
+                   delta="OK" if _n_doc > 0 else "Sin DNI",
+                   delta_color="normal" if _n_doc > 0 else "inverse")
+        if _n_doc == 0:
+            if st.button("🔄 Recargar índice", key="btn_reload_indice"):
+                st.session_state.pop('_indice_dni', None)
+                st.session_state.pop('_indice_dni_ts', None)
+                try:
+                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+                    _gs_i = _gs()
+                    if _gs_i: _gs_i.invalidar_cache()
+                except Exception:
+                    pass
+                with st.spinner("Recargando..."):
+                    _construir_indice_dni()
+                st.rerun()
 
         # Sonido/vibración via JS después de registrar
         if not dm:  # Campo fue limpiado = se registró
