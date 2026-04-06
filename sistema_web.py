@@ -1557,6 +1557,37 @@ class BaseDatos:
                 return df
         except Exception:
             pass
+        # FALLBACK FINAL: construir desde hoja Usuarios de GSheets
+        # La hoja Docentes puede estar vacía pero Usuarios tiene todos los docentes
+        try:
+            gs = _gs()
+            if gs:
+                _gu = gs.leer_usuarios()
+                _rows = []
+                for _un, _ud in _gu.items():
+                    _rol = str(_ud.get('rol','')).lower()
+                    if not any(r in _rol for r in ['docente','directiv','auxiliar','promotor']):
+                        continue
+                    _pwd = str(_ud.get('password','')).strip().replace('.0','')
+                    _dni = _pwd if (_pwd.isdigit() and 7 <= len(_pwd) <= 8) else ''
+                    if not _dni:
+                        continue
+                    _nom = str(_ud.get('nombre', _ud.get('label', _un))).strip().upper()
+                    _cargo = ('DIRECTORA' if 'directiv' in _rol else
+                              'AUXILIAR'  if 'auxiliar' in _rol else 'DOCENTE')
+                    _grado = str(_ud.get('grado','')).strip()
+                    _rows.append({
+                        'Nombre': _nom, 'DNI': _dni.zfill(8),
+                        'Cargo': _cargo, 'Especialidad': '',
+                        'Celular': '', 'Grado_Asignado': _grado
+                    })
+                if _rows:
+                    df_fb = pd.DataFrame(_rows)
+                    st.session_state['_cache_doc_df'] = df_fb
+                    st.session_state['_cache_doc_ts'] = _now
+                    return df_fb
+        except Exception:
+            pass
         return pd.DataFrame(columns=[
             'Nombre', 'DNI', 'Cargo', 'Especialidad', 'Celular', 'Grado_Asignado'
         ])
@@ -10430,69 +10461,48 @@ def tab_asistencias():
         st.markdown("### ✏️ Registro Manual / Lector de Código de Barras")
         st.caption("💡 Con lector de barras: apunte al carnet y se registra automáticamente")
 
-        # ── CARGA AUTOMÁTICA SIEMPRE — sin botón, sin intervención ──────────
-    # SIEMPRE reconstruye el índice al entrar, garantizando docentes + alumnos
-    _idx = st.session_state.get('_indice_dni', {})
-    _idx_ts = st.session_state.get('_indice_dni_ts', 0)
-    _edad = _t_asis.time() - _idx_ts
+        # Métricas de índice
+        _col_a, _col_b = st.columns(2)
+        with _col_a:
+            st.metric("Alumnos listos", _n_alu)
+        with _col_b:
+            st.metric("Docentes listos", _n_doc,
+                      delta="OK" if _n_doc > 0 else "Sin DNI registrado",
+                      delta_color="normal" if _n_doc > 0 else "inverse")
 
-    # Contar antes de decidir
-    _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
-    _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+        # Botón recargar si docentes = 0
+        if _n_doc == 0:
+            if st.button("🔄 Recargar índice", key="btn_reload_indice",
+                         help="Si docentes no aparecen, presiona aquí"):
+                st.session_state.pop('_indice_dni', None)
+                st.session_state.pop('_indice_dni_ts', None)
+                try:
+                    Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
+                    _gs_inst = _gs()
+                    if _gs_inst: _gs_inst.invalidar_cache()
+                except Exception:
+                    pass
+                with st.spinner("Recargando..."):
+                    _construir_indice_dni()
+                st.rerun()
 
-    # Reconstruir si: vacío, viejo (>3min), o faltan docentes
-    if (not _idx) or (_edad > 180) or (_n_doc == 0):
-        _construir_indice_dni()
-        _idx  = st.session_state.get('_indice_dni', {})
-        _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
-        _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
-
-    # ── Estado visual ──────────────────────────────────────────────────
-    _col_a, _col_b = st.columns(2)
-    with _col_a:
-        st.metric("Alumnos listos", _n_alu)
-    with _col_b:
-        st.metric("Docentes listos", _n_doc,
-                  delta="OK" if _n_doc > 0 else "Sin DNI registrado",
-                  delta_color="normal" if _n_doc > 0 else "inverse")
-
-    if _n_alu == 0 and _n_doc == 0:
-        st.error("❌ No se cargaron datos. Verifica tu conexión a Google Sheets o que el Excel de matrícula esté subido.")
-        if st.button("Intentar cargar de nuevo", type="primary", key="btn_force_reload"):
-            st.session_state.pop('_indice_dni', None)
-            st.session_state.pop('_indice_dni_ts', None)
-            try:
-                Path(ARCHIVO_INDICE_CACHE).unlink(missing_ok=True)
-            except Exception:
-                pass
-            st.rerun()
-        return  # No mostrar el resto si no hay datos
-
-    # Inicializar tracking de WhatsApp enviados
-    if 'wa_enviados' not in st.session_state:
-        st.session_state.wa_enviados = set()
-
-    # ── Horario y Modo ──────────────────────────────────────────
-        # Callback que se ejecuta al cambiar el campo (Enter o scanner)
+        # Callback para Enter/scanner
         def _on_dni_submit():
             val = st.session_state.get('dm_input', '').strip()
             dni_limpio = ''.join(c for c in val if c.isdigit())
-            if len(dni_limpio) >= 7:  # Aceptar 7-8 dígitos
-                # Guardar DNI pendiente para procesarlo fuera del callback
+            if len(dni_limpio) >= 7:
                 st.session_state['_dni_pendiente'] = dni_limpio[:8]
-            # Limpiar campo inmediatamente
             st.session_state['dm_input'] = ''
 
         dm = st.text_input("DNI:", key="dm_input",
                            placeholder="Escanee código de barras o escriba DNI + Enter",
                            on_change=_on_dni_submit)
 
-        # Procesar DNI pendiente FUERA del callback (más estable)
+        # Procesar DNI pendiente
         _dni_pend = st.session_state.pop('_dni_pendiente', None)
         if _dni_pend:
             _registrar_asistencia_rapida(_dni_pend)
         
-        # También procesar si escribieron DNI y no activó on_change
         if dm:
             dni_directo = ''.join(c for c in dm.strip() if c.isdigit())
             if len(dni_directo) == 8:
