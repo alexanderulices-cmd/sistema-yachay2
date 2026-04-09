@@ -8514,150 +8514,294 @@ def _generar_control_horas_colegiadas(config, trimestre, n_sesiones, nombres_doc
 
 
 def _generar_ficha_monitoreo(config, docente, area, grado, tipo_mon, director, anio):
-    """Ficha de monitoreo pedagógico según MINEDU/GEREDU Cusco — MBDD."""
+    """Ficha de monitoreo pedagogico — genera los 4 modelos MINEDU/MBDD en un solo PDF."""
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
-                                     Spacer, KeepTogether)
+                                     Spacer, KeepTogether, PageBreak, HRFlowable)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     import io as _io
+
     buf = _io.BytesIO()
-    ie = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
+    ie   = config.get('nombre_ie', 'I.E.P. ALTERNATIVO YACHAY')
     ugel = config.get('ugel', 'Urubamba')
+    W    = A4[0] - 3.6*cm   # 17.4 cm
+
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            topMargin=1.4*cm, bottomMargin=1.4*cm,
                             leftMargin=1.8*cm, rightMargin=1.8*cm)
-    styles = getSampleStyleSheet()
-    def P(txt, bold=False, size=9, align=TA_LEFT, space=2):
-        return Paragraph(txt if not bold else f"<b>{txt}</b>",
-                         ParagraphStyle('p', fontSize=size, leading=size+2,
+    ss  = getSampleStyleSheet()
+    C_R = colors.Color(0.60, 0.05, 0.05)
+    C_B = colors.Color(0.08, 0.18, 0.48)
+    C_G = colors.Color(0.05, 0.38, 0.12)
+    C_AL= colors.Color(0.90, 0.94, 0.99)
+    C_GL= colors.Color(0.90, 0.97, 0.90)
+    C_RL= colors.Color(0.97, 0.90, 0.90)
+
+    def P(txt, bold=False, size=8.5, align=TA_LEFT, space=2, color=None):
+        return Paragraph(f"<b>{txt}</b>" if bold else txt,
+                         ParagraphStyle('p', fontSize=size, leading=size+2.5,
                                         alignment=align, spaceAfter=space,
-                                        parent=styles['Normal']))
-    def tabla(data, col_ws, row_hs=None):
-        if row_hs is None:
-            row_hs = [0.7*cm]*len(data)
-        t = Table(data, colWidths=col_ws, rowHeights=row_hs)
+                                        textColor=color or colors.black,
+                                        fontName='Helvetica-Bold' if bold else 'Helvetica',
+                                        parent=ss['Normal']))
+
+    def hdr(txt, bg):
+        t = Table([[P(txt, bold=True, size=8.5, color=colors.white)]],
+                  colWidths=[W], rowHeights=[0.50*cm])
+        t.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(0,0),bg),
+            ('LEFTPADDING',(0,0),(0,0),5),
+            ('VALIGN',(0,0),(0,0),'MIDDLE'),
+        ]))
+        return t
+
+    def fila_datos():
+        t = Table([
+            [P(f'DOCENTE: {docente or "_"*28}',size=7.5),
+             P(f'ÁREA: {area or "_"*15}',size=7.5),
+             P(f'GRADO: {grado or "_"*10}',size=7.5),
+             P('FECHA: __/__/____',size=7.5)],
+            [P(f'DIRECTOR(A): {director or "_"*22}',size=7.5),
+             P(f'TIPO: {tipo_mon[:30] if tipo_mon else ""}',size=7),
+             P('N° SESIÓN: ____',size=7.5),
+             P('HORA: ____',size=7.5)],
+        ], colWidths=[5.8*cm,4.0*cm,3.8*cm,3.8*cm],
+           rowHeights=[0.80*cm,0.80*cm])
         t.setStyle(TableStyle([
             ('GRID',(0,0),(-1,-1),0.4,colors.black),
             ('FONTSIZE',(0,0),(-1,-1),7.5),
             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('LEFTPADDING',(0,0),(-1,-1),4),
+            ('LEFTPADDING',(0,0),(-1,-1),3),
         ]))
         return t
 
+    def indicadores_tabla(items, bg_hdr):
+        """items = [(N°, descripcion, nivel1, nivel2, nivel3, nivel4)]"""
+        rows = [[P('N°',bold=True,size=7,color=colors.white),
+                 P('INDICADORES DE DESEMPEÑO',bold=True,size=7,color=colors.white),
+                 P('I',bold=True,size=7,color=colors.white,align=TA_CENTER),
+                 P('EP',bold=True,size=7,color=colors.white,align=TA_CENTER),
+                 P('D',bold=True,size=7,color=colors.white,align=TA_CENTER),
+                 P('L',bold=True,size=7,color=colors.white,align=TA_CENTER)]]
+        for n, desc, *_ in items:
+            rows.append([P(n,size=7,align=TA_CENTER), P(desc,size=7), '', '', '', ''])
+        t = Table(rows, colWidths=[0.8*cm, W-4.8*cm, 1.0*cm,1.0*cm,1.0*cm,1.0*cm],
+                  rowHeights=[0.55*cm]+[0.85*cm]*len(items))
+        t.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(-1,0),bg_hdr),
+            ('GRID',(0,0),(-1,-1),0.4,colors.black),
+            ('FONTSIZE',(0,0),(-1,-1),7),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),3),
+            ('ALIGN',(2,0),(-1,-1),'CENTER'),
+        ]))
+        return t
+
+    def leyenda():
+        t = Table([[P('I = Inicio',size=6.5), P('EP = En Proceso',size=6.5),
+                    P('D = En Desarrollo',size=6.5), P('L = Logrado',size=6.5)]],
+                  colWidths=[W/4]*4, rowHeights=[0.35*cm])
+        t.setStyle(TableStyle([('FONTSIZE',(0,0),(-1,-1),6.5),
+                                ('ALIGN',(0,0),(-1,-1),'CENTER')]))
+        return t
+
+    def firma_tabla():
+        t = Table([
+            [P('FIRMA Y SELLO DIRECTOR(A)',bold=True,size=7.5,align=TA_CENTER),
+             P('FIRMA DOCENTE MONITOREADO',bold=True,size=7.5,align=TA_CENTER)],
+            ['',''],
+            [P('Nombre:___________________________',size=7,align=TA_CENTER),
+             P('Nombre:___________________________',size=7,align=TA_CENTER)],
+        ], colWidths=[W/2,W/2], rowHeights=[0.40*cm,1.0*cm,0.35*cm])
+        t.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.5,colors.Color(0.7,0.7,0.7)),
+            ('BACKGROUND',(0,0),(-1,0),C_AL),
+            ('ALIGN',(0,0),(-1,-1),'CENTER'),
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ]))
+        return t
+
+    def titulo_ficha(n, txt, subtxt, c):
+        return [
+            HRFlowable(width='100%', thickness=2, color=c, spaceBefore=2, spaceAfter=2),
+            P(f'FICHA {n}: {txt}', bold=True, size=11, align=TA_CENTER, color=c, space=2),
+            P(f'{ie}  |  UGEL {ugel}  |  Año {anio}  |  {subtxt}',
+              size=7.5, align=TA_CENTER, color=colors.Color(0.4,0.4,0.4)),
+            HRFlowable(width='100%', thickness=1, color=c, spaceBefore=2, spaceAfter=4),
+            fila_datos(),
+            Spacer(1,0.2*cm),
+        ]
+
     story = []
-    # Encabezado
-    story += [
-        P("FICHA DE MONITOREO Y ACOMPAÑAMIENTO PEDAGÓGICO", bold=True, size=11, align=TA_CENTER, space=4),
-        P(f"{ie}  |  UGEL {ugel}  |  Año {anio}", size=8, align=TA_CENTER, space=6),
-        # Ancho útil A4 = 21cm - 2*1.8cm = 17.4cm
-        tabla([
-            ["I. DATOS GENERALES","","",""],
-            [P(f"DOCENTE: {docente or '_'*25}", size=7.5),
-             P(f"ÁREA: {area or '_'*15}", size=7.5),
-             P(f"GRADO: {grado or '_'*12}", size=7.5),
-             P(f"FECHA: {'_'*12}", size=7.5)],
-            [P(f"DIRECTOR(A): {director or '_'*20}", size=7.5),
-             P(f"TIPO: {tipo_mon}", size=7),
-             P("N° SESIÓN: ____", size=7.5),
-             P("HORA: ____", size=7.5)],
-        ], [5.8*cm, 4.5*cm, 3.8*cm, 3.3*cm],
-        [0.5*cm, 0.85*cm, 0.85*cm]),
-        Spacer(1, 0.3*cm),
+
+    # ══════════════════════════════════════════════════════════════════
+    # FICHA 1: MONITOREO Y ACOMPAÑAMIENTO PEDAGÓGICO (MBDD)
+    # ══════════════════════════════════════════════════════════════════
+    story += titulo_ficha('1','MONITOREO Y ACOMPAÑAMIENTO PEDAGÓGICO',
+                          'Marco del Buen Desempeño Docente — MBDD', C_B)
+
+    story.append(hdr('DOMINIO I: PREPARACIÓN PARA EL APRENDIZAJE DE LOS ESTUDIANTES', C_B))
+    story.append(indicadores_tabla([
+        ('1.1','Demuestra conocimiento actualizado de las teorías y prácticas pedagógicas del área.'),
+        ('1.2','Elabora la programación curricular articulando entre los niveles cognitivos y demandas de aprendizaje.'),
+        ('1.3','Diseña creativamente procesos pedagógicos capaces de despertar curiosidad e interés.'),
+        ('1.4','Selecciona los contenidos en función de los aprendizajes fundamentales del CNEB.'),
+    ], C_B))
+    story.append(leyenda())
+    story.append(Spacer(1,0.15*cm))
+
+    story.append(hdr('DOMINIO II: ENSEÑANZA PARA EL APRENDIZAJE DE LOS ESTUDIANTES', C_G))
+    story.append(indicadores_tabla([
+        ('2.1','Construye relaciones de respeto, colaboración y corresponsabilidad con los estudiantes.'),
+        ('2.2','Orienta su práctica a conseguir logros en todos sus estudiantes.'),
+        ('2.3','Promueve un ambiente acogedor de la diversidad donde todos los estudiantes experimenten éxito.'),
+        ('2.4','Resuelve conflictos dialogando con los estudiantes sobre sus causas y consecuencias.'),
+        ('2.5','Controla permanentemente la ejecución de la programación, observando su nivel de impacto.'),
+        ('2.6','Propicia oportunidades para que los estudiantes usen los conocimientos en la solución de problemas.'),
+        ('2.7','Constata que todos los estudiantes comprenden los propósitos de la sesión de aprendizaje.'),
+        ('2.8','Desarrolla estrategias pedagógicas y actividades de aprendizaje que promueven el pensamiento crítico.'),
+    ], C_G))
+    story.append(leyenda())
+    story.append(Spacer(1,0.2*cm))
+
+    story.append(hdr('OBSERVACIONES Y COMPROMISOS', C_R))
+    story.append(Table([[''],[''],['']],colWidths=[W],rowHeights=[0.7*cm]*3))
+    story.append(Spacer(1,0.3*cm))
+    story.append(firma_tabla())
+
+    # ══════════════════════════════════════════════════════════════════
+    # FICHA 2: VISITA DE AULA (OBSERVACIÓN)
+    # ══════════════════════════════════════════════════════════════════
+    story.append(PageBreak())
+    story += titulo_ficha('2','VISITA DE AULA — OBSERVACIÓN DIRECTA',
+                          'R.M. 0547-2012-ED | Lista de cotejo pedagógico', C_G)
+
+    story.append(hdr('INICIO DE LA SESIÓN (0–10 min)', C_G))
+    items_inicio = [
+        ('I.1','Comunica con claridad el propósito de la sesión y los criterios de evaluación.'),
+        ('I.2','Recoge saberes previos mediante estrategias pertinentes al contexto.'),
+        ('I.3','Genera conflicto cognitivo para motivar el aprendizaje.'),
+        ('I.4','Establece normas de convivencia para el trabajo en el aula.'),
     ]
+    story.append(indicadores_tabla(items_inicio, C_G))
 
-    # Competencias del MBDD
-    COMPETENCIAS = [
-        ("DOMINIO I: PREPARACIÓN PARA EL APRENDIZAJE", [
-            ("Comp. 1", "Conoce y comprende las características de sus estudiantes y sus contextos",
-             ["1.1 Demuestra conocimiento de las características individuales y evolutivas de sus estudiantes.",
-              "1.2 Demuestra conocimiento de los enfoques y procesos pedagógicos del área.",
-              "1.3 Planifica considerando las necesidades e intereses de los estudiantes."]),
-            ("Comp. 2", "Planifica la enseñanza de forma colegiada garantizando la coherencia",
-             ["2.1 La planificación responde a las características del contexto.",
-              "2.2 La unidad didáctica presenta coherencia entre propósitos, actividades y evaluación.",
-              "2.3 La sesión de aprendizaje incluye los tres momentos didácticos.",
-              "2.4 Los materiales están previstos y son pertinentes."]),
-        ]),
-        ("DOMINIO II: ENSEÑANZA PARA EL APRENDIZAJE", [
-            ("Comp. 3", "Crea un clima propicio para el aprendizaje",
-             ["3.1 Promueve relaciones de respeto y colaboración entre estudiantes.",
-              "3.2 Genera un ambiente de confianza donde los estudiantes se sienten valorados.",
-              "3.3 Maneja el tiempo eficientemente."]),
-            ("Comp. 4", "Conduce el proceso de enseñanza con dominio del contenido disciplinar",
-             ["4.1 Desarrolla estrategias pedagógicas pertinentes al contenido.",
-              "4.2 Utiliza recursos didácticos significativos para el aprendizaje.",
-              "4.3 Maneja estrategias de retroalimentación formativa.",
-              "4.4 Sistematiza y cierra el aprendizaje de forma clara.",
-              "4.5 Usa las TIC como herramienta de aprendizaje cuando corresponde."]),
-            ("Comp. 5", "Evalúa permanentemente el aprendizaje",
-             ["5.1 Utiliza técnicas e instrumentos de evaluación pertinentes.",
-              "5.2 Proporciona retroalimentación oportuna y de calidad.",
-              "5.3 Sistematiza los resultados para la toma de decisiones."]),
-        ]),
+    story.append(hdr('DESARROLLO DE LA SESIÓN (10–70 min)', C_B))
+    items_desarrollo = [
+        ('D.1','Usa recursos y materiales educativos pertinentes al propósito de aprendizaje.'),
+        ('D.2','Promueve el trabajo colaborativo e individual según la naturaleza de la tarea.'),
+        ('D.3','Monitorea y retroalimenta permanentemente el trabajo de los estudiantes.'),
+        ('D.4','Adapta la enseñanza a las diferencias individuales, ritmos y estilos de aprendizaje.'),
+        ('D.5','Genera espacios de reflexión sobre lo aprendido y los procesos seguidos.'),
+        ('D.6','Usa el tiempo pedagógico de manera efectiva y eficiente.'),
     ]
-    escala = ["L = Logrado", "EP = En Proceso", "I = Inicio", "NE = No Evidenciado"]
-    story.append(P(f"ESCALA: {'  |  '.join(escala)}", size=7.5, space=4))
+    story.append(indicadores_tabla(items_desarrollo, C_B))
 
-    for dominio, comps in COMPETENCIAS:
-        story.append(P(dominio, bold=True, size=8.5, space=2))
-        for cod, comp_txt, indicadores in comps:
-            rows_comp = [[P(f"<b>{cod}</b>", size=7.5), P(comp_txt, size=7.5), "NIVEL", "EVIDENCIAS"]]
-            for ind in indicadores:
-                rows_comp.append(["", P(f"• {ind}", size=7), "L / EP / I / NE", ""])
-            # A4 con márgenes 1.8cm c/lado: ancho útil = 21 - 3.6 = 17.4cm
-            t_comp = Table(rows_comp, colWidths=[1.2*cm, 9.8*cm, 2.8*cm, 3.6*cm],
-                           rowHeights=[0.65*cm]*(len(rows_comp)))
-            t_comp.setStyle(TableStyle([
-                ('GRID',(0,0),(-1,-1),0.3,colors.black),
-                ('FONTSIZE',(0,0),(-1,-1),7),
-                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.85,0.9,1)),
-                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-                ('SPAN',(0,0),(0,len(rows_comp)-1)),
-                ('LEFTPADDING',(0,0),(-1,-1),3),
-            ]))
-            story += [t_comp, Spacer(1, 0.2*cm)]
-        story.append(Spacer(1, 0.2*cm))
-
-    # Fortalezas / Aspectos de mejora / Compromisos — ancho total 17.4cm
-    rows_fm = [
-        [P("<b>FORTALEZAS IDENTIFICADAS:</b>", size=8, align=TA_LEFT),
-         P("<b>ASPECTOS DE MEJORA:</b>", size=8, align=TA_LEFT)],
-        [P(" ", size=7), P(" ", size=7)],
-        [P("<b>COMPROMISOS DEL DOCENTE:</b>", size=8, align=TA_LEFT),
-         P("<b>PRÓXIMA VISITA /\nACOMPAÑAMIENTO:</b>", size=8, align=TA_LEFT)],
-        [P(" ", size=7), P("Fecha: ________________", size=7, align=TA_LEFT)],
+    story.append(hdr('CIERRE DE LA SESIÓN (70–90 min)', C_R))
+    items_cierre = [
+        ('C.1','Promueve la metacognición sobre los aprendizajes logrados en la sesión.'),
+        ('C.2','Consolida los aprendizajes con actividades de extensión o transferencia.'),
+        ('C.3','Evalúa formativamente usando instrumentos pertinentes al propósito de aprendizaje.'),
     ]
-    t_fm = Table(rows_fm, colWidths=[10.4*cm, 7.0*cm],
-                 rowHeights=[0.5*cm, 2.0*cm, 0.65*cm, 0.9*cm])
-    t_fm.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1), 0.4, colors.black),
-        ('VALIGN',(0,0),(-1,-1),'TOP'),
-        ('LEFTPADDING',(0,0),(-1,-1), 4),
-        ('TOPPADDING',(0,0),(-1,-1), 3),
-    ]))
-    story += [t_fm, Spacer(1, 0.5*cm)]
+    story.append(indicadores_tabla(items_cierre, C_R))
+    story.append(leyenda())
+    story.append(Spacer(1,0.2*cm))
 
-    # Firmas — ancho total 17.4cm
-    firmas = [["FIRMA DEL DOCENTE", "FIRMA Y SELLO DEL DIRECTOR(A)"],
-              [f"\n{docente or ''}\n", f"\n{director or ''}\n"]]
-    t_f = Table(firmas, colWidths=[9.0*cm, 8.4*cm], rowHeights=[0.4*cm, 1.5*cm])
-    t_f.setStyle(TableStyle([
-        ('GRID',(0,0),(-1,-1),0.4,colors.black),
-        ('ALIGN',(0,0),(-1,-1),'CENTER'),
-        ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-        ('FONTSIZE',(0,0),(-1,-1),8),
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('BACKGROUND',(0,0),(-1,0),colors.Color(0.85,0.85,0.95)),
-    ]))
-    story.append(t_f)
+    story.append(hdr('FORTALEZAS Y ASPECTOS A MEJORAR', C_B))
+    story.append(Table(
+        [[P('Fortalezas observadas:',size=7.5,bold=True),
+          P('Aspectos a mejorar / Compromisos:',size=7.5,bold=True)],
+         ['',''],['','']],
+        colWidths=[W/2, W/2], rowHeights=[0.40*cm,0.80*cm,0.80*cm]))
+    story.append(Spacer(1,0.25*cm))
+    story.append(firma_tabla())
+
+    # ══════════════════════════════════════════════════════════════════
+    # FICHA 3: REVISIÓN DE PLANIFICACIÓN CURRICULAR
+    # ══════════════════════════════════════════════════════════════════
+    story.append(PageBreak())
+    story += titulo_ficha('3','REVISIÓN DE PLANIFICACIÓN CURRICULAR',
+                          'CNEB vigente | INSTRUCTIVO N°001-2026 GEREDU Cusco', C_R)
+
+    story.append(hdr('A. PROGRAMACIÓN ANUAL', C_R))
+    story.append(indicadores_tabla([
+        ('A.1','Presenta la situación significativa que contextualiza el año escolar.'),
+        ('A.2','Establece las competencias, capacidades y desempeños por bimestre/trimestre.'),
+        ('A.3','El número y distribución de unidades es coherente con el calendario escolar.'),
+        ('A.4','Incluye enfoques transversales, valores y actitudes observables.'),
+    ], C_R))
+
+    story.append(hdr('B. UNIDAD DIDÁCTICA', C_B))
+    story.append(indicadores_tabla([
+        ('B.1','La situación significativa es retadora, real y moviliza las competencias.'),
+        ('B.2','Los propósitos de aprendizaje son coherentes con el CNEB.'),
+        ('B.3','La secuencia de sesiones es coherente con el logro de los propósitos.'),
+        ('B.4','Los criterios de evaluación son claros y están articulados a los desempeños.'),
+        ('B.5','Los recursos y materiales son pertinentes a los aprendizajes previstos.'),
+    ], C_B))
+
+    story.append(hdr('C. SESIÓN DE APRENDIZAJE', C_G))
+    story.append(indicadores_tabla([
+        ('C.1','El propósito de aprendizaje está claramente enunciado.'),
+        ('C.2','Las actividades del inicio generan motivación y recojo de saberes previos.'),
+        ('C.3','Las actividades del desarrollo son coherentes con los procesos didácticos del área.'),
+        ('C.4','El cierre promueve la metacognición y evaluación formativa.'),
+        ('C.5','Los instrumentos de evaluación recogen evidencias de los desempeños previstos.'),
+    ], C_G))
+    story.append(leyenda())
+    story.append(Spacer(1,0.2*cm))
+    story.append(hdr('OBSERVACIONES DEL REVISOR', C_R))
+    story.append(Table([[''],['']],colWidths=[W],rowHeights=[0.70*cm]*2))
+    story.append(Spacer(1,0.25*cm))
+    story.append(firma_tabla())
+
+    # ══════════════════════════════════════════════════════════════════
+    # FICHA 4: EVALUACIÓN FORMATIVA
+    # ══════════════════════════════════════════════════════════════════
+    story.append(PageBreak())
+    story += titulo_ficha('4','MONITOREO DE EVALUACIÓN FORMATIVA',
+                          'Enfoque por competencias — CNEB vigente', C_G)
+
+    story.append(hdr('I. PLANIFICACIÓN DE LA EVALUACIÓN', C_G))
+    story.append(indicadores_tabla([
+        ('1.1','Define con claridad los criterios de evaluación alineados a los desempeños.'),
+        ('1.2','Diseña instrumentos de evaluación coherentes con los propósitos de aprendizaje.'),
+        ('1.3','Comunica a los estudiantes qué, cómo y para qué se les evaluará.'),
+        ('1.4','Usa la autoevaluación y coevaluación como estrategias formativas.'),
+    ], C_G))
+
+    story.append(hdr('II. EJECUCIÓN Y RETROALIMENTACIÓN', C_B))
+    story.append(indicadores_tabla([
+        ('2.1','Recoge evidencias de aprendizaje de todos los estudiantes durante la sesión.'),
+        ('2.2','Brinda retroalimentación oportuna, específica y orientada a la mejora.'),
+        ('2.3','Ajusta su enseñanza en función de la información recogida.'),
+        ('2.4','Registra sistemáticamente los avances y dificultades de los estudiantes.'),
+        ('2.5','Involucra a los estudiantes en la reflexión sobre sus propios aprendizajes.'),
+    ], C_B))
+
+    story.append(hdr('III. EVIDENCIAS E INSTRUMENTOS REVISADOS', C_R))
+    story.append(Table([
+        [P('Instrumento/Evidencia',bold=True,size=7.5),
+         P('¿Pertinente?',bold=True,size=7.5,align=TA_CENTER),
+         P('Observaciones',bold=True,size=7.5)],
+        ['Rúbrica de evaluación','', ''],
+        ['Lista de cotejo','',''],
+        ['Cuaderno/portafolio del estudiante','',''],
+        ['Registro auxiliar actualizado','',''],
+    ], colWidths=[6.0*cm, 2.5*cm, W-8.5*cm],
+       rowHeights=[0.50*cm]+[0.70*cm]*4))
+    story.append(leyenda())
+    story.append(Spacer(1,0.2*cm))
+    story.append(hdr('COMPROMISOS DE MEJORA', C_G))
+    story.append(Table([[''],['']],colWidths=[W],rowHeights=[0.7*cm]*2))
+    story.append(Spacer(1,0.25*cm))
+    story.append(firma_tabla())
+
     doc.build(story)
     buf.seek(0)
-    return buf
-
+    return buf.read()
 
 def _generar_esquema_programacion_word(config, nivel, tipo, docente, area, grado, ciclo, anio):
     """Genera esquema de programación curricular en Word usando python-docx."""
@@ -10920,13 +11064,14 @@ def tab_asistencias():
             except Exception:
                 pass
 
-        # ── Calcular dias de la semana ISO actual (Lun → hoy, máx Vie) ──
+        # ── Calcular dias de la semana (L-V) ──────────────────────
         _hoy = hora_peru().date()
-        _lunes_sem = _hoy - timedelta(days=_hoy.weekday())  # Lunes de la semana actual
+        # Semana ACTUAL: lunes de esta semana hasta hoy (solo L-V)
+        _lunes = _hoy - timedelta(days=_hoy.weekday())
         _dias_semana = []
-        for _d in range(5):  # Lun=0 … Vie=4
-            _dia = _lunes_sem + timedelta(days=_d)
-            if _dia <= _hoy:  # Solo hasta hoy (semana en curso)
+        for _d in range(5):
+            _dia = _lunes + timedelta(days=_d)
+            if _dia <= _hoy:
                 _dias_semana.append((_dia.strftime("%Y-%m-%d"), _dia.strftime("%d/%m/%Y")))
 
         _asis_sem = {}
@@ -10940,7 +11085,13 @@ def tab_asistencias():
             _reg_dia = _asis_sem.get(_iso, _asis_sem.get(_disp, {}))
             for _dk, _dv in _reg_dia.items():
                 _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
-                _tard = bool(_dv.get("tardanza","")) or (bool(_ent) and _es_tardanza(_ent))
+                _tard = bool(_dv.get("tardanza",""))
+                try:
+                    if _ent:
+                        _h,_m = int(_ent[:2]),int(_ent[3:5])
+                        _tard = _tard or (_h*60+_m > 8*60+5)
+                except Exception:
+                    pass
                 _dst = _conteo_doc if _dv.get("es_docente",False) else _conteo_alu
                 if _dk not in _dst:
                     _dst[_dk] = {"nombre":_dv.get("nombre",""), "puntual":0, "tardanza":0, "total":0}
@@ -11030,7 +11181,7 @@ def tab_asistencias():
             <div style='background:#f0f9ff;border-radius:10px;padding:10px 16px;
                         margin-top:8px;border:1px solid #bae6fd;font-size:0.8rem;color:#0369a1;'>
             📌 <b>¿Cómo llegar al 1er lugar?</b> Registra tu asistencia <b>antes de las 08:05</b>
-            todos los días. Cada día puntual suma 1 punto. Con {len(_dias_semana)}/{len(_dias_semana)} días = 100% y medalla de oro 🥇<br>
+            todos los días. Cada día puntual suma 1 punto. Con 5/5 días = 100% y medalla de oro 🥇<br>
             🌟 <b>Sistema inspirado en Singapur:</b> reconocimiento público, frases motivacionales y
             registro diario construyen cultura de puntualidad.
             </div>
@@ -11070,7 +11221,13 @@ def tab_asistencias():
                     continue
                 for _dk, _dv in _fdata.items():
                     _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
-                    _tard = bool(_dv.get("tardanza","")) or (bool(_ent) and _es_tardanza(_ent))
+                    _tard = bool(_dv.get("tardanza",""))
+                    try:
+                        if _ent:
+                            _h,_m = int(_ent[:2]),int(_ent[3:5])
+                            _tard = _tard or (_h*60+_m > 8*60+5)
+                    except Exception:
+                        pass
                     _dst = _conteo_mes_doc if _dv.get("es_docente",False) else _conteo_mes_alu
                     if _dk not in _dst:
                         _dst[_dk] = {"nombre":_dv.get("nombre",""),"puntual":0,"tardanza":0,"total":0}
