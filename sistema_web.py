@@ -10920,14 +10920,14 @@ def tab_asistencias():
             except Exception:
                 pass
 
-        # ── Calcular dias de la semana (L-V) ──────────────────────
+        # ── Calcular dias de la semana ISO actual (Lun → hoy, máx Vie) ──
         _hoy = hora_peru().date()
+        _lunes_sem = _hoy - timedelta(days=_hoy.weekday())  # Lunes de la semana actual
         _dias_semana = []
-        for _d in range(13, -1, -1):
-            _dia = _hoy - timedelta(days=_d)
-            if _dia.weekday() < 5:
+        for _d in range(5):  # Lun=0 … Vie=4
+            _dia = _lunes_sem + timedelta(days=_d)
+            if _dia <= _hoy:  # Solo hasta hoy (semana en curso)
                 _dias_semana.append((_dia.strftime("%Y-%m-%d"), _dia.strftime("%d/%m/%Y")))
-        _dias_semana = _dias_semana[-5:]
 
         _asis_sem = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
@@ -10940,13 +10940,7 @@ def tab_asistencias():
             _reg_dia = _asis_sem.get(_iso, _asis_sem.get(_disp, {}))
             for _dk, _dv in _reg_dia.items():
                 _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
-                _tard = bool(_dv.get("tardanza",""))
-                try:
-                    if _ent:
-                        _h,_m = int(_ent[:2]),int(_ent[3:5])
-                        _tard = _tard or (_h*60+_m > 8*60+5)
-                except Exception:
-                    pass
+                _tard = bool(_dv.get("tardanza","")) or (bool(_ent) and _es_tardanza(_ent))
                 _dst = _conteo_doc if _dv.get("es_docente",False) else _conteo_alu
                 if _dk not in _dst:
                     _dst[_dk] = {"nombre":_dv.get("nombre",""), "puntual":0, "tardanza":0, "total":0}
@@ -11036,7 +11030,7 @@ def tab_asistencias():
             <div style='background:#f0f9ff;border-radius:10px;padding:10px 16px;
                         margin-top:8px;border:1px solid #bae6fd;font-size:0.8rem;color:#0369a1;'>
             📌 <b>¿Cómo llegar al 1er lugar?</b> Registra tu asistencia <b>antes de las 08:05</b>
-            todos los días. Cada día puntual suma 1 punto. Con 5/5 días = 100% y medalla de oro 🥇<br>
+            todos los días. Cada día puntual suma 1 punto. Con {len(_dias_semana)}/{len(_dias_semana)} días = 100% y medalla de oro 🥇<br>
             🌟 <b>Sistema inspirado en Singapur:</b> reconocimiento público, frases motivacionales y
             registro diario construyen cultura de puntualidad.
             </div>
@@ -11076,13 +11070,7 @@ def tab_asistencias():
                     continue
                 for _dk, _dv in _fdata.items():
                     _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
-                    _tard = bool(_dv.get("tardanza",""))
-                    try:
-                        if _ent:
-                            _h,_m = int(_ent[:2]),int(_ent[3:5])
-                            _tard = _tard or (_h*60+_m > 8*60+5)
-                    except Exception:
-                        pass
+                    _tard = bool(_dv.get("tardanza","")) or (bool(_ent) and _es_tardanza(_ent))
                     _dst = _conteo_mes_doc if _dv.get("es_docente",False) else _conteo_mes_alu
                     if _dk not in _dst:
                         _dst[_dk] = {"nombre":_dv.get("nombre",""),"puntual":0,"tardanza":0,"total":0}
