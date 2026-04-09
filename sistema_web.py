@@ -10900,53 +10900,99 @@ def tab_asistencias():
 
         # ── PUNTUAL DE LA SEMANA ─────────────────────────────────────
         st.markdown("---")
-        st.subheader("🏆 Puntual de la Semana")
-        st.caption("Top 5 estudiantes y docentes más puntuales — Lunes a Viernes de la semana actual")
 
+        # ── Guardar historial semanal automaticamente ─────────────
+        import json as _jps
+        _ARCH_HIST_PUN = "historial_puntual.json"
+
+        def _cargar_hist_puntual():
+            try:
+                if Path(_ARCH_HIST_PUN).exists():
+                    return _jps.loads(Path(_ARCH_HIST_PUN).read_text(encoding="utf-8"))
+            except Exception:
+                pass
+            return {}
+
+        def _guardar_hist_puntual(data):
+            try:
+                Path(_ARCH_HIST_PUN).write_text(
+                    _jps.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            except Exception:
+                pass
+
+        # ── Calcular dias de la semana (L-V) ──────────────────────
         _hoy = hora_peru().date()
-        # Solo dias habiles: lunes(0) a viernes(4), semana actual
         _dias_semana = []
         for _d in range(13, -1, -1):
             _dia = _hoy - timedelta(days=_d)
             if _dia.weekday() < 5:
-                _dias_semana.append((_dia.strftime('%Y-%m-%d'), _dia.strftime('%d/%m/%Y')))
-        _dias_semana = _dias_semana[-5:]  # solo los 5 dias habiles mas recientes
+                _dias_semana.append((_dia.strftime("%Y-%m-%d"), _dia.strftime("%d/%m/%Y")))
+        _dias_semana = _dias_semana[-5:]
 
         _asis_sem = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS,'r',encoding='utf-8') as _fs:
-                _asis_sem = json.load(_fs)
+            with open(ARCHIVO_ASISTENCIAS, "r", encoding="utf-8") as _fs:
+                _asis_sem = _jps.load(_fs)
 
-        # Contar días puntuales por persona
-        _conteo_alu = {}  # {dni: {nombre, dias_puntual, dias_tardanza, dias_total}}
+        _conteo_alu = {}
         _conteo_doc = {}
         for _iso, _disp in _dias_semana:
-            _registros_dia = _asis_sem.get(_iso, _asis_sem.get(_disp, {}))
-            for _dk, _dv in _registros_dia.items():
-                _ent = _dv.get('entrada','') or _dv.get('tardanza','')
-                _tard = bool(_dv.get('tardanza',''))
+            _reg_dia = _asis_sem.get(_iso, _asis_sem.get(_disp, {}))
+            for _dk, _dv in _reg_dia.items():
+                _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
+                _tard = bool(_dv.get("tardanza",""))
                 try:
                     if _ent:
-                        h,m = int(_ent[:2]),int(_ent[3:5])
-                        _tard = _tard or (h*60+m > 8*60+5)
+                        _h,_m = int(_ent[:2]),int(_ent[3:5])
+                        _tard = _tard or (_h*60+_m > 8*60+5)
                 except Exception:
                     pass
-                _dst = _conteo_doc if _dv.get('es_docente',False) else _conteo_alu
+                _dst = _conteo_doc if _dv.get("es_docente",False) else _conteo_alu
                 if _dk not in _dst:
-                    _dst[_dk] = {'nombre': _dv.get('nombre',''), 'puntual':0, 'tardanza':0, 'total':0}
-                _dst[_dk]['total'] += 1
-                if _ent and not _tard:
-                    _dst[_dk]['puntual'] += 1
-                elif _tard:
-                    _dst[_dk]['tardanza'] += 1
+                    _dst[_dk] = {"nombre":_dv.get("nombre",""), "puntual":0, "tardanza":0, "total":0}
+                _dst[_dk]["total"] += 1
+                if _ent and not _tard: _dst[_dk]["puntual"] += 1
+                elif _tard: _dst[_dk]["tardanza"] += 1
 
-        # Top 5 de cada grupo
-        _top_alu = sorted(_conteo_alu.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:5]
-        _top_doc = sorted(_conteo_doc.values(), key=lambda x: (-x['puntual'], x['tardanza']))[:5]
+        _top_alu = sorted(_conteo_alu.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
+        _top_doc = sorted(_conteo_doc.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
+        _fecha_ini_sem = _dias_semana[0][1]
+        _fecha_fin_sem = _dias_semana[-1][1]
+        _semana_key    = f"{_dias_semana[0][0]}_{_dias_semana[-1][0]}"
+        _n_dias_reg    = len([d for d,_ in _dias_semana if _asis_sem.get(d)])
 
-        _medallas = ['🥇','🥈','🥉','4️⃣','5️⃣']
-        _colores_med = ['#FFD700','#94a3b8','#b45309','#0f766e','#4f46e5']
-        _frases_sem = [
+        # Guardar en historial automaticamente si hay datos
+        if _top_alu or _top_doc:
+            _hist_pun = _cargar_hist_puntual()
+            _hist_pun[_semana_key] = {
+                "fecha_ini": _fecha_ini_sem, "fecha_fin": _fecha_fin_sem,
+                "dias_registrados": _n_dias_reg,
+                "top_alumnos": _top_alu, "top_docentes": _top_doc,
+                "guardado": fecha_peru_str(),
+            }
+            _guardar_hist_puntual(_hist_pun)
+
+        # ── Selector: Semana actual vs historial ──────────────────
+        st.markdown("""
+        <div style='background:linear-gradient(135deg,#f8fafc,#e0f2fe);
+                    border-radius:16px;padding:16px 20px;margin-bottom:12px;
+                    border-left:5px solid #0ea5e9;'>
+          <div style='font-size:1.3rem;font-weight:800;color:#0c4a6e;'>🏆 Ranking de Puntualidad</div>
+          <div style='font-size:0.82rem;color:#64748b;margin-top:2px;'>
+            Sistema de reconocimiento estilo Singapur · Lunes a Viernes
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        _tab_sem, _tab_mes, _tab_hist = st.tabs(
+            ["📅 Esta Semana", "📆 Top Mes", "📚 Historial Semanas"])
+
+        _medallas   = ["🥇","🥈","🥉","4️⃣","5️⃣"]
+        _bg_alu     = ["#fef9c3","#f0fdf4","#f0fdf4","#f8fafc","#f8fafc"]
+        _bg_doc     = ["#fef9c3","#eff6ff","#eff6ff","#f8fafc","#f8fafc"]
+        _brd_alu    = ["#ca8a04","#16a34a","#16a34a","#94a3b8","#94a3b8"]
+        _brd_doc    = ["#ca8a04","#2563eb","#2563eb","#94a3b8","#94a3b8"]
+        _frases     = [
             "¡La puntualidad es el primer logro del día! Felicitaciones.",
             "Llegar a tiempo es respetar el aprendizaje de todos. ¡Excelente!",
             "La constancia y la puntualidad construyen el éxito. ¡Sigue así!",
@@ -10954,114 +11000,206 @@ def tab_asistencias():
             "Cada día puntual es un paso más hacia la excelencia. ¡Bravo!",
         ]
 
-        col_sem1, col_sem2 = st.columns(2)
-        with col_sem1:
-            st.markdown("**👨‍🎓 Estudiantes Puntuales**")
-            for _i, _p in enumerate(_top_alu):
-                _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
-                _frase_i = _frases_sem[_i % len(_frases_sem)]
-                st.markdown(
-                    f"<div style='background:#f0fdf4;border:2px solid {_colores_med[_i]}44;"
-                    f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
-                    f"display:flex;align-items:center;gap:10px;'>"
-                    f"<span style='font-size:1.6rem;'>{_medallas[_i]}</span>"
+        def _card(p, i, bg, brd, txt_color="#1e293b", subtxt="#16a34a"):
+            pct = round(p["puntual"]/p["total"]*100) if p["total"] else 0
+            return (f"<div style='background:{bg};border:2px solid {brd}44;"
+                    f"border-radius:12px;padding:10px 14px;margin-bottom:8px;"
+                    f"display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px {brd}22;'>"
+                    f"<span style='font-size:1.8rem;'>{_medallas[i]}</span>"
                     f"<div style='flex:1;'>"
-                    f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
-                    f"<div style='font-size:0.78rem;color:#16a34a;'>"
-                    f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
-                    f"<div style='font-size:0.7rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
-                    f"<div style='font-size:0.68rem;color:#0f766e;font-style:italic;'>{_frase_i}</div>"
-                    f"</div></div>", unsafe_allow_html=True)
-            if not _top_alu:
-                st.info("Sin registros esta semana")
+                    f"<b style='font-size:0.88rem;color:{txt_color};'>{p['nombre']}</b>"
+                    f"<div style='margin-top:2px;'>"
+                    f"<span style='font-size:0.77rem;color:{subtxt};font-weight:600;'>"
+                    f"✅ {p['puntual']} días puntual | {pct}%</span>"
+                    f"&nbsp;&nbsp;<span style='font-size:0.72rem;color:#94a3b8;'>"
+                    f"⏰ {p['tardanza']} tardanza(s)</span></div>"
+                    f"<div style='font-size:0.68rem;color:#64748b;font-style:italic;margin-top:2px;'>"
+                    f"{_frases[i % len(_frases)]}</div>"
+                    f"</div></div>")
 
-        with col_sem2:
-            st.markdown("**👨‍🏫 Docentes Puntuales**")
-            for _i, _p in enumerate(_top_doc):
-                _pct_p = round(_p['puntual']/_p['total']*100) if _p['total'] else 0
-                _frase_i = _frases_sem[_i % len(_frases_sem)]
-                st.markdown(
-                    f"<div style='background:#eff6ff;border:2px solid {_colores_med[_i]}44;"
-                    f"border-radius:10px;padding:10px 14px;margin-bottom:6px;"
-                    f"display:flex;align-items:center;gap:10px;'>"
-                    f"<span style='font-size:1.6rem;'>{_medallas[_i]}</span>"
-                    f"<div style='flex:1;'>"
-                    f"<b style='font-size:0.9rem;color:#1e293b;'>{_p['nombre']}</b>"
-                    f"<div style='font-size:0.78rem;color:#2563eb;'>"
-                    f"✅ {_p['puntual']} días puntual  |  {_pct_p}%</div>"
-                    f"<div style='font-size:0.7rem;color:#888;'>⏰ {_p['tardanza']} tardanza(s)</div>"
-                    f"<div style='font-size:0.68rem;color:#1d4ed8;font-style:italic;'>{_frase_i}</div>"
-                    f"</div></div>", unsafe_allow_html=True)
-            if not _top_doc:
-                st.info("Sin registros esta semana")
+        with _tab_sem:
+            _c1, _c2 = st.columns(2)
+            with _c1:
+                st.markdown("**👨‍🎓 Estudiantes Puntuales**")
+                for _i,_p in enumerate(_top_alu):
+                    st.markdown(_card(_p,_i,_bg_alu[_i],_brd_alu[_i]), unsafe_allow_html=True)
+                if not _top_alu:
+                    st.info("Sin registros esta semana")
+            with _c2:
+                st.markdown("**👨‍🏫 Docentes Puntuales**")
+                for _i,_p in enumerate(_top_doc):
+                    st.markdown(_card(_p,_i,_bg_doc[_i],_brd_doc[_i],subtxt="#2563eb"), unsafe_allow_html=True)
+                if not _top_doc:
+                    st.info("Sin registros esta semana")
 
-        # Botón PDF Puntual de la semana
-        fecha_ini_sem = _dias_semana[0][1]
-        fecha_fin_sem = _dias_semana[-1][1]
-        if st.button("📥 Descargar PDF — Puntual de la Semana",
-                     type="primary", use_container_width=True, key="btn_pdf_semana"):
-            _pdf_sem = _generar_pdf_puntual_semana(
-                _top_alu, _top_doc, fecha_ini_sem, fecha_fin_sem)
-            st.session_state['_pdf_semana_bytes'] = _pdf_sem
-        if st.session_state.get('_pdf_semana_bytes'):
-            st.download_button(
-                f"⬇️ PDF Puntual Semana ({fecha_ini_sem} — {fecha_fin_sem})",
-                st.session_state['_pdf_semana_bytes'],
-                f"Puntual_Semana_{fecha_fin_sem.replace('/','')}.pdf",
-                "application/pdf", key="dl_pdf_semana"
-            )
+            st.markdown(f"""
+            <div style='background:#f0f9ff;border-radius:10px;padding:10px 16px;
+                        margin-top:8px;border:1px solid #bae6fd;font-size:0.8rem;color:#0369a1;'>
+            📌 <b>¿Cómo llegar al 1er lugar?</b> Registra tu asistencia <b>antes de las 08:05</b>
+            todos los días. Cada día puntual suma 1 punto. Con 5/5 días = 100% y medalla de oro 🥇<br>
+            🌟 <b>Sistema inspirado en Singapur:</b> reconocimiento público, frases motivacionales y
+            registro diario construyen cultura de puntualidad.
+            </div>
+            """, unsafe_allow_html=True)
 
-        # ── HISTORIAL PDF por fecha ──────────────────────────────────
+            _c_pdf1, _c_pdf2 = st.columns(2)
+            with _c_pdf1:
+                if st.button("📥 PDF Ranking Semana", type="primary",
+                             use_container_width=True, key="btn_pdf_semana"):
+                    _pdf_sem = _generar_pdf_puntual_semana(
+                        _top_alu, _top_doc, _fecha_ini_sem, _fecha_fin_sem)
+                    st.session_state["_pdf_semana_bytes"] = _pdf_sem
+                if st.session_state.get("_pdf_semana_bytes"):
+                    st.download_button(
+                        f"⬇️ Descargar PDF ({_fecha_ini_sem}–{_fecha_fin_sem})",
+                        st.session_state["_pdf_semana_bytes"],
+                        f"Puntual_Semana_{_fecha_fin_sem.replace('/','')}.pdf",
+                        "application/pdf", key="dl_pdf_semana")
+
+        # ── TOP DEL MES ───────────────────────────────────────────
+        with _tab_mes:
+            _mes_actual = _hoy.month
+            _anio_actual = _hoy.year
+            _conteo_mes_alu = {}
+            _conteo_mes_doc = {}
+            for _fkey, _fdata in _asis_sem.items():
+                try:
+                    if "-" in _fkey:
+                        _fdt = datetime.strptime(_fkey, "%Y-%m-%d")
+                    else:
+                        _fdt = datetime.strptime(_fkey, "%d/%m/%Y")
+                    if _fdt.month != _mes_actual or _fdt.year != _anio_actual:
+                        continue
+                    if _fdt.weekday() >= 5:
+                        continue
+                except Exception:
+                    continue
+                for _dk, _dv in _fdata.items():
+                    _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
+                    _tard = bool(_dv.get("tardanza",""))
+                    try:
+                        if _ent:
+                            _h,_m = int(_ent[:2]),int(_ent[3:5])
+                            _tard = _tard or (_h*60+_m > 8*60+5)
+                    except Exception:
+                        pass
+                    _dst = _conteo_mes_doc if _dv.get("es_docente",False) else _conteo_mes_alu
+                    if _dk not in _dst:
+                        _dst[_dk] = {"nombre":_dv.get("nombre",""),"puntual":0,"tardanza":0,"total":0}
+                    _dst[_dk]["total"] += 1
+                    if _ent and not _tard: _dst[_dk]["puntual"] += 1
+                    elif _tard: _dst[_dk]["tardanza"] += 1
+
+            _top_mes_alu = sorted(_conteo_mes_alu.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
+            _top_mes_doc = sorted(_conteo_mes_doc.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:3]
+            _nom_mes = ["","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][_mes_actual]
+
+            st.markdown(f"### 🌟 Top del Mes — {_nom_mes} {_anio_actual}")
+            _m1, _m2 = st.columns(2)
+            with _m1:
+                st.markdown("**🏅 Top 5 Estudiantes del Mes**")
+                for _i,_p in enumerate(_top_mes_alu):
+                    _pct = round(_p["puntual"]/_p["total"]*100) if _p["total"] else 0
+                    st.markdown(_card(_p,_i,_bg_alu[_i],_brd_alu[_i]), unsafe_allow_html=True)
+                if not _top_mes_alu:
+                    st.info("Sin datos este mes")
+            with _m2:
+                st.markdown("**🏅 Top 3 Docentes más Puntuales del Mes**")
+                for _i,_p in enumerate(_top_mes_doc):
+                    st.markdown(_card(_p,_i,_bg_doc[_i],_brd_doc[_i],subtxt="#2563eb"), unsafe_allow_html=True)
+                if not _top_mes_doc:
+                    st.info("Sin datos este mes")
+
+            if _top_mes_alu or _top_mes_doc:
+                if st.button("📥 PDF Ranking del Mes", type="primary",
+                             use_container_width=True, key="btn_pdf_mes"):
+                    _pdf_mes = _generar_pdf_puntual_semana(
+                        _top_mes_alu, _top_mes_doc,
+                        f"01/{_mes_actual:02d}/{_anio_actual}", _fecha_fin_sem)
+                    st.session_state["_pdf_mes_bytes"] = _pdf_mes
+                if st.session_state.get("_pdf_mes_bytes"):
+                    st.download_button(
+                        f"⬇️ PDF Top Mes {_nom_mes} {_anio_actual}",
+                        st.session_state["_pdf_mes_bytes"],
+                        f"Top_Mes_{_nom_mes}{_anio_actual}.pdf",
+                        "application/pdf", key="dl_pdf_mes")
+
+        # ── HISTORIAL DE SEMANAS ──────────────────────────────────
+        with _tab_hist:
+            _hist_pun = _cargar_hist_puntual()
+            if not _hist_pun:
+                st.info("📭 Aún no hay historial guardado. Se guarda automáticamente cada semana con registros.")
+            else:
+                _semanas_ord = sorted(_hist_pun.keys(), reverse=True)
+                st.caption(f"📋 {len(_semanas_ord)} semana(s) con historial guardado")
+                for _sk in _semanas_ord[:8]:  # mostrar últimas 8 semanas
+                    _sd = _hist_pun[_sk]
+                    _lbl = f"Semana {_sd['fecha_ini']} — {_sd['fecha_fin']} | {_sd['dias_registrados']} días"
+                    with st.expander(_lbl, expanded=False):
+                        _h1, _h2 = st.columns(2)
+                        with _h1:
+                            st.markdown("**🎓 Top Estudiantes:**")
+                            for _hi, _hp in enumerate(_sd.get("top_alumnos",[])[:3]):
+                                _hpct = round(_hp["puntual"]/_hp["total"]*100) if _hp["total"] else 0
+                                st.markdown(
+                                    f"{_medallas[_hi]} **{_hp['nombre']}** — "
+                                    f"{_hp['puntual']} días ({_hpct}%)")
+                        with _h2:
+                            st.markdown("**👨‍🏫 Top Docentes:**")
+                            for _hi, _hp in enumerate(_sd.get("top_docentes",[])[:3]):
+                                _hpct = round(_hp["puntual"]/_hp["total"]*100) if _hp["total"] else 0
+                                st.markdown(
+                                    f"{_medallas[_hi]} **{_hp['nombre']}** — "
+                                    f"{_hp['puntual']} días ({_hpct}%)")
+                        if st.button(f"📥 PDF esta semana", key=f"btn_hist_sem_{_sk}"):
+                            _pdf_h = _generar_pdf_puntual_semana(
+                                _sd.get("top_alumnos",[]),
+                                _sd.get("top_docentes",[]),
+                                _sd["fecha_ini"], _sd["fecha_fin"])
+                            st.download_button(
+                                "⬇️ Descargar",_pdf_h,
+                                f"Puntual_{_sk}.pdf","application/pdf",
+                                key=f"dl_hist_{_sk}")
+
+        # ── Historial de dias ─────────────────────────────────────
         with st.expander("📅 Historial — Descargar PDF de otro dia", expanded=False):
             if Path(ARCHIVO_ASISTENCIAS).exists():
-                with open(ARCHIVO_ASISTENCIAS,'r',encoding='utf-8') as _fh:
-                    _hist_all = json.load(_fh)
-                # Solo fechas válidas DD/MM/YYYY
+                with open(ARCHIVO_ASISTENCIAS,"r",encoding="utf-8") as _fh:
+                    _hist_all = _jps.load(_fh)
                 _fechas_disp = sorted(
-                    [d for d in _hist_all.keys() if len(d.split('/')) == 3],
-                    key=lambda d: (d.split('/')[2], d.split('/')[1], d.split('/')[0]),
+                    [d for d in _hist_all.keys() if len(d.split("/")) == 3],
+                    key=lambda d:(d.split("/")[2],d.split("/")[1],d.split("/")[0]),
                     reverse=True)
                 if _fechas_disp:
-                    # Selector de mes y dia
                     _meses_disp = sorted(set(
                         f"{d.split('/')[1]}/{d.split('/')[2]}"
                         for d in _fechas_disp), reverse=True)
-                    _mes_sel = st.selectbox("Mes:",
-                        _meses_disp,
-                        format_func=lambda m: (
+                    _mes_sel = st.selectbox("Mes:", _meses_disp,
+                        format_func=lambda m:(
                             ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
                              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
-                            [int(m.split('/')[0])] + " " + m.split('/')[1]),
+                            [int(m.split("/")[0])]+" "+m.split("/")[1]),
                         key="hist_mes_sel")
                     _dias_del_mes = [d for d in _fechas_disp
-                                     if d.split('/')[1]+'/'+d.split('/')[2] == _mes_sel]
-                    _dia_sel = st.selectbox("Dia:",
-                        _dias_del_mes,
-                        format_func=lambda d: d,
-                        key="hist_dia_sel")
+                                     if d.split("/")[1]+"/"+d.split("/")[2]==_mes_sel]
+                    _dia_sel = st.selectbox("Dia:", _dias_del_mes, key="hist_dia_sel")
                     _asis_sel = _hist_all.get(_dia_sel, {})
-                    _n_per = len(_asis_sel)
-                    _n_al  = sum(1 for v in _asis_sel.values() if not v.get('es_docente'))
-                    _n_dc  = sum(1 for v in _asis_sel.values() if v.get('es_docente'))
-                    st.caption(f"Dia {_dia_sel}: {_n_per} personas ({_n_al} alumnos, {_n_dc} docentes)")
-                    if st.button(f"📥 Generar PDF — {_dia_sel}",
-                                 type="primary", use_container_width=True,
-                                 key="btn_hist_pdf"):
+                    _n_al = sum(1 for v in _asis_sel.values() if not v.get("es_docente"))
+                    _n_dc = sum(1 for v in _asis_sel.values() if v.get("es_docente"))
+                    st.caption(f"Dia {_dia_sel}: {_n_al} alumnos, {_n_dc} docentes")
+                    if st.button(f"📥 PDF — {_dia_sel}", type="primary",
+                                 use_container_width=True, key="btn_hist_pdf"):
                         _pdf_hist = _generar_pdf_asistencia_dia(_dia_sel, _asis_sel)
-                        st.session_state['_pdf_hist_bytes'] = _pdf_hist
-                        st.session_state['_pdf_hist_fecha'] = _dia_sel
-                    if st.session_state.get('_pdf_hist_bytes'):
-                        _fh2   = st.session_state.get('_pdf_hist_fecha', _dia_sel)
-                        _fname2 = "Asistencia_" + _fh2.replace('/','') + ".pdf"
+                        st.session_state["_pdf_hist_bytes"] = _pdf_hist
+                        st.session_state["_pdf_hist_fecha"] = _dia_sel
+                    if st.session_state.get("_pdf_hist_bytes"):
+                        _fh2 = st.session_state.get("_pdf_hist_fecha", _dia_sel)
                         st.download_button(
                             f"⬇️ Descargar — {_fh2}",
-                            st.session_state['_pdf_hist_bytes'],
-                            _fname2, "application/pdf",
-                            key="dl_hist_pdf")
-                else:
-                    st.info("No hay registros historicos aun.")
-            else:
-                st.info("No hay archivo de asistencias guardado aun.")
+                            st.session_state["_pdf_hist_bytes"],
+                            "Asistencia_"+_fh2.replace("/","")+".pdf",
+                            "application/pdf", key="dl_hist_pdf")
+
         # ===== ZONA WHATSAPP — TABS ENTRADA / SALIDA =====
         st.markdown("---")
         st.subheader("📱 Enviar Notificaciones WhatsApp")
