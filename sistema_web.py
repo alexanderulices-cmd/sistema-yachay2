@@ -11298,11 +11298,15 @@ def tab_asistencias():
         _tab_sem, _tab_mes, _tab_hist = st.tabs(
             ["📅 Esta Semana", "📆 Top Mes", "📚 Historial Semanas"])
 
-        _medallas   = ["🥇","🥈","🥉","4️⃣","5️⃣"]
-        _bg_alu     = ["#fef9c3","#f0fdf4","#f0fdf4","#f8fafc","#f8fafc"]
-        _bg_doc     = ["#fef9c3","#eff6ff","#eff6ff","#f8fafc","#f8fafc"]
-        _brd_alu    = ["#ca8a04","#16a34a","#16a34a","#94a3b8","#94a3b8"]
-        _brd_doc    = ["#ca8a04","#2563eb","#2563eb","#94a3b8","#94a3b8"]
+        _medallas   = ["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"]
+        _bg_alu     = ["#fef9c3","#f0fdf4","#f0fdf4","#f8fafc","#f8fafc",
+                       "#fafafa","#fafafa","#fafafa","#fafafa","#fafafa"]
+        _bg_doc     = ["#fef9c3","#eff6ff","#eff6ff","#f8fafc","#f8fafc",
+                       "#fafafa","#fafafa","#fafafa","#fafafa","#fafafa"]
+        _brd_alu    = ["#ca8a04","#16a34a","#16a34a","#94a3b8","#94a3b8",
+                       "#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1"]
+        _brd_doc    = ["#ca8a04","#2563eb","#2563eb","#94a3b8","#94a3b8",
+                       "#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1"]
         _frases     = [
             "¡La puntualidad es el primer logro del día! Felicitaciones.",
             "Llegar a tiempo es respetar el aprendizaje de todos. ¡Excelente!",
@@ -11316,7 +11320,7 @@ def tab_asistencias():
             return (f"<div style='background:{bg};border:2px solid {brd}44;"
                     f"border-radius:12px;padding:10px 14px;margin-bottom:8px;"
                     f"display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px {brd}22;'>"
-                    f"<span style='font-size:1.8rem;'>{_medallas[i]}</span>"
+                    f"<span style='font-size:1.8rem;'>{_medallas[min(i,9)]}</span>"
                     f"<div style='flex:1;'>"
                     f"<b style='font-size:0.88rem;color:{txt_color};'>{p['nombre']}</b>"
                     f"<div style='margin-top:2px;'>"
@@ -11333,13 +11337,13 @@ def tab_asistencias():
             with _c1:
                 st.markdown("**👨‍🎓 Estudiantes Puntuales**")
                 for _i,_p in enumerate(_top_alu):
-                    st.markdown(_card(_p,_i,_bg_alu[min(_i,4)],_brd_alu[min(_i,4)]), unsafe_allow_html=True)
+                    st.markdown(_card(_p,_i,_bg_alu[min(_i,9)],_brd_alu[min(_i,9)]), unsafe_allow_html=True)
                 if not _top_alu:
                     st.info("Sin registros esta semana")
             with _c2:
                 st.markdown("**👨‍🏫 Docentes Puntuales**")
                 for _i,_p in enumerate(_top_doc):
-                    st.markdown(_card(_p,_i,_bg_doc[min(_i,4)],_brd_doc[min(_i,4)],subtxt="#2563eb"), unsafe_allow_html=True)
+                    st.markdown(_card(_p,_i,_bg_doc[min(_i,9)],_brd_doc[min(_i,9)],subtxt="#2563eb"), unsafe_allow_html=True)
                 if not _top_doc:
                     st.info("Sin registros esta semana")
 
