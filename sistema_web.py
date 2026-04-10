@@ -10042,104 +10042,225 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
 
 
 def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
-    """PDF: Top 5 estudiantes y docentes puntuales de la semana."""
+    """PDF ranking puntualidad — estilo Singapur, colores pasteles, barras de progreso."""
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
+                                     Spacer, HRFlowable, KeepTogether)
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.graphics.shapes import Drawing, Rect, String
+    from reportlab.graphics import renderPDF
     import io as _io
 
     buf = _io.BytesIO()
+    W_pg, H_pg = A4
+    ML = MR = 1.8*cm
+    W = W_pg - ML - MR
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=1.5*cm, bottomMargin=1.5*cm,
-                            leftMargin=1.8*cm, rightMargin=1.8*cm)
-    ss = getSampleStyleSheet()
-    C_AZU = colors.Color(0.10, 0.20, 0.50)
-    C_VER = colors.Color(0.05, 0.40, 0.10)
-    C_ORO = colors.Color(0.85, 0.70, 0.0)
+                            topMargin=1.2*cm, bottomMargin=1.2*cm,
+                            leftMargin=ML, rightMargin=MR)
+    ss  = getSampleStyleSheet()
+
+    # ── Colores pastel estilo Singapur ────────────────────────────
+    C_ORO   = colors.Color(0.90, 0.72, 0.10)
+    C_AZU   = colors.Color(0.14, 0.36, 0.70)
+    C_VER   = colors.Color(0.08, 0.52, 0.28)
+    C_NAR   = colors.Color(0.85, 0.40, 0.10)
+    C_MOR   = colors.Color(0.42, 0.12, 0.62)
+
+    PAL_ALU = [colors.Color(1.0,0.95,0.78), colors.Color(0.88,0.97,0.88),
+               colors.Color(0.88,0.97,0.88), colors.Color(0.92,0.94,0.99),
+               colors.Color(0.92,0.94,0.99)]
+    PAL_DOC = [colors.Color(1.0,0.95,0.78), colors.Color(0.88,0.93,1.0),
+               colors.Color(0.88,0.93,1.0), colors.Color(0.92,0.94,0.99),
+               colors.Color(0.92,0.94,0.99)]
+
+    MED = ['ORO 🥇','PLATA 🥈','BRONCE 🥉','4° Lugar','5° Lugar',
+           '6° Lugar','7° Lugar','8° Lugar','9° Lugar','10° Lugar']
+    MED_C = [C_ORO, colors.Color(0.60,0.62,0.68), colors.Color(0.68,0.42,0.12),
+             C_AZU, C_VER, C_NAR, C_MOR, C_AZU, C_VER, C_NAR]
+
+    FRASES = [
+        "La excelencia no es un acto, es un hábito. — Aristóteles",
+        "La disciplina es el puente entre metas y logros. — Jim Rohn",
+        "El éxito es la suma de pequeños esfuerzos repetidos cada día.",
+        "Ser puntual es respetar el tiempo propio y el de los demás.",
+        "La constancia vence lo que la dicha no alcanza.",
+        "Cada día a tiempo es un paso más hacia la excelencia.",
+        "Los ganadores llegan temprano. — Yachay PRO",
+        "La puntualidad es la virtud de los grandes líderes.",
+    ]
 
     def P(txt, bold=False, size=9, align=TA_CENTER, color=None, italic=False):
-        fn = "Helvetica-Bold" if bold else ("Helvetica-Oblique" if italic else "Helvetica")
+        fn = ('Helvetica-BoldOblique' if bold and italic else
+              'Helvetica-Bold' if bold else
+              'Helvetica-Oblique' if italic else 'Helvetica')
         return Paragraph(f"<b>{txt}</b>" if bold else txt,
-                         ParagraphStyle("_p", fontSize=size, leading=size+3,
+                         ParagraphStyle('p', fontSize=size, leading=size+3,
                                         alignment=align, textColor=color or colors.black,
-                                        fontName=fn, parent=ss["Normal"]))
+                                        fontName=fn, parent=ss['Normal']))
 
-    MEDALLAS = ["1 ORO", "2 PLATA", "3 BRONCE", "4 Lugar", "5 Lugar"]
-    COL_MED  = [
-        C_ORO,
-        colors.Color(0.6, 0.6, 0.65),
-        colors.Color(0.70, 0.45, 0.10),
-        colors.Color(0.05, 0.47, 0.43),
-        colors.Color(0.31, 0.28, 0.60),
-    ]
+    def _barra_progreso(pct, w_total, h=0.30*cm, color_bar=None):
+        """Barra de progreso ReportLab Drawing."""
+        if color_bar is None:
+            color_bar = (C_VER if pct==100 else C_ORO if pct>=80 else C_NAR)
+        d = Drawing(w_total, h)
+        # Fondo gris
+        d.add(Rect(0, 0, w_total, h, fillColor=colors.Color(0.88,0.88,0.88),
+                   strokeColor=None))
+        # Barra coloreada
+        bar_w = max(0.1*cm, w_total * pct/100)
+        d.add(Rect(0, 0, bar_w, h, fillColor=color_bar, strokeColor=None))
+        # Texto %
+        d.add(String(w_total+0.15*cm, h*0.2, f"{pct}%",
+                     fontSize=7, fillColor=color_bar, fontName='Helvetica-Bold'))
+        return d
 
-    def _tabla_top(lista, color_hdr):
-        rows = [[P("LUGAR", bold=True, size=8, color=colors.white),
-                 P("APELLIDOS Y NOMBRES", bold=True, size=8, color=colors.white),
-                 P("DIAS PUNTUAL", bold=True, size=8, color=colors.white),
-                 P("TARDANZAS", bold=True, size=8, color=colors.white),
-                 P("%", bold=True, size=8, color=colors.white)]]
-        for i, p in enumerate(lista):
-            pct = round(p["puntual"]/p["total"]*100) if p["total"] else 0
-            med = MEDALLAS[i] if i < len(MEDALLAS) else f"{i+1} Lugar"
-            rows.append([
-                P(med, bold=True, size=8),
-                P(p["nombre"], size=8, align=TA_LEFT),
-                P(str(p["puntual"]), bold=True, size=10, color=colors.Color(0.1,0.5,0.1)),
-                P(str(p["tardanza"]), size=9, color=colors.Color(0.6,0.3,0)),
-                P(f"{pct}%", bold=True, size=9),
-            ])
+    def _fila_persona(persona, rank, es_doc=False):
+        """Fila completa para una persona en la tabla."""
+        pct  = round(persona['puntual']/persona['total']*100) if persona['total'] else 0
+        med  = MED[rank] if rank < len(MED) else f"{rank+1}°"
+        c_bg = (PAL_DOC if es_doc else PAL_ALU)[min(rank, len(PAL_ALU)-1)]
+        c_med= MED_C[min(rank, len(MED_C)-1)]
+        c_bar= (C_VER if pct==100 else C_ORO if pct>=80 else C_NAR)
+
+        barra = _barra_progreso(pct, W/2 - 2.8*cm, color_bar=c_bar)
+
+        frase_r = FRASES[rank % len(FRASES)]
+        return (c_bg, c_med, [
+            P(med, bold=True, size=7.5, color=c_med),
+            Table([[P(persona['nombre'], bold=True, size=8.5, align=TA_LEFT),
+                    P(f"✅ {persona['puntual']} días  ⏰ {persona['tardanza']} tard.",
+                      size=7.5, align=TA_LEFT,
+                      color=C_VER if not es_doc else C_AZU)],
+                   [barra, P(frase_r, size=6.8, align=TA_LEFT,
+                             color=colors.Color(0.4,0.4,0.45), italic=True)]],
+                  colWidths=[W/2-1.8*cm, W/2-1.2*cm],
+                  rowHeights=[0.45*cm, 0.35*cm]),
+        ])
+
+    def _bloque_ranking(lista, titulo, color_hdr, es_doc=False):
+        elems = []
+        # Encabezado sección
+        t_hdr = Table([[P(titulo, bold=True, size=10, color=colors.white)]],
+                      colWidths=[W], rowHeights=[0.60*cm])
+        t_hdr.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(0,0), color_hdr),
+            ('LEFTPADDING',(0,0),(0,0), 8),
+            ('VALIGN',(0,0),(0,0),'MIDDLE'),
+        ]))
+        elems.append(t_hdr)
+        elems.append(Spacer(1,0.08*cm))
+
+        # Cabecera columnas
+        t_cols = Table([[P('POSICIÓN',bold=True,size=7.5,color=colors.Color(0.4,0.4,0.4)),
+                         P('NOMBRE Y PROGRESO',bold=True,size=7.5,align=TA_LEFT,color=colors.Color(0.4,0.4,0.4))]],
+                       colWidths=[2.2*cm, W-2.2*cm], rowHeights=[0.35*cm])
+        t_cols.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(-1,0), colors.Color(0.94,0.94,0.96)),
+            ('FONTSIZE',(0,0),(-1,-1),7),
+            ('LEFTPADDING',(0,0),(-1,-1),4),
+        ]))
+        elems.append(t_cols)
+
+        for rank, persona in enumerate(lista[:10]):
+            c_bg, c_med, celdas = _fila_persona(persona, rank, es_doc)
+            fila = Table([celdas], colWidths=[2.2*cm, W-2.2*cm],
+                         rowHeights=[0.85*cm])
+            fila.setStyle(TableStyle([
+                ('BACKGROUND',(0,0),(-1,0), c_bg),
+                ('GRID',(0,0),(-1,-1), 0.3, colors.Color(0.85,0.85,0.85)),
+                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                ('LEFTPADDING',(0,0),(-1,-1),4),
+                ('TOPPADDING',(0,0),(-1,-1),3),
+                ('BOTTOMPADDING',(0,0),(-1,-1),3),
+                ('ALIGN',(0,0),(0,0),'CENTER'),
+            ]))
+            elems.append(fila)
+
         if not lista:
-            rows.append([P("Sin registros esta semana", size=8), "", "", "", ""])
+            elems.append(P("Sin registros en este período.", size=8.5,
+                           color=colors.Color(0.5,0.5,0.5)))
+        return elems
 
-        t = Table(rows, colWidths=[2.6*cm, 7.5*cm, 2.5*cm, 2.2*cm, 2.0*cm],
-                  rowHeights=[0.7*cm] + [0.9*cm]*max(len(lista), 1))
-        cmds = [
-            ("GRID",   (0,0),(-1,-1), 0.4, colors.Color(0.8,0.8,0.8)),
-            ("BACKGROUND",(0,0),(-1,0), color_hdr),
-            ("VALIGN", (0,0),(-1,-1), "MIDDLE"),
-            ("ALIGN",  (0,0),(-1,-1), "CENTER"),
-            ("ALIGN",  (1,1),(1,-1),  "LEFT"),
-            ("LEFTPADDING",(0,0),(-1,-1), 4),
-        ]
-        for i in range(len(lista)):
-            c = COL_MED[i] if i < len(COL_MED) else colors.Color(0.5,0.5,0.5)
-            cmds.append(("BACKGROUND",(0,i+1),(0,i+1),
-                         colors.Color(c.red, c.green, c.blue, 0.18)))
-            bg = colors.Color(0.97,0.97,1.0) if i % 2 else colors.white
-            cmds.append(("BACKGROUND",(1,i+1),(-1,i+1), bg))
-        t.setStyle(TableStyle(cmds))
-        return t
+    # ── Construir historia ────────────────────────────────────────
+    story = []
 
-    story = [
-        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=14),
-        P("UGEL Urubamba  |  Chinchero, Cusco  |  Pioneros en la Educacion de Calidad",
-          size=8, color=colors.Color(0.3,0.5,0.1)),
-        HRFlowable(width="100%", thickness=2, color=C_ORO, spaceBefore=4, spaceAfter=8),
-        P("PUNTUAL DE LA SEMANA", bold=True, size=13, color=C_AZU),
-        P(f"Periodo: {fecha_ini}  al  {fecha_fin}", size=9, color=colors.Color(0.4,0.4,0.4)),
-        Spacer(1, 0.5*cm),
-        P("TOP 5 ESTUDIANTES MAS PUNTUALES", bold=True, size=10, align=TA_LEFT, color=C_AZU),
-        Spacer(1, 0.2*cm),
-        _tabla_top(top_alu, C_AZU),
-        Spacer(1, 0.6*cm),
-        P("TOP 5 DOCENTES MAS PUNTUALES", bold=True, size=10, align=TA_LEFT, color=C_VER),
-        Spacer(1, 0.2*cm),
-        _tabla_top(top_doc, C_VER),
-        Spacer(1, 0.8*cm),
-        P("La puntualidad es el primer acto de responsabilidad del dia.",
-          size=8, italic=True, color=colors.Color(0.4,0.4,0.5)),
-        Spacer(1, 1.5*cm),
-        Table([
-            [P("DIRECTOR(A)", bold=True, size=8), P("AUXILIAR / RESPONSABLE", bold=True, size=8)],
-            [P("_"*35, size=8), P("_"*35, size=8)],
-            [P("Firma y Sello", size=7, color=colors.Color(0.5,0.5,0.5)),
-             P("Firma", size=7, color=colors.Color(0.5,0.5,0.5))],
-        ], colWidths=[8.5*cm, 8.5*cm], rowHeights=[0.5*cm, 1.2*cm, 0.4*cm]),
-    ]
+    # Portada/encabezado
+    t_top = Table([[
+        P("I.E.P. ALTERNATIVO YACHAY", bold=True, size=13, color=colors.white),
+        P(f"🏆 RANKING DE PUNTUALIDAD\n{fecha_ini} — {fecha_fin}",
+          bold=True, size=10, color=colors.Color(1.0,0.93,0.7)),
+    ]], colWidths=[W*0.55, W*0.45], rowHeights=[1.2*cm])
+    t_top.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(-1,0), C_AZU),
+        ('VALIGN',(0,0),(-1,0),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),8),
+    ]))
+    story.append(t_top)
+
+    # Leyenda sistema
+    story.append(Spacer(1, 0.3*cm))
+    t_ley = Table([[
+        P("✅ Puntual = llegó antes de 08:05", size=7.5, color=C_VER, align=TA_LEFT),
+        P("🟡 En progreso = 60–99% puntualidad", size=7.5, color=C_ORO, align=TA_LEFT),
+        P("⏰ Tardanza = llegó después de 08:05", size=7.5, color=C_NAR, align=TA_LEFT),
+        P("📊 Barra = % puntualidad del período", size=7.5,
+          color=colors.Color(0.4,0.4,0.5), align=TA_LEFT),
+    ]], colWidths=[W/4]*4, rowHeights=[0.50*cm])
+    t_ley.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.96,0.97,1.0)),
+        ('BOX',(0,0),(-1,0), 0.5, C_AZU),
+        ('FONTSIZE',(0,0),(-1,-1),7),
+        ('LEFTPADDING',(0,0),(-1,-1),5),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ]))
+    story.append(t_ley)
+    story.append(Spacer(1, 0.3*cm))
+
+    # Rankings
+    story += _bloque_ranking(top_alu, "🎓 RANKING — ESTUDIANTES", C_AZU, es_doc=False)
+    story.append(Spacer(1, 0.4*cm))
+    story += _bloque_ranking(top_doc, "👨‍🏫 RANKING — DOCENTES", C_VER, es_doc=True)
+    story.append(Spacer(1, 0.4*cm))
+
+    # Cita inspiradora final
+    import random as _rnd
+    _rnd.seed(int(fecha_fin.replace('/','')))
+    frase_final = _rnd.choice([
+        '"La educación es el arma más poderosa para cambiar el mundo." — Nelson Mandela',
+        '"La disciplina es la base del éxito; la puntualidad, su primer escalón." — Yachay PRO',
+        '"En Singapur, la excelencia no es opcional — es el estándar." — Lee Kuan Yew',
+        '"Los estudiantes puntuales de hoy son los líderes del mañana." — MINEDU',
+    ])
+    t_cita = Table([[P(frase_final, size=8.5, italic=True, align=TA_CENTER,
+                       color=colors.Color(0.3,0.3,0.5))]],
+                   colWidths=[W], rowHeights=[0.7*cm])
+    t_cita.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(0,0), colors.Color(0.94,0.95,1.0)),
+        ('BOX',(0,0),(0,0), 0.8, C_AZU),
+        ('TOPPADDING',(0,0),(0,0), 6),
+        ('BOTTOMPADDING',(0,0),(0,0), 6),
+    ]))
+    story.append(t_cita)
+    story.append(Spacer(1, 0.3*cm))
+
+    # Firmas
+    t_firm = Table([
+        [P("DIRECTOR(A)", bold=True, size=8), P("AUXILIAR / RESPONSABLE", bold=True, size=8)],
+        ["",""],
+        [P("Firma y Sello", size=7, color=colors.Color(0.5,0.5,0.5)),
+         P("Firma", size=7, color=colors.Color(0.5,0.5,0.5))],
+    ], colWidths=[W/2, W/2], rowHeights=[0.45*cm, 1.1*cm, 0.38*cm])
+    t_firm.setStyle(TableStyle([
+        ('GRID',(0,0),(-1,-1), 0.4, colors.Color(0.7,0.7,0.7)),
+        ('BACKGROUND',(0,0),(-1,0), colors.Color(0.92,0.95,1.0)),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ]))
+    story.append(t_firm)
 
     doc.build(story)
     buf.seek(0)
@@ -11132,8 +11253,8 @@ def tab_asistencias():
                 if _ent and not _tard: _dst[_dk]["puntual"] += 1
                 elif _tard: _dst[_dk]["tardanza"] += 1
 
-        _top_alu = sorted(_conteo_alu.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
-        _top_doc = sorted(_conteo_doc.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
+        _top_alu = sorted(_conteo_alu.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:10]
+        _top_doc = sorted(_conteo_doc.values(), key=lambda x:(-x["puntual"],x["tardanza"]))[:10]
         _fecha_ini_sem = _dias_semana[0][1]
         _fecha_fin_sem = _dias_semana[-1][1]
         _semana_key    = f"{_dias_semana[0][0]}_{_dias_semana[-1][0]}"
@@ -11248,22 +11369,56 @@ def tab_asistencias():
 
         # ── TOP DEL MES ───────────────────────────────────────────
         with _tab_mes:
-            _mes_actual = _hoy.month
+            _mes_actual  = _hoy.month
             _anio_actual = _hoy.year
+            _nom_mes_full = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                             "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][_mes_actual]
+            _nom_mes = _nom_mes_full[:3]
+
+            # Construir datos del mes completo: local + GSheets
+            _asis_mes = dict(_asis_sem)  # start from what we have (may include GSheets data)
+            try:
+                gs = _gs()
+                if gs:
+                    ws_am = gs._get_hoja('asistencias')
+                    if ws_am:
+                        for _row in ws_am.get_all_records():
+                            _f_gs  = str(_row.get('fecha','')).strip()
+                            _d_gs  = str(_row.get('dni','')).strip()
+                            _nom_g = str(_row.get('nombre','')).strip()
+                            _tipo_g= str(_row.get('tipo_persona','')).strip().lower()
+                            _ent_g = str(_row.get('hora_entrada','')).strip()
+                            if not _f_gs or not _d_gs: continue
+                            try:
+                                _fdt_g = (datetime.strptime(_f_gs, "%Y-%m-%d")
+                                          if "-" in _f_gs else datetime.strptime(_f_gs, "%d/%m/%Y"))
+                                if _fdt_g.month != _mes_actual or _fdt_g.year != _anio_actual: continue
+                                if _fdt_g.weekday() >= 5: continue
+                                _fkey_g = _fdt_g.strftime("%Y-%m-%d")
+                            except Exception:
+                                continue
+                            if _fkey_g not in _asis_mes:
+                                _asis_mes[_fkey_g] = {}
+                            if _d_gs not in _asis_mes[_fkey_g]:
+                                _asis_mes[_fkey_g][_d_gs] = {
+                                    'nombre': _nom_g, 'entrada': _ent_g,
+                                    'es_docente': 'doc' in _tipo_g,
+                                }
+            except Exception:
+                pass
+
             _conteo_mes_alu = {}
             _conteo_mes_doc = {}
-            for _fkey, _fdata in _asis_sem.items():
+            _dias_mes_con_data = 0
+            for _fkey, _fdata in _asis_mes.items():
                 try:
-                    if "-" in _fkey:
-                        _fdt = datetime.strptime(_fkey, "%Y-%m-%d")
-                    else:
-                        _fdt = datetime.strptime(_fkey, "%d/%m/%Y")
-                    if _fdt.month != _mes_actual or _fdt.year != _anio_actual:
-                        continue
-                    if _fdt.weekday() >= 5:
-                        continue
+                    _fdt = (datetime.strptime(_fkey, "%Y-%m-%d")
+                            if "-" in _fkey else datetime.strptime(_fkey, "%d/%m/%Y"))
+                    if _fdt.month != _mes_actual or _fdt.year != _anio_actual: continue
+                    if _fdt.weekday() >= 5: continue
                 except Exception:
                     continue
+                _dias_mes_con_data += 1
                 for _dk, _dv in _fdata.items():
                     _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
                     _tard = bool(_dv.get("tardanza",""))
@@ -11280,23 +11435,61 @@ def tab_asistencias():
                     if _ent and not _tard: _dst[_dk]["puntual"] += 1
                     elif _tard: _dst[_dk]["tardanza"] += 1
 
-            _top_mes_alu = sorted(_conteo_mes_alu.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:5]
-            _top_mes_doc = sorted(_conteo_mes_doc.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:3]
-            _nom_mes = ["","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][_mes_actual]
+            _top_mes_alu = sorted(_conteo_mes_alu.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:10]
+            _top_mes_doc = sorted(_conteo_mes_doc.values(),key=lambda x:(-x["puntual"],x["tardanza"]))[:10]
 
-            st.markdown(f"### 🌟 Top del Mes — {_nom_mes} {_anio_actual}")
+            st.markdown(f"""
+            <div style='background:linear-gradient(135deg,#fffbeb,#fef3c7);border-radius:14px;
+                        padding:14px 18px;margin-bottom:14px;border-left:5px solid #d97706;'>
+              <div style='font-size:1.2rem;font-weight:800;color:#92400e;'>
+                🌟 Top del Mes — {_nom_mes_full} {_anio_actual}
+              </div>
+              <div style='font-size:0.8rem;color:#b45309;margin-top:3px;'>
+                📊 {_dias_mes_con_data} día(s) con registro este mes · Top 10 estudiantes y docentes
+              </div>
+            </div>""", unsafe_allow_html=True)
+
+            # Extend color arrays for top 10
+            _bg10_alu  = ["#fef9c3","#f0fdf4","#f0fdf4","#f8fafc","#f8fafc",
+                          "#fafafa","#fafafa","#fafafa","#fafafa","#fafafa"]
+            _bg10_doc  = ["#fef9c3","#eff6ff","#eff6ff","#f8fafc","#f8fafc",
+                          "#fafafa","#fafafa","#fafafa","#fafafa","#fafafa"]
+            _brd10_alu = ["#ca8a04","#16a34a","#16a34a","#94a3b8","#94a3b8",
+                          "#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1"]
+            _brd10_doc = ["#ca8a04","#2563eb","#2563eb","#94a3b8","#94a3b8",
+                          "#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1","#cbd5e1"]
+            _med10 = ["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"]
+
+            def _card10(p, i, bg, brd, subtxt="#16a34a"):
+                pct = round(p["puntual"]/p["total"]*100) if p["total"] else 0
+                bar_w = pct
+                bar_col = "#16a34a" if pct==100 else ("#f59e0b" if pct>=80 else "#ef4444")
+                return (f"<div style='background:{bg};border:2px solid {brd}44;"
+                        f"border-radius:12px;padding:9px 13px;margin-bottom:7px;"
+                        f"box-shadow:0 2px 6px {brd}22;'>"
+                        f"<div style='display:flex;align-items:center;gap:10px;'>"
+                        f"<span style='font-size:1.5rem;'>{_med10[i]}</span>"
+                        f"<div style='flex:1;'>"
+                        f"<b style='font-size:0.84rem;color:#1e293b;'>{p['nombre']}</b>"
+                        f"<div style='margin-top:3px;background:#e2e8f0;border-radius:999px;height:7px;'>"
+                        f"<div style='background:{bar_col};border-radius:999px;height:7px;width:{bar_w}%;transition:width 0.5s;'></div></div>"
+                        f"<div style='margin-top:3px;display:flex;gap:12px;'>"
+                        f"<span style='font-size:0.73rem;color:{subtxt};font-weight:600;'>"
+                        f"✅ {p['puntual']} días puntual | {pct}%</span>"
+                        f"<span style='font-size:0.70rem;color:#94a3b8;'>⏰ {p['tardanza']} tardanza(s)</span>"
+                        f"</div></div></div></div>")
+
             _m1, _m2 = st.columns(2)
             with _m1:
-                st.markdown("**🏅 Top 5 Estudiantes del Mes**")
+                st.markdown("**🎓 Top 10 Estudiantes del Mes**")
                 for _i,_p in enumerate(_top_mes_alu):
-                    _pct = round(_p["puntual"]/_p["total"]*100) if _p["total"] else 0
-                    st.markdown(_card(_p,_i,_bg_alu[_i],_brd_alu[_i]), unsafe_allow_html=True)
+                    st.markdown(_card10(_p,_i,_bg10_alu[min(_i,9)],_brd10_alu[min(_i,9)]), unsafe_allow_html=True)
                 if not _top_mes_alu:
-                    st.info("Sin datos este mes")
+                    st.info("Sin datos este mes — registros insuficientes en GSheets")
             with _m2:
-                st.markdown("**🏅 Top 3 Docentes más Puntuales del Mes**")
+                st.markdown("**👨‍🏫 Top 10 Docentes del Mes**")
                 for _i,_p in enumerate(_top_mes_doc):
-                    st.markdown(_card(_p,_i,_bg_doc[_i],_brd_doc[_i],subtxt="#2563eb"), unsafe_allow_html=True)
+                    st.markdown(_card10(_p,_i,_bg10_doc[min(_i,9)],_brd10_doc[min(_i,9)],subtxt="#2563eb"), unsafe_allow_html=True)
                 if not _top_mes_doc:
                     st.info("Sin datos este mes")
 
@@ -11304,12 +11497,13 @@ def tab_asistencias():
                 if st.button("📥 PDF Ranking del Mes", type="primary",
                              use_container_width=True, key="btn_pdf_mes"):
                     _pdf_mes = _generar_pdf_puntual_semana(
-                        _top_mes_alu, _top_mes_doc,
-                        f"01/{_mes_actual:02d}/{_anio_actual}", _fecha_fin_sem)
+                        _top_mes_alu[:5], _top_mes_doc[:5],
+                        f"01/{_mes_actual:02d}/{_anio_actual}",
+                        _hoy.strftime("%d/%m/%Y"))
                     st.session_state["_pdf_mes_bytes"] = _pdf_mes
                 if st.session_state.get("_pdf_mes_bytes"):
                     st.download_button(
-                        f"⬇️ PDF Top Mes {_nom_mes} {_anio_actual}",
+                        f"⬇️ PDF Top Mes {_nom_mes_full} {_anio_actual}",
                         st.session_state["_pdf_mes_bytes"],
                         f"Top_Mes_{_nom_mes}{_anio_actual}.pdf",
                         "application/pdf", key="dl_pdf_mes")
