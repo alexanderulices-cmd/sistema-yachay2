@@ -11333,13 +11333,13 @@ def tab_asistencias():
             with _c1:
                 st.markdown("**👨‍🎓 Estudiantes Puntuales**")
                 for _i,_p in enumerate(_top_alu):
-                    st.markdown(_card(_p,_i,_bg_alu[_i],_brd_alu[_i]), unsafe_allow_html=True)
+                    st.markdown(_card(_p,_i,_bg_alu[min(_i,4)],_brd_alu[min(_i,4)]), unsafe_allow_html=True)
                 if not _top_alu:
                     st.info("Sin registros esta semana")
             with _c2:
                 st.markdown("**👨‍🏫 Docentes Puntuales**")
                 for _i,_p in enumerate(_top_doc):
-                    st.markdown(_card(_p,_i,_bg_doc[_i],_brd_doc[_i],subtxt="#2563eb"), unsafe_allow_html=True)
+                    st.markdown(_card(_p,_i,_bg_doc[min(_i,4)],_brd_doc[min(_i,4)],subtxt="#2563eb"), unsafe_allow_html=True)
                 if not _top_doc:
                     st.info("Sin registros esta semana")
 
