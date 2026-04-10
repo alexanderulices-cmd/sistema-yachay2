@@ -11075,9 +11075,42 @@ def tab_asistencias():
                 _dias_semana.append((_dia.strftime("%Y-%m-%d"), _dia.strftime("%d/%m/%Y")))
 
         _asis_sem = {}
+        # 1. Cargar desde archivo local
         if Path(ARCHIVO_ASISTENCIAS).exists():
             with open(ARCHIVO_ASISTENCIAS, "r", encoding="utf-8") as _fs:
                 _asis_sem = _jps.load(_fs)
+
+        # 2. Complementar con GSheets si faltan dias de la semana
+        _dias_en_local = [iso for iso,_ in _dias_semana if _asis_sem.get(iso) or _asis_sem.get(disp)]
+        _dias_faltantes = [iso for iso,_ in _dias_semana if not _asis_sem.get(iso)]
+        if _dias_faltantes:
+            try:
+                gs = _gs()
+                if gs:
+                    ws_a = gs._get_hoja('asistencias')
+                    if ws_a:
+                        _rows_gs = ws_a.get_all_records()
+                        for _row in _rows_gs:
+                            _f_gs  = str(_row.get('fecha','')).strip()
+                            _d_gs  = str(_row.get('dni','')).strip()
+                            _nom   = str(_row.get('nombre','')).strip()
+                            _tipo  = str(_row.get('tipo_persona','')).strip().lower()
+                            _ent_g = str(_row.get('hora_entrada','')).strip()
+                            _sal_g = str(_row.get('hora_salida','')).strip()
+                            if not _f_gs or not _d_gs: continue
+                            if _f_gs not in _asis_sem:
+                                _asis_sem[_f_gs] = {}
+                            if _d_gs not in _asis_sem[_f_gs]:
+                                _asis_sem[_f_gs][_d_gs] = {
+                                    'nombre': _nom,
+                                    'entrada': _ent_g,
+                                    'salida': _sal_g,
+                                    'es_docente': 'doc' in _tipo,
+                                }
+            except Exception:
+                pass
+
+        _n_dias_con_data = sum(1 for iso,_ in _dias_semana if _asis_sem.get(iso))
 
         _conteo_alu = {}
         _conteo_doc = {}
@@ -11118,13 +11151,25 @@ def tab_asistencias():
             _guardar_hist_puntual(_hist_pun)
 
         # ── Selector: Semana actual vs historial ──────────────────
-        st.markdown("""
+        # Info de días encontrados
+        _nombres_dias = ['Lun','Mar','Mié','Jue','Vie']
+        _dias_info = []
+        for _iso, _disp in _dias_semana:
+            _wd = datetime.strptime(_iso, '%Y-%m-%d').weekday()
+            _tiene = bool(_asis_sem.get(_iso) or _asis_sem.get(_disp))
+            _dias_info.append(f"{'✅' if _tiene else '⬜'} {_nombres_dias[_wd]} {_disp[0:5]}")
+        _dias_str = '  '.join(_dias_info)
+
+        st.markdown(f"""
         <div style='background:linear-gradient(135deg,#f8fafc,#e0f2fe);
                     border-radius:16px;padding:16px 20px;margin-bottom:12px;
                     border-left:5px solid #0ea5e9;'>
           <div style='font-size:1.3rem;font-weight:800;color:#0c4a6e;'>🏆 Ranking de Puntualidad</div>
           <div style='font-size:0.82rem;color:#64748b;margin-top:2px;'>
             Sistema de reconocimiento estilo Singapur · Lunes a Viernes
+          </div>
+          <div style='font-size:0.78rem;margin-top:6px;color:#0369a1;'>
+            📅 Días con registro esta semana: <b>{_dias_str}</b>
           </div>
         </div>
         """, unsafe_allow_html=True)
