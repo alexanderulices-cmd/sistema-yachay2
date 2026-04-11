@@ -1129,6 +1129,57 @@ def reproducir_beep_error():
     """)
 
 
+def _hablar_nombre(nombre, tipo, es_tardanza=False):
+    """Anuncia el nombre en voz alta usando Web Speech API del navegador.
+    Voz en español, tono diferenciado: entrada puntual / tardanza / salida."""
+    import streamlit.components.v1 as _cv
+    import random as _rr2
+    uid = _rr2.randint(100000, 999999)
+
+    # Solo primer nombre + primer apellido para que no sea muy largo
+    partes = nombre.strip().split()
+    nombre_corto = " ".join(partes[:2]) if len(partes) >= 2 else nombre
+
+    if es_tardanza:
+        frase = f"Tardanza. {nombre_corto}."
+        pitch  = "0.85"
+        rate   = "0.90"
+    elif "salida" in tipo.lower():
+        frase = f"Hasta luego, {nombre_corto}."
+        pitch  = "1.05"
+        rate   = "1.00"
+    else:
+        frase = f"Bienvenido, {nombre_corto}."
+        pitch  = "1.10"
+        rate   = "1.00"
+
+    # Escapar comillas simples por si el nombre las tiene
+    frase_js = frase.replace("'", "\'")
+
+    _cv.html(f"""
+    <script>
+    (function tts_{uid}() {{
+        try {{
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            var u = new SpeechSynthesisUtterance('{frase_js}');
+            u.lang    = 'es-PE';
+            u.pitch   = {pitch};
+            u.rate    = {rate};
+            u.volume  = 1.0;
+            // Intentar voz en español si está disponible
+            var voces = window.speechSynthesis.getVoices();
+            var esp = voces.find(function(v) {{
+                return v.lang && v.lang.startsWith('es');
+            }});
+            if (esp) u.voice = esp;
+            window.speechSynthesis.speak(u);
+        }} catch(e) {{ console.log('TTS error:', e); }}
+    }})();
+    </script>
+    """, height=0)
+
+
 # ================================================================
 # IMPORTACIONES OPCIONALES
 # ================================================================
@@ -10041,6 +10092,120 @@ def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
     return buf.read()
 
 
+def _generar_jpg_ranking(top_alu, top_doc, fecha_ini, fecha_fin):
+    """Genera imagen JPG del ranking de puntualidad — diseño moderno tipo leaderboard."""
+    from PIL import Image, ImageDraw, ImageFont
+    import io as _io
+
+    FONT_DIR = "/usr/share/fonts/truetype/dejavu/"
+    def _f(size, bold=False):
+        path = FONT_DIR + ("DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf")
+        try:    return ImageFont.truetype(path, size)
+        except: return ImageFont.load_default()
+
+    BG=(248,250,252); NAVY=(15,40,90); GOLD=(212,160,20)
+    GREEN=(14,120,70); BLUE=(25,80,190); GRAY=(120,130,145)
+    WHITE=(255,255,255); DARK=(22,27,38)
+    MED_COLORS=[
+        ((212,160,20),(255,245,200)),((140,145,158),(235,237,242)),
+        ((176,100,30),(248,228,205)),((50,100,200),(215,228,255)),
+        ((14,130,80),(212,248,228)),((130,60,180),(238,220,255)),
+        ((200,80,20),(255,225,205)),((20,140,160),(210,245,250)),
+        ((80,80,80),(232,232,232)),((60,60,60),(225,225,225)),
+    ]
+    MED_LABELS=["1\u00b0","2\u00b0","3\u00b0","4\u00b0","5\u00b0","6\u00b0","7\u00b0","8\u00b0","9\u00b0","10\u00b0"]
+
+    def _trunc(txt,n=28): return txt[:n-1]+"\u2026" if len(txt)>n else txt
+    def _rr(draw,xy,r,fill,outline=None,w=1):
+        draw.rounded_rectangle(xy,radius=r,fill=fill,outline=outline,width=w)
+    def _circ(draw,cx,cy,r,fill,outline=None,w=2):
+        draw.ellipse([cx-r,cy-r,cx+r,cy+r],fill=fill,outline=outline,width=w)
+    def _bar(draw,x,y,W,h,pct,color):
+        _rr(draw,[x,y,x+W,y+h],r=h//2,fill=(220,225,235))
+        fw=max(int(W*pct/100),h)
+        _rr(draw,[x,y,x+fw,y+h],r=h//2,fill=color)
+        draw.text((x+W+8,y-2),f"{pct}%",font=_f(11,True),fill=color)
+
+    W_IMG,H_IMG=1380,1020; PAD=32; COL_W=(W_IMG-PAD*3)//2
+    img=Image.new("RGB",(W_IMG,H_IMG),BG)
+    draw=ImageDraw.Draw(img)
+
+    HDR_H=110
+    draw.rectangle([0,0,W_IMG,HDR_H],fill=NAVY)
+    draw.rectangle([0,HDR_H-5,W_IMG,HDR_H],fill=GOLD)
+    _circ(draw,65,HDR_H//2,38,GOLD,outline=WHITE,w=2)
+    draw.text((65,HDR_H//2),"#1",font=_f(22,True),fill=NAVY,anchor="mm")
+    draw.text((120,16),"I.E.P. ALTERNATIVO YACHAY",font=_f(22,True),fill=WHITE)
+    draw.text((120,48),"RANKING DE PUNTUALIDAD ESCOLAR",font=_f(16),fill=(200,218,255))
+    draw.text((120,76),f"Semana: {fecha_ini}  \u2013  {fecha_fin}",font=_f(13),fill=GOLD)
+    bx=W_IMG-220
+    _rr(draw,[bx,28,W_IMG-PAD,82],r=10,fill=(255,200,0),outline=WHITE,w=2)
+    draw.text((bx+(W_IMG-PAD-bx)//2,55),"\u2605 SISTEMA SINGAPUR \u2605",font=_f(12,True),fill=NAVY,anchor="mm")
+
+    LEY_Y=HDR_H+12; lx=PAD
+    for sym,col,desc in [("Puntual",GREEN,"antes 08:05"),
+                          ("Tardanza",(200,60,20),"despues 08:05"),
+                          ("Barra",BLUE,"% dias puntuales")]:
+        draw.text((lx,LEY_Y),f"[{sym}]",font=_f(12,True),fill=col)
+        tw=int(draw.textlength(f"[{sym}]",font=_f(12,True)))
+        draw.text((lx+tw+4,LEY_Y),desc,font=_f(12),fill=GRAY)
+        lx+=tw+int(draw.textlength(desc,font=_f(12)))+30
+
+    COL_Y0=LEY_Y+30; col_xs=[PAD,PAD+COL_W+PAD]
+    secciones=[
+        ("ESTUDIANTES PUNTUALES",top_alu,GREEN,(220,248,232),BLUE),
+        ("DOCENTES PUNTUALES",top_doc,BLUE,(220,235,255),GREEN),
+    ]
+
+    for ci,(titulo,lista,c_hdr,c_hdr_lt,c_bar) in enumerate(secciones):
+        cx=col_xs[ci]
+        _rr(draw,[cx,COL_Y0,cx+COL_W,COL_Y0+42],r=8,fill=c_hdr)
+        draw.text((cx+COL_W//2,COL_Y0+21),f"  {titulo}",font=_f(15,True),fill=WHITE,anchor="mm")
+
+        CARD_H=90; CARD_GAP=8; PODIO_Y0=COL_Y0+52
+        for rank,p in enumerate(lista[:3]):
+            pct=round(p["puntual"]/p["total"]*100) if p["total"] else 0
+            c_acc,c_lt=MED_COLORS[rank]
+            cy=PODIO_Y0+rank*(CARD_H+CARD_GAP)
+            _rr(draw,[cx,cy,cx+COL_W,cy+CARD_H],r=10,fill=c_lt,outline=c_acc,w=2)
+            draw.rectangle([cx,cy+6,cx+6,cy+CARD_H-6],fill=c_acc)
+            _circ(draw,cx+26,cy+CARD_H//2,24,c_acc,outline=WHITE,w=2)
+            draw.text((cx+26,cy+CARD_H//2),MED_LABELS[rank],font=_f(13,True),fill=WHITE,anchor="mm")
+            draw.text((cx+62,cy+14),_trunc(p["nombre"]),font=_f(14,True),fill=DARK)
+            draw.text((cx+62,cy+34),f"{p['puntual']} dias puntuales  |  {p['tardanza']} tardanza(s)",font=_f(11),fill=c_acc)
+            bc=(GREEN if pct==100 else (212,160,20) if pct>=80 else (200,60,20))
+            _bar(draw,cx+62,cy+58,COL_W-90,10,pct,bc)
+
+        ROW_H=48; ROW_Y0=PODIO_Y0+3*(CARD_H+CARD_GAP)+10
+        for rank,p in enumerate(lista[3:10],start=3):
+            pct=round(p["puntual"]/p["total"]*100) if p["total"] else 0
+            c_acc,c_lt=MED_COLORS[rank]
+            ry=ROW_Y0+(rank-3)*(ROW_H+4)
+            row_bg=c_lt if rank%2==0 else (250,251,253)
+            _rr(draw,[cx,ry,cx+COL_W,ry+ROW_H],r=6,fill=row_bg,outline=(210,215,225),w=1)
+            draw.rectangle([cx,ry+4,cx+5,ry+ROW_H-4],fill=c_acc)
+            _circ(draw,cx+20,ry+ROW_H//2,14,c_acc)
+            draw.text((cx+20,ry+ROW_H//2),MED_LABELS[rank],font=_f(10,True),fill=WHITE,anchor="mm")
+            draw.text((cx+42,ry+6),_trunc(p["nombre"],26),font=_f(12,True),fill=DARK)
+            bc=(GREEN if pct==100 else (212,160,20) if pct>=80 else (200,60,20))
+            _bar(draw,cx+42,ry+26,COL_W-170,8,pct,bc)
+            draw.text((cx+COL_W-62,ry+14),f"{p['puntual']}d {pct}%",font=_f(11,True),fill=c_acc)
+
+    FT_Y=H_IMG-70
+    draw.rectangle([0,FT_Y,W_IMG,H_IMG],fill=NAVY)
+    draw.rectangle([0,FT_Y,W_IMG,FT_Y+3],fill=GOLD)
+    draw.text((W_IMG//2,FT_Y+20),
+              '"La disciplina es la base del exito; la puntualidad, su primer escalon." - Yachay PRO',
+              font=_f(12,True),fill=GOLD,anchor="mm")
+    for fx,ftxt in [(PAD,"DIRECTOR(A) - Firma y Sello"),(W_IMG-PAD-260,"AUXILIAR / RESPONSABLE - Firma")]:
+        draw.line([fx,FT_Y+48,fx+260,FT_Y+48],fill=(200,210,230),width=1)
+        draw.text((fx+130,FT_Y+56),ftxt,font=_f(10),fill=(180,195,215),anchor="mm")
+
+    buf=_io.BytesIO()
+    img.save(buf,format="JPEG",quality=95,dpi=(150,150))
+    buf.seek(0)
+    return buf.read()
+
 def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
     """PDF ranking puntualidad — estilo Singapur, colores pasteles, barras de progreso."""
     from reportlab.lib.pagesizes import A4
@@ -11370,6 +11535,17 @@ def tab_asistencias():
                         st.session_state["_pdf_semana_bytes"],
                         f"Puntual_Semana_{_fecha_fin_sem.replace('/','')}.pdf",
                         "application/pdf", key="dl_pdf_semana")
+            with _c_pdf2:
+                if st.button("🖼️ JPG Ranking Semana", use_container_width=True, key="btn_jpg_semana"):
+                    _jpg_sem = _generar_jpg_ranking(
+                        _top_alu, _top_doc, _fecha_ini_sem, _fecha_fin_sem)
+                    st.session_state["_jpg_semana_bytes"] = _jpg_sem
+                if st.session_state.get("_jpg_semana_bytes"):
+                    st.download_button(
+                        f"⬇️ Descargar JPG ({_fecha_ini_sem}–{_fecha_fin_sem})",
+                        st.session_state["_jpg_semana_bytes"],
+                        f"Ranking_Semana_{_fecha_fin_sem.replace('/','')}.jpg",
+                        "image/jpeg", key="dl_jpg_semana")
 
         # ── TOP DEL MES ───────────────────────────────────────────
         with _tab_mes:
@@ -11498,19 +11674,34 @@ def tab_asistencias():
                     st.info("Sin datos este mes")
 
             if _top_mes_alu or _top_mes_doc:
-                if st.button("📥 PDF Ranking del Mes", type="primary",
-                             use_container_width=True, key="btn_pdf_mes"):
-                    _pdf_mes = _generar_pdf_puntual_semana(
-                        _top_mes_alu[:5], _top_mes_doc[:5],
-                        f"01/{_mes_actual:02d}/{_anio_actual}",
-                        _hoy.strftime("%d/%m/%Y"))
-                    st.session_state["_pdf_mes_bytes"] = _pdf_mes
-                if st.session_state.get("_pdf_mes_bytes"):
-                    st.download_button(
-                        f"⬇️ PDF Top Mes {_nom_mes_full} {_anio_actual}",
-                        st.session_state["_pdf_mes_bytes"],
-                        f"Top_Mes_{_nom_mes}{_anio_actual}.pdf",
-                        "application/pdf", key="dl_pdf_mes")
+                _cm1, _cm2 = st.columns(2)
+                with _cm1:
+                    if st.button("📥 PDF Ranking del Mes", type="primary",
+                                 use_container_width=True, key="btn_pdf_mes"):
+                        _pdf_mes = _generar_pdf_puntual_semana(
+                            _top_mes_alu[:5], _top_mes_doc[:5],
+                            f"01/{_mes_actual:02d}/{_anio_actual}",
+                            _hoy.strftime("%d/%m/%Y"))
+                        st.session_state["_pdf_mes_bytes"] = _pdf_mes
+                    if st.session_state.get("_pdf_mes_bytes"):
+                        st.download_button(
+                            f"⬇️ PDF Top Mes {_nom_mes_full} {_anio_actual}",
+                            st.session_state["_pdf_mes_bytes"],
+                            f"Top_Mes_{_nom_mes}{_anio_actual}.pdf",
+                            "application/pdf", key="dl_pdf_mes")
+                with _cm2:
+                    if st.button("🖼️ JPG Ranking del Mes", use_container_width=True, key="btn_jpg_mes"):
+                        _jpg_mes = _generar_jpg_ranking(
+                            _top_mes_alu[:10], _top_mes_doc[:10],
+                            f"01/{_mes_actual:02d}/{_anio_actual}",
+                            _hoy.strftime("%d/%m/%Y"))
+                        st.session_state["_jpg_mes_bytes"] = _jpg_mes
+                    if st.session_state.get("_jpg_mes_bytes"):
+                        st.download_button(
+                            f"⬇️ JPG Top Mes {_nom_mes_full} {_anio_actual}",
+                            st.session_state["_jpg_mes_bytes"],
+                            f"Ranking_Mes_{_nom_mes}{_anio_actual}.jpg",
+                            "image/jpeg", key="dl_jpg_mes")
 
         # ── HISTORIAL DE SEMANAS ──────────────────────────────────
         with _tab_hist:
@@ -11539,15 +11730,27 @@ def tab_asistencias():
                                 st.markdown(
                                     f"{_medallas[_hi]} **{_hp['nombre']}** — "
                                     f"{_hp['puntual']} días ({_hpct}%)")
-                        if st.button(f"📥 PDF esta semana", key=f"btn_hist_sem_{_sk}"):
-                            _pdf_h = _generar_pdf_puntual_semana(
-                                _sd.get("top_alumnos",[]),
-                                _sd.get("top_docentes",[]),
-                                _sd["fecha_ini"], _sd["fecha_fin"])
-                            st.download_button(
-                                "⬇️ Descargar",_pdf_h,
-                                f"Puntual_{_sk}.pdf","application/pdf",
-                                key=f"dl_hist_{_sk}")
+                        _hb1, _hb2 = st.columns(2)
+                        with _hb1:
+                            if st.button(f"📥 PDF esta semana", key=f"btn_hist_sem_{_sk}"):
+                                _pdf_h = _generar_pdf_puntual_semana(
+                                    _sd.get("top_alumnos",[]),
+                                    _sd.get("top_docentes",[]),
+                                    _sd["fecha_ini"], _sd["fecha_fin"])
+                                st.download_button(
+                                    "⬇️ Descargar PDF",_pdf_h,
+                                    f"Puntual_{_sk}.pdf","application/pdf",
+                                    key=f"dl_hist_{_sk}")
+                        with _hb2:
+                            if st.button(f"🖼️ JPG esta semana", key=f"btn_hist_jpg_{_sk}"):
+                                _jpg_h = _generar_jpg_ranking(
+                                    _sd.get("top_alumnos",[]),
+                                    _sd.get("top_docentes",[]),
+                                    _sd["fecha_ini"], _sd["fecha_fin"])
+                                st.download_button(
+                                    "⬇️ Descargar JPG",_jpg_h,
+                                    f"Ranking_{_sk}.jpg","image/jpeg",
+                                    key=f"dl_hist_jpg_{_sk}")
 
         # ── Historial de dias ─────────────────────────────────────
         with st.expander("📅 Historial — Descargar PDF de otro dia", expanded=False):
@@ -11961,6 +12164,8 @@ def _registrar_asistencia_rapida(dni):
             reproducir_beep_tardanza()
         else:
             reproducir_beep_exitoso()
+        # Anuncio de voz con el nombre
+        _hablar_nombre(nombre, tipo, es_tardanza=(tipo == 'tardanza'))
     else:
         reproducir_beep_error()
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
