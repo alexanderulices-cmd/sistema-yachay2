@@ -20151,6 +20151,7 @@ def tab_registrar_notas(config):
 
         st.markdown("---")
         st.markdown("#### 👤 Paso 2: Ingresa las respuestas de cada estudiante")
+        st.caption("✏️ Escribe la secuencia de respuestas de cada estudiante (ej: AABCDDABCD). El sistema calcula la nota al instante.")
 
         # Cargar estudiantes del grado
         df_cl = BaseDatos.obtener_estudiantes_grado(grado_cl)
@@ -20158,42 +20159,103 @@ def tab_registrar_notas(config):
             st.warning("No hay estudiantes en este grado.")
             return
 
-        st.caption(f"{len(df_cl)} estudiantes · Selecciona las respuestas marcadas por cada uno")
+        # ── Construir tabla rápida con st.data_editor ─────────────────
+        # Una columna por curso (ingreso como string de letras), sin selectbox por pregunta
+        import pandas as _pd_cl
 
-        # Tabla de respuestas — un expander por estudiante
-        notas_cl = {}  # {dni: {nombre, areas:{curso:nota}, promedio}}
+        # Clave de sesión para persistir la tabla entre reruns
+        _tabla_key = f"cl_tabla_{grado_cl}_{int(n_cursos)}"
 
-        for _, est_row in df_cl.iterrows():
-            nom_e = str(est_row.get('Nombre','')).strip()
-            dni_e = str(est_row.get('DNI','')).strip()
-            with st.expander(f"👤 {nom_e}", expanded=False):
-                nota_cursos = {}
-                total_puntaje = 0
-                for ci2, cur in enumerate(cursos_config):
-                    st.markdown(f"**{cur['nombre']}** — {cur['n_preguntas']} preguntas")
-                    cols_resp = st.columns(min(cur['n_preguntas'], 10))
-                    correctas = 0
-                    for pi2 in range(cur['n_preguntas']):
-                        with cols_resp[pi2 % 10]:
-                            resp_e = st.selectbox(
-                                f"P{pi2+1}",
-                                ["—"] + OPCIONES_RESP,
-                                key=f"resp_{dni_e}_{ci2}_{pi2}",
-                                label_visibility="visible")
-                            if resp_e != "—" and resp_e == cur['claves'][pi2]:
-                                correctas += 1
-                    nota_cur = round(correctas / cur['n_preguntas'] * 20, 1) if cur['n_preguntas'] > 0 else 0
-                    nota_cursos[cur['nombre']] = nota_cur
-                    total_puntaje += nota_cur
-                    st.caption(f"✅ {correctas}/{cur['n_preguntas']} correctas → **{nota_cur}/20**")
-
-                prom_e = round(total_puntaje / max(len(cursos_config), 1), 1)
-                st.success(f"Promedio: **{prom_e}** ({nota_a_letra(prom_e)})")
-                notas_cl[dni_e] = {
-                    'nombre': nom_e, 'dni': dni_e,
-                    'areas': nota_cursos,
-                    'promedio': prom_e,
+        # Inicializar tabla vacía si no existe o cambió el grado/n_cursos
+        if _tabla_key not in st.session_state:
+            filas_init = []
+            for _, est_row in df_cl.iterrows():
+                fila = {
+                    "Nombre": str(est_row.get('Nombre','')).strip(),
+                    "DNI":    str(est_row.get('DNI','')).strip(),
                 }
+                for cur in cursos_config:
+                    fila[cur['nombre']] = ""   # cadena vacía de respuestas
+                filas_init.append(fila)
+            st.session_state[_tabla_key] = _pd_cl.DataFrame(filas_init)
+
+        df_tabla = st.session_state[_tabla_key]
+
+        # Si cambió la lista de cursos, agregar/eliminar columnas sin perder lo escrito
+        for cur in cursos_config:
+            if cur['nombre'] not in df_tabla.columns:
+                df_tabla[cur['nombre']] = ""
+        cols_validos = ["Nombre","DNI"] + [c['nombre'] for c in cursos_config]
+        df_tabla = df_tabla[[c for c in cols_validos if c in df_tabla.columns]]
+
+        # Ayuda de formato
+        for cur in cursos_config:
+            st.caption(
+                f"📌 **{cur['nombre']}** ({cur['n_preguntas']} preguntas) — "
+                f"Clave: `{''.join(cur['claves'])}` — "
+                f"Escribe {cur['n_preguntas']} letras seguidas, ej: `{''.join(cur['claves'][:min(4,cur['n_preguntas'])])}`...")
+
+        # Editor único — sin reruns por cada celda
+        df_editado = st.data_editor(
+            df_tabla,
+            use_container_width=True,
+            hide_index=True,
+            key=f"cl_editor_{grado_cl}",
+            column_config={
+                "Nombre": st.column_config.TextColumn("Estudiante", disabled=True, width="large"),
+                "DNI":    st.column_config.TextColumn("DNI", disabled=True, width="small"),
+                **{
+                    cur['nombre']: st.column_config.TextColumn(
+                        cur['nombre'],
+                        help=f"Escribe {cur['n_preguntas']} letras (A/B/C/D). Clave: {''.join(cur['claves'])}",
+                        max_chars=cur['n_preguntas'],
+                        width="medium",
+                    )
+                    for cur in cursos_config
+                }
+            }
+        )
+        # Persistir cambios
+        st.session_state[_tabla_key] = df_editado
+
+        # ── Calcular notas automáticamente desde el editor ────────────
+        notas_cl = {}
+        for _, fila in df_editado.iterrows():
+            nom_e = str(fila.get('Nombre','')).strip()
+            dni_e = str(fila.get('DNI','')).strip()
+            if not dni_e: continue
+            nota_cursos = {}
+            total_puntaje = 0
+            for cur in cursos_config:
+                respuestas_str = str(fila.get(cur['nombre'],'')).strip().upper()
+                correctas = 0
+                n_preg = cur['n_preguntas']
+                for pi2 in range(min(n_preg, len(respuestas_str))):
+                    if respuestas_str[pi2] == cur['claves'][pi2]:
+                        correctas += 1
+                nota_cur = round(correctas / n_preg * 20, 1) if n_preg > 0 else 0
+                nota_cursos[cur['nombre']] = nota_cur
+                total_puntaje += nota_cur
+            prom_e = round(total_puntaje / max(len(cursos_config), 1), 1)
+            notas_cl[dni_e] = {
+                'nombre': nom_e, 'dni': dni_e,
+                'areas': nota_cursos, 'promedio': prom_e,
+            }
+
+        # Vista previa de puntajes (solo si hay respuestas ingresadas)
+        con_resp = [v for v in notas_cl.values() if v['promedio'] > 0]
+        if con_resp:
+            st.markdown("---")
+            st.markdown("#### 📊 Vista previa de puntajes")
+            prev_rows = []
+            for v in sorted(con_resp, key=lambda x: -x['promedio']):
+                row = {"Nombre": v['nombre']}
+                for cur in cursos_config:
+                    row[cur['nombre']] = v['areas'].get(cur['nombre'], 0)
+                row['Promedio'] = v['promedio']
+                row['Letra'] = nota_a_letra(v['promedio'])
+                prev_rows.append(row)
+            st.dataframe(_pd_cl.DataFrame(prev_rows), use_container_width=True, hide_index=True)
 
         st.markdown("---")
         st.markdown("#### 🏆 Ranking y Guardado")
@@ -20236,18 +20298,21 @@ def tab_registrar_notas(config):
                         'areas': areas_obj, 'ranking': ranking_cl,
                         'tipo_evaluacion': 'Por Claves',
                     }
-                    _guardar_historial_evaluaciones(hist_cl)
-                    # Guardar en resultados.json para portal padres y reporte integral
-                    try:
-                        import json as _js2
-                        _res_path = 'resultados.json'
-                        _res_act = []
-                        if Path(_res_path).exists():
-                            with open(_res_path,'r',encoding='utf-8') as _fr2:
-                                _res_act = _js2.load(_fr2)
-                        for _dnir, _datr in notas_cl.items():
-                            if _datr['promedio'] > 0:
-                                _res_act.append({
+                    # ── Guardar todo en una sola operación al final ──────
+                    with st.spinner("💾 Guardando evaluación..."):
+                        # 1. Historial evaluaciones (JSON + GSheets en una llamada)
+                        _guardar_historial_evaluaciones(hist_cl)
+
+                        # 2. resultados.json — construir lista completa de una vez
+                        try:
+                            _res_path = 'resultados.json'
+                            _res_act = []
+                            if Path(_res_path).exists():
+                                with open(_res_path,'r',encoding='utf-8') as _fr2:
+                                    _res_act = json.load(_fr2)
+                            # Construir todos los registros en memoria primero
+                            _nuevos = [
+                                {
                                     'dni': _dnir,
                                     'nombre': _datr['nombre'],
                                     'grado': grado_cl,
@@ -20261,21 +20326,18 @@ def tab_registrar_notas(config):
                                               for k, v in _datr['areas'].items()],
                                     'promedio_general': _datr['promedio'],
                                     '_docente': usuario,
-                                })
-                        with open(_res_path,'w',encoding='utf-8') as _fw2:
-                            _js2.dump(_res_act, _fw2, ensure_ascii=False, indent=2)
-                        # También en historial_evaluaciones por DNI para portal padres
-                        _hev_path = 'historial_evaluaciones.json'
-                        _hev = {}
-                        if Path(_hev_path).exists():
-                            with open(_hev_path,'r',encoding='utf-8') as _fhev:
-                                _hev = _js2.load(_fhev)
-                        _hev[clave_cl] = hist_cl[clave_cl]
-                        with open(_hev_path,'w',encoding='utf-8') as _fhev2:
-                            _js2.dump(_hev, _fhev2, ensure_ascii=False, indent=2)
-                    except Exception as _erc:
-                        st.warning(f"Historial guardado pero error en resultados.json: {_erc}")
-                    st.success("✅ Evaluación guardada — visible en portal padres y reporte integral")
+                                }
+                                for _dnir, _datr in notas_cl.items()
+                                if _datr['promedio'] > 0
+                            ]
+                            # Escribir todo de una sola vez (no uno por uno)
+                            _res_act.extend(_nuevos)
+                            with open(_res_path,'w',encoding='utf-8') as _fw2:
+                                json.dump(_res_act, _fw2, ensure_ascii=False, indent=2)
+                        except Exception as _erc:
+                            st.warning(f"Historial guardado — aviso en resultados.json: {_erc}")
+
+                    st.success(f"✅ Evaluación guardada — {len([v for v in notas_cl.values() if v['promedio']>0])} estudiantes registrados")
                     st.balloons()
 
             with col_pdf_cl:
@@ -20287,12 +20349,20 @@ def tab_registrar_notas(config):
                                        f"Ranking_Claves_{grado_cl}_{bim_cl}.pdf",
                                        "application/pdf", key="dl_pdf_cl")
 
-            # WhatsApp
+            # WhatsApp — pre-carga celulares del DataFrame en memoria (1 lectura, no N)
             st.markdown("**📱 Enviar notas por WhatsApp:**")
+            import urllib.parse as _up3
+            # Construir mapa DNI→celular de una sola pasada sobre df_cl (ya en memoria)
+            _mapa_cel = {}
+            for _, _rf in df_cl.iterrows():
+                _d = str(_rf.get('DNI','')).strip()
+                _c = str(_rf.get('Celular_Apoderado', _rf.get('celular_apoderado',
+                         _rf.get('Celular','')))).strip()
+                if _d and _c not in ('nan','None',''):
+                    _mapa_cel[_d] = _c
             wa_cl = []
             for fr2 in ranking_cl:
-                al2 = BaseDatos.buscar_por_dni(fr2.get('DNI',''))
-                cel2 = str((al2 or {}).get('Celular_Apoderado','')).strip()
+                cel2 = _mapa_cel.get(str(fr2.get('DNI','')).strip(), '')
                 if cel2 and cel2 not in ('nan','None',''):
                     cc2 = cel2.replace(' ','').replace('+','').replace('-','')
                     if not cc2.startswith('51'): cc2 = '51'+cc2
@@ -20301,7 +20371,6 @@ def tab_registrar_notas(config):
                     for an2 in areas_cl_names:
                         msg2 += f"{an2}: {fr2.get(an2,0)} ({nota_a_letra(fr2.get(an2,0))})\n"
                     msg2 += f"PROMEDIO: {fr2.get('Promedio',0)}"
-                    import urllib.parse as _up3
                     url2 = f"https://wa.me/{cc2}?text={_up3.quote(msg2)}"
                     wa_cl.append(f'<a href="{url2}" target="_blank" style="background:#25D366;color:white;padding:3px 8px;border-radius:5px;text-decoration:none;font-size:0.78rem;margin:2px;display:inline-block;">📱 {fr2.get("Nombre","")[:16]}</a>')
             if wa_cl:
