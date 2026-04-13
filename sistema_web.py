@@ -20163,11 +20163,14 @@ def tab_registrar_notas(config):
         # Una columna por curso (ingreso como string de letras), sin selectbox por pregunta
         import pandas as _pd_cl
 
-        # Clave de sesión para persistir la tabla entre reruns
-        _tabla_key = f"cl_tabla_{grado_cl}_{int(n_cursos)}"
+        # ── Clave única por grado+cursos — el data_editor guarda su propio estado ──
+        _editor_key = f"cl_editor_{grado_cl}_{int(n_cursos)}_{'_'.join(c['nombre'][:4] for c in cursos_config)}"
+        _base_key   = f"cl_base_{_editor_key}"
 
-        # Inicializar tabla vacía si no existe o cambió el grado/n_cursos
-        if _tabla_key not in st.session_state:
+        # Construir el DataFrame base UNA SOLA VEZ y nunca sobreescribirlo.
+        # El data_editor guarda sus ediciones internamente en session_state[_editor_key].
+        # Si sobreescribimos la base con las ediciones, Streamlit resetea el delta → borra todo.
+        if _base_key not in st.session_state:
             filas_init = []
             for _, est_row in df_cl.iterrows():
                 fila = {
@@ -20175,18 +20178,20 @@ def tab_registrar_notas(config):
                     "DNI":    str(est_row.get('DNI','')).strip(),
                 }
                 for cur in cursos_config:
-                    fila[cur['nombre']] = ""   # cadena vacía de respuestas
+                    fila[cur['nombre']] = ""
                 filas_init.append(fila)
-            st.session_state[_tabla_key] = _pd_cl.DataFrame(filas_init)
+            st.session_state[_base_key] = _pd_cl.DataFrame(filas_init)
 
-        df_tabla = st.session_state[_tabla_key]
+        df_base = st.session_state[_base_key].copy()
 
-        # Si cambió la lista de cursos, agregar/eliminar columnas sin perder lo escrito
+        # Agregar columnas nuevas si el docente agregó más cursos (sin perder las existentes)
         for cur in cursos_config:
-            if cur['nombre'] not in df_tabla.columns:
-                df_tabla[cur['nombre']] = ""
+            if cur['nombre'] not in df_base.columns:
+                df_base[cur['nombre']] = ""
         cols_validos = ["Nombre","DNI"] + [c['nombre'] for c in cursos_config]
-        df_tabla = df_tabla[[c for c in cols_validos if c in df_tabla.columns]]
+        df_base = df_base[[c for c in cols_validos if c in df_base.columns]]
+        # Actualizar la base con las columnas nuevas (sin tocar las ediciones)
+        st.session_state[_base_key] = df_base
 
         # Ayuda de formato
         for cur in cursos_config:
@@ -20195,12 +20200,13 @@ def tab_registrar_notas(config):
                 f"Clave: `{''.join(cur['claves'])}` — "
                 f"Escribe {cur['n_preguntas']} letras seguidas, ej: `{''.join(cur['claves'][:min(4,cur['n_preguntas'])])}`...")
 
-        # Editor único — sin reruns por cada celda
+        # Editor único — key fijo = Streamlit mantiene los cambios entre reruns
+        # NO sobreescribir df_base con df_editado: eso rompe el estado interno del widget
         df_editado = st.data_editor(
-            df_tabla,
+            df_base,
             use_container_width=True,
             hide_index=True,
-            key=f"cl_editor_{grado_cl}",
+            key=_editor_key,
             column_config={
                 "Nombre": st.column_config.TextColumn("Estudiante", disabled=True, width="large"),
                 "DNI":    st.column_config.TextColumn("DNI", disabled=True, width="small"),
@@ -20215,8 +20221,8 @@ def tab_registrar_notas(config):
                 }
             }
         )
-        # Persistir cambios
-        st.session_state[_tabla_key] = df_editado
+        # ⚠️ NO hacer: st.session_state[_base_key] = df_editado
+        # El widget maneja su propio estado — sobreescribir la base resetea las ediciones
 
         # ── Calcular notas automáticamente desde el editor ────────────
         notas_cl = {}
