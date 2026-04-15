@@ -4237,6 +4237,25 @@ def _portal_padres_familia():
         st.session_state['_portal_dni'] = dni_input.strip()
         st.session_state.pop('_portal_hijos', None)
         dni_buscar = dni_input.strip()
+        # ── Registrar acceso para seguimiento del admin ──────────────
+        try:
+            _log_path = 'portal_accesos.json'
+            _logs = []
+            if Path(_log_path).exists():
+                with open(_log_path,'r',encoding='utf-8') as _fl:
+                    _logs = json.load(_fl)
+            _logs.append({
+                'dni': dni_input.strip(),
+                'fecha': fecha_peru_str(),
+                'hora': hora_peru_str(),
+                'ts': hora_peru().isoformat(),
+            })
+            # Mantener solo los últimos 500 accesos
+            _logs = _logs[-500:]
+            with open(_log_path,'w',encoding='utf-8') as _fl2:
+                json.dump(_logs, _fl2, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
     if not dni_buscar:
         st.info("📌 Ingresa tu DNI (apoderado) o el DNI de tu hijo/a para ver su historial.")
@@ -4293,6 +4312,45 @@ def _portal_padres_familia():
     es_vigesimal = nivel in ('SECUNDARIA', 'PREUNIVERSITARIO') or any(
         g in grado for g in ['Secundaria','CEPRE','Ciclo','Reforzamiento','Preu','PREU']
     )
+
+    # ── RECORDATORIO DE MENSUALIDAD (2 días antes del fin de mes, Mar-Dic) ───
+    try:
+        import calendar as _cal
+        _hoy_p = hora_peru()
+        _mes_p = _hoy_p.month
+        _anio_p = _hoy_p.year
+        _ultimo_dia = _cal.monthrange(_anio_p, _mes_p)[1]
+        _dias_para_fin = _ultimo_dia - _hoy_p.day
+        if 3 <= _mes_p <= 12 and _dias_para_fin <= 2:
+            _nom_mes_rec = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                            "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][_mes_p]
+            st.markdown(f"""
+            <div style='background:linear-gradient(135deg,#fef3c7,#fde68a);
+                border:2px solid #f59e0b;border-radius:16px;padding:18px 20px;
+                margin-bottom:16px;box-shadow:0 4px 16px rgba(245,158,11,0.3);'>
+                <div style='font-size:1.3rem;font-weight:900;color:#92400e;margin-bottom:8px;'>
+                    🔔 ¡Recordatorio de Mensualidad!
+                </div>
+                <div style='font-size:0.95rem;color:#78350f;line-height:1.6;'>
+                    Estimado padre/madre de familia, te recordamos que el mes de
+                    <b>{_nom_mes_rec}</b> está por terminar.<br>
+                    Si aún no realizaste el pago de la mensualidad de tu hijo/a,
+                    puedes hacerlo en:<br>
+                    <div style='background:rgba(255,255,255,0.6);border-radius:10px;
+                        padding:10px 14px;margin-top:8px;font-weight:700;font-size:0.9rem;'>
+                        🏦 <b>Caja Municipal de Ahorro y Crédito Cusco</b><br>
+                        💳 Solicita el número de cuenta en la Dirección del colegio<br>
+                        📅 Plazo máximo: último día de {_nom_mes_rec}
+                    </div>
+                    <div style='margin-top:8px;font-size:0.8rem;color:#92400e;'>
+                        ✅ Educación de calidad requiere el compromiso de toda la comunidad.
+                        ¡Gracias por tu puntualidad!
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    except Exception:
+        pass
 
     # ── SALUDO PERSONALIZADO ──────────────────────────────────────
     nombre_apo = apod if apod else "Estimado padre/madre"
@@ -4704,6 +4762,281 @@ def _portal_padres_familia():
                             f"</div>", unsafe_allow_html=True)
     else:
         st.info("📭 No hay calificaciones registradas aún para este estudiante.")
+
+    # ════════════════════════════════════════════════════════════════
+    # HERRAMIENTAS PARA PADRES
+    # ════════════════════════════════════════════════════════════════
+    st.markdown("---")
+    st.markdown("## 🧰 Herramientas para Padres y Familias")
+    st.caption("Recursos educativos para apoyar el desarrollo de tu hijo/a desde casa")
+
+    _tool_tabs = st.tabs([
+        "🎯 Test Vocacional",
+        "🧠 Test TDAH",
+        "📄 Documentos",
+    ])
+
+    # ──────────────────────────────────────────────────────────────
+    # TAB A: TEST VOCACIONAL (1 por semana, guarda resultado en PDF)
+    # ──────────────────────────────────────────────────────────────
+    with _tool_tabs[0]:
+        st.markdown("#### 🎯 Orientación Vocacional — UNSAAC y Carreras Nacionales")
+        st.caption("Basado en el modelo Holland RIASEC adaptado a las carreras de la UNSAAC Cusco · 1 test por semana")
+
+        _tv_key = f"tv_portal_{dni_estudiante}"
+        _tv_hist_path = "portal_tests_vocacionales.json"
+
+        def _cargar_tv_hist():
+            try:
+                if Path(_tv_hist_path).exists():
+                    with open(_tv_hist_path,"r",encoding="utf-8") as _f:
+                        return json.load(_f)
+            except Exception: pass
+            return {}
+
+        def _guardar_tv_hist(data):
+            try:
+                with open(_tv_hist_path,"w",encoding="utf-8") as _f:
+                    json.dump(data,_f,ensure_ascii=False,indent=2)
+            except Exception: pass
+
+        _tv_hist = _cargar_tv_hist()
+        _tv_alu  = _tv_hist.get(dni_estudiante, [])
+        _sem_actual = hora_peru().strftime("%Y-W%V")
+        _ya_hizo_esta_semana = any(t.get("semana") == _sem_actual for t in _tv_alu)
+
+        if _ya_hizo_esta_semana:
+            _ultimo = [t for t in _tv_alu if t.get("semana") == _sem_actual][-1]
+            st.success(f"✅ Ya realizaste el test esta semana ({_ultimo.get('fecha','')})")
+            st.markdown(f"**Resultado:** {_ultimo.get('tipo_holland','')} — {_ultimo.get('grupo_unsaac','')}")
+            st.markdown(f"**Carreras sugeridas:** {', '.join(_ultimo.get('carreras_top',[])[:3])}")
+        else:
+            # 30 preguntas Holland RIASEC adaptadas
+            _PREGUNTAS_TV = [
+                ("Me gusta construir o reparar objetos con mis manos","R"),
+                ("Disfruto trabajar al aire libre con plantas o animales","R"),
+                ("Me atrae usar herramientas, máquinas o equipos técnicos","R"),
+                ("Prefiero actividades físicas o mecánicas a las intelectuales","R"),
+                ("Me gusta armar, ensamblar o hacer cosas concretas","R"),
+                ("Disfruto investigar, analizar y resolver problemas complejos","I"),
+                ("Me fascina la ciencia, matemáticas o tecnología","I"),
+                ("Prefiero buscar soluciones basadas en datos y evidencia","I"),
+                ("Me gusta observar, explorar y entender cómo funciona el mundo","I"),
+                ("Disfruto leer, estudiar y aprender de manera independiente","I"),
+                ("Me gusta crear cosas originales: arte, música, escritura","A"),
+                ("Disfruto expresarme de formas no convencionales","A"),
+                ("Prefiero trabajos que me permitan usar imaginación y creatividad","A"),
+                ("Me atrae el diseño, la fotografía, el teatro o la danza","A"),
+                ("Valoro la libertad para innovar sin seguir reglas estrictas","A"),
+                ("Disfruto ayudar, enseñar o cuidar a otras personas","S"),
+                ("Me gusta trabajar en equipo y colaborar con otros","S"),
+                ("Me siento bien resolviendo conflictos y apoyando a los demás","S"),
+                ("Prefiero profesiones relacionadas con la salud o la educación","S"),
+                ("Me importa el bienestar y desarrollo de la comunidad","S"),
+                ("Me gusta liderar proyectos y tomar decisiones","E"),
+                ("Disfruto vender, negociar o convencer a otros","E"),
+                ("Me atrae emprender, administrar o dirigir equipos","E"),
+                ("Prefiero asumir riesgos calculados para lograr metas","E"),
+                ("Me gusta la competencia y destacar entre mis pares","E"),
+                ("Prefiero trabajos con orden, reglas claras y procedimientos","C"),
+                ("Me gusta organizar datos, archivos o información detallada","C"),
+                ("Disfruto trabajos con sistemas, contabilidad o administración","C"),
+                ("Prefiero tareas donde hay respuestas correctas definidas","C"),
+                ("Me atrae seguir instrucciones precisas y trabajar con exactitud","C"),
+            ]
+
+            UNSAAC_MAP = {
+                "R": {"grupo":"Grupo A — Ingenierías y Ciencias Exactas",
+                      "carreras":["Ingeniería Civil","Ingeniería Informática y de Sistemas",
+                                  "Ingeniería Mecánica","Arquitectura y Urbanismo",
+                                  "Ingeniería Eléctrica","Matemática y Estadística"]},
+                "I": {"grupo":"Grupo A/B — Ciencias e Investigación",
+                      "carreras":["Física","Química","Matemática y Estadística",
+                                  "Ingeniería Geológica","Biología","Ingeniería de Minas"]},
+                "A": {"grupo":"Grupo C — Humanidades y Artes",
+                      "carreras":["Literatura y Lingüística","Comunicación Social",
+                                  "Psicología","Educación — Arte","Arquitectura y Urbanismo"]},
+                "S": {"grupo":"Grupo B — Ciencias de la Salud y Sociales",
+                      "carreras":["Medicina Humana","Enfermería","Obstetricia",
+                                  "Trabajo Social","Educación — Ciencias Sociales",
+                                  "Psicología","Antropología"]},
+                "E": {"grupo":"Grupo D — Derecho, Economía y Gestión",
+                      "carreras":["Administración de Empresas","Contabilidad",
+                                  "Economía","Derecho","Turismo","Comercio"]},
+                "C": {"grupo":"Grupo D — Administración y Contabilidad",
+                      "carreras":["Contabilidad","Administración de Empresas",
+                                  "Economía","Estadística","Derecho","Informática"]},
+            }
+
+            if f"tv_resp_{dni_estudiante}" not in st.session_state:
+                st.session_state[f"tv_resp_{dni_estudiante}"] = {}
+
+            st.markdown("**Indica cuánto te identifica cada afirmación (1=Nada · 5=Mucho):**")
+            _cols_tv = st.columns(2)
+            for _qi, (_preg, _tipo) in enumerate(_PREGUNTAS_TV):
+                with _cols_tv[_qi % 2]:
+                    _v = st.slider(_preg, 1, 5, 3,
+                                   key=f"tv_{dni_estudiante}_{_qi}",
+                                   label_visibility="visible")
+                    st.session_state[f"tv_resp_{dni_estudiante}"][_tipo] =                         st.session_state[f"tv_resp_{dni_estudiante}"].get(_tipo, 0) + _v
+
+            if st.button("🎯 Ver Mi Resultado Vocacional", type="primary",
+                         use_container_width=True, key=f"btn_tv_{dni_estudiante}"):
+                _scores = {"R":0,"I":0,"A":0,"S":0,"E":0,"C":0}
+                for _qi2, (_, _tipo2) in enumerate(_PREGUNTAS_TV):
+                    _val2 = st.session_state.get(f"tv_{dni_estudiante}_{_qi2}", 3)
+                    _scores[_tipo2] += _val2
+                _top_tipo = max(_scores, key=_scores.get)
+                _segundo  = sorted(_scores, key=_scores.get, reverse=True)[1]
+                _info_top  = UNSAAC_MAP.get(_top_tipo, {})
+                _info_seg  = UNSAAC_MAP.get(_segundo, {})
+                _carreras_top = list(dict.fromkeys(
+                    _info_top.get("carreras",[]) + _info_seg.get("carreras",[])))[:6]
+                _NOMBRES_HOLLAND = {"R":"Realista","I":"Investigador","A":"Artístico",
+                                    "S":"Social","E":"Emprendedor","C":"Convencional"}
+                _resultado_tv = {
+                    "dni": dni_estudiante, "nombre": nombre,
+                    "semana": _sem_actual, "fecha": fecha_peru_str(),
+                    "tipo_holland": f"{_NOMBRES_HOLLAND[_top_tipo]}-{_NOMBRES_HOLLAND[_segundo]}",
+                    "grupo_unsaac": _info_top.get("grupo",""),
+                    "carreras_top": _carreras_top,
+                    "scores": _scores,
+                }
+                _tv_alu.append(_resultado_tv)
+                _tv_hist[dni_estudiante] = _tv_alu
+                _guardar_tv_hist(_tv_hist)
+                st.session_state[f"tv_guardado_{dni_estudiante}"] = _resultado_tv
+                st.rerun()
+
+        # Mostrar resultado guardado en esta sesión
+        _res_guardado = st.session_state.get(f"tv_guardado_{dni_estudiante}")
+        if _res_guardado or _ya_hizo_esta_semana:
+            _res = _res_guardado or ([t for t in _tv_alu if t.get("semana")==_sem_actual] or [_tv_alu[-1]])[-1]
+            st.markdown(f"""
+            <div style='background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:14px;
+                padding:18px;border-left:5px solid #2563eb;margin-top:12px;'>
+                <b style='font-size:1.1rem;'>🎓 Tipo Holland: {_res.get("tipo_holland","")}</b><br>
+                <span style='color:#1e40af;'>📚 {_res.get("grupo_unsaac","")}</span><br><br>
+                <b>Carreras recomendadas:</b><br>
+                {"".join(f"<span style='background:#dbeafe;padding:3px 10px;border-radius:8px;margin:2px;display:inline-block;font-size:0.85rem;'>🎯 {c}</span>" for c in _res.get("carreras_top",[]))}
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ──────────────────────────────────────────────────────────────
+    # TAB B: TEST TDAH (escala Conners abreviada)
+    # ──────────────────────────────────────────────────────────────
+    with _tool_tabs[1]:
+        st.markdown("#### 🧠 Cuestionario de Atención — Escala Conners Abreviada para Padres")
+        st.caption("Herramienta de orientación (NO diagnóstica). Si el resultado indica posibles síntomas, consulta con un especialista.")
+
+        _CONNERS = [
+            "Mi hijo/a se mueve o se retuerce continuamente en su asiento",
+            "Es fácil distraerlo/a con cualquier cosa que pase alrededor",
+            "Le cuesta mantenerse quieto/a sentado/a",
+            "Se impacienta con facilidad o tiene arranques de cólera",
+            "Le cuesta terminar lo que empieza",
+            "Es muy inquieto/a e hiperactivo/a",
+            "Llora con facilidad o con frecuencia",
+            "Cambia de humor repentinamente",
+            "Se le hace difícil seguir instrucciones de varias partes",
+            "Interrumpe constantemente las conversaciones o actividades de otros",
+        ]
+        _CONNERS_OPT = ["0 — Nunca","1 — Pocas veces","2 — Bastante","3 — Siempre"]
+
+        _tdah_prev = st.session_state.get(f"tdah_hecho_{dni_estudiante}", False)
+        if not _tdah_prev:
+            st.markdown("**Responde según cómo es tu hijo/a normalmente:**")
+            _puntaje_tdah = 0
+            for _ti, _tpreg in enumerate(_CONNERS):
+                _tv = st.selectbox(_tpreg, _CONNERS_OPT,
+                                   key=f"tdah_{dni_estudiante}_{_ti}")
+                _puntaje_tdah += int(_tv[0])
+
+            if st.button("📊 Ver Resultado del Cuestionario", type="primary",
+                         use_container_width=True, key=f"btn_tdah_{dni_estudiante}"):
+                st.session_state[f"tdah_score_{dni_estudiante}"] = _puntaje_tdah
+                st.session_state[f"tdah_hecho_{dni_estudiante}"] = True
+                st.rerun()
+
+        _tdah_score = st.session_state.get(f"tdah_score_{dni_estudiante}")
+        if _tdah_score is not None:
+            if _tdah_score <= 10:
+                _tdah_nivel = "Bajo"; _tdah_color = "#16a34a"
+                _tdah_msg = "El puntaje no sugiere síntomas significativos de TDAH. Sigue acompañando a tu hijo/a con rutinas y hábitos de estudio."
+            elif _tdah_score <= 16:
+                _tdah_nivel = "Moderado"; _tdah_color = "#f59e0b"
+                _tdah_msg = "Hay algunos indicadores que vale la pena monitorear. Se recomienda conversar con el tutor o psicólogo escolar."
+            else:
+                _tdah_nivel = "Alto"; _tdah_color = "#ef4444"
+                _tdah_msg = "El puntaje sugiere posibles síntomas de TDAH. Se recomienda consultar con un especialista (psicólogo o psiquiatra pediátrico) para una evaluación formal."
+            st.markdown(f"""
+            <div style='background:white;border:2px solid {_tdah_color};border-radius:14px;padding:18px;margin-top:12px;'>
+                <div style='font-size:1.2rem;font-weight:800;color:{_tdah_color};'>
+                    Puntaje: {_tdah_score}/30 — Nivel {_tdah_nivel}
+                </div>
+                <div style='margin-top:8px;font-size:0.9rem;line-height:1.6;'>
+                    {_tdah_msg}
+                </div>
+                <div style='margin-top:10px;font-size:0.78rem;color:#888;'>
+                    ⚠️ Este cuestionario es una herramienta de orientación basada en la Escala Conners.
+                    NO reemplaza un diagnóstico clínico profesional.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("🔄 Hacer el cuestionario nuevamente", key=f"btn_tdah_reset_{dni_estudiante}"):
+                st.session_state.pop(f"tdah_hecho_{dni_estudiante}", None)
+                st.session_state.pop(f"tdah_score_{dni_estudiante}", None)
+                st.rerun()
+
+    # ──────────────────────────────────────────────────────────────
+    # TAB C: DOCUMENTOS (Reglamento Interno + otros — links de Drive)
+    # ──────────────────────────────────────────────────────────────
+    with _tool_tabs[2]:
+        st.markdown("#### 📄 Documentos Institucionales")
+        st.caption("Descarga los documentos oficiales de la institución")
+
+        # Cargar links configurados por el administrador
+        _docs_config = {}
+        try:
+            if Path("config_documentos_portal.json").exists():
+                with open("config_documentos_portal.json","r",encoding="utf-8") as _fd:
+                    _docs_config = json.load(_fd)
+        except Exception:
+            pass
+
+        _docs_default = [
+            ("📋 Reglamento Interno", "reglamento_interno", "Normas y reglamentos de la institución"),
+            ("📘 Plan Anual de Trabajo", "plan_anual", "PAT 2026 — Metas institucionales"),
+            ("📗 PEI", "pei", "Proyecto Educativo Institucional"),
+            ("📙 PCI", "pci", "Proyecto Curricular Institucional"),
+            ("📄 Libro de Matrícula", "matricula_doc", "Requisitos y proceso de matrícula"),
+            ("📃 Comunicados", "comunicados", "Circulares y comunicados a padres"),
+        ]
+
+        _hay_docs = False
+        for _doc_nombre, _doc_key, _doc_desc in _docs_default:
+            _link = _docs_config.get(_doc_key, "")
+            if _link:
+                _hay_docs = True
+                st.markdown(f"""
+                <div style='background:#f0fdf4;border:1px solid #86efac;border-radius:10px;
+                    padding:12px 16px;margin-bottom:8px;display:flex;
+                    align-items:center;justify-content:space-between;'>
+                    <div>
+                        <b>{_doc_nombre}</b><br>
+                        <span style='font-size:0.8rem;color:#555;'>{_doc_desc}</span>
+                    </div>
+                    <a href="{_link}" target="_blank"
+                       style='background:#16a34a;color:white;padding:8px 16px;
+                       border-radius:8px;text-decoration:none;font-size:0.85rem;
+                       font-weight:700;white-space:nowrap;'>
+                       ⬇️ Descargar
+                    </a>
+                </div>
+                """, unsafe_allow_html=True)
+
+        if not _hay_docs:
+            st.info("📭 Los documentos aún no han sido cargados por el administrador. Vuelve pronto.")
 
     # ── Pie del portal ────────────────────────────────────────────
     st.markdown("---")
@@ -30090,6 +30423,7 @@ def main():
                 ("🎯", "Dinámica de Aula", "temporizador", "#0891b2"),
                 ("📅", "Horarios", "horario", "#0f766e"),
                 ("🎭", "Guess Up", "guess_up", "#7c2d12"),
+                ("👨‍👩‍👧", "Portal Padres", "portal_seguimiento", "#0f766e"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -30195,7 +30529,115 @@ def main():
                 _tab_horarios_directivo(config)  # Admin/Directivo ven todos
             elif mod == "guess_up":
                 _tab_guess_up()
+            elif mod == "portal_seguimiento":
+                tab_seguimiento_portal_padres(config)
 
+
+
+def tab_seguimiento_portal_padres(config):
+    """Admin: ver quiénes han entrado al portal de padres y configurar documentos Drive."""
+    import json as _jpa
+    from pathlib import Path as _Ppa
+
+    st.header("👨‍👩‍👧 Seguimiento Portal de Padres")
+
+    _sub = st.tabs(["📊 Accesos Recientes", "📄 Configurar Documentos"])
+
+    # ── TAB 1: ACCESOS ────────────────────────────────────────────
+    with _sub[0]:
+        st.markdown("#### 📊 Registro de accesos al Portal de Padres")
+        st.caption("Cada vez que un padre ingresa su DNI para ver las notas/asistencia, queda registrado aquí.")
+
+        _logs = []
+        try:
+            if _Ppa("portal_accesos.json").exists():
+                with open("portal_accesos.json","r",encoding="utf-8") as _fl:
+                    _logs = _jpa.load(_fl)
+        except Exception:
+            pass
+
+        if not _logs:
+            st.info("📭 Aún no hay accesos registrados al portal de padres.")
+        else:
+            # KPIs
+            import pandas as _pd_pa
+            df_logs = _pd_pa.DataFrame(_logs)
+            _hoy_str = fecha_peru_str()
+            _hoy_acc = df_logs[df_logs["fecha"] == _hoy_str] if "fecha" in df_logs.columns else _pd_pa.DataFrame()
+            _k1, _k2, _k3 = st.columns(3)
+            with _k1:
+                st.metric("Total accesos registrados", len(_logs))
+            with _k2:
+                st.metric("Accesos hoy", len(_hoy_acc))
+            with _k3:
+                _dnisunicos = df_logs["dni"].nunique() if "dni" in df_logs.columns else 0
+                st.metric("DNIs únicos", _dnisunicos)
+
+            st.markdown("---")
+            st.markdown("**Últimos 50 accesos:**")
+            _ultimos = list(reversed(_logs))[:50]
+            for _ac in _ultimos:
+                _dni_ac = _ac.get("dni","")
+                _fec_ac = _ac.get("fecha","")
+                _hor_ac = _ac.get("hora","")
+                # Buscar nombre del estudiante
+                _per = BaseDatos.buscar_por_dni(_dni_ac)
+                _nom_ac = _per.get("Nombre","") if _per else _dni_ac
+                st.markdown(
+                    f"<div style='background:#f8fafc;border:1px solid #e2e8f0;"
+                    f"border-radius:8px;padding:8px 14px;margin-bottom:4px;"
+                    f"display:flex;justify-content:space-between;align-items:center;'>"
+                    f"<div><b>{_nom_ac}</b> <span style='color:#64748b;font-size:0.8rem;'>DNI: {_dni_ac}</span></div>"
+                    f"<div style='font-size:0.8rem;color:#64748b;'>📅 {_fec_ac} &nbsp; 🕐 {_hor_ac}</div>"
+                    f"</div>", unsafe_allow_html=True)
+
+            if st.button("🗑️ Limpiar registro de accesos", key="btn_limpiar_accesos"):
+                with open("portal_accesos.json","w",encoding="utf-8") as _fl2:
+                    _jpa.dump([], _fl2)
+                st.success("✅ Registro limpiado")
+                st.rerun()
+
+    # ── TAB 2: CONFIGURAR DOCUMENTOS DRIVE ───────────────────────
+    with _sub[1]:
+        st.markdown("#### 📄 Configurar enlaces de documentos para padres")
+        st.caption("Pega el enlace de Google Drive (modo 'Cualquiera con el enlace puede ver') para cada documento.")
+        st.info("💡 En Google Drive: Archivo → Compartir → 'Cualquiera con el enlace' → Copiar enlace")
+
+        _cfg_path = "config_documentos_portal.json"
+        _cfg_docs = {}
+        try:
+            if _Ppa(_cfg_path).exists():
+                with open(_cfg_path,"r",encoding="utf-8") as _fd:
+                    _cfg_docs = _jpa.load(_fd)
+        except Exception:
+            pass
+
+        _DOC_CAMPOS = [
+            ("reglamento_interno", "📋 Reglamento Interno", "Enlace al Reglamento Interno 2026"),
+            ("plan_anual",         "📘 Plan Anual de Trabajo (PAT)", "Enlace al PAT 2026"),
+            ("pei",                "📗 Proyecto Educativo Institucional (PEI)", "Enlace al PEI"),
+            ("pci",                "📙 Proyecto Curricular Institucional (PCI)", "Enlace al PCI"),
+            ("matricula_doc",      "📄 Información de Matrícula", "Enlace a requisitos de matrícula"),
+            ("comunicados",        "📃 Comunicados a Padres", "Enlace a carpeta de comunicados"),
+        ]
+
+        _nuevos_links = {}
+        for _dc_key, _dc_label, _dc_help in _DOC_CAMPOS:
+            _val_prev = _cfg_docs.get(_dc_key, "")
+            _nuevo_val = st.text_input(
+                _dc_label,
+                value=_val_prev,
+                placeholder="https://drive.google.com/file/d/...",
+                help=_dc_help,
+                key=f"doc_link_{_dc_key}"
+            )
+            _nuevos_links[_dc_key] = _nuevo_val.strip()
+
+        if st.button("💾 Guardar enlaces de documentos", type="primary",
+                     use_container_width=True, key="btn_guardar_docs_portal"):
+            with open(_cfg_path,"w",encoding="utf-8") as _fd2:
+                _jpa.dump(_nuevos_links, _fd2, ensure_ascii=False, indent=2)
+            st.success("✅ Enlaces guardados — los padres ya pueden ver y descargar los documentos")
 
 def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
