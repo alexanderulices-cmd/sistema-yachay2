@@ -4772,7 +4772,7 @@ def _portal_padres_familia():
 
     _tool_tabs = st.tabs([
         "🎯 Test Vocacional",
-        "🧠 Test TDAH",
+        "🌟 Inteligencias Múltiples",
         "📄 Documentos",
     ])
 
@@ -4923,69 +4923,101 @@ def _portal_padres_familia():
             """, unsafe_allow_html=True)
 
     # ──────────────────────────────────────────────────────────────
-    # TAB B: TEST TDAH (escala Conners abreviada)
+    # TAB B: INTELIGENCIAS MÚLTIPLES (Howard Gardner) para padres
     # ──────────────────────────────────────────────────────────────
     with _tool_tabs[1]:
-        st.markdown("#### 🧠 Cuestionario de Atención — Escala Conners Abreviada para Padres")
-        st.caption("Herramienta de orientación (NO diagnóstica). Si el resultado indica posibles síntomas, consulta con un especialista.")
+        st.markdown("#### 🌟 Test de Inteligencias Múltiples — Howard Gardner")
+        st.caption("Descubre cuáles son las inteligencias dominantes de tu hijo/a. 8 tipos según la teoría de Gardner, usada en Finlandia y Singapur.")
 
-        _CONNERS = [
-            "Mi hijo/a se mueve o se retuerce continuamente en su asiento",
-            "Es fácil distraerlo/a con cualquier cosa que pase alrededor",
-            "Le cuesta mantenerse quieto/a sentado/a",
-            "Se impacienta con facilidad o tiene arranques de cólera",
-            "Le cuesta terminar lo que empieza",
-            "Es muy inquieto/a e hiperactivo/a",
-            "Llora con facilidad o con frecuencia",
-            "Cambia de humor repentinamente",
-            "Se le hace difícil seguir instrucciones de varias partes",
-            "Interrumpe constantemente las conversaciones o actividades de otros",
+        _IM_PREGUNTAS = [
+            ("Le gusta leer, escribir cuentos o poesía","Lingüística"),
+            ("Disfruta jugar con palabras, rimas o trabalenguas","Lingüística"),
+            ("Le resulta fácil aprender idiomas","Lingüística"),
+            ("Le gustan los problemas de matemáticas y lógica","Lógico-Matemática"),
+            ("Disfruta los juegos de estrategia (ajedrez, rompecabezas)","Lógico-Matemática"),
+            ("Organiza bien los pasos para resolver un problema","Lógico-Matemática"),
+            ("Le gusta dibujar, pintar o diseñar","Espacial"),
+            ("Tiene buena memoria para caras, lugares y objetos","Espacial"),
+            ("Disfruta los mapas, planos y figuras geométricas","Espacial"),
+            ("Le gusta el deporte, la danza o actividades físicas","Corporal-Kinestésica"),
+            ("Aprende mejor haciendo que escuchando","Corporal-Kinestésica"),
+            ("Tiene buena coordinación y destreza manual","Corporal-Kinestésica"),
+            ("Le gusta cantar, tocar instrumento o escuchar música","Musical"),
+            ("Recuerda fácilmente melodías y ritmos","Musical"),
+            ("Le resulta fácil seguir el compás o el ritmo","Musical"),
+            ("Le gusta trabajar en grupo y hace amigos fácilmente","Interpersonal"),
+            ("Entiende bien cómo se sienten los demás","Interpersonal"),
+            ("Es bueno resolviendo conflictos entre personas","Interpersonal"),
+            ("Conoce bien sus propias emociones y fortalezas","Intrapersonal"),
+            ("Le gusta trabajar solo y reflexionar en silencio","Intrapersonal"),
+            ("Se fija metas y las cumple con disciplina","Intrapersonal"),
+            ("Le encantan los animales, plantas y la naturaleza","Naturalista"),
+            ("Distingue fácilmente tipos de plantas, animales o minerales","Naturalista"),
+            ("Le gusta observar el cielo, clima o fenómenos naturales","Naturalista"),
         ]
-        _CONNERS_OPT = ["0 — Nunca","1 — Pocas veces","2 — Bastante","3 — Siempre"]
 
-        _tdah_prev = st.session_state.get(f"tdah_hecho_{dni_estudiante}", False)
-        if not _tdah_prev:
-            st.markdown("**Responde según cómo es tu hijo/a normalmente:**")
-            _puntaje_tdah = 0
-            for _ti, _tpreg in enumerate(_CONNERS):
-                _tv = st.selectbox(_tpreg, _CONNERS_OPT,
-                                   key=f"tdah_{dni_estudiante}_{_ti}")
-                _puntaje_tdah += int(_tv[0])
+        _IM_COLORES = {
+            "Lingüística":"#2563eb","Lógico-Matemática":"#7c3aed",
+            "Espacial":"#0891b2","Corporal-Kinestésica":"#16a34a",
+            "Musical":"#ea580c","Interpersonal":"#db2777",
+            "Intrapersonal":"#854d0e","Naturalista":"#065f46",
+        }
 
-            if st.button("📊 Ver Resultado del Cuestionario", type="primary",
-                         use_container_width=True, key=f"btn_tdah_{dni_estudiante}"):
-                st.session_state[f"tdah_score_{dni_estudiante}"] = _puntaje_tdah
-                st.session_state[f"tdah_hecho_{dni_estudiante}"] = True
+        _IM_CARRERAS = {
+            "Lingüística":["Literatura y Lingüística","Comunicación Social","Derecho","Educación","Periodismo"],
+            "Lógico-Matemática":["Ingeniería Informática","Matemática","Física","Economía","Estadística"],
+            "Espacial":["Arquitectura","Ingeniería Civil","Arte y Diseño","Ingeniería Geológica"],
+            "Corporal-Kinestésica":["Medicina","Educación Física","Enfermería","Cirugía Dental"],
+            "Musical":["Educación — Artes","Música","Comunicación","Psicología"],
+            "Interpersonal":["Psicología","Trabajo Social","Medicina","Educación","Administración"],
+            "Intrapersonal":["Filosofía","Psicología","Teología","Literatura"],
+            "Naturalista":["Biología","Agronomía","Zootecnia","Ing. Ambiental","Medicina Veterinaria"],
+        }
+
+        _im_prev = st.session_state.get(f"im_hecho_{dni_estudiante}", False)
+        if not _im_prev:
+            st.markdown("**¿Cómo es tu hijo/a? (1=Nunca · 3=A veces · 5=Siempre)**")
+            _cols_im = st.columns(2)
+            for _ii, (_ipreg, _itipo) in enumerate(_IM_PREGUNTAS):
+                with _cols_im[_ii % 2]:
+                    st.slider(_ipreg, 1, 5, 3, key=f"im_{dni_estudiante}_{_ii}")
+
+            if st.button("🌟 Ver Mis Inteligencias Dominantes", type="primary",
+                         use_container_width=True, key=f"btn_im_{dni_estudiante}"):
+                _im_scores = {k:0 for k in _IM_COLORES}
+                for _ii2, (_, _itipo2) in enumerate(_IM_PREGUNTAS):
+                    _im_scores[_itipo2] += st.session_state.get(f"im_{dni_estudiante}_{_ii2}", 3)
+                st.session_state[f"im_scores_{dni_estudiante}"] = _im_scores
+                st.session_state[f"im_hecho_{dni_estudiante}"] = True
                 st.rerun()
 
-        _tdah_score = st.session_state.get(f"tdah_score_{dni_estudiante}")
-        if _tdah_score is not None:
-            if _tdah_score <= 10:
-                _tdah_nivel = "Bajo"; _tdah_color = "#16a34a"
-                _tdah_msg = "El puntaje no sugiere síntomas significativos de TDAH. Sigue acompañando a tu hijo/a con rutinas y hábitos de estudio."
-            elif _tdah_score <= 16:
-                _tdah_nivel = "Moderado"; _tdah_color = "#f59e0b"
-                _tdah_msg = "Hay algunos indicadores que vale la pena monitorear. Se recomienda conversar con el tutor o psicólogo escolar."
-            else:
-                _tdah_nivel = "Alto"; _tdah_color = "#ef4444"
-                _tdah_msg = "El puntaje sugiere posibles síntomas de TDAH. Se recomienda consultar con un especialista (psicólogo o psiquiatra pediátrico) para una evaluación formal."
-            st.markdown(f"""
-            <div style='background:white;border:2px solid {_tdah_color};border-radius:14px;padding:18px;margin-top:12px;'>
-                <div style='font-size:1.2rem;font-weight:800;color:{_tdah_color};'>
-                    Puntaje: {_tdah_score}/30 — Nivel {_tdah_nivel}
-                </div>
-                <div style='margin-top:8px;font-size:0.9rem;line-height:1.6;'>
-                    {_tdah_msg}
-                </div>
-                <div style='margin-top:10px;font-size:0.78rem;color:#888;'>
-                    ⚠️ Este cuestionario es una herramienta de orientación basada en la Escala Conners.
-                    NO reemplaza un diagnóstico clínico profesional.
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("🔄 Hacer el cuestionario nuevamente", key=f"btn_tdah_reset_{dni_estudiante}"):
-                st.session_state.pop(f"tdah_hecho_{dni_estudiante}", None)
-                st.session_state.pop(f"tdah_score_{dni_estudiante}", None)
+        _im_scores_res = st.session_state.get(f"im_scores_{dni_estudiante}")
+        if _im_scores_res:
+            _im_ordenado = sorted(_im_scores_res.items(), key=lambda x: -x[1])
+            _im_max = _im_ordenado[0][0]
+            st.markdown(f"### 🌟 Inteligencia dominante: **{_im_max}**")
+            for _im_tipo, _im_val in _im_ordenado:
+                _im_pct = round(_im_val / 15 * 100)
+                _im_col = _IM_COLORES.get(_im_tipo,"#888")
+                st.markdown(
+                    f"<div style='margin-bottom:6px;'>"
+                    f"<div style='display:flex;justify-content:space-between;'>"
+                    f"<b style='color:{_im_col};'>{_im_tipo}</b>"
+                    f"<span style='font-size:0.85rem;color:#555;'>{_im_val}/15 pts</span></div>"
+                    f"<div style='background:#f1f5f9;border-radius:6px;height:10px;'>"
+                    f"<div style='background:{_im_col};width:{_im_pct}%;height:10px;border-radius:6px;'></div>"
+                    f"</div></div>", unsafe_allow_html=True)
+            st.markdown("---")
+            _carrs_im = _IM_CARRERAS.get(_im_max,[])
+            st.markdown(f"**🎓 Carreras afines según tus inteligencias:**")
+            st.markdown(" ".join(
+                f"<span style='background:{_IM_COLORES.get(_im_max,'#888')}22;"
+                f"color:{_IM_COLORES.get(_im_max,'#888')};padding:4px 10px;"
+                f"border-radius:8px;font-size:0.85rem;margin:2px;display:inline-block;'>"
+                f"🎯 {c}</span>" for c in _carrs_im), unsafe_allow_html=True)
+            if st.button("🔄 Repetir test", key=f"btn_im_reset_{dni_estudiante}"):
+                st.session_state.pop(f"im_hecho_{dni_estudiante}", None)
+                st.session_state.pop(f"im_scores_{dni_estudiante}", None)
                 st.rerun()
 
     # ──────────────────────────────────────────────────────────────
@@ -12296,6 +12328,92 @@ def tab_asistencias():
         st.info("📝 No hay registros hoy. Escanee QR o ingrese DNI para registrar.")
 
 
+
+# ═══════════════════════════════════════════════════════
+# SISTEMA DE NOTIFICACIONES TELEGRAM PARA PADRES
+# ═══════════════════════════════════════════════════════
+_TG_SUBS_PATH = "telegram_suscriptores.json"
+_TG_CONFIG_PATH = "telegram_config.json"
+
+def _tg_cargar_config():
+    """Carga el token del bot de Telegram."""
+    try:
+        if Path(_TG_CONFIG_PATH).exists():
+            with open(_TG_CONFIG_PATH,"r",encoding="utf-8") as f:
+                return json.load(f)
+    except Exception: pass
+    return {}
+
+def _tg_cargar_subs():
+    """Carga el mapa DNI_alumno → chat_id del padre."""
+    try:
+        if Path(_TG_SUBS_PATH).exists():
+            with open(_TG_SUBS_PATH,"r",encoding="utf-8") as f:
+                return json.load(f)
+    except Exception: pass
+    return {}
+
+def _tg_guardar_subs(data):
+    try:
+        with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception: pass
+
+def _tg_enviar(chat_id, mensaje, token):
+    """Envía un mensaje de Telegram. Llamada HTTP simple, no bloquea el UI."""
+    import urllib.request as _ur
+    import urllib.parse as _up
+    try:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        data = _up.urlencode({"chat_id": str(chat_id), "text": mensaje,
+                               "parse_mode": "HTML"}).encode()
+        req = _ur.Request(url, data=data, method="POST")
+        req.add_header("Content-Type","application/x-www-form-urlencoded")
+        with _ur.urlopen(req, timeout=4) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
+    """Envía notificación de asistencia al padre si está suscrito."""
+    cfg = _tg_cargar_config()
+    token = cfg.get("bot_token","").strip()
+    if not token: return
+    subs = _tg_cargar_subs()
+    chat_id = subs.get(str(dni_alumno).strip())
+    if not chat_id: return
+
+    iconos = {"entrada":"✅","tardanza":"⏰","salida":"🔵",
+              "entrada_tarde":"🌤️","salida_tarde":"🌙"}
+    ico = iconos.get(tipo, "📌")
+    etiquetas = {"entrada":"ENTRÓ PUNTUAL","tardanza":"TARDANZA",
+                 "salida":"SALIÓ — Turno mañana","entrada_tarde":"ENTRÓ — Turno tarde",
+                 "salida_tarde":"SALIÓ — Turno tarde"}
+    etq = etiquetas.get(tipo, tipo.replace("_"," ").upper())
+
+    msg = (
+        f"{ico} <b>YACHAY PRO \u2014 Asistencia</b>\n\n"
+        f"\U0001f464 <b>{nombre_alumno}</b>\n"
+        f"\U0001f4da {grado}\n"
+        f"\U0001f4cc {etq}\n"
+        f"\U0001f550 {hora}\n\n"
+        f"<i>I.E.P. Alternativo Yachay \u2014 Chinchero</i>"
+    )
+    # Ejecutar en hilo para no bloquear el UI
+    import threading
+    threading.Thread(target=_tg_enviar, args=(chat_id, msg, token), daemon=True).start()
+
+def _tg_obtener_chat_id(token):
+    """Obtiene los últimos mensajes recibidos por el bot (para registrar suscriptores)."""
+    import urllib.request as _ur
+    try:
+        url = f"https://api.telegram.org/bot{token}/getUpdates?limit=20"
+        with _ur.urlopen(url, timeout=5) as resp:
+            import json as _jt
+            return _jt.loads(resp.read().decode())
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia — INSTANTÁNEO: solo usa índice en RAM, nunca GSheets."""
     # 1. Buscar SOLO en índice local (< 1ms, nunca bloquea)
@@ -12499,6 +12617,13 @@ def _registrar_asistencia_rapida(dni):
             reproducir_beep_exitoso()
         # Anuncio de voz con el nombre
         _hablar_nombre(nombre, tipo, es_tardanza=(tipo == 'tardanza'))
+        # Notificación Telegram al padre (solo alumnos, hilo separado para no bloquear)
+        if not es_d:
+            try:
+                _grado_e = str(persona.get('Grado', persona.get('grado', ''))).strip()
+                _tg_notificar_asistencia(dni_str, nombre, _grado_e, tipo, hora)
+            except Exception:
+                pass
     else:
         reproducir_beep_error()
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
@@ -29055,6 +29180,151 @@ fix();
 
 
 
+
+def _tab_test_tdah_docente(config):
+    """Test TDAH — Escala Conners y Vanderbilt para uso docente/directivo.
+    Permite evaluar a un estudiante y guardar el resultado."""
+    st.subheader("🧠 Evaluación TDAH — Herramientas para Docentes")
+    st.caption("Escalas de orientación (NO diagnósticas). Para uso profesional del docente/psicólogo escolar.")
+    st.info("⚠️ Estas herramientas son de orientación pedagógica. Un diagnóstico formal requiere evaluación clínica especializada.")
+
+    _TDAH_TESTS = {
+        "Escala Conners para Docentes (10 ítems)": {
+            "items": [
+                "El estudiante se mueve excesivamente en el asiento",
+                "Se distrae fácilmente con estímulos externos",
+                "Tiene dificultad para prestar atención sostenida",
+                "Es impulsivo/a — actúa antes de pensar",
+                "Le cuesta esperar su turno",
+                "Interrumpe o se entromete con otros",
+                "No termina las tareas que empieza",
+                "Tiene dificultad para seguir instrucciones",
+                "Cambia de actividad frecuentemente sin completar",
+                "Es excesivamente activo/a — corre o trepa en situaciones inapropiadas",
+            ],
+            "opciones": ["0 — Nunca","1 — Pocas veces","2 — Bastante","3 — Siempre"],
+            "corte": 15, "max": 30,
+            "interpretacion": {
+                (0,10): ("Bajo","#16a34a","No se observan indicadores significativos en el aula."),
+                (11,16): ("Moderado","#f59e0b","Algunos indicadores presentes. Se recomienda observación continua y estrategias de apoyo."),
+                (17,30): ("Alto","#ef4444","Indicadores frecuentes. Se recomienda derivar a psicólogo para evaluación formal."),
+            }
+        },
+        "Escala Vanderbilt — Inatención (9 ítems)": {
+            "items": [
+                "No presta atención a los detalles o comete errores por descuido",
+                "Tiene dificultad para mantener la atención en tareas",
+                "Parece no escuchar cuando se le habla directamente",
+                "No sigue instrucciones y no termina las tareas",
+                "Tiene dificultad para organizar tareas y actividades",
+                "Evita tareas que requieren esfuerzo mental sostenido",
+                "Pierde objetos necesarios para tareas (lápiz, cuaderno)",
+                "Se distrae fácilmente por estímulos del entorno",
+                "Es olvidadizo/a en las actividades diarias",
+            ],
+            "opciones": ["0 — Nunca","1 — Pocas veces","2 — Bastante","3 — Siempre"],
+            "corte": 12, "max": 27,
+            "interpretacion": {
+                (0,9): ("Bajo","#16a34a","Sin indicadores significativos de inatención."),
+                (10,15): ("Moderado","#f59e0b","Inatención moderada. Implementar estrategias diferenciadas."),
+                (16,27): ("Alto","#ef4444","Inatención significativa. Derivar a especialista."),
+            }
+        },
+    }
+
+    _test_sel = st.selectbox("Selecciona el instrumento:", list(_TDAH_TESTS.keys()), key="tdah_doc_sel")
+    _test_data = _TDAH_TESTS[_test_sel]
+
+    grado_td = _grados_para_selector("tdah_doc")
+    df_td = BaseDatos.obtener_estudiantes_grado(grado_td)
+    if df_td.empty:
+        st.warning("No hay estudiantes en este grado.")
+        return
+
+    nombres_td = df_td.apply(
+        lambda r: f"{r.get('Nombre','')} ({r.get('DNI','')})", axis=1).tolist()
+    alu_td = st.selectbox("Estudiante a evaluar:", nombres_td, key="tdah_doc_alu")
+    dni_td = alu_td.split("(")[-1].rstrip(")").strip()
+    nombre_td = alu_td.split(" (")[0].strip()
+
+    st.markdown(f"**Evaluando: {nombre_td}**")
+    st.caption("Responde según lo que observas habitualmente en el aula:")
+
+    _puntaje_td = 0
+    _cols_td = st.columns(2)
+    for _tdi, _item in enumerate(_test_data["items"]):
+        with _cols_td[_tdi % 2]:
+            _resp = st.selectbox(_item, _test_data["opciones"],
+                                 key=f"tdah_doc_{dni_td}_{_tdi}_{_test_sel[:5]}")
+            _puntaje_td += int(_resp[0])
+
+    obs_td = st.text_area("Observaciones adicionales del docente:", key=f"tdah_obs_{dni_td}",
+                           height=80, placeholder="Ej: Se distrae especialmente en las 2 primeras horas...")
+
+    if st.button("📊 Calcular Resultado", type="primary",
+                 use_container_width=True, key=f"btn_tdah_doc_{dni_td}"):
+        _nivel_td = "—"; _color_td = "#888"; _msg_td = ""
+        for (_lo, _hi), (_niv, _col, _msg) in _test_data["interpretacion"].items():
+            if _lo <= _puntaje_td <= _hi:
+                _nivel_td = _niv; _color_td = _col; _msg_td = _msg; break
+
+        st.markdown(f"""
+        <div style='background:white;border:3px solid {_color_td};border-radius:14px;padding:18px;margin-top:12px;'>
+            <b style='font-size:1.1rem;color:{_color_td};'>
+                Puntaje: {_puntaje_td}/{_test_data["max"]} — Nivel {_nivel_td}
+            </b>
+            <div style='background:#f1f5f9;border-radius:8px;height:12px;margin:10px 0;'>
+                <div style='background:{_color_td};width:{round(_puntaje_td/_test_data["max"]*100)}%;height:12px;border-radius:8px;'></div>
+            </div>
+            <p style='margin:8px 0;font-size:0.9rem;'>{_msg_td}</p>
+            <p style='font-size:0.75rem;color:#888;'>⚠️ Herramienta de orientación pedagógica. No reemplaza evaluación clínica.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Guardar resultado
+        try:
+            _tdah_res_path = "tdah_resultados.json"
+            _tdah_res = []
+            if Path(_tdah_res_path).exists():
+                with open(_tdah_res_path,"r",encoding="utf-8") as _ft:
+                    _tdah_res = json.load(_ft)
+            _tdah_res.append({
+                "dni": dni_td, "nombre": nombre_td, "grado": grado_td,
+                "test": _test_sel, "puntaje": _puntaje_td,
+                "nivel": _nivel_td, "observacion": obs_td.strip(),
+                "docente": st.session_state.get("usuario_actual",""),
+                "fecha": fecha_peru_str(), "hora": hora_peru_str(),
+            })
+            with open(_tdah_res_path,"w",encoding="utf-8") as _ft2:
+                json.dump(_tdah_res, _ft2, ensure_ascii=False, indent=2)
+            st.success(f"✅ Resultado guardado para {nombre_td}")
+        except Exception as _et:
+            st.warning(f"No se pudo guardar: {_et}")
+
+    # Historial de evaluaciones TDAH
+    with st.expander("📋 Historial de evaluaciones TDAH guardadas"):
+        try:
+            if Path("tdah_resultados.json").exists():
+                with open("tdah_resultados.json","r",encoding="utf-8") as _fth:
+                    _hist_td = json.load(_fth)
+                _hist_td_s = sorted(_hist_td, key=lambda x: x.get("fecha",""), reverse=True)
+                for _ht in _hist_td_s[:20]:
+                    _nc = "#16a34a" if _ht.get("nivel") == "Bajo" else                           "#f59e0b" if _ht.get("nivel") == "Moderado" else "#ef4444"
+                    st.markdown(
+                        f"<div style='background:#f8fafc;border-left:4px solid {_nc};"
+                        f"padding:8px 12px;border-radius:6px;margin-bottom:4px;'>"
+                        f"<b>{_ht.get('nombre','')}</b> — {_ht.get('grado','')} | "
+                        f"{_ht.get('test','')} | Puntaje: {_ht.get('puntaje','')} — "
+                        f"<b style='color:{_nc};'>{_ht.get('nivel','')}</b> | {_ht.get('fecha','')}"
+                        + (f"<br><small style='color:#666;'>{_ht.get('observacion','')}</small>"
+                           if _ht.get("observacion") else "")
+                        + "</div>", unsafe_allow_html=True)
+            else:
+                st.info("Sin evaluaciones guardadas aún.")
+        except Exception:
+            st.info("Sin historial disponible.")
+
+
 def tab_yachay_plickers(config):
     """YACHAY QAWAY v2 — sync PC + celular"""
     # Restaurar quizzes desde Google Sheets si no hay locales
@@ -30298,6 +30568,7 @@ def main():
                 ("📄", "Documentos", "documentos_doc", "#7c3aed"),
                 ("📅", "Mi Horario", "horario", "#0f766e"),
                 ("🎭", "Guess Up", "guess_up", "#7c2d12"),
+                ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
             ]
 
             # Grid de módulos
@@ -30385,6 +30656,10 @@ def main():
                 _tab_horario(config)
             elif mod == "guess_up":
                 _tab_guess_up()
+            elif mod == "tdah_docente":
+                _tab_test_tdah_docente(config)
+            elif mod == "telegram_bot":
+                tab_telegram_notificaciones(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -30424,6 +30699,8 @@ def main():
                 ("📅", "Horarios", "horario", "#0f766e"),
                 ("🎭", "Guess Up", "guess_up", "#7c2d12"),
                 ("👨‍👩‍👧", "Portal Padres", "portal_seguimiento", "#0f766e"),
+                ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
+                ("📱", "Notif. Telegram", "telegram_bot", "#0088cc"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -30529,6 +30806,10 @@ def main():
                 _tab_horarios_directivo(config)  # Admin/Directivo ven todos
             elif mod == "guess_up":
                 _tab_guess_up()
+            elif mod == "tdah_docente":
+                _tab_test_tdah_docente(config)
+            elif mod == "telegram_bot":
+                tab_telegram_notificaciones(config)
             elif mod == "portal_seguimiento":
                 tab_seguimiento_portal_padres(config)
 
@@ -30638,6 +30919,165 @@ def tab_seguimiento_portal_padres(config):
             with open(_cfg_path,"w",encoding="utf-8") as _fd2:
                 _jpa.dump(_nuevos_links, _fd2, ensure_ascii=False, indent=2)
             st.success("✅ Enlaces guardados — los padres ya pueden ver y descargar los documentos")
+
+
+def tab_telegram_notificaciones(config):
+    """Admin: configurar bot de Telegram y gestionar suscriptores de padres."""
+    st.header("📱 Notificaciones Telegram para Padres")
+    st.caption("Los padres reciben notificacion en su celular cada vez que su hijo registra entrada o salida.")
+
+    cfg = _tg_cargar_config()
+    subs = _tg_cargar_subs()
+    token = cfg.get("bot_token","").strip()
+
+    _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres"])
+
+    # ── TAB 1: CONFIGURAR TOKEN ──────────────────────────────────
+    with _sub_tg[0]:
+        st.markdown("#### ⚙️ Token del Bot de Telegram")
+        if token:
+            st.success(f"✅ Bot configurado — Token: `{token[:10]}...{token[-6:]}`")
+        else:
+            st.warning("⚠️ Aún no hay token configurado. Sigue las instrucciones de la pestaña 3.")
+
+        _nuevo_token = st.text_input("Token del Bot (de @BotFather):",
+                                      value=token, type="password",
+                                      placeholder="1234567890:AABBccDDeeFF...",
+                                      key="tg_token_input")
+        _nombre_bot = st.text_input("Nombre del bot (para mostrar a los padres):",
+                                     value=cfg.get("bot_nombre","YachayPRO_Bot"),
+                                     key="tg_nombre_bot")
+        _username_bot = st.text_input("Username del bot (sin @, ej: YachayPROBot):",
+                                       value=cfg.get("bot_username",""),
+                                       key="tg_username_bot")
+
+        if st.button("💾 Guardar configuración del bot", type="primary",
+                     use_container_width=True, key="btn_tg_save"):
+            _cfg_nueva = {
+                "bot_token": _nuevo_token.strip(),
+                "bot_nombre": _nombre_bot.strip(),
+                "bot_username": _username_bot.strip(),
+            }
+            with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as _fc:
+                json.dump(_cfg_nueva, _fc, ensure_ascii=False, indent=2)
+            st.success("✅ Configuración guardada")
+            st.rerun()
+
+        if token:
+            st.markdown("---")
+            st.markdown("**🔍 Verificar conexión y ver nuevas suscripciones:**")
+            if st.button("🔄 Obtener nuevos suscriptores del bot", type="primary",
+                         key="btn_tg_updates"):
+                with st.spinner("Consultando Telegram..."):
+                    updates = _tg_obtener_chat_id(token)
+                if updates.get("ok"):
+                    _msgs = updates.get("result",[])
+                    _subs_act = _tg_cargar_subs()
+                    _nuevos = 0
+                    for _upd in _msgs:
+                        _msg = _upd.get("message",{})
+                        _chat = _msg.get("chat",{})
+                        _text = _msg.get("text","").strip()
+                        _chat_id = _chat.get("id")
+                        _user_name = _chat.get("first_name","") + " " + _chat.get("last_name","")
+                        # Formato esperado: /start 12345678 (DNI del alumno)
+                        if _text.startswith("/start") and len(_text.split()) >= 2:
+                            _dni_pad = _text.split()[1].strip()
+                            if _dni_pad not in _subs_act:
+                                _subs_act[_dni_pad] = {
+                                    "chat_id": _chat_id,
+                                    "nombre_padre": _user_name.strip(),
+                                    "fecha_suscripcion": fecha_peru_str(),
+                                }
+                                _nuevos += 1
+                    _tg_guardar_subs({k: (v["chat_id"] if isinstance(v,dict) else v) for k,v in _subs_act.items()})
+                    # Guardar info completa en archivo separado
+                    with open("telegram_subs_detalle.json","w",encoding="utf-8") as _fsd:
+                        json.dump(_subs_act, _fsd, ensure_ascii=False, indent=2)
+                    if _nuevos > 0:
+                        st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s)")
+                    else:
+                        st.info(f"Sin nuevas suscripciones. Total suscriptores: {len(_subs_act)}")
+                else:
+                    st.error(f"❌ Error al conectar con Telegram: {updates.get('error','Token incorrecto')}")
+
+            # Test de envío
+            st.markdown("---")
+            st.markdown("**🧪 Enviar mensaje de prueba:**")
+            _chat_test = st.text_input("Chat ID de prueba (del padre):", key="tg_chat_test",
+                                        placeholder="Ej: 123456789")
+            if st.button("📤 Enviar mensaje de prueba", key="btn_tg_test"):
+                if _chat_test:
+                    _ok = _tg_enviar(_chat_test,
+                        "\u2705 <b>YACHAY PRO \u2014 Prueba de notificacion</b>\n\nEste es un mensaje de prueba del sistema de asistencia.\n\n<i>I.E.P. Alternativo Yachay \u2014 Chinchero</i>",
+                        token)
+                    if _ok:
+                        st.success("✅ Mensaje enviado correctamente")
+                    else:
+                        st.error("❌ Error al enviar. Verifica el chat_id y el token.")
+
+    # ── TAB 2: SUSCRIPTORES ──────────────────────────────────────
+    with _sub_tg[1]:
+        st.markdown(f"#### 👨‍👩‍👧 Padres suscritos a notificaciones: **{len(subs)}**")
+
+        if not subs:
+            st.info("📭 Aún no hay padres suscritos. Comparte las instrucciones de la pestaña 3.")
+        else:
+            df_mat = BaseDatos.cargar_matricula()
+            _sub_rows = []
+            for _dni_s, _chat_s in subs.items():
+                _chat_id_s = _chat_s if isinstance(_chat_s, (int,str)) else _chat_s.get("chat_id","")
+                _nom_s = ""
+                if not df_mat.empty and 'DNI' in df_mat.columns:
+                    _f = df_mat[df_mat['DNI'].astype(str).str.strip() == str(_dni_s).strip()]
+                    if not _f.empty:
+                        _nom_s = str(_f.iloc[0].get('Nombre','')).strip()
+                _sub_rows.append({"DNI Alumno":_dni_s,"Estudiante":_nom_s,"Chat ID":str(_chat_id_s)})
+
+            import pandas as _pd_tg
+            st.dataframe(_pd_tg.DataFrame(_sub_rows), use_container_width=True, hide_index=True)
+
+            if st.button("🗑️ Limpiar todas las suscripciones", key="btn_tg_clear"):
+                _tg_guardar_subs({})
+                st.success("✅ Suscripciones eliminadas")
+                st.rerun()
+
+    # ── TAB 3: INSTRUCCIONES PARA PADRES ─────────────────────────
+    with _sub_tg[2]:
+        _uname = cfg.get("bot_username","YachayPROBot")
+        _blink = f"https://t.me/{_uname}" if _uname else "https://t.me/[username_de_tu_bot]"
+
+        st.markdown("#### 📋 Instrucciones para compartir con los padres")
+        st.info("Copia este texto y envíalo por WhatsApp al grupo de padres de familia:")
+
+        _instrucciones = f"""📱 NOTIFICACIONES DE ASISTENCIA — I.E.P. YACHAY
+
+Estimado padre/madre de familia:
+
+Ahora puede recibir en su celular una notificación INMEDIATA cada vez que su hijo/a registre entrada o salida en el colegio.
+
+PASOS:
+1️⃣ Instale TELEGRAM en su celular (gratis en Play Store o App Store)
+2️⃣ Abra Telegram y busque: @{_uname}
+   O haga clic en este enlace: {_blink}
+3️⃣ Escriba el siguiente mensaje al bot:
+   /start XXXXXXXX
+   (Reemplace XXXXXXXX con el DNI de su hijo/a)
+
+Ejemplo: /start 70123456
+
+✅ Listo. Desde ese momento recibirá notificaciones automáticas de asistencia.
+
+📞 Consultas: Dirección del colegio — I.E.P. Alternativo Yachay, Chinchero"""
+
+        st.text_area("Texto para copiar:", value=_instrucciones, height=350,
+                     key="tg_instrucciones_txt")
+
+        st.markdown("---")
+        st.markdown("#### 📊 Como ver el Chat ID de un padre manualmente")
+        st.markdown("1. El padre abre Telegram y escribe `/start [DNI]` al bot.")
+        st.markdown("2. El admin hace clic en **Obtener nuevos suscriptores** en la pestaña Configurar Bot.")
+        st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
 
 def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
