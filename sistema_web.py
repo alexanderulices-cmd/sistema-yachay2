@@ -12335,8 +12335,21 @@ def tab_asistencias():
 _TG_SUBS_PATH = "telegram_suscriptores.json"
 _TG_CONFIG_PATH = "telegram_config.json"
 
+def _tg_limpiar_token(raw):
+    """Limpia el token: quita espacios, saltos de línea y caracteres invisibles."""
+    return str(raw or "").strip().replace("\n","").replace("\r","").replace(" ","")
+
+def _tg_validar_token(token):
+    """Valida formato básico del token: NNNNNNNNNN:AAAAA... (al menos 40 chars con :)."""
+    t = _tg_limpiar_token(token)
+    if not t or ":" not in t: return False, "Token vacío o sin formato correcto (falta ':')"
+    partes = t.split(":")
+    if not partes[0].isdigit(): return False, f"El ID del bot debe ser numérico, encontrado: '{partes[0]}'"
+    if len(partes[1]) < 30: return False, "La clave del token parece muy corta"
+    return True, ""
+
 def _tg_cargar_config():
-    """Carga el token del bot de Telegram."""
+    """Carga la configuración del bot de Telegram."""
     try:
         if Path(_TG_CONFIG_PATH).exists():
             with open(_TG_CONFIG_PATH,"r",encoding="utf-8") as f:
@@ -12359,60 +12372,73 @@ def _tg_guardar_subs(data):
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception: pass
 
-def _tg_enviar(chat_id, mensaje, token):
-    """Envía un mensaje de Telegram. Llamada HTTP simple, no bloquea el UI."""
+def _tg_llamar_api(endpoint, token, params=None, timeout=8):
+    """Llamada genérica a la API de Telegram. Retorna dict con ok/result/error."""
     import urllib.request as _ur
     import urllib.parse as _up
+    token_limpio = _tg_limpiar_token(token)
+    url = f"https://api.telegram.org/bot{token_limpio}/{endpoint}"
     try:
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        data = _up.urlencode({"chat_id": str(chat_id), "text": mensaje,
-                               "parse_mode": "HTML"}).encode()
-        req = _ur.Request(url, data=data, method="POST")
-        req.add_header("Content-Type","application/x-www-form-urlencoded")
-        with _ur.urlopen(req, timeout=4) as resp:
-            return resp.status == 200
+        if params:
+            data = _up.urlencode(params).encode()
+            req = _ur.Request(url, data=data, method="POST")
+            req.add_header("Content-Type","application/x-www-form-urlencoded")
+        else:
+            req = _ur.Request(url)
+        with _ur.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode())
+    except Exception as e:
+        err = str(e)
+        # Detectar 401 específicamente y dar mensaje claro
+        if "401" in err:
+            return {"ok": False, "error": "401 — Token incorrecto. Copia el token completo desde BotFather sin espacios ni saltos de línea."}
+        if "404" in err:
+            return {"ok": False, "error": "404 — Bot no encontrado. Verifica que el token sea correcto."}
+        return {"ok": False, "error": err}
+
+def _tg_enviar(chat_id, mensaje, token):
+    """Envía mensaje Telegram. No bloquea (se llama desde hilo)."""
+    try:
+        result = _tg_llamar_api("sendMessage", token,
+                                 {"chat_id": str(chat_id), "text": mensaje, "parse_mode": "HTML"})
+        return result.get("ok", False)
     except Exception:
         return False
 
 def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
-    """Envía notificación de asistencia al padre si está suscrito."""
+    """Envía notificación de asistencia al padre si está suscrito. Hilo separado."""
     cfg = _tg_cargar_config()
-    token = cfg.get("bot_token","").strip()
+    token = _tg_limpiar_token(cfg.get("bot_token",""))
     if not token: return
     subs = _tg_cargar_subs()
-    chat_id = subs.get(str(dni_alumno).strip())
+    entry = subs.get(str(dni_alumno).strip())
+    if not entry: return
+    chat_id = entry if isinstance(entry,(int,str)) else entry.get("chat_id","")
     if not chat_id: return
 
     iconos = {"entrada":"✅","tardanza":"⏰","salida":"🔵",
-              "entrada_tarde":"🌤️","salida_tarde":"🌙"}
+              "entrada_tarde":"🌤","salida_tarde":"🌙"}
     ico = iconos.get(tipo, "📌")
-    etiquetas = {"entrada":"ENTRÓ PUNTUAL","tardanza":"TARDANZA",
-                 "salida":"SALIÓ — Turno mañana","entrada_tarde":"ENTRÓ — Turno tarde",
-                 "salida_tarde":"SALIÓ — Turno tarde"}
+    etiquetas = {"entrada":"ENTRO PUNTUAL","tardanza":"TARDANZA",
+                 "salida":"SALIO - Turno manana","entrada_tarde":"ENTRO - Turno tarde",
+                 "salida_tarde":"SALIO - Turno tarde"}
     etq = etiquetas.get(tipo, tipo.replace("_"," ").upper())
+    grado_txt = str(grado).strip() or "---"
 
     msg = (
-        f"{ico} <b>YACHAY PRO \u2014 Asistencia</b>\n\n"
-        f"\U0001f464 <b>{nombre_alumno}</b>\n"
-        f"\U0001f4da {grado}\n"
-        f"\U0001f4cc {etq}\n"
-        f"\U0001f550 {hora}\n\n"
-        f"<i>I.E.P. Alternativo Yachay \u2014 Chinchero</i>"
+        f"{ico} <b>YACHAY PRO - Asistencia</b>\n\n"
+        f"<b>{nombre_alumno}</b>\n"
+        f"Grado: {grado_txt}\n"
+        f"Estado: <b>{etq}</b>\n"
+        f"Hora: {hora}\n\n"
+        f"<i>I.E.P. Alternativo Yachay - Chinchero</i>"
     )
-    # Ejecutar en hilo para no bloquear el UI
     import threading
     threading.Thread(target=_tg_enviar, args=(chat_id, msg, token), daemon=True).start()
 
 def _tg_obtener_chat_id(token):
-    """Obtiene los últimos mensajes recibidos por el bot (para registrar suscriptores)."""
-    import urllib.request as _ur
-    try:
-        url = f"https://api.telegram.org/bot{token}/getUpdates?limit=20"
-        with _ur.urlopen(url, timeout=5) as resp:
-            import json as _jt
-            return _jt.loads(resp.read().decode())
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    """Obtiene los últimos updates del bot en hilo con resultado en session_state."""
+    return _tg_llamar_api("getUpdates", token, timeout=10)
 
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia — INSTANTÁNEO: solo usa índice en RAM, nunca GSheets."""
@@ -30928,24 +30954,47 @@ def tab_telegram_notificaciones(config):
 
     cfg = _tg_cargar_config()
     subs = _tg_cargar_subs()
-    token = cfg.get("bot_token","").strip()
+    token = _tg_limpiar_token(cfg.get("bot_token",""))
 
     _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres"])
 
     # ── TAB 1: CONFIGURAR TOKEN ──────────────────────────────────
     with _sub_tg[0]:
         st.markdown("#### ⚙️ Token del Bot de Telegram")
-        if token:
-            st.success(f"✅ Bot configurado — Token: `{token[:10]}...{token[-6:]}`")
-        else:
-            st.warning("⚠️ Aún no hay token configurado. Sigue las instrucciones de la pestaña 3.")
 
-        _nuevo_token = st.text_input("Token del Bot (de @BotFather):",
-                                      value=token, type="password",
-                                      placeholder="1234567890:AABBccDDeeFF...",
-                                      key="tg_token_input")
-        _nombre_bot = st.text_input("Nombre del bot (para mostrar a los padres):",
-                                     value=cfg.get("bot_nombre","YachayPRO_Bot"),
+        # Estado del token actual
+        if token:
+            _tok_ok, _tok_err = _tg_validar_token(token)
+            if _tok_ok:
+                st.success(f"✅ Bot configurado — Token: `{token[:12]}...{token[-4:]}`")
+            else:
+                st.error(f"⚠️ Token guardado con problema: {_tok_err}")
+        else:
+            st.warning("⚠️ Aún no hay token. Sigue los pasos de la pestaña 3.")
+
+        # Instrucción clave para pegar bien el token
+        st.info("💡 **IMPORTANTE:** Copia el token desde BotFather y pégalo aquí directamente. "
+                "No copies desde una nota o WhatsApp — puede tener espacios invisibles.")
+
+        _nuevo_token_raw = st.text_input(
+            "Token del Bot (de @BotFather):",
+            value="",   # siempre vacío por seguridad — el usuario repega
+            type="password",
+            placeholder="Ej: 8796175902:AAGybheHKvgjFO9d_HwU2id8zY0eDUcc0-4",
+            key="tg_token_input",
+            help="Copia exactamente desde el mensaje de BotFather. Sin espacios al inicio o final.")
+
+        # Vista previa del token ingresado (para detectar errores)
+        if _nuevo_token_raw:
+            _t_clean = _tg_limpiar_token(_nuevo_token_raw)
+            _t_ok, _t_err = _tg_validar_token(_t_clean)
+            if _t_ok:
+                st.markdown(f"✅ Formato válido — longitud: `{len(_t_clean)}` caracteres")
+            else:
+                st.markdown(f"⚠️ Problema detectado: `{_t_err}`")
+
+        _nombre_bot = st.text_input("Nombre del bot:",
+                                     value=cfg.get("bot_nombre","YACHAY PRO Asistencia"),
                                      key="tg_nombre_bot")
         _username_bot = st.text_input("Username del bot (sin @, ej: YachayPROBot):",
                                        value=cfg.get("bot_username",""),
@@ -30953,68 +31002,93 @@ def tab_telegram_notificaciones(config):
 
         if st.button("💾 Guardar configuración del bot", type="primary",
                      use_container_width=True, key="btn_tg_save"):
-            _cfg_nueva = {
-                "bot_token": _nuevo_token.strip(),
-                "bot_nombre": _nombre_bot.strip(),
-                "bot_username": _username_bot.strip(),
-            }
-            with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as _fc:
-                json.dump(_cfg_nueva, _fc, ensure_ascii=False, indent=2)
-            st.success("✅ Configuración guardada")
-            st.rerun()
+            _token_a_guardar = _tg_limpiar_token(_nuevo_token_raw) if _nuevo_token_raw.strip() else token
+            _v_ok, _v_err = _tg_validar_token(_token_a_guardar)
+            if not _v_ok:
+                st.error(f"❌ Token inválido: {_v_err}. Vuelve a copiar desde BotFather.")
+            else:
+                _cfg_nueva = {
+                    "bot_token": _token_a_guardar,
+                    "bot_nombre": _nombre_bot.strip(),
+                    "bot_username": _username_bot.strip(),
+                }
+                with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as _fc:
+                    json.dump(_cfg_nueva, _fc, ensure_ascii=False, indent=2)
+                st.success(f"✅ Token guardado correctamente ({len(_token_a_guardar)} caracteres)")
+                st.rerun()
 
         if token:
             st.markdown("---")
-            st.markdown("**🔍 Verificar conexión y ver nuevas suscripciones:**")
+            st.markdown("**🔍 Verificar conexión y registrar nuevas suscripciones:**")
+            st.caption("Los padres deben primero escribir /start [DNI] al bot en Telegram, luego hacer clic aquí.")
             if st.button("🔄 Obtener nuevos suscriptores del bot", type="primary",
                          key="btn_tg_updates"):
-                with st.spinner("Consultando Telegram..."):
+                with st.spinner("Consultando Telegram (puede tardar unos segundos)..."):
                     updates = _tg_obtener_chat_id(token)
                 if updates.get("ok"):
                     _msgs = updates.get("result",[])
                     _subs_act = _tg_cargar_subs()
                     _nuevos = 0
+                    _ya_existian = 0
                     for _upd in _msgs:
-                        _msg = _upd.get("message",{})
-                        _chat = _msg.get("chat",{})
-                        _text = _msg.get("text","").strip()
-                        _chat_id = _chat.get("id")
-                        _user_name = _chat.get("first_name","") + " " + _chat.get("last_name","")
-                        # Formato esperado: /start 12345678 (DNI del alumno)
-                        if _text.startswith("/start") and len(_text.split()) >= 2:
-                            _dni_pad = _text.split()[1].strip()
-                            if _dni_pad not in _subs_act:
-                                _subs_act[_dni_pad] = {
-                                    "chat_id": _chat_id,
-                                    "nombre_padre": _user_name.strip(),
-                                    "fecha_suscripcion": fecha_peru_str(),
-                                }
-                                _nuevos += 1
-                    _tg_guardar_subs({k: (v["chat_id"] if isinstance(v,dict) else v) for k,v in _subs_act.items()})
-                    # Guardar info completa en archivo separado
+                        _msg_u = _upd.get("message",{})
+                        _chat_u = _msg_u.get("chat",{})
+                        _text_u = str(_msg_u.get("text","")).strip()
+                        _chat_id_u = _chat_u.get("id")
+                        _fn = str(_chat_u.get("first_name","")).strip()
+                        _ln = str(_chat_u.get("last_name","")).strip()
+                        _nombre_pad = f"{_fn} {_ln}".strip()
+                        # Acepta "/start XXXXXXXX" o solo el DNI
+                        _partes_u = _text_u.split()
+                        if len(_partes_u) >= 2 and _partes_u[0] == "/start":
+                            _dni_u = _partes_u[1].strip()
+                        elif len(_partes_u) == 1 and _partes_u[0].isdigit() and len(_partes_u[0]) == 8:
+                            _dni_u = _partes_u[0]
+                        else:
+                            continue
+                        if _dni_u not in _subs_act:
+                            _subs_act[_dni_u] = {"chat_id":_chat_id_u,"nombre_padre":_nombre_pad,
+                                                  "fecha":fecha_peru_str()}
+                            _nuevos += 1
+                        else:
+                            _ya_existian += 1
+                    # Guardar suscriptores — formato compatible con _tg_notificar_asistencia
+                    _tg_guardar_subs(_subs_act)
                     with open("telegram_subs_detalle.json","w",encoding="utf-8") as _fsd:
                         json.dump(_subs_act, _fsd, ensure_ascii=False, indent=2)
                     if _nuevos > 0:
-                        st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s)")
+                        st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s) | {_ya_existian} ya existían")
                     else:
-                        st.info(f"Sin nuevas suscripciones. Total suscriptores: {len(_subs_act)}")
+                        st.info(f"Sin nuevas suscripciones. Total: {len(_subs_act)} suscriptores. {_ya_existian} mensajes procesados.")
+                    if _msgs:
+                        st.caption(f"Mensajes revisados: {len(_msgs)}. Si no aparecen nuevos padres, pídeles que escriban al bot primero.")
                 else:
-                    st.error(f"❌ Error al conectar con Telegram: {updates.get('error','Token incorrecto')}")
+                    _err_msg = updates.get("error","Error desconocido")
+                    st.error(f"❌ {_err_msg}")
+                    if "401" in str(_err_msg):
+                        st.warning("👉 Solución: ve al campo Token de arriba, borra todo y vuelve a pegar el token directamente desde BotFather.")
 
-            # Test de envío
+            # Test de envío directo
             st.markdown("---")
-            st.markdown("**🧪 Enviar mensaje de prueba:**")
-            _chat_test = st.text_input("Chat ID de prueba (del padre):", key="tg_chat_test",
-                                        placeholder="Ej: 123456789")
-            if st.button("📤 Enviar mensaje de prueba", key="btn_tg_test"):
-                if _chat_test:
-                    _ok = _tg_enviar(_chat_test,
-                        "\u2705 <b>YACHAY PRO \u2014 Prueba de notificacion</b>\n\nEste es un mensaje de prueba del sistema de asistencia.\n\n<i>I.E.P. Alternativo Yachay \u2014 Chinchero</i>",
-                        token)
-                    if _ok:
-                        st.success("✅ Mensaje enviado correctamente")
+            st.markdown("**🧪 Enviar mensaje de prueba a un chat_id:**")
+            st.caption("Para saber tu chat_id: en Telegram busca @userinfobot y escríbele /start")
+            _c1t, _c2t = st.columns([2,1])
+            with _c1t:
+                _chat_test = st.text_input("Chat ID:", key="tg_chat_test", placeholder="Ej: 123456789")
+            with _c2t:
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("📤 Enviar prueba", key="btn_tg_test", use_container_width=True):
+                    if _chat_test.strip():
+                        with st.spinner("Enviando..."):
+                            _ok_t = _tg_enviar(_chat_test.strip(),
+                                "Hola! Este es un mensaje de prueba de YACHAY PRO.\nEl sistema de notificaciones esta funcionando correctamente.\nI.E.P. Alternativo Yachay - Chinchero",
+                                token)
+                        if _ok_t:
+                            st.success("✅ Mensaje enviado. Verifica en Telegram.")
+                        else:
+                            st.error("❌ No se pudo enviar. Verifica el chat_id y el token.")
                     else:
-                        st.error("❌ Error al enviar. Verifica el chat_id y el token.")
+                        st.warning("Ingresa el chat_id primero.")
 
     # ── TAB 2: SUSCRIPTORES ──────────────────────────────────────
     with _sub_tg[1]:
