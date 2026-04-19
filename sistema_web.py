@@ -12643,13 +12643,15 @@ def _registrar_asistencia_rapida(dni):
             reproducir_beep_exitoso()
         # Anuncio de voz con el nombre
         _hablar_nombre(nombre, tipo, es_tardanza=(tipo == 'tardanza'))
-        # Notificación Telegram al padre (solo alumnos, hilo separado para no bloquear)
-        if not es_d:
-            try:
-                _grado_e = str(persona.get('Grado', persona.get('grado', ''))).strip()
-                _tg_notificar_asistencia(dni_str, nombre, _grado_e, tipo, hora)
-            except Exception:
-                pass
+        # Notificación Telegram — alumnos Y docentes
+        try:
+            _grado_e = str(persona.get('Grado', persona.get('grado',
+                          'Docente' if es_d else ''))).strip()
+            if not _grado_e and es_d:
+                _grado_e = "Docente"
+            _tg_notificar_asistencia(dni_str, nombre, _grado_e, tipo, hora)
+        except Exception:
+            pass
     else:
         reproducir_beep_error()
         st.warning(f"⚠️ DNI **{dni}** no está en matrícula. Puede registrarlo manualmente:")
