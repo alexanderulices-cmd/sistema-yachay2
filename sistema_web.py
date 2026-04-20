@@ -12348,8 +12348,47 @@ def _tg_validar_token(token):
     if len(partes[1]) < 30: return False, "La clave del token parece muy corta"
     return True, ""
 
+def _tg_gs_set(clave, valor_dict):
+    """Guarda un dict en Google Sheets hoja config — clave→JSON. Permanente."""
+    try:
+        gs = _gs()
+        if not gs: return
+        ws = gs._get_hoja('config')
+        if not ws: return
+        val_str = json.dumps(valor_dict, ensure_ascii=False)
+        all_vals = ws.get_all_values()
+        for idx, row in enumerate(all_vals):
+            if row and row[0] == clave:
+                ws.update_cell(idx + 1, 2, val_str)
+                return
+        ws.append_row([clave, val_str])
+    except Exception: pass
+
+def _tg_gs_get(clave):
+    """Lee un dict desde Google Sheets hoja config."""
+    try:
+        gs = _gs()
+        if not gs: return None
+        ws = gs._get_hoja('config')
+        if not ws: return None
+        for row in ws.get_all_values():
+            if row and row[0] == clave and len(row) > 1 and row[1]:
+                return json.loads(row[1])
+    except Exception: pass
+    return None
+
 def _tg_cargar_config():
-    """Carga la configuración del bot de Telegram."""
+    """Carga config del bot: primero GSheets (permanente), fallback local."""
+    # 1. GSheets — persistente entre reinicios de Streamlit Cloud
+    cfg_gs = _tg_gs_get('telegram_config')
+    if cfg_gs:
+        # Sincronizar local también
+        try:
+            with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as f:
+                json.dump(cfg_gs, f, ensure_ascii=False)
+        except Exception: pass
+        return cfg_gs
+    # 2. Archivo local (si GSheets no disponible)
     try:
         if Path(_TG_CONFIG_PATH).exists():
             with open(_TG_CONFIG_PATH,"r",encoding="utf-8") as f:
@@ -12357,8 +12396,23 @@ def _tg_cargar_config():
     except Exception: pass
     return {}
 
+def _tg_guardar_config(data):
+    """Guarda config en GSheets Y local — doble respaldo."""
+    try:
+        with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception: pass
+    _tg_gs_set('telegram_config', data)
+
 def _tg_cargar_subs():
-    """Carga el mapa DNI_alumno → chat_id del padre."""
+    """Carga suscriptores: primero GSheets, fallback local."""
+    subs_gs = _tg_gs_get('telegram_suscriptores')
+    if subs_gs:
+        try:
+            with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
+                json.dump(subs_gs, f, ensure_ascii=False)
+        except Exception: pass
+        return subs_gs
     try:
         if Path(_TG_SUBS_PATH).exists():
             with open(_TG_SUBS_PATH,"r",encoding="utf-8") as f:
@@ -12367,10 +12421,12 @@ def _tg_cargar_subs():
     return {}
 
 def _tg_guardar_subs(data):
+    """Guarda suscriptores en GSheets Y local — doble respaldo."""
     try:
         with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception: pass
+    _tg_gs_set('telegram_suscriptores', data)
 
 def _tg_llamar_api(endpoint, token, params=None, timeout=8):
     """Llamada genérica a la API de Telegram. Retorna dict con ok/result/error."""
@@ -12431,7 +12487,8 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"Grado: {grado_txt}\n"
         f"Estado: <b>{etq}</b>\n"
         f"Hora: {hora}\n\n"
-        f"<i>I.E.P. Alternativo Yachay - Chinchero</i>"
+        f"<i>I.E.P. Alternativo Yachay - Chinchero</i>\n"
+        f"\U0001f4de 084-750071"
     )
     import threading
     threading.Thread(target=_tg_enviar, args=(chat_id, msg, token), daemon=True).start()
@@ -12581,28 +12638,39 @@ def _registrar_asistencia_rapida(dni):
             tiene_ent_tarde = reg_hoy.get('entrada_tarde')
             tiene_sal_tarde = reg_hoy.get('salida_tarde')
             tiene_salida    = reg_hoy.get('salida')
+            _hoy_sabado_sal = (hora_peru().weekday() == 5)
 
-            # ── ¿Es turno tarde? → si tiene entrada tarde O hora actual ≥ 14:10 ──
-            es_turno_tarde_sal = tiene_ent_tarde or (_mins_ahora >= HORA_ENTRADA_TARDE_MIN)
-            if es_turno_tarde_sal and not tiene_sal_tarde and not (tiene_salida and not tiene_ent_tarde and _mins_ahora < HORA_ENTRADA_TARDE_MIN):
-                if tiene_sal_tarde:
-                    st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
+            # En sábado NO hay turno tarde — siempre salida simple
+            if _hoy_sabado_sal:
+                if tiene_salida:
+                    st.warning(f"⚠️ **{nombre}** ya registró salida hoy ({tiene_salida}).")
                     return
-                tipo       = 'salida_tarde'
-                emoji_tipo = "🌙"
-                msg_extra  = " 📌 SALIDA TARDE — Turno tarde"
-                if not tiene_ent_tarde:
-                    msg_extra += " (sin entrada tarde registrada)"
-            elif tiene_sal_tarde:
-                st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
-                return
-            else:
-                # Salida sin entrada registrada — se permite siempre
                 tipo       = 'salida'
                 emoji_tipo = "🔵"
-                msg_extra  = " 🏁 SALIDA — Turno mañana"
+                msg_extra  = " 🏁 SALIDA — Sábado"
                 if not tiene_entrada:
                     msg_extra += " (sin entrada registrada)"
+            else:
+                # ── ¿Es turno tarde? → si tiene entrada tarde O hora actual ≥ 14:30 ──
+                es_turno_tarde_sal = tiene_ent_tarde or (_mins_ahora >= HORA_ENTRADA_TARDE_MIN)
+                if es_turno_tarde_sal and not tiene_sal_tarde and not (tiene_salida and not tiene_ent_tarde and _mins_ahora < HORA_ENTRADA_TARDE_MIN):
+                    if tiene_sal_tarde:
+                        st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
+                        return
+                    tipo       = 'salida_tarde'
+                    emoji_tipo = "🌙"
+                    msg_extra  = " 📌 SALIDA TARDE — Turno tarde"
+                    if not tiene_ent_tarde:
+                        msg_extra += " (sin entrada tarde registrada)"
+                elif tiene_sal_tarde:
+                    st.warning(f"⚠️ **{nombre}** ya completó salida tarde hoy.")
+                    return
+                else:
+                    tipo       = 'salida'
+                    emoji_tipo = "🔵"
+                    msg_extra  = " 🏁 SALIDA — Turno mañana"
+                    if not tiene_entrada:
+                        msg_extra += " (sin entrada registrada)"
         else:
             tipo = modo.lower()
             emoji_tipo = "⚪"
@@ -20829,7 +20897,29 @@ def tab_registrar_notas(config):
                         except Exception as _erc:
                             st.warning(f"Historial guardado — aviso en resultados.json: {_erc}")
 
-                    st.success(f"✅ Evaluación guardada — {len([v for v in notas_cl.values() if v['promedio']>0])} estudiantes registrados")
+                    _n_cl = len([v for v in notas_cl.values() if v['promedio']>0])
+                    st.success(f"✅ Evaluación guardada — {_n_cl} estudiantes registrados")
+                    try:
+                        _subs_cl=_tg_cargar_subs(); _cfg_cl=_tg_cargar_config()
+                        _tok_cl=_tg_limpiar_token(_cfg_cl.get("bot_token",""))
+                        if _tok_cl and _subs_cl:
+                            import threading as _thr_cl
+                            _snap_cl=dict(notas_cl); _snap_subs=dict(_subs_cl)
+                            def _env_cl():
+                                for _d,_dat in _snap_cl.items():
+                                    if _dat['promedio']==0: continue
+                                    _ent=_snap_subs.get(str(_d).strip())
+                                    if not _ent: continue
+                                    _cid=_ent if isinstance(_ent,(int,str)) else _ent.get("chat_id","")
+                                    if not _cid: continue
+                                    _at="\n".join(f"  {k}: {v} ({nota_a_letra(v)})" for k,v in _dat['areas'].items())
+                                    _msg=(f"\U0001f4ca YACHAY PRO - Notas\n\n{_dat['nombre']}\n"
+                                          f"Grado: {grado_cl} | {bim_cl}\nEvaluacion: {titulo_cl or 'Por Claves'}\n\n"
+                                          f"{_at}\n\nPROMEDIO: {_dat['promedio']}\n"
+                                          f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
+                                    _tg_enviar(_cid,_msg,_tok_cl)
+                            _thr_cl.Thread(target=_env_cl,daemon=True).start()
+                    except Exception: pass
                     st.balloons()
 
             with col_pdf_cl:
@@ -21299,6 +21389,29 @@ def tab_registrar_notas(config):
                     st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
+                    # Notificación Telegram automática a cada padre suscrito
+                    try:
+                        _subs_ev=_tg_cargar_subs(); _cfg_ev=_tg_cargar_config()
+                        _tok_ev=_tg_limpiar_token(_cfg_ev.get("bot_token",""))
+                        if _tok_ev and _subs_ev:
+                            import threading as _thr_ev
+                            _snap_ev=list(ranking_filas); _snap_subs_ev=dict(_subs_ev)
+                            _areas_ev=list(areas_nombres); _grado_ev=grado_sel; _bim_ev=bim_sel; _tit_ev=titulo_ev
+                            def _env_notas_ev():
+                                for _fila in _snap_ev:
+                                    _dni_ev=str(_fila.get('DNI','')).strip()
+                                    _ent_ev=_snap_subs_ev.get(_dni_ev)
+                                    if not _ent_ev: continue
+                                    _cid_ev=_ent_ev if isinstance(_ent_ev,(int,str)) else _ent_ev.get("chat_id","")
+                                    if not _cid_ev: continue
+                                    _at_ev="\n".join(f"  {a}: {_fila.get(a,0)} ({nota_a_letra(_fila.get(a,0))})" for a in _areas_ev)
+                                    _msg_ev=(f"\U0001f4ca YACHAY PRO - Notas\n\n{_fila.get('Nombre','')}\n"
+                                             f"Grado: {_grado_ev} | {_bim_ev}\nEvaluacion: {_tit_ev}\n\n"
+                                             f"{_at_ev}\n\nPROMEDIO: {_fila.get('Promedio',0)}\n"
+                                             f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
+                                    _tg_enviar(_cid_ev,_msg_ev,_tok_ev)
+                            _thr_ev.Thread(target=_env_notas_ev,daemon=True).start()
+                    except Exception: pass
                 else:
                     st.error("❌ Error al guardar")
 
@@ -31014,9 +31127,8 @@ def tab_telegram_notificaciones(config):
                     "bot_nombre": _nombre_bot.strip(),
                     "bot_username": _username_bot.strip(),
                 }
-                with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as _fc:
-                    json.dump(_cfg_nueva, _fc, ensure_ascii=False, indent=2)
-                st.success(f"✅ Token guardado correctamente ({len(_token_a_guardar)} caracteres)")
+                _tg_guardar_config(_cfg_nueva)
+                st.success(f"✅ Token guardado permanentemente ({len(_token_a_guardar)} caracteres) — en GSheets y local")
                 st.rerun()
 
         if token:
@@ -31052,14 +31164,69 @@ def tab_telegram_notificaciones(config):
                             _subs_act[_dni_u] = {"chat_id":_chat_id_u,"nombre_padre":_nombre_pad,
                                                   "fecha":fecha_peru_str()}
                             _nuevos += 1
+                            # Enviar mensaje de bienvenida automático
+                            _cfg_bv = _tg_cargar_config()
+                            _tok_bv = _tg_limpiar_token(_cfg_bv.get("bot_token",""))
+                            if _tok_bv and _chat_id_u:
+                                _df_bv = BaseDatos.cargar_matricula()
+                                _nom_alu = ""
+                                if not _df_bv.empty and 'DNI' in _df_bv.columns:
+                                    _fb = _df_bv[_df_bv['DNI'].astype(str).str.strip()==str(_dni_u).strip()]
+                                    if not _fb.empty:
+                                        _nom_alu = str(_fb.iloc[0].get('Nombre','')).strip()
+                                _bienvenida = (
+                                    "Bienvenido/a a YACHAY PRO!\n\n"
+                                    + (f"Estudiante registrado: {_nom_alu}\n" if _nom_alu else f"DNI registrado: {_dni_u}\n")
+                                    + "Desde ahora recibira notificaciones automaticas cada vez que su hijo/a registre entrada o salida en el colegio.\n\n"
+                                    "I.E.P. Alternativo Yachay\n"
+                                    "Chinchero, Urubamba, Cusco\n"
+                                    "Tel: 084-750071"
+                                )
+                                import threading as _th_bv
+                                _th_bv.Thread(target=_tg_enviar,
+                                              args=(_chat_id_u, _bienvenida, _tok_bv),
+                                              daemon=True).start()
                         else:
                             _ya_existian += 1
                     # Guardar suscriptores — formato compatible con _tg_notificar_asistencia
                     _tg_guardar_subs(_subs_act)
                     with open("telegram_subs_detalle.json","w",encoding="utf-8") as _fsd:
                         json.dump(_subs_act, _fsd, ensure_ascii=False, indent=2)
+                    # Enviar mensaje de bienvenida a los nuevos suscriptores
                     if _nuevos > 0:
-                        st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s) | {_ya_existian} ya existían")
+                        _cfg_bienvenida = _tg_cargar_config()
+                        _tok_bv = _tg_limpiar_token(_cfg_bienvenida.get("bot_token",""))
+                        _nombre_colegio = "I.E.P. Alternativo Yachay"
+                        for _dni_bv, _dat_bv in _subs_act.items():
+                            if not isinstance(_dat_bv, dict): continue
+                            if _dat_bv.get("bienvenida_enviada"): continue
+                            _cid_bv = _dat_bv.get("chat_id","")
+                            if not _cid_bv: continue
+                            # Buscar nombre del alumno
+                            _df_mat_bv = BaseDatos.cargar_matricula()
+                            _nom_alu_bv = _dni_bv
+                            if not _df_mat_bv.empty and 'DNI' in _df_mat_bv.columns:
+                                _f_bv = _df_mat_bv[_df_mat_bv['DNI'].astype(str).str.strip()==str(_dni_bv).strip()]
+                                if not _f_bv.empty:
+                                    _nom_alu_bv = str(_f_bv.iloc[0].get('Nombre',_dni_bv)).strip()
+                            _msg_bv = (
+                                f"\U0001f393 Bienvenido/a a YACHAY PRO\n\n"
+                                f"Hola! Te has suscrito exitosamente a las notificaciones de asistencia de:\n\n"
+                                f"\U0001f464 Estudiante: {_nom_alu_bv}\n\n"
+                                f"A partir de ahora recibiras un mensaje cada vez que tu hijo/a registre "
+                                f"entrada o salida en el colegio.\n\n"
+                                f"\U0001f3eb {_nombre_colegio}\n"
+                                f"Chinchero, Urubamba, Cusco\n"
+                                f"\U0001f4de 084-750071\n\n"
+                                f"Yachay - Educar para la Vida"
+                            )
+                            if _tok_bv:
+                                import threading as _thr_bv
+                                _thr_bv.Thread(target=_tg_enviar,
+                                    args=(_cid_bv,_msg_bv,_tok_bv),daemon=True).start()
+                            _dat_bv["bienvenida_enviada"] = True
+                        _tg_guardar_subs(_subs_act)
+                        st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s) — mensaje de bienvenida enviado | {_ya_existian} ya existían")
                     else:
                         st.info(f"Sin nuevas suscripciones. Total: {len(_subs_act)} suscriptores. {_ya_existian} mensajes procesados.")
                     if _msgs:
