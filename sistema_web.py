@@ -5015,7 +5015,7 @@ def _portal_padres_familia():
                 f"color:{_IM_COLORES.get(_im_max,'#888')};padding:4px 10px;"
                 f"border-radius:8px;font-size:0.85rem;margin:2px;display:inline-block;'>"
                 f"🎯 {c}</span>" for c in _carrs_im), unsafe_allow_html=True)
-            if st.button("🔄 Repetir test", key=f"btn_im_reset_{dni_estudiante}"):
+            if st.button("🔄 Repetir test", type="primary", key=f"btn_im_reset_{dni_estudiante}"):
                 st.session_state.pop(f"im_hecho_{dni_estudiante}", None)
                 st.session_state.pop(f"im_scores_{dni_estudiante}", None)
                 st.rerun()
@@ -9970,7 +9970,7 @@ def _seccion_registros_pdf(config):
             st.session_state['_aux_pdf'] = pdf
             st.session_state['_aux_key'] = f"RegAux_{gp}_{bim}"
     with c2a:
-        if st.button("📄 Generar Word Auxiliar", use_container_width=True, key="gra_docx"):
+        if st.button("📄 Generar Word Auxiliar", type="primary", use_container_width=True, key="gra_docx"):
             sl = sp if sp != "Todas" else "Todas"
             with st.spinner("Generando Word..."):
                 docx_aux = generar_registro_auxiliar_docx(gp, sl, config['anio'], bim, dg, cursos)
@@ -11286,7 +11286,7 @@ def tab_asistencias():
                    delta="OK" if _n_doc > 0 else "Sin DNI",
                    delta_color="normal" if _n_doc > 0 else "inverse")
         if _n_doc == 0:
-            if st.button("🔄 Recargar índice", key="btn_reload_indice"):
+            if st.button("🔄 Recargar índice", type="primary", key="btn_reload_indice"):
                 st.session_state.pop('_indice_dni', None)
                 st.session_state.pop('_indice_dni_ts', None)
                 try:
@@ -11901,7 +11901,7 @@ def tab_asistencias():
                         f"Puntual_Semana_{_fecha_fin_sem.replace('/','')}.pdf",
                         "application/pdf", key="dl_pdf_semana")
             with _c_pdf2:
-                if st.button("🖼️ JPG Ranking Semana", use_container_width=True, key="btn_jpg_semana"):
+                if st.button("🖼️ JPG Ranking Semana", type="primary", use_container_width=True, key="btn_jpg_semana"):
                     _jpg_sem = _generar_jpg_ranking(
                         _top_alu, _top_doc, _fecha_ini_sem, _fecha_fin_sem)
                     st.session_state["_jpg_semana_bytes"] = _jpg_sem
@@ -12055,7 +12055,7 @@ def tab_asistencias():
                             f"Top_Mes_{_nom_mes}{_anio_actual}.pdf",
                             "application/pdf", key="dl_pdf_mes")
                 with _cm2:
-                    if st.button("🖼️ JPG Ranking del Mes", use_container_width=True, key="btn_jpg_mes"):
+                    if st.button("🖼️ JPG Ranking del Mes", type="primary", use_container_width=True, key="btn_jpg_mes"):
                         _jpg_mes = _generar_jpg_ranking(
                             _top_mes_alu[:10], _top_mes_doc[:10],
                             f"01/{_mes_actual:02d}/{_anio_actual}",
@@ -12097,7 +12097,7 @@ def tab_asistencias():
                                     f"{_hp['puntual']} días ({_hpct}%)")
                         _hb1, _hb2 = st.columns(2)
                         with _hb1:
-                            if st.button(f"📥 PDF esta semana", key=f"btn_hist_sem_{_sk}"):
+                            if st.button(f"📥 PDF esta semana", type="primary", key=f"btn_hist_sem_{_sk}"):
                                 _pdf_h = _generar_pdf_puntual_semana(
                                     _sd.get("top_alumnos",[]),
                                     _sd.get("top_docentes",[]),
@@ -12107,7 +12107,7 @@ def tab_asistencias():
                                     f"Puntual_{_sk}.pdf","application/pdf",
                                     key=f"dl_hist_{_sk}")
                         with _hb2:
-                            if st.button(f"🖼️ JPG esta semana", key=f"btn_hist_jpg_{_sk}"):
+                            if st.button(f"🖼️ JPG esta semana", type="primary", key=f"btn_hist_jpg_{_sk}"):
                                 _jpg_h = _generar_jpg_ranking(
                                     _sd.get("top_alumnos",[]),
                                     _sd.get("top_docentes",[]),
@@ -12319,7 +12319,7 @@ def tab_asistencias():
             </style>""", unsafe_allow_html=True)
             st.markdown('<style>#borrar_asist_wrap button{background:#dc2626!important;color:white!important;-webkit-text-fill-color:white!important;border:2px solid #b91c1c!important;font-weight:800!important;}</style>', unsafe_allow_html=True)
             if st.button("🗑️ BORRAR ASISTENCIAS DEL DÍA", type="primary",
-                         use_container_width=True, key="borrar_asist"):
+                         use_container_width=True, key="borrar_asist_2"):
                 BaseDatos.borrar_asistencias_hoy()
                 st.session_state.wa_enviados = set()
                 st.success("🎉 Eliminadas")
@@ -13752,7 +13752,7 @@ def tab_calificacion_yachay(config):
                         st.write(f"**Promedio:** {h.get('promedio_general', 0)}/20")
 
                 # Descargar reporte completo
-                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf", type="primary"):
+                if st.button("📥 Descargar Reporte Completo PDF", key="dl_hist_pdf_2", type="primary"):
                     al_h = BaseDatos.buscar_por_dni(dni_hist)
                     grado_h = str(al_h.get('Grado', '')) if al_h else ""
                     pdf = generar_reporte_estudiante_pdf(
@@ -14431,7 +14431,7 @@ def _tab_registro_auxiliar_docente(grado, config):
             st.session_state['_aux_pdf_d'] = pdf
             st.session_state['_aux_key_d'] = f"RegAux_{lg}_{bim}"
     with cd2:
-        if st.button("📄 Generar Word", use_container_width=True, key="ddra_docx_btn",
+        if st.button("📄 Generar Word", type="primary", use_container_width=True, key="ddra_docx_btn",
                      disabled=len(cursos_d) == 0):
             lg = grado_sel if grado_sel != "ALL_SECUNDARIA" else "Secundaria"
             sl = sec if sec != "Todas" else "Todas"
@@ -21096,13 +21096,13 @@ def tab_registrar_notas(config):
             border: none !important;
             box-shadow: 0 4px 6px rgba(6, 182, 212, 0.4) !important;
         }
-        button[key="btn_nueva_eval"]:hover {
+        button[key="btn_nueva_eval_2"]:hover {
             background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
             box-shadow: 0 6px 10px rgba(6, 182, 212, 0.6) !important;
         }
         </style>
         """, unsafe_allow_html=True)
-        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval", type="primary"):
+        if st.button("🔄 NUEVA EVALUACIÓN", key="btn_nueva_eval_3", type="primary"):
             st.session_state.eval_sesion = None
             st.session_state.notas_sesion = {}
             st.session_state.eval_estudiantes = []
@@ -21317,7 +21317,7 @@ def tab_registrar_notas(config):
         background: #25D366 !important;
     }
     /* Botón NUEVA EVALUACIÓN - Cyan sólido */
-    button[key="btn_nueva_eval"] {
+    button[key="btn_nueva_eval_4"] {
         background: #0891b2 !important;
     }
     /* Hover - solo un poco más oscuro */
@@ -21421,7 +21421,7 @@ def tab_registrar_notas(config):
                 st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
-        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval", type="primary"):
+        if st.button("📱 ENVIAR POR WHATSAPP", use_container_width=True, key="btn_wa_eval_2", type="primary"):
             st.session_state['_mostrar_wa_eval'] = True
         if st.session_state.get('_mostrar_wa_eval'):
             st.markdown("### 📱 Enviar Notas por WhatsApp")
@@ -27048,7 +27048,7 @@ def tab_pausa_activa(config):
         activo = nivel_sel == nv
         with nf_cols[ni]:
             label = f"{'✅ ' if activo else ico+' '}{nv}"
-            if st.button(label, key=f"nfilt_{nv}", use_container_width=True):
+            if st.button(label, type="primary", key=f"nfilt_{nv}", use_container_width=True):
                 st.session_state['_pausa_nivel_filtro'] = nv
                 st.rerun()
 
@@ -27185,7 +27185,7 @@ def tab_pausa_activa(config):
                 <div style='color:rgba(255,255,255,0.65); font-size:0.72rem;'>{musica_badge} {"Con musica" if tiene_musica else "Sin musica"}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"▶  Iniciar  {m['emoji_principal']}", key=f"sel_pausa_{m['id']}", use_container_width=True):
+            if st.button(f"▶  Iniciar  {m['emoji_principal']}", type="primary", key=f"sel_pausa_{m['id']}", use_container_width=True):
                 st.session_state['_pausa_modelo_id'] = m['id']
                 st.session_state['_pausa_paso_actual'] = 0
                 st.session_state['_pausa_activa'] = True
@@ -27719,7 +27719,7 @@ if(document.getElementById('bgm')) {{
         with nc1:
             if paso_idx > 0:
                 st.markdown('<div id="nav_prev">', unsafe_allow_html=True)
-                if st.button("◀  Anterior", use_container_width=True, key="pausa_prev"):
+                if st.button("◀  Anterior", type="primary", use_container_width=True, key="pausa_prev"):
                     st.session_state['_pausa_paso_actual'] -= 1
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -27734,13 +27734,13 @@ if(document.getElementById('bgm')) {{
         with nc3:
             if paso_idx < total_pasos - 1:
                 st.markdown('<div id="nav_sig">', unsafe_allow_html=True)
-                if st.button("Siguiente  ▶", use_container_width=True, key="pausa_next"):
+                if st.button("Siguiente  ▶", type="primary", use_container_width=True, key="pausa_next"):
                     st.session_state['_pausa_paso_actual'] += 1
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.markdown('<div id="nav_fin">', unsafe_allow_html=True)
-                if st.button("🎉  FINALIZAR", use_container_width=True, key="pausa_fin"):
+                if st.button("🎉  FINALIZAR", type="primary", use_container_width=True, key="pausa_fin"):
                     st.balloons()
                     st.session_state['_pausa_activa']    = False
                     st.session_state['_pausa_modelo_id'] = None
@@ -28554,7 +28554,7 @@ def _tab_horario(config):
                     st.rerun()
 
         st.markdown("---")
-        if st.button("🔄 Restaurar áreas por defecto", key="h_reset_areas"):
+        if st.button("🔄 Restaurar áreas por defecto", type="primary", key="h_reset_areas"):
             del st.session_state['h_areas']
             st.rerun()
 
@@ -28713,13 +28713,13 @@ def _tab_horario(config):
                             f"Horario_{(grado_h or 'grado').replace(' ','_')[:20]}_{anio}.pdf",
                             "application/pdf", type="primary", key="dl_h_pdf")
                 with c3:
-                    if st.button("Imprimir B/N", use_container_width=True, key="btn_h_bn"):
+                    if st.button("Imprimir B/N", type="primary", use_container_width=True, key="btn_h_bn"):
                         buf_b = _generar_pdf_horario_blanco(grado_h, anio, horas, dias)
                         st.download_button("⬇️ Descargar B/N", buf_b,
                                             f"Horario_BN_{anio}.pdf", "application/pdf",
                                             type="primary", key="dl_h_bn")
                 with c4:
-                    if st.button("Limpiar horario", use_container_width=True, key="btn_h_clear"):
+                    if st.button("Limpiar horario", type="primary", use_container_width=True, key="btn_h_clear"):
                         st.session_state.horario_data = {}
                         st.rerun()
             else:
@@ -30710,6 +30710,8 @@ def main():
                 ("📅", "Mi Horario", "horario", "#0f766e"),
                 ("🎭", "Guess Up", "guess_up", "#7c2d12"),
                 ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
+                ("💚", "Bienestar", "bienestar", "#059669"),
+                ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
             ]
 
             # Grid de módulos
@@ -30801,6 +30803,10 @@ def main():
                 _tab_test_tdah_docente(config)
             elif mod == "telegram_bot":
                 tab_telegram_notificaciones(config)
+            elif mod == "bienestar":
+                tab_bienestar_estudiantil(config)
+            elif mod == "predictivo":
+                tab_analisis_predictivo(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -30842,6 +30848,8 @@ def main():
                 ("👨‍👩‍👧", "Portal Padres", "portal_seguimiento", "#0f766e"),
                 ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
                 ("📱", "Notif. Telegram", "telegram_bot", "#0088cc"),
+                ("💚", "Bienestar", "bienestar", "#059669"),
+                ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -30953,6 +30961,10 @@ def main():
                 tab_telegram_notificaciones(config)
             elif mod == "portal_seguimiento":
                 tab_seguimiento_portal_padres(config)
+            elif mod == "bienestar":
+                tab_bienestar_estudiantil(config)
+            elif mod == "predictivo":
+                tab_analisis_predictivo(config)
 
 
 
@@ -31321,6 +31333,178 @@ Ejemplo: /start 70123456
         st.markdown("1. El padre abre Telegram y escribe `/start [DNI]` al bot.")
         st.markdown("2. El admin hace clic en **Obtener nuevos suscriptores** en la pestaña Configurar Bot.")
         st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
+
+
+def tab_bienestar_estudiantil(config):
+    """Dashboard de bienestar estudiantil — sistema Wilma de Finlandia."""
+    st.header("💚 Bienestar Estudiantil")
+    st.caption("Registro semanal 1-5 de cada dimension. Detecta alumnos en riesgo antes que bajen notas.")
+
+    ARCHIVO_BW = "bienestar_estudiantil.json"
+    DIMS = [("Emocional","Como se siente emocionalmente"),
+            ("Motivacion","Que tan motivado esta con sus estudios"),
+            ("Social","Como se lleva con sus companeros"),
+            ("Hogar","Como esta el ambiente en casa"),
+            ("Descanso","Esta descansando bien y con energia")]
+    C_NIV = {1:"#ef4444",2:"#f97316",3:"#eab308",4:"#22c55e",5:"#16a34a"}
+    E_NIV = {1:"Muy mal",2:"Regular",3:"Bien",4:"Muy bien",5:"Excelente"}
+
+    def _bw_load():
+        try:
+            if Path(ARCHIVO_BW).exists():
+                with open(ARCHIVO_BW,"r",encoding="utf-8") as f: return json.load(f)
+        except Exception: pass
+        return {}
+    def _bw_save(d):
+        try:
+            with open(ARCHIVO_BW,"w",encoding="utf-8") as f: json.dump(d,f,ensure_ascii=False,indent=2)
+        except Exception: pass
+
+    data_bw = _bw_load()
+    sem = hora_peru().strftime("%Y-W%V")
+    hoy_str = fecha_peru_str()
+
+    _t1, _t2, _t3 = st.tabs(["📝 Registro Semanal","📊 Dashboard","⚠️ Alertas"])
+
+    with _t1:
+        grado_bw = _grados_para_selector("bw")
+        df_bw = BaseDatos.obtener_estudiantes_grado(grado_bw)
+        if df_bw.empty:
+            st.warning("Sin estudiantes en este grado.")
+        else:
+            st.caption(f"👥 {len(df_bw)} estudiantes — semana {sem}")
+            noms = df_bw.apply(lambda r: f"{r.get('Nombre','')} ({r.get('DNI','')})", axis=1).tolist()
+            sel = st.selectbox("Estudiante:", noms, key="bw_alu")
+            dni_bw = sel.split("(")[-1].rstrip(")").strip()
+            nom_bw = sel.split(" (")[0].strip()
+            prev = data_bw.get(sem,{}).get(dni_bw,{})
+            st.markdown(f"**Registro — {nom_bw}** (Escala 1=Muy mal · 5=Excelente)")
+            vals = {}
+            for dim, preg in DIMS:
+                v = st.slider(preg, 1, 5, prev.get(dim,3), key=f"bw_{dni_bw}_{dim}")
+                vals[dim] = v
+                st.markdown(f"<span style='background:{C_NIV[v]};color:white;padding:2px 10px;border-radius:10px;font-size:12px;'>{E_NIV[v]}</span>", unsafe_allow_html=True)
+            obs = st.text_area("Observaciones:", value=prev.get("obs",""), key=f"bw_obs_{dni_bw}", height=60)
+            if st.button("💾 Guardar Bienestar", type="primary", use_container_width=True, key="btn_save_bw"):
+                if sem not in data_bw: data_bw[sem] = {}
+                prom = round(sum(vals.values())/len(vals),2)
+                data_bw[sem][dni_bw] = {**vals,"nombre":nom_bw,"fecha":hoy_str,"obs":obs.strip(),"promedio":prom}
+                _bw_save(data_bw)
+                if prom < 2.5: st.error(f"⚠️ ALERTA — Promedio muy bajo: {prom}/5")
+                elif prom < 3.5: st.warning(f"📋 Bienestar moderado: {prom}/5")
+                else: st.success(f"✅ Guardado — Bienestar: {prom}/5")
+
+    with _t2:
+        sems = sorted(data_bw.keys(), reverse=True)
+        if not sems:
+            st.info("Sin registros. Empieza registrando el bienestar de tus estudiantes.")
+        else:
+            sem_s = st.selectbox("Semana:", sems, key="bw_sem_dash")
+            reg_s = data_bw.get(sem_s,{})
+            if reg_s:
+                st.markdown(f"**{len(reg_s)} estudiantes registrados — semana {sem_s}**")
+                prom_dims = {d:[] for d,_ in DIMS}
+                for v in reg_s.values():
+                    for d,_ in DIMS:
+                        if d in v: prom_dims[d].append(v[d])
+                cols_d = st.columns(len(DIMS))
+                for ci,(d,_) in enumerate(DIMS):
+                    vals_d = prom_dims[d]
+                    pr = round(sum(vals_d)/len(vals_d),1) if vals_d else 0
+                    col_d = C_NIV.get(round(pr),"#888")
+                    with cols_d[ci]:
+                        st.markdown(f"<div style='background:{col_d};color:white;border-radius:8px;padding:10px;text-align:center;'><b>{pr}</b><br><small>{d}</small></div>", unsafe_allow_html=True)
+                import pandas as _pd_bw2
+                rows_bw = [{"Alerta":"🔴" if v.get("promedio",5)<2.5 else ("🟡" if v.get("promedio",5)<3.5 else "🟢"),
+                             "Estudiante":v.get("nombre",""),"Promedio":v.get("promedio",0),
+                             **{d:v.get(d,"—") for d,_ in DIMS}} for v in reg_s.values()]
+                st.dataframe(_pd_bw2.DataFrame(rows_bw), use_container_width=True, hide_index=True)
+
+    with _t3:
+        alertas_bw = []
+        for s,r in data_bw.items():
+            for d,v in r.items():
+                if v.get("promedio",5) < 3.0:
+                    alertas_bw.append({"Semana":s,"Estudiante":v.get("nombre",""),"Promedio":v.get("promedio",0),"Obs":v.get("obs","")})
+        if not alertas_bw:
+            st.success("✅ Sin alertas. Todos los estudiantes con bienestar adecuado.")
+        else:
+            for a in sorted(alertas_bw, key=lambda x:x["Promedio"]):
+                c = "#ef4444" if a["Promedio"]<2.0 else "#f97316"
+                st.markdown(f"<div style='background:{c}22;border-left:4px solid {c};padding:8px 12px;border-radius:6px;margin-bottom:6px;'><b>{a['Estudiante']}</b> — Sem {a['Semana']} — Prom: <b>{a['Promedio']}/5</b>" + (f"<br><small>{a['Obs']}</small>" if a['Obs'] else "") + "</div>", unsafe_allow_html=True)
+
+
+def tab_analisis_predictivo(config):
+    """Analisis predictivo de rendimiento — cruza asistencia + notas. Estonia e-kool."""
+    st.header("📈 Análisis Predictivo de Rendimiento")
+    st.caption("Cruza asistencia + notas para detectar alumnos en riesgo. Estilo Estonia (e-kool).")
+
+    grado_p = _grados_para_selector("pred")
+    sec_p = st.selectbox("Sección:", ["Todas"] + SECCIONES, key="pred_sec")
+    df_p = BaseDatos.obtener_estudiantes_grado(grado_p, sec_p if sec_p != "Todas" else None)
+    if df_p.empty:
+        st.warning("Sin estudiantes.")
+        return
+
+    st.info(f"👥 Analizando {len(df_p)} estudiantes de {grado_p}")
+    asis_all = {}
+    try:
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS,"r",encoding="utf-8") as f: asis_all = json.load(f)
+    except Exception: pass
+    notas_all = {}
+    try:
+        if Path("notas.json").exists():
+            with open("notas.json","r",encoding="utf-8") as f: notas_all = json.load(f)
+    except Exception: pass
+
+    hoy = hora_peru()
+    perfiles = []
+    for _, row in df_p.iterrows():
+        dni_e = str(row.get("DNI",row.get("dni",""))).strip()
+        nom_e = str(row.get("Nombre",row.get("nombre",""))).strip()
+        if not dni_e: continue
+        td = 0; da = 0; dt = 0; df2 = 0
+        for fk, fd in asis_all.items():
+            try:
+                ft = datetime.strptime(fk,"%Y-%m-%d") if "-" in fk else datetime.strptime(fk,"%d/%m/%Y")
+                if ft.year != hoy.year or ft.weekday() >= 5: continue
+                td += 1
+                if dni_e in fd:
+                    re2 = fd[dni_e]
+                    if re2.get("tardanza"): dt += 1
+                    else: da += 1
+                else: df2 += 1
+            except Exception: continue
+        pct_a = round(da/td*100,1) if td else 0
+        pct_t = round(dt/td*100,1) if td else 0
+        proms = []
+        for k,v in notas_all.items():
+            if isinstance(v,dict) and str(v.get("grado",""))==grado_p:
+                n = v.get("notas",{}).get(dni_e) or v.get("notas",{}).get(nom_e)
+                if n is not None:
+                    try: proms.append(float(n))
+                    except Exception: pass
+        pn = round(sum(proms)/len(proms),1) if proms else None
+        riesgo = min(100, round(max(0,(75-pct_a))*1.2 + pct_t*0.5 + (max(0,(13-(pn or 13)))*3.5)))
+        nivel = "🔴 ALTO" if riesgo>=60 else ("🟡 MEDIO" if riesgo>=35 else "🟢 BAJO")
+        color = "#ef4444" if riesgo>=60 else ("#f59e0b" if riesgo>=35 else "#22c55e")
+        perfiles.append({"dni":dni_e,"nombre":nom_e,"asist":pct_a,"tard":pct_t,"faltas":df2,"total":td,"nota":pn,"riesgo":riesgo,"nivel":nivel,"color":color})
+
+    n_alto=sum(1 for p in perfiles if p["riesgo"]>=60)
+    n_med=sum(1 for p in perfiles if 35<=p["riesgo"]<60)
+    n_bajo=sum(1 for p in perfiles if p["riesgo"]<35)
+    prom_a=round(sum(p["asist"] for p in perfiles)/len(perfiles),1) if perfiles else 0
+    k1,k2,k3,k4=st.columns(4)
+    for col,n,label,c in [(k1,n_alto,"Riesgo ALTO","#ef4444"),(k2,n_med,"Riesgo MEDIO","#f59e0b"),(k3,n_bajo,"Riesgo BAJO","#22c55e"),(k4,f"{prom_a}%","Asistencia prom","#2563eb")]:
+        with col:
+            st.markdown(f"<div style='background:{c}11;border-left:4px solid {c};padding:10px;border-radius:6px;text-align:center;'><div style='font-size:1.6rem;font-weight:700;color:{c};'>{n}</div><div style='font-size:0.78rem;color:#555;'>{label}</div></div>", unsafe_allow_html=True)
+
+    st.markdown("---")
+    for p in sorted(perfiles, key=lambda x:-x["riesgo"]):
+        bw = p["riesgo"]
+        nt = f"{p['nota']}/20" if p["nota"] is not None else "Sin notas"
+        st.markdown(f"<div style='background:white;border:1px solid #e5e7eb;border-left:5px solid {p['color']};border-radius:8px;padding:10px 14px;margin-bottom:6px;'><div style='display:flex;justify-content:space-between;'><b>{p['nombre']}</b><span style='color:{p['color']};font-weight:700;'>Riesgo: {bw}%</span></div><div style='background:#f1f5f9;border-radius:6px;height:7px;margin:6px 0;'><div style='background:{p['color']};width:{bw}%;height:7px;border-radius:6px;'></div></div><div style='font-size:0.75rem;color:#555;'>✅ Asistencia: {p['asist']}% &nbsp;⏰ Tardanzas: {p['tard']}% &nbsp;❌ Faltas: {p['faltas']} &nbsp;📝 Notas: {nt}</div></div>", unsafe_allow_html=True)
 
 def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
