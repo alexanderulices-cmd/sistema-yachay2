@@ -11448,6 +11448,38 @@ def tab_asistencias():
             except Exception:
                 _hist_todas = {}
 
+    # Complementar con Google Sheets — recupera datos de meses anteriores
+    try:
+        _gs_inst = _gs()
+        if _gs_inst:
+            _ws_hist = _gs_inst._get_hoja('asistencias')
+            if _ws_hist:
+                for _row_h in _ws_hist.get_all_records():
+                    _fh_gs = str(_row_h.get('fecha','')).strip()
+                    _dh_gs = str(_row_h.get('dni','')).strip()
+                    if not _fh_gs or not _dh_gs: continue
+                    # Normalizar clave de fecha
+                    try:
+                        if '-' in _fh_gs:
+                            _fdt_h = datetime.strptime(_fh_gs,'%Y-%m-%d')
+                        else:
+                            _fdt_h = datetime.strptime(_fh_gs,'%d/%m/%Y')
+                        _fkey_h = _fdt_h.strftime('%Y-%m-%d')
+                    except Exception:
+                        _fkey_h = _fh_gs
+                    if _fkey_h not in _hist_todas:
+                        _hist_todas[_fkey_h] = {}
+                    if _dh_gs not in _hist_todas[_fkey_h]:
+                        _hist_todas[_fkey_h][_dh_gs] = {
+                            'nombre': str(_row_h.get('nombre','')).strip(),
+                            'entrada': str(_row_h.get('hora_entrada','')).strip(),
+                            'tardanza': str(_row_h.get('tardanza','')).strip(),
+                            'salida': str(_row_h.get('hora_salida','')).strip(),
+                            'es_docente': 'doc' in str(_row_h.get('tipo_persona','')).lower(),
+                        }
+    except Exception:
+        pass
+
     if _hist_todas:
         from datetime import datetime as _dt
         # Normalizar TODAS las fechas a DD/MM/YYYY para display y comparacion
@@ -11568,6 +11600,305 @@ def tab_asistencias():
                             "application/pdf", key="dl_pdf_hist_doc"
                         )
 
+
+        # ===== MÓDULO: ESTUDIANTES QUE NO VINIERON =====
+        st.markdown("---")
+        st.subheader("🔴 Estudiantes que no vinieron al colegio")
+
+        with st.expander("📋 Ver ausentes y enviar alertas", expanded=False):
+            _col_aus1, _col_aus2, _col_aus3 = st.columns(3)
+            with _col_aus1:
+                _grado_aus = st.selectbox("Grado:", ["Todos"] + GRADOS_OPCIONES, key="aus_grado")
+            with _col_aus2:
+                _modo_aus = st.radio("Período:", ["Hoy", "Por mes"], horizontal=True, key="aus_modo")
+            with _col_aus3:
+                if _modo_aus == "Por mes":
+                    _mes_aus = st.selectbox("Mes:", [
+                        "03/2026","04/2026","05/2026","06/2026","07/2026",
+                        "08/2026","09/2026","10/2026","11/2026","12/2026"
+                    ], key="aus_mes",
+                    index=max(0, hora_peru().month - 3))
+                else:
+                    _mes_aus = None
+
+            if st.button("🔍 Calcular ausentes", type="primary",
+                         use_container_width=True, key="btn_calc_aus"):
+                st.session_state["_aus_calculado"] = True
+
+            if st.session_state.get("_aus_calculado"):
+                # Cargar matrículas del grado
+                if _grado_aus == "Todos":
+                    _df_aus = BaseDatos.cargar_matricula()
+                else:
+                    _df_aus = BaseDatos.obtener_estudiantes_grado(_grado_aus)
+
+                if _df_aus.empty:
+                    st.warning("No hay estudiantes matriculados en este grado.")
+                else:
+                    # Cargar asistencias locales + GSheets
+                    _asis_aus = {}
+                    if Path(ARCHIVO_ASISTENCIAS).exists():
+                        with open(ARCHIVO_ASISTENCIAS,"r",encoding="utf-8") as _fa2:
+                            try: _asis_aus = json.load(_fa2)
+                            except Exception: pass
+                    try:
+                        _gs2 = _gs()
+                        if _gs2:
+                            _ws2 = _gs2._get_hoja('asistencias')
+                            if _ws2:
+                                for _r2 in _ws2.get_all_records():
+                                    _f2 = str(_r2.get('fecha','')).strip()
+                                    _d2 = str(_r2.get('dni','')).strip()
+                                    if not _f2 or not _d2: continue
+                                    try:
+                                        _fdt2 = datetime.strptime(_f2,'%Y-%m-%d') if '-' in _f2 else datetime.strptime(_f2,'%d/%m/%Y')
+                                        _fk2 = _fdt2.strftime('%Y-%m-%d')
+                                    except Exception: continue
+                                    if _fk2 not in _asis_aus: _asis_aus[_fk2] = {}
+                                    if _d2 not in _asis_aus[_fk2]:
+                                        _asis_aus[_fk2][_d2] = {
+                                            'nombre': str(_r2.get('nombre','')).strip(),
+                                            'entrada': str(_r2.get('hora_entrada','')).strip(),
+                                            'tardanza': str(_r2.get('tardanza','')).strip(),
+                                            'es_docente': 'doc' in str(_r2.get('tipo_persona','')).lower(),
+                                        }
+                    except Exception: pass
+
+                    # Determinar días a analizar
+                    if _modo_aus == "Hoy":
+                        _hoy_aus = hora_peru().date()
+                        _dias_analizar = [_hoy_aus.strftime('%Y-%m-%d')]
+                        _titulo_aus = f"HOY — {_hoy_aus.strftime('%d/%m/%Y')}"
+                    else:
+                        _mes_num, _anio_num = int(_mes_aus.split('/')[0]), int(_mes_aus.split('/')[1])
+                        import calendar as _cal2
+                        _n_dias_mes = _cal2.monthrange(_anio_num, _mes_num)[1]
+                        _dias_analizar = [
+                            datetime(_anio_num, _mes_num, _d).strftime('%Y-%m-%d')
+                            for _d in range(1, _n_dias_mes+1)
+                            if datetime(_anio_num, _mes_num, _d).weekday() < 5
+                        ]
+                        _nom_mes_aus = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                                         "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][_mes_num]
+                        _titulo_aus = f"{_nom_mes_aus.upper()} {_anio_num}"
+
+                    # Calcular resumen por estudiante
+                    _dni_col = 'DNI' if 'DNI' in _df_aus.columns else 'dni'
+                    _nom_col = 'Nombre' if 'Nombre' in _df_aus.columns else 'nombre'
+                    _gra_col = 'Grado' if 'Grado' in _df_aus.columns else 'grado'
+                    _apo_col = next((c for c in ['Apoderado','apoderado','Apoderado_Nombre'] if c in _df_aus.columns), None)
+                    _cel_col = next((c for c in ['Celular_Apoderado','celular_apoderado','Celular'] if c in _df_aus.columns), None)
+
+                    _resumen_aus = []
+                    for _, _row_a in _df_aus.iterrows():
+                        _dni_a = str(_row_a.get(_dni_col,'')).strip()
+                        _nom_a = str(_row_a.get(_nom_col,'')).strip()
+                        _gra_a = str(_row_a.get(_gra_col,'')).strip()
+                        _apo_a = str(_row_a.get(_apo_col,'') if _apo_col else '').strip()
+                        _cel_a = str(_row_a.get(_cel_col,'') if _cel_col else '').strip()
+                        if _cel_a in ('nan','None',''): _cel_a = ''
+                        if not _dni_a: continue
+
+                        _dias_total = len(_dias_analizar)
+                        _dias_puntual = 0; _dias_tardanza = 0; _dias_falta = 0
+                        for _dk in _dias_analizar:
+                            _reg_dk = _asis_aus.get(_dk, {})
+                            if _dni_a in _reg_dk:
+                                _rv = _reg_dk[_dni_a]
+                                if _rv.get('tardanza'): _dias_tardanza += 1
+                                else: _dias_puntual += 1
+                            else:
+                                _dias_falta += 1
+
+                        _resumen_aus.append({
+                            'dni': _dni_a, 'nombre': _nom_a, 'grado': _gra_a,
+                            'apoderado': _apo_a, 'celular': _cel_a,
+                            'total': _dias_total, 'puntual': _dias_puntual,
+                            'tardanza': _dias_tardanza, 'falta': _dias_falta,
+                            'pct_asist': round((_dias_puntual+_dias_tardanza)/_dias_total*100,1) if _dias_total else 0,
+                        })
+
+                    _resumen_aus.sort(key=lambda x: x['falta'], reverse=True)
+                    _solo_ausentes = [r for r in _resumen_aus if r['falta'] > 0]
+
+                    # KPIs
+                    _kc1, _kc2, _kc3, _kc4 = st.columns(4)
+                    for _col_k, _val_k, _lab_k, _col_bg in [
+                        (_kc1, len(_solo_ausentes), "Con faltas", "#ef4444"),
+                        (_kc2, sum(1 for r in _resumen_aus if r['tardanza']>0), "Con tardanzas", "#f59e0b"),
+                        (_kc3, sum(1 for r in _resumen_aus if r['falta']==0), "Asistencia perfecta", "#22c55e"),
+                        (_kc4, f"{round(sum(r['pct_asist'] for r in _resumen_aus)/len(_resumen_aus),1)}%" if _resumen_aus else "0%", "% asistencia promedio", "#2563eb"),
+                    ]:
+                        with _col_k:
+                            st.markdown(f"<div style='background:{_col_bg}11;border-left:4px solid {_col_bg};padding:10px;border-radius:6px;text-align:center;'><div style='font-size:1.6rem;font-weight:700;color:{_col_bg};'>{_val_k}</div><div style='font-size:0.75rem;color:#555;'>{_lab_k}</div></div>", unsafe_allow_html=True)
+
+                    st.markdown(f"#### Detalle — {_titulo_aus}")
+
+                    # Tabla visual
+                    for _r in _resumen_aus:
+                        _pct = _r['pct_asist']
+                        _c = "#ef4444" if _pct < 75 else ("#f59e0b" if _pct < 90 else "#22c55e")
+                        _ic = "🔴" if _r['falta'] > 0 else "🟢"
+                        st.markdown(
+                            f"<div style='background:white;border:1px solid #e5e7eb;border-left:5px solid {_c};"
+                            f"border-radius:8px;padding:8px 14px;margin-bottom:5px;"
+                            f"display:flex;align-items:center;justify-content:space-between;'>"
+                            f"<div><b>{_r['nombre']}</b> <span style='font-size:0.78rem;color:#888;'>{_r['grado']}</span></div>"
+                            f"<div style='display:flex;gap:12px;font-size:0.8rem;'>"
+                            f"<span style='color:#22c55e;'>✅ {_r['puntual']}</span>"
+                            f"<span style='color:#f59e0b;'>⏰ {_r['tardanza']}</span>"
+                            f"<span style='color:#ef4444;'>❌ {_r['falta']}</span>"
+                            f"<span style='color:{_c};font-weight:700;'>{_pct}%</span>"
+                            f"</div></div>", unsafe_allow_html=True)
+
+                    st.markdown("---")
+
+                    # Botones de acción
+                    _ab1, _ab2, _ab3 = st.columns(3)
+
+                    # PDF mensual completo
+                    with _ab1:
+                        if st.button("📥 PDF Reporte Mensual", type="primary",
+                                     use_container_width=True, key="btn_pdf_aus"):
+                            from reportlab.lib.pagesizes import A4
+                            from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+                            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+                            from reportlab.lib import colors
+                            from reportlab.lib.units import cm
+                            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+                            import io as _io2
+                            _buf_aus = _io2.BytesIO()
+                            _doc_aus = SimpleDocTemplate(_buf_aus, pagesize=A4,
+                                topMargin=1.5*cm, bottomMargin=1.5*cm,
+                                leftMargin=1.8*cm, rightMargin=1.8*cm)
+                            _ss2 = getSampleStyleSheet()
+                            def _Pp(t, bold=False, s=9, al=TA_CENTER, c=None):
+                                return Paragraph(f"<b>{t}</b>" if bold else str(t),
+                                    ParagraphStyle("p2",fontSize=s,leading=s+3,alignment=al,
+                                        textColor=c or colors.black,
+                                        fontName="Helvetica-Bold" if bold else "Helvetica",parent=_ss2["Normal"]))
+                            _W2 = A4[0]-3.6*cm
+                            _C_RED = colors.Color(0.65,0.05,0.05)
+                            _C_GRN = colors.Color(0.05,0.55,0.2)
+                            _C_ORG = colors.Color(0.85,0.4,0.05)
+                            _story2 = [
+                                _Pp("I.E.P. ALTERNATIVO YACHAY", bold=True, s=13),
+                                _Pp("UGEL Urubamba  |  Chinchero, Cusco", s=8, c=colors.Color(0.4,0.4,0.4)),
+                                Spacer(1,0.2*cm),
+                                _Pp(f"REPORTE DE ASISTENCIA — {_titulo_aus}", bold=True, s=12),
+                                _Pp(f"Grado: {_grado_aus}  |  {len(_resumen_aus)} estudiantes  |  {len(_dias_analizar)} días escolares", s=9),
+                                Spacer(1,0.4*cm),
+                            ]
+                            # Tabla encabezado
+                            _HDRS2 = ["N°","Apellidos y Nombres","Grado","Puntual","Tardanza","Faltas","% Asist.","Apoderado","Celular"]
+                            _CWS2  = [0.6*cm,4.8*cm,2.0*cm,1.2*cm,1.5*cm,1.2*cm,1.4*cm,3.5*cm,2.4*cm]
+                            _rows2 = [_HDRS2]
+                            for _n2, _r2 in enumerate(_resumen_aus, 1):
+                                _cel2 = _r2['celular'] if _r2['celular'] else '—'
+                                _apo2 = _r2['apoderado'][:22] if _r2['apoderado'] else '—'
+                                _rows2.append([
+                                    str(_n2), _r2['nombre'][:32], _r2['grado'],
+                                    str(_r2['puntual']), str(_r2['tardanza']), str(_r2['falta']),
+                                    f"{_r2['pct_asist']}%", _apo2, _cel2
+                                ])
+                            _t2 = Table(_rows2, colWidths=_CWS2)
+                            _ts2 = TableStyle([
+                                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.08,0.18,0.45)),
+                                ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+                                ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
+                                ('FONTSIZE',(0,0),(-1,-1),7.5),
+                                ('ALIGN',(0,0),(-1,-1),'CENTER'),
+                                ('ALIGN',(1,0),(1,-1),'LEFT'),
+                                ('ALIGN',(7,0),(8,-1),'LEFT'),
+                                ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.96,0.97,1.0)]),
+                                ('GRID',(0,0),(-1,-1),0.4,colors.Color(0.8,0.8,0.8)),
+                                ('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3),
+                            ])
+                            # Colorear filas con faltas
+                            for _ri2, _r2 in enumerate(_resumen_aus, 1):
+                                if _r2['falta'] > 0:
+                                    _ts2.add('TEXTCOLOR',(5,_ri2),(5,_ri2),_C_RED)
+                                    _ts2.add('FONTNAME',(5,_ri2),(5,_ri2),'Helvetica-Bold')
+                                if _r2['tardanza'] > 0:
+                                    _ts2.add('TEXTCOLOR',(4,_ri2),(4,_ri2),_C_ORG)
+                            _t2.setStyle(_ts2)
+                            _story2.append(_t2)
+                            _doc_aus.build(_story2)
+                            _buf_aus.seek(0)
+                            st.session_state['_pdf_aus_bytes'] = _buf_aus.read()
+
+                        if st.session_state.get('_pdf_aus_bytes'):
+                            st.download_button("⬇️ Descargar PDF",
+                                st.session_state['_pdf_aus_bytes'],
+                                f"Asistencia_{_grado_aus}_{_titulo_aus.replace(' ','_')}.pdf",
+                                "application/pdf", key="dl_pdf_aus")
+
+                    # WhatsApp a padres con faltas
+                    with _ab2:
+                        _con_falta_wa = [r for r in _solo_ausentes if r['celular']]
+                        if st.button(f"📱 WhatsApp ({len(_con_falta_wa)} padres)",
+                                     type="primary", use_container_width=True, key="btn_wa_aus"):
+                            st.session_state['_mostrar_wa_aus'] = True
+                        if st.session_state.get('_mostrar_wa_aus') and _con_falta_wa:
+                            st.markdown("**Mensajes WhatsApp — padres con faltas:**")
+                            import urllib.parse as _up_aus
+                            for _ra in _con_falta_wa[:15]:
+                                _cc = _ra['celular'].replace(' ','').replace('+','').replace('-','')
+                                if not _cc.startswith('51'): _cc = '51'+_cc
+                                _msg_wa = (
+                                    "I.E.P. YACHAY - Chinchero\n"
+                                    f"Estimado apoderado de {_ra['nombre']}\n"
+                                    f"Periodo: {_titulo_aus}\n"
+                                    f"Puntual: {_ra['puntual']} dias\n"
+                                    f"Tardanza: {_ra['tardanza']} dias\n"
+                                    f"Falta: {_ra['falta']} dias\n"
+                                    f"Asistencia: {_ra['pct_asist']}%\n"
+                                    "Tel: 084-750071"
+                                )
+                                _url_wa = f"https://wa.me/{_cc}?text={_up_aus.quote(_msg_wa)}"
+                                st.markdown(
+                                    f"<a href='{_url_wa}' target='_blank' style='display:inline-block;"
+                                    f"background:#25D366;color:white;padding:4px 10px;"
+                                    f"border-radius:6px;text-decoration:none;font-size:0.8rem;margin:2px;'>"
+                                    f"📱 {_ra['nombre'][:20]} — {_ra['falta']} falta(s)</a>",
+                                    unsafe_allow_html=True)
+
+                    # Telegram a padres con faltas
+                    with _ab3:
+                        _cfg_aus = _tg_cargar_config()
+                        _tok_aus = _tg_limpiar_token(_cfg_aus.get("bot_token",""))
+                        _subs_aus = _tg_cargar_subs() if _tok_aus else {}
+                        _con_tg = [r for r in _solo_ausentes
+                                   if str(r['dni']).strip() in _subs_aus]
+                        if st.button(f"📲 Telegram ({len(_con_tg)} suscritos)",
+                                     type="primary", use_container_width=True, key="btn_tg_aus"):
+                            if _tok_aus and _con_tg:
+                                import threading as _thr_aus
+                                def _env_aus():
+                                    for _ra2 in _con_tg:
+                                        _ent2 = _subs_aus.get(str(_ra2['dni']).strip())
+                                        _cid2 = _ent2 if isinstance(_ent2,(int,str)) else _ent2.get("chat_id","")
+                                        if not _cid2: continue
+                                        _msg_tg = (
+                                            "🚨 YACHAY PRO - Alerta de Inasistencia\n\n"
+                                            f"Apoderado de: {_ra2['nombre']}\n"
+                                            f"Grado: {_ra2['grado']}\n"
+                                            f"Periodo: {_titulo_aus}\n\n"
+                                            f"\u2705 Puntual: {_ra2['puntual']} dias\n"
+                                            f"\u23f0 Tardanza: {_ra2['tardanza']} dias\n"
+                                            f"\u274c Falta: {_ra2['falta']} dias\n"
+                                            f"Asistencia: {_ra2['pct_asist']}%\n\n"
+                                            "I.E.P. Alternativo Yachay - Chinchero\n"
+                                            "\U0001f4de 084-750071"
+                                        )
+                                        _tg_enviar(_cid2, _msg_tg, _tok_aus)
+                                _thr_aus.Thread(target=_env_aus, daemon=True).start()
+                                st.success(f"✅ Enviando Telegram a {len(_con_tg)} apoderados...")
+                            elif not _tok_aus:
+                                st.warning("Configura el bot de Telegram primero.")
+                            else:
+                                st.info("Sin apoderados suscritos con faltas.")
+
         # ===== INNOVACIONES: ANALYTICS DE ASISTENCIA =====
         st.markdown("---")
         st.subheader("📊 Analytics de Asistencia")
@@ -11583,6 +11914,10 @@ def tab_asistencias():
         col_an1, col_an2, col_an3 = st.columns(3)
 
         with col_an1:
+            _hoy_anal = hora_peru().strftime('%Y-%m-%d')
+            _dia_hoy_data = _asis_hist.get(_hoy_anal, _asis_hist.get(hora_peru().strftime('%d/%m/%Y'), {}))
+            _ent = sum(1 for v in _dia_hoy_data.values()
+                       if not v.get('es_docente', False) and (v.get('entrada') or v.get('tardanza')))
             _total_mat = len(BaseDatos.cargar_matricula())
             _pct = round(_ent / _total_mat * 100) if _total_mat > 0 else 0
             _cc = "#16a34a" if _pct >= 90 else ("#f59e0b" if _pct >= 75 else "#dc2626")
@@ -31384,7 +31719,8 @@ def tab_bienestar_estudiantil(config):
                 v = st.slider(preg, 1, 5, prev.get(dim,3), key=f"bw_{dni_bw}_{dim}")
                 vals[dim] = v
                 st.markdown(f"<span style='background:{C_NIV[v]};color:white;padding:2px 10px;border-radius:10px;font-size:12px;'>{E_NIV[v]}</span>", unsafe_allow_html=True)
-            obs = st.text_area("Observaciones:", value=prev.get("obs",""), key=f"bw_obs_{dni_bw}", height=60)
+            _obs_val = str(prev.get("obs","") or "")
+            obs = st.text_area("Observaciones:", value=_obs_val, key=f"bw_obs_{dni_bw}_{sem}", height=60)
             if st.button("💾 Guardar Bienestar", type="primary", use_container_width=True, key="btn_save_bw"):
                 if sem not in data_bw: data_bw[sem] = {}
                 prom = round(sum(vals.values())/len(vals),2)
