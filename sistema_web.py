@@ -7230,23 +7230,38 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
 
     # ── ATENCIÓN DE PADRES ───────────────────────────────────────────
     elif key == "atencion_padres":
-        st.markdown("#### 👨‍👩‍👧 Formato de Atención a Padres de Familia")
-        st.caption("Con compromiso, firma del padre/madre/estudiante — según MINEDU")
-        col1, col2 = st.columns(2)
-        with col1:
-            doc_atp  = st.text_input("Docente/Tutor:", key="atp_doc",
-                                      placeholder="Apellidos y Nombres")
-            grado_atp = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="atp_grado")
-        with col2:
-            n_atp = st.number_input("N° formatos a generar:", 1, 10, 1, key="atp_n")
-        if st.button("📄 Generar Formato", type="primary",
+        st.markdown("#### 👨‍👩‍👧 Formatos de Atención — MINEDU")
+        st.caption("Formato oficial R.M. 0657-2017-MINEDU · El grado se deja en blanco para que el docente lo llene a mano")
+
+        _tipo_fa = st.radio("Tipo de formato:",
+                            ["Atención a Padres de Familia","Atención al Estudiante"],
+                            horizontal=True, key="atp_tipo")
+        _fa_tipo = "padres" if "Padres" in _tipo_fa else "estudiante"
+
+        col1_fa, col2_fa, col3_fa = st.columns(3)
+        with col1_fa:
+            doc_atp = st.text_input("Docente/Tutor (opcional):", key="atp_doc",
+                                    placeholder="Se puede dejar vacío para llenar a mano")
+        with col2_fa:
+            n_atp = st.number_input("N° formatos a generar:", 1, 15, 1, key="atp_n")
+        with col3_fa:
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.info("El campo **Grado/Sección** se deja vacío para que el docente lo complete a mano en cada cita.")
+
+        if st.button("📄 Generar Formato de Atención", type="primary",
                      use_container_width=True, key="btn_atp"):
-            buf_atp = _generar_formato_atencion_padres(config, doc_atp, "",
-                                                        int(n_atp), anio)
+            with st.spinner("Generando formato..."):
+                buf_atp = _generar_formato_atencion_completo(
+                    config, doc_atp.strip(), "",
+                    int(n_atp), anio, tipo=_fa_tipo)
             st.session_state['_pdf_atp'] = buf_atp
+            st.session_state['_pdf_atp_nombre'] = (
+                f"Atencion_Padres_{anio}.pdf" if _fa_tipo=="padres"
+                else f"Atencion_Estudiante_{anio}.pdf")
         if st.session_state.get('_pdf_atp'):
-            st.download_button("⬇️ Descargar Formato", st.session_state['_pdf_atp'],
-                f"Atencion_Padres_{grado_atp.replace(' ','_')}_{anio}.pdf",
+            st.download_button("⬇️ Descargar Formato PDF",
+                st.session_state['_pdf_atp'],
+                st.session_state.get('_pdf_atp_nombre',f'Formato_{anio}.pdf'),
                 "application/pdf", type="primary", key="dl_atp")
 
     # ── INVENTARIO SALONES PDF ──────────────────────────────────────
@@ -7880,6 +7895,181 @@ def _generar_papeleta_aula(config, n_hojas, anio):
             draw_papeleta(y0)
 
     c.save(); buf.seek(0)
+    return buf.read()
+
+
+def _generar_formato_atencion_completo(config, docente="", grado="", n_formatos=1,
+                                       anio=2026, tipo="padres"):
+    """Formato de atencion — MINEDU compliant, sin grado fijo (docente lo llena).
+    tipo: 'padres' o 'estudiante'"""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas as _rl_c
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io as _io_fa
+
+    buf = _io_fa.BytesIO()
+    ie   = config.get("nombre_ie","I.E.P. ALTERNATIVO YACHAY")
+    ugel = config.get("ugel","Urubamba")
+    anio_txt = str(anio)
+    W, H = A4
+    # Colores institucionales
+    if tipo == "padres":
+        C_HDR = (0.40,0.08,0.52)  # morado
+        C_LT  = (0.95,0.89,0.99)
+        titulo = "REGISTRO DE ATENCIÓN A PADRES DE FAMILIA"
+        norma  = "R.M. 0657-2017-MINEDU — Plan de Tutoría y Orientación Educativa"
+    else:
+        C_HDR = (0.08,0.18,0.45)  # azul navy
+        C_LT  = (0.90,0.93,0.99)
+        titulo = "REGISTRO DE ATENCIÓN AL ESTUDIANTE"
+        norma  = "R.M. 0657-2017-MINEDU — Tutoría Individual — Art. 35"
+
+    MX = 1.4*cm
+    MW = W - 2.8*cm
+
+    c = _rl_c.Canvas(buf, pagesize=A4)
+
+    def draw_page():
+        y = H - 1.0*cm
+
+        # Banda de título
+        c.setFillColorRGB(*C_HDR)
+        c.rect(MX, y-0.60*cm, MW, 0.60*cm, fill=1, stroke=0)
+        c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10.5)
+        c.drawCentredString(W/2, y-0.40*cm, titulo)
+        y -= 0.68*cm
+
+        # Subtítulo institución
+        c.setFillColorRGB(*C_HDR); c.setFont("Helvetica",7.5)
+        c.drawCentredString(W/2, y, f"{ie}  |  UGEL {ugel}  |  Año Escolar {anio_txt}")
+        y -= 0.22*cm
+        c.setFont("Helvetica-Oblique",6.5)
+        c.drawCentredString(W/2, y, norma)
+        y -= 0.28*cm
+
+        # Línea divisora
+        c.setStrokeColorRGB(*C_HDR); c.setLineWidth(1.5)
+        c.line(MX, y, MX+MW, y); y -= 0.15*cm
+
+        LH = 0.85*cm  # altura de cada caja
+
+        def box(lbl, bx, by, bw, bh=LH, fs=6.8):
+            """Dibuja caja con label embebido arriba."""
+            c.setFillColorRGB(*C_LT)
+            c.rect(bx, by+bh-0.28*cm, bw-0.03*cm, 0.28*cm, fill=1, stroke=0)
+            c.setStrokeColorRGB(*[x*0.75 for x in C_HDR]); c.setLineWidth(0.5)
+            c.rect(bx, by, bw-0.03*cm, bh, fill=0, stroke=1)
+            c.setFillColorRGB(*C_HDR); c.setFont("Helvetica-Bold",fs)
+            c.drawString(bx+0.10*cm, by+bh-0.22*cm, lbl)
+
+        def sec(lbl, by, bh=0.38*cm):
+            c.setFillColorRGB(*C_HDR)
+            c.rect(MX, by, MW, bh, fill=1, stroke=0)
+            c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",8)
+            c.drawString(MX+0.15*cm, by+0.08*cm, f"  {lbl}")
+            return by - 0.06*cm
+
+        def lineas(by, n=3, bx=None, bw=None):
+            """Dibuja líneas para escritura libre."""
+            _bx = bx or MX; _bw = bw or MW
+            lh = 0.52*cm
+            for i in range(n):
+                ly = by - (i+1)*lh
+                c.setStrokeColorRGB(0.75,0.75,0.75); c.setLineWidth(0.3)
+                c.line(_bx+0.1*cm, ly, _bx+_bw-0.1*cm, ly)
+            return by - n*lh - 0.08*cm
+
+        # ── Fila 1: N° / Fecha / Hora inicio / Hora fin / Modalidad ──
+        ws = [MW*0.12, MW*0.18, MW*0.15, MW*0.13, MW*0.42]
+        ls = ["N° Cita:", "Fecha:", "Hora inicio:", "Hora fin:",
+              "Modalidad:  ☐ Presencial   ☐ Virtual   ☐ Telefónica"]
+        xc = MX
+        for l1,w1 in zip(ls,ws):
+            box(l1, xc, y-LH, w1)
+            xc += w1
+        y -= LH + 0.10*cm
+
+        # ── Fila 2: Docente/Tutor + Grado (dejar en blanco) ──
+        box("Docente / Tutor:", MX, y-LH, MW*0.65)
+        box("Grado / Sección: (llenar)", MX+MW*0.65, y-LH, MW*0.35)
+        y -= LH + 0.10*cm
+
+        if tipo == "padres":
+            y = sec("DATOS DEL ESTUDIANTE Y APODERADO", y)
+            box("Apellidos y Nombres del estudiante:", MX, y-LH, MW*0.55)
+            box("DNI:", MX+MW*0.55, y-LH, MW*0.20)
+            box("Grado / Sección:", MX+MW*0.75, y-LH, MW*0.25)
+            y -= LH + 0.08*cm
+            box("Apellidos y Nombres del padre / madre / apoderado:", MX, y-LH, MW*0.70)
+            box("Parentesco:", MX+MW*0.70, y-LH, MW*0.30)
+            y -= LH + 0.08*cm
+            box("Celular del apoderado:", MX, y-LH, MW*0.35)
+            box("Correo electrónico:", MX+MW*0.35, y-LH, MW*0.40)
+            box("Firma:", MX+MW*0.75, y-LH, MW*0.25)
+            y -= LH + 0.12*cm
+        else:
+            y = sec("DATOS DEL ESTUDIANTE", y)
+            box("Apellidos y Nombres:", MX, y-LH, MW*0.60)
+            box("DNI:", MX+MW*0.60, y-LH, MW*0.18)
+            box("Fecha nacimiento:", MX+MW*0.78, y-LH, MW*0.22)
+            y -= LH + 0.08*cm
+            box("Grado / Sección:", MX, y-LH, MW*0.30)
+            box("Nivel:", MX+MW*0.30, y-LH, MW*0.20)
+            box("Apoderado:", MX+MW*0.50, y-LH, MW*0.30)
+            box("Celular apoderado:", MX+MW*0.80, y-LH, MW*0.20)
+            y -= LH + 0.12*cm
+
+        # ── Motivo / Tema ──
+        y = sec("MOTIVO DE LA CITA / TEMA TRATADO", y)
+        if tipo == "padres":
+            # Checkboxes de motivos frecuentes MINEDU
+            motivos = ["Rendimiento académico","Conducta / disciplina","Asistencia / puntualidad",
+                       "Situación familiar","Orientación vocacional","Otro:"]
+            xm = MX + 0.1*cm
+            for i, mot in enumerate(motivos):
+                if i % 2 == 0 and i > 0:
+                    y -= 0.38*cm
+                xm_cur = MX + 0.1*cm + (MW/2)*(i%2)
+                c.setFont("Helvetica",7.5)
+                c.setFillColorRGB(0,0,0)
+                c.drawString(xm_cur, y-0.25*cm, f"☐  {mot}")
+            y -= 0.50*cm
+        y = lineas(y, 4)
+
+        # ── Compromisos y acuerdos ──
+        y = sec("COMPROMISOS Y ACUERDOS", y)
+        y = lineas(y, 4)
+
+        # ── Acciones de seguimiento ──
+        y = sec("ACCIONES DE SEGUIMIENTO / PRÓXIMA CITA", y)
+        box("Fecha próxima cita:", MX, y-LH*0.85, MW*0.35, LH*0.85)
+        box("Responsable:", MX+MW*0.35, y-LH*0.85, MW*0.35, LH*0.85)
+        box("Firma:", MX+MW*0.70, y-LH*0.85, MW*0.30, LH*0.85)
+        y -= LH*0.85 + 0.25*cm
+
+        # ── Firmas finales ──
+        c.setStrokeColorRGB(*[x*0.6 for x in C_HDR]); c.setLineWidth(0.6)
+        fw = MW*0.40
+        fy = 1.8*cm
+        for xi, lbl in [(MX+MW*0.05,"Firma del Docente / Tutor"),
+                        (MX+MW*0.58,"Firma del Padre / Apoderado" if tipo=="padres" else "Firma del Estudiante")]:
+            c.line(xi, fy, xi+fw, fy)
+            c.setFont("Helvetica",7); c.setFillColorRGB(*C_HDR)
+            c.drawCentredString(xi+fw/2, fy-0.30*cm, lbl)
+
+        # Pie de página
+        c.setFont("Helvetica-Oblique",6)
+        c.setFillColorRGB(0.55,0.55,0.55)
+        c.drawCentredString(W/2, 0.8*cm,
+            f"{ie}  ·  UGEL {ugel}  ·  Formato aprobado: RM 0657-2017-MINEDU  ·  {anio_txt}")
+
+    for _ in range(max(1,n_formatos)):
+        draw_page()
+        c.showPage()
+
+    c.save()
+    buf.seek(0)
     return buf.read()
 
 def _generar_formato_atencion_padres(config, docente, grado, n_formatos, anio):
@@ -10797,8 +10987,8 @@ def _generar_pdf_puntual_semana(top_alu, top_doc, fecha_ini, fecha_fin):
     return buf.read()
 
 def _generar_pdf_ausentes(ausentes, fecha_str):
-    """PDF lista de ausentes del día con celular del apoderado para llamadas."""
-    from reportlab.lib.pagesizes import A4
+    """PDF lista de ausentes del día — LANDSCAPE para ver nombres completos."""
+    from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
@@ -10807,9 +10997,9 @@ def _generar_pdf_ausentes(ausentes, fecha_str):
     import io as _io
 
     buf = _io.BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=A4,
-                            topMargin=1.5*cm, bottomMargin=1.5*cm,
-                            leftMargin=1.8*cm, rightMargin=1.8*cm)
+    doc = SimpleDocTemplate(buf, pagesize=landscape(A4),
+                            topMargin=1.2*cm, bottomMargin=1.2*cm,
+                            leftMargin=1.2*cm, rightMargin=1.2*cm)
     ss  = getSampleStyleSheet()
     C_R = colors.Color(0.65, 0.05, 0.05)
     C_L = colors.Color(0.98, 0.93, 0.93)
@@ -10843,7 +11033,7 @@ def _generar_pdf_ausentes(ausentes, fecha_str):
     ]
 
     HDRS = ["N°", "Apellidos y Nombres", "Grado", "Apoderado", "Celular", "¿Llamó?", "Obs."]
-    CWS  = [0.6*cm, 5.8*cm, 2.5*cm, 4.0*cm, 2.4*cm, 1.4*cm, 1.3*cm]
+    CWS  = [0.6*cm, 7.5*cm, 3.5*cm, 5.5*cm, 3.0*cm, 1.8*cm, 2.0*cm]
     n = 0
     for grado, lista in por_grado.items():
         story.append(P(f"  {grado}  ({len(lista)} ausentes)", bold=True, size=9,
@@ -11760,69 +11950,131 @@ def tab_asistencias():
                     with _ab1:
                         if st.button("📥 PDF Reporte Mensual", type="primary",
                                      use_container_width=True, key="btn_pdf_aus"):
-                            from reportlab.lib.pagesizes import A4
-                            from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+                            from reportlab.lib.pagesizes import A4, landscape
+                            from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
                             from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
                             from reportlab.lib import colors
                             from reportlab.lib.units import cm
-                            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+                            from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
                             import io as _io2
                             _buf_aus = _io2.BytesIO()
-                            _doc_aus = SimpleDocTemplate(_buf_aus, pagesize=A4,
-                                topMargin=1.5*cm, bottomMargin=1.5*cm,
-                                leftMargin=1.8*cm, rightMargin=1.8*cm)
+                            _PG_AUS = landscape(A4)   # ← HORIZONTAL
+                            _W_AUS  = _PG_AUS[0] - 2.4*cm   # ancho útil ~25.3 cm
+                            _doc_aus = SimpleDocTemplate(_buf_aus, pagesize=_PG_AUS,
+                                topMargin=1.2*cm, bottomMargin=1.2*cm,
+                                leftMargin=1.2*cm, rightMargin=1.2*cm)
                             _ss2 = getSampleStyleSheet()
+                            _C_NAVY = colors.Color(0.08,0.18,0.45)
+                            _C_RED  = colors.Color(0.70,0.05,0.05)
+                            _C_ORG  = colors.Color(0.80,0.38,0.02)
+                            _C_GRN  = colors.Color(0.05,0.52,0.18)
+                            _C_LB   = colors.Color(0.94,0.96,1.00)
                             def _Pp(t, bold=False, s=9, al=TA_CENTER, c=None):
                                 return Paragraph(f"<b>{t}</b>" if bold else str(t),
-                                    ParagraphStyle("p2",fontSize=s,leading=s+3,alignment=al,
-                                        textColor=c or colors.black,
-                                        fontName="Helvetica-Bold" if bold else "Helvetica",parent=_ss2["Normal"]))
-                            _W2 = A4[0]-3.6*cm
-                            _C_RED = colors.Color(0.65,0.05,0.05)
-                            _C_GRN = colors.Color(0.05,0.55,0.2)
-                            _C_ORG = colors.Color(0.85,0.4,0.05)
+                                    ParagraphStyle("p2",fontSize=s,leading=s+3,
+                                        alignment=al, textColor=c or colors.black,
+                                        fontName="Helvetica-Bold" if bold else "Helvetica",
+                                        parent=_ss2["Normal"]))
+                            # ── Encabezado ──────────────────────────────
                             _story2 = [
-                                _Pp("I.E.P. ALTERNATIVO YACHAY", bold=True, s=13),
+                                _Pp("I.E.P. ALTERNATIVO YACHAY", bold=True, s=14, c=_C_NAVY),
                                 _Pp("UGEL Urubamba  |  Chinchero, Cusco", s=8, c=colors.Color(0.4,0.4,0.4)),
-                                Spacer(1,0.2*cm),
-                                _Pp(f"REPORTE DE ASISTENCIA — {_titulo_aus}", bold=True, s=12),
-                                _Pp(f"Grado: {_grado_aus}  |  {len(_resumen_aus)} estudiantes  |  {len(_dias_analizar)} días escolares", s=9),
-                                Spacer(1,0.4*cm),
+                                HRFlowable(width="100%", thickness=2, color=_C_NAVY, spaceBefore=4, spaceAfter=4),
+                                _Pp(f"REPORTE DE ASISTENCIA — {_titulo_aus}", bold=True, s=13, c=_C_NAVY),
+                                _Pp(f"Grado: {_grado_aus}  |  {len(_resumen_aus)} estudiantes  |  {len(_dias_analizar)} días escolares  |  Generado: {fecha_peru_str()}", s=8, c=colors.Color(0.3,0.3,0.3)),
+                                Spacer(1,0.35*cm),
                             ]
-                            # Tabla encabezado
-                            _HDRS2 = ["N°","Apellidos y Nombres","Grado","Puntual","Tardanza","Faltas","% Asist.","Apoderado","Celular"]
-                            _CWS2  = [0.6*cm,4.8*cm,2.0*cm,1.2*cm,1.5*cm,1.2*cm,1.4*cm,3.5*cm,2.4*cm]
+                            # ── KPI resumen ─────────────────────────────
+                            _n_f = sum(1 for r in _resumen_aus if r['falta']>0)
+                            _n_t = sum(1 for r in _resumen_aus if r['tardanza']>0)
+                            _n_ok= sum(1 for r in _resumen_aus if r['falta']==0 and r['tardanza']==0)
+                            _prom_a = round(sum(r['pct_asist'] for r in _resumen_aus)/len(_resumen_aus),1) if _resumen_aus else 0
+                            _kpi_row = [
+                                [_Pp(f"{_n_f}",bold=True,s=18,c=_C_RED), _Pp("Con faltas",s=7,c=_C_RED)],
+                                [_Pp(f"{_n_t}",bold=True,s=18,c=_C_ORG), _Pp("Con tardanzas",s=7,c=_C_ORG)],
+                                [_Pp(f"{_n_ok}",bold=True,s=18,c=_C_GRN), _Pp("Perfecta asistencia",s=7,c=_C_GRN)],
+                                [_Pp(f"{_prom_a}%",bold=True,s=18,c=_C_NAVY), _Pp("Asist. promedio",s=7,c=_C_NAVY)],
+                            ]
+                            _kpi_w = _W_AUS/4
+                            _t_kpi = Table([[Table([[r[0]],[r[1]]],colWidths=[_kpi_w-0.4*cm]) for r in _kpi_row]],
+                                           colWidths=[_kpi_w]*4)
+                            _t_kpi.setStyle(TableStyle([
+                                ('ALIGN',(0,0),(-1,-1),'CENTER'),('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                                ('ROWBACKGROUNDS',(0,0),(-1,-1),[colors.Color(0.98,0.99,1.0)]),
+                                ('BOX',(0,0),(-1,-1),0.5,colors.Color(0.85,0.85,0.85)),
+                                ('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6),
+                            ]))
+                            _story2 += [_t_kpi, Spacer(1,0.35*cm)]
+                            # ── Tabla principal — 9 columnas bien anchas ─
+                            _HDRS2 = ["N°","Apellidos y Nombres","Grado",
+                                      "Puntual","Tardanza","Faltas","% Asist.","Apoderado","Celular"]
+                            # Totales: 0.7+6.2+3.8+1.6+1.8+1.6+1.8+4.4+2.9 = 24.8 cm ≈ _W_AUS
+                            _CWS2 = [0.70*cm,6.20*cm,3.80*cm,1.60*cm,1.80*cm,1.60*cm,1.80*cm,4.40*cm,2.90*cm]
                             _rows2 = [_HDRS2]
                             for _n2, _r2 in enumerate(_resumen_aus, 1):
-                                _cel2 = _r2['celular'] if _r2['celular'] else '—'
-                                _apo2 = _r2['apoderado'][:22] if _r2['apoderado'] else '—'
+                                _cel2 = _r2['celular'] if _r2['celular'] and _r2['celular'] not in ('nan','None') else '—'
+                                _apo2 = (_r2['apoderado'][:30] if _r2['apoderado'] and _r2['apoderado'] not in ('nan','None') else '—')
+                                _falta_txt = str(_r2['falta']) if _r2['falta'] == 0 else f"**{_r2['falta']}**"
                                 _rows2.append([
-                                    str(_n2), _r2['nombre'][:32], _r2['grado'],
-                                    str(_r2['puntual']), str(_r2['tardanza']), str(_r2['falta']),
-                                    f"{_r2['pct_asist']}%", _apo2, _cel2
+                                    str(_n2),
+                                    _r2['nombre'],          # nombre completo sin truncar
+                                    _r2['grado'],
+                                    str(_r2['puntual']),
+                                    str(_r2['tardanza']),
+                                    str(_r2['falta']),
+                                    f"{_r2['pct_asist']}%",
+                                    _apo2,
+                                    _cel2
                                 ])
-                            _t2 = Table(_rows2, colWidths=_CWS2)
+                            _t2 = Table(_rows2, colWidths=_CWS2, repeatRows=1)
                             _ts2 = TableStyle([
-                                ('BACKGROUND',(0,0),(-1,0),colors.Color(0.08,0.18,0.45)),
+                                # Encabezado
+                                ('BACKGROUND',(0,0),(-1,0),_C_NAVY),
                                 ('TEXTCOLOR',(0,0),(-1,0),colors.white),
                                 ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),
-                                ('FONTSIZE',(0,0),(-1,-1),7.5),
+                                ('FONTSIZE',(0,0),(-1,0),8),
+                                # Cuerpo
+                                ('FONTSIZE',(0,1),(-1,-1),7.5),
+                                ('FONTNAME',(0,1),(-1,-1),'Helvetica'),
                                 ('ALIGN',(0,0),(-1,-1),'CENTER'),
-                                ('ALIGN',(1,0),(1,-1),'LEFT'),
-                                ('ALIGN',(7,0),(8,-1),'LEFT'),
-                                ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.Color(0.96,0.97,1.0)]),
-                                ('GRID',(0,0),(-1,-1),0.4,colors.Color(0.8,0.8,0.8)),
-                                ('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3),
+                                ('ALIGN',(1,0),(1,-1),'LEFT'),   # nombres → izquierda
+                                ('ALIGN',(2,0),(2,-1),'LEFT'),   # grado → izquierda
+                                ('ALIGN',(7,0),(8,-1),'LEFT'),   # apoderado/cel → izquierda
+                                ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white, _C_LB]),
+                                ('GRID',(0,0),(-1,-1),0.3,colors.Color(0.78,0.78,0.78)),
+                                ('TOPPADDING',(0,0),(-1,-1),3),
+                                ('BOTTOMPADDING',(0,0),(-1,-1),3),
+                                ('LEFTPADDING',(0,0),(-1,-1),4),
+                                ('RIGHTPADDING',(0,0),(-1,-1),4),
+                                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
                             ])
-                            # Colorear filas con faltas
+                            # Colorear según estado
                             for _ri2, _r2 in enumerate(_resumen_aus, 1):
                                 if _r2['falta'] > 0:
                                     _ts2.add('TEXTCOLOR',(5,_ri2),(5,_ri2),_C_RED)
                                     _ts2.add('FONTNAME',(5,_ri2),(5,_ri2),'Helvetica-Bold')
+                                    _ts2.add('FONTSIZE',(5,_ri2),(5,_ri2),9)
                                 if _r2['tardanza'] > 0:
                                     _ts2.add('TEXTCOLOR',(4,_ri2),(4,_ri2),_C_ORG)
+                                    _ts2.add('FONTNAME',(4,_ri2),(4,_ri2),'Helvetica-Bold')
+                                if _r2['pct_asist'] < 75:
+                                    _ts2.add('BACKGROUND',(6,_ri2),(6,_ri2),colors.Color(1.0,0.92,0.92))
+                                    _ts2.add('TEXTCOLOR',(6,_ri2),(6,_ri2),_C_RED)
+                                elif _r2['pct_asist'] >= 90:
+                                    _ts2.add('TEXTCOLOR',(6,_ri2),(6,_ri2),_C_GRN)
                             _t2.setStyle(_ts2)
                             _story2.append(_t2)
+                            # Firma
+                            _story2 += [
+                                Spacer(1,0.8*cm),
+                                Table([[_Pp("DIRECTOR(A)",bold=True,s=8),
+                                        _Pp("DOCENTE / AUXILIAR",bold=True,s=8)]],
+                                      colWidths=[_W_AUS/2,_W_AUS/2],
+                                      style=[('LINEABOVE',(0,0),(0,0),0.5,colors.grey),
+                                             ('LINEABOVE',(1,0),(1,0),0.5,colors.grey),
+                                             ('ALIGN',(0,0),(-1,-1),'CENTER'),
+                                             ('TOPPADDING',(0,0),(-1,-1),4)])
+                            ]
                             _doc_aus.build(_story2)
                             _buf_aus.seek(0)
                             st.session_state['_pdf_aus_bytes'] = _buf_aus.read()
@@ -11996,6 +12248,58 @@ def tab_asistencias():
                 f'<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;">'
                 f'<strong style="color:#c2410c;">⚠️ Alumnos con 3+ inasistencias en 14 días:</strong>'
                 f'<div style="margin-top:6px;">{_chips}</div></div>', unsafe_allow_html=True)
+
+        # ── GRÁFICO DE BARRAS MENSUAL ────────────────────────────────
+        st.markdown("---")
+        st.markdown("#### 📊 Gráfico de Asistencia — Mes en curso")
+
+        _hoy_g = hora_peru()
+        _mes_g = _hoy_g.month; _anio_g = _hoy_g.year
+        import calendar as _calg
+        _dias_mes_g = _calg.monthrange(_anio_g, _mes_g)[1]
+        _dias_lab_g = [
+            datetime(_anio_g, _mes_g, _d)
+            for _d in range(1, _dias_mes_g+1)
+            if datetime(_anio_g, _mes_g, _d).weekday() < 5
+        ]
+        _total_mat_g = max(1, len(BaseDatos.cargar_matricula()))
+        _bars_g = []
+        for _dg in _dias_lab_g:
+            _fk_g = _dg.strftime('%Y-%m-%d')
+            _reg_g = _asis_hist.get(_fk_g, {})
+            _ent_g = sum(1 for v in _reg_g.values()
+                        if not v.get('es_docente',False) and (v.get('entrada') or v.get('tardanza')))
+            _tard_g = sum(1 for v in _reg_g.values()
+                         if not v.get('es_docente',False) and v.get('tardanza'))
+            _pct_g  = round(_ent_g/_total_mat_g*100)
+            _bars_g.append((_dg.day, _dg.strftime('%d/%m'), _ent_g, _tard_g, _pct_g))
+
+        if any(b[2] > 0 for b in _bars_g):
+            _MAX_H = 80
+            _bars_html = "<div style='display:flex;align-items:flex-end;gap:3px;height:100px;overflow-x:auto;padding-bottom:4px;'>"
+            for _dd, _label, _ent, _tard, _pct in _bars_g:
+                _h_ent  = max(2, int(_ent/_total_mat_g*_MAX_H))
+                _h_tard = max(0, int(_tard/_total_mat_g*_MAX_H))
+                _es_hoy = (_dd == _hoy_g.day)
+                _bg_e   = "#16a34a" if not _es_hoy else "#0f766e"
+                _bord   = "2px solid #0f766e" if _es_hoy else "none"
+                _bars_html += (
+                    f"<div style='display:flex;flex-direction:column;align-items:center;min-width:22px;'>"
+                    f"<div style='font-size:9px;color:#666;margin-bottom:2px;'>{_pct}%</div>"
+                    f"<div style='width:16px;border:{_bord};border-radius:2px 2px 0 0;'>"
+                    f"<div style='background:{_bg_e};height:{_h_ent}px;'></div>"
+                    f"<div style='background:#fbbf24;height:{_h_tard}px;'></div>"
+                    f"</div>"
+                    f"<div style='font-size:8px;color:{'#0f766e' if _es_hoy else '#888'};font-weight:{'700' if _es_hoy else '400'};'>{_label[:5]}</div>"
+                    f"</div>")
+            _bars_html += "</div>"
+            _bars_html += "<div style='font-size:11px;color:#888;margin-top:4px;'>🟩 Puntual &nbsp;🟨 Tardanza &nbsp;(borde = hoy)</div>"
+            st.markdown(f"<div style='background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;'>"
+                        f"<div style='font-size:0.82rem;font-weight:700;color:#334155;margin-bottom:8px;'>"
+                        f"Asistencia diaria — {_hoy_g.strftime('%B %Y')} | Base: {_total_mat_g} estudiantes</div>"
+                        f"{_bars_html}</div>", unsafe_allow_html=True)
+        else:
+            st.info("Sin datos de asistencia para este mes aún.")
 
         # Ranking puntualidad por grado
         with st.expander("🏅 Ranking de Puntualidad por Grado (14 días)", expanded=False):
@@ -31593,7 +31897,7 @@ def tab_telegram_notificaciones(config):
                 _chat_test = st.text_input("Chat ID:", key="tg_chat_test", placeholder="Ej: 123456789")
             with _c2t:
                 st.markdown("<br>", unsafe_allow_html=True)
-                if st.button("📤 Enviar prueba", key="btn_tg_test", use_container_width=True):
+                if st.button("📤 Enviar prueba", type="primary", key="btn_tg_test", use_container_width=True):
                     if _chat_test.strip():
                         with st.spinner("Enviando..."):
                             _ok_t = _tg_enviar(_chat_test.strip(),
@@ -31627,7 +31931,7 @@ def tab_telegram_notificaciones(config):
             import pandas as _pd_tg
             st.dataframe(_pd_tg.DataFrame(_sub_rows), use_container_width=True, hide_index=True)
 
-            if st.button("🗑️ Limpiar todas las suscripciones", key="btn_tg_clear"):
+            if st.button("🗑️ Limpiar todas las suscripciones", type="primary", key="btn_tg_clear"):
                 _tg_guardar_subs({})
                 st.success("✅ Suscripciones eliminadas")
                 st.rerun()
