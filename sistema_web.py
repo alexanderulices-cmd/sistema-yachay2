@@ -12968,6 +12968,81 @@ def tab_asistencias():
 
 
 
+
+# ─────────────────────────────────────────────────────────────
+# WHATSAPP AUTOMÁTICO — CallMeBot (100% gratis)
+# Setup único por padre: enviar "I allow callmebot to send me messages"
+# al número +34 644 65 21 68 en WhatsApp → reciben API key
+# ─────────────────────────────────────────────────────────────
+_CMB_CONFIG_PATH = "callmebot_config.json"
+_CMB_SUBS_PATH   = "callmebot_suscriptores.json"
+
+def _cmb_cargar_subs():
+    """Carga mapa DNI → {celular, apikey}."""
+    try:
+        if Path(_CMB_SUBS_PATH).exists():
+            with open(_CMB_SUBS_PATH,"r",encoding="utf-8") as f:
+                return json.load(f)
+    except Exception: pass
+    # Intentar desde GSheets
+    try:
+        d = _tg_gs_get('callmebot_suscriptores')
+        if d: return d
+    except Exception: pass
+    return {}
+
+def _cmb_guardar_subs(data):
+    """Guarda subs en GSheets + local."""
+    try:
+        with open(_CMB_SUBS_PATH,"w",encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception: pass
+    try: _tg_gs_set('callmebot_suscriptores', data)
+    except Exception: pass
+
+def _cmb_enviar(celular, mensaje, apikey):
+    """Envía WhatsApp via CallMeBot. Retorna True si OK."""
+    import urllib.request as _ur2
+    import urllib.parse as _up2
+    try:
+        # Limpiar número
+        tel = str(celular).replace(' ','').replace('+','').replace('-','')
+        if not tel.startswith('51'): tel = '51' + tel
+        # Solo texto ASCII/URL-safe
+        msg_enc = _up2.quote(str(mensaje))
+        url = f"https://api.callmebot.com/whatsapp.php?phone={tel}&text={msg_enc}&apikey={apikey}"
+        req = _ur2.Request(url)
+        with _ur2.urlopen(req, timeout=6) as resp:
+            body = resp.read().decode('utf-8','ignore').lower()
+            return 'message queued' in body or resp.status == 200
+    except Exception:
+        return False
+
+def _cmb_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
+    """Envía WhatsApp automático al padre via CallMeBot."""
+    subs = _cmb_cargar_subs()
+    entry = subs.get(str(dni_alumno).strip())
+    if not entry: return
+    celular = entry.get('celular','') if isinstance(entry, dict) else ''
+    apikey  = entry.get('apikey','')  if isinstance(entry, dict) else ''
+    if not celular or not apikey: return
+
+    etiquetas = {"entrada":"ENTRO PUNTUAL","tardanza":"TARDANZA",
+                 "salida":"SALIO Turno manana","entrada_tarde":"ENTRO Turno tarde",
+                 "salida_tarde":"SALIO Turno tarde"}
+    etq = etiquetas.get(tipo, tipo.replace("_"," ").upper())
+
+    msg = (
+        f"YACHAY PRO - Asistencia\n"
+        f"Estudiante: {nombre_alumno}\n"
+        f"Grado: {grado or 'Docente'}\n"
+        f"Estado: {etq}\n"
+        f"Hora: {hora}\n"
+        "IEP Yachay Chinchero Tel:084-750071"
+    )
+    import threading as _th_cmb
+    _th_cmb.Thread(target=_cmb_enviar, args=(celular, msg, apikey), daemon=True).start()
+
 # ═══════════════════════════════════════════════════════
 # SISTEMA DE NOTIFICACIONES TELEGRAM PARA PADRES
 # ═══════════════════════════════════════════════════════
@@ -13350,13 +13425,14 @@ def _registrar_asistencia_rapida(dni):
             reproducir_beep_exitoso()
         # Anuncio de voz con el nombre
         _hablar_nombre(nombre, tipo, es_tardanza=(tipo == 'tardanza'))
-        # Notificación Telegram — alumnos Y docentes
+        # Notificaciones automáticas — Telegram Y WhatsApp (CallMeBot)
         try:
             _grado_e = str(persona.get('Grado', persona.get('grado',
                           'Docente' if es_d else ''))).strip()
             if not _grado_e and es_d:
                 _grado_e = "Docente"
             _tg_notificar_asistencia(dni_str, nombre, _grado_e, tipo, hora)
+            _cmb_notificar_asistencia(dni_str, nombre, _grado_e, tipo, hora)
         except Exception:
             pass
     else:
@@ -22028,10 +22104,11 @@ def tab_registrar_notas(config):
                     st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
-                    # Notificación Telegram automática a cada padre suscrito
+                    # Notificaciones automáticas Telegram + WhatsApp a cada padre
                     try:
                         _subs_ev=_tg_cargar_subs(); _cfg_ev=_tg_cargar_config()
                         _tok_ev=_tg_limpiar_token(_cfg_ev.get("bot_token",""))
+                        _cmb_subs_ev=_cmb_cargar_subs()  # CallMeBot subs
                         if _tok_ev and _subs_ev:
                             import threading as _thr_ev
                             _snap_ev=list(ranking_filas); _snap_subs_ev=dict(_subs_ev)
@@ -31442,8 +31519,10 @@ def main():
                 _tab_test_tdah_docente(config)
             elif mod == "telegram_bot":
                 tab_telegram_notificaciones(config)
+            elif mod == "whatsapp_auto":
+                tab_whatsapp_automatico(config)
             elif mod == "bienestar":
-                tab_bienestar_estudiantil(config)
+                tab_bienestar_estudiantil(config, _pfx="bw_doc")
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
@@ -31487,6 +31566,7 @@ def main():
                 ("👨‍👩‍👧", "Portal Padres", "portal_seguimiento", "#0f766e"),
                 ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
                 ("📱", "Notif. Telegram", "telegram_bot", "#0088cc"),
+                ("💬", "WhatsApp Auto", "whatsapp_auto", "#25D366"),
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
             ]
@@ -31974,7 +32054,7 @@ Ejemplo: /start 70123456
         st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
 
 
-def tab_bienestar_estudiantil(config):
+def tab_bienestar_estudiantil(config, _pfx="bw"):
     """Dashboard de bienestar estudiantil — sistema Wilma de Finlandia."""
     st.header("💚 Bienestar Estudiantil")
     st.caption("Registro semanal 1-5 de cada dimension. Detecta alumnos en riesgo antes que bajen notas.")
@@ -32013,19 +32093,19 @@ def tab_bienestar_estudiantil(config):
         else:
             st.caption(f"👥 {len(df_bw)} estudiantes — semana {sem}")
             noms = df_bw.apply(lambda r: f"{r.get('Nombre','')} ({r.get('DNI','')})", axis=1).tolist()
-            sel = st.selectbox("Estudiante:", noms, key="bw_alu")
+            sel = st.selectbox("Estudiante:", noms, key=f"{_pfx}_alu")
             dni_bw = sel.split("(")[-1].rstrip(")").strip()
             nom_bw = sel.split(" (")[0].strip()
             prev = data_bw.get(sem,{}).get(dni_bw,{})
             st.markdown(f"**Registro — {nom_bw}** (Escala 1=Muy mal · 5=Excelente)")
             vals = {}
             for dim, preg in DIMS:
-                v = st.slider(preg, 1, 5, prev.get(dim,3), key=f"bw_{dni_bw}_{dim}")
+                v = st.slider(preg, 1, 5, prev.get(dim,3), key=f"{_pfx}_{dni_bw}_{dim}")
                 vals[dim] = v
                 st.markdown(f"<span style='background:{C_NIV[v]};color:white;padding:2px 10px;border-radius:10px;font-size:12px;'>{E_NIV[v]}</span>", unsafe_allow_html=True)
             _obs_val = str(prev.get("obs","") or "")
-            obs = st.text_area("Observaciones:", value=_obs_val, key=f"bw_obs_{dni_bw}_{sem}", height=60)
-            if st.button("💾 Guardar Bienestar", type="primary", use_container_width=True, key="btn_save_bw"):
+            obs = st.text_area("Observaciones:", value=_obs_val, key=f"{_pfx}_obs_{dni_bw}_{sem}", height=60)
+            if st.button("💾 Guardar Bienestar", type="primary", use_container_width=True, key=f"{_pfx}_btn_save"):
                 if sem not in data_bw: data_bw[sem] = {}
                 prom = round(sum(vals.values())/len(vals),2)
                 data_bw[sem][dni_bw] = {**vals,"nombre":nom_bw,"fecha":hoy_str,"obs":obs.strip(),"promedio":prom}
@@ -32039,7 +32119,7 @@ def tab_bienestar_estudiantil(config):
         if not sems:
             st.info("Sin registros. Empieza registrando el bienestar de tus estudiantes.")
         else:
-            sem_s = st.selectbox("Semana:", sems, key="bw_sem_dash")
+            sem_s = st.selectbox("Semana:", sems, key=f"{_pfx}_sem_dash")
             reg_s = data_bw.get(sem_s,{})
             if reg_s:
                 st.markdown(f"**{len(reg_s)} estudiantes registrados — semana {sem_s}**")
@@ -32145,6 +32225,134 @@ def tab_analisis_predictivo(config):
         bw = p["riesgo"]
         nt = f"{p['nota']}/20" if p["nota"] is not None else "Sin notas"
         st.markdown(f"<div style='background:white;border:1px solid #e5e7eb;border-left:5px solid {p['color']};border-radius:8px;padding:10px 14px;margin-bottom:6px;'><div style='display:flex;justify-content:space-between;'><b>{p['nombre']}</b><span style='color:{p['color']};font-weight:700;'>Riesgo: {bw}%</span></div><div style='background:#f1f5f9;border-radius:6px;height:7px;margin:6px 0;'><div style='background:{p['color']};width:{bw}%;height:7px;border-radius:6px;'></div></div><div style='font-size:0.75rem;color:#555;'>✅ Asistencia: {p['asist']}% &nbsp;⏰ Tardanzas: {p['tard']}% &nbsp;❌ Faltas: {p['faltas']} &nbsp;📝 Notas: {nt}</div></div>", unsafe_allow_html=True)
+
+
+def tab_whatsapp_automatico(config):
+    """Admin: configurar WhatsApp automático via CallMeBot (gratis)."""
+    st.header("📲 WhatsApp Automático — CallMeBot")
+    st.caption("Notificaciones automáticas a padres via WhatsApp. Gratis, sin API de pago.")
+
+    subs_cmb = _cmb_cargar_subs()
+
+    _sub_wa = st.tabs(["📋 Instrucciones","👨‍👩‍👧 Suscriptores","🧪 Enviar Prueba"])
+
+    with _sub_wa[0]:
+        st.markdown("#### ¿Cómo funciona CallMeBot?")
+        st.info("CallMeBot es un servicio gratuito que permite enviar mensajes automáticos de WhatsApp "
+                "a cualquier celular. Cada padre hace la activación una sola vez en 2 minutos.")
+        st.markdown("""
+**SETUP — Lo hace cada padre (2 minutos):**
+
+**Paso 1:** El padre guarda este número en sus contactos de WhatsApp:
+""")
+        st.code("+34 644 65 21 68", language=None)
+        st.markdown("""
+**Paso 2:** Le envía este mensaje exacto (en inglés):
+""")
+        st.code("I allow callmebot to send me messages", language=None)
+        st.markdown("""
+**Paso 3:** CallMeBot responde con un mensaje que dice:
+`Your Whatsapp phone is activated. Your API key is: XXXXXXXX`
+
+**Paso 4:** El padre te da ese número de API key y tú lo registras en la pestaña Suscriptores.
+
+**Listo.** Desde ese momento, cuando un estudiante registre asistencia, el mensaje llega automáticamente al WhatsApp del padre.
+        """)
+        st.warning("⚠️ Solo funciona con el número que el padre activó con CallMeBot. "
+                   "Si cambia de celular debe repetir el setup.")
+        st.markdown("---")
+        st.markdown("**Texto de instrucción para enviar a los padres (copia y comparte por WhatsApp):**")
+        _inst_txt = (
+            "IEP ALTERNATIVO YACHAY - CHINCHERO\n\n"
+            "Estimado padre/madre:\n\n"
+            "Para recibir notificaciones AUTOMATICAS de asistencia de su hijo/a en WhatsApp, "
+            "siga estos 4 pasos:\n\n"
+            "1) Guarde este numero en WhatsApp: +34 644 65 21 68 (como CallMeBot)\n"
+            "2) Envieles este mensaje EXACTO: I allow callmebot to send me messages\n"
+            "3) Recibira un codigo API Key (ejemplo: 1234567)\n"
+            "4) Envienos ese codigo a: 084-750071 o al docente de su hijo\n\n"
+            "Costo: CERO. Solo hacer 1 vez.\n"
+            "Cualquier duda: 084-750071 - IEP Alternativo Yachay"
+        )
+        st.text_area("Instrucciones para padres:", value=_inst_txt, height=300,
+                     key="cmb_instrucciones")
+
+    with _sub_wa[1]:
+        st.markdown(f"#### 👨‍👩‍👧 Padres registrados en WhatsApp automático: **{len(subs_cmb)}**")
+        st.caption("Registra aquí el celular y API Key de cada padre que completó el setup.")
+
+        # Agregar nuevo suscriptor
+        with st.expander("➕ Agregar nuevo suscriptor", expanded=len(subs_cmb)==0):
+            df_mat_cmb = BaseDatos.cargar_matricula()
+            _col_cmb1, _col_cmb2 = st.columns(2)
+            with _col_cmb1:
+                if not df_mat_cmb.empty:
+                    _noms_cmb = df_mat_cmb.apply(
+                        lambda r: f"{r.get('Nombre','')} ({r.get('DNI','')})", axis=1).tolist()
+                    _sel_cmb = st.selectbox("Estudiante:", _noms_cmb, key="cmb_alu_sel")
+                    _dni_cmb_new = _sel_cmb.split("(")[-1].rstrip(")").strip()
+                    _nom_cmb_new = _sel_cmb.split(" (")[0].strip()
+                else:
+                    _dni_cmb_new = st.text_input("DNI del estudiante:", key="cmb_dni_new")
+                    _nom_cmb_new = ""
+            with _col_cmb2:
+                _cel_cmb_new = st.text_input("Celular del padre (con 9 dígitos):",
+                                              placeholder="987654321", key="cmb_cel_new")
+                _key_cmb_new = st.text_input("API Key de CallMeBot:",
+                                              placeholder="1234567", key="cmb_key_new")
+
+            if st.button("✅ Registrar padre en WhatsApp automático", type="primary",
+                         use_container_width=True, key="btn_cmb_add"):
+                if _dni_cmb_new and _cel_cmb_new and _key_cmb_new:
+                    subs_cmb[_dni_cmb_new.strip()] = {
+                        "nombre": _nom_cmb_new,
+                        "celular": _cel_cmb_new.strip(),
+                        "apikey": _key_cmb_new.strip(),
+                        "fecha": fecha_peru_str(),
+                    }
+                    _cmb_guardar_subs(subs_cmb)
+                    st.success(f"✅ {_nom_cmb_new or _dni_cmb_new} registrado. "
+                               f"Las próximas notificaciones le llegarán por WhatsApp.")
+                    st.rerun()
+                else:
+                    st.warning("Completa DNI, celular y API key.")
+
+        if subs_cmb:
+            st.markdown("---")
+            for _dni_s, _dat_s in subs_cmb.items():
+                _cel_s = _dat_s.get('celular','') if isinstance(_dat_s,dict) else ''
+                _key_s = _dat_s.get('apikey','') if isinstance(_dat_s,dict) else ''
+                _nom_s = _dat_s.get('nombre','') if isinstance(_dat_s,dict) else str(_dat_s)
+                st.markdown(
+                    f"<div style='background:#f0fdf4;border:1px solid #86efac;"
+                    f"border-radius:8px;padding:8px 14px;margin-bottom:5px;"
+                    f"display:flex;justify-content:space-between;align-items:center;'>"
+                    f"<div><b>{_nom_s}</b> <span style='color:#888;font-size:0.8rem;'>DNI: {_dni_s}</span></div>"
+                    f"<div style='font-size:0.8rem;color:#555;'>📱 {_cel_s} &nbsp;🔑 {_key_s[:4]}****</div>"
+                    f"</div>", unsafe_allow_html=True)
+
+            if st.button("🗑️ Limpiar todos los suscriptores WA", key="btn_cmb_clear"):
+                _cmb_guardar_subs({})
+                st.success("✅ Limpiado")
+                st.rerun()
+
+    with _sub_wa[2]:
+        st.markdown("#### 🧪 Enviar mensaje de prueba")
+        _cel_test = st.text_input("Celular (9 dígitos sin código país):", placeholder="987654321", key="cmb_test_cel")
+        _key_test = st.text_input("API Key CallMeBot:", placeholder="1234567", key="cmb_test_key")
+        if st.button("📤 Enviar prueba WhatsApp", type="primary",
+                     use_container_width=True, key="btn_cmb_test"):
+            if _cel_test and _key_test:
+                with st.spinner("Enviando..."):
+                    _ok_cmb = _cmb_enviar(_cel_test,
+                        "Prueba YACHAY PRO. El sistema de notificaciones WhatsApp automatico esta funcionando. IEP Alternativo Yachay Chinchero Tel:084-750071",
+                        _key_test)
+                if _ok_cmb:
+                    st.success("✅ Mensaje enviado. Verifica en WhatsApp.")
+                else:
+                    st.error("❌ No se pudo enviar. Verifica el celular y el API key de CallMeBot.")
+            else:
+                st.warning("Ingresa el celular y el API key.")
 
 def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
