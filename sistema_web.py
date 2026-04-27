@@ -1737,6 +1737,21 @@ class BaseDatos:
                         'hora_salida_tarde': reg.get('salida_tarde', ''),
                         'grado': grado, 'nivel': nivel,
                     })
+                    # Guardar el JSON completo en hoja config — para restaurar Top del Mes
+                    try:
+                        ws_cfg = gs._get_hoja('config')
+                        if ws_cfg:
+                            import json as _jsg
+                            _asis_str = _jsg.dumps(_snap_asis, ensure_ascii=False)
+                            _rows_cfg = ws_cfg.get_all_values()
+                            _found = False
+                            for _ri, _rw in enumerate(_rows_cfg):
+                                if _rw and _rw[0] == 'asistencias_json':
+                                    ws_cfg.update_cell(_ri+1, 2, _asis_str)
+                                    _found = True; break
+                            if not _found:
+                                ws_cfg.append_row(['asistencias_json', _asis_str])
+                    except Exception: pass
             except Exception: pass
         _t = _th.Thread(target=_sync_bg, daemon=True)
         _t.start()
@@ -12559,8 +12574,30 @@ def tab_asistencias():
                              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][_mes_actual]
             _nom_mes = _nom_mes_full[:3]
 
-            # Construir datos del mes completo: local + GSheets
-            _asis_mes = dict(_asis_sem)  # start from what we have (may include GSheets data)
+            # Construir datos del mes completo: local + GSheets config backup
+            _asis_mes = dict(_asis_sem)  # semana actual
+
+            # Intentar recuperar el JSON completo de asistencias desde GSheets config
+            # (guardado allí en cada registro para sobrevivir reinicios de Streamlit)
+            try:
+                _gs_inst2 = _gs()
+                if _gs_inst2:
+                    _ws_cfg2 = _gs_inst2._get_hoja('config')
+                    if _ws_cfg2:
+                        for _row_cfg in _ws_cfg2.get_all_values():
+                            if _row_cfg and _row_cfg[0] == 'asistencias_json' and len(_row_cfg) > 1:
+                                _full_asis = json.loads(_row_cfg[1])
+                                # Merge: local tiene prioridad, GSheets llena los huecos
+                                for _fk2, _fd2 in _full_asis.items():
+                                    if _fk2 not in _asis_mes:
+                                        _asis_mes[_fk2] = _fd2
+                                    else:
+                                        for _dk2, _dv2 in _fd2.items():
+                                            if _dk2 not in _asis_mes[_fk2]:
+                                                _asis_mes[_fk2][_dk2] = _dv2
+                                break
+            except Exception:
+                pass
             try:
                 gs = _gs()
                 if gs:
@@ -20472,6 +20509,11 @@ def _restaurar_datos_desde_gs():
                     restaurados += 1
                 elif key == 'diagnostico_data' and not Path('diagnostico_data.json').exists():
                     with open('diagnostico_data.json', 'w', encoding='utf-8') as f:
+                        f.write(val)
+                    restaurados += 1
+                elif key == 'asistencias_json' and not Path('asistencias.json').exists():
+                    # Restaurar historial completo de asistencias — fundamental para Top del Mes
+                    with open('asistencias.json', 'w', encoding='utf-8') as f:
                         f.write(val)
                     restaurados += 1
             except Exception:
