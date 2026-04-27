@@ -13738,7 +13738,7 @@ def tab_calificacion_yachay(config):
             titulo_eval = st.text_input("📝 Nombre de la evaluación:",
                                          "Evaluación Bimestral", key="tit_eval")
         with ec2:
-            num_areas = st.number_input("Número de áreas:", 1, 6, 1, key="num_areas_grid")
+            num_areas = st.number_input("Número de áreas (máx. 8):", 1, 8, 1, key="num_areas_grid")
 
         areas_grid = []
         total_preguntas = 0
@@ -13749,8 +13749,9 @@ def tab_calificacion_yachay(config):
                 area_nom = st.text_input(f"Área {a_idx+1}:", key=f"area_nom_{a_idx}",
                                           value=["Matemática", "Comunicación",
                                                  "Ciencia y Tec.", "Personal Social",
-                                                 "Arte y Cultura", "Ed. Física"][a_idx]
-                                          if a_idx < 6 else f"Área {a_idx+1}")
+                                                 "Arte y Cultura", "Ed. Física",
+                                                 "Historia", "Inglés"][a_idx]
+                                          if a_idx < 8 else f"Área {a_idx+1}")
             with ac2:
                 area_num = st.selectbox(f"Preguntas:",
                                          [5, 10, 15, 20, 25],
@@ -21331,13 +21332,25 @@ def tab_registrar_notas(config):
                     cols_h = ['Puesto','Medalla','Nombre'] + areas_nombres + ['Promedio']
                     cols_h = [c for c in cols_h if c in df_h.columns]
                     st.dataframe(df_h[cols_h], use_container_width=True, hide_index=True)
-                    col_pdf_h, col_wa_h = st.columns(2)
+                    col_pdf_h, col_prog_h, col_wa_h = st.columns(3)
                     with col_pdf_h:
                         if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
                             pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
                             st.download_button("⬇️ Descargar PDF",pdf_h,
                                                f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
                                                "application/pdf", key=f"dl_hist_{clave}")
+                    with col_prog_h:
+                        if st.button("📊 Gráfico Progreso", key=f"prog_hist_{clave}", type="primary"):
+                            _hist_all_hv = _cargar_historial_evaluaciones()
+                            _prev_hv = [v for k2,v in _hist_all_hv.items()
+                                        if isinstance(v,dict) and v.get('grado','')==ev.get('grado','')
+                                        and k2!=clave]
+                            _pdf_prog_hv = _generar_pdf_progreso_barras(
+                                ranking_h, areas_nombres, _prev_hv,
+                                ev.get('grado',''), ev.get('periodo',''), config)
+                            st.download_button("⬇️ Gráfico PDF",_pdf_prog_hv,
+                                f"Progreso_{clave}.pdf","application/pdf",
+                                key=f"dl_prog_hv_{clave}")
                     with col_wa_h:
                         # WA siempre visible — links directos sin estado
                         _wa_h = []
@@ -21389,7 +21402,7 @@ def tab_registrar_notas(config):
 
         # ── Definir cursos y claves ────────────────────────────────
         st.markdown("#### 📚 Paso 1: Define los cursos y sus claves")
-        n_cursos = st.number_input("N° de cursos:", 1, 8, 1, key="cl_ncursos")
+        n_cursos = st.number_input("N° de cursos (máx. 8):", 1, 8, 1, key="cl_ncursos")
 
         OPCIONES_RESP = ["A","B","C","D","E"]
         cursos_config = []  # [{nombre, n_preguntas, claves:[]}]
@@ -21645,6 +21658,20 @@ def tab_registrar_notas(config):
                     st.download_button("⬇️ Descargar PDF", pdf_cl,
                                        f"Ranking_Claves_{grado_cl}_{bim_cl}.pdf",
                                        "application/pdf", key="dl_pdf_cl")
+                if st.button("📊 PDF Gráfico Progreso", type="primary",
+                             use_container_width=True, key="btn_pdf_prog_cl"):
+                    _hist_a_cl = _cargar_historial_evaluaciones()
+                    _prev_cl = [v for k,v in _hist_a_cl.items()
+                                if isinstance(v,dict) and v.get('grado','')==grado_cl
+                                and v.get('periodo','')!=bim_cl]
+                    _pdf_pg_cl = _generar_pdf_progreso_barras(
+                        ranking_cl, areas_cl_names, _prev_cl, grado_cl, bim_cl, config)
+                    st.session_state['_pdf_prog_cl'] = _pdf_pg_cl
+                if st.session_state.get('_pdf_prog_cl'):
+                    st.download_button("⬇️ Gráfico PDF",
+                        st.session_state['_pdf_prog_cl'],
+                        f"Progreso_{grado_cl}_{bim_cl}.pdf",
+                        "application/pdf", key="dl_prog_cl")
 
             # WhatsApp — pre-carga celulares del DataFrame en memoria (1 lectura, no N)
             st.markdown("**📱 Enviar notas por WhatsApp:**")
@@ -22184,6 +22211,205 @@ def tab_registrar_notas(config):
     else:
         st.warning("⚠️ Ingresa al menos una nota para guardar")
 
+
+
+def _generar_pdf_progreso_barras(ranking_actual, areas_nombres, historial_prev,
+                                  grado, periodo, config):
+    """PDF con gráfico de barras de progreso por área.
+    ranking_actual: lista de dicts {Nombre, DNI, Area1, Area2..., Promedio}
+    historial_prev: lista de evaluaciones anteriores [{titulo, ranking:[...]}, ...]
+    Genera una página con barras comparativas para CADA área."""
+    import io as _io_pb
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.pdfgen import canvas as _rpc
+    from reportlab.lib import colors
+
+    buf = _io_pb.BytesIO()
+    W, H = landscape(A4)
+    c = _rpc.Canvas(buf, pagesize=landscape(A4))
+    fecha_hoy = hora_peru().strftime('%d/%m/%Y')
+    ie = config.get("nombre_ie", "I.E.P. ALTERNATIVO YACHAY")
+
+    # Paleta de colores por área
+    AREA_COLS = [
+        "#1e3a8a","#14532d","#7c2d12","#581c87",
+        "#164e63","#713f12","#1e1b4b","#831843",
+    ]
+    AREA_LIGHT = [
+        "#dbeafe","#dcfce7","#ffedd5","#f3e8ff",
+        "#cffafe","#fef9c3","#e0e7ff","#fce7f3",
+    ]
+
+    MX = 30; MY = 30
+    HDR_H = 50
+
+    # ── Por cada área: una sección con barras ──────────────────────
+    n_areas = len(areas_nombres)
+    # Layout: 2 áreas por fila si ≤ 4 áreas, 2 col si más
+    COLS_POR_FILA = 2
+    FILAS = (n_areas + COLS_POR_FILA - 1) // COLS_POR_FILA
+    BLOQUE_W = (W - MX*2) / COLS_POR_FILA
+    BLOQUE_H = (H - MY*2 - HDR_H) / max(FILAS, 1)
+
+    # ── HEADER ─────────────────────────────────────────────────────
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.rect(0, H-HDR_H, W, HDR_H, fill=1, stroke=0)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 15)
+    c.drawCentredString(W/2, H-22, f"GRÁFICO DE PROGRESO POR ÁREA — {grado} — {periodo}")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(colors.HexColor("#93c5fd"))
+    c.drawCentredString(W/2, H-38, f"{ie}  ·  Generado: {fecha_hoy}  ·  {len(ranking_actual)} estudiantes")
+
+    # Obtener promedios de evaluaciones anteriores (hasta 4)
+    eval_prev_labels = []
+    eval_prev_promedios = {}  # {area: [promedio_ev1, promedio_ev2, ...]}
+
+    for ev_p in historial_prev[-4:]:
+        t_p = ev_p.get('titulo', ev_p.get('periodo','Anterior'))[:18]
+        eval_prev_labels.append(t_p)
+        r_p = ev_p.get('ranking', [])
+        for a_p in areas_nombres:
+            notas_p = [float(r.get(a_p, 0)) for r in r_p
+                      if str(r.get(a_p,'')).replace('.','',1).isdigit()]
+            prom_p = round(sum(notas_p)/len(notas_p), 1) if notas_p else 0
+            eval_prev_promedios.setdefault(a_p, []).append((t_p, prom_p))
+
+    eval_prev_labels.append(periodo)  # evaluación actual al final
+
+    # Promedio actual por área
+    for a_cur in areas_nombres:
+        notas_cur = [float(r.get(a_cur,0)) for r in ranking_actual
+                    if str(r.get(a_cur,'')).replace('.','',1).isdigit()]
+        prom_cur = round(sum(notas_cur)/len(notas_cur),1) if notas_cur else 0
+        eval_prev_promedios.setdefault(a_cur,[]).append((periodo, prom_cur))
+
+    # ── Dibujar bloques por área ────────────────────────────────────
+    for ai, area in enumerate(areas_nombres):
+        col_a = ai % COLS_POR_FILA
+        fila_a = ai // COLS_POR_FILA
+        BX = MX + col_a * BLOQUE_W
+        BY = H - HDR_H - MY - (fila_a+1) * BLOQUE_H
+        BW = BLOQUE_W - 20
+        BH = BLOQUE_H - 25
+
+        c_hex = AREA_COLS[ai % len(AREA_COLS)]
+        c_lt  = AREA_LIGHT[ai % len(AREA_LIGHT)]
+
+        # Fondo bloque
+        c.setFillColor(colors.HexColor(c_lt))
+        c.roundRect(BX+5, BY+5, BW, BH, 8, fill=1, stroke=0)
+        c.setStrokeColor(colors.HexColor(c_hex))
+        c.setLineWidth(1.5)
+        c.roundRect(BX+5, BY+5, BW, BH, 8, fill=0, stroke=1)
+
+        # Título área
+        c.setFillColor(colors.HexColor(c_hex))
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(BX+14, BY+BH-8, area.upper())
+
+        # Datos de evolución para esta área
+        ev_data = eval_prev_promedios.get(area, [])
+        if not ev_data:
+            c.setFont("Helvetica", 8)
+            c.setFillColor(colors.grey)
+            c.drawCentredString(BX+BW/2+5, BY+BH/2, "Sin datos anteriores")
+            continue
+
+        BAR_AREA_X = BX + 14
+        BAR_AREA_W = BW - 28
+        BAR_AREA_Y = BY + 18
+        BAR_AREA_H = BH - 38
+        BAR_MAX    = 20.0  # escala sobre 20
+
+        n_evs = len(ev_data)
+        if n_evs == 0: continue
+        each_w = BAR_AREA_W / n_evs
+        BAR_W  = each_w * 0.55
+
+        # Línea base
+        c.setStrokeColor(colors.HexColor("#94a3b8"))
+        c.setLineWidth(0.5)
+        c.line(BAR_AREA_X, BAR_AREA_Y, BAR_AREA_X+BAR_AREA_W, BAR_AREA_Y)
+
+        # Líneas guía 5, 10, 13, 15, 18, 20
+        for ref in [5,10,13,15,18,20]:
+            ry = BAR_AREA_Y + (ref/BAR_MAX)*BAR_AREA_H
+            c.setStrokeColor(colors.HexColor("#cbd5e1"))
+            c.setLineWidth(0.3)
+            c.line(BAR_AREA_X, ry, BAR_AREA_X+BAR_AREA_W, ry)
+            c.setFillColor(colors.HexColor("#94a3b8"))
+            c.setFont("Helvetica", 6)
+            c.drawString(BAR_AREA_X-18, ry-2, str(ref))
+
+        for ei, (ev_lbl, prom_e) in enumerate(ev_data):
+            bx_e = BAR_AREA_X + ei*each_w + (each_w-BAR_W)/2
+            bar_h_e = max(2, (prom_e/BAR_MAX)*BAR_AREA_H)
+            es_actual = (ei == len(ev_data)-1)
+
+            # Barra
+            if es_actual:
+                c.setFillColor(colors.HexColor(c_hex))
+            else:
+                r, g, b = int(c_hex[1:3],16)/255, int(c_hex[3:5],16)/255, int(c_hex[5:7],16)/255
+                c.setFillColor(colors.Color(r,g,b,alpha=0.35))
+            c.roundRect(bx_e, BAR_AREA_Y, BAR_W, bar_h_e, 3, fill=1, stroke=0)
+
+            # Valor encima de la barra
+            c.setFillColor(colors.HexColor(c_hex) if es_actual else colors.HexColor("#64748b"))
+            c.setFont("Helvetica-Bold" if es_actual else "Helvetica", 7)
+            c.drawCentredString(bx_e+BAR_W/2, BAR_AREA_Y+bar_h_e+2, str(prom_e))
+
+            # Etiqueta bajo la barra
+            c.setFillColor(colors.HexColor("#334155"))
+            c.setFont("Helvetica-Bold" if es_actual else "Helvetica", 6)
+            lbl_short = ev_lbl[:12]
+            c.drawCentredString(bx_e+BAR_W/2, BAR_AREA_Y-10, lbl_short)
+
+            # Flecha de tendencia entre barras
+            if ei > 0:
+                prom_prev = ev_data[ei-1][1]
+                arrow_x   = bx_e - each_w/2 + each_w/4
+                arrow_y   = BAR_AREA_Y + bar_h_e + 12
+                if prom_e > prom_prev:
+                    c.setFillColor(colors.HexColor("#16a34a"))
+                    c.setFont("Helvetica-Bold",9)
+                    c.drawCentredString(arrow_x+BAR_W/2, arrow_y, "▲")
+                elif prom_e < prom_prev:
+                    c.setFillColor(colors.HexColor("#dc2626"))
+                    c.setFont("Helvetica-Bold",9)
+                    c.drawCentredString(arrow_x+BAR_W/2, arrow_y, "▼")
+                else:
+                    c.setFillColor(colors.HexColor("#f59e0b"))
+                    c.setFont("Helvetica-Bold",9)
+                    c.drawCentredString(arrow_x+BAR_W/2, arrow_y, "–")
+
+        # Leyenda: dónde mejorar
+        prom_actual_a = ev_data[-1][1] if ev_data else 0
+        if prom_actual_a < 13:
+            c.setFillColor(colors.HexColor("#dc2626"))
+            c.setFont("Helvetica-Bold", 7)
+            c.drawString(BX+14, BY+9, "⚠ ÁREA A REFORZAR")
+        elif prom_actual_a >= 16:
+            c.setFillColor(colors.HexColor("#16a34a"))
+            c.setFont("Helvetica-Bold", 7)
+            c.drawString(BX+14, BY+9, "✓ RENDIMIENTO ALTO")
+        else:
+            c.setFillColor(colors.HexColor("#f59e0b"))
+            c.setFont("Helvetica-Bold", 7)
+            c.drawString(BX+14, BY+9, "→ EN PROGRESO")
+
+    # Footer
+    c.setFillColor(colors.HexColor("#001e7c"))
+    c.rect(0, 0, W, 18, fill=1, stroke=0)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(W/2, 5,
+        f"{ie}  ·  ▲ Subiendo  ▼ Bajando  – Estable  ·  Escala sobre 20  ·  {fecha_hoy}")
+
+    c.save()
+    buf.seek(0)
+    return buf.read()
 
 def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=None):
     """Genera PDF del ranking — colores por área, nombres completos, separadores visuales"""
@@ -31519,8 +31745,6 @@ def main():
                 _tab_test_tdah_docente(config)
             elif mod == "telegram_bot":
                 tab_telegram_notificaciones(config)
-            elif mod == "whatsapp_auto":
-                tab_whatsapp_automatico(config)
             elif mod == "bienestar":
                 tab_bienestar_estudiantil(config, _pfx="bw_doc")
             elif mod == "predictivo":
@@ -31566,7 +31790,6 @@ def main():
                 ("👨‍👩‍👧", "Portal Padres", "portal_seguimiento", "#0f766e"),
                 ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
                 ("📱", "Notif. Telegram", "telegram_bot", "#0088cc"),
-                ("💬", "WhatsApp Auto", "whatsapp_auto", "#25D366"),
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
             ]
@@ -32228,131 +32451,178 @@ def tab_analisis_predictivo(config):
 
 
 def tab_whatsapp_automatico(config):
-    """Admin: configurar WhatsApp automático via CallMeBot (gratis)."""
-    st.header("📲 WhatsApp Automático — CallMeBot")
-    st.caption("Notificaciones automáticas a padres via WhatsApp. Gratis, sin API de pago.")
+    """Admin: WhatsApp — diagnóstico CallMeBot + alternativas + registro de celulares."""
+    st.header("📲 WhatsApp para Padres")
 
-    subs_cmb = _cmb_cargar_subs()
+    _sub_wa = st.tabs(["🔍 Estado CallMeBot","📱 Registro Celulares","💬 Envío Grupal","📋 Alternativas"])
 
-    _sub_wa = st.tabs(["📋 Instrucciones","👨‍👩‍👧 Suscriptores","🧪 Enviar Prueba"])
-
+    # ── TAB 0: DIAGNÓSTICO CALLMEBOT ─────────────────────────────
     with _sub_wa[0]:
-        st.markdown("#### ¿Cómo funciona CallMeBot?")
-        st.info("CallMeBot es un servicio gratuito que permite enviar mensajes automáticos de WhatsApp "
-                "a cualquier celular. Cada padre hace la activación una sola vez en 2 minutos.")
-        st.markdown("""
-**SETUP — Lo hace cada padre (2 minutos):**
-
-**Paso 1:** El padre guarda este número en sus contactos de WhatsApp:
-""")
-        st.code("+34 644 65 21 68", language=None)
-        st.markdown("""
-**Paso 2:** Le envía este mensaje exacto (en inglés):
-""")
-        st.code("I allow callmebot to send me messages", language=None)
-        st.markdown("""
-**Paso 3:** CallMeBot responde con un mensaje que dice:
-`Your Whatsapp phone is activated. Your API key is: XXXXXXXX`
-
-**Paso 4:** El padre te da ese número de API key y tú lo registras en la pestaña Suscriptores.
-
-**Listo.** Desde ese momento, cuando un estudiante registre asistencia, el mensaje llega automáticamente al WhatsApp del padre.
-        """)
-        st.warning("⚠️ Solo funciona con el número que el padre activó con CallMeBot. "
-                   "Si cambia de celular debe repetir el setup.")
-        st.markdown("---")
-        st.markdown("**Texto de instrucción para enviar a los padres (copia y comparte por WhatsApp):**")
-        _inst_txt = (
-            "IEP ALTERNATIVO YACHAY - CHINCHERO\n\n"
-            "Estimado padre/madre:\n\n"
-            "Para recibir notificaciones AUTOMATICAS de asistencia de su hijo/a en WhatsApp, "
-            "siga estos 4 pasos:\n\n"
-            "1) Guarde este numero en WhatsApp: +34 644 65 21 68 (como CallMeBot)\n"
-            "2) Envieles este mensaje EXACTO: I allow callmebot to send me messages\n"
-            "3) Recibira un codigo API Key (ejemplo: 1234567)\n"
-            "4) Envienos ese codigo a: 084-750071 o al docente de su hijo\n\n"
-            "Costo: CERO. Solo hacer 1 vez.\n"
-            "Cualquier duda: 084-750071 - IEP Alternativo Yachay"
+        st.markdown("#### 🔍 Estado de CallMeBot")
+        st.error(
+            "**CallMeBot no está funcionando confiablemente en Perú.**\n\n"
+            "El número +34 644 65 21 68 tiene restricciones geográficas y "
+            "no siempre responde desde celulares peruanos. "
+            "Esto explica por qué no te llegó respuesta."
         )
-        st.text_area("Instrucciones para padres:", value=_inst_txt, height=300,
-                     key="cmb_instrucciones")
+        st.markdown("**¿Qué puedes hacer?**")
 
+        with st.expander("🔄 Intentar activar CallMeBot de nuevo (puede funcionar a veces)", expanded=False):
+            st.warning("Este proceso es inestable desde Perú. Solo intenta si tienes VPN o un número extranjero.")
+            st.markdown("1. Guardar `+34 644 65 21 68` como contacto")
+            st.code("I allow callmebot to send me messages")
+            st.markdown("2. Si responde con API key, ingrésala en la pestaña **Registro Celulares**")
+            _cel_p = st.text_input("Celular:", placeholder="987654321", key="cmb_p_cel")
+            _key_p = st.text_input("API Key recibida:", placeholder="1234567", key="cmb_p_key")
+            if st.button("🧪 Probar si funciona", type="primary", key="btn_cmb_p"):
+                if _cel_p and _key_p:
+                    with st.spinner("Probando conexión..."):
+                        import urllib.request as _urp
+                        import urllib.parse as _upp
+                        try:
+                            tel_p = _cel_p.replace(' ','').replace('+','').replace('-','')
+                            if not tel_p.startswith('51'): tel_p='51'+tel_p
+                            _url_p = f"https://api.callmebot.com/whatsapp.php?phone={tel_p}&text=Prueba+YACHAY+PRO&apikey={_key_p}"
+                            with _urp.urlopen(_urp.Request(_url_p), timeout=8) as _rp:
+                                _body_p = _rp.read().decode('utf-8','ignore')
+                            if 'queued' in _body_p.lower():
+                                st.success(f"✅ Funciona. Respuesta: {_body_p[:80]}")
+                            else:
+                                st.error(f"❌ No funciona. Respuesta: {_body_p[:120]}")
+                        except Exception as _ep:
+                            st.error(f"❌ Error de conexión: {str(_ep)[:150]}")
+                else:
+                    st.warning("Ingresa celular y API key.")
+
+        st.markdown("---")
+        st.markdown("### ✅ La mejor alternativa: usar Telegram (ya funciona)")
+        st.info(
+            "El módulo **Notif. Telegram** ya está activo y funcionando en el sistema. "
+            "Es más confiable que CallMeBot porque:\n"
+            "- Los padres solo escriben /start + DNI al bot\n"
+            "- No depende de números extranjeros\n"
+            "- No tiene restricciones geográficas\n"
+            "- Ya confirmaste que tienes 1 suscriptor registrado"
+        )
+        if st.button("📱 Ir a configurar Telegram", type="primary", key="btn_ir_tg"):
+            st.session_state["modulo_activo"] = "telegram_bot"
+            st.rerun()
+
+    # ── TAB 1: REGISTRO DE CELULARES (envío semi-automático) ─────
     with _sub_wa[1]:
-        st.markdown(f"#### 👨‍👩‍👧 Padres registrados en WhatsApp automático: **{len(subs_cmb)}**")
-        st.caption("Registra aquí el celular y API Key de cada padre que completó el setup.")
+        st.markdown("#### 📱 Registro de celulares de apoderados")
+        st.caption(
+            "Aunque CallMeBot no funcione automáticamente, registra aquí los celulares. "
+            "El sistema generará los links de WhatsApp pre-cargados con el mensaje listo."
+        )
+        _subs_c = _cmb_cargar_subs()
+        df_mat_c = BaseDatos.cargar_matricula()
 
-        # Agregar nuevo suscriptor
-        with st.expander("➕ Agregar nuevo suscriptor", expanded=len(subs_cmb)==0):
-            df_mat_cmb = BaseDatos.cargar_matricula()
-            _col_cmb1, _col_cmb2 = st.columns(2)
-            with _col_cmb1:
-                if not df_mat_cmb.empty:
-                    _noms_cmb = df_mat_cmb.apply(
-                        lambda r: f"{r.get('Nombre','')} ({r.get('DNI','')})", axis=1).tolist()
-                    _sel_cmb = st.selectbox("Estudiante:", _noms_cmb, key="cmb_alu_sel")
-                    _dni_cmb_new = _sel_cmb.split("(")[-1].rstrip(")").strip()
-                    _nom_cmb_new = _sel_cmb.split(" (")[0].strip()
+        with st.expander("➕ Registrar celular de apoderado", expanded=True):
+            _cc1, _cc2 = st.columns(2)
+            with _cc1:
+                if not df_mat_c.empty:
+                    _nc = df_mat_c.apply(
+                        lambda r: f"{r.get('Nombre','')} — DNI:{r.get('DNI','')}",
+                        axis=1).tolist()
+                    _sc = st.selectbox("Estudiante:", _nc, key="cmb2_alu")
+                    _dc = _sc.split("DNI:")[-1].strip() if "DNI:" in _sc else ""
+                    _nmc = _sc.split(" — ")[0].strip()
                 else:
-                    _dni_cmb_new = st.text_input("DNI del estudiante:", key="cmb_dni_new")
-                    _nom_cmb_new = ""
-            with _col_cmb2:
-                _cel_cmb_new = st.text_input("Celular del padre (con 9 dígitos):",
-                                              placeholder="987654321", key="cmb_cel_new")
-                _key_cmb_new = st.text_input("API Key de CallMeBot:",
-                                              placeholder="1234567", key="cmb_key_new")
-
-            if st.button("✅ Registrar padre en WhatsApp automático", type="primary",
-                         use_container_width=True, key="btn_cmb_add"):
-                if _dni_cmb_new and _cel_cmb_new and _key_cmb_new:
-                    subs_cmb[_dni_cmb_new.strip()] = {
-                        "nombre": _nom_cmb_new,
-                        "celular": _cel_cmb_new.strip(),
-                        "apikey": _key_cmb_new.strip(),
-                        "fecha": fecha_peru_str(),
+                    _dc = st.text_input("DNI:", key="cmb2_dni")
+                    _nmc = ""
+            with _cc2:
+                _celc = st.text_input("Celular del apoderado:", placeholder="987654321", key="cmb2_cel")
+                _apoc = st.text_input("Nombre apoderado (opcional):", key="cmb2_apo")
+            if st.button("💾 Guardar celular", type="primary", use_container_width=True, key="btn_cmb2_add"):
+                if _dc and _celc:
+                    _subs_c[_dc.strip()] = {
+                        "nombre": _nmc, "apoderado": _apoc.strip(),
+                        "celular": _celc.strip(), "apikey": "",
+                        "fecha": fecha_peru_str()
                     }
-                    _cmb_guardar_subs(subs_cmb)
-                    st.success(f"✅ {_nom_cmb_new or _dni_cmb_new} registrado. "
-                               f"Las próximas notificaciones le llegarán por WhatsApp.")
+                    _cmb_guardar_subs(_subs_c)
+                    st.success(f"✅ Guardado: {_nmc} — {_celc}")
                     st.rerun()
-                else:
-                    st.warning("Completa DNI, celular y API key.")
 
-        if subs_cmb:
-            st.markdown("---")
-            for _dni_s, _dat_s in subs_cmb.items():
-                _cel_s = _dat_s.get('celular','') if isinstance(_dat_s,dict) else ''
-                _key_s = _dat_s.get('apikey','') if isinstance(_dat_s,dict) else ''
-                _nom_s = _dat_s.get('nombre','') if isinstance(_dat_s,dict) else str(_dat_s)
-                st.markdown(
-                    f"<div style='background:#f0fdf4;border:1px solid #86efac;"
-                    f"border-radius:8px;padding:8px 14px;margin-bottom:5px;"
-                    f"display:flex;justify-content:space-between;align-items:center;'>"
-                    f"<div><b>{_nom_s}</b> <span style='color:#888;font-size:0.8rem;'>DNI: {_dni_s}</span></div>"
-                    f"<div style='font-size:0.8rem;color:#555;'>📱 {_cel_s} &nbsp;🔑 {_key_s[:4]}****</div>"
-                    f"</div>", unsafe_allow_html=True)
+        st.markdown(f"**{len(_subs_c)} celulares registrados:**")
+        for _ds, _vs in _subs_c.items():
+            _ns = _vs.get('nombre','') if isinstance(_vs,dict) else ''
+            _cs = _vs.get('celular','') if isinstance(_vs,dict) else ''
+            st.markdown(
+                f"<div style='background:#f0fdf4;border:1px solid #86efac;border-radius:8px;"
+                f"padding:8px 14px;margin-bottom:4px;display:flex;justify-content:space-between;'>"
+                f"<b>{_ns}</b><span style='color:#666;font-size:0.8rem;'>DNI:{_ds} · 📱{_cs}</span>"
+                f"</div>", unsafe_allow_html=True)
 
-            if st.button("🗑️ Limpiar todos los suscriptores WA", key="btn_cmb_clear"):
-                _cmb_guardar_subs({})
-                st.success("✅ Limpiado")
-                st.rerun()
+        if _subs_c and st.button("🗑️ Limpiar registros", key="btn_cmb2_clear"):
+            _cmb_guardar_subs({})
+            st.success("✅ Limpiado")
+            st.rerun()
 
+    # ── TAB 2: ENVÍO GRUPAL (links WA pre-cargados) ──────────────
     with _sub_wa[2]:
-        st.markdown("#### 🧪 Enviar mensaje de prueba")
-        _cel_test = st.text_input("Celular (9 dígitos sin código país):", placeholder="987654321", key="cmb_test_cel")
-        _key_test = st.text_input("API Key CallMeBot:", placeholder="1234567", key="cmb_test_key")
-        if st.button("📤 Enviar prueba WhatsApp", type="primary",
-                     use_container_width=True, key="btn_cmb_test"):
-            if _cel_test and _key_test:
-                with st.spinner("Enviando..."):
-                    _ok_cmb = _cmb_enviar(_cel_test,
-                        "Prueba YACHAY PRO. El sistema de notificaciones WhatsApp automatico esta funcionando. IEP Alternativo Yachay Chinchero Tel:084-750071",
-                        _key_test)
-                if _ok_cmb:
-                    st.success("✅ Mensaje enviado. Verifica en WhatsApp.")
-                else:
-                    st.error("❌ No se pudo enviar. Verifica el celular y el API key de CallMeBot.")
-            else:
-                st.warning("Ingresa el celular y el API key.")
+        st.markdown("#### 💬 Envío grupal por WhatsApp")
+        st.info(
+            "Genera links de WhatsApp pre-cargados para cada apoderado. "
+            "Un clic por cada padre y el mensaje se envía directo. "
+            "Es el método más rápido y confiable disponible hoy en Perú."
+        )
+        _subs_g = _cmb_cargar_subs()
+        if not _subs_g:
+            st.warning("Primero registra celulares de apoderados en la pestaña anterior.")
+        else:
+            _msg_g = st.text_area(
+                "Mensaje personalizado:",
+                value=(
+                    "I.E.P. YACHAY - Chinchero\n"
+                    "Estimado apoderado, le informamos sobre la asistencia de su hijo/a.\n"
+                    "Para mas informacion: 084-750071"
+                ),
+                height=100, key="cmb_msg_grupal")
+            if st.button("📲 Generar links WhatsApp", type="primary",
+                         use_container_width=True, key="btn_cmb_grupal"):
+                import urllib.parse as _upg
+                st.markdown("**Haz clic en cada nombre para enviar:**")
+                for _dg, _vg in _subs_g.items():
+                    _cg = _vg.get('celular','') if isinstance(_vg,dict) else ''
+                    _ng = _vg.get('nombre','') if isinstance(_vg,dict) else _dg
+                    if not _cg: continue
+                    _tg = _cg.replace(' ','').replace('+','').replace('-','')
+                    if not _tg.startswith('51'): _tg='51'+_tg
+                    _url_g = f"https://wa.me/{_tg}?text={_upg.quote(_msg_g)}"
+                    st.markdown(
+                        f"<a href='{_url_g}' target='_blank' style='display:inline-block;"
+                        f"background:#25D366;color:white;padding:6px 14px;border-radius:8px;"
+                        f"text-decoration:none;font-size:0.85rem;margin:3px;font-weight:500;'>"
+                        f"📱 {_ng[:22]}</a>",
+                        unsafe_allow_html=True)
+
+    # ── TAB 3: ALTERNATIVAS ───────────────────────────────────────
+    with _sub_wa[3]:
+        st.markdown("#### 📋 Alternativas de notificación disponibles")
+        for _alt_t, _alt_d, _alt_e in [
+            ("✅ Telegram (ACTIVO y funcionando)",
+             "Los padres instalan Telegram, escriben /start + DNI al bot @YachayPROBot. Gratuito, confiable, sin restricciones en Perú.",
+             "verde"),
+            ("📱 WhatsApp manual (botones en notas y ausentes)",
+             "El sistema genera botones de WhatsApp pre-cargados en el módulo de Notas y en el reporte de Ausentes. Un clic envía el mensaje.",
+             "azul"),
+            ("📢 Grupo de WhatsApp",
+             "El método más simple: crear un grupo de WhatsApp del grado y compartir el link de YACHAY PRO. Los padres ven el portal directamente.",
+             "verde"),
+            ("💰 WhatsApp Business API (pago)",
+             "Twilio o Meta Business API permiten envío automático 100% confiable. Costo aprox. S/0.10 por mensaje. Requiere cuenta business.",
+             "gris"),
+        ]:
+            _c = "#f0fdf4" if _alt_e=="verde" else ("#eff6ff" if _alt_e=="azul" else "#f8fafc")
+            _b = "#16a34a" if _alt_e=="verde" else ("#2563eb" if _alt_e=="azul" else "#94a3b8")
+            st.markdown(
+                f"<div style='background:{_c};border-left:4px solid {_b};border-radius:0 8px 8px 0;"
+                f"padding:12px 16px;margin-bottom:8px;'>"
+                f"<b style='color:{_b};'>{_alt_t}</b><br>"
+                f"<span style='font-size:0.85rem;color:#555;'>{_alt_d}</span>"
+                f"</div>", unsafe_allow_html=True)
 
 def tab_libro_reclamaciones(config):
     """Libro de Reclamaciones Virtual según normativa MINEDU"""
