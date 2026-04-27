@@ -21741,7 +21741,7 @@ def tab_registrar_notas(config):
 
         # Número de áreas — aplica a TODOS los niveles
         st.markdown("---")
-        num_areas = st.radio("📚 Número de áreas a evaluar:", [1, 2, 3, 4, 5, 6], horizontal=True, key="rn_cfg_nareas")
+        num_areas = st.radio("📚 Número de áreas a evaluar:", [1, 2, 3, 4, 5, 6, 7, 8], horizontal=True, key="rn_cfg_nareas")
 
         # Determinar áreas disponibles según el grado seleccionado
         grado_str_cfg = str(grado_cfg)
