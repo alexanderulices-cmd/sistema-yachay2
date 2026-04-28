@@ -1162,11 +1162,24 @@ def _hablar_nombre(nombre, tipo, es_tardanza=False):
         try {{
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
-            var u = new SpeechSynthesisUtterance('{frase_js}');
-            u.lang    = 'es-PE';
-            u.pitch   = {pitch};
-            u.rate    = {rate};
-            u.volume  = 1.0;
+            // Pequeña pausa para que el cancel surta efecto
+            setTimeout(function() {{
+                var u = new SpeechSynthesisUtterance('{frase_js}');
+                u.lang    = 'es-PE';
+                u.pitch   = {pitch};
+                u.rate    = {rate};
+                u.volume  = 1.0;
+                // Seleccionar voz con mayor claridad si está disponible
+                var voces = window.speechSynthesis.getVoices();
+                var esp = voces.find(function(v) {{
+                    return v.lang && v.lang.startsWith('es') && !v.name.includes('Online');
+                }}) || voces.find(function(v) {{
+                    return v.lang && v.lang.startsWith('es');
+                }});
+                if (esp) u.voice = esp;
+                window.speechSynthesis.speak(u);
+            }}, 150);
+            return;
             // Intentar voz en español si está disponible
             var voces = window.speechSynthesis.getVoices();
             var esp = voces.find(function(v) {{
@@ -12574,27 +12587,64 @@ def tab_asistencias():
                              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][_mes_actual]
             _nom_mes = _nom_mes_full[:3]
 
-            # Construir datos del mes completo: local + GSheets config backup
-            _asis_mes = dict(_asis_sem)  # semana actual
+            # Construir datos del mes completo
+            # Fuente 1: semana actual (ya cargada)
+            _asis_mes = dict(_asis_sem)
 
-            # Intentar recuperar el JSON completo de asistencias desde GSheets config
-            # (guardado allí en cada registro para sobrevivir reinicios de Streamlit)
+            # Fuente 2: asistencias.json local (puede tener más días si no reinició)
+            try:
+                if Path(ARCHIVO_ASISTENCIAS).exists():
+                    with open(ARCHIVO_ASISTENCIAS,"r",encoding="utf-8") as _fam:
+                        _local_all = json.load(_fam)
+                    for _fk_l, _fd_l in _local_all.items():
+                        if _fk_l not in _asis_mes:
+                            _asis_mes[_fk_l] = _fd_l
+                        else:
+                            for _dk_l, _dv_l in _fd_l.items():
+                                if _dk_l not in _asis_mes[_fk_l]:
+                                    _asis_mes[_fk_l][_dk_l] = _dv_l
+            except Exception:
+                pass
+
+            # Fuente 3: Google Drive YACHAY_BACKUP/asistencias.json
+            # Tiene el historial COMPLETO (todo abril y meses anteriores)
+            _drive_cache_key = '_asis_drive_cache'
+            _drive_cache_ts  = '_asis_drive_ts'
+            import time as _tm_mes
+            _now_mes = _tm_mes.time()
+            # Solo consultar Drive una vez cada 5 minutos para no ralentizar
+            if (_now_mes - st.session_state.get(_drive_cache_ts, 0) > 300
+                    or _drive_cache_key not in st.session_state):
+                with st.spinner("🔄 Cargando historial completo de asistencias..."):
+                    try:
+                        _drive_full = _drive_restaurar_json("asistencias.json")
+                        if _drive_full and isinstance(_drive_full, dict):
+                            st.session_state[_drive_cache_key] = _drive_full
+                            st.session_state[_drive_cache_ts]  = _now_mes
+                    except Exception:
+                        pass
+
+            _drive_data = st.session_state.get(_drive_cache_key, {})
+            for _fk_d, _fd_d in _drive_data.items():
+                if _fk_d not in _asis_mes:
+                    _asis_mes[_fk_d] = _fd_d
+                else:
+                    for _dk_d, _dv_d in _fd_d.items():
+                        if _dk_d not in _asis_mes[_fk_d]:
+                            _asis_mes[_fk_d][_dk_d] = _dv_d
+
+            # Fuente 4: GSheets config backup (asistencias_json) — fallback
             try:
                 _gs_inst2 = _gs()
-                if _gs_inst2:
+                if _gs_inst2 and not _drive_data:
                     _ws_cfg2 = _gs_inst2._get_hoja('config')
                     if _ws_cfg2:
                         for _row_cfg in _ws_cfg2.get_all_values():
                             if _row_cfg and _row_cfg[0] == 'asistencias_json' and len(_row_cfg) > 1:
-                                _full_asis = json.loads(_row_cfg[1])
-                                # Merge: local tiene prioridad, GSheets llena los huecos
-                                for _fk2, _fd2 in _full_asis.items():
-                                    if _fk2 not in _asis_mes:
-                                        _asis_mes[_fk2] = _fd2
-                                    else:
-                                        for _dk2, _dv2 in _fd2.items():
-                                            if _dk2 not in _asis_mes[_fk2]:
-                                                _asis_mes[_fk2][_dk2] = _dv2
+                                _gs_full = json.loads(_row_cfg[1])
+                                for _fk_g2, _fd_g2 in _gs_full.items():
+                                    if _fk_g2 not in _asis_mes:
+                                        _asis_mes[_fk_g2] = _fd_g2
                                 break
             except Exception:
                 pass
