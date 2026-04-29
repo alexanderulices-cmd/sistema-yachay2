@@ -18620,7 +18620,8 @@ def tab_reportes(config):
             <p style='margin:2px 0 0;color:#FFD700;font-size:0.85rem;'>📍 Chinchero, Cusco — {hora_peru().year}</p>
         </div>""", unsafe_allow_html=True)
 
-        # ── Cargar datos de asistencia ──────────────────────────────────
+        # ── Cargar datos de asistencia ─────────────────────────────────
+        # Fuente 1: archivo local
         asistencias = {}
         if Path(ARCHIVO_ASISTENCIAS).exists():
             try:
@@ -18629,7 +18630,29 @@ def tab_reportes(config):
             except Exception:
                 pass
 
-        # GS
+        # Fuente 2: Drive backup (tiene el historial completo del año)
+        _drv_cache_rep = st.session_state.get('_asis_drive_cache', {})
+        if not _drv_cache_rep:
+            with st.spinner("🔄 Cargando historial completo desde Drive..."):
+                try:
+                    _drv_full_rep = _drive_restaurar_json("asistencias.json")
+                    if _drv_full_rep and isinstance(_drv_full_rep, dict):
+                        import time as _tmr
+                        st.session_state['_asis_drive_cache'] = _drv_full_rep
+                        st.session_state['_asis_drive_ts'] = _tmr.time()
+                        _drv_cache_rep = _drv_full_rep
+                except Exception:
+                    pass
+        # Merge Drive → local (local tiene prioridad = datos de hoy)
+        for _fk_r, _fd_r in _drv_cache_rep.items():
+            if _fk_r not in asistencias:
+                asistencias[_fk_r] = _fd_r
+            else:
+                for _dk_r, _dv_r in _fd_r.items():
+                    if _dk_r not in asistencias[_fk_r]:
+                        asistencias[_fk_r][_dk_r] = _dv_r
+
+        # Fuente 3: GSheets hoja asistencias
         datos_gs_doc = {}
         if gs:
             try:
@@ -18651,12 +18674,26 @@ def tab_reportes(config):
             except Exception:
                 pass
 
-        todas_fechas = set(asistencias.keys()) | set(datos_gs_doc.keys())
+        # Normalizar todas las fechas a formato YYYY-MM-DD
+        def _norm_fecha_rep(f):
+            try:
+                if f and '/' in f: return datetime.strptime(f,'%d/%m/%Y').strftime('%Y-%m-%d')
+                return f
+            except Exception: return f
+
+        _asis_norm = {}
+        for _fk, _fd in asistencias.items():
+            _asis_norm[_norm_fecha_rep(_fk)] = _fd
+        _gs_norm = {}
+        for _fk, _fd in datos_gs_doc.items():
+            _gs_norm[_norm_fecha_rep(_fk)] = _fd
+
+        todas_fechas = set(_asis_norm.keys()) | set(_gs_norm.keys())
 
         # Extraer solo docentes
         docentes_asist = {}
         for fecha in sorted(todas_fechas):
-            regs = {**datos_gs_doc.get(fecha, {}), **asistencias.get(fecha, {})}
+            regs = {**_gs_norm.get(fecha, {}), **_asis_norm.get(fecha, {})}
             for dni, dat in regs.items():
                 if dat.get('es_docente', False):
                     nm = dat.get('nombre', dni)
