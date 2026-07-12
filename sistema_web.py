@@ -53,6 +53,37 @@ try:
 except ImportError:
     HAS_DOCX = False
 
+# ------------------------------------------------------------------
+# Utilidad para hilos en segundo plano (threading) SEGUROS con Streamlit
+# ------------------------------------------------------------------
+# Streamlit no permite que un hilo distinto al principal use
+# st.session_state / comandos de st sin su "ScriptRunContext". Si no se
+# adjunta ese contexto, Streamlit solo emite un warning ("missing
+# ScriptRunContext"), pero el acceso concurrente y sin contexto a
+# session_state desde varios hilos es una causa conocida de caídas
+# (incluyendo Segmentation fault) en despliegues como Streamlit Cloud.
+# _iniciar_hilo() adjunta siempre el contexto correcto antes de arrancar
+# el hilo, evitando el problema.
+import threading as _threading_base
+try:
+    from streamlit.runtime.scriptrunner import add_script_run_ctx as _add_script_run_ctx
+except ImportError:
+    try:
+        from streamlit.scriptrunner import add_script_run_ctx as _add_script_run_ctx  # versiones antiguas
+    except ImportError:
+        def _add_script_run_ctx(thread):  # último recurso: no-op
+            return thread
+
+def _iniciar_hilo(target, args=(), kwargs=None, daemon=True):
+    """Crea, adjunta el ScriptRunContext y arranca un hilo de forma segura."""
+    _t = _threading_base.Thread(target=target, args=args, kwargs=kwargs or {}, daemon=daemon)
+    try:
+        _add_script_run_ctx(_t)
+    except Exception:
+        pass
+    _t.start()
+    return _t
+
 st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
 
 
@@ -1725,7 +1756,6 @@ class BaseDatos:
         st.session_state['_asis_invalidar'] = True
         st.session_state.pop('_cache_asis_hoy', None)
         # Sync GSheets y Drive en hilo separado — NO bloquea la UI
-        import threading as _th
         _snap_asis = dict(asistencias)
         _snap_dni = str(dni)
         _snap_nom = str(nombre)
@@ -1766,8 +1796,7 @@ class BaseDatos:
                                 ws_cfg.append_row(['asistencias_json', _asis_str])
                     except Exception: pass
             except Exception: pass
-        _t = _th.Thread(target=_sync_bg, daemon=True)
-        _t.start()
+        _iniciar_hilo(_sync_bg)
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -2193,12 +2222,13 @@ def _construir_indice_dni():
         pass
 
     # PASO 4: Alumnos GSheets en hilo de fondo
-    import threading as _th_idx
-    def _gs_act():
+    # NOTA: se captura una copia (_idx_base) del índice ANTES de lanzar el
+    # hilo para no leer st.session_state concurrentemente desde dos hilos.
+    _idx_base = dict(st.session_state.get('_indice_dni', {}))
+    def _gs_act(idx2):
         try:
             gs = _gs()
             if not gs: return
-            idx2 = dict(st.session_state.get('_indice_dni', {}))
             df_gs = gs.leer_matricula()
             col_map = {'nombre':'Nombre','dni':'DNI','nivel':'Nivel','grado':'Grado',
                        'seccion':'Seccion','apoderado':'Apoderado',
@@ -2222,7 +2252,7 @@ def _construir_indice_dni():
                 pass
         except Exception:
             pass
-    _th_idx.Thread(target=_gs_act, daemon=True).start()
+    _iniciar_hilo(_gs_act, args=(_idx_base,))
 
 
 def _nombre_completo_docente():
@@ -12153,7 +12183,6 @@ def tab_asistencias():
                         if st.button(f"📲 Telegram ({len(_con_tg)} suscritos)",
                                      type="primary", use_container_width=True, key="btn_tg_aus"):
                             if _tok_aus and _con_tg:
-                                import threading as _thr_aus
                                 def _env_aus():
                                     for _ra2 in _con_tg:
                                         _ent2 = _subs_aus.get(str(_ra2['dni']).strip())
@@ -12172,7 +12201,7 @@ def tab_asistencias():
                                             "\U0001f4de 084-750071"
                                         )
                                         _tg_enviar(_cid2, _msg_tg, _tok_aus)
-                                _thr_aus.Thread(target=_env_aus, daemon=True).start()
+                                _iniciar_hilo(_env_aus)
                                 st.success(f"✅ Enviando Telegram a {len(_con_tg)} apoderados...")
                             elif not _tok_aus:
                                 st.warning("Configura el bot de Telegram primero.")
@@ -13127,8 +13156,7 @@ def _cmb_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"Hora: {hora}\n"
         "IEP Yachay Chinchero Tel:084-750071"
     )
-    import threading as _th_cmb
-    _th_cmb.Thread(target=_cmb_enviar, args=(celular, msg, apikey), daemon=True).start()
+    _iniciar_hilo(_cmb_enviar, args=(celular, msg, apikey))
 
 # ═══════════════════════════════════════════════════════
 # SISTEMA DE NOTIFICACIONES TELEGRAM PARA PADRES
@@ -13291,8 +13319,7 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"<i>I.E.P. Alternativo Yachay - Chinchero</i>\n"
         f"\U0001f4de 084-750071"
     )
-    import threading
-    threading.Thread(target=_tg_enviar, args=(chat_id, msg, token), daemon=True).start()
+    _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token))
 
 def _tg_obtener_chat_id(token):
     """Obtiene los últimos updates del bot en hilo con resultado en session_state."""
@@ -21760,7 +21787,6 @@ def tab_registrar_notas(config):
                         _subs_cl=_tg_cargar_subs(); _cfg_cl=_tg_cargar_config()
                         _tok_cl=_tg_limpiar_token(_cfg_cl.get("bot_token",""))
                         if _tok_cl and _subs_cl:
-                            import threading as _thr_cl
                             _snap_cl=dict(notas_cl); _snap_subs=dict(_subs_cl)
                             def _env_cl():
                                 for _d,_dat in _snap_cl.items():
@@ -21775,7 +21801,7 @@ def tab_registrar_notas(config):
                                           f"{_at}\n\nPROMEDIO: {_dat['promedio']}\n"
                                           f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
                                     _tg_enviar(_cid,_msg,_tok_cl)
-                            _thr_cl.Thread(target=_env_cl,daemon=True).start()
+                            _iniciar_hilo(_env_cl)
                     except Exception: pass
                     st.balloons()
 
@@ -22266,7 +22292,6 @@ def tab_registrar_notas(config):
                         _tok_ev=_tg_limpiar_token(_cfg_ev.get("bot_token",""))
                         _cmb_subs_ev=_cmb_cargar_subs()  # CallMeBot subs
                         if _tok_ev and _subs_ev:
-                            import threading as _thr_ev
                             _snap_ev=list(ranking_filas); _snap_subs_ev=dict(_subs_ev)
                             _areas_ev=list(areas_nombres); _grado_ev=grado_sel; _bim_ev=bim_sel; _tit_ev=titulo_ev
                             def _env_notas_ev():
@@ -22282,7 +22307,7 @@ def tab_registrar_notas(config):
                                              f"{_at_ev}\n\nPROMEDIO: {_fila.get('Promedio',0)}\n"
                                              f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
                                     _tg_enviar(_cid_ev,_msg_ev,_tok_ev)
-                            _thr_ev.Thread(target=_env_notas_ev,daemon=True).start()
+                            _iniciar_hilo(_env_notas_ev)
                     except Exception: pass
                 else:
                     st.error("❌ Error al guardar")
@@ -29464,7 +29489,6 @@ def _horario_guardar(usuario, grado, horario_data, horas, dias, areas, docente_n
             _j.dump(horarios_local, f, ensure_ascii=False)
     except Exception: pass
     # GSheets en hilo de fondo
-    import threading as _th
     def _bg():
         try:
             gs = _gs()
@@ -29478,7 +29502,7 @@ def _horario_guardar(usuario, grado, horario_data, horas, dias, areas, docente_n
                             return
                     hoja.append_row([clave, valor])
         except Exception: pass
-    _th.Thread(target=_bg, daemon=True).start()
+    _iniciar_hilo(_bg)
 
 
 def _horarios_cargar_todos():
@@ -32265,10 +32289,7 @@ def tab_telegram_notificaciones(config):
                                     "Chinchero, Urubamba, Cusco\n"
                                     "Tel: 084-750071"
                                 )
-                                import threading as _th_bv
-                                _th_bv.Thread(target=_tg_enviar,
-                                              args=(_chat_id_u, _bienvenida, _tok_bv),
-                                              daemon=True).start()
+                                _iniciar_hilo(_tg_enviar, args=(_chat_id_u, _bienvenida, _tok_bv))
                         else:
                             _ya_existian += 1
                     # Guardar suscriptores — formato compatible con _tg_notificar_asistencia
@@ -32304,9 +32325,7 @@ def tab_telegram_notificaciones(config):
                                 f"Yachay - Educar para la Vida"
                             )
                             if _tok_bv:
-                                import threading as _thr_bv
-                                _thr_bv.Thread(target=_tg_enviar,
-                                    args=(_cid_bv,_msg_bv,_tok_bv),daemon=True).start()
+                                _iniciar_hilo(_tg_enviar, args=(_cid_bv, _msg_bv, _tok_bv))
                             _dat_bv["bienvenida_enviada"] = True
                         _tg_guardar_subs(_subs_act)
                         st.success(f"✅ {_nuevos} nuevo(s) suscriptor(es) registrado(s) — mensaje de bienvenida enviado | {_ya_existian} ya existían")
