@@ -16,4 +16,4 @@ cryptography==41.0.7
 rpds-py==0.30.0
 jsonschema==4.26.0
 referencing==0.37.0
-pyarrow==25.0.0
+pyarrow==17.0.0
