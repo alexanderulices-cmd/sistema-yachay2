@@ -1310,6 +1310,8 @@ class BaseDatos:
                 if Path(ARCHIVO_MATRICULA).exists():
                     df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                     df.columns = df.columns.str.strip()
+                    if 'DNI' in df.columns:
+                        df['DNI'] = df['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                     return df
             except Exception:
                 pass
@@ -1326,11 +1328,15 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    if 'DNI' in df_gs.columns:
+                        df_gs['DNI'] = df_gs['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                     # ── PROTECCIÓN: combinar con local para no perder datos ──────
                     try:
                         if Path(ARCHIVO_MATRICULA).exists():
                             df_local = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                             df_local.columns = df_local.columns.str.strip()
+                            if 'DNI' in df_local.columns:
+                                df_local['DNI'] = df_local['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                             if not df_local.empty and 'DNI' in df_local.columns and 'DNI' in df_gs.columns:
                                 # Agregar al GS los que están en local pero no en GS
                                 dnis_gs = set(df_gs['DNI'].astype(str).str.strip())
@@ -1349,6 +1355,8 @@ class BaseDatos:
             if Path(ARCHIVO_MATRICULA).exists():
                 df = pd.read_excel(ARCHIVO_MATRICULA, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                if 'DNI' in df.columns:
+                    df['DNI'] = df['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                 st.session_state['_cache_mat_df'] = df
                 st.session_state['_cache_mat_ts'] = _now
                 return df
@@ -1623,6 +1631,8 @@ class BaseDatos:
                 if Path(ARCHIVO_DOCENTES).exists():
                     df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
                     df.columns = df.columns.str.strip()
+                    if 'DNI' in df.columns:
+                        df['DNI'] = df['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                     return df
             except Exception:
                 pass
@@ -1638,6 +1648,8 @@ class BaseDatos:
                     df_gs = df_gs.rename(columns=col_map)
                     for col in df_gs.columns:
                         df_gs[col] = df_gs[col].astype(str).replace('nan', '').replace('None', '')
+                    if 'DNI' in df_gs.columns:
+                        df_gs['DNI'] = df_gs['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                     st.session_state['_cache_doc_df'] = df_gs
                     st.session_state['_cache_doc_ts'] = _now
                     return df_gs
@@ -1647,6 +1659,8 @@ class BaseDatos:
             if Path(ARCHIVO_DOCENTES).exists():
                 df = pd.read_excel(ARCHIVO_DOCENTES, dtype=str, engine='openpyxl')
                 df.columns = df.columns.str.strip()
+                if 'DNI' in df.columns:
+                    df['DNI'] = df['DNI'].astype(str).str.strip().str.replace('.0', '', regex=False)
                 st.session_state['_cache_doc_df'] = df
                 st.session_state['_cache_doc_ts'] = _now
                 return df
@@ -19705,7 +19719,10 @@ AREAS_MINEDU = {
 PERIODOS_EVALUACION = [
     'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
     'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
-    'Quincenal 1', 'Quincenal 2',
+    'Semana 9', 'Semana 10', 'Semana 11', 'Semana 12',
+    'Semana 13', 'Semana 14', 'Semana 15', 'Semana 16',
+    'Semana 17', 'Semana 18', 'Semana 19', 'Semana 20',
+    'Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
     'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
     'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
@@ -31629,6 +31646,124 @@ def _tab_horarios_directivo(config):
         st.caption("El directivo también puede crear y guardar su propio horario")
         _tab_horario(config)
 
+ARCHIVO_AUSENCIAS_AUTO = "ausencias_auto_enviadas.json"
+_NIVELES_TURNO_TARDE = {'SECUNDARIA', 'PREUNIVERSITARIO'}
+
+
+def _cargar_ausencias_auto_flags():
+    try:
+        if Path(ARCHIVO_AUSENCIAS_AUTO).exists():
+            with open(ARCHIVO_AUSENCIAS_AUTO, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+
+def _guardar_ausencias_auto_flags(data):
+    try:
+        with open(ARCHIVO_AUSENCIAS_AUTO, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
+def _es_nivel_turno_tarde(nivel_str, grado_str):
+    """Solo Secundaria y Academia Pre-U tienen turno tarde."""
+    n = str(nivel_str).strip().upper()
+    if n in _NIVELES_TURNO_TARDE:
+        return True
+    g = str(grado_str).strip()
+    return g in NIVELES_GRADOS.get('SECUNDARIA', []) or g in NIVELES_GRADOS.get('PREUNIVERSITARIO', [])
+
+
+def _verificar_y_enviar_ausencias_automatico():
+    """Se ejecuta en cada carga de página (de cualquier usuario logueado).
+    Si ya pasaron las 9:00am (turno mañana, todos) o las 4:00pm (turno
+    tarde, SOLO Secundaria y Academia Pre-U) y todavía no se avisó hoy
+    para ese turno, manda automáticamente 'FALTA' por Telegram a los
+    apoderados de quienes no registraron entrada. Se manda una sola vez
+    por turno por día (se guarda un flag para no duplicar avisos)."""
+    try:
+        ahora = hora_peru()
+        if ahora.weekday() == 6:  # domingo: no hay clases
+            return
+        fecha_hoy = fecha_peru_str()
+        mins_ahora = ahora.hour * 60 + ahora.minute
+
+        flags = _cargar_ausencias_auto_flags()
+        flags.setdefault(fecha_hoy, {})
+
+        cfg_tg = _tg_cargar_config()
+        token = _tg_limpiar_token(cfg_tg.get("bot_token", ""))
+        subs_tg = _tg_cargar_subs() if token else {}
+        if not token or not subs_tg:
+            return
+
+        asis_hoy = {}
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                asis_hoy = json.load(f).get(fecha_hoy, {})
+
+        df_mat = BaseDatos.cargar_matricula()
+        if df_mat.empty or 'DNI' not in df_mat.columns:
+            return
+
+        # ── Turno mañana: después de las 9:00am, aplica a TODOS ──────────
+        if mins_ahora >= 9 * 60 and not flags[fecha_hoy].get('manana_enviado'):
+            flags[fecha_hoy]['manana_enviado'] = True
+            _guardar_ausencias_auto_flags(flags)
+            faltantes = []
+            for _, row in df_mat.iterrows():
+                dni_r = str(row.get('DNI', '')).strip()
+                if not dni_r or dni_r not in subs_tg:
+                    continue
+                reg = asis_hoy.get(dni_r, {})
+                if not (reg.get('entrada') or reg.get('tardanza')):
+                    faltantes.append({'dni': dni_r, 'nombre': row.get('Nombre', ''), 'grado': row.get('Grado', '')})
+            if faltantes:
+                def _enviar_faltas_manana(lista):
+                    for f_ in lista:
+                        ent = subs_tg.get(f_['dni'])
+                        cid = ent if isinstance(ent, (int, str)) else ent.get("chat_id", "")
+                        if not cid:
+                            continue
+                        msg = (f"\U0001f6a8 YACHAY PRO - Falta\n\n{f_['nombre']}\nGrado: {f_['grado']}\n\n"
+                               f"No registra ENTRADA hoy {fecha_hoy} (turno mañana).\n\n"
+                               f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
+                        _tg_enviar(cid, msg, token)
+                _iniciar_hilo(_enviar_faltas_manana, args=(faltantes,))
+
+        # ── Turno tarde: después de las 4:00pm, SOLO Secundaria/Pre-U ────
+        if mins_ahora >= 16 * 60 and ahora.weekday() != 5 and not flags[fecha_hoy].get('tarde_enviado'):
+            flags[fecha_hoy]['tarde_enviado'] = True
+            _guardar_ausencias_auto_flags(flags)
+            faltantes_t = []
+            for _, row in df_mat.iterrows():
+                if not _es_nivel_turno_tarde(row.get('Nivel', ''), row.get('Grado', '')):
+                    continue
+                dni_r = str(row.get('DNI', '')).strip()
+                if not dni_r or dni_r not in subs_tg:
+                    continue
+                reg = asis_hoy.get(dni_r, {})
+                if not reg.get('entrada_tarde'):
+                    faltantes_t.append({'dni': dni_r, 'nombre': row.get('Nombre', ''), 'grado': row.get('Grado', '')})
+            if faltantes_t:
+                def _enviar_faltas_tarde(lista):
+                    for f_ in lista:
+                        ent = subs_tg.get(f_['dni'])
+                        cid = ent if isinstance(ent, (int, str)) else ent.get("chat_id", "")
+                        if not cid:
+                            continue
+                        msg = (f"\U0001f6a8 YACHAY PRO - Falta\n\n{f_['nombre']}\nGrado: {f_['grado']}\n\n"
+                               f"No registra ENTRADA hoy {fecha_hoy} (turno tarde).\n\n"
+                               f"I.E.P. Alternativo Yachay - Chinchero\n\U0001f4de 084-750071")
+                        _tg_enviar(cid, msg, token)
+                _iniciar_hilo(_enviar_faltas_tarde, args=(faltantes_t,))
+    except Exception:
+        pass  # Nunca debe tumbar la app — esto es un extra, no algo crítico
+
+
 def main():
     # ── Portal Padres de Familia ──────────────────────────────────
     if st.session_state.get('_portal_padres'):
@@ -31638,6 +31773,8 @@ def main():
     if st.session_state.rol is None:
         pantalla_login()
         st.stop()
+
+    _verificar_y_enviar_ausencias_automatico()
 
     # JS global — pinta rojo los botones de peligro por texto
     import streamlit.components.v1 as _comp_gjs
