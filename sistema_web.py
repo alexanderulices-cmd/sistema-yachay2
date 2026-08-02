@@ -11850,10 +11850,14 @@ def tab_asistencias():
 
         # ── CAMPO DNI — PRIMERO Y SIEMPRE VISIBLE ────────────────────
         def _on_dni_submit():
-            val = st.session_state.get('dm_input', '').strip()
-            dni_limpio = ''.join(c for c in val if c.isdigit())
-            if len(dni_limpio) >= 7:
-                st.session_state['_dni_pendiente'] = dni_limpio[:8]
+            val = st.session_state.get('dm_input', '')
+            codigo = normalizar_codigo_estudiante(val)
+            if es_codigo_valido(codigo):
+                # Los DNI numericos se recortan a 8; los codigos con letras
+                # (PROV0001) se dejan completos o se pierden.
+                st.session_state['_dni_pendiente'] = (
+                    codigo[:8] if codigo.isdigit() and len(codigo) == 8
+                    else codigo)
             st.session_state['dm_input'] = ''
 
         dm = st.text_input("🔍 DNI / Código:", key="dm_input",
@@ -11866,9 +11870,11 @@ def tab_asistencias():
         if _dni_pend:
             _registrar_asistencia_rapida(_dni_pend)
         if dm:
-            dni_directo = ''.join(c for c in dm.strip() if c.isdigit())
-            if len(dni_directo) == 8:
-                _registrar_asistencia_rapida(dni_directo)
+            _cod_directo = normalizar_codigo_estudiante(dm)
+            if es_codigo_valido(_cod_directo) and (
+                    (_cod_directo.isdigit() and len(_cod_directo) == 8)
+                    or not _cod_directo.isdigit()):
+                _registrar_asistencia_rapida(_cod_directo)
                 st.session_state['dm_input'] = ''
 
         # ── Métricas e índice ─────────────────────────────────────────
@@ -13507,6 +13513,31 @@ def _cmb_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
 # ═══════════════════════════════════════════════════════
 _TG_SUBS_PATH = "telegram_suscriptores.json"
 _TG_CONFIG_PATH = "telegram_config.json"
+
+def normalizar_codigo_estudiante(val):
+    """Limpia un código escaneado sin destruir los códigos con letras.
+
+    El escáner antiguo hacía ''.join(c for c in val if c.isdigit()), lo que
+    convertía PROV0001 en '0001' y la lectura se descartaba por corta. Los
+    códigos provisionales llevan letras a propósito, así que solo se quitan
+    espacios y separadores, y se conservan letras y dígitos.
+    """
+    if val is None:
+        return ""
+    t = str(val).strip().upper()
+    t = "".join(c for c in t if c.isalnum())
+    return t
+
+
+def es_codigo_valido(codigo):
+    """True si el código escaneado tiene forma de identificador utilizable."""
+    c = normalizar_codigo_estudiante(codigo)
+    if not c:
+        return False
+    if c.isdigit():
+        return len(c) >= 7          # DNI (8) o celular (9)
+    return len(c) >= 5              # PROV0001 y similares
+
 
 def _tg_limpiar_token(raw):
     """Limpia el token: quita espacios, saltos de línea y caracteres invisibles."""
@@ -33216,6 +33247,9 @@ Ejemplo: /start 70123456
 ⚠️ Si su hijo/a todavía NO tiene DNI (matrícula provisional), pida en
 Secretaría el CÓDIGO TEMPORAL asignado (empieza con PROV) y escríbalo
 en lugar del DNI. Ejemplo: /start PROV0001
+
+⚠️ Si Secretaría le indica que se registró su número de celular en
+lugar del DNI, escriba ese número de celular tal como se lo indiquen.
 
 ✅ Listo. Desde ese momento recibirá notificaciones automáticas de asistencia.
 
