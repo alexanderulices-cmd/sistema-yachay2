@@ -916,19 +916,36 @@ section[data-testid="stSidebar"] {
 
 /* === DASHBOARD GRID === */
 .stButton > button[kind="secondary"] {
-    min-height: 100px !important;
-    font-size: 1.1rem !important;
-    border-radius: 16px !important;
-    border: 2px solid #e2e8f0 !important;
+    min-height: 44px !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+    border: 2px solid #cbd5e1 !important;
     background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
+    /* Sin esto el texto hereda el blanco de la regla global y el boton
+       se ve vacio sobre su propio fondo claro. */
+    color: #1e293b !important;
+    -webkit-text-fill-color: #1e293b !important;
     transition: all 0.3s ease !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10) !important;
+}
+.stButton > button[kind="secondary"] p,
+.stButton > button[kind="secondary"] span,
+.stButton > button[kind="secondary"] div {
+    color: #1e293b !important;
+    -webkit-text-fill-color: #1e293b !important;
 }
 .stButton > button[kind="secondary"]:hover {
-    transform: translateY(-4px) scale(1.02) !important;
-    box-shadow: 0 8px 25px rgba(26,86,219,0.15) !important;
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 0 8px 25px rgba(26,86,219,0.20) !important;
     border-color: #1a56db !important;
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+.stButton > button[kind="secondary"]:hover p,
+.stButton > button[kind="secondary"]:hover span {
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
 }
 
 /* === NÚMERO ANIMADO === */
@@ -29830,6 +29847,50 @@ def _horario_cargar_usuario(usuario):
     return None
 
 
+
+def _horario_a_texto(docente, grado, horario_data, horas, dias):
+    """Convierte el horario en un mensaje de texto para Telegram."""
+    lineas = ["<b>HORARIO DE CLASES</b>"]
+    if grado:
+        lineas.append(f"Grado: <b>{grado}</b>")
+    if docente:
+        lineas.append(f"Docente: {docente}")
+    lineas.append("")
+    for d in dias:
+        lineas.append(f"<b>{d.upper()}</b>")
+        vacio = True
+        for h in horas:
+            if "RECREO" in str(h).upper() or "R E C R E O" in str(h).upper():
+                lineas.append("   — recreo —")
+                continue
+            area = (horario_data.get(f"{d}_{h}") or "").strip()
+            if area:
+                lineas.append(f"   {h}: {area}")
+                vacio = False
+        if vacio:
+            lineas.append("   (sin clases registradas)")
+        lineas.append("")
+    return "\n".join(lineas)
+
+
+def _horario_enviar_telegram(texto):
+    """Envia el horario a todos los chats suscritos. Devuelve (enviados, total)."""
+    cfg = _tg_cargar_config()
+    token = _tg_limpiar_token(cfg.get("bot_token", ""))
+    if not token:
+        return 0, 0
+    subs = _tg_cargar_subs()
+    if not subs:
+        return 0, 0
+    enviados = 0
+    for _dni, entry in subs.items():
+        chat_id = entry if isinstance(entry, (int, str)) else entry.get("chat_id", "")
+        if not chat_id:
+            continue
+        if _tg_enviar(chat_id, texto, token):
+            enviados += 1
+    return enviados, len(subs)
+
 def _tab_horario(config):
     """Módulo de construcción de horario de clases con áreas personalizadas."""
     anio = config.get('anio', 2026)
@@ -29944,29 +30005,24 @@ def _tab_horario(config):
             docente_h = st.text_input("Docente:", placeholder="Apellidos y Nombres", key="h_docente")
             grado_h = st.text_input("Grado y Sección:", placeholder="4° Primaria — A", key="h_grado")
 
+            # Bloques sin hora escrita: el docente ordena las areas por
+            # bloque y no depende de que la hora exacta cambie cada ciclo.
+            _BLQ_MANANA = ["1er bloque", "2do bloque", "3er bloque", "4to bloque",
+                           "R E C R E O",
+                           "5to bloque", "6to bloque", "7mo bloque", "8vo bloque"]
+            _BLQ_TARDE = ["9no bloque", "10mo bloque",
+                          "R E C R E O (tarde)",
+                          "11vo bloque", "12vo bloque"]
+
             HORAS_PRESET = {
-                "Primaria — bloques dobles (8:00–14:00)": [
-                    "8:00 – 9:30",
-                    "9:30 – 11:00",
-                    "11:00 – 11:30 (Recreo)",
-                    "11:30 – 13:00",
-                    "13:00 – 14:00",
-                ],
-                "Secundaria — bloques dobles (7:30–13:00)": [
-                    "7:30 – 9:00",
-                    "9:00 – 10:30",
-                    "10:30 – 11:00 (Recreo)",
-                    "11:00 – 12:30",
-                    "12:30 – 13:00",
-                ],
-                "Primaria — bloques simples 45min (8:00–14:00)": [
-                    "8:00–8:45","8:45–9:30","9:30–10:15","10:15–11:00",
-                    "11:00–11:30 (Recreo)","11:30–12:15","12:15–13:00","13:00–14:00"
-                ],
-                "Secundaria — bloques simples 45min (7:30–13:00)": [
-                    "7:30–8:15","8:15–9:00","9:00–9:45","9:45–10:30",
-                    "10:30–11:00 (Recreo)","11:00–11:45","11:45–12:30","12:30–13:00"
-                ],
+                "Primaria — 4 bloques + recreo + 4 bloques":
+                    list(_BLQ_MANANA),
+                "Secundaria — 4 bloques + recreo + 4 bloques":
+                    list(_BLQ_MANANA),
+                "Secundaria / Preuniversitario — mañana y tarde":
+                    list(_BLQ_MANANA) + list(_BLQ_TARDE),
+                "Preuniversitario — solo tarde (2 + recreo + 2)":
+                    list(_BLQ_TARDE),
                 "Personalizado": []
             }
             preset_h = st.selectbox("Franjas horarias:", list(HORAS_PRESET.keys()), key="h_preset")
@@ -30090,6 +30146,32 @@ def _tab_horario(config):
                     if st.button("Limpiar horario", type="primary", use_container_width=True, key="btn_h_clear"):
                         st.session_state.horario_data = {}
                         st.rerun()
+
+                # ── Envio por Telegram ────────────────────────────────
+                st.markdown("---")
+                st.markdown("#### 📱 Enviar el horario por Telegram")
+                _txt_hor = _horario_a_texto(
+                    docente_h or st.session_state.get('h_docente_guardado', ''),
+                    grado_h or st.session_state.get('h_grado_guardado', ''),
+                    st.session_state.horario_data, horas, dias)
+                with st.expander("Ver cómo llegará el mensaje"):
+                    st.code(_txt_hor.replace("<b>", "").replace("</b>", ""),
+                            language=None)
+                _ct1, _ct2 = st.columns([2, 3])
+                with _ct1:
+                    if st.button("📤 ENVIAR AHORA", type="primary",
+                                 use_container_width=True, key="btn_h_tg"):
+                        _env, _tot = _horario_enviar_telegram(_txt_hor)
+                        if _tot == 0:
+                            st.warning("No hay bot configurado o nadie está "
+                                       "suscrito todavía. Revisa Notif. Telegram.")
+                        else:
+                            st.success(f"Enviado a {_env} de {_tot} contactos.")
+                with _ct2:
+                    st.caption("Envío manual: pulsa el botón cada lunes. "
+                               "Un envío automático no es fiable porque "
+                               "Streamlit Cloud duerme la app cuando nadie la usa, "
+                               "y un lunes que esté dormida el mensaje no saldría.")
             else:
                 st.info("Configura las franjas horarias y los días en el panel izquierdo.")
 
