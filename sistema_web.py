@@ -2085,6 +2085,29 @@ class BaseDatos:
         }
 
     @staticmethod
+    def generar_codigo_provisional():
+        """Código temporal para un estudiante sin DNI todavía.
+
+        Sin esto, un estudiante en matrícula provisional queda con DNI
+        vacío y el índice de asistencia lo excluye (requiere longitud
+        >= 7), por lo que no puede marcar asistencia ni vincular
+        Telegram hasta que alguien complete su DNI real. El código
+        temporal ocupa el mismo campo DNI y hace que el estudiante
+        funcione con normalidad desde el primer día; cuando llegue el
+        DNI real, Secretaría lo reemplaza en Base de Datos.
+        """
+        df = BaseDatos.cargar_matricula()
+        existentes = set()
+        if not df.empty and 'DNI' in df.columns:
+            existentes = set(df['DNI'].astype(str).str.strip())
+        n = 1
+        while True:
+            codigo = f"PROV{n:04d}"
+            if codigo not in existentes:
+                return codigo
+            n += 1
+
+    @staticmethod
     def previsualizar_promocion():
         """Retorna resumen de cómo quedarían los grados SIN guardar."""
         CADENA_PROMOCION = {
@@ -5992,10 +6015,14 @@ def tab_matricula(config):
                      key="bm"):
             if mn:
                 if es_provisional:
-                    # Registro provisional — sin DNI
+                    # Registro provisional — con código temporal en vez de
+                    # DNI vacío. Sin código, el estudiante quedaría
+                    # invisible para asistencia y Telegram hasta que
+                    # alguien complete el DNI real.
+                    _codigo_prov = BaseDatos.generar_codigo_provisional()
                     with st.spinner("💾 Guardando matrícula provisional..."):
                         BaseDatos.registrar_estudiante({
-                            'Nombre': mn.strip().upper(), 'DNI': '',
+                            'Nombre': mn.strip().upper(), 'DNI': _codigo_prov,
                             'Nivel': mnv, 'Grado': mg, 'Seccion': ms,
                             'Sexo': msexo, 'Apoderado': '', 'DNI_Apoderado': '',
                             'Celular_Apoderado': '', '_provisional': 'SI'
@@ -6009,9 +6036,17 @@ def tab_matricula(config):
                         {avatar} {mn.strip().upper()}<br>
                         🎓 {mg} — Sección {ms}<br>
                         📅 {fecha_peru_str()}<br>
+                        <span style="color:#0369a1;font-weight:bold;">
+                        📌 Código temporal: {_codigo_prov}</span><br>
                         <span style="color:orange;font-weight:bold;">⚠️ PENDIENTE: completar DNI y celular en Base de Datos</span>
                     </div>
                     """, unsafe_allow_html=True)
+                    st.info(f"Con este código **{_codigo_prov}** ya puede marcar "
+                            f"asistencia y el apoderado puede vincular Telegram "
+                            f"escribiendo `/start {_codigo_prov}`. Cuando llegue "
+                            f"el DNI real, reemplázalo en Base de Datos — el "
+                            f"apoderado deberá volver a escribir /start con el "
+                            f"DNI nuevo.")
                     reproducir_beep_exitoso()
                 else:
                     # Registro completo — requiere DNI
@@ -33177,6 +33212,10 @@ PASOS:
    (Reemplace XXXXXXXX con el DNI de su hijo/a)
 
 Ejemplo: /start 70123456
+
+⚠️ Si su hijo/a todavía NO tiene DNI (matrícula provisional), pida en
+Secretaría el CÓDIGO TEMPORAL asignado (empieza con PROV) y escríbalo
+en lugar del DNI. Ejemplo: /start PROV0001
 
 ✅ Listo. Desde ese momento recibirá notificaciones automáticas de asistencia.
 
