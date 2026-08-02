@@ -45,7 +45,8 @@ except ImportError:
 
 # Avance del temario — Academia Preuniversitaria UNSAAC
 try:
-    from avance_temario import tab_avance_docente, tab_avance_coordinacion
+    from avance_temario import (tab_avance_docente, tab_avance_coordinacion,
+                                tab_simulacro_becas)
     AVANCE_TEMARIO_DISPONIBLE = True
 except ImportError:
     AVANCE_TEMARIO_DISPONIBLE = False
@@ -662,6 +663,40 @@ ARCHIVO_ASISTENCIAS = "asistencias.json"
 ARCHIVO_INDICE_CACHE = "indice_dni_cache.json"  # Caché local del índice — sobrevive reinicios
 ARCHIVO_RESULTADOS = "resultados_examenes.json"
 
+
+
+# ================================================================
+# ALIAS DE AREAS POR NIVEL
+# ================================================================
+# Estas cuatro constantes se usaban en verificar_acceso_docente y en el
+# Registro Mensual de Notas, pero nunca llegaron a definirse: cualquiera
+# que abriera esas pantallas recibia un NameError. Se derivan de las
+# listas oficiales que ya existen mas abajo en el archivo.
+
+AREAS_INICIAL = [
+    'Personal Social', 'Psicomotriz', 'Comunicación',
+    'Castellano como segunda lengua', 'Matemática',
+    'Ciencia y Tecnología', 'Educación Física', 'Inglés',
+]
+
+AREAS_PRIMARIA = [
+    'Personal Social', 'Educación Física', 'Comunicación',
+    'Arte y Cultura', 'Castellano como segunda lengua',
+    'Inglés', 'Matemática', 'Ciencia y Tecnología',
+    'Educación Religiosa',
+]
+
+AREAS_SECUNDARIA = [
+    'Desarrollo Personal, Ciudadanía y Cívica', 'Ciencias Sociales',
+    'Educación para el Trabajo', 'Educación Física', 'Comunicación',
+    'Arte y Cultura', 'Castellano como segunda lengua', 'Inglés',
+    'Matemática', 'Ciencia y Tecnología', 'Educación Religiosa',
+]
+
+AREAS_PREUNIVERSITARIO = sorted(set(
+    AREAS_CEPRE_UNSAAC.get('GRUPO AB', []) +
+    AREAS_CEPRE_UNSAAC.get('GRUPO CD', [])
+))
 
 
 def verificar_acceso_docente(nivel):
@@ -21651,7 +21686,9 @@ def tab_registrar_notas(config):
                 notas_para_semaforo = notas_ingresadas
 
             # Construir tabla con promedios y semáforo
-            _col_semaf = [f"{'📊' if i==0 else '  '} Estudiante"] + [a[:12] for a in areas_diag] + ["Promedio", "Nivel"]
+            # Antes usaba una variable 'i' que en este punto no existe:
+            # dependia de que un bucle anterior la hubiera dejado suelta.
+            _col_semaf = ["📊 Estudiante"] + [a[:12] for a in areas_diag] + ["Promedio", "Nivel"]
             _fila_semaf = []
             _conteo_nivel = {"AD":0,"A":0,"B":0,"C":0}
             _promedios_area_gen = [[] for _ in areas_diag]
@@ -32670,6 +32707,7 @@ def main():
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
                 ("📚", "Control Academia", "control_academia", "#0891b2"),
+                ("🏆", "Simulacro / Becas", "simulacro_becas", "#b45309"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32785,6 +32823,8 @@ def main():
                 tab_bienestar_estudiantil(config)
             elif mod == "control_academia":
                 tab_avance_coordinacion(config)
+            elif mod == "simulacro_becas":
+                tab_simulacro_becas(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
