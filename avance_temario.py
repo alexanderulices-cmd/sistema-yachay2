@@ -456,7 +456,57 @@ def guardar_avance(registros):
         return False, f"Guardado local. La nube no respondió: {e}"
 
 
+def _leer_config_nube(clave):
+    """Lee un valor JSON guardado en la hoja Config de Google Sheets."""
+    gs = _gs()
+    if gs is None:
+        return None
+    try:
+        ws = gs._get_hoja("config")
+        if ws is None:
+            return None
+        for row in ws.get_all_values():
+            if row and row[0] == clave:
+                return json.loads(row[1])
+    except Exception:
+        pass
+    return None
+
+
+def _escribir_config_nube(clave, valor):
+    gs = _gs()
+    if gs is None:
+        return False
+    try:
+        ws = gs._get_hoja("config")
+        if ws is None:
+            return False
+        blob = json.dumps(valor, ensure_ascii=False)
+        for i, row in enumerate(ws.get_all_values()):
+            if row and row[0] == clave:
+                ws.update_cell(i + 1, 2, blob)
+                return True
+        ws.append_row([clave, blob])
+        return True
+    except Exception:
+        return False
+
+
 def cargar_config_ciclo():
+    """Configuración del ciclo, con la nube como fuente de verdad.
+
+    Antes se guardaba solo en un archivo local, y Streamlit Cloud borra el
+    disco cada vez que reinicia la aplicación: la fecha del examen se
+    perdía sola y el semáforo volvía a quedar en gris.
+    """
+    remoto = _leer_config_nube("ciclo_academia")
+    if remoto:
+        try:
+            with open(ARCHIVO_CONFIG_CICLO, "w", encoding="utf-8") as f:
+                json.dump(remoto, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        return remoto
     p = Path(ARCHIVO_CONFIG_CICLO)
     if p.exists():
         try:
@@ -468,8 +518,12 @@ def cargar_config_ciclo():
 
 
 def guardar_config_ciclo(cfg):
-    with open(ARCHIVO_CONFIG_CICLO, "w", encoding="utf-8") as f:
-        json.dump(cfg, f, indent=2, ensure_ascii=False)
+    try:
+        with open(ARCHIVO_CONFIG_CICLO, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
+    return _escribir_config_nube("ciclo_academia", cfg)
 
 
 # ================================================================
@@ -1069,6 +1123,10 @@ def tab_avance_coordinacion(config=None):
 PIE_LEGAL = ("Derechos reservados — I.E.P. ALTERNATIVO YACHAY · "
              "Documento generado por SISTEMA YACHAY PRO")
 
+# Encabezado institucional que abre todos los documentos del módulo.
+ENCABEZADO_L1 = "I.E.P. YACHAY  ·  ACADEMIA YACHAY"
+ENCABEZADO_L2 = "PIONEROS EN LA EDUCACIÓN DE CALIDAD"
+
 
 def _pie_pagina(canvas, doc):
     """Pie legal en todas las paginas, con numeracion."""
@@ -1091,6 +1149,14 @@ def _estilos_pdf():
     from reportlab.lib import colors
     ss = getSampleStyleSheet()
     return {
+        "marca": ParagraphStyle("m", parent=ss["Title"], fontSize=19,
+                                textColor=colors.HexColor("#001e7c"),
+                                spaceAfter=0, spaceBefore=0,
+                                leading=22, alignment=TA_CENTER),
+        "lema": ParagraphStyle("l", parent=ss["Normal"], fontSize=9.5,
+                               textColor=colors.HexColor("#b45309"),
+                               alignment=TA_CENTER, spaceAfter=0,
+                               spaceBefore=1),
         "titulo": ParagraphStyle("t", parent=ss["Title"], fontSize=15,
                                  textColor=colors.HexColor("#001e7c"),
                                  spaceAfter=2, alignment=TA_CENTER),
@@ -1108,8 +1174,13 @@ def _estilos_pdf():
     }
 
 
-def _encabezado(story, titulo, subtitulo, est):
+def _encabezado(story, titulo, subtitulo, est, con_marca=True):
+    """Cabecera de los PDF: marca institucional y luego el título propio."""
     from reportlab.platypus import Paragraph, Spacer
+    if con_marca:
+        story.append(Paragraph(ENCABEZADO_L1, est["marca"]))
+        story.append(Paragraph(ENCABEZADO_L2, est["lema"]))
+        story.append(Spacer(1, 6))
     story.append(Paragraph(titulo, est["titulo"]))
     story.append(Paragraph(subtitulo, est["sub"]))
     story.append(Spacer(1, 4))
@@ -1134,7 +1205,7 @@ def generar_pdf_coordinacion(avance, anio, ciclo, dias, institucion="ACADEMIA YA
     sub = f"{ciclo} {anio} &nbsp;·&nbsp; Emitido el {hoy}"
     if dias is not None and dias > 0:
         sub += f" &nbsp;·&nbsp; Faltan {dias} días para el examen"
-    _encabezado(story, f"{institucion}<br/>INFORME DE AVANCE DEL TEMARIO", sub, est)
+    _encabezado(story, "INFORME DE AVANCE DEL TEMARIO", sub, est)
     story.append(Paragraph(
         "Temario de Admisión UNSAAC aprobado por Res. CU-575-2024-UNSAAC. "
         "El porcentaje del grupo está ponderado por el número de preguntas "
@@ -1260,7 +1331,7 @@ def generar_pdf_docente(avance, anio, ciclo, grupo, curso, docente, dias,
     etiqueta, color = diagnostico(res["pct"], dias)
     hoy = datetime.now().strftime("%d/%m/%Y")
 
-    _encabezado(story, f"{institucion}<br/>AVANCE DEL TEMARIO — {curso.upper()}",
+    _encabezado(story, f"AVANCE DEL TEMARIO — {curso.upper()}",
                 f"{grupo} &nbsp;·&nbsp; {ciclo} {anio} &nbsp;·&nbsp; "
                 f"Docente: {docente} &nbsp;·&nbsp; {hoy}", est)
 
@@ -1654,7 +1725,7 @@ def generar_pdf_planilla(grupo, ciclo, anio, institucion="ACADEMIA YACHAY"):
                             topMargin=1.2 * cm, bottomMargin=1.2 * cm)
     story = []
 
-    _encabezado(story, f"{institucion}<br/>PLANILLA DE CONTROL DEL TEMARIO",
+    _encabezado(story, "PLANILLA DE CONTROL DEL TEMARIO",
                 f"{grupo} &nbsp;·&nbsp; {ciclo} {anio} &nbsp;·&nbsp; "
                 f"Temario UNSAAC (Res. CU-575-2024)", est)
     story.append(Paragraph(
@@ -1774,7 +1845,7 @@ def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
     pesos = _pesos_de(area)
     total_preg = int(round(sum(pesos.values())))
 
-    _encabezado(story, f"{institucion}<br/>TEMARIO DE ADMISIÓN — {_etiqueta_area(area)}",
+    _encabezado(story, f"TEMARIO DE ADMISIÓN — {_etiqueta_area(area)}",
                 f"{ciclo} {anio} &nbsp;·&nbsp; {total_preg} preguntas &nbsp;·&nbsp; "
                 f"Res. CU-575-2024-UNSAAC", est)
 
@@ -1990,7 +2061,9 @@ def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
 
     AZUL = (0x00, 0x1E, 0x7C)
 
-    p(institucion, 15, True, WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
+    p(ENCABEZADO_L1, 17, True, WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
+    p(ENCABEZADO_L2, 9.5, False, WD_ALIGN_PARAGRAPH.CENTER, 8,
+      (0xB4, 0x53, 0x09))
     p("CRONOGRAMA DE AVANCE Y ENTREGA DE PREGUNTAS", 13, True,
       WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
     p(f"{_etiqueta_area(area)} — {ciclo}", 11, True, WD_ALIGN_PARAGRAPH.CENTER, 10)
@@ -2198,7 +2271,15 @@ FERIADOS_FIJOS = [
 
 
 def cargar_feriados():
-    """Devuelve {'AAAA-MM-DD': 'motivo'} con los días no lectivos."""
+    """Días no lectivos {'AAAA-MM-DD': 'motivo'}, sincronizados con la nube."""
+    remoto = _leer_config_nube("feriados_academia")
+    if remoto:
+        try:
+            with open(ARCHIVO_FERIADOS, "w", encoding="utf-8") as f:
+                json.dump(remoto, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        return remoto
     p = Path(ARCHIVO_FERIADOS)
     if p.exists():
         try:
@@ -2213,9 +2294,9 @@ def guardar_feriados(data):
     try:
         with open(ARCHIVO_FERIADOS, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        return True
     except Exception:
-        return False
+        pass
+    return _escribir_config_nube("feriados_academia", data)
 
 
 def feriados_nacionales(anio):
@@ -2481,7 +2562,7 @@ def generar_pdf_ranking_simulacro(sim, ambito, filas,
         _f_txt = date.fromisoformat(sim.get("fecha", "")).strftime("%d/%m/%Y")
     except ValueError:
         _f_txt = str(sim.get("fecha", ""))
-    _encabezado(story, f"{institucion}<br/>{sim.get('nombre', 'SIMULACRO').upper()}",
+    _encabezado(story, sim.get('nombre', 'SIMULACRO').upper(),
                 f"{etiqueta} &nbsp;·&nbsp; Aplicado el {_f_txt} "
                 f"&nbsp;·&nbsp; {len(filas)} postulantes", est)
 
