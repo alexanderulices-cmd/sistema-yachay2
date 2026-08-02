@@ -29753,10 +29753,28 @@ def _generar_pdf_horario_blanco(grado, anio, horas, dias):
 
 
 
+def _horario_slug(txt):
+    """Convierte el grado en algo usable dentro de una clave."""
+    t = "".join(ch if ch.isalnum() else "_" for ch in str(txt).strip())
+    while "__" in t:
+        t = t.replace("__", "_")
+    return t.strip("_")[:40]
+
+
+def _horario_clave(usuario, grado):
+    """Una clave por usuario Y grado, para no pisar horarios entre grados."""
+    g = _horario_slug(grado)
+    return f"horario_{usuario}__{g}" if g else f"horario_{usuario}"
+
+
 def _horario_guardar(usuario, grado, horario_data, horas, dias, areas, docente_nombre):
-    """Guarda el horario del docente en GSheets (Config) y JSON local."""
+    """Guarda el horario del docente en GSheets (Config) y JSON local.
+
+    Se guarda uno por cada grado, de modo que un mismo docente puede
+    tener el de 4to Primaria y el de 5to Secundaria a la vez.
+    """
     import json as _j, time as _t
-    clave = f"horario_{usuario}"
+    clave = _horario_clave(usuario, grado)
     datos = {
         "usuario": usuario,
         "docente": docente_nombre,
@@ -29822,8 +29840,41 @@ def _horarios_cargar_todos():
     return horarios
 
 
+def _horarios_del_usuario(usuario):
+    """Todos los horarios guardados por este usuario, uno por grado."""
+    import json as _j
+    pref = f"horario_{usuario}"
+    salida = {}
+    try:
+        if Path("horarios.json").exists():
+            with open("horarios.json", "r", encoding="utf-8") as f:
+                for k, v in (_j.load(f) or {}).items():
+                    if k == pref or k.startswith(pref + "__"):
+                        salida[k] = v
+    except Exception:
+        pass
+    try:
+        gs = _gs()
+        if gs:
+            hoja = gs._get_hoja('config')
+            if hoja:
+                for row in hoja.get_all_records():
+                    k = str(row.get('clave', '')).strip()
+                    if k == pref or k.startswith(pref + "__"):
+                        try:
+                            salida[k] = _j.loads(str(row.get('valor', '{}')))
+                        except Exception:
+                            pass
+    except Exception:
+        pass
+    return salida
+
+
 def _horario_cargar_usuario(usuario):
-    """Carga el horario de un docente específico."""
+    """Carga el horario más reciente del docente (para abrir el módulo)."""
+    todos = _horarios_del_usuario(usuario)
+    if todos:
+        return max(todos.values(), key=lambda d: d.get("ts", 0))
     import json as _j
     clave = f"horario_{usuario}"
     # Local primero
@@ -30109,6 +30160,35 @@ def _tab_horario(config):
                                         unsafe_allow_html=True)
 
                 st.markdown("---")
+
+                # ── Horarios ya guardados por este docente ────────────
+                _mis_hor = _horarios_del_usuario(usuario_actual)
+                if _mis_hor:
+                    _opts = {}
+                    for _k, _d in _mis_hor.items():
+                        _et = _d.get("grado") or "(sin grado)"
+                        _opts[f"{_et}"] = _d
+                    _sel_h = st.selectbox(
+                        "📂 Mis horarios guardados:",
+                        ["— no cargar —"] + sorted(_opts.keys()),
+                        key="h_cargar_sel",
+                        help="Cada grado se guarda por separado. "
+                             "Elige uno para abrirlo y modificarlo.")
+                    if _sel_h != "— no cargar —":
+                        if st.button(f"📥 Abrir horario de {_sel_h}",
+                                     key="h_cargar_btn",
+                                     use_container_width=True):
+                            _d = _opts[_sel_h]
+                            st.session_state.horario_data = _d.get("horario", {})
+                            st.session_state.h_areas = _d.get(
+                                "areas", st.session_state.get("h_areas", {}))
+                            st.session_state['h_grado_guardado'] = _d.get("grado", "")
+                            st.session_state['h_docente_guardado'] = _d.get("docente", "")
+                            st.success(f"Horario de {_sel_h} cargado. "
+                                       "Modifícalo y vuelve a guardar.")
+                            st.rerun()
+                    st.markdown("---")
+
                 c1, c2, c3, c4 = st.columns(4)
                 with c1:
                     if st.button("💾 GUARDAR Horario", type="primary",
