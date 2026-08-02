@@ -898,6 +898,23 @@ def tab_avance_coordinacion(config=None):
                     st.caption(f"No se pudo generar: {e}")
 
         st.markdown("---")
+        st.markdown("#### Temario completo por área de postulación")
+        st.caption("Una hoja por área con todos sus cursos, cuánto pesa cada "
+                   "uno y sus temas. Sirve para entregar al postulante.")
+        _ca = st.columns(4)
+        for _col, _ar in zip(_ca, ["A", "B", "C", "D"]):
+            with _col:
+                try:
+                    _pa = generar_pdf_area(_ar, ciclo, anio)
+                    st.download_button(
+                        f"📘 Área {_ar}", data=_pa,
+                        file_name=f"temario_area_{_ar}_{anio}.pdf",
+                        mime="application/pdf", use_container_width=True,
+                        key=f"av_area_{_ar}")
+                except Exception as e:
+                    st.caption(f"Error: {e}")
+
+        st.markdown("---")
         st.markdown("#### Reporte individual por docente")
         cc1, cc2 = st.columns(2)
         with cc1:
@@ -1548,6 +1565,98 @@ def generar_pdf_planilla(grupo, ciclo, anio, institucion="ACADEMIA YACHAY"):
         if len(temas) > 18:
             for x in bloque[1:]:
                 story.append(x)
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+# ================================================================
+# 12. TEMARIO COMPLETO POR ÁREA (A, B, C, D)
+# ================================================================
+
+def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
+    """Temario completo de un área de postulación, curso por curso.
+
+    Sirve para entregar al postulante y al docente: en una sola hoja
+    saben exactamente qué cursos les tocan, cuánto pesa cada uno y
+    todos los temas que entran en el examen.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer,
+                                    Table, TableStyle)
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+
+    est = _estilos_pdf()
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            leftMargin=1.5 * cm, rightMargin=1.5 * cm,
+                            topMargin=1.2 * cm, bottomMargin=1.2 * cm)
+    story = []
+
+    pesos = PESOS.get(area, {})
+    total_preg = sum(pesos.values())
+
+    _encabezado(story, f"{institucion}<br/>TEMARIO DE ADMISIÓN — ÁREA «{area}»",
+                f"{ciclo} {anio} &nbsp;·&nbsp; {total_preg} preguntas &nbsp;·&nbsp; "
+                f"Res. CU-575-2024-UNSAAC", est)
+
+    # Resumen de la distribución
+    data = [["Curso", "Preguntas", "% del examen", "N° de temas"]]
+    for curso, np_ in sorted(pesos.items(), key=lambda x: -x[1]):
+        data.append([
+            Paragraph(curso, est["n"]), str(np_),
+            f"{round(100*np_/total_preg, 1)}%",
+            str(len(TEMARIO.get(curso, []))),
+        ])
+    data.append(["TOTAL", str(total_preg), "100%",
+                 str(sum(len(TEMARIO.get(c, [])) for c in pesos))])
+    t = Table(data, colWidths=[8.5 * cm, 2.6 * cm, 3.0 * cm, 3.0 * cm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#001e7c")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+        ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#e2e8f0")),
+        ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+        ("ALIGN", (1, 0), (-1, -1), "CENTER"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -2),
+         [colors.white, colors.HexColor("#f8fafc")]),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 6))
+    story.append(Paragraph(
+        "Los cursos con más preguntas son los que más deciden el ingreso. "
+        "Prioriza tu estudio en ese orden.", est["n"]))
+    story.append(Spacer(1, 10))
+
+    # Temario curso por curso
+    for curso, np_ in sorted(pesos.items(), key=lambda x: -x[1]):
+        temas = TEMARIO.get(curso, [])
+        story.append(Paragraph(
+            f"{curso} &nbsp;<font size=8 color='#64748b'>"
+            f"({np_} preguntas · {len(temas)} temas)</font>", est["h2"]))
+        filas, mitad = [], -(-len(temas) // 2)
+        for i in range(mitad):
+            izq = f"{i+1}. {temas[i]}"
+            j = i + mitad
+            der = f"{j+1}. {temas[j]}" if j < len(temas) else ""
+            filas.append([Paragraph(izq, est["n"]), Paragraph(der, est["n"])])
+        t = Table(filas, colWidths=[8.85 * cm, 8.85 * cm])
+        t.setStyle(TableStyle([
+            ("FONTSIZE", (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("TOPPADDING", (0, 0), (-1, -1), 1.5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5),
+            ("LINEBELOW", (0, 0), (-1, -1), 0.25, colors.HexColor("#e2e8f0")),
+        ]))
+        story.append(t)
+        story.append(Spacer(1, 8))
 
     doc.build(story)
     buf.seek(0)
