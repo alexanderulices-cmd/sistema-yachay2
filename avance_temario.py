@@ -694,7 +694,8 @@ def tab_avance_coordinacion(config=None):
                 "Fecha del examen",
                 value=datetime.strptime(cfg["examen"], "%Y-%m-%d").date()
                 if cfg.get("examen") else date.today() + timedelta(days=90))
-        if st.button("Guardar configuración", key="av_cfg_save"):
+        if st.button("💾 Guardar configuración", key="av_cfg_save",
+                     type="primary", use_container_width=True):
             guardar_config_ciclo({
                 "ciclo": nciclo,
                 "inicio": ini.strftime("%Y-%m-%d"),
@@ -876,6 +877,25 @@ def tab_avance_coordinacion(config=None):
                     type="primary", key="av_coord_pdf")
             except Exception as e:
                 st.caption(f"No se pudo preparar el PDF: {e}")
+
+        st.markdown("---")
+        st.markdown("#### Planilla para marcar a mano")
+        st.caption("Hoja impresa con todos los cursos y sus temas, con "
+                   "casilleros vacíos para marcar con aspa y firmar.")
+        pc1, pc2 = st.columns(2)
+        for col, grupo_pl in zip([pc1, pc2], list(GRUPOS.keys())):
+            with col:
+                try:
+                    pl = generar_pdf_planilla(grupo_pl, ciclo, anio)
+                    st.download_button(
+                        f"🖨️ Planilla {grupo_pl}",
+                        data=pl,
+                        file_name=(f"planilla_temario_{grupo_pl.replace(' ', '')}"
+                                   f"_{anio}.pdf"),
+                        mime="application/pdf", use_container_width=True,
+                        key=f"av_planilla_{grupo_pl}")
+                except Exception as e:
+                    st.caption(f"No se pudo generar: {e}")
 
         st.markdown("---")
         st.markdown("#### Reporte individual por docente")
@@ -1450,3 +1470,85 @@ def seccion_vincular_evaluaciones(avance, anio, ciclo, grupo, curso, docente):
             unsafe_allow_html=True)
     if not hubo:
         st.caption("Vincula al menos un examen arriba para ver esta sección.")
+
+
+# ================================================================
+# 11. PLANILLA IMPRESA PARA MARCAR A MANO
+# ================================================================
+
+def generar_pdf_planilla(grupo, ciclo, anio, institucion="ACADEMIA YACHAY"):
+    """Hoja con todos los cursos y sus temas, con casilleros vacíos.
+
+    Sirve para que dirección o el propio docente marque con aspa sobre
+    papel durante la clase y luego lo pase al sistema, o para archivar
+    la evidencia firmada.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer,
+                                    Table, TableStyle, KeepTogether)
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+
+    est = _estilos_pdf()
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            leftMargin=1.3 * cm, rightMargin=1.3 * cm,
+                            topMargin=1.2 * cm, bottomMargin=1.2 * cm)
+    story = []
+
+    _encabezado(story, f"{institucion}<br/>PLANILLA DE CONTROL DEL TEMARIO",
+                f"{grupo} &nbsp;·&nbsp; {ciclo} {anio} &nbsp;·&nbsp; "
+                f"Temario UNSAAC (Res. CU-575-2024)", est)
+    story.append(Paragraph(
+        "Marque con una <b>X</b> el estado de cada tema. "
+        "<b>P</b> = pendiente &nbsp; <b>A</b> = en avance &nbsp; "
+        "<b>C</b> = concluido &nbsp; <b>R</b> = reforzado.", est["n"]))
+    story.append(Spacer(1, 8))
+
+    for curso in cursos_de_grupo(grupo):
+        temas = TEMARIO.get(curso, [])
+        bloque = [Paragraph(
+            f"{curso} &nbsp;<font size=8 color='#64748b'>"
+            f"({int(peso_curso(grupo, curso))} preguntas en el examen · "
+            f"{len(temas)} temas)</font>", est["h2"])]
+
+        data = [["N°", "Tema", "P", "A", "C", "R", "Fecha", "Observación"]]
+        for i, tema in enumerate(temas, start=1):
+            data.append([str(i), Paragraph(tema, est["n"]),
+                         "", "", "", "", "", ""])
+
+        t = Table(data, colWidths=[0.9 * cm, 7.2 * cm, 0.75 * cm, 0.75 * cm,
+                                   0.75 * cm, 0.75 * cm, 2.0 * cm, 5.0 * cm],
+                  repeatRows=1)
+        t.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#001e7c")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, -1), 8),
+            ("ALIGN", (0, 0), (0, -1), "CENTER"),
+            ("ALIGN", (2, 0), (6, -1), "CENTER"),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+            # Casilleros de marcado resaltados
+            ("BACKGROUND", (2, 1), (5, -1), colors.HexColor("#f1f5f9")),
+            ("ROWBACKGROUNDS", (0, 1), (1, -1),
+             [colors.white, colors.HexColor("#fafafa")]),
+            ("TOPPADDING", (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ]))
+        bloque.append(t)
+        bloque.append(Spacer(1, 4))
+        bloque.append(Paragraph(
+            "Docente: _______________________________ &nbsp;&nbsp; "
+            "Firma: _______________________ &nbsp;&nbsp; "
+            "V°B° Dirección: _______________________", est["n"]))
+        bloque.append(Spacer(1, 12))
+        story.append(KeepTogether(bloque) if len(temas) <= 18
+                     else bloque[0])
+        if len(temas) > 18:
+            for x in bloque[1:]:
+                story.append(x)
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.getvalue()
