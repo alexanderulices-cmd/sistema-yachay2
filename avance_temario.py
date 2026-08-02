@@ -842,8 +842,17 @@ def tab_avance_coordinacion(config=None):
         with cr1:
             _preset = st.selectbox("Ciclo:", list(CICLOS_PRESET.keys()),
                                    key="cr_preset")
-            _area_cr = st.selectbox("Área de postulación:",
-                                    ["A", "B", "C", "D"], key="cr_area")
+            _area_cr = st.selectbox(
+                "Área / salón:",
+                ["A", "B", "C", "D", "GRUPO AB", "GRUPO CD"],
+                key="cr_area",
+                help="Elige un área sola si cada postulante tiene su "
+                     "propio salón. Elige GRUPO AB o GRUPO CD si el "
+                     "salón junta a dos áreas y comparten docente en "
+                     "los cursos comunes.")
+            if es_grupo_combinado(_area_cr):
+                st.caption(f"Cursos comunes de {', '.join(GRUPOS[_area_cr])}: "
+                           + ", ".join(cursos_de_grupo(_area_cr)))
         with cr2:
             _m1, _d1, _m2, _d2 = CICLOS_PRESET[_preset]
             _anio_cr = st.number_input("Año:", 2024, 2040, anio, key="cr_anio")
@@ -1007,6 +1016,21 @@ def tab_avance_coordinacion(config=None):
                         file_name=f"temario_area_{_ar}_{anio}.pdf",
                         mime="application/pdf", use_container_width=True,
                         key=f"av_area_{_ar}")
+                except Exception as e:
+                    st.caption(f"Error: {e}")
+
+        st.caption("Para un salón que junta dos áreas (AB o CD), descarga "
+                   "el temario combinado:")
+        _cg1, _cg2 = st.columns(2)
+        for _col, _gr in zip([_cg1, _cg2], list(GRUPOS.keys())):
+            with _col:
+                try:
+                    _pg = generar_pdf_area(_gr, ciclo, anio)
+                    st.download_button(
+                        f"📘 {_gr}", data=_pg,
+                        file_name=f"temario_{_gr.replace(' ', '_')}_{anio}.pdf",
+                        mime="application/pdf", use_container_width=True,
+                        key=f"av_grupo_{_gr}")
                 except Exception as e:
                     st.caption(f"Error: {e}")
 
@@ -1693,6 +1717,40 @@ def generar_pdf_planilla(grupo, ciclo, anio, institucion="ACADEMIA YACHAY"):
 # 12. TEMARIO COMPLETO POR ÁREA (A, B, C, D)
 # ================================================================
 
+def tabla_numeracion_grupo(grupo):
+    """Numeración de preguntas curso por curso, para un grupo combinado.
+
+    No existe un examen único de 80 preguntas para "GRUPO AB": existen
+    DOS exámenes de 80 preguntas (uno por área) que comparten casi todos
+    los cursos. Por eso se muestra la numeración de cada área en su
+    propia columna, en vez de sumar los pesos como si fuera un solo
+    examen — sumarlos daría más de 80 y sería un dato falso.
+    """
+    areas = GRUPOS.get(grupo, [])
+    por_area = {a: {x["curso"]: x for x in numeracion_preguntas(a)}
+                for a in areas}
+    cursos = cursos_de_grupo(grupo)
+    # Ordenar por el peso máximo que tenga en cualquiera de las áreas
+    cursos.sort(key=lambda c: -max(
+        (por_area[a].get(c, {}).get("preguntas", 0) for a in areas),
+        default=0))
+    filas = []
+    for c in cursos:
+        fila = {"curso": c, "total_temas": len(TEMARIO.get(c, []))}
+        for a in areas:
+            info = por_area[a].get(c)
+            fila[a] = (f"{info['desde']}–{info['hasta']}"
+                       if info else "no entra")
+        filas.append(fila)
+    return filas
+
+
+def _etiqueta_area(area_o_grupo):
+    if es_grupo_combinado(area_o_grupo):
+        return f"{area_o_grupo} (Áreas {' y '.join(GRUPOS[area_o_grupo])})"
+    return f"ÁREA «{area_o_grupo}»"
+
+
 def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
     """Temario completo de un área de postulación, curso por curso.
 
@@ -1713,16 +1771,17 @@ def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
                             topMargin=1.2 * cm, bottomMargin=1.2 * cm)
     story = []
 
-    pesos = PESOS.get(area, {})
-    total_preg = sum(pesos.values())
+    pesos = _pesos_de(area)
+    total_preg = int(round(sum(pesos.values())))
 
-    _encabezado(story, f"{institucion}<br/>TEMARIO DE ADMISIÓN — ÁREA «{area}»",
+    _encabezado(story, f"{institucion}<br/>TEMARIO DE ADMISIÓN — {_etiqueta_area(area)}",
                 f"{ciclo} {anio} &nbsp;·&nbsp; {total_preg} preguntas &nbsp;·&nbsp; "
                 f"Res. CU-575-2024-UNSAAC", est)
 
     # Resumen de la distribución
     data = [["Curso", "Preguntas", "% del examen", "N° de temas"]]
-    for curso, np_ in sorted(pesos.items(), key=lambda x: -x[1]):
+    for curso, np_raw in sorted(pesos.items(), key=lambda x: -x[1]):
+        np_ = int(round(np_raw))
         data.append([
             Paragraph(curso, est["n"]), str(np_),
             f"{round(100*np_/total_preg, 1)}%",
@@ -1754,7 +1813,8 @@ def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
     story.append(Spacer(1, 10))
 
     # Temario curso por curso
-    for curso, np_ in sorted(pesos.items(), key=lambda x: -x[1]):
+    for curso, np_raw in sorted(pesos.items(), key=lambda x: -x[1]):
+        np_ = int(round(np_raw))
         temas = TEMARIO.get(curso, [])
         story.append(Paragraph(
             f"{curso} &nbsp;<font size=8 color='#64748b'>"
@@ -1834,23 +1894,48 @@ def repartir_temas(n_temas, n_semanas, semanas_repaso=2):
     return tramos
 
 
+def _pesos_de(area_o_grupo):
+    """Cursos y su peso, sirva el parametro un área sola (A, B, C, D) o
+    un grupo combinado (GRUPO AB, GRUPO CD).
+
+    En un grupo combinado el peso de cada curso es el promedio de las
+    áreas que lo integran (usa peso_curso, ya usado en el resto del
+    módulo), para que la numeración de un curso compartido no dependa
+    de cuál de las dos áreas se mire primero.
+    """
+    if area_o_grupo in PESOS:
+        return dict(PESOS[area_o_grupo])
+    if area_o_grupo in GRUPOS:
+        cursos = cursos_de_grupo(area_o_grupo)
+        return {c: peso_curso(area_o_grupo, c) for c in cursos}
+    return {}
+
+
+def es_grupo_combinado(area_o_grupo):
+    return area_o_grupo in GRUPOS
+
+
 def numeracion_preguntas(area):
     """Rango fijo de numeración de cada curso dentro del examen de 80.
 
     Que cada docente entregue siempre el mismo tramo evita que dos
     profesores numeren igual y haya que renumerar todo al armar la prueba.
+    Acepta un área sola (A, B, C, D) o un grupo combinado (GRUPO AB, CD).
     """
-    pesos = PESOS.get(area, {})
+    pesos = _pesos_de(area)
     orden = sorted(pesos.items(), key=lambda x: -x[1])
     salida, n = [], 1
     for curso, cant in orden:
-        salida.append({"curso": curso, "preguntas": cant,
-                       "desde": n, "hasta": n + cant - 1})
-        n += cant
+        cant_i = int(round(cant))
+        salida.append({"curso": curso, "preguntas": cant_i,
+                       "desde": n, "hasta": n + cant_i - 1})
+        n += cant_i
     return salida
 
 
 def cronograma_area(area, inicio, fin, semanas_repaso=2, feriados=None):
+    """area puede ser una letra (A, B, C, D) o un grupo combinado
+    (GRUPO AB, GRUPO CD)."""
     """Arma el cronograma completo: semanas, fechas y temas por curso.
 
     Salta los sábados que caen en día no lectivo, para no programar un
@@ -1880,6 +1965,7 @@ def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
 
     docentes = docentes or {}
     cron = cronograma_area(area, inicio, fin, semanas_repaso, feriados)
+    combinado = es_grupo_combinado(area)
     doc = Document()
 
     for s in doc.sections:
@@ -1907,7 +1993,7 @@ def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
     p(institucion, 15, True, WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
     p("CRONOGRAMA DE AVANCE Y ENTREGA DE PREGUNTAS", 13, True,
       WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
-    p(f"ÁREA «{area}» — {ciclo}", 11, True, WD_ALIGN_PARAGRAPH.CENTER, 10)
+    p(f"{_etiqueta_area(area)} — {ciclo}", 11, True, WD_ALIGN_PARAGRAPH.CENTER, 10)
     p(f"Del {inicio.strftime('%d/%m/%Y')} al {fin.strftime('%d/%m/%Y')} "
       f"· {cron['semanas']} semanas · Examen semanal los sábados por la tarde",
       9.5, False, WD_ALIGN_PARAGRAPH.CENTER, 14)
@@ -1918,26 +2004,54 @@ def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
       "evita que dos cursos numeren igual y haya que rehacer la prueba.",
       9.5, False, None, 6)
 
-    t = doc.add_table(rows=1, cols=5)
-    t.style = "Light Grid Accent 1"
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    for i, h in enumerate(["Curso", "Docente responsable", "N° preguntas",
-                           "Numeración", "Temas"]):
-        c = t.rows[0].cells[i]
-        c.text = h
-        c.paragraphs[0].runs[0].bold = True
-        c.paragraphs[0].runs[0].font.size = Pt(9.5)
-    for c in cron["cursos"]:
-        f = t.add_row().cells
-        f[0].text = c["curso"]
-        f[1].text = docentes.get(c["curso"], "______________________")
-        f[2].text = str(c["preguntas"])
-        f[3].text = f"{c['desde']} al {c['hasta']}"
-        f[4].text = str(c["total_temas"])
-        for cc in f:
-            for pp in cc.paragraphs:
-                for r in pp.runs:
-                    r.font.size = Pt(9)
+    if combinado:
+        _areas_g = GRUPOS[area]
+        p(f"Este salón agrupa a postulantes de {' y '.join(_areas_g)}. "
+          f"Cada área rinde su propio examen de 80 preguntas; por eso la "
+          f"numeración se muestra por separado para cada una.", 9, False,
+          None, 6)
+        t = doc.add_table(rows=1, cols=2 + len(_areas_g) + 1)
+        t.style = "Light Grid Accent 1"
+        t.alignment = WD_TABLE_ALIGNMENT.CENTER
+        _enc = ["Curso", "Docente responsable"] + \
+               [f"Numeración en {a}" for a in _areas_g] + ["Temas"]
+        for i, h in enumerate(_enc):
+            c = t.rows[0].cells[i]
+            c.text = h
+            c.paragraphs[0].runs[0].bold = True
+            c.paragraphs[0].runs[0].font.size = Pt(9)
+        for fila in tabla_numeracion_grupo(area):
+            f = t.add_row().cells
+            f[0].text = fila["curso"]
+            f[1].text = docentes.get(fila["curso"], "______________________")
+            for i, a in enumerate(_areas_g):
+                f[2 + i].text = fila[a]
+            f[-1].text = str(fila["total_temas"])
+            for cc in f:
+                for pp in cc.paragraphs:
+                    for r in pp.runs:
+                        r.font.size = Pt(8.5)
+    else:
+        t = doc.add_table(rows=1, cols=5)
+        t.style = "Light Grid Accent 1"
+        t.alignment = WD_TABLE_ALIGNMENT.CENTER
+        for i, h in enumerate(["Curso", "Docente responsable", "N° preguntas",
+                               "Numeración", "Temas"]):
+            c = t.rows[0].cells[i]
+            c.text = h
+            c.paragraphs[0].runs[0].bold = True
+            c.paragraphs[0].runs[0].font.size = Pt(9.5)
+        for c in cron["cursos"]:
+            f = t.add_row().cells
+            f[0].text = c["curso"]
+            f[1].text = docentes.get(c["curso"], "______________________")
+            f[2].text = str(c["preguntas"])
+            f[3].text = f"{c['desde']} al {c['hasta']}"
+            f[4].text = str(c["total_temas"])
+            for cc in f:
+                for pp in cc.paragraphs:
+                    for r in pp.runs:
+                        r.font.size = Pt(9)
     p("", 6, space=8)
 
     if cron.get("omitidos"):
@@ -2208,3 +2322,479 @@ def seccion_calendario_feriados():
             st.rerun()
     else:
         st.info("Todavía no hay días marcados.")
+
+
+# ================================================================
+# 15. SIMULACROS Y EXÁMENES DE BECAS
+# ================================================================
+# Registro independiente de la matrícula: los postulantes externos no
+# son alumnos del colegio y no deben ensuciar la base de estudiantes.
+# Cada postulante declara su área, que es el dato que la matrícula no
+# tiene y sin el cual un ranking de 80 preguntas no significa nada.
+
+ARCHIVO_SIMULACROS = "simulacros.json"
+
+
+def cargar_simulacros():
+    p = Path(ARCHIVO_SIMULACROS)
+    if p.exists():
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def guardar_simulacros(data):
+    try:
+        with open(ARCHIVO_SIMULACROS, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
+    gs = _gs()
+    if gs is None:
+        return False
+    try:
+        ws = gs._get_hoja("config")
+        if ws is None:
+            return False
+        blob = json.dumps(data, ensure_ascii=False)
+        for i, row in enumerate(ws.get_all_values()):
+            if row and row[0] == "simulacros_json":
+                ws.update_cell(i + 1, 2, blob)
+                return True
+        ws.append_row(["simulacros_json", blob])
+        return True
+    except Exception:
+        return False
+
+
+def restaurar_simulacros_nube():
+    """Si el disco se reinició (Streamlit Cloud lo hace), recupera de la nube."""
+    if Path(ARCHIVO_SIMULACROS).exists():
+        return cargar_simulacros()
+    gs = _gs()
+    if gs is None:
+        return {}
+    try:
+        ws = gs._get_hoja("config")
+        if ws is None:
+            return {}
+        for row in ws.get_all_values():
+            if row and row[0] == "simulacros_json":
+                data = json.loads(row[1])
+                with open(ARCHIVO_SIMULACROS, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+                return data
+    except Exception:
+        pass
+    return {}
+
+
+def puntaje_postulante(post, area, descuento=0.0):
+    """Puntaje sobre 80 y equivalencia vigesimal.
+
+    descuento: puntos restados por cada respuesta incorrecta. Se deja
+    configurable porque las reglas de calificación cambian entre
+    procesos y una constante escondida en el código envejece mal.
+    """
+    pesos = PESOS.get(area, {})
+    total = sum(pesos.values()) or 80
+    aciertos = 0
+    errores = 0
+    for curso, cant in pesos.items():
+        a = post.get("aciertos", {}).get(curso)
+        if a is None:
+            continue
+        a = max(0, min(int(a), cant))
+        aciertos += a
+        errores += (cant - a)
+    bruto = aciertos - descuento * errores
+    bruto = max(bruto, 0)
+    return {
+        "aciertos": aciertos,
+        "errores": errores,
+        "total": total,
+        "puntaje": round(bruto, 2),
+        "pct": round(100 * bruto / total, 1) if total else 0,
+        "vigesimal": round(20 * bruto / total, 1) if total else 0,
+    }
+
+
+def ranking_simulacro(sim, ambito="general"):
+    """Devuelve la tabla ordenada por puntaje.
+
+    ambito: 'general' (todos juntos), 'A'/'B'/'C'/'D' (un área),
+    'GRUPO AB'/'GRUPO CD' (las dos áreas del salón).
+    """
+    desc = float(sim.get("descuento", 0) or 0)
+    filas = []
+    for dni, post in (sim.get("postulantes") or {}).items():
+        area = post.get("area", "")
+        if ambito in ("A", "B", "C", "D") and area != ambito:
+            continue
+        if ambito in GRUPOS and area not in GRUPOS[ambito]:
+            continue
+        if not area:
+            continue
+        r = puntaje_postulante(post, area, desc)
+        # Sin ninguna respuesta cargada no entra al ranking: un cero por
+        # no haber sido calificado todavía falsearía los puestos.
+        if not post.get("aciertos"):
+            continue
+        filas.append({
+            "DNI": dni,
+            "Postulante": post.get("nombre", ""),
+            "Área": area,
+            "Colegio": post.get("colegio", ""),
+            "Aciertos": r["aciertos"],
+            "Puntaje": r["puntaje"],
+            "% ": r["pct"],
+            "Nota /20": r["vigesimal"],
+        })
+    filas.sort(key=lambda x: (-x["Puntaje"], x["Postulante"]))
+    for i, f in enumerate(filas, start=1):
+        f["Puesto"] = i
+    return filas
+
+
+def generar_pdf_ranking_simulacro(sim, ambito, filas,
+                                  institucion="ACADEMIA YACHAY",
+                                  vacantes=0):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer,
+                                    Table, TableStyle)
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+
+    est = _estilos_pdf()
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            leftMargin=1.4 * cm, rightMargin=1.4 * cm,
+                            topMargin=1.3 * cm, bottomMargin=1.6 * cm)
+    story = []
+
+    etiqueta = ("Resultado general" if ambito == "general"
+                else _etiqueta_area(ambito))
+    try:
+        _f_txt = date.fromisoformat(sim.get("fecha", "")).strftime("%d/%m/%Y")
+    except ValueError:
+        _f_txt = str(sim.get("fecha", ""))
+    _encabezado(story, f"{institucion}<br/>{sim.get('nombre', 'SIMULACRO').upper()}",
+                f"{etiqueta} &nbsp;·&nbsp; Aplicado el {_f_txt} "
+                f"&nbsp;·&nbsp; {len(filas)} postulantes", est)
+
+    desc = float(sim.get("descuento", 0) or 0)
+    story.append(Paragraph(
+        "Calificación: 1 punto por respuesta correcta" +
+        (f", −{desc} por incorrecta." if desc else ", sin descuento por "
+         "respuesta incorrecta."), est["n"]))
+    story.append(Spacer(1, 8))
+
+    data = [["Pto.", "Postulante", "DNI", "Área", "Colegio",
+             "Aciertos", "Puntaje", "Nota /20"]]
+    estilos = []
+    for i, f in enumerate(filas, start=1):
+        data.append([
+            str(f["Puesto"]),
+            Paragraph(str(f["Postulante"]), est["n"]),
+            str(f["DNI"]), str(f["Área"]),
+            Paragraph(str(f["Colegio"])[:28], est["n"]),
+            f"{f['Aciertos']}/{sum(PESOS.get(f['Área'], {}).values()) or 80}",
+            str(f["Puntaje"]), str(f["Nota /20"]),
+        ])
+        if vacantes and i <= vacantes:
+            estilos.append(("BACKGROUND", (0, i), (-1, i),
+                            colors.HexColor("#dcfce7")))
+        if i <= 3:
+            estilos.append(("FONTNAME", (0, i), (-1, i), "Helvetica-Bold"))
+
+    t = Table(data, colWidths=[1.0*cm, 5.4*cm, 2.0*cm, 1.2*cm, 4.2*cm,
+                               1.7*cm, 1.6*cm, 1.6*cm], repeatRows=1)
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#001e7c")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("ALIGN", (0, 0), (0, -1), "CENTER"),
+        ("ALIGN", (2, 0), (-1, -1), "CENTER"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#cbd5e1")),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
+         [colors.white, colors.HexColor("#f8fafc")]),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ] + estilos))
+    story.append(t)
+
+    if vacantes:
+        story.append(Spacer(1, 6))
+        story.append(Paragraph(
+            f"Las filas resaltadas corresponden a las {vacantes} primeras "
+            f"posiciones, alcanzadas por el beneficio ofrecido.", est["n"]))
+
+    story.append(Spacer(1, 22))
+    firmas = Table([[
+        "_______________________________\nCoordinación Académica",
+        "_______________________________\nDirección",
+    ]], colWidths=[8.6 * cm, 8.6 * cm])
+    firmas.setStyle(TableStyle([
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#334155")),
+    ]))
+    story.append(firmas)
+
+    doc.build(story, onFirstPage=_pie_pagina, onLaterPages=_pie_pagina)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def _etiqueta_simulacro(sim):
+    """Etiqueta legible del simulacro, con fecha en formato peruano."""
+    try:
+        f = date.fromisoformat(sim.get("fecha", "")).strftime("%d/%m/%Y")
+    except ValueError:
+        f = str(sim.get("fecha", ""))
+    return f"{f} · {sim.get('nombre', '(sin nombre)')}"
+
+
+def tab_simulacro_becas(config=None):
+    """Módulo completo: crear simulacro, registrar postulantes, calificar
+    y publicar el ranking. Sirve tanto para exámenes de beca con público
+    externo como para simulacros internos del ciclo."""
+    st.subheader("🏆 Simulacros y Examen de Becas")
+    st.caption("Registro independiente de la matrícula: los postulantes "
+               "externos no se mezclan con los alumnos del colegio.")
+
+    sims = restaurar_simulacros_nube()
+
+    # ── Selección / creación ──────────────────────────────────────
+    col_s1, col_s2 = st.columns([3, 2])
+    with col_s1:
+        opciones = ["➕ Crear nuevo"] + [
+            _etiqueta_simulacro(v)
+            for k, v in sorted(sims.items(),
+                               key=lambda x: x[1].get("fecha", ""),
+                               reverse=True)]
+        sel = st.selectbox("Simulacro:", opciones, key="sim_sel")
+    with col_s2:
+        st.metric("Simulacros registrados", len(sims))
+
+    if sel == "➕ Crear nuevo":
+        with st.form("sim_nuevo"):
+            c1, c2 = st.columns(2)
+            with c1:
+                nombre = st.text_input("Nombre del simulacro:",
+                                       placeholder="Examen de Becas 2026 – I")
+                fecha_s = st.date_input("Fecha de aplicación:", value=date.today())
+            with c2:
+                desc = st.number_input(
+                    "Descuento por respuesta incorrecta:",
+                    0.0, 1.0, 0.0, 0.25,
+                    help="0 = sin penalidad. Confirma la regla del proceso "
+                         "de admisión vigente antes de cambiarlo.")
+                vac = st.number_input("Vacantes / becas ofrecidas:", 0, 200, 0)
+            if st.form_submit_button("Crear simulacro", type="primary",
+                                     use_container_width=True):
+                if not nombre.strip():
+                    st.error("Ponle un nombre para poder identificarlo después.")
+                else:
+                    sid = f"sim_{fecha_s.isoformat()}_{len(sims)+1}"
+                    sims[sid] = {
+                        "id": sid, "nombre": nombre.strip(),
+                        "fecha": fecha_s.isoformat(),
+                        "descuento": float(desc), "vacantes": int(vac),
+                        "postulantes": {},
+                    }
+                    guardar_simulacros(sims)
+                    st.success("Simulacro creado. Selecciónalo arriba para "
+                               "empezar a registrar postulantes.")
+                    st.rerun()
+        return
+
+    # Simulacro activo
+    sid = None
+    for k, v in sims.items():
+        if _etiqueta_simulacro(v) == sel:
+            sid = k
+            break
+    if sid is None:
+        st.warning("No se encontró el simulacro.")
+        return
+    sim = sims[sid]
+    sim.setdefault("postulantes", {})
+
+    t_reg, t_cal, t_rank = st.tabs(
+        ["👤 Postulantes", "✍️ Calificar", "🏅 Ranking"])
+
+    # ── Registro de postulantes ───────────────────────────────────
+    with t_reg:
+        st.markdown("##### Registrar un postulante")
+        with st.form("sim_add_post", clear_on_submit=True):
+            r1, r2 = st.columns([3, 2])
+            with r1:
+                p_nom = st.text_input("Apellidos y Nombres:")
+                p_col = st.text_input("Colegio de procedencia:")
+            with r2:
+                p_dni = st.text_input("DNI:", max_chars=12)
+                p_area = st.selectbox("Área a la que postula:",
+                                      ["A", "B", "C", "D"])
+                p_cel = st.text_input("Celular (opcional):", max_chars=15)
+            if st.form_submit_button("➕ Agregar postulante", type="primary",
+                                     use_container_width=True):
+                dni_l = p_dni.strip()
+                if not p_nom.strip():
+                    st.error("Falta el nombre.")
+                elif not dni_l:
+                    st.error("El DNI es obligatorio: es lo que evita "
+                             "registrar dos veces a la misma persona.")
+                elif dni_l in sim["postulantes"]:
+                    st.error(f"El DNI {dni_l} ya está registrado en este "
+                             f"simulacro ({sim['postulantes'][dni_l]['nombre']}).")
+                else:
+                    sim["postulantes"][dni_l] = {
+                        "nombre": p_nom.strip().upper(),
+                        "dni": dni_l, "area": p_area,
+                        "colegio": p_col.strip(), "celular": p_cel.strip(),
+                        "aciertos": {},
+                    }
+                    guardar_simulacros(sims)
+                    st.success(f"{p_nom.strip().upper()} registrado en el Área {p_area}.")
+                    st.rerun()
+
+        if sim["postulantes"]:
+            st.markdown("##### Postulantes registrados")
+            df_p = pd.DataFrame([
+                {"DNI": d, "Postulante": p.get("nombre", ""),
+                 "Área": p.get("area", ""), "Colegio": p.get("colegio", ""),
+                 "Celular": p.get("celular", ""),
+                 "Calificado": "sí" if p.get("aciertos") else "no"}
+                for d, p in sim["postulantes"].items()])
+            st.dataframe(df_p.sort_values("Postulante"),
+                         use_container_width=True, hide_index=True)
+
+            resumen = df_p["Área"].value_counts().to_dict()
+            st.caption("Por área: " + " · ".join(
+                f"{a}: {n}" for a, n in sorted(resumen.items())))
+
+            quitar = st.selectbox("Quitar postulante:", ["—"] +
+                                  sorted(sim["postulantes"].keys()),
+                                  key="sim_del")
+            if quitar != "—" and st.button(f"🗑️ Quitar {quitar}", key="sim_del_b"):
+                sim["postulantes"].pop(quitar, None)
+                guardar_simulacros(sims)
+                st.rerun()
+        else:
+            st.info("Todavía no hay postulantes registrados.")
+
+    # ── Calificación ──────────────────────────────────────────────
+    with t_cal:
+        if not sim["postulantes"]:
+            st.info("Registra postulantes antes de calificar.")
+        else:
+            area_cal = st.selectbox("Calificar el área:", ["A", "B", "C", "D"],
+                                    key="sim_area_cal")
+            cursos_a = list(PESOS.get(area_cal, {}).keys())
+            los_de_area = {d: p for d, p in sim["postulantes"].items()
+                           if p.get("area") == area_cal}
+            if not los_de_area:
+                st.warning(f"No hay postulantes registrados en el Área {area_cal}.")
+            else:
+                st.caption("Escribe cuántas respuestas acertó en cada curso. "
+                           "El máximo de cada columna es el número de "
+                           "preguntas que ese curso tiene en el examen.")
+                filas = []
+                for d, p in sorted(los_de_area.items(),
+                                   key=lambda x: x[1].get("nombre", "")):
+                    fila = {"DNI": d, "Postulante": p.get("nombre", "")}
+                    for c in cursos_a:
+                        fila[f"{c} (/{PESOS[area_cal][c]})"] = \
+                            p.get("aciertos", {}).get(c, 0)
+                    filas.append(fila)
+                df_cal = pd.DataFrame(filas)
+
+                edit = st.data_editor(
+                    df_cal, use_container_width=True, hide_index=True,
+                    disabled=["DNI", "Postulante"], key=f"sim_ed_{area_cal}",
+                    column_config={
+                        f"{c} (/{PESOS[area_cal][c]})": st.column_config.NumberColumn(
+                            min_value=0, max_value=PESOS[area_cal][c], step=1)
+                        for c in cursos_a})
+
+                if st.button("💾 GUARDAR CALIFICACIÓN", type="primary",
+                             use_container_width=True, key="sim_save_cal"):
+                    for _, row in edit.iterrows():
+                        d = str(row["DNI"])
+                        if d not in sim["postulantes"]:
+                            continue
+                        ac = {}
+                        for c in cursos_a:
+                            v = row.get(f"{c} (/{PESOS[area_cal][c]})", 0)
+                            try:
+                                ac[c] = int(v)
+                            except (TypeError, ValueError):
+                                ac[c] = 0
+                        sim["postulantes"][d]["aciertos"] = ac
+                    guardar_simulacros(sims)
+                    st.success("Calificación guardada.")
+                    st.rerun()
+
+    # ── Ranking ───────────────────────────────────────────────────
+    with t_rank:
+        ambito = st.selectbox(
+            "Ver ranking de:",
+            ["general", "GRUPO AB", "GRUPO CD", "A", "B", "C", "D"],
+            key="sim_amb",
+            help="'general' junta todas las áreas. Ten en cuenta que "
+                 "compararlas entre sí solo es válido porque todas rinden "
+                 "80 preguntas.")
+        vacantes = int(sim.get("vacantes", 0) or 0)
+        filas = ranking_simulacro(sim, ambito)
+
+        if not filas:
+            st.info("Todavía no hay postulantes calificados en este ámbito.")
+        else:
+            m1, m2, m3, m4 = st.columns(4)
+            puntajes = [f["Puntaje"] for f in filas]
+            m1.metric("Postulantes", len(filas))
+            m2.metric("Puntaje más alto", max(puntajes))
+            m3.metric("Promedio", round(sum(puntajes) / len(puntajes), 1))
+            m4.metric("Puntaje más bajo", min(puntajes))
+
+            df_r = pd.DataFrame(filas)[
+                ["Puesto", "Postulante", "DNI", "Área", "Colegio",
+                 "Aciertos", "Puntaje", "Nota /20"]]
+            st.dataframe(df_r, use_container_width=True, hide_index=True,
+                         height=420)
+
+            if vacantes:
+                st.success(f"Alcanzan el beneficio los primeros {vacantes} "
+                           f"puestos. Corte: "
+                           f"{filas[min(vacantes, len(filas))-1]['Puntaje']} puntos.")
+
+            d1, d2 = st.columns(2)
+            with d1:
+                try:
+                    pdf = generar_pdf_ranking_simulacro(
+                        sim, ambito, filas, vacantes=vacantes)
+                    st.download_button(
+                        "📄 Descargar ranking en PDF", data=pdf,
+                        file_name=(f"ranking_{sim.get('nombre','simulacro')[:24]}"
+                                   f"_{ambito.replace(' ', '')}.pdf")
+                        .replace(" ", "_"),
+                        mime="application/pdf", type="primary",
+                        use_container_width=True, key="sim_pdf")
+                except Exception as e:
+                    st.error(f"No se pudo generar el PDF: {e}")
+            with d2:
+                buf = io.BytesIO()
+                with pd.ExcelWriter(buf, engine="openpyxl") as w:
+                    df_r.to_excel(w, sheet_name="Ranking", index=False)
+                st.download_button(
+                    "📥 Descargar en Excel", data=buf.getvalue(),
+                    file_name=f"ranking_{ambito.replace(' ', '')}.xlsx",
+                    mime=("application/vnd.openxmlformats-officedocument."
+                          "spreadsheetml.sheet"),
+                    use_container_width=True, key="sim_xlsx")
