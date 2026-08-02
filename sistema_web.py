@@ -21584,6 +21584,26 @@ def tab_registrar_notas(config):
         st.markdown("#### 📚 Paso 1: Define los cursos y sus claves")
         n_cursos = st.number_input("N° de cursos (máx. 8):", 1, 8, 1, key="cl_ncursos")
 
+        # Lista fija de cursos segun el grado: evita que el mismo curso se
+        # escriba distinto en cada evaluacion y rompa los reportes.
+        _g_cl = str(grado_cl)
+        if "GRUPO AB" in _g_cl.upper():
+            _cursos_cl = AREAS_CEPRE_UNSAAC.get("GRUPO AB", [])
+        elif "GRUPO CD" in _g_cl.upper():
+            _cursos_cl = AREAS_CEPRE_UNSAAC.get("GRUPO CD", [])
+        elif any(x in _g_cl for x in ["CEPRE","Ciclo","Reforzamiento","PREU","Preu","UNSAAC"]):
+            _cursos_cl = sorted(set(AREAS_CEPRE_UNSAAC.get("GRUPO AB", []) +
+                                    AREAS_CEPRE_UNSAAC.get("GRUPO CD", [])))
+        elif "Secundaria" in _g_cl:
+            _cursos_cl = AREAS_MINEDU.get("SECUNDARIA", [])
+        elif "Primaria" in _g_cl:
+            _cursos_cl = AREAS_MINEDU.get("PRIMARIA", [])
+        else:
+            _cursos_cl = []
+        if _cursos_cl:
+            st.caption("Los cursos salen de una lista fija para que los "
+                       "reportes y el cruce con el avance del temario cuadren.")
+
         OPCIONES_RESP = ["A","B","C","D","E"]
         cursos_config = []  # [{nombre, n_preguntas, claves:[]}]
 
@@ -21591,8 +21611,12 @@ def tab_registrar_notas(config):
         for ci in range(int(n_cursos)):
             with cols_cur[ci % 3]:
                 with st.container(border=True):
-                    nom_c = st.text_input(f"Curso {ci+1}:", key=f"cl_nom_{ci}",
-                                           placeholder="Matemática")
+                    if _cursos_cl:
+                        nom_c = st.selectbox(f"Curso {ci+1}:", _cursos_cl,
+                                             key=f"cl_sel_{ci}")
+                    else:
+                        nom_c = st.text_input(f"Curso {ci+1}:", key=f"cl_nom_{ci}",
+                                               placeholder="Matemática")
                     n_preg = st.number_input(f"N° preguntas:", 1, 30, 10,
                                               key=f"cl_npreg_{ci}")
                     st.caption("Clave de respuestas:")
