@@ -43,6 +43,13 @@ try:
 except ImportError:
     GOOGLE_SYNC_DISPONIBLE = False
 
+# Avance del temario — Academia Preuniversitaria UNSAAC
+try:
+    from avance_temario import tab_avance_docente, tab_avance_coordinacion
+    AVANCE_TEMARIO_DISPONIBLE = True
+except ImportError:
+    AVANCE_TEMARIO_DISPONIBLE = False
+
 import base64  # Para Aula Virtual
 
 # python-docx para leer archivos Word
@@ -31944,6 +31951,7 @@ def main():
                 ("🧠", "Test TDAH", "tdah_docente", "#7c3aed"),
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
+                ("📚", "Avance Temario", "avance_temario", "#0891b2"),
             ]
 
             # Grid de módulos
@@ -32037,6 +32045,8 @@ def main():
                 tab_telegram_notificaciones(config)
             elif mod == "bienestar":
                 tab_bienestar_estudiantil(config, _pfx="bw_doc")
+            elif mod == "avance_temario":
+                tab_avance_docente(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
@@ -32082,6 +32092,7 @@ def main():
                 ("📱", "Notif. Telegram", "telegram_bot", "#0088cc"),
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
+                ("📚", "Control Academia", "control_academia", "#0891b2"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32195,6 +32206,8 @@ def main():
                 tab_seguimiento_portal_padres(config)
             elif mod == "bienestar":
                 tab_bienestar_estudiantil(config)
+            elif mod == "control_academia":
+                tab_avance_coordinacion(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
