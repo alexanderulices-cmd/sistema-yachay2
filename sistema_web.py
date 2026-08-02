@@ -3291,7 +3291,18 @@ def generar_ranking_pdf(resultados, anio):
     c.drawCentredString(w/2, h-60, f"RANKING DE RESULTADOS — {anio}")
     c.setFont("Helvetica", 9)
     c.setFillColor(colors.HexColor("#6b7280"))
-    c.drawCentredString(w/2, h-75, f"Generado: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
+    # La fecha de la evaluacion es la que vale como dato; la de emision
+    # solo dice cuando se imprimio el papel.
+    _f_ev = ""
+    try:
+        _fs = sorted({str(r.get('fecha', '')) for r in resultados if r.get('fecha')})
+        if _fs:
+            _f_ev = _fs[0] if len(_fs) == 1 else f"{_fs[0]} al {_fs[-1]}"
+    except Exception:
+        _f_ev = ""
+    _pie_f = (f"Evaluación: {_f_ev}  |  " if _f_ev else "")
+    c.drawCentredString(w/2, h-75,
+                        f"{_pie_f}Emitido: {hora_peru().strftime('%d/%m/%Y %H:%M')}")
     c.setFillColor(colors.black)
 
     rk = sorted(resultados,
@@ -21404,6 +21415,114 @@ def _generar_pdf_diagnostico_grado(grado, seccion, anio, filas_semaf, areas_diag
     return buf
 
 
+
+# ================================================================
+# PUENTE ENTRE "REGISTRAR NOTAS" Y "AVANCE DEL TEMARIO"
+# ================================================================
+# El sistema no puede adivinar que temas entraron en un examen: eso solo
+# lo sabe quien lo redacto. Por eso se pregunta al configurar la
+# evaluacion y se guarda junto con ella, sin pasos posteriores.
+
+try:
+    from avance_temario import (TEMARIO as _TEMARIO_PREU,
+                                ALIAS_AREA as _ALIAS_PREU,
+                                guardar_avance as _av_guardar,
+                                cargar_avance as _av_cargar,
+                                _clave as _av_clave,
+                                cargar_config_ciclo as _av_cfg_ciclo)
+    _AVANCE_OK = True
+except Exception:
+    _TEMARIO_PREU, _ALIAS_PREU, _AVANCE_OK = {}, {}, False
+
+
+def _es_grado_preu(grado):
+    """True si el grado corresponde a la academia preuniversitaria."""
+    g = str(grado).upper()
+    return any(x in g for x in ["GRUPO AB", "GRUPO CD", "CEPRE", "CICLO",
+                                "PREU", "UNSAAC", "REFORZAMIENTO"])
+
+
+def _grupo_de_grado(grado):
+    g = str(grado).upper()
+    if "AB" in g:
+        return "GRUPO AB"
+    if "CD" in g:
+        return "GRUPO CD"
+    return ""
+
+
+def _temario_curso_equivalente(area):
+    """Traduce el nombre del curso usado en notas al del temario oficial.
+
+    En notas existen 'Geometria' y 'Trigonometria' por separado; el
+    temario UNSAAC los trata como un solo curso.
+    """
+    if not _TEMARIO_PREU:
+        return None
+    a = str(area).strip().lower()
+    for curso in _TEMARIO_PREU:
+        if a == curso.lower():
+            return curso
+    for curso, alias in (_ALIAS_PREU or {}).items():
+        for al in alias:
+            if a == al.lower():
+                return curso
+    return None
+
+
+def _vincular_temas_evaluacion(grado, periodo, titulo, fecha, docente, areas):
+    """Marca en el avance del temario que estos temas ya fueron evaluados.
+
+    Se llama al guardar la evaluacion. Si algo falla, no interrumpe el
+    guardado de notas: la nota es el dato critico, el vinculo es extra.
+    """
+    if not _AVANCE_OK:
+        return 0
+    grupo = _grupo_de_grado(grado)
+    if not grupo:
+        return 0
+    try:
+        cfg = _av_cfg_ciclo()
+        ciclo = cfg.get("ciclo", "Ciclo Regular")
+        anio = datetime.now().year
+        eval_id = f"{fecha}|{periodo}|{titulo}"
+        avance = _av_cargar()
+        cambios = []
+        for a in areas or []:
+            curso = a.get('curso_temario') or _temario_curso_equivalente(a.get('nombre', ''))
+            temas = a.get('temas') or []
+            if not curso or not temas:
+                continue
+            for num in temas:
+                clave = _av_clave(anio, ciclo, grupo, curso, num)
+                reg = dict(avance.get(clave, {}))
+                evals = [x for x in str(reg.get("evals", "")).split(",") if x]
+                if eval_id in evals:
+                    continue
+                evals.append(eval_id)
+                lista = _TEMARIO_PREU.get(curso, [])
+                estado_prev = reg.get("estado", "Pendiente")
+                reg.update({
+                    "clave": clave, "anio": anio, "ciclo": ciclo,
+                    "grupo": grupo, "curso": curso, "tema_num": num,
+                    "tema": lista[num-1] if num <= len(lista) else "",
+                    # Si se evaluo, es que se dicto. No se degrada un
+                    # estado ya marcado como Reforzado por el docente.
+                    "estado": ("Concluido" if estado_prev in ("Pendiente", "En avance")
+                               else estado_prev),
+                    "fecha": reg.get("fecha", "") or fecha,
+                    "sesion": reg.get("sesion", ""),
+                    "docente": reg.get("docente", "") or docente,
+                    "observacion": reg.get("observacion", ""),
+                    "evals": ",".join(evals),
+                })
+                cambios.append(reg)
+        if cambios:
+            _av_guardar(cambios)
+        return len(cambios)
+    except Exception:
+        return 0
+
 def tab_registrar_notas(config):
     """Módulo para que docentes registren notas — multi-área, sesión limpia, historial"""
     st.header("📝 Registrar Notas")
@@ -21758,7 +21877,7 @@ def tab_registrar_notas(config):
                     col_pdf_h, col_prog_h, col_wa_h = st.columns(3)
                     with col_pdf_h:
                         if st.button("📥 PDF Ranking", key=f"pdf_hist_{clave}", type="primary"):
-                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config)
+                            pdf_h = _generar_ranking_pdf(ranking_h, areas_nombres, ev['grado'], ev['periodo'], config, fecha_eval=ev.get('fecha'))
                             st.download_button("⬇️ Descargar PDF",pdf_h,
                                                f"Ranking_{ev['grado']}_{ev['periodo']}_{ev['fecha']}.pdf",
                                                "application/pdf", key=f"dl_hist_{clave}")
@@ -22218,7 +22337,29 @@ def tab_registrar_notas(config):
                 st.markdown(f"**Área/Curso {i+1}**")
                 nombre_a = st.selectbox(f"Área:", areas_disp, key=f"rn_cfg_area_{i}")
                 npregs_a = st.number_input(f"N° preguntas:", 1, 100, 20, key=f"rn_cfg_npregs_{i}")
-                areas_cfg.append({'nombre': nombre_a, 'num_preguntas': int(npregs_a)})
+
+                # ── Temas evaluados (solo preuniversitario) ────────────
+                # Se pregunta aqui, mientras el docente tiene el examen
+                # delante, y no como una tarea aparte que se olvida.
+                _temas_a = []
+                _curso_tem = _temario_curso_equivalente(nombre_a)
+                if _es_grado_preu(grado_cfg) and _curso_tem:
+                    _lista_t = _TEMARIO_PREU.get(_curso_tem, [])
+                    _sel_t = st.multiselect(
+                        "Temas que entran en el examen:",
+                        [f"{k+1}. {t}" for k, t in enumerate(_lista_t)],
+                        key=f"rn_cfg_temas_{i}",
+                        help="Marca los temas evaluados. Con esto el sistema "
+                             "puede decirte después si un tema se dictó pero "
+                             "no se entendió. Puedes dejarlo vacío.")
+                    _temas_a = [int(x.split(".")[0]) for x in _sel_t]
+                    if _temas_a:
+                        st.caption(f"✓ {len(_temas_a)} tema(s) marcados")
+
+                areas_cfg.append({'nombre': nombre_a,
+                                  'num_preguntas': int(npregs_a),
+                                  'temas': _temas_a,
+                                  'curso_temario': _curso_tem or ''})
 
         st.markdown("---")
         if st.button("▶ INICIAR EVALUACIÓN", type="primary", use_container_width=True, key="btn_iniciar_eval"):
@@ -22574,6 +22715,18 @@ def tab_registrar_notas(config):
                         pass
                     
                     _sync_resultados_a_gs()
+
+                    # Vincular con el avance del temario (preuniversitario)
+                    try:
+                        _nv = _vincular_temas_evaluacion(
+                            grado_sel, bim_sel, titulo_ev, fecha_peru_str(),
+                            nombre_completo_doc, ev.get('areas', []))
+                        if _nv:
+                            st.info(f"📚 {_nv} tema(s) del temario quedaron "
+                                    f"marcados como evaluados y concluidos.")
+                    except Exception:
+                        pass
+
                     st.success(f"✅ Evaluación guardada — {len(ranking_filas)} estudiantes")
                     st.balloons()
                     reproducir_beep_exitoso()
@@ -22605,7 +22758,7 @@ def tab_registrar_notas(config):
 
         with col_g2:
             if st.button("📥 DESCARGAR RANKING", use_container_width=True, key="btn_pdf_eval", type="primary"):
-                pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config, sin_nota=sin_nota_filas)
+                pdf_r = _generar_ranking_pdf(ranking_filas, areas_nombres, grado_sel, bim_sel, config, sin_nota=sin_nota_filas, fecha_eval=fecha_peru_str())
                 st.download_button("⬇️ PDF", pdf_r, f"Ranking_{grado_sel}_{bim_sel}.pdf",
                                    "application/pdf", key="dl_pdf_eval")
 
@@ -22856,7 +23009,8 @@ def _generar_pdf_progreso_barras(ranking_actual, areas_nombres, historial_prev,
     buf.seek(0)
     return buf.read()
 
-def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=None):
+def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config,
+                        sin_nota=None, fecha_eval=None):
     """Genera PDF del ranking — colores por área, nombres completos, separadores visuales"""
     if sin_nota is None:
         sin_nota = []
@@ -22916,7 +23070,13 @@ def _generar_ranking_pdf(ranking_filas, areas, grado, periodo, config, sin_nota=
     c_pdf.drawCentredString(w / 2, h - 36, f"I.E.P. YACHAY  —  {grado}  —  {periodo}")
     c_pdf.setFont("Helvetica", 8)
     c_pdf.setFillColor(colors.HexColor("#93c5fd"))
-    c_pdf.drawCentredString(w / 2, h - 49, hora_peru().strftime('%d/%m/%Y'))
+    # Si se conoce la fecha de la evaluacion se imprime esa, no la del dia
+    # en que se descarga el PDF: un ranking de setiembre bajado en diciembre
+    # decia diciembre y confundia al archivarlo.
+    _txt_f = (f"Evaluación: {fecha_eval}  |  Emitido: "
+              f"{hora_peru().strftime('%d/%m/%Y')}") if fecha_eval else \
+             hora_peru().strftime('%d/%m/%Y')
+    c_pdf.drawCentredString(w / 2, h - 49, _txt_f)
 
     # ── Layout de columnas ───────────────────────────────────────────────
     x_margin   = 12
