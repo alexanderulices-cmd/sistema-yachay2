@@ -13580,7 +13580,8 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"Estado: <b>{etq}</b>\n"
         f"Hora: {hora}\n\n"
         f"<i>I.E.P. Alternativo Yachay - Chinchero</i>\n"
-        f"\U0001f4de 084-750071"
+        f"\U0001f4de 084-750071\n\n"
+        f"{pie_institucional(turno=tipo)}"
     )
     _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token))
 
@@ -30054,7 +30055,12 @@ def _tab_horario(config):
         col_i, col_d = st.columns([1, 2])
         with col_i:
             docente_h = st.text_input("Docente:", placeholder="Apellidos y Nombres", key="h_docente")
-            grado_h = st.text_input("Grado y Sección:", placeholder="4° Primaria — A", key="h_grado")
+            # Lista cerrada: escrito a mano, un grado mal tipeado genera un
+            # horario nuevo en vez de actualizar el que ya existe.
+            _g_sel = st.selectbox("Grado:", GRADOS_OPCIONES, key="h_grado_sel")
+            _s_sel = st.selectbox("Sección:", SECCIONES, key="h_sec_sel")
+            grado_h = f"{_g_sel} — {_s_sel}" if _s_sel != "Única" else _g_sel
+            st.caption(f"Se guardará como: **{grado_h}**")
 
             # Bloques sin hora escrita: el docente ordena las areas por
             # bloque y no depende de que la hora exacta cambie cada ciclo.
@@ -34284,6 +34290,227 @@ def _generar_pdf_acuerdos_convivencia(config, grado, docente, anio):
     doc.build(story)
     buf.seek(0)
     return buf
+
+
+# ================================================================
+# BANCO DE FRASES INSTITUCIONALES (ver seccion al final)
+# ================================================================
+# Se envian junto a las notificaciones de asistencia. Son 160 frases
+# repartidas en cuatro categorias; con una distinta por turno alcanzan
+# para mas de un ano escolar sin que un apoderado lea dos veces lo mismo
+# en el mismo mes.
+
+LEMA = "YACHAY, pioneros en la educación de calidad"
+
+MOTIVADORAS = [
+    "El esfuerzo de hoy es el logro de mañana.",
+    "Cada día de clase es un paso más hacia tu meta.",
+    "La constancia vence al talento cuando el talento no es constante.",
+    "Nadie llega lejos sin empezar temprano.",
+    "Lo que se practica se domina.",
+    "Estudiar no es un castigo, es una ventaja.",
+    "Los grandes logros empiezan con pequeños hábitos.",
+    "La puntualidad también se aprende y también se enseña.",
+    "Un cuaderno ordenado refleja una mente ordenada.",
+    "El que pregunta aprende dos veces.",
+    "La educación es la herencia que nadie te puede quitar.",
+    "Hoy es un buen día para superar tu marca de ayer.",
+    "El conocimiento pesa poco y lleva lejos.",
+    "Aprender cuesta; no aprender cuesta mucho más.",
+    "Los sueños se escriben con esfuerzo diario.",
+    "El aula es el taller donde se construye el futuro.",
+    "Quien se prepara, no improvisa.",
+    "La disciplina convierte las metas en resultados.",
+    "Cada pregunta en clase es una puerta que se abre.",
+    "No hay atajos hacia lo que vale la pena.",
+    "El estudio de hoy sostiene la decisión de mañana.",
+    "Ser mejor que ayer ya es una victoria.",
+    "La mente es como el músculo: crece con el uso.",
+    "Los libros abiertos abren caminos.",
+    "El talento sin trabajo se queda en promesa.",
+    "Empezar es difícil; continuar es lo que distingue.",
+    "Confía en el proceso y cumple tu parte.",
+    "El futuro pertenece a quien se prepara hoy.",
+    "Toda meta grande se alcanza en pasos pequeños.",
+    "El aprendizaje es el único gasto que siempre devuelve.",
+    "Levantarse temprano ya es media tarea cumplida.",
+    "Ninguna clase perdida se recupera del todo.",
+    "El orden ahorra tiempo y el tiempo ahorra esfuerzo.",
+    "El que estudia con método rinde el doble.",
+    "Tu firma en la lista de asistencia también es un compromiso.",
+    "Se aprende más de una duda resuelta que de mil páginas leídas.",
+    "El aula premia la presencia, no la intención.",
+    "La excelencia es un hábito, no un accidente.",
+    "Estudiar es invertir en la única cuenta que nadie puede tocar.",
+    "Cada evaluación es una foto del esfuerzo, no una sentencia.",
+]
+
+ALIENTO = [
+    "Si hoy costó, mañana costará un poco menos.",
+    "Equivocarse es parte de aprender, rendirse no.",
+    "Tu ritmo también es válido; lo importante es no detenerte.",
+    "Un mal resultado no define tu capacidad.",
+    "Hay días difíciles, pero ninguno es definitivo.",
+    "Detrás de cada estudiante hay una familia que confía.",
+    "Pedir ayuda es signo de inteligencia, no de debilidad.",
+    "El cansancio pasa; lo aprendido se queda.",
+    "Nadie empieza sabiendo. Todos empiezan intentando.",
+    "Lo que hoy parece imposible, en un mes será rutina.",
+    "Vale más un avance lento que un abandono rápido.",
+    "Tu esfuerzo se nota, aunque la nota aún no lo muestre.",
+    "Comparte con tus compañeros lo que entiendes; enseñar es aprender.",
+    "Respira, ordena tus ideas y vuelve a intentarlo.",
+    "Un tropiezo no borra el camino recorrido.",
+    "Cada mañana es una oportunidad nueva de hacerlo bien.",
+    "El profesor está para ayudarte; acércate y pregunta.",
+    "Los resultados llegan cuando ya te habías acostumbrado a trabajar.",
+    "Confía: quien insiste, encuentra la manera.",
+    "Estás más cerca de lo que crees.",
+    "Los buenos hábitos se notan primero en la calma, luego en las notas.",
+    "No compares tu capítulo uno con el capítulo diez de otro.",
+    "Descansar también es parte de estudiar bien.",
+    "Escribe tus dudas; una duda anotada es media duda resuelta.",
+    "Hoy solo tienes que hacer lo que te toca hoy.",
+    "El error corregido enseña más que el acierto casual.",
+    "Sigue. Nadie se arrepiente de haber estudiado.",
+    "Que un tema sea difícil no significa que sea imposible.",
+    "Tu familia celebra tus avances, no solo tus premios.",
+    "El desánimo es pasajero; los hábitos son permanentes.",
+    "Un paso al día son trescientos al año.",
+    "Si te distrajiste, vuelve. Volver también cuenta.",
+    "Nadie aprende con miedo; pregunta con confianza.",
+    "Las mejores notas nacen de las peores dudas resueltas a tiempo.",
+    "Que hoy sea un día tranquilo y productivo.",
+    "Lo que repasas hoy, mañana te sale solo.",
+    "Estudiar acompañado hace más liviano el camino.",
+    "Tu asistencia constante ya te pone por delante.",
+    "Cada clase es una oportunidad, no una obligación.",
+    "Ánimo: lo estás haciendo mejor de lo que piensas.",
+]
+
+REFLEXION = [
+    "Educar no es llenar un recipiente, es encender una luz.",
+    "Se enseña con el ejemplo antes que con la palabra.",
+    "El respeto en el aula es la primera lección del día.",
+    "Aprender a convivir es tan importante como aprender a calcular.",
+    "La escuela forma personas, no solo estudiantes.",
+    "Quien cuida su palabra, cuida su comunidad.",
+    "El conocimiento sin valores es una herramienta sin dueño.",
+    "Escuchar es la mitad de toda conversación.",
+    "La puntualidad es una forma de respeto hacia los demás.",
+    "El aula es de todos; cuidarla es cuidarnos.",
+    "Se crece cuando se reconoce lo que aún no se sabe.",
+    "La honestidad en un examen vale más que la nota obtenida.",
+    "Un pueblo educado es un pueblo libre.",
+    "Aprender la lengua de tus abuelos también es aprender historia.",
+    "El que ayuda a un compañero no pierde tiempo, gana comunidad.",
+    "Hablar bien de los demás también es educación.",
+    "La curiosidad es la mejor herramienta de estudio.",
+    "Cuidar el ambiente es cuidar a quienes vienen después.",
+    "La lectura amplía el mundo sin mover los pies.",
+    "Todo lo que hoy es sencillo alguna vez fue difícil para alguien.",
+    "El silencio atento enseña más que el ruido apurado.",
+    "Nuestras raíces andinas también son conocimiento.",
+    "Compartir lo aprendido multiplica su valor.",
+    "La familia y la escuela educan mejor cuando caminan juntas.",
+    "El agradecimiento es una forma diaria de sabiduría.",
+    "Ser puntual es cumplir la palabra dada.",
+    "La justicia empieza por tratar bien a quien tienes al lado.",
+    "El estudio es el camino más seguro para servir a los demás.",
+    "Cuidar el material de estudio es cuidar el esfuerzo familiar.",
+    "Quien aprende a preguntar, aprende a pensar.",
+    "El orden externo ayuda al orden interno.",
+    "La verdadera competencia es contra uno mismo.",
+    "El trabajo bien hecho se reconoce sin necesidad de anunciarlo.",
+    "Nadie se educa solo; nos educamos entre todos.",
+    "La paciencia es el ritmo de los que llegan lejos.",
+    "Reconocer un error a tiempo es un acto de valentía.",
+    "El respeto a los mayores es parte del saber andino.",
+    "Un aula tranquila es un aula donde se aprende.",
+    "El esfuerzo compartido en casa sostiene el logro en la escuela.",
+    "Aprender es la forma más noble de crecer.",
+]
+
+FILOSOFICAS = [
+    "Solo sé que nada sé. — Sócrates",
+    "La educación es el arma más poderosa para cambiar el mundo. — Nelson Mandela",
+    "Somos lo que hacemos repetidamente. — Aristóteles",
+    "Nadie se baña dos veces en el mismo río. — Heráclito",
+    "Nadie educa a nadie; nos educamos en comunión. — Paulo Freire",
+    "El hombre es la medida de todas las cosas. — Protágoras",
+    "Peruanicemos al Perú. — José Carlos Mariátegui",
+    "Pienso, luego existo. — René Descartes",
+    "Atrévete a saber. — Immanuel Kant",
+    "La filosofía nace del asombro. — Platón",
+    "El que tiene un porqué encuentra casi cualquier cómo. — Friedrich Nietzsche",
+    "Lo esencial es invisible a los ojos. — Antoine de Saint-Exupéry",
+    "Una vida sin examen no merece ser vivida. — Sócrates",
+    "El saber no ocupa lugar, pero cambia de sitio a quien lo tiene.",
+    "El futuro tiene muchos nombres: para los valientes, oportunidad. — Victor Hugo",
+    "Aprender sin pensar es inútil; pensar sin aprender, peligroso. — Confucio",
+    "La educación no cambia el mundo: cambia a quienes lo cambiarán. — Paulo Freire",
+    "El límite de mi lenguaje es el límite de mi mundo. — Ludwig Wittgenstein",
+    "Nada hay en el entendimiento que no haya estado antes en los sentidos. — John Locke",
+    "El hombre está condenado a ser libre. — Jean-Paul Sartre",
+    "Conócete a ti mismo. — Inscripción del templo de Delfos",
+    "Solo la verdad nos hará libres.",
+    "No basta con saber; hay que aplicar. — Goethe",
+    "La duda es el principio de la sabiduría. — Aristóteles",
+    "Somos enanos a hombros de gigantes. — Bernardo de Chartres",
+    "El pensamiento crítico es el mejor equipaje de un estudiante.",
+    "La razón sin experiencia queda vacía; la experiencia sin razón, ciega.",
+    "El maestro que enseña a dudar enseña a pensar.",
+    "La virtud está en el término medio. — Aristóteles",
+    "El conocimiento es poder. — Francis Bacon",
+    "Se hace camino al andar. — Antonio Machado",
+    "El que no conoce su historia está condenado a repetirla.",
+    "La sabiduría comienza por reconocer la propia ignorancia.",
+    "Educar la mente sin educar el corazón no es educar. — Aristóteles",
+    "Toda persona tiene derecho a pensar por sí misma.",
+    "El asombro es el comienzo de toda ciencia.",
+    "La libertad sin conocimiento es solo azar.",
+    "Ama la verdad más que a tu propia opinión.",
+    "El tiempo bien usado es la mayor de las riquezas. — Séneca",
+    "No existe viento favorable para quien no sabe adónde va. — Séneca",
+]
+
+def _intercalar(*grupos):
+    """Mezcla las categorias en orden ciclico.
+
+    Concatenarlas sin mas haria que el apoderado reciba cuatro dias
+    seguidos de citas filosoficas y luego cuarenta de aliento.
+    """
+    salida = []
+    for i in range(max(len(g) for g in grupos)):
+        for g in grupos:
+            if i < len(g):
+                salida.append(g[i])
+    return salida
+
+
+TODAS = _intercalar(MOTIVADORAS, ALIENTO, REFLEXION, FILOSOFICAS)
+
+
+def frase_del_dia(fecha=None, turno=""):
+    """Devuelve una frase estable para todo el dia y turno.
+
+    Estable a proposito: si dos hermanos entran a distinta hora, la
+    familia recibe la misma frase y no parece un mensaje aleatorio.
+    """
+    from datetime import date as _date
+    f = fecha or _date.today()
+    try:
+        base = f.toordinal()
+    except AttributeError:
+        base = 0
+    desplazamiento = 0 if str(turno).startswith("entrada") else 1
+    return TODAS[(base * 2 + desplazamiento) % len(TODAS)]
+
+
+def pie_institucional(fecha=None, turno=""):
+    """Bloque de cierre para los mensajes: lema + frase del dia."""
+    return f"<b>{LEMA}</b>\n<i>{frase_del_dia(fecha, turno)}</i>"
+
 
 if __name__ == "__main__":
     main()
