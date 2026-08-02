@@ -8010,14 +8010,16 @@ def _generar_formato_atencion_completo(config, docente="", grado="", n_formatos=
     c = _rl_c.Canvas(buf, pagesize=A4)
 
     def draw_page():
-        y = H - 1.0*cm
+        y = H - 0.85*cm
 
         # Banda de título
         c.setFillColorRGB(*C_HDR)
         c.rect(MX, y-0.60*cm, MW, 0.60*cm, fill=1, stroke=0)
         c.setFillColorRGB(1,1,1); c.setFont("Helvetica-Bold",10.5)
         c.drawCentredString(W/2, y-0.40*cm, titulo)
-        y -= 0.68*cm
+        # Separacion suficiente para que el nombre de la I.E. no
+        # se monte sobre la banda de color del titulo.
+        y -= 0.98*cm
 
         # Subtítulo institución
         c.setFillColorRGB(*C_HDR); c.setFont("Helvetica",7.5)
@@ -10362,15 +10364,150 @@ def tab_documentos(config):
             _seccion_documentos_auxiliar(config)
 
 
+
+# ================================================================
+# STICKERS DE CODIGO DE BARRAS — para pegar en la agenda del alumno
+# ================================================================
+
+def generar_stickers_codigo_barras(lista_datos, anio, cols=4, filas=12,
+                                   incluir_grado=True, incluir_dni=True):
+    """Hoja A4 de etiquetas pequenas: nombre + codigo de barras escaneable.
+
+    Pensada para papel autoadhesivo. Cada etiqueta lleva el codigo Code128
+    del DNI, que es el mismo que ya usa el carnet, asi que el escaner del
+    modulo de asistencia lo lee sin ningun cambio.
+    """
+    from reportlab.pdfgen import canvas as _rl_cs
+    from reportlab.lib.pagesizes import A4 as _A4s
+    from reportlab.lib.units import cm as _cms
+    from reportlab.lib.utils import ImageReader
+
+    buf = io.BytesIO()
+    W, H = _A4s
+    c = _rl_cs.Canvas(buf, pagesize=_A4s)
+
+    MX, MY = 0.7*_cms, 0.7*_cms
+    GAP_X, GAP_Y = 0.25*_cms, 0.18*_cms
+    ancho = (W - 2*MX - (cols-1)*GAP_X) / cols
+    alto  = (H - 2*MY - (filas-1)*GAP_Y) / filas
+    por_hoja = cols * filas
+
+    def _dibujar_codigo(dni, bx, by, bw, bh):
+        """Dibuja el Code128 como vector, no como imagen.
+
+        Un código rasterizado y luego estirado pierde definición y el
+        escáner falla. En vector las barras salen exactas a cualquier
+        tamaño, que es lo que hace que la etiqueta sea leíble.
+        Devuelve True si se pudo dibujar.
+        """
+        try:
+            from reportlab.graphics.barcode import code128
+        except Exception:
+            return False
+        try:
+            # Primer trazo de prueba para medir cuánto ocupa
+            prueba = code128.Code128(str(dni), barWidth=0.01*_cms,
+                                     barHeight=bh, humanReadable=False,
+                                     quiet=True)
+            if prueba.width <= 0:
+                return False
+            escala = bw / prueba.width
+            bc = code128.Code128(str(dni), barWidth=0.01*_cms*escala,
+                                 barHeight=bh, humanReadable=False,
+                                 quiet=True)
+            bc.drawOn(c, bx, by)
+            return True
+        except Exception:
+            return False
+
+    def _ajustar(txt, fuente, tam, max_w, tam_min=4.8):
+        """Reduce el tamano de letra hasta que el nombre entre completo.
+
+        Solo recorta si ni al minimo cabe, y en ese caso deja puntos
+        suspensivos en vez de un corte seco a mitad de palabra.
+        """
+        t = str(txt)
+        while tam > tam_min and c.stringWidth(t, fuente, tam) > max_w:
+            tam -= 0.2
+        if c.stringWidth(t, fuente, tam) > max_w:
+            while t and c.stringWidth(t + "...", fuente, tam) > max_w:
+                t = t[:-1]
+            t = t.rstrip() + "..."
+        return t, tam
+
+    total = len(lista_datos)
+    for idx, d in enumerate(lista_datos):
+        pos = idx % por_hoja
+        if pos == 0 and idx > 0:
+            c.showPage()
+
+        col = pos % cols
+        fil = pos // cols
+        x = MX + col * (ancho + GAP_X)
+        y = H - MY - (fil + 1) * alto - fil * GAP_Y
+
+        # Marco de corte
+        c.setStrokeColorRGB(0.75, 0.78, 0.85)
+        c.setLineWidth(0.4)
+        c.roundRect(x, y, ancho, alto, 0.10*_cms, fill=0, stroke=1)
+
+        nombre = str(d.get('nombre', d.get('Nombre', d.get('NOMBRE', '')))).strip()
+        dni = str(d.get('dni', d.get('DNI', ''))).strip()
+        grado = str(d.get('grado', d.get('GRADO', ''))).strip()
+
+        pad = 0.12*_cms
+        cy = y + alto - pad
+
+        # Nombre
+        c.setFillColorRGB(0.05, 0.10, 0.35)
+        _txt_n, _tam_n = _ajustar(nombre.upper(), "Helvetica-Bold", 6.6,
+                                  ancho - 2*pad)
+        c.setFont("Helvetica-Bold", _tam_n)
+        cy -= 0.20*_cms
+        c.drawCentredString(x + ancho/2, cy, _txt_n)
+
+        # Grado
+        if incluir_grado and grado:
+            c.setFillColorRGB(0.35, 0.38, 0.45)
+            _txt_g, _tam_g = _ajustar(grado, "Helvetica", 5.4,
+                                      ancho - 2*pad, tam_min=4.2)
+            c.setFont("Helvetica", _tam_g)
+            cy -= 0.18*_cms
+            c.drawCentredString(x + ancho/2, cy, _txt_g)
+
+        # Codigo de barras vectorial
+        bh = 0.85*_cms
+        cy -= (bh + 0.10*_cms)
+        bw = ancho - 2.6*pad
+        if not (dni and _dibujar_codigo(dni, x + 1.3*pad, cy, bw, bh)):
+            c.setFillColorRGB(0.6, 0.6, 0.6)
+            c.setFont("Helvetica", 5.5)
+            c.drawCentredString(x + ancho/2, cy + bh/2, "(sin codigo)")
+
+        # DNI legible
+        if incluir_dni and dni:
+            c.setFillColorRGB(0.15, 0.15, 0.15)
+            c.setFont("Helvetica-Bold", 6.0)
+            c.drawCentredString(x + ancho/2, y + 0.10*_cms, dni)
+
+    if total == 0:
+        c.setFont("Helvetica", 11)
+        c.drawCentredString(W/2, H/2, "No hay estudiantes seleccionados")
+
+    c.save()
+    buf.seek(0)
+    return buf.getvalue()
+
 # ================================================================
 # TAB: CARNETS (Individual, Matrícula, Lote Alumnos PDF, Lote Docentes PDF)
 # ================================================================
 
 def tab_carnets(config):
     st.header("🪪 Centro de Carnetización")
-    t1, t2, t3, t4 = st.tabs([
+    t1, t2, t3, t4, t5 = st.tabs([
         "⚡ Individual", "📋 Desde Matrícula",
-        "📦 Lote Alumnos (PDF)", "DOCENTE Lote Docentes (PDF)"
+        "📦 Lote Alumnos (PDF)", "DOCENTE Lote Docentes (PDF)",
+        "🏷️ Stickers Código de Barras"
     ])
 
     with t1:
@@ -10486,6 +10623,94 @@ def tab_carnets(config):
 # ================================================================
 # TAB: ASISTENCIAS (Alumnos + Docentes)
 # ================================================================
+
+    # ── STICKERS DE CÓDIGO DE BARRAS ──────────────────────────────
+    with t5:
+        st.subheader("🏷️ Stickers de Código de Barras")
+        st.caption("Etiquetas pequeñas con el nombre y el código de barras "
+                   "para pegar en la agenda del alumno. Imprímelas en papel "
+                   "autoadhesivo A4. El escáner de asistencia las lee igual "
+                   "que el carnet.")
+
+        if not HAS_BARCODE:
+            st.error("La librería de códigos de barras no está disponible "
+                     "en el servidor. Revisa que python-barcode figure en "
+                     "requirements.txt.")
+        else:
+            sc1, sc2 = st.columns(2)
+            with sc1:
+                st_grado = st.selectbox("Grado:", ["Todos"] + GRADOS_OPCIONES,
+                                        key="stk_grado")
+            with sc2:
+                st_sec = st.selectbox("Sección:", ["Todas"] + SECCIONES,
+                                      key="stk_sec")
+
+            sc3, sc4, sc5 = st.columns(3)
+            with sc3:
+                st_tam = st.selectbox(
+                    "Tamaño de etiqueta:",
+                    ["Mediana — 30 por hoja (recomendada)",
+                     "Grande — 16 por hoja",
+                     "Pequeña — 48 por hoja"],
+                    key="stk_tam")
+            with sc4:
+                st_grado_chk = st.checkbox("Mostrar grado", value=True,
+                                           key="stk_chk_grado")
+            with sc5:
+                st_dni_chk = st.checkbox("Mostrar DNI", value=True,
+                                          key="stk_chk_dni")
+
+            _mapa_tam = {
+                "Mediana — 30 por hoja (recomendada)": (3, 10),
+                "Grande — 16 por hoja": (2, 8),
+                "Pequeña — 48 por hoja": (4, 12),
+            }
+            if "Pequeña" in st_tam:
+                st.warning("En el tamaño pequeño las barras quedan muy "
+                           "juntas y algunas etiquetas pueden fallar al "
+                           "escanear. Úsalo solo si tu lector es de "
+                           "contacto. La mediana lee sin problemas.")
+            _cols_st, _filas_st = _mapa_tam[st_tam]
+
+            if st_grado == "Todos":
+                df_st = BaseDatos.cargar_matricula()
+            else:
+                df_st = BaseDatos.obtener_estudiantes_grado(
+                    st_grado, st_sec if st_sec != "Todas" else None)
+
+            if df_st is None or df_st.empty:
+                st.warning("No hay estudiantes con esos filtros.")
+            else:
+                st.info(f"**{len(df_st)} estudiantes** — "
+                        f"{-(-len(df_st) // (_cols_st * _filas_st))} hoja(s) "
+                        f"a imprimir.")
+                with st.expander("Ver lista"):
+                    st.dataframe(df_st, use_container_width=True,
+                                 hide_index=True)
+
+                if st.button("🏷️ GENERAR HOJA DE STICKERS", type="primary",
+                             use_container_width=True, key="stk_btn"):
+                    lista_st = []
+                    for _, r in df_st.iterrows():
+                        lista_st.append({
+                            "nombre": r.get("nombre", r.get("Nombre", "")),
+                            "dni": r.get("dni", r.get("DNI", "")),
+                            "grado": r.get("grado", r.get("Grado", "")),
+                        })
+                    with st.spinner("Generando etiquetas..."):
+                        pdf_st = generar_stickers_codigo_barras(
+                            lista_st, config.get("anio", ""),
+                            cols=_cols_st, filas=_filas_st,
+                            incluir_grado=st_grado_chk,
+                            incluir_dni=st_dni_chk)
+                    st.success("Listo. Imprime a tamaño real (100%), "
+                               "sin ajustar a la página.")
+                    st.download_button(
+                        "⬇️ Descargar stickers en PDF", data=pdf_st,
+                        file_name=f"stickers_{st_grado.replace(' ', '_')}.pdf",
+                        mime="application/pdf", use_container_width=True,
+                        key="stk_dl")
+
 
 def _generar_pdf_asistencia_dia(fecha_str, asis_data, tipo='ambos'):
     """PDF de asistencia. tipo='alumnos'|'docentes'|'ambos'"""
