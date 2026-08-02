@@ -714,9 +714,10 @@ def tab_avance_coordinacion(config=None):
         else:
             st.warning(f"**{ciclo}** — la fecha del examen ya pasó.")
 
-    tab1, tab4, tab2, tab3 = st.tabs(
+    tab1, tab4, tab2, tab5, tab6, tab3 = st.tabs(
         ["🚦 Semáforo por curso", "🎯 Dictado vs Aprendido",
-         "👤 Por docente", "📥 Reportes"])
+         "👤 Por docente", "📋 Cronograma docentes", "📅 Calendario",
+         "📥 Reportes"])
 
     # ---------- Semáforo ----------
     with tab1:
@@ -829,6 +830,101 @@ def tab_avance_coordinacion(config=None):
                 for _, r in inactivos.iterrows():
                     st.warning(f"**{r['docente']}** — {r['curso']} ({r['grupo']}) · "
                                f"último registro: {r['ultima_actualizacion']}")
+
+    # ---------- Cronograma para docentes ----------
+    with tab5:
+        st.markdown("Genera el comunicado en Word que se entrega a los "
+                    "docentes: fechas del ciclo, qué temas avanza cada uno "
+                    "por semana, cuántas preguntas entrega y con qué "
+                    "numeración.")
+
+        cr1, cr2 = st.columns(2)
+        with cr1:
+            _preset = st.selectbox("Ciclo:", list(CICLOS_PRESET.keys()),
+                                   key="cr_preset")
+            _area_cr = st.selectbox("Área de postulación:",
+                                    ["A", "B", "C", "D"], key="cr_area")
+        with cr2:
+            _m1, _d1, _m2, _d2 = CICLOS_PRESET[_preset]
+            _anio_cr = st.number_input("Año:", 2024, 2040, anio, key="cr_anio")
+            _a2 = _anio_cr + (1 if _m2 < _m1 else 0)
+            _ini_cr = st.date_input("Inicio de clases:",
+                                    value=date(_anio_cr, _m1, _d1), key="cr_ini")
+            _fin_cr = st.date_input("Fin del ciclo:",
+                                    value=date(_a2, _m2, min(_d2, 28)),
+                                    key="cr_fin")
+
+        cr3, cr4, cr5 = st.columns(3)
+        with cr3:
+            _wsp = st.text_input("WhatsApp de Secretaría:", key="cr_wsp",
+                                 placeholder="984 123 456")
+        with cr4:
+            _dia_ent = st.selectbox("Día límite de entrega:", DIAS_SEMANA[:6],
+                                    index=3, key="cr_dia")
+        with cr5:
+            _sem_rep = st.number_input("Semanas de repaso al final:", 0, 6, 2,
+                                       key="cr_repaso")
+
+        if _fin_cr <= _ini_cr:
+            st.error("El fin del ciclo debe ser posterior al inicio.")
+        else:
+            _fer = cargar_feriados()
+            _cron = cronograma_area(_area_cr, _ini_cr, _fin_cr, _sem_rep, _fer)
+            if _cron.get("omitidos"):
+                st.warning("Sábados sin examen por día no lectivo: " +
+                           ", ".join(f"{s.strftime('%d/%m')} ({m})"
+                                     for s, m in _cron["omitidos"]))
+            st.info(f"**{_cron['semanas']} semanas** — primer examen el "
+                    f"{_cron['sabados'][0].strftime('%d/%m/%Y')}, último el "
+                    f"{_cron['sabados'][-1].strftime('%d/%m/%Y')}. "
+                    f"Los exámenes son los sábados por la tarde.")
+
+            st.markdown("##### Docente responsable de cada curso")
+            _docs = {}
+            _cols_d = st.columns(2)
+            for _i, _c in enumerate(_cron["cursos"]):
+                with _cols_d[_i % 2]:
+                    _docs[_c["curso"]] = st.text_input(
+                        f"{_c['curso']} — preguntas {_c['desde']} al {_c['hasta']}",
+                        key=f"cr_doc_{_area_cr}_{_c['curso']}",
+                        placeholder="Apellidos y Nombres")
+
+            st.markdown("##### Vista previa del reparto")
+            _prev = []
+            for _i, _sab in enumerate(_cron["sabados"]):
+                _fila = {"Sem": _i + 1, "Examen": _sab.strftime("%d/%m")}
+                for _c in _cron["cursos"]:
+                    _t = _c["tramos"][_i] if _i < len(_c["tramos"]) else (None, None)
+                    _fila[_c["curso"][:14]] = ("repaso" if _t[0] is None else
+                                               (f"T{_t[0]}" if _t[0] == _t[1]
+                                                else f"T{_t[0]}–{_t[1]}"))
+                _prev.append(_fila)
+            st.dataframe(pd.DataFrame(_prev), use_container_width=True,
+                         hide_index=True, height=280)
+
+            if st.button("📄 GENERAR COMUNICADO EN WORD", type="primary",
+                         use_container_width=True, key="cr_gen"):
+                try:
+                    _docx = generar_comunicado_docx(
+                        _area_cr, _ini_cr, _fin_cr, f"{_preset} {_anio_cr}",
+                        docentes={k: v for k, v in _docs.items() if v.strip()},
+                        whatsapp_secretaria=_wsp, dia_entrega=_dia_ent,
+                        semanas_repaso=_sem_rep, feriados=_fer)
+                    st.download_button(
+                        "⬇️ Descargar comunicado (.docx)", data=_docx,
+                        file_name=(f"cronograma_area_{_area_cr}_"
+                                   f"{_preset.split()[1]}_{_anio_cr}.docx"),
+                        mime=("application/vnd.openxmlformats-officedocument."
+                              "wordprocessingml.document"),
+                        use_container_width=True, key="cr_dl")
+                    st.success("Listo. Ábrelo en Word, ajusta lo que necesites "
+                               "y repártelo a los docentes.")
+                except Exception as e:
+                    st.error(f"No se pudo generar: {e}")
+
+    # ---------- Calendario ----------
+    with tab6:
+        seccion_calendario_feriados()
 
     # ---------- Reportes ----------
     with tab3:
@@ -945,6 +1041,25 @@ def tab_avance_coordinacion(config=None):
 # ================================================================
 # 8. REPORTES EN PDF
 # ================================================================
+
+PIE_LEGAL = ("Derechos reservados — I.E.P. ALTERNATIVO YACHAY · "
+             "Documento generado por SISTEMA YACHAY PRO")
+
+
+def _pie_pagina(canvas, doc):
+    """Pie legal en todas las paginas, con numeracion."""
+    from reportlab.lib.units import cm
+    canvas.saveState()
+    canvas.setFont("Helvetica", 6.5)
+    canvas.setFillColorRGB(0.42, 0.45, 0.50)
+    canvas.drawCentredString(doc.pagesize[0] / 2, 0.75 * cm, PIE_LEGAL)
+    canvas.drawRightString(doc.pagesize[0] - 1.4 * cm, 0.75 * cm,
+                           f"Pág. {canvas.getPageNumber()}")
+    canvas.setStrokeColorRGB(0.80, 0.83, 0.87)
+    canvas.setLineWidth(0.4)
+    canvas.line(1.4 * cm, 1.05 * cm, doc.pagesize[0] - 1.4 * cm, 1.05 * cm)
+    canvas.restoreState()
+
 
 def _estilos_pdf():
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -1095,7 +1210,8 @@ def generar_pdf_coordinacion(avance, anio, ciclo, dias, institucion="ACADEMIA YA
     story.append(Paragraph(
         "Documento generado automáticamente por SISTEMA YACHAY PRO", est["pie"]))
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_pie_pagina,
+              onLaterPages=_pie_pagina)
     buf.seek(0)
     return buf.getvalue()
 
@@ -1192,7 +1308,8 @@ def generar_pdf_docente(avance, anio, ciclo, grupo, curso, docente, dias,
     ]))
     story.append(firmas)
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_pie_pagina,
+              onLaterPages=_pie_pagina)
     buf.seek(0)
     return buf.getvalue()
 
@@ -1566,7 +1683,8 @@ def generar_pdf_planilla(grupo, ciclo, anio, institucion="ACADEMIA YACHAY"):
             for x in bloque[1:]:
                 story.append(x)
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_pie_pagina,
+              onLaterPages=_pie_pagina)
     buf.seek(0)
     return buf.getvalue()
 
@@ -1658,6 +1776,435 @@ def generar_pdf_area(area, ciclo, anio, institucion="ACADEMIA YACHAY"):
         story.append(t)
         story.append(Spacer(1, 8))
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_pie_pagina,
+              onLaterPages=_pie_pagina)
     buf.seek(0)
     return buf.getvalue()
+
+
+# ================================================================
+# 13. CRONOGRAMA Y COMUNICADO PARA DOCENTES
+# ================================================================
+
+CICLOS_PRESET = {
+    "Ciclo Agosto – Diciembre": (8, 3, 12, 20),
+    "Ciclo Marzo – Julio": (3, 1, 7, 31),
+    "Verano CEPRU (Enero – Febrero)": (1, 5, 2, 28),
+}
+
+DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes",
+               "Sábado", "Domingo"]
+
+
+def sabados_del_ciclo(inicio, fin):
+    """Todos los sábados entre dos fechas: son los días de examen semanal."""
+    from datetime import timedelta
+    d = inicio
+    while d.weekday() != 5:          # 5 = sábado
+        d += timedelta(days=1)
+    salida = []
+    while d <= fin:
+        salida.append(d)
+        d += timedelta(days=7)
+    return salida
+
+
+def repartir_temas(n_temas, n_semanas, semanas_repaso=2):
+    """Reparte los temas entre las semanas, dejando las últimas para repaso.
+
+    El reparto es proporcional, no secuencial: si un curso tiene 14 temas
+    y hay 18 semanas de avance, las semanas sin tema nuevo quedan
+    intercaladas y sirven de refuerzo, en vez de amontonar todo al
+    principio y dejar seis semanas muertas al final.
+    """
+    if n_semanas <= 0 or n_temas <= 0:
+        return []
+    avance = max(n_semanas - semanas_repaso, 1)
+    tramos, anterior = [], 0
+    for i in range(n_semanas):
+        if i >= avance:
+            tramos.append((None, None))
+            continue
+        hasta = round((i + 1) * n_temas / avance)
+        if hasta > anterior:
+            tramos.append((anterior + 1, hasta))
+            anterior = hasta
+        else:
+            tramos.append((None, None))
+    return tramos
+
+
+def numeracion_preguntas(area):
+    """Rango fijo de numeración de cada curso dentro del examen de 80.
+
+    Que cada docente entregue siempre el mismo tramo evita que dos
+    profesores numeren igual y haya que renumerar todo al armar la prueba.
+    """
+    pesos = PESOS.get(area, {})
+    orden = sorted(pesos.items(), key=lambda x: -x[1])
+    salida, n = [], 1
+    for curso, cant in orden:
+        salida.append({"curso": curso, "preguntas": cant,
+                       "desde": n, "hasta": n + cant - 1})
+        n += cant
+    return salida
+
+
+def cronograma_area(area, inicio, fin, semanas_repaso=2, feriados=None):
+    """Arma el cronograma completo: semanas, fechas y temas por curso.
+
+    Salta los sábados que caen en día no lectivo, para no programar un
+    examen un día en que el colegio está cerrado.
+    """
+    sabados, omitidos = sabados_habiles(inicio, fin, feriados)
+    n_sem = len(sabados)
+    cursos = numeracion_preguntas(area)
+    for c in cursos:
+        temas = TEMARIO.get(c["curso"], [])
+        c["total_temas"] = len(temas)
+        c["tramos"] = repartir_temas(len(temas), n_sem, semanas_repaso)
+    return {"area": area, "inicio": inicio, "fin": fin,
+            "sabados": sabados, "semanas": n_sem, "cursos": cursos,
+            "omitidos": omitidos}
+
+
+def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
+                            institucion="ACADEMIA YACHAY",
+                            whatsapp_secretaria="", dia_entrega="Jueves",
+                            semanas_repaso=2, feriados=None):
+    """Documento Word con el cronograma y las instrucciones para docentes."""
+    from docx import Document
+    from docx.shared import Pt, Cm, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+
+    docentes = docentes or {}
+    cron = cronograma_area(area, inicio, fin, semanas_repaso, feriados)
+    doc = Document()
+
+    for s in doc.sections:
+        s.top_margin = Cm(1.8); s.bottom_margin = Cm(1.8)
+        s.left_margin = Cm(2.0); s.right_margin = Cm(2.0)
+
+    est = doc.styles["Normal"]
+    est.font.name = "Calibri"
+    est.font.size = Pt(10.5)
+
+    def p(txt, size=10.5, bold=False, align=None, space=4, color=None):
+        par = doc.add_paragraph()
+        run = par.add_run(txt)
+        run.bold = bold
+        run.font.size = Pt(size)
+        if color:
+            run.font.color.rgb = RGBColor(*color)
+        if align:
+            par.alignment = align
+        par.paragraph_format.space_after = Pt(space)
+        return par
+
+    AZUL = (0x00, 0x1E, 0x7C)
+
+    p(institucion, 15, True, WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
+    p("CRONOGRAMA DE AVANCE Y ENTREGA DE PREGUNTAS", 13, True,
+      WD_ALIGN_PARAGRAPH.CENTER, 0, AZUL)
+    p(f"ÁREA «{area}» — {ciclo}", 11, True, WD_ALIGN_PARAGRAPH.CENTER, 10)
+    p(f"Del {inicio.strftime('%d/%m/%Y')} al {fin.strftime('%d/%m/%Y')} "
+      f"· {cron['semanas']} semanas · Examen semanal los sábados por la tarde",
+      9.5, False, WD_ALIGN_PARAGRAPH.CENTER, 14)
+
+    # ── 1. Numeración fija ────────────────────────────────────────
+    p("1. NUMERACIÓN DE PREGUNTAS POR CURSO", 11.5, True, None, 4, AZUL)
+    p("Cada docente entrega siempre el mismo tramo de numeración. Respetarlo "
+      "evita que dos cursos numeren igual y haya que rehacer la prueba.",
+      9.5, False, None, 6)
+
+    t = doc.add_table(rows=1, cols=5)
+    t.style = "Light Grid Accent 1"
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, h in enumerate(["Curso", "Docente responsable", "N° preguntas",
+                           "Numeración", "Temas"]):
+        c = t.rows[0].cells[i]
+        c.text = h
+        c.paragraphs[0].runs[0].bold = True
+        c.paragraphs[0].runs[0].font.size = Pt(9.5)
+    for c in cron["cursos"]:
+        f = t.add_row().cells
+        f[0].text = c["curso"]
+        f[1].text = docentes.get(c["curso"], "______________________")
+        f[2].text = str(c["preguntas"])
+        f[3].text = f"{c['desde']} al {c['hasta']}"
+        f[4].text = str(c["total_temas"])
+        for cc in f:
+            for pp in cc.paragraphs:
+                for r in pp.runs:
+                    r.font.size = Pt(9)
+    p("", 6, space=8)
+
+    if cron.get("omitidos"):
+        p("Sábados sin examen por día no lectivo:", 10, True, None, 2)
+        for _s, _mot in cron["omitidos"]:
+            par = doc.add_paragraph(
+                f"{_s.strftime('%d/%m/%Y')} — {_mot}", style="List Bullet")
+            par.paragraph_format.space_after = Pt(1)
+            for r in par.runs:
+                r.font.size = Pt(9)
+        p("", 6, space=8)
+
+    # ── 2. Reglas de entrega ──────────────────────────────────────
+    p("2. ENTREGA SEMANAL DE PREGUNTAS", 11.5, True, None, 4, AZUL)
+    reglas = [
+        f"Fecha límite de entrega: {dia_entrega} de cada semana hasta las 6:00 p.m.",
+        (f"Enviar al WhatsApp de Secretaría: {whatsapp_secretaria}"
+         if whatsapp_secretaria else
+         "Enviar al WhatsApp de Secretaría."),
+        "Formato: archivo Word, una pregunta por numeral, con su clave de "
+        "respuesta al final.",
+        "Las preguntas deben corresponder únicamente a los temas avanzados "
+        "esa semana, según el cronograma de la sección 3.",
+        "Respetar el tramo de numeración asignado a su curso en la tabla anterior.",
+        "El examen semanal se aplica los sábados por la tarde y evalúa todo lo "
+        "avanzado durante la semana.",
+        "El docente que no entregue a tiempo deja su tramo vacío y perjudica "
+        "a todos los postulantes del área.",
+    ]
+    for r in reglas:
+        par = doc.add_paragraph(r, style="List Bullet")
+        par.paragraph_format.space_after = Pt(2)
+        for run in par.runs:
+            run.font.size = Pt(9.5)
+    p("", 6, space=8)
+
+    # ── 3. Cronograma semanal ─────────────────────────────────────
+    p("3. CRONOGRAMA DE AVANCE POR SEMANA", 11.5, True, None, 4, AZUL)
+    p("El rango indica los números de tema del temario oficial UNSAAC "
+      "(Res. CU-575-2024) que corresponden a esa semana.", 9.5, False, None, 6)
+
+    cursos = cron["cursos"]
+    t2 = doc.add_table(rows=1, cols=2 + len(cursos))
+    t2.style = "Light Grid Accent 1"
+    enc = ["Sem.", "Examen"] + [c["curso"][:18] for c in cursos]
+    for i, h in enumerate(enc):
+        c = t2.rows[0].cells[i]
+        c.text = h
+        c.paragraphs[0].runs[0].bold = True
+        c.paragraphs[0].runs[0].font.size = Pt(8)
+    for i, sab in enumerate(cron["sabados"]):
+        f = t2.add_row().cells
+        f[0].text = str(i + 1)
+        f[1].text = sab.strftime("%d/%m")
+        for j, c in enumerate(cursos):
+            tramo = c["tramos"][i] if i < len(c["tramos"]) else (None, None)
+            if tramo[0] is None:
+                f[2 + j].text = "repaso"
+            elif tramo[0] == tramo[1]:
+                f[2 + j].text = f"T{tramo[0]}"
+            else:
+                f[2 + j].text = f"T{tramo[0]}–{tramo[1]}"
+        for cc in f:
+            for pp in cc.paragraphs:
+                for r in pp.runs:
+                    r.font.size = Pt(8)
+    p("", 6, space=10)
+
+    # ── 4. Detalle de temas por curso ─────────────────────────────
+    p("4. DETALLE DE TEMAS POR CURSO", 11.5, True, None, 6, AZUL)
+    for c in cursos:
+        temas = TEMARIO.get(c["curso"], [])
+        p(f"{c['curso']} — {docentes.get(c['curso'], 'docente por asignar')} "
+          f"· preguntas {c['desde']} al {c['hasta']}", 10.5, True, None, 3)
+        for i, sab in enumerate(cron["sabados"]):
+            tramo = c["tramos"][i] if i < len(c["tramos"]) else (None, None)
+            if tramo[0] is None:
+                continue
+            nombres = "; ".join(
+                f"{k}. {temas[k-1]}" for k in range(tramo[0], tramo[1] + 1)
+                if k <= len(temas))
+            par = doc.add_paragraph()
+            r1 = par.add_run(f"Semana {i+1} (examen {sab.strftime('%d/%m')}): ")
+            r1.bold = True
+            r1.font.size = Pt(9)
+            r2 = par.add_run(nombres)
+            r2.font.size = Pt(9)
+            par.paragraph_format.space_after = Pt(1)
+            par.paragraph_format.left_indent = Cm(0.6)
+        p("", 6, space=8)
+
+    # ── Firmas ────────────────────────────────────────────────────
+    p("", 6, space=20)
+    tf = doc.add_table(rows=1, cols=2)
+    tf.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, txt in enumerate(["_______________________________\nCoordinación Académica",
+                             "_______________________________\nDirección"]):
+        cel = tf.rows[0].cells[i]
+        cel.text = txt
+        for pp in cel.paragraphs:
+            pp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            for r in pp.runs:
+                r.font.size = Pt(9)
+
+    # Pie de pagina legal en todas las hojas del Word
+    for sec in doc.sections:
+        pie = sec.footer.paragraphs[0]
+        pie.text = PIE_LEGAL
+        pie.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        for r in pie.runs:
+            r.font.size = Pt(6.5)
+            r.font.color.rgb = RGBColor(0x6B, 0x72, 0x80)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+# ================================================================
+# 14. CALENDARIO DE FERIADOS Y SEMANAS NO LECTIVAS
+# ================================================================
+
+ARCHIVO_FERIADOS = "feriados_academia.json"
+
+# Feriados nacionales fijos del Perú (mes, día). Los movibles como
+# Jueves y Viernes Santo cambian de fecha cada año y se agregan a mano.
+FERIADOS_FIJOS = [
+    (1, 1, "Año Nuevo"),
+    (5, 1, "Día del Trabajo"),
+    (6, 7, "Batalla de Arica"),
+    (6, 29, "San Pedro y San Pablo"),
+    (7, 23, "Día de la Fuerza Aérea"),
+    (7, 28, "Fiestas Patrias"),
+    (7, 29, "Fiestas Patrias"),
+    (8, 6, "Batalla de Junín"),
+    (8, 30, "Santa Rosa de Lima"),
+    (10, 8, "Combate de Angamos"),
+    (11, 1, "Todos los Santos"),
+    (12, 8, "Inmaculada Concepción"),
+    (12, 9, "Batalla de Ayacucho"),
+    (12, 25, "Navidad"),
+]
+
+
+def cargar_feriados():
+    """Devuelve {'AAAA-MM-DD': 'motivo'} con los días no lectivos."""
+    p = Path(ARCHIVO_FERIADOS)
+    if p.exists():
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def guardar_feriados(data):
+    try:
+        with open(ARCHIVO_FERIADOS, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+
+def feriados_nacionales(anio):
+    """Los feriados fijos de un año, listos para precargar."""
+    return {date(anio, m, d).isoformat(): motivo
+            for m, d, motivo in FERIADOS_FIJOS}
+
+
+def es_no_lectivo(dia, feriados=None):
+    f = feriados if feriados is not None else cargar_feriados()
+    return dia.isoformat() in f
+
+
+def sabados_habiles(inicio, fin, feriados=None):
+    """Sábados de examen, saltando los que caen en día no lectivo.
+
+    Devuelve (habiles, omitidos) para poder avisar en el documento qué
+    semanas se perdieron y por qué.
+    """
+    f = feriados if feriados is not None else cargar_feriados()
+    habiles, omitidos = [], []
+    for s in sabados_del_ciclo(inicio, fin):
+        if s.isoformat() in f:
+            omitidos.append((s, f[s.isoformat()]))
+        else:
+            habiles.append(s)
+    return habiles, omitidos
+
+
+def seccion_calendario_feriados():
+    """Interfaz para marcar feriados, semanas de gestión y suspensiones."""
+    st.markdown("#### 📅 Calendario de días no lectivos")
+    st.caption("Los sábados marcados aquí se saltan al armar el cronograma, "
+               "para no programar un examen un día que el colegio está cerrado.")
+
+    feriados = cargar_feriados()
+    anio_f = st.number_input("Año:", 2024, 2040, date.today().year,
+                             key="fer_anio")
+
+    cf1, cf2 = st.columns(2)
+    with cf1:
+        if st.button("➕ Precargar feriados nacionales del Perú",
+                     use_container_width=True, key="fer_precarga"):
+            feriados.update(feriados_nacionales(int(anio_f)))
+            guardar_feriados(feriados)
+            st.success("Feriados nacionales agregados. "
+                       "Semana Santa y feriados regionales se añaden a mano.")
+            st.rerun()
+    with cf2:
+        st.caption("Faltan por agregar a mano: Jueves y Viernes Santo "
+                   "(cambian cada año), aniversario del distrito, "
+                   "semana de gestión y suspensiones de último momento.")
+
+    st.markdown("##### Agregar un día o un rango")
+    ca1, ca2, ca3 = st.columns([2, 2, 3])
+    with ca1:
+        _d1 = st.date_input("Desde:", value=date.today(), key="fer_d1")
+    with ca2:
+        _d2 = st.date_input("Hasta:", value=date.today(), key="fer_d2")
+    with ca3:
+        _motivo = st.text_input("Motivo:", key="fer_motivo",
+                                placeholder="Semana de gestión / Feriado / Suspensión")
+
+    if st.button("Agregar al calendario", type="primary",
+                 use_container_width=True, key="fer_add"):
+        if _d2 < _d1:
+            st.error("La fecha final no puede ser anterior a la inicial.")
+        elif not _motivo.strip():
+            st.error("Escribe el motivo para que quede constancia.")
+        else:
+            from datetime import timedelta
+            d, n = _d1, 0
+            while d <= _d2:
+                feriados[d.isoformat()] = _motivo.strip()
+                d += timedelta(days=1)
+                n += 1
+            guardar_feriados(feriados)
+            st.success(f"{n} día(s) marcados como no lectivos.")
+            st.rerun()
+
+    if feriados:
+        st.markdown("##### Días registrados")
+        filas = []
+        for k in sorted(feriados):
+            try:
+                dd = date.fromisoformat(k)
+            except ValueError:
+                continue
+            filas.append({
+                "Fecha": dd.strftime("%d/%m/%Y"),
+                "Día": DIAS_SEMANA[dd.weekday()],
+                "Motivo": feriados[k],
+                "Cae sábado": "⚠️ sí" if dd.weekday() == 5 else "",
+            })
+        st.dataframe(pd.DataFrame(filas), use_container_width=True,
+                     hide_index=True, height=260)
+
+        _quitar = st.selectbox("Quitar un día:", ["—"] + sorted(feriados),
+                               key="fer_del_sel")
+        if _quitar != "—" and st.button(f"🗑️ Quitar {_quitar}",
+                                        key="fer_del_btn"):
+            feriados.pop(_quitar, None)
+            guardar_feriados(feriados)
+            st.rerun()
+    else:
+        st.info("Todavía no hay días marcados.")
