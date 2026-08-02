@@ -305,7 +305,23 @@ ARCHIVO_CONFIG_CICLO = "ciclo_academia.json"
 HOJA_AVANCE = "AvanceTemario"
 COLS_AVANCE = ["clave", "anio", "ciclo", "grupo", "curso", "tema_num",
                "tema", "estado", "fecha", "sesion", "docente",
-               "observacion", "actualizado"]
+               "observacion", "evals", "actualizado"]
+
+# Los exámenes se guardan con el nombre del área, que no siempre coincide
+# exactamente con el nombre del curso en el temario oficial.
+ALIAS_AREA = {
+    "Geometría y Trigonometría": ["Geometría", "Trigonometría",
+                                  "Geometria", "Trigonometria"],
+    "Competencia Comunicativa": ["Competencia Lingüística", "Comunicación",
+                                 "Lenguaje", "Razonamiento Verbal"],
+    "Filosofía y Lógica": ["Filosofía", "Lógica"],
+    "Educación Cívica": ["Cívica", "Educación Ciudadana"],
+}
+
+# Nota mínima vigesimal de aprobación usada en la academia.
+# Archivo donde 'Registrar Notas → Nueva Evaluación' deja las notas.
+NOTA_UMBRAL = 11.0
+ARCHIVO_RESULTADOS_NOTAS = "resultados.json"
 
 
 # ================================================================
@@ -637,6 +653,22 @@ def tab_avance_docente(config=None):
         except Exception as e:
             st.caption(f"No se pudo preparar el PDF: {e}")
 
+    st.markdown("---")
+    with st.expander("🎯 Cruzar con las notas de mis exámenes", expanded=False):
+        nt = notas_del_curso(grupo, curso)
+        if nt["promedio"] is not None:
+            etiqueta, color, lectura = cuadrante(res["pct"], nt["promedio"])
+            k1, k2, k3 = st.columns(3)
+            k1.metric("Promedio del curso", nt["promedio"])
+            k2.metric(f"Sobre {NOTA_UMBRAL}", f"{nt['pct_aprob']}%")
+            k3.markdown(
+                f"<div style='background:{color};color:#fff;padding:12px;"
+                f"border-radius:8px;text-align:center;font-weight:bold;'>"
+                f"{etiqueta}</div>", unsafe_allow_html=True)
+            st.caption(lectura)
+            st.markdown("---")
+        seccion_vincular_evaluaciones(avance, anio, ciclo, grupo, curso, docente)
+
 
 # ================================================================
 # 7. VISTA DE COORDINACIÓN — panel de control
@@ -681,8 +713,9 @@ def tab_avance_coordinacion(config=None):
         else:
             st.warning(f"**{ciclo}** — la fecha del examen ya pasó.")
 
-    tab1, tab2, tab3 = st.tabs(
-        ["🚦 Semáforo por curso", "👤 Por docente", "📥 Reportes"])
+    tab1, tab4, tab2, tab3 = st.tabs(
+        ["🚦 Semáforo por curso", "🎯 Dictado vs Aprendido",
+         "👤 Por docente", "📥 Reportes"])
 
     # ---------- Semáforo ----------
     with tab1:
@@ -718,6 +751,50 @@ def tab_avance_coordinacion(config=None):
             if atrasados:
                 st.error("Requieren intervención inmediata: " + ", ".join(atrasados))
             st.markdown("---")
+
+    # ---------- Dictado vs Aprendido ----------
+    with tab4:
+        st.markdown("Cruza lo que **se dictó** con lo que los alumnos "
+                    "**demostraron en los exámenes** que ya registras en el "
+                    "sistema. Un curso puede ir al 90% de avance y aun así "
+                    "ser el que más puntos te está costando.")
+        hay_notas = False
+        for grupo in GRUPOS:
+            filas = tabla_dictado_vs_aprendido(avance, anio, ciclo, grupo)
+            st.markdown(f"### {grupo}")
+            for f in filas:
+                if f["promedio"] is not None:
+                    hay_notas = True
+                prom_txt = "sin notas" if f["promedio"] is None else \
+                    f"promedio {f['promedio']} · {f['pct_aprob']}% sobre {NOTA_UMBRAL}"
+                st.markdown(
+                    f"""<div style='padding:10px 14px;margin-bottom:6px;
+                    border-radius:8px;background:#f8fafc;
+                    border-left:6px solid {f['color']};'>
+                    <div style='display:flex;justify-content:space-between;
+                    align-items:center;'>
+                    <div><b>{f['curso']}</b>
+                    <span style='color:#64748b;font-size:.85rem;'>
+                    · {int(f['peso'])} preguntas · avance {f['avance']}% ·
+                    {prom_txt}</span></div>
+                    <div style='color:{f['color']};font-weight:bold;'>
+                    {f['estado']}</div></div>
+                    <div style='color:#475569;font-size:.82rem;margin-top:4px;'>
+                    {f['lectura']}</div></div>""", unsafe_allow_html=True)
+
+            criticos = [f["curso"] for f in filas
+                        if f["estado"] == "Dictado, no aprendido"]
+            if criticos:
+                st.error("**Se avanzó pero no se asimiló:** " +
+                         ", ".join(criticos) +
+                         ". Estos cursos no necesitan más velocidad, "
+                         "necesitan repaso.")
+            st.markdown("---")
+
+        if not hay_notas:
+            st.info("Todavía no hay notas registradas para los grupos "
+                    "preuniversitarios. En cuanto apliques exámenes desde "
+                    "Exámenes Semanales o YACHAY QAWAY, este panel se llena solo.")
 
     # ---------- Por docente ----------
     with tab2:
@@ -1081,3 +1158,295 @@ def generar_pdf_docente(avance, anio, ciclo, grupo, curso, docente, dias,
     doc.build(story)
     buf.seek(0)
     return buf.getvalue()
+
+
+# ================================================================
+# 9. CRUCE CON LAS NOTAS YA REGISTRADAS
+# ================================================================
+# Responde la pregunta que un checklist no puede responder:
+# el tema se dictó, ¿pero el alumno lo entendió?
+
+def _coincide_area(curso, area_examen):
+    """Compara el curso del temario con el área con que se guardó el examen."""
+    a = str(area_examen).strip().lower()
+    if not a:
+        return False
+    if a == curso.lower():
+        return True
+    for alias in ALIAS_AREA.get(curso, []):
+        if a == alias.lower():
+            return True
+    return curso.lower().startswith(a) or a.startswith(curso.lower()[:8])
+
+
+def _coincide_grupo(grupo, grado_examen):
+    """GRUPO AB coincide con 'GRUPO AB — CEPRE UNSAAC' y variantes."""
+    g = str(grado_examen).upper().replace("—", "-")
+    return grupo.upper().replace("GRUPO ", "").strip() in g
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def _leer_resultados():
+    """Aplana todas las notas registradas a filas comparables.
+
+    Fuente principal: resultados.json, que es donde "Registrar Notas →
+    Nueva Evaluación" deja cada estudiante con sus áreas anidadas.
+    Si no está en disco, se recupera del blob 'resultados_json' que el
+    sistema guarda en la hoja Config.
+    Fuente secundaria: la hoja Resultados (YACHAY QAWAY / exámenes por clave).
+    """
+    filas = []
+
+    # --- Fuente 1: notas de Nueva Evaluación ---
+    data = []
+    p = Path(ARCHIVO_RESULTADOS_NOTAS)
+    if p.exists():
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = []
+    if not data:
+        gs = _gs()
+        if gs is not None:
+            try:
+                ws = gs._get_hoja("config")
+                if ws:
+                    for row in ws.get_all_values():
+                        if row and row[0] == "resultados_json":
+                            data = json.loads(row[1])
+                            break
+            except Exception:
+                data = []
+
+    for r in data or []:
+        periodo = str(r.get("periodo", ""))
+        titulo = str(r.get("titulo", ""))
+        fecha = str(r.get("fecha", ""))
+        eval_id = f"{fecha}|{periodo}|{titulo}"
+        for a in r.get("areas", []) or []:
+            try:
+                nota = float(a.get("nota") or 0)
+            except (TypeError, ValueError):
+                continue
+            if nota <= 0:
+                continue
+            filas.append({
+                "eval_id": eval_id,
+                "eval_titulo": titulo or periodo or "Evaluación",
+                "periodo": periodo,
+                "fecha": fecha,
+                "grado": r.get("grado", ""),
+                "area": a.get("nombre", ""),
+                "nota": nota,
+                "docente": r.get("docente_nombre") or r.get("docente", ""),
+            })
+
+    # --- Fuente 2: hoja Resultados (formato plano) ---
+    gs = _gs()
+    if gs is not None:
+        try:
+            for r in gs.leer_resultados():
+                try:
+                    nota = float(r.get("nota") or 0)
+                except (TypeError, ValueError):
+                    continue
+                if nota <= 0:
+                    continue
+                filas.append({
+                    "eval_id": str(r.get("eval_id", "")),
+                    "eval_titulo": r.get("eval_titulo", ""),
+                    "periodo": "",
+                    "fecha": r.get("fecha", ""),
+                    "grado": r.get("grado", ""),
+                    "area": r.get("area", ""),
+                    "nota": nota,
+                    "docente": r.get("docente", ""),
+                })
+        except Exception:
+            pass
+
+    return filas
+
+
+def notas_del_curso(grupo, curso, eval_ids=None):
+    """Promedio y detalle de las evaluaciones de un curso en un grupo."""
+    filas = []
+    for r in _leer_resultados():
+        if not _coincide_grupo(grupo, r.get("grado", "")):
+            continue
+        if not _coincide_area(curso, r.get("area", "")):
+            continue
+        if eval_ids and str(r.get("eval_id")) not in eval_ids:
+            continue
+        try:
+            filas.append(float(r.get("nota") or 0))
+        except (TypeError, ValueError):
+            continue
+    if not filas:
+        return {"promedio": None, "alumnos": 0, "aprobados": 0, "pct_aprob": None}
+    aprob = sum(1 for n in filas if n >= NOTA_UMBRAL)
+    return {
+        "promedio": round(sum(filas) / len(filas), 1),
+        "alumnos": len(filas),
+        "aprobados": aprob,
+        "pct_aprob": round(100 * aprob / len(filas), 1),
+    }
+
+
+def evaluaciones_disponibles(grupo, curso):
+    """Lista de exámenes ya aplicados que corresponden a este curso."""
+    vistos, salida = set(), []
+    for r in _leer_resultados():
+        if not _coincide_grupo(grupo, r.get("grado", "")):
+            continue
+        if not _coincide_area(curso, r.get("area", "")):
+            continue
+        eid = str(r.get("eval_id", ""))
+        if eid and eid not in vistos:
+            vistos.add(eid)
+            periodo = r.get("periodo", "")
+            titulo = r.get("eval_titulo", "Sin título")
+            salida.append({
+                "eval_id": eid,
+                "titulo": f"{periodo} · {titulo}" if periodo else titulo,
+                "fecha": r.get("fecha", ""),
+            })
+    return sorted(salida, key=lambda x: str(x["fecha"]), reverse=True)
+
+
+def cuadrante(pct_avance, promedio):
+    """Cruza cobertura con resultados. Devuelve (etiqueta, color, lectura)."""
+    if promedio is None:
+        return ("Sin evaluar", "#94a3b8",
+                "Se dictó pero todavía no hay notas que lo respalden.")
+    alto_av = pct_avance >= 60
+    alto_no = promedio >= NOTA_UMBRAL
+    if alto_av and alto_no:
+        return ("Consolidado", "#16a34a",
+                "Buen avance y los alumnos responden. Mantener el ritmo.")
+    if alto_av and not alto_no:
+        return ("Dictado, no aprendido", "#dc2626",
+                "Se avanzó rápido pero las notas no acompañan. "
+                "Conviene frenar y reforzar antes de seguir.")
+    if not alto_av and alto_no:
+        return ("En ruta", "#2563eb",
+                "Poco avance, pero lo dictado quedó claro. "
+                "El problema es de tiempo, no de método.")
+    return ("Crítico", "#ea580c",
+            "Poco avance y notas bajas. Requiere intervención directa.")
+
+
+def tabla_dictado_vs_aprendido(avance, anio, ciclo, grupo):
+    filas = []
+    for curso in cursos_de_grupo(grupo):
+        res = resumen_curso(avance, anio, ciclo, grupo, curso)
+        nt = notas_del_curso(grupo, curso)
+        etiqueta, color, lectura = cuadrante(res["pct"], nt["promedio"])
+        filas.append({
+            "curso": curso,
+            "peso": res["peso"],
+            "avance": res["pct"],
+            "promedio": nt["promedio"],
+            "alumnos": nt["alumnos"],
+            "pct_aprob": nt["pct_aprob"],
+            "estado": etiqueta,
+            "color": color,
+            "lectura": lectura,
+        })
+    return filas
+
+
+# ================================================================
+# 10. VINCULAR TEMAS CON EVALUACIONES (para análisis por tema)
+# ================================================================
+
+def seccion_vincular_evaluaciones(avance, anio, ciclo, grupo, curso, docente):
+    """Permite decir qué temas cubrió cada examen ya aplicado."""
+    st.markdown("#### 🎯 ¿Qué temas evaluó cada examen?")
+    st.caption("Al vincularlos, el sistema puede decirte si un tema se dictó "
+               "pero no se entendió, en vez de solo si se dictó.")
+
+    evals = evaluaciones_disponibles(grupo, curso)
+    if not evals:
+        st.info("Todavía no hay exámenes registrados para este curso y grupo. "
+                "Aparecerán aquí en cuanto apliques uno desde Exámenes "
+                "Semanales o YACHAY QAWAY.")
+        return
+
+    etiquetas = {f"{e['fecha']} — {e['titulo']}": e["eval_id"] for e in evals}
+    sel = st.selectbox("Examen aplicado", list(etiquetas.keys()),
+                       key=f"av_ev_sel_{grupo}_{curso}")
+    eid = etiquetas[sel]
+
+    temas = TEMARIO.get(curso, [])
+    ya = []
+    for i, tema in enumerate(temas, start=1):
+        r = avance.get(_clave(anio, ciclo, grupo, curso, i), {})
+        if eid in str(r.get("evals", "")).split(","):
+            ya.append(f"{i}. {tema}")
+
+    elegidos = st.multiselect(
+        "Temas que entraron en este examen",
+        [f"{i}. {t}" for i, t in enumerate(temas, start=1)],
+        default=ya, key=f"av_ev_temas_{grupo}_{curso}_{eid}")
+
+    if st.button("🔗 Vincular examen con estos temas",
+                 key=f"av_ev_btn_{grupo}_{curso}_{eid}",
+                 use_container_width=True):
+        cambios = []
+        indices = {int(x.split(".")[0]) for x in elegidos}
+        for i, tema in enumerate(temas, start=1):
+            clave = _clave(anio, ciclo, grupo, curso, i)
+            r = dict(avance.get(clave, {}))
+            actuales = [x for x in str(r.get("evals", "")).split(",") if x]
+            nuevo = list(actuales)
+            if i in indices and eid not in nuevo:
+                nuevo.append(eid)
+            elif i not in indices and eid in nuevo:
+                nuevo.remove(eid)
+            if nuevo != actuales:
+                r.update({
+                    "clave": clave, "anio": anio, "ciclo": ciclo,
+                    "grupo": grupo, "curso": curso, "tema_num": i,
+                    "tema": tema,
+                    "estado": r.get("estado", "Pendiente"),
+                    "fecha": r.get("fecha", ""),
+                    "sesion": r.get("sesion", ""),
+                    "docente": r.get("docente", docente),
+                    "observacion": r.get("observacion", ""),
+                    "evals": ",".join(nuevo),
+                })
+                cambios.append(r)
+        if cambios:
+            ok, msg = guardar_avance(cambios)
+            (st.success if ok else st.warning)(msg)
+            st.rerun()
+        else:
+            st.info("No hubo cambios que guardar.")
+
+    # --- Resultado por tema vinculado ---
+    st.markdown("##### Cómo les fue en los temas ya evaluados")
+    hubo = False
+    for i, tema in enumerate(temas, start=1):
+        r = avance.get(_clave(anio, ciclo, grupo, curso, i), {})
+        ids = [x for x in str(r.get("evals", "")).split(",") if x]
+        if not ids:
+            continue
+        hubo = True
+        nt = notas_del_curso(grupo, curso, eval_ids=set(ids))
+        prom = nt["promedio"]
+        if prom is None:
+            continue
+        color = "#16a34a" if prom >= NOTA_UMBRAL else "#dc2626"
+        aviso = "" if prom >= NOTA_UMBRAL else " · conviene reforzar"
+        st.markdown(
+            f"<div style='padding:6px 10px;margin-bottom:4px;border-radius:6px;"
+            f"background:#f8fafc;border-left:5px solid {color};font-size:.9rem;'>"
+            f"<b>{i}. {tema}</b> — promedio "
+            f"<b style='color:{color};'>{prom}</b> "
+            f"({nt['alumnos']} notas, {nt['pct_aprob']}% sobre {NOTA_UMBRAL})"
+            f"<span style='color:{color};'>{aviso}</span></div>",
+            unsafe_allow_html=True)
+    if not hubo:
+        st.caption("Vincula al menos un examen arriba para ver esta sección.")
