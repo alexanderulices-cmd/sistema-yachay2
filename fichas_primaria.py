@@ -2009,26 +2009,39 @@ def tab_fichas_primaria(config=None):
                        value=nivel.startswith("1°"), key="fp_trab")
 
     st.markdown("##### Elige las lecturas a imprimir")
-    elegidas = st.multiselect(
-        "Lecturas:", [L["titulo"] for L in disponibles],
-        default=[disponibles[0]["titulo"]] if disponibles else [],
-        key=f"fp_sel_{nivel}_{tipo_sel}",
-        help="Se imprime solo lo que marques aquí. Cada lectura ocupa una "
-             "hoja completa.")
+    titulos_disp = [L["titulo"] for L in disponibles]
 
-    seleccion = [L for L in disponibles if L["titulo"] in elegidas]
+    # Streamlit no permite reasignar la clave de un widget ya creado. Por eso
+    # los botones de marcar/quitar guardan la selección en otra variable y
+    # cambian el número de versión: al cambiar la clave, el multiselect se
+    # vuelve a crear tomando ese valor como predeterminado.
+    _ver = st.session_state.get("fp_ver", 0)
+    _forzado = st.session_state.get("fp_forzado")
+    if _forzado is None:
+        _predet = titulos_disp[:1]
+    else:
+        _predet = [t for t in _forzado if t in titulos_disp]
 
     ct1, ct2 = st.columns(2)
     with ct1:
         if st.button(f"Marcar las {len(disponibles)} de este nivel",
                      use_container_width=True, key="fp_todas"):
-            st.session_state[f"fp_sel_{nivel}_{tipo_sel}"] = [
-                L["titulo"] for L in disponibles]
+            st.session_state["fp_forzado"] = list(titulos_disp)
+            st.session_state["fp_ver"] = _ver + 1
             st.rerun()
     with ct2:
         if st.button("Quitar todas", use_container_width=True, key="fp_nada"):
-            st.session_state[f"fp_sel_{nivel}_{tipo_sel}"] = []
+            st.session_state["fp_forzado"] = []
+            st.session_state["fp_ver"] = _ver + 1
             st.rerun()
+
+    elegidas = st.multiselect(
+        "Lecturas:", titulos_disp, default=_predet,
+        key=f"fp_sel_{nivel}_{tipo_sel}_{_ver}",
+        help="Se imprime solo lo que marques aquí. Cada lectura ocupa una "
+             "hoja completa.")
+
+    seleccion = [L for L in disponibles if L["titulo"] in elegidas]
 
     if not seleccion:
         st.warning("No has marcado ninguna lectura. Elige al menos una "
