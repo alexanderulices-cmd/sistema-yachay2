@@ -13,6 +13,13 @@
 # ================================================================
 
 import streamlit as st
+
+# set_page_config DEBE ser la primera orden de Streamlit que se ejecuta.
+# Va aqui arriba a proposito: los modulos que se importan mas abajo
+# (avance_temario y otros) usan decoradores @st.cache_data que se ejecutan
+# al importarse, y eso adelantaba una orden de Streamlit provocando
+# StreamlitSetPageConfigMustBeFirstCommandError.
+st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
 import pandas as pd
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
@@ -50,6 +57,20 @@ try:
     AVANCE_TEMARIO_DISPONIBLE = True
 except ImportError:
     AVANCE_TEMARIO_DISPONIBLE = False
+
+# Fichas de comprensión lectora — Primaria
+try:
+    from fichas_primaria import tab_fichas_primaria
+    FICHAS_PRIMARIA_OK = True
+except ImportError:
+    FICHAS_PRIMARIA_OK = False
+
+# Juegos interactivos CNEB — Inicial y Primaria
+try:
+    from juegos_cneb import tab_aprendo_jugando
+    JUEGOS_CNEB_OK = True
+except ImportError:
+    JUEGOS_CNEB_OK = False
 
 import base64  # Para Aula Virtual
 
@@ -92,7 +113,6 @@ def _iniciar_hilo(target, args=(), kwargs=None, daemon=True):
     _t.start()
     return _t
 
-st.set_page_config(page_title="SISTEMA YACHAY PRO", page_icon="🎓", layout="wide")
 
 
 # Estilos CSS mejorados con colores vibrantes
@@ -32774,6 +32794,8 @@ def main():
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
                 ("📚", "Control Academia", "control_academia", "#0891b2"),
                 ("🏆", "Simulacro / Becas", "simulacro_becas", "#b45309"),
+                ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
+                ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32891,6 +32913,10 @@ def main():
                 tab_avance_coordinacion(config)
             elif mod == "simulacro_becas":
                 tab_simulacro_becas(config)
+            elif mod == "fichas_primaria":
+                tab_fichas_primaria(config)
+            elif mod == "aprendo_jugando":
+                tab_aprendo_jugando(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
