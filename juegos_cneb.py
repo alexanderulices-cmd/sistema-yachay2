@@ -74,6 +74,32 @@ BANCO = {
             {"tipo": "opcion", "emoji": "🧼💧", "d": 2, "pregunta": "¿Cuándo me lavo las manos?",
              "opciones": ["Antes de comer", "Nunca"], "correcta": "Antes de comer"},
         ],
+        "🌍 Métodos del mundo": [
+            # Singapur — «number bonds»: ver el número como partes que se unen
+            {"tipo": "opcion", "emoji": "🍓🍓 + ❓", "d": 1,
+             "pregunta": "Tengo 2 fresas. ¿Cuántas faltan para tener 5?",
+             "opciones": ["1", "2", "3"], "correcta": "3"},
+            {"tipo": "opcion", "emoji": "⚽⚽⚽ + ❓", "d": 1,
+             "pregunta": "Hay 3 pelotas. ¿Cuántas faltan para tener 5?",
+             "opciones": ["1", "2", "3"], "correcta": "2"},
+            {"tipo": "emparejar", "d": 2,
+             "pregunta": "Singapur: une las partes que forman 5",
+             "pares": [["4 y ...", "1"], ["3 y ...", "2"], ["5 y ...", "0"]]},
+            # Montessori — seriación: ordenar por tamaño antes de contar
+            {"tipo": "ordenar", "d": 1,
+             "pregunta": "Montessori: ordena de más pequeño a más grande",
+             "items": ["🐜", "🐁", "🐕", "🐘"]},
+            # Finlandia — aprender jugando con la vida diaria
+            {"tipo": "ordenar", "d": 2,
+             "pregunta": "Finlandia: ordena tu mañana",
+             "items": ["Despertar", "Lavarme", "Desayunar", "Ir al colegio"]},
+            # Japón — patrones antes que operaciones
+            {"tipo": "opcion", "emoji": "🔴🔵🔴🔵❓", "d": 2,
+             "pregunta": "Japón: ¿qué sigue en el patrón?",
+             "opciones": ["🔴", "🔵", "🟢"], "correcta": "🔴"},
+            {"tipo": "opcion", "emoji": "🌞🌙🌞🌙❓", "d": 2,
+             "pregunta": "¿Qué sigue?", "opciones": ["🌞", "🌙"], "correcta": "🌞"},
+        ],
         "Inglés": [
             {"tipo": "opcion", "emoji": "🔵", "d": 1, "pregunta": "¿Qué color es «blue»?",
              "opciones": ["🔵", "🔴", "🟡"], "correcta": "🔵"},
@@ -168,6 +194,44 @@ BANCO = {
             {"tipo": "opcion", "emoji": "♻️", "d": 2, "pregunta": "¿Dónde va una botella de plástico?",
              "opciones": ["Tacho de reciclaje", "Al río"],
              "correcta": "Tacho de reciclaje"},
+        ],
+        "🌍 Métodos del mundo": [
+            # Singapur — descomponer para calcular mental
+            {"tipo": "opcion", "emoji": "🔢", "d": 1,
+             "pregunta": "Singapur: 8 + 5. Primero completo 10. 8 + 2 = 10, "
+                         "me sobran 3. ¿Cuánto es en total?",
+             "opciones": ["12", "13", "14"], "correcta": "13"},
+            {"tipo": "opcion", "emoji": "🔢", "d": 2,
+             "pregunta": "Descompón 47 en decenas y unidades:",
+             "opciones": ["40 + 7", "4 + 7", "47 + 0"], "correcta": "40 + 7"},
+            {"tipo": "emparejar", "d": 2,
+             "pregunta": "Une cada número con sus partes",
+             "pares": [["100", "50 y 50"], ["20", "15 y 5"], ["30", "10 y 20"]]},
+            # Singapur — modelo de barras: el problema se dibuja antes de calcular
+            {"tipo": "opcion", "emoji": "▬▬▬▬ Ana\n▬▬ Luis", "d": 2,
+             "pregunta": "Modelo de barras: Ana tiene 12 canicas. Luis tiene "
+                         "la mitad. ¿Cuántas tiene Luis?",
+             "opciones": ["6", "8", "24"], "correcta": "6"},
+            {"tipo": "opcion", "emoji": "▬▬▬ + ▬▬", "d": 2,
+             "pregunta": "Modelo de barras: juntos tienen 20 soles. Uno tiene "
+                         "12. ¿Cuánto tiene el otro?",
+             "opciones": ["8", "10", "32"], "correcta": "8"},
+            # Estonia — pensamiento computacional desde primaria
+            {"tipo": "ordenar", "d": 2,
+             "pregunta": "Estonia: ordena las instrucciones para lavarse las manos",
+             "items": ["Abrir el caño", "Echar jabón", "Frotar",
+                       "Enjuagar", "Cerrar el caño"]},
+            {"tipo": "ordenar", "d": 3,
+             "pregunta": "Programa a un robot para llegar a la puerta",
+             "items": ["Avanzar 2 pasos", "Girar a la derecha",
+                       "Avanzar 3 pasos", "Abrir la puerta"]},
+            # Finlandia — aprendizaje por fenómenos: una pregunta, varias áreas
+            {"tipo": "emparejar", "d": 2,
+             "pregunta": "Finlandia: «El agua en Chinchero». Une cada pregunta "
+                         "con el área que la responde",
+             "pares": [["¿De dónde viene?", "Ciencia"],
+                       ["¿Quién la reparte?", "Personal Social"],
+                       ["¿Cuántos litros gastamos?", "Matemática"]]},
         ],
         "Inglés": [
             {"tipo": "opcion", "emoji": "🔴", "d": 1, "pregunta": "¿Cómo se dice «rojo»?",
@@ -274,6 +338,54 @@ BANCO = {
              "opciones": ["Gases de efecto invernadero", "La lluvia"],
              "correcta": "Gases de efecto invernadero"},
         ],
+        "🌍 Métodos del mundo": [
+            {"tipo": "opcion", "emoji": "▬▬▬▬", "d": 1,
+             "pregunta": "Modelo de barras: una barra de 12 se parte en 2 "
+                         "partes iguales. ¿Cuánto vale cada parte?",
+             "opciones": ["6", "4", "24"], "correcta": "6"},
+            {"tipo": "opcion", "emoji": "🧮", "d": 1,
+             "pregunta": "Estimación: 49 + 52 está más cerca de…",
+             "opciones": ["100", "150", "50"], "correcta": "100"},
+            # Singapur — modelo de barras con fracciones y proporciones
+            {"tipo": "opcion", "emoji": "▬▬▬▬▬▬▬▬", "d": 2,
+             "pregunta": "Modelo de barras: una barra de 24 se divide en 3 "
+                         "partes iguales. ¿Cuánto vale 2 partes?",
+             "opciones": ["8", "16", "12"], "correcta": "16"},
+            {"tipo": "opcion", "emoji": "🍕", "d": 3,
+             "pregunta": "Modelo de barras: gasté 3/5 de mis S/ 50. "
+                         "¿Cuánto me queda?",
+             "opciones": ["S/ 20", "S/ 30", "S/ 15"], "correcta": "S/ 20"},
+            # Países Bajos — matemática realista: estimar antes de calcular
+            {"tipo": "opcion", "emoji": "🧮", "d": 2,
+             "pregunta": "Estimación: 198 + 203 está más cerca de…",
+             "opciones": ["400", "300", "500"], "correcta": "400"},
+            {"tipo": "opcion", "emoji": "🛒", "d": 2,
+             "pregunta": "Llevo S/ 50. Si cada cuaderno cuesta S/ 9, "
+                         "¿alcanza para 6?",
+             "opciones": ["No, faltan S/ 4", "Sí, sobran S/ 4"],
+             "correcta": "No, faltan S/ 4"},
+            # Estonia — depurar: encontrar el error en un procedimiento
+            {"tipo": "opcion", "emoji": "🐞", "d": 3,
+             "pregunta": "Depuración: 24 ÷ 4 = 8. ¿Dónde está el error?",
+             "opciones": ["El resultado: es 6", "No hay error",
+                          "La operación: era por 4"],
+             "correcta": "El resultado: es 6"},
+            {"tipo": "ordenar", "d": 2,
+             "pregunta": "Ordena los pasos para resolver un problema (Polya)",
+             "items": ["Entender el problema", "Trazar un plan",
+                       "Ejecutar el plan", "Revisar el resultado"]},
+            # Finlandia — fenómeno local integrado
+            {"tipo": "emparejar", "d": 2,
+             "pregunta": "Fenómeno «La papa nativa de Chinchero»: une la "
+                         "pregunta con el área",
+             "pares": [["¿Cómo se conserva el chuño?", "Ciencia"],
+                       ["¿A qué precio se vende?", "Matemática"],
+                       ["¿Quién la cultivaba antes?", "Personal Social"]]},
+            # Japón — cálculo mental encadenado
+            {"tipo": "ordenar", "d": 3,
+             "pregunta": "Japón: ordena los resultados de menor a mayor",
+             "items": ["6 × 4", "5 × 7", "9 × 5", "8 × 8"]},
+        ],
         "Inglés": [
             {"tipo": "opcion", "emoji": "🕐", "d": 1, "pregunta": "What time is it? (1:00)",
              "opciones": ["One o'clock", "Two o'clock"], "correcta": "One o'clock"},
@@ -311,6 +423,90 @@ BANCO = {
              "pares": [["Go", "Went"], ["Eat", "Ate"], ["See", "Saw"]]},
         ],
     },
+
+    "Secundaria": {
+        "🌍 Métodos del mundo": [
+            {"tipo": "opcion", "emoji": "▬▬▬", "d": 1,
+             "pregunta": "Modelo de barras: si 1 parte vale 7, "
+                         "¿cuánto valen 3 partes?",
+             "opciones": ["21", "10", "37"], "correcta": "21"},
+            {"tipo": "opcion", "emoji": "📱", "d": 1,
+             "pregunta": "Antes de compartir una noticia conviene…",
+             "opciones": ["Comprobar quién la publicó",
+                          "Compartirla rápido"],
+             "correcta": "Comprobar quién la publicó"},
+            # Singapur — modelo de barras aplicado a álgebra
+            {"tipo": "opcion", "emoji": "▬▬▬▬▬▬", "d": 2,
+             "pregunta": "Modelo de barras: dos números suman 40 y uno es el "
+                         "triple del otro. ¿Cuál es el menor?",
+             "opciones": ["10", "12", "15"], "correcta": "10"},
+            {"tipo": "opcion", "emoji": "📊", "d": 2,
+             "pregunta": "Si 3 partes equivalen a 27, ¿cuánto vale 1 parte?",
+             "opciones": ["9", "8", "12"], "correcta": "9"},
+            # Estonia — pensamiento computacional y depuración
+            {"tipo": "ordenar", "d": 2,
+             "pregunta": "Estonia: ordena los pasos de un algoritmo de búsqueda",
+             "items": ["Definir qué busco", "Recorrer la lista",
+                       "Comparar cada elemento", "Devolver el resultado"]},
+            {"tipo": "opcion", "emoji": "🐞", "d": 3,
+             "pregunta": "Depuración: «Todos los cuadrados son rectángulos, "
+                         "por lo tanto todos los rectángulos son cuadrados». "
+                         "¿Qué falla?",
+             "opciones": ["Invierte la relación indebidamente",
+                          "No falla nada", "Los cuadrados no son rectángulos"],
+             "correcta": "Invierte la relación indebidamente"},
+            # Finlandia — aprendizaje por fenómenos
+            {"tipo": "emparejar", "d": 2,
+             "pregunta": "Finlandia, fenómeno «Turismo en el Valle Sagrado»: "
+                         "une la pregunta con el área",
+             "pares": [["¿Cuánto ingreso genera?", "Economía"],
+                       ["¿Cómo afecta al suelo?", "Ciencia"],
+                       ["¿Quién decide los permisos?", "Cívica"]]},
+            # Japón — Lesson Study: analizar el error ajeno
+            {"tipo": "opcion", "emoji": "🔍", "d": 3,
+             "pregunta": "Japón: un compañero resolvió 2 + 3 × 4 = 20. "
+                         "¿Cuál fue su error?",
+             "opciones": ["Sumó antes de multiplicar",
+                          "Multiplicó mal", "No hay error"],
+             "correcta": "Sumó antes de multiplicar"},
+            # Canadá / OCDE — alfabetización mediática
+            {"tipo": "opcion", "emoji": "📱", "d": 2,
+             "pregunta": "Recibes una noticia alarmante por WhatsApp. "
+                         "¿Qué haces primero?",
+             "opciones": ["Verificar la fuente original",
+                          "Reenviarla a todos", "Creerla sin más"],
+             "correcta": "Verificar la fuente original"},
+            {"tipo": "opcion", "emoji": "📊", "d": 3,
+             "pregunta": "Un gráfico empieza el eje vertical en 90 en lugar "
+                         "de 0. ¿Qué efecto produce?",
+             "opciones": ["Exagera las diferencias",
+                          "Las reduce", "No cambia nada"],
+             "correcta": "Exagera las diferencias"},
+        ],
+        "Razonamiento": [
+            {"tipo": "opcion", "emoji": "🔢", "d": 1,
+             "pregunta": "¿Qué número sigue? 2, 4, 8, 16, ...",
+             "opciones": ["32", "24", "20"], "correcta": "32"},
+            {"tipo": "opcion", "emoji": "🔢", "d": 2,
+             "pregunta": "¿Qué número sigue? 1, 1, 2, 3, 5, 8, ...",
+             "opciones": ["13", "11", "16"], "correcta": "13"},
+            {"tipo": "opcion", "emoji": "🧩", "d": 2,
+             "pregunta": "Si todos los A son B, y ningún B es C, entonces…",
+             "opciones": ["Ningún A es C", "Todos los A son C",
+                          "Algunos A son C"], "correcta": "Ningún A es C"},
+            {"tipo": "opcion", "emoji": "⏱️", "d": 2,
+             "pregunta": "Si 5 obreros hacen un muro en 10 días, "
+                         "¿cuántos días tardan 10 obreros?",
+             "opciones": ["5", "20", "10"], "correcta": "5"},
+            {"tipo": "ordenar", "d": 3,
+             "pregunta": "Ordena de menor a mayor",
+             "items": ["0,25", "1/3", "0,5", "3/4", "0,9"]},
+            {"tipo": "opcion", "emoji": "💧", "d": 3,
+             "pregunta": "Un balde se llena en 6 h con un caño y en 3 h con "
+                         "otro. Con ambos abiertos tarda…",
+             "opciones": ["2 h", "4,5 h", "9 h"], "correcta": "2 h"},
+        ],
+    },
 }
 
 
@@ -324,27 +520,42 @@ _HTML = r"""
 <style>
 :root{
   /* Paleta tomada de los tejidos de Chinchero */
-  --tela:#FDFBF7; --indigo:#1B3A94; --carmesi:#C1272D; --maiz:#F2A900;
-  --jade:#0E9F8E; --fucsia:#C13D8C; --tinta:#22252B; --humo:#6B7280;
-  --exito:#16A34A; --error:#DC2626;
+  --tela:#FFFFFF; --indigo:#12307F; --carmesi:#B01C22; --maiz:#E08900;
+  --jade:#0A7F72; --fucsia:#A62E72; --tinta:#0F1115; --humo:#4B5563;
+  --exito:#0F7A34; --error:#B3161C;
+  --borde:#B8C0CC; --sombra:#94A0B0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',system-ui,sans-serif;background:var(--tela);
   color:var(--tinta);padding:14px;-webkit-tap-highlight-color:transparent}
-.marco{max-width:760px;margin:0 auto}
+.marco{max-width:760px;margin:0 auto;transition:font-size .2s}
+.herramientas{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px}
+.tool{background:#fff;border:2px solid var(--borde);border-radius:10px;
+  padding:7px 12px;font-family:inherit;font-weight:800;font-size:.85rem;
+  color:var(--indigo);cursor:pointer;box-shadow:0 2px 0 var(--sombra)}
+.tool:hover{background:#EEF2FF;border-color:var(--indigo)}
+.tool:active{transform:translateY(2px);box-shadow:none}
+/* En pantalla completa todo crece: sirve para proyector y pizarra digital */
+body:fullscreen{padding:28px}
+body:fullscreen .marco{max-width:1100px;font-size:1.3rem}
+body:fullscreen .emoji{font-size:5.4rem}
+body:fullscreen .pregunta{font-size:2rem}
+body:fullscreen .op{font-size:1.6rem;padding:24px}
+body:fullscreen .faja{height:32px}
 
 /* --- Faja andina: la barra de progreso se teje --- */
-.faja{display:flex;gap:3px;height:22px;border-radius:11px;overflow:hidden;
-  background:#E8E3DA;padding:3px}
-.hilo{flex:1;border-radius:6px;background:#D6D0C6;transition:background .35s ease,transform .35s ease}
+.faja{display:flex;gap:3px;height:24px;border-radius:12px;overflow:hidden;
+  background:#DDE2E8;padding:3px;border:1px solid var(--borde)}
+.hilo{flex:1;border-radius:6px;background:#C3CAD4;transition:background .35s ease,transform .35s ease}
 .hilo.on{transform:scaleY(1.0)}
 .barra-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .vidas{font-size:1.35rem;letter-spacing:2px;white-space:nowrap}
 .marcador{font-weight:900;color:var(--indigo);font-size:1rem;white-space:nowrap}
 
 .tarjeta{background:#fff;border-radius:22px;padding:26px 22px;
-  box-shadow:0 6px 0 #E4DED4,0 12px 30px rgba(0,0,0,.07);text-align:center}
-.nivelchip{display:inline-block;background:#F3F0EA;color:var(--humo);
+  border:2px solid var(--borde);
+  box-shadow:0 6px 0 var(--sombra),0 12px 30px rgba(0,0,0,.10);text-align:center}
+.nivelchip{display:inline-block;background:#E7EBF1;color:#2A3340;
   border-radius:999px;padding:4px 14px;font-size:.8rem;font-weight:900;
   letter-spacing:.5px;margin-bottom:10px}
 .subenivel{background:linear-gradient(90deg,var(--maiz),var(--carmesi));
@@ -354,20 +565,25 @@ body{font-family:'Nunito',system-ui,sans-serif;background:var(--tela);
 .pregunta{font-size:1.35rem;font-weight:900;margin-bottom:20px;line-height:1.35}
 
 .ops{display:grid;gap:12px}
-.op{background:#fff;border:3px solid #E4DED4;border-radius:16px;
-  padding:16px 18px;font-size:1.15rem;font-weight:700;cursor:pointer;
+.op{background:#fff;border:3px solid var(--borde);border-radius:16px;
+  padding:18px 18px;font-size:1.25rem;font-weight:800;cursor:pointer;
+  color:var(--tinta);
   font-family:inherit;transition:transform .12s,border-color .15s,background .15s;
-  box-shadow:0 4px 0 #E4DED4}
+  box-shadow:0 4px 0 var(--sombra)}
 .op:hover{border-color:var(--indigo);transform:translateY(-2px)}
 .op:active{transform:translateY(2px);box-shadow:0 1px 0 #E4DED4}
-.op.ok{border-color:var(--exito);background:#E9FBEF;box-shadow:0 4px 0 #A7E9BC}
-.op.mal{border-color:var(--error);background:#FDECEC;box-shadow:0 4px 0 #F3B7B7}
-.op.sel{border-color:var(--indigo);background:#EEF2FF}
+.op.ok{border-color:var(--exito);background:#D6F5E0;color:#0A5325;
+  box-shadow:0 4px 0 var(--exito)}
+.op.mal{border-color:var(--error);background:#FBDDDD;color:#7A0F13;
+  box-shadow:0 4px 0 var(--error)}
+.op.sel{border-color:var(--indigo);background:#DBE5FF;
+  box-shadow:0 4px 0 var(--indigo)}
 .op:disabled{cursor:default}
 
 .pares{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .orden-zona{min-height:56px;display:flex;flex-wrap:wrap;gap:8px;
-  justify-content:center;padding:10px;border-radius:14px;background:#F3F0EA;
+  justify-content:center;padding:10px;border-radius:14px;background:#E7EBF1;
+  border:2px dashed var(--borde);
   margin-bottom:12px}
 .pill{background:var(--indigo);color:#fff;border-radius:12px;padding:8px 14px;
   font-weight:700}
@@ -395,6 +611,12 @@ body{font-family:'Nunito',system-ui,sans-serif;background:var(--tela);
 @media(max-width:520px){.pares{grid-template-columns:1fr}.emoji{font-size:2.8rem}}
 </style></head><body>
 <div class="marco">
+  <div class="herramientas">
+    <button class="tool" onclick="pantallaCompleta()" id="btnFull">
+      ⛶ Pantalla completa</button>
+    <button class="tool" onclick="zoom(1)">A+</button>
+    <button class="tool" onclick="zoom(-1)">A−</button>
+  </div>
   <div class="barra-top">
     <div class="vidas" id="vidas"></div>
     <div class="faja" id="faja" style="flex:1"></div>
@@ -404,14 +626,14 @@ body{font-family:'Nunito',system-ui,sans-serif;background:var(--tela);
 </div>
 <script>
 const EJ = __DATOS__;
-const COLORES = ['#C1272D','#F2A900','#0E9F8E','#1B3A94','#C13D8C'];
+const COLORES = ['#B01C22','#E08900','#0A7F72','#12307F','#A62E72'];
 let i=0, aciertos=0, vidas=3, bloqueado=false, seleccion=null, orden=[];
 
 const $ = id => document.getElementById(id);
 
 function pintarBarra(){
   $('faja').innerHTML = EJ.map((_,k)=>
-    `<div class="hilo ${k<i?'on':''}" style="background:${k<i?COLORES[k%5]:'#D6D0C6'}"></div>`
+    `<div class="hilo ${k<i?'on':''}" style="background:${k<i?COLORES[k%5]:'#C3CAD4'}"></div>`
   ).join('');
   $('vidas').textContent = '❤️'.repeat(vidas) + '🤍'.repeat(3-vidas);
   $('marcador').textContent = aciertos;
@@ -583,7 +805,63 @@ function final(){
 }
 
 function reiniciar(){ i=0; aciertos=0; vidas=3; bloqueado=false;
-  seleccion=null; orden=[]; pintarBarra(); render(); }
+  seleccion=null; orden=[]; function pantallaCompleta(){
+  const el = document.documentElement;
+  if(!document.fullscreenElement){
+    (el.requestFullscreen||el.webkitRequestFullscreen).call(el);
+    $('btnFull').textContent='⤫ Salir';
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    $('btnFull').textContent='⛶ Pantalla completa';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  $('btnFull').textContent = document.fullscreenElement
+    ? '⤫ Salir' : '⛶ Pantalla completa';
+});
+
+// Zoom manual: para un niño con baja visión o una pantalla lejana
+let escala = 1;
+function zoom(dir){
+  escala = Math.min(1.9, Math.max(0.85, escala + dir*0.15));
+  document.querySelector('.marco').style.fontSize = escala+'rem';
+  document.querySelectorAll('.op').forEach(o=>{
+    o.style.fontSize = (1.25*escala)+'rem'; });
+  const p=document.querySelector('.pregunta');
+  if(p) p.style.fontSize = (1.35*escala)+'rem';
+  const e=document.querySelector('.emoji');
+  if(e) e.style.fontSize = (3.6*escala)+'rem';
+}
+
+pintarBarra(); render(); }
+
+function pantallaCompleta(){
+  const el = document.documentElement;
+  if(!document.fullscreenElement){
+    (el.requestFullscreen||el.webkitRequestFullscreen).call(el);
+    $('btnFull').textContent='⤫ Salir';
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    $('btnFull').textContent='⛶ Pantalla completa';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  $('btnFull').textContent = document.fullscreenElement
+    ? '⤫ Salir' : '⛶ Pantalla completa';
+});
+
+// Zoom manual: para un niño con baja visión o una pantalla lejana
+let escala = 1;
+function zoom(dir){
+  escala = Math.min(1.9, Math.max(0.85, escala + dir*0.15));
+  document.querySelector('.marco').style.fontSize = escala+'rem';
+  document.querySelectorAll('.op').forEach(o=>{
+    o.style.fontSize = (1.25*escala)+'rem'; });
+  const p=document.querySelector('.pregunta');
+  if(p) p.style.fontSize = (1.35*escala)+'rem';
+  const e=document.querySelector('.emoji');
+  if(e) e.style.fontSize = (3.6*escala)+'rem';
+}
 
 pintarBarra(); render();
 </script></body></html>
