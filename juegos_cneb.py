@@ -908,9 +908,17 @@ def tab_aprendo_jugando(config=None):
         filtro_d = NIVELES[modo]
         disponibles = ([e for e in ejercicios if e.get("d", 1) == filtro_d]
                        if filtro_d else list(ejercicios))
-        tope = max(len(disponibles), 3)
-        cuantos = st.slider("Cantidad de actividades:", 3, tope,
-                            min(6, tope), key="jg_n")
+        # El deslizador exige que el mínimo sea menor que el máximo. Si el
+        # nivel tiene 3 actividades o menos, se juegan todas y no se muestra.
+        if len(disponibles) > 3:
+            cuantos = st.slider("Cantidad de actividades:", 3,
+                                len(disponibles),
+                                min(6, len(disponibles)), key="jg_n")
+        else:
+            cuantos = len(disponibles)
+            if disponibles:
+                st.caption(f"Este nivel tiene {cuantos} actividad(es): "
+                           f"se juegan todas.")
 
     if not disponibles:
         st.warning(f"No hay actividades de ese nivel en {area}. "
