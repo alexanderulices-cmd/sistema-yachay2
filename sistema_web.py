@@ -72,6 +72,20 @@ try:
 except ImportError:
     JUEGOS_CNEB_OK = False
 
+# Fichas y banco de preguntas de Historia — CEPRU UNSAAC
+try:
+    from fichas_historia import tab_fichas_historia
+    FICHAS_HISTORIA_OK = True
+except ImportError:
+    FICHAS_HISTORIA_OK = False
+
+# Fichas y banco de preguntas de Filosofía y Lógica — CEPRU UNSAAC
+try:
+    from fichas_filosofia import tab_fichas_filosofia
+    FICHAS_FILOSOFIA_OK = True
+except ImportError:
+    FICHAS_FILOSOFIA_OK = False
+
 import base64  # Para Aula Virtual
 
 # python-docx para leer archivos Word
@@ -10755,13 +10769,25 @@ def tab_carnets(config):
                      "en el servidor. Revisa que python-barcode figure en "
                      "requirements.txt.")
         else:
-            sc1, sc2 = st.columns(2)
-            with sc1:
-                st_grado = st.selectbox("Grado:", ["Todos"] + GRADOS_OPCIONES,
-                                        key="stk_grado")
-            with sc2:
-                st_sec = st.selectbox("Sección:", ["Todas"] + SECCIONES,
-                                      key="stk_sec")
+            st_quien = st.radio("Generar stickers para:",
+                                ["🎓 Estudiantes", "DOCENTE Docentes"],
+                                horizontal=True, key="stk_quien")
+            _es_doc = st_quien.endswith("Docentes")
+
+            if not _es_doc:
+                sc1, sc2 = st.columns(2)
+                with sc1:
+                    st_grado = st.selectbox("Grado:", ["Todos"] + GRADOS_OPCIONES,
+                                            key="stk_grado")
+                with sc2:
+                    st_sec = st.selectbox("Sección:", ["Todas"] + SECCIONES,
+                                          key="stk_sec")
+            else:
+                st_grado, st_sec = "Todos", "Todas"
+                st.caption("Se generarán los stickers de todo el personal "
+                           "registrado. El código de barras usa el mismo DNI "
+                           "del carnet, así que sirve para marcar asistencia "
+                           "de docentes.")
 
             sc3, sc4, sc5 = st.columns(3)
             with sc3:
@@ -10772,7 +10798,8 @@ def tab_carnets(config):
                      "Pequeña — 48 por hoja"],
                     key="stk_tam")
             with sc4:
-                st_grado_chk = st.checkbox("Mostrar grado", value=True,
+                st_grado_chk = st.checkbox(
+                "Mostrar cargo" if _es_doc else "Mostrar grado", value=True,
                                            key="stk_chk_grado")
             with sc5:
                 st_dni_chk = st.checkbox("Mostrar DNI", value=True,
@@ -10790,16 +10817,20 @@ def tab_carnets(config):
                            "contacto. La mediana lee sin problemas.")
             _cols_st, _filas_st = _mapa_tam[st_tam]
 
-            if st_grado == "Todos":
+            if _es_doc:
+                df_st = BaseDatos.cargar_docentes()
+            elif st_grado == "Todos":
                 df_st = BaseDatos.cargar_matricula()
             else:
                 df_st = BaseDatos.obtener_estudiantes_grado(
                     st_grado, st_sec if st_sec != "Todas" else None)
 
             if df_st is None or df_st.empty:
-                st.warning("No hay estudiantes con esos filtros.")
+                st.warning("No hay {} con esos filtros."
+                           .format("docentes registrados" if _es_doc
+                                   else "estudiantes"))
             else:
-                st.info(f"**{len(df_st)} estudiantes** — "
+                st.info(f"**{len(df_st)} {'docentes' if _es_doc else 'estudiantes'}** — "
                         f"{-(-len(df_st) // (_cols_st * _filas_st))} hoja(s) "
                         f"a imprimir.")
                 with st.expander("Ver lista"):
@@ -10810,10 +10841,13 @@ def tab_carnets(config):
                              use_container_width=True, key="stk_btn"):
                     lista_st = []
                     for _, r in df_st.iterrows():
+                        # En docentes la segunda línea es el cargo, no el grado.
+                        _sub = (r.get("Cargo", r.get("cargo", "")) if _es_doc
+                                else r.get("grado", r.get("Grado", "")))
                         lista_st.append({
                             "nombre": r.get("nombre", r.get("Nombre", "")),
                             "dni": r.get("dni", r.get("DNI", "")),
-                            "grado": r.get("grado", r.get("Grado", "")),
+                            "grado": _sub,
                         })
                     with st.spinner("Generando etiquetas..."):
                         pdf_st = generar_stickers_codigo_barras(
@@ -10825,7 +10859,8 @@ def tab_carnets(config):
                                "sin ajustar a la página.")
                     st.download_button(
                         "⬇️ Descargar stickers en PDF", data=pdf_st,
-                        file_name=f"stickers_{st_grado.replace(' ', '_')}.pdf",
+                        file_name=("stickers_docentes.pdf" if _es_doc
+                                   else f"stickers_{st_grado.replace(' ', '_')}.pdf"),
                         mime="application/pdf", use_container_width=True,
                         key="stk_dl")
 
@@ -32796,6 +32831,8 @@ def main():
                 ("🏆", "Simulacro / Becas", "simulacro_becas", "#b45309"),
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
+                ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
+                ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32917,6 +32954,10 @@ def main():
                 tab_fichas_primaria(config)
             elif mod == "aprendo_jugando":
                 tab_aprendo_jugando(config)
+            elif mod == "fichas_historia":
+                tab_fichas_historia(config)
+            elif mod == "fichas_filosofia":
+                tab_fichas_filosofia(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
