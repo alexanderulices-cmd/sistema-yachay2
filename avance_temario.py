@@ -2140,6 +2140,14 @@ def generar_comunicado_docx(area, inicio, fin, ciclo, docentes=None,
     # ── 2. Reglas de entrega ──────────────────────────────────────
     p("2. ENTREGA SEMANAL DE PREGUNTAS", 11.5, True, None, 4, AZUL)
     reglas = [
+        "MATERIAL OBLIGATORIO POR SEMANA: cada docente entrega, además de "
+        "sus preguntas, una FICHA DE TEXTO (una o ambas caras) con la teoría "
+        "del tema avanzado, MÁS una PRÁCTICA de ejercicios. Ambas en el "
+        "formato oficial de la academia.",
+        "La ficha de texto debe contener: definiciones, propiedades y al "
+        "menos dos ejemplos resueltos paso a paso del tema de esa semana.",
+        "La práctica debe tener ejercicios de dificultad creciente y venir "
+        "con su clave de respuestas.",
         f"Fecha límite de entrega: {dia_entrega} de cada semana hasta las 6:00 p.m.",
         (f"Enviar al WhatsApp de Secretaría: {whatsapp_secretaria}"
          if whatsapp_secretaria else
