@@ -2887,4 +2887,3 @@ def tab_simulacro_becas(config=None):
                     mime=("application/vnd.openxmlformats-officedocument."
                           "spreadsheetml.sheet"),
                     use_container_width=True, key="sim_xlsx")
-
