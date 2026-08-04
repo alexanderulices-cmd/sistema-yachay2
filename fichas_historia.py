@@ -32,6 +32,7 @@ ENCABEZADO_L1 = "I.E.P. YACHAY  ·  ACADEMIA YACHAY"
 ENCABEZADO_L2 = "PIONEROS EN LA EDUCACIÓN DE CALIDAD"
 def pie_legal(area):
     return (f"Derechos reservados — ACADEMIA YACHAY · Área: {area} · "
+            f"Prof. Alexander Córdova · "
             f"Uso exclusivo de estudiantes y docentes de la academia")
 
 
