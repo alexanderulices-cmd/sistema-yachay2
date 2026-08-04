@@ -124,7 +124,17 @@ BALOTAS_FILO = [{'num': 1,
                            'significa que {Busca el saber por el saber '
                            'mismo}.',
                            'La filosofía, como reflexión racional y '
-                           'sistemática, se origina en {Grecia}.']}],
+                           'sistemática, se origina en {Grecia}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['La actitud filosófica no se contradice con la '
+                           'ciencia, sino que ambas se {complementan} en la '
+                           'búsqueda del conocimiento.',
+                           'Entre las disciplinas filosóficas se cuenta la '
+                           '{Estética}, que trata sobre lo bello y sus '
+                           'distintos modos de apreciación.',
+                           'Si una fuente de luz se acerca a nosotros, sus '
+                           'espectros se desplazan hacia el extremo '
+                           '{azul}.']}],
   'cuadros': [{'titulo': '1. COSMOGONÍA FRENTE A COSMOLOGÍA',
                'encabezados': ['Aspecto', 'Cosmogonía', 'Cosmología'],
                'filas': [['Explica por',
@@ -377,7 +387,35 @@ BALOTAS_FILO = [{'num': 1,
                            'Marco Aurelio perteneció a la escuela {Estoica}.',
                            'Los sofistas se caracterizaron por {Enseñar '
                            'retórica por dinero y defender el '
-                           'relativismo}.']}],
+                           'relativismo}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['A Heráclito se le llamó «el oscuro» por la '
+                           'dificultad de su filosofía y por su carácter '
+                           '{misántropo}.',
+                           'De Demócrito se conserva escasa obra escrita; '
+                           'era conocido como el «filósofo {alegre}», en '
+                           'contraste con Heráclito.',
+                           'Demócrito desarrolló su teoría atómica a partir '
+                           'de las ideas de su maestro {Leucipo}.',
+                           'Con Parménides se inicia la Metafísica y también '
+                           'la especulación lógica, al formular de manera '
+                           'implícita el Principio de {Identidad}.',
+                           'Gorgias es considerado por algunos el creador de '
+                           'la sofística, aunque otros atribuyen ese mérito '
+                           'a su contemporáneo {Protágoras}.',
+                           'Sócrates evitaba la política porque consideraba '
+                           'haber recibido una advertencia {divina}.',
+                           'El verdadero nombre de Platón era {Arístocles}; '
+                           '«Platón» era un apodo.',
+                           'Aristóteles distinguió tres formas puras de '
+                           'gobierno —monarquía, aristocracia y democracia— '
+                           'y sus formas impuras: tiranía, oligarquía y '
+                           '{oclocracia}.',
+                           'El estoicismo fue fundado por {Zenón de Citio} '
+                           'en Atenas, a principios del siglo III a.C.',
+                           'Los estoicos identificaban cuatro virtudes '
+                           'centrales: conocimiento práctico, templanza, '
+                           'justicia y {coraje}.']}],
   'cuadros': [{'titulo': '2.1 EL ARJÉ SEGÚN LOS PRESOCRÁTICOS',
                'encabezados': ['Filósofo', 'Principio (arjé)'],
                'filas': [['{Tales} de Mileto', 'El {agua}'],
@@ -612,7 +650,31 @@ BALOTAS_FILO = [{'num': 1,
                            'capacidades del ser humano se llamó {Humanismo}.',
                            'La expresión latina «ancilla theologiae» '
                            'significa que la filosofía era {Sierva de la '
-                           'teología}.']}],
+                           'teología}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['San Agustín de Hipona nació en Tagaste, en la '
+                           'actual {Argelia}.',
+                           'Copérnico publicó en 1514 un breve reporte '
+                           'llamado «{Pequeño Comentario}», donde exponía '
+                           'por primera vez su teoría heliocéntrica.',
+                           'La obra principal de Copérnico se tituló «De '
+                           'Revolutionibus Orbium {Coelestium}», sobre los '
+                           'giros de los orbes celestes.',
+                           'Maquiavelo, autor de «El Príncipe», sostenía que '
+                           'la mejor forma de gobierno era la {República}.',
+                           'Francis Bacon tituló a su obra principal «{Novum '
+                           'Organum}», el nuevo instrumento de la '
+                           'investigación, en oposición a la lógica '
+                           'aristotélica.',
+                           'Para Descartes, la sustancia espiritual tiene '
+                           'como esencia el pensamiento, llamada «res '
+                           '{cogitans}».',
+                           'John Locke sostenía que la mente humana al nacer '
+                           'es como un «papel en {blanco}», sin ideas '
+                           'previas.',
+                           'Thomas Hobbes sostenía que las leyes que rigen '
+                           'el comportamiento humano son las mismas que '
+                           'rigen el {universo}, de origen divino.']}],
   'cuadros': [{'titulo': '3. DOS ETAPAS DEL PENSAMIENTO MEDIEVAL',
                'encabezados': ['Etapa', 'Representante', 'Influencia'],
                'filas': [['{Patrística}', 'San {Agustín}', '{Platón}'],
@@ -854,7 +916,34 @@ BALOTAS_FILO = [{'num': 1,
                            '{Marxista}.',
                            'El criticismo kantiano sostiene que el '
                            'conocimiento resulta de {La unión de razón y '
-                           'experiencia}.']}],
+                           'experiencia}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Para Hegel, la realidad se estructura en tres '
+                           'momentos: espíritu subjetivo, espíritu objetivo '
+                           'y espíritu {absoluto}.',
+                           'Entre las obras de Carlos Marx figuran «El '
+                           'Capital» y «{Miseria} de la filosofía».',
+                           'Engels vivió y trabajó en Manchester, donde '
+                           'conoció de cerca las condiciones de vida de los '
+                           '{obreros}.',
+                           'Nietzsche estuvo influenciado por '
+                           '{Schopenhauer}, cuya obra «El mundo como '
+                           'voluntad y representación» estudió a fondo.',
+                           'En «Así habló Zaratustra», Nietzsche distingue '
+                           'entre la moral del amo y la moral del {esclavo}.',
+                           'González Prada expresó su crítica más dura a la '
+                           'clase dirigente en su obra «{Páginas Libres}».',
+                           'Mariátegui fundó en 1926 la revista {Amauta}, '
+                           'que fue clausurada en 1927 bajo la acusación de '
+                           'un supuesto complot comunista.',
+                           'En 1929, Mariátegui fundó la {Confederación '
+                           'General de Trabajadores} del Perú.',
+                           'Una crisis de su enfermedad obligó a amputarle '
+                           'una pierna a Mariátegui en el año {1924}, '
+                           'condenándolo a usar silla de ruedas.',
+                           'Salazar Bondy fue uno de los ideólogos de la '
+                           'Reforma Educativa durante el gobierno militar de '
+                           '{Velasco Alvarado}.']}],
   'cuadros': [{'titulo': '4. CORRIENTES DE LA FILOSOFÍA MODERNA',
                'encabezados': ['Corriente',
                                'Representante',
@@ -1099,7 +1188,18 @@ BALOTAS_FILO = [{'num': 1,
                            'Las necesidades e instintos corresponden a la '
                            'dimensión humana {Natural o biológica}.',
                            'El ser humano crea valores, normas y símbolos '
-                           'porque es un ser {Cultural y espiritual}.']}],
+                           'porque es un ser {Cultural y espiritual}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Según la teoría dualista, el hombre está '
+                           'constituido por materia y espíritu: un cuerpo '
+                           'mortal y un {alma} o espíritu.',
+                           'El creacionismo bíblico sostiene que el hombre '
+                           'fue creado a imagen y {semejanza} de Dios.',
+                           'Charles Darwin es considerado el biólogo más '
+                           'importante de la historia, comparable en '
+                           'trascendencia científica a {Isaac Newton}.',
+                           'Entre los representantes del evolucionismo '
+                           'moderno figuran Dobzhansky, Mayr y {Simpson}.']}],
   'cuadros': [{'titulo': '5.2 TEORÍAS SOBRE EL ORIGEN DEL HOMBRE',
                'encabezados': ['Teoría', 'Sostiene', 'Representante'],
                'filas': [['{Creacionismo}',
@@ -1349,7 +1449,25 @@ BALOTAS_FILO = [{'num': 1,
                            'conocido se denomina {Objeto}.',
                            'La afirmación «la nieve es blanca es verdadera '
                            'si la nieve es blanca» ilustra la teoría de {La '
-                           'correspondencia}.']}],
+                           'correspondencia}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El acto de conocer requiere de dos elementos '
+                           'fundamentales: el sujeto {cognoscente} y el '
+                           'objeto de conocimiento.',
+                           'La validez a priori es independiente de la '
+                           'experiencia y corresponde a las ciencias '
+                           '{formales}; la validez a posteriori depende de '
+                           'la experiencia y corresponde a las ciencias '
+                           'fácticas.',
+                           'Entre las características de la ciencia figuran '
+                           'ser especializada, metódica, sistemática, '
+                           'objetiva, explicativa, experimental, falible y '
+                           '{predictiva}.',
+                           'Mario Bunge clasificó las ciencias en formales, '
+                           'que usan el método {deductivo} a partir de '
+                           'axiomas, y fácticas.',
+                           'Los axiomas son enunciados que se presentan con '
+                           'tal claridad que no requieren {demostración}.']}],
   'cuadros': [{'titulo': '6.3 CLASES DE CONOCIMIENTO',
                'encabezados': ['Clase', 'Se obtiene por', 'Carácter'],
                'filas': [['{Sensible}',
@@ -1592,7 +1710,22 @@ BALOTAS_FILO = [{'num': 1,
                            'El criticismo kantiano supera la oposición entre '
                            '{Racionalismo y empirismo}.',
                            'Para el materialismo, la conciencia es {Un '
-                           'producto de la materia}.']}],
+                           'producto de la materia}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El dogmatismo confía en la posibilidad del '
+                           'conocimiento sin cuestionarla; el escepticismo, '
+                           'representado por los presocráticos, la niega por '
+                           'completo.',
+                           'Para el racionalismo, fundado por Descartes, '
+                           'solo el conocimiento racional es {universal} y '
+                           'necesario.',
+                           'El empirismo, representado por Locke, distingue '
+                           'dos tipos de experiencia: la {externa}, de los '
+                           'sentidos, y la interna, de la reflexión.',
+                           'El idealismo considera que los objetos son '
+                           'creados por el {pensamiento}; el realismo '
+                           'sostiene que el mundo y las cosas son reales y '
+                           'objetivos.']}],
   'cuadros': [{'titulo': '7. CORRIENTES GNOSEOLÓGICAS',
                'encabezados': ['Problema', 'Corriente', 'Representante'],
                'filas': [['Posibilidad', '{Escepticismo}', '{Pirrón}'],
@@ -1833,7 +1966,17 @@ BALOTAS_FILO = [{'num': 1,
                            'Que la ciencia pueda anticipar hechos futuros '
                            'corresponde a su función {Predictiva}.',
                            'Las ciencias fácticas se caracterizan porque su '
-                           'objeto es {Real}.']}],
+                           'objeto es {Real}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El método científico regula el planteamiento de '
+                           'problemas y la puesta a prueba de las '
+                           '{hipótesis} formuladas como soluciones.',
+                           'La hipótesis es un ensayo preliminar de solución '
+                           'que la ciencia espera confirmar mediante la '
+                           '{contrastación} empírica.',
+                           'La predicción, una de las funciones de la '
+                           'ciencia, permite prever situaciones futuras a '
+                           'partir de un hecho, ley o {teoría}.']}],
   'cuadros': [{'titulo': '8.4 CLASIFICACIÓN DE LAS CIENCIAS (BUNGE)',
                'encabezados': ['Tipo', 'Objeto', 'Ejemplos'],
                'filas': [['{Formales}', '{Ideal}', '{Lógica} y matemática'],
@@ -2079,7 +2222,29 @@ BALOTAS_FILO = [{'num': 1,
                            'cuando se realiza {Por deber}.',
                            'La afirmación «los valores cambian según la '
                            'época y la cultura» corresponde al '
-                           '{Socioculturalismo}.']}],
+                           '{Socioculturalismo}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['La axiología, del griego axios (valor) y logos '
+                           '(tratado), estudia la forma, el significado y el '
+                           'fundamento de los juicios {valorativos}.',
+                           'El eudemonismo de Aristóteles considera la '
+                           'felicidad como la meta suprema de la actividad '
+                           '{moral} del hombre.',
+                           'Para Aristóteles, la virtud es el equilibrio '
+                           'entre el exceso y el defecto: la ley del '
+                           '{término medio}.',
+                           'Los utilitaristas Bentham y Stuart Mill '
+                           'defendían la felicidad de la {mayoría}, sin '
+                           'admitir una versión egoísta del bien.',
+                           'El imperativo categórico de Kant exige obrar de '
+                           'tal modo que la acción pueda convertirse en {ley '
+                           'universal}.',
+                           'El bien es considerado el valor supremo de la '
+                           'persona, según Sócrates y Platón, y de la '
+                           'sociedad, según {John Stuart Mill}.',
+                           'Aristóteles distinguió la justicia general, '
+                           'referida al Estado, de la justicia {particular}, '
+                           'referida a los individuos.']}],
   'cuadros': [{'titulo': '9.4 CORRIENTES ÉTICAS',
                'encabezados': ['Corriente', 'Representante', 'Fin moral'],
                'filas': [['{Eudemonismo}', '{Aristóteles}', 'La {felicidad}'],
@@ -2304,7 +2469,30 @@ BALOTAS_FILO = [{'num': 1,
                            'La lógica se clasifica como una ciencia '
                            '{Formal}.',
                            'La «Isagoge» fue escrita por {Porfirio de '
-                           'Tiro}.']}],
+                           'Tiro}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El punto de partida de la lógica formal se '
+                           'encuentra en los trabajos de {Aristóteles} sobre '
+                           'la silogística.',
+                           'A Aristóteles se le atribuye la obra «{el '
+                           'Organon}», un conjunto de tratados lógicos.',
+                           'Leibniz propuso que algunas verdades son '
+                           '{tautológicas}, y desarrolló la idea de '
+                           'proposiciones idénticas.',
+                           'Giuseppe Peano publicó el «{Formulario '
+                           'Matemático}», obra que influyó directamente en '
+                           'el proyecto de Russell y Whitehead.',
+                           'Bertrand Russell y Whitehead culminaron su '
+                           'proyecto lógico en la obra «{Principia '
+                           'Mathematica}», publicada en tres volúmenes.',
+                           'Wittgenstein introdujo el método de las {tablas '
+                           'de verdad} para evaluar los esquemas '
+                           'moleculares.',
+                           'El lógico polaco {Lukasiewicz} perteneció al '
+                           'Círculo de Viena y estudió la silogística '
+                           'aristotélica desde la lógica matemática.',
+                           'Las tres funciones básicas del lenguaje son '
+                           'informativa, expresiva y {directiva}.']}],
   'cuadros': [{'titulo': '10.3 FUNCIONES DEL LENGUAJE',
                'encabezados': ['Función', 'Finalidad', '¿Verdadera o falsa?'],
                'filas': [['{Informativa}',
@@ -2538,7 +2726,15 @@ BALOTAS_FILO = [{'num': 1,
                            'especialidad}.',
                            'Confundir la simple sucesión temporal con una '
                            'relación causal corresponde a la falacia de '
-                           '{Causa falsa}.']}],
+                           '{Causa falsa}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Las falacias se dividen en dos grandes tipos: '
+                           '{formales} y no formales.',
+                           'Las falacias no formales, del lenguaje común, se '
+                           'dividen en falacias de atinencia y de '
+                           '{ambigüedad}.',
+                           'Las falacias formales se cometen cuando se viola '
+                           'alguna de las leyes de la {lógica clásica}.']}],
   'cuadros': [{'titulo': '11.2 FALACIAS DE ATINENCIA',
                'encabezados': ['Falacia', 'En qué consiste'],
                'filas': [['{Ad hominem}', 'Atacar a la {persona}'],
@@ -2763,7 +2959,20 @@ BALOTAS_FILO = [{'num': 1,
                            'variable}.',
                            'Los conectores que unen dos variables se '
                            'denominan {Diádicos o binarios}.',
-                           'El símbolo ~ representa la {Negación}.']}],
+                           'El símbolo ~ representa la {Negación}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Las proposiciones predicativas relacionan un '
+                           'sujeto con una cualidad; las {relacionales} '
+                           'vinculan dos o más sujetos entre sí.',
+                           'Las proposiciones compuestas también se llaman '
+                           '{coligativas}, porque unen proposiciones simples '
+                           'mediante conectores lógicos.',
+                           'En la disyunción débil, ambas alternativas '
+                           'pueden cumplirse a la vez; en la disyunción '
+                           '{fuerte} o exclusiva, no pueden darse '
+                           'simultáneamente.',
+                           'Los conectores monádicos afectan a una sola '
+                           '{variable}; los diádicos requieren dos o más.']}],
   'cuadros': [{'titulo': '12.2 CONECTORES LÓGICOS',
                'encabezados': ['Conector', 'Símbolo', 'Se lee'],
                'filas': [['{Negación}', '~', '{no}'],
@@ -2980,7 +3189,26 @@ BALOTAS_FILO = [{'num': 1,
                            'cine», concluyo «voy al teatro». Es un '
                            '{Silogismo disyuntivo}.',
                            'El dilema constructivo compuesto se abrevia como '
-                           '{DCC}.']}],
+                           '{DCC}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Las variables de una tabla de verdad se ubican '
+                           'en la parte superior, y en la parte inferior se '
+                           'ordenan todas las combinaciones de verdad y '
+                           '{falsedad}.',
+                           'El Silogismo Hipotético Puro se expresa mediante '
+                           'la fórmula [(p → q) ∧ (q → r)] → (p → {r}).',
+                           'El Principio de Identidad se atribuye a '
+                           '{Parménides}, quien planteó que todo objeto es '
+                           'idéntico a sí mismo.',
+                           'El Principio de No Contradicción se atribuye a '
+                           '{Platón}, y sostiene que el mundo sensible y el '
+                           'inteligible no pueden ser lo mismo a la vez.',
+                           'El Principio del Tercio Excluido fue formulado '
+                           'por {Aristóteles}.',
+                           'Las leyes de la lógica dialéctica, distintas de '
+                           'la lógica formal, incluyen la ley del tránsito '
+                           'de lo cuantitativo a lo cualitativo y la ley de '
+                           'la {negación} de la negación.']}],
   'cuadros': [{'titulo': '13.2 ESQUEMAS SEGÚN SU RESULTADO',
                'encabezados': ['Esquema', 'Resultado'],
                'filas': [['{Tautología}', '{Verdadera} en todos los casos'],
@@ -3189,7 +3417,25 @@ BALOTAS_FILO = [{'num': 1,
                            'El razonamiento cuya conclusión es solo probable '
                            'es el {Inductivo}.',
                            'El razonamiento que concluye por semejanza entre '
-                           'casos es el {Analógico}.']}],
+                           'casos es el {Analógico}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El objeto formal del concepto sujeto, según su '
+                           'extensión, da origen a juicios universales, '
+                           'particulares e {individuales}.',
+                           'Immanuel Kant propuso, además de los juicios '
+                           'afirmativo y negativo, los llamados juicios '
+                           '{infinitos}.',
+                           'Según su modalidad, los juicios pueden ser '
+                           'asertóricos, problemáticos y {apodícticos}, '
+                           'según el grado de certeza que expresan.',
+                           'Francis Bacon es autor del «Novum Organum», '
+                           'también llamado el nuevo {Organon}.',
+                           'El razonamiento deductivo va de lo universal a '
+                           'lo particular; el {inductivo} va de casos '
+                           'particulares a una conclusión universal.',
+                           'El razonamiento {analógico} concluye por '
+                           'semejanza entre un caso conocido y otro '
+                           'nuevo.']}],
   'cuadros': [{'titulo': '14.3 JUICIOS CATEGÓRICOS TÍPICOS',
                'encabezados': ['Tipo', 'Cantidad', 'Cualidad'],
                'filas': [['{A}', '{Universal}', '{Afirmativo}'],
@@ -3413,7 +3659,25 @@ BALOTAS_FILO = [{'num': 1,
                            'La relación entre A y O en el cuadro de '
                            'oposición es de {Contradicción}.',
                            'La relación entre A y E en el cuadro de '
-                           'oposición es de {Contrariedad}.']}],
+                           'oposición es de {Contrariedad}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El cuadro tradicional de oposición entre los '
+                           'juicios A, E, I, O también es conocido como el '
+                           'cuadro de {Boecio}.',
+                           'Dos proposiciones contrarias (A y E) nunca '
+                           'pueden ser verdaderas a la vez, pero sí pueden '
+                           'ser {falsas} ambas.',
+                           'En la conversión, se intercambian el sujeto y el '
+                           'predicado; en la {obversión}, se cambia la '
+                           'cualidad del juicio y se niega el predicado.',
+                           'En la obversión, ni el sujeto ni la {cantidad} '
+                           'del juicio cambian; permanecen invariables.',
+                           'El complemento de una clase está formado por '
+                           'todos los elementos que no pertenecen a la clase '
+                           '{original}.',
+                           'En un silogismo válido, si ambas premisas son '
+                           'universales, al menos una debe ser '
+                           '{negativa}.']}],
   'cuadros': [{'titulo': '15.4 ESTRUCTURA DEL SILOGISMO',
                'encabezados': ['Elemento', 'Símbolo', 'Ubicación'],
                'filas': [['Término {mayor}',
@@ -3635,7 +3899,19 @@ BALOTAS_FILO = [{'num': 1,
                            'entre {Clases o conjuntos}.',
                            'La unión también recibe el nombre de {Suma}.',
                            'La intersección también recibe el nombre de '
-                           '{Producto}.']}],
+                           '{Producto}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['El conjunto de todos los elementos posibles en '
+                           'un contexto dado se llama, según De Morgan, '
+                           '{universo del discurso}.',
+                           'La clase vacía se simboliza con el número cero o '
+                           'con la letra griega {fi}.',
+                           'El complemento de una clase A se simboliza como '
+                           '{Ā} (A con una raya encima).',
+                           'Las operaciones básicas entre clases son la '
+                           'unión o suma, la {intersección} y la diferencia.',
+                           'Dos clases son iguales cuando todos sus '
+                           'elementos son {comunes} a ambas.']}],
   'cuadros': [{'titulo': '16. CLASES Y SÍMBOLOS',
                'encabezados': ['Concepto', 'Símbolo'],
                'filas': [['Clase {universal}', '{1}'],
@@ -3857,7 +4133,22 @@ BALOTAS_FILO = [{'num': 1,
                            'para el término medio {Se dibuja intersecando a '
                            'los otros dos}.',
                            'Diagramar la conclusión antes que las premisas '
-                           'constituye {Un error de método}.']}],
+                           'constituye {Un error de método}.']},
+                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
+                 'items': ['Afirmar que una clase S tiene miembros equivale '
+                           'a {negar} que sea vacía.',
+                           'Para resolver una proposición atípica se sigue '
+                           'una secuencia: hallar su estructura formal, '
+                           'determinar la fórmula atípica y luego la fórmula '
+                           '{booleana}.',
+                           'Al diagramar un silogismo con tres círculos, '
+                           'estos se rotulan con las letras {S}, P y M.',
+                           'Un silogismo se considera válido cuando, al '
+                           'diagramar las premisas, la conclusión queda '
+                           'representada de forma {automática}.',
+                           'La ley del contenido existencial se aplica '
+                           'cuando ambas premisas son universales y la '
+                           '{conclusión} es particular.']}],
   'cuadros': [{'titulo': '17.1 SIMBOLOGÍA DE LOS DIAGRAMAS',
                'encabezados': ['Signo', 'Significado'],
                'filas': [['{Sombreado}', 'La región está {vacía}'],
