@@ -475,6 +475,20 @@ BANCO = {
                           "Avisándole a gritos",
                           "Tapando la honda del cazador"],
              "correcta": "Picando el pie del cazador"},
+            {"tipo": "lectura", "d": 3,
+             "titulo": "Las ranas piden un rey",
+             "texto": "Las ranas vivían libres en su laguna, pero "
+                      "pidieron a gritos un rey. Les enviaron un tronco, "
+                      "que cayó con un ruido enorme; al ver que no se "
+                      "movía, saltaron sobre él y pidieron otro rey más "
+                      "interesante. Entonces les enviaron una cigüeña, "
+                      "que caminó por la laguna comiéndose a varias "
+                      "ranas. Las demás extrañaron su antigua libertad.",
+             "pregunta": "¿Qué aprendieron las ranas al final del cuento?",
+             "opciones": ["Que habían perdido algo bueno por no valorarlo",
+                          "Que el tronco era el mejor rey posible",
+                          "Que debían pedir un tercer rey"],
+             "correcta": "Que habían perdido algo bueno por no valorarlo"},
         ],
         "Matemática": [
             {"tipo": "opcion", "emoji": "➕", "d": 1, "pregunta": "7 + 5 =",
@@ -812,6 +826,21 @@ BANCO = {
                           "Leer una sola vez con atención",
                           "Releer todo diez veces seguidas el mismo día"],
              "correcta": "Repasar espaciado en varios días"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El leñador honrado",
+             "texto": "Un leñador cortaba árboles junto al río cuando "
+                      "su hacha cayó al agua. Un anciano apareció y "
+                      "sacó un hacha de oro, preguntando si era la suya. "
+                      "El leñador dijo que no. Sacó una de plata, y de "
+                      "nuevo dijo que no. Por fin sacó su vieja hacha de "
+                      "hierro, y el leñador dijo feliz que esa sí era "
+                      "la suya. El anciano, por su honradez, le regaló "
+                      "las tres.",
+             "pregunta": "¿Por qué el anciano le regaló las tres hachas al leñador?",
+             "opciones": ["Porque fue honrado y no mintió",
+                          "Porque el leñador era muy pobre",
+                          "Porque el hacha de hierro era muy valiosa"],
+             "correcta": "Porque fue honrado y no mintió"},
         ],
         "Matemática": [
             {"tipo": "opcion", "emoji": "✖️", "d": 1, "pregunta": "7 × 8 =",
