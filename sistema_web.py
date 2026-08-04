@@ -86,6 +86,13 @@ try:
 except ImportError:
     FICHAS_FILOSOFIA_OK = False
 
+# Simulador de la Prueba Nacional de Nombramiento Docente
+try:
+    from simulador_nombramiento import tab_simulador_nombramiento
+    SIMULADOR_NOMB_OK = True
+except ImportError:
+    SIMULADOR_NOMB_OK = False
+
 import base64  # Para Aula Virtual
 
 # python-docx para leer archivos Word
@@ -32833,6 +32840,7 @@ def main():
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
                 ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
+                ("🎯", "Simulador Nombramiento", "simulador_nomb", "#be123c"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32958,6 +32966,8 @@ def main():
                 tab_fichas_historia(config)
             elif mod == "fichas_filosofia":
                 tab_fichas_filosofia(config)
+            elif mod == "simulador_nomb":
+                tab_simulador_nombramiento(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
 
