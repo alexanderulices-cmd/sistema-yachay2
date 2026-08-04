@@ -32694,6 +32694,10 @@ def main():
                 ("💚", "Bienestar", "bienestar", "#059669"),
                 ("📈", "Análisis Pred.", "predictivo", "#7c3aed"),
                 ("📚", "Avance Temario", "avance_temario", "#0891b2"),
+                ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
+                ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
+                ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
+                ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
             ]
 
             # Grid de módulos
@@ -32791,6 +32795,14 @@ def main():
                 tab_avance_docente(config)
             elif mod == "predictivo":
                 tab_analisis_predictivo(config)
+            elif mod == "fichas_primaria":
+                tab_fichas_primaria(config)
+            elif mod == "aprendo_jugando":
+                tab_aprendo_jugando(config)
+            elif mod == "fichas_historia":
+                tab_fichas_historia(config)
+            elif mod == "fichas_filosofia":
+                tab_fichas_filosofia(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -32840,10 +32852,13 @@ def main():
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
                 ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
-                ("🎯", "Simulador Nombramiento", "simulador_nomb", "#be123c"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
+                # Exclusivo de admin: la directora/directivo no lo necesita
+                # para su gestión diaria, y es información personal del
+                # docente que rinde su propio examen de nombramiento.
+                modulos.append(("🎯", "Simulador Nombramiento", "simulador_nomb", "#be123c"))
 
             # Grid de módulos - SOLUCIÓN SIMPLE Y VISIBLE
             for i in range(0, len(modulos), 3):
