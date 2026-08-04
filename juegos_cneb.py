@@ -74,6 +74,152 @@ BANCO = {
             {"tipo": "opcion", "emoji": "🧼💧", "d": 2, "pregunta": "¿Cuándo me lavo las manos?",
              "opciones": ["Antes de comer", "Nunca"], "correcta": "Antes de comer"},
         ],
+        "📖 Lecturas con audio": [
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El perrito perdido",
+             "texto": "Toto el perrito perdió su pelota roja en el parque. "
+                      "Buscó y buscó debajo de los árboles. Un pajarito lo "
+                      "vio y le mostró dónde estaba: ¡debajo de una banca! "
+                      "Toto movió la cola feliz y se fue a casa con su pelota.",
+             "pregunta": "¿Qué perdió Toto?",
+             "opciones": ["Su pelota", "Su hueso", "Su casa"],
+             "correcta": "Su pelota"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La abejita golosa",
+             "texto": "Mia la abejita volaba de flor en flor buscando "
+                      "miel dulce. Encontró una flor amarilla enorme y "
+                      "tomó mucha miel. Después voló a su panal a "
+                      "compartir con sus amigas abejitas.",
+             "pregunta": "¿Qué buscaba Mia entre las flores?",
+             "opciones": ["Miel", "Agua", "Hojas"],
+             "correcta": "Miel"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El solcito friolento",
+             "texto": "Una mañana el sol se despertó con mucho frío y no "
+                      "quería salir de las nubes. Los niños esperaban "
+                      "jugar afuera. Entonces todos cantaron una canción "
+                      "para el sol, y el sol, feliz, salió a calentar el "
+                      "día.",
+             "pregunta": "¿Por qué el sol no quería salir al principio?",
+             "opciones": ["Tenía frío", "Estaba dormido", "Estaba triste"],
+             "correcta": "Tenía frío"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "Las ovejitas y el pastor",
+             "texto": "Un pastor cuidaba diez ovejitas en el cerro. Cada "
+                      "tarde las contaba antes de volver a casa: una, dos, "
+                      "tres, hasta diez. Un día contó solo nueve. Buscó y "
+                      "encontró a la ovejita perdida dormida bajo un "
+                      "árbol.",
+             "pregunta": "¿Cuántas ovejitas cuidaba el pastor?",
+             "opciones": ["Diez", "Nueve", "Cinco"],
+             "correcta": "Diez"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El pollito valiente",
+             "texto": "Un pollito pequeño tenía miedo de nadar en el "
+                      "estanque. Sus hermanos patitos nadaban felices. "
+                      "Un día el pollito juntó valor, metió una patita al "
+                      "agua, y descubrió que no era tan difícil. ¡Ahora "
+                      "nada todos los días!",
+             "pregunta": "¿Qué tenía el pollito al principio del cuento?",
+             "opciones": ["Miedo", "Hambre", "Sueño"],
+             "correcta": "Miedo"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El gatito y el ovillo",
+             "texto": "Coco el gatito encontró un ovillo de lana roja. "
+                      "Jugó y jugó saltando sobre él por toda la sala. "
+                      "Al final, quedó enredado entre los hilos y su "
+                      "mamá gata tuvo que ayudarlo a salir, riendo.",
+             "pregunta": "¿De qué color era el ovillo de lana?",
+             "opciones": ["Rojo", "Azul", "Amarillo"],
+             "correcta": "Rojo"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La lluvia y el paraguas",
+             "texto": "Empezó a llover fuerte mientras Sami caminaba a "
+                      "casa. No tenía paraguas y se iba a mojar. Su "
+                      "amiga Luz lo vio desde su ventana y bajó corriendo "
+                      "con un paraguas grande para compartir con él.",
+             "pregunta": "¿Quién ayudó a Sami cuando llovía?",
+             "opciones": ["Luz", "Su mamá", "Un vecino"],
+             "correcta": "Luz"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El globo que voló alto",
+             "texto": "A Nico se le escapó su globo amarillo y voló muy "
+                      "alto hacia el cielo. Nico se puso triste. Su papá "
+                      "le dijo que no llorara, y esa tarde le compró un "
+                      "globo nuevo, esta vez atado fuerte a su muñeca.",
+             "pregunta": "¿De qué color era el globo que se le escapó a Nico?",
+             "opciones": ["Amarillo", "Verde", "Morado"],
+             "correcta": "Amarillo"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "Las semillas de la abuela",
+             "texto": "La abuela de Ana sembró semillitas en macetas de "
+                      "colores. Cada día Ana las regaba con cuidado. "
+                      "Después de dos semanas, unas plantitas verdes "
+                      "asomaron. ¡Ana estaba feliz de verlas crecer!",
+             "pregunta": "¿Qué hacía Ana cada día por las semillas?",
+             "opciones": ["Las regaba", "Las cantaba", "Las tapaba"],
+             "correcta": "Las regaba"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El osito que no quería dormir",
+             "texto": "Tito el osito no quería ir a dormir, quería seguir "
+                      "jugando. Su mamá le cantó una canción suave y le "
+                      "contó sobre las estrellas que también descansan de "
+                      "noche. Tito bostezó y por fin cerró los ojitos.",
+             "pregunta": "¿Qué hizo la mamá para que Tito se durmiera?",
+             "opciones": ["Le cantó una canción", "Le dio un juguete",
+                         "Lo dejó jugar más"],
+             "correcta": "Le cantó una canción"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El pececito curioso",
+             "texto": "Fin el pececito vivía en una pecera azul. Un día "
+                      "vio una burbuja subir y quiso atraparla nadando "
+                      "rápido. La burbuja explotó justo al llegar arriba, "
+                      "y Fin se rió con sus amigos peces.",
+             "pregunta": "¿De qué color era la pecera de Fin?",
+             "opciones": ["Azul", "Roja", "Verde"],
+             "correcta": "Azul"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "Los zapatos nuevos",
+             "texto": "Mili estrenó zapatos nuevos color celeste para ir "
+                      "al colegio. Estaba tan contenta que quería "
+                      "mostrárselos a todos sus amigos. Caminó con "
+                      "cuidado para no ensuciarlos en el patio de tierra.",
+             "pregunta": "¿De qué color eran los zapatos nuevos de Mili?",
+             "opciones": ["Celeste", "Negro", "Blanco"],
+             "correcta": "Celeste"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El arcoíris después de la lluvia",
+             "texto": "Después de la lluvia, Beto salió a jugar y vio un "
+                      "arcoíris enorme en el cielo. Contó sus colores con "
+                      "el dedo: uno, dos, tres, muchos colores juntos. "
+                      "Corrió a llamar a su hermana para que también lo "
+                      "viera.",
+             "pregunta": "¿Cuándo apareció el arcoíris?",
+             "opciones": ["Después de la lluvia", "En la noche",
+                         "Antes de dormir"],
+             "correcta": "Después de la lluvia"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El cumpleaños de Rosita",
+             "texto": "Era el cumpleaños de Rosita y su familia preparó "
+                      "una torta de chocolate con cinco velitas, una por "
+                      "cada año. Rosita pidió un deseo, sopló fuerte y "
+                      "todas las velitas se apagaron. Todos aplaudieron "
+                      "felices.",
+             "pregunta": "¿Cuántas velitas tenía la torta de Rosita?",
+             "opciones": ["Cinco", "Tres", "Diez"],
+             "correcta": "Cinco"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El pajarito con el ala rota",
+             "texto": "Camila encontró un pajarito con el ala lastimada "
+                      "bajo un árbol. Con cuidado lo llevó a casa en una "
+                      "cajita con algodón. Le dio agua y semillas cada "
+                      "día. Después de una semana, el pajarito ya podía "
+                      "volar y se despidió cantando desde la ventana.",
+             "pregunta": "¿Qué le pasaba al pajarito que encontró Camila?",
+             "opciones": ["Tenía el ala lastimada", "Tenía hambre",
+                         "Estaba perdido de su nido"],
+             "correcta": "Tenía el ala lastimada"},
+        ],
         "🌍 Métodos del mundo": [
             # Singapur — «number bonds»: ver el número como partes que se unen
             {"tipo": "opcion", "emoji": "🍓🍓 + ❓", "d": 1,
@@ -136,6 +282,200 @@ BANCO = {
     },
 
     "Primaria 1° a 3°": {
+        "📖 Lecturas con audio": [
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La liebre y la tortuga",
+             "texto": "La liebre corría muy rápido y se burlaba de la "
+                      "tortuga. Eres tan lenta que nunca ganarías una "
+                      "carrera, le dijo. La tortuga la miró con calma y "
+                      "propuso una carrera. La liebre salió disparada y, "
+                      "confiada, se quedó dormida bajo un árbol. La "
+                      "tortuga caminó despacio pero sin detenerse, y "
+                      "cruzó la meta primero.",
+             "pregunta": "¿Quién ganó la carrera?",
+             "opciones": ["La tortuga", "La liebre", "Ninguna"],
+             "correcta": "La tortuga"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "La liebre y la tortuga (parte 2)",
+             "texto": "La liebre corría muy rápido y se burlaba de la "
+                      "tortuga. Eres tan lenta que nunca ganarías una "
+                      "carrera, le dijo. La tortuga la miró con calma y "
+                      "propuso una carrera. La liebre salió disparada y, "
+                      "confiada, se quedó dormida bajo un árbol. La "
+                      "tortuga caminó despacio pero sin detenerse, y "
+                      "cruzó la meta primero.",
+             "pregunta": "¿Por qué perdió la liebre?",
+             "opciones": ["Porque se confió y se durmió",
+                          "Porque se cansó de correr",
+                          "Porque se perdió en el camino"],
+             "correcta": "Porque se confió y se durmió"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El león y el ratón",
+             "texto": "Un león dormía en el bosque. Un ratoncito pasó "
+                      "corriendo y lo despertó sin querer. El león lo "
+                      "atrapó, pero el ratón prometió ayudarlo algún día "
+                      "y el león, riendo, lo dejó ir. Tiempo después unos "
+                      "cazadores atraparon al león con una red, y el "
+                      "ratoncito llegó corriendo y royó las cuerdas hasta "
+                      "liberarlo.",
+             "pregunta": "¿Cómo ayudó el ratón al león?",
+             "opciones": ["Royendo las cuerdas de la red",
+                          "Asustando a los cazadores",
+                          "Trayendo comida"],
+             "correcta": "Royendo las cuerdas de la red"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La zorra y las uvas",
+             "texto": "Una zorra con mucha hambre vio un racimo de uvas "
+                      "moradas colgando de una parra. Saltó una vez, y "
+                      "otra, y otra más, pero no pudo alcanzarlas. Al "
+                      "final, cansada, se alejó diciendo: no importa, "
+                      "esas uvas están verdes.",
+             "pregunta": "¿Qué quería alcanzar la zorra?",
+             "opciones": ["Las uvas", "Un pan", "Un pescado"],
+             "correcta": "Las uvas"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El pastorcito mentiroso",
+             "texto": "Un pastorcito se aburría cuidando ovejas y gritó: "
+                      "el lobo, viene el lobo. Los vecinos subieron "
+                      "corriendo, pero no había ningún lobo, y el "
+                      "pastorcito se rió de ellos. Lo hizo una segunda "
+                      "vez. Pero una tarde el lobo llegó de verdad, y "
+                      "cuando el pastorcito pidió ayuda, nadie subió "
+                      "porque pensaron que mentía otra vez.",
+             "pregunta": "¿Por qué nadie ayudó al pastorcito la última vez?",
+             "opciones": ["Porque ya no le creían, había mentido antes",
+                          "Porque estaban dormidos",
+                          "Porque no escucharon sus gritos"],
+             "correcta": "Porque ya no le creían, había mentido antes"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La cigarra y la hormiga",
+             "texto": "Todo el verano la cigarra cantó bajo el sol, "
+                      "mientras la hormiga trabajaba sin parar guardando "
+                      "comida. Llegó el invierno y ya no había comida en "
+                      "el campo. La cigarra, con hambre, tocó la puerta "
+                      "de la hormiga, que le abrió y compartió su comida.",
+             "pregunta": "¿Qué hizo la hormiga durante el verano?",
+             "opciones": ["Guardó comida trabajando",
+                          "Cantó todo el día",
+                          "Durmió la mayor parte del tiempo"],
+             "correcta": "Guardó comida trabajando"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El cuervo y la zorra",
+             "texto": "Un cuervo encontró un pedazo de queso y se subió "
+                      "a una rama para comerlo tranquilo. Una zorra lo "
+                      "vio y le dijo: qué hermoso eres, cuervo, seguro "
+                      "tu voz es la más linda del bosque, canta un poco. "
+                      "El cuervo, orgulloso, abrió el pico para cantar y "
+                      "el queso cayó al suelo. La zorra lo atrapó al "
+                      "vuelo.",
+             "pregunta": "¿Qué perdió el cuervo por presumir?",
+             "opciones": ["El queso", "Sus plumas", "Su nido"],
+             "correcta": "El queso"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "La gallina de los huevos de oro",
+             "texto": "Un campesino tenía una gallina que cada mañana "
+                      "ponía un huevo de oro. Poco a poco se hizo rico. "
+                      "Pero un día pensó que, si abría a la gallina, "
+                      "sacaría todo el oro de una vez. La abrió, pero "
+                      "adentro no había oro, y la gallina murió sin "
+                      "poner nunca más.",
+             "pregunta": "¿Qué le pasó a la gallina al final?",
+             "opciones": ["Murió y ya no puso más huevos",
+                          "Puso el doble de huevos",
+                          "Se escapó al bosque"],
+             "correcta": "Murió y ya no puso más huevos"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El perro y su reflejo",
+             "texto": "Un perro caminaba con un hueso grande en el "
+                      "hocico. Al cruzar un puente, miró al río y vio su "
+                      "propio reflejo, pero creyó que era otro perro con "
+                      "un hueso más grande. Abrió la boca para "
+                      "quitárselo, y su propio hueso cayó al agua y se "
+                      "hundió.",
+             "pregunta": "¿Por qué el perro perdió su hueso?",
+             "opciones": ["Creyó que su reflejo era otro perro",
+                          "Se lo robó otro perro de verdad",
+                          "Se le cayó por accidente al caminar"],
+             "correcta": "Creyó que su reflejo era otro perro"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El viento y el sol",
+             "texto": "El viento y el sol discutían sobre quién era más "
+                      "fuerte. Vieron a un caminante con abrigo y "
+                      "decidieron que ganaría quien lograra quitárselo. "
+                      "El viento sopló fuerte, pero el caminante se "
+                      "cerró más el abrigo. Entonces el sol brilló "
+                      "suave, el caminante sintió calor y se quitó el "
+                      "abrigo solo.",
+             "pregunta": "¿Quién logró que el caminante se quitara el abrigo?",
+             "opciones": ["El sol, brillando con calma",
+                          "El viento, soplando fuerte",
+                          "Los dos juntos"],
+             "correcta": "El sol, brillando con calma"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "Los dos amigos y el oso",
+             "texto": "Dos amigos caminaban por el bosque cuando "
+                      "apareció un oso. Uno corrió y se subió a un "
+                      "árbol sin avisar al otro. El segundo amigo se "
+                      "tiró al suelo y se quedó quieto. El oso lo olió "
+                      "y se fue. Bajando del árbol, el primero preguntó "
+                      "qué le había dicho el oso al oído.",
+             "pregunta": "¿Qué hizo el segundo amigo cuando llegó el oso?",
+             "opciones": ["Se tiró al suelo y se quedó quieto",
+                          "Corrió más rápido que su amigo",
+                          "Le gritó al oso para asustarlo"],
+             "correcta": "Se tiró al suelo y se quedó quieto"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "El ratón de campo y el ratón de ciudad",
+             "texto": "El ratón de ciudad visitó a su primo del campo y "
+                      "no le gustó la comida sencilla. Lo llevó a la "
+                      "ciudad, donde había queso y pan, pero de pronto "
+                      "aparecieron pasos y ladridos, y tuvieron que "
+                      "esconderse asustados. El ratón de campo dijo que "
+                      "prefería sus granos tranquilos, y volvió a casa.",
+             "pregunta": "¿Por qué el ratón de campo decidió regresar?",
+             "opciones": ["Prefería estar tranquilo aunque comiera menos",
+                          "No le gustó el queso de la ciudad",
+                          "Extrañaba a su familia"],
+             "correcta": "Prefería estar tranquilo aunque comiera menos"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "La lechera",
+             "texto": "Una joven llevaba un balde de leche en la cabeza "
+                      "para venderla. Mientras caminaba, soñaba: con el "
+                      "dinero compraré huevos, de los huevos nacerán "
+                      "pollitos, los venderé y compraré un vestido "
+                      "nuevo. Al mover la cabeza imaginando su vestido, "
+                      "el balde se cayó y toda la leche se derramó.",
+             "pregunta": "¿Por qué se le cayó el balde a la lechera?",
+             "opciones": ["Se distrajo soñando y movió la cabeza",
+                          "Tropezó con una piedra",
+                          "El balde estaba roto"],
+             "correcta": "Se distrajo soñando y movió la cabeza"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El burro cargado de sal",
+             "texto": "Un burro llevaba sacos de sal y al cruzar un río "
+                      "resbaló. La sal se disolvió y la carga quedó "
+                      "liviana. Al día siguiente, cargado de esponjas, "
+                      "el burro se tiró al río a propósito, pero las "
+                      "esponjas absorbieron el agua y pesaron el doble.",
+             "pregunta": "¿Qué le pasó al burro con las esponjas mojadas?",
+             "opciones": ["Pesaron mucho más de lo normal",
+                          "Se disolvieron como la sal",
+                          "Se volvieron más livianas"],
+             "correcta": "Pesaron mucho más de lo normal"},
+            {"tipo": "lectura", "d": 1,
+             "titulo": "La paloma y la hormiga",
+             "texto": "Una hormiga cayó a un arroyo y la corriente se "
+                      "la llevaba. Una paloma la vio y dejó caer una "
+                      "hoja al agua para que se salvara. Días después, "
+                      "un cazador apuntó a la paloma. La hormiga lo vio "
+                      "y le picó el pie, y el cazador gritó de dolor, "
+                      "asustando así a la paloma, que voló a salvo.",
+             "pregunta": "¿Cómo salvó la hormiga a la paloma al final?",
+             "opciones": ["Picando el pie del cazador",
+                          "Avisándole a gritos",
+                          "Tapando la honda del cazador"],
+             "correcta": "Picando el pie del cazador"},
+        ],
         "Matemática": [
             {"tipo": "opcion", "emoji": "➕", "d": 1, "pregunta": "7 + 5 =",
              "opciones": ["11", "12", "13"], "correcta": "12"},
@@ -271,6 +611,208 @@ BANCO = {
     },
 
     "Primaria 4° a 6°": {
+        "📖 Lecturas con audio": [
+            {"tipo": "lectura", "d": 2,
+             "titulo": "Manco Cápac y Mama Ocllo",
+             "texto": "Cuentan los antiguos que el dios Sol miró la "
+                      "tierra y la vio en desorden. Envió a sus hijos, "
+                      "Manco Cápac y Mama Ocllo, desde el lago Titicaca, "
+                      "con una vara de oro. Les dijo que caminaran hacia "
+                      "el norte y que donde la vara se hundiera por "
+                      "completo, fundaran allí su pueblo. En el cerro "
+                      "Huanacaure la vara se hundió sin esfuerzo, y allí "
+                      "fundaron el Cusco.",
+             "pregunta": "¿Qué debían buscar Manco Cápac y Mama Ocllo?",
+             "opciones": ["El lugar donde se hundiera la vara de oro",
+                          "Una montaña muy alta",
+                          "Un río caudaloso"],
+             "correcta": "El lugar donde se hundiera la vara de oro"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El origen del arcoíris",
+             "texto": "Después de muchos días de lluvia, los ríos se "
+                      "desbordaron y la gente perdió sus chacras. Una "
+                      "niña subió al cerro y le habló al cielo: ya no "
+                      "llores más, nosotros también tenemos sed de sol. "
+                      "El cielo escuchó, la lluvia paró, y apareció una "
+                      "franja de colores entre los cerros. Los abuelos "
+                      "dijeron que era la señal de que el cielo y la "
+                      "tierra habían vuelto a entenderse.",
+             "pregunta": "¿Qué le pidió la niña al cielo?",
+             "opciones": ["Que dejara de llover", "Que lloviera más",
+                          "Que hiciera más frío"],
+             "correcta": "Que dejara de llover"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "Los dos lobos",
+             "texto": "Un abuelo le dijo a su nieto: dentro de cada "
+                      "persona hay dos lobos que pelean. Uno es la "
+                      "rabia, la envidia y la mentira. El otro es la "
+                      "alegría, la humildad y la verdad. El niño "
+                      "preguntó cuál de los dos ganaba. El abuelo "
+                      "respondió con calma: gana el que tú alimentas "
+                      "cada día.",
+             "pregunta": "Según el abuelo, ¿cuál de los dos lobos gana?",
+             "opciones": ["El que la persona alimenta cada día",
+                          "El más fuerte de nacimiento",
+                          "El que pelea con más ganas"],
+             "correcta": "El que la persona alimenta cada día"},
+            {"tipo": "lectura", "d": 3,
+             "titulo": "El elefante encadenado",
+             "texto": "En el circo, un elefante enorme permanecía atado "
+                      "a una pequeña estaca de madera. Un niño preguntó "
+                      "por qué no escapaba, si con su fuerza podía "
+                      "arrancar un árbol. Un anciano explicó: ese "
+                      "elefante está atado a esa estaca desde muy "
+                      "pequeño; entonces era débil y no pudo soltarse. "
+                      "Ahora es gigante, pero cree que no puede, y nunca "
+                      "más lo volvió a intentar.",
+             "pregunta": "¿Por qué el elefante ya no intenta escapar?",
+             "opciones": ["Porque cree que sigue siendo tan débil como antes",
+                          "Porque la estaca es de metal",
+                          "Porque le gusta estar en el circo"],
+             "correcta": "Porque cree que sigue siendo tan débil como antes"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "La papa que salvó al mundo",
+             "texto": "La papa nació en los Andes hace más de siete mil "
+                      "años. Los antiguos peruanos la domesticaron y "
+                      "crearon miles de variedades. También inventaron "
+                      "el chuño: congelaban la papa de noche y la "
+                      "secaban al sol, logrando que durara años sin "
+                      "malograrse. Cuando la papa llegó a Europa, ayudó "
+                      "a que millones de personas dejaran de pasar "
+                      "hambre.",
+             "pregunta": "¿Qué es el chuño?",
+             "opciones": ["Papa congelada y secada al sol para conservarla",
+                          "Una herramienta de labranza",
+                          "Un tipo de maíz andino"],
+             "correcta": "Papa congelada y secada al sol para conservarla"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "Los quipus, la escritura que no era letra",
+             "texto": "Los incas no usaban letras, pero sí registraban "
+                      "información con quipus: cuerdas con nudos de "
+                      "distintos colores. Cada nudo indicaba una "
+                      "cantidad, y el color señalaba de qué se hablaba. "
+                      "Los quipucamayocs eran los especialistas "
+                      "encargados de leerlos y guardarlos.",
+             "pregunta": "¿Quiénes leían los quipus?",
+             "opciones": ["Los quipucamayocs", "Los sacerdotes del Sol",
+                         "Cualquier persona del ayllu"],
+             "correcta": "Los quipucamayocs"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El puente de Q'eswachaka",
+             "texto": "Cada junio, cuatro comunidades del Cusco se "
+                      "reúnen sobre el río Apurímac para rehacer un "
+                      "puente inca de cuerdas. Trenzan paja ichu en "
+                      "sogas cada vez más gruesas y en tres días tienden "
+                      "el puente nuevo, mientras el viejo cae al río. "
+                      "En 2013 fue declarado Patrimonio de la Humanidad.",
+             "pregunta": "¿Con qué material se hace el puente de Q'eswachaka?",
+             "opciones": ["Con sogas trenzadas de paja ichu",
+                          "Con troncos de madera",
+                          "Con piedras talladas"],
+             "correcta": "Con sogas trenzadas de paja ichu"},
+            {"tipo": "lectura", "d": 3,
+             "titulo": "El violinista en el metro",
+             "texto": "En 2007, un violinista tocó 45 minutos en una "
+                      "estación de metro. Pasaron más de mil personas y "
+                      "solo siete se detuvieron a escuchar. Ese músico "
+                      "era Joshua Bell, uno de los más famosos del "
+                      "mundo, que días antes había llenado un teatro. "
+                      "Casi nadie lo reconoció en el metro.",
+             "pregunta": "¿Cuántas personas se detuvieron a escuchar al violinista?",
+             "opciones": ["Siete", "Cien", "Mil"],
+             "correcta": "Siete"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El rey Midas",
+             "texto": "El rey Midas pidió que todo lo que tocara se "
+                      "convirtiera en oro. Al principio se alegró, pero "
+                      "al comer, el pan se volvió oro en su boca. "
+                      "Cuando su hija corrió a abrazarlo, ella también "
+                      "quedó convertida en una estatua dorada. Midas "
+                      "suplicó que le quitaran el don.",
+             "pregunta": "¿Qué le pasó a la hija de Midas?",
+             "opciones": ["Se convirtió en una estatua de oro",
+                          "Se enfermó gravemente",
+                          "Se escondió asustada"],
+             "correcta": "Se convirtió en una estatua de oro"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El tigre y el sabio",
+             "texto": "Un tigre cayó en una trampa y le pidió ayuda a "
+                      "un sabio, prometiendo no comérselo. El sabio lo "
+                      "liberó, pero el tigre quiso atacarlo igual. Pasó "
+                      "un zorro y pidió que le mostraran cómo estaban "
+                      "antes. El tigre volvió a la trampa para "
+                      "explicar, y el zorro cerró la puerta y se fue.",
+             "pregunta": "¿Cómo resolvió el zorro la situación?",
+             "opciones": ["Hizo que el tigre volviera a la trampa",
+                          "Peleó contra el tigre",
+                          "Llamó a más animales para ayudar"],
+             "correcta": "Hizo que el tigre volviera a la trampa"},
+            {"tipo": "lectura", "d": 3,
+             "titulo": "Los tres albañiles",
+             "texto": "Un viajero encontró a tres hombres colocando "
+                      "ladrillos. El primero dijo que pegaba ladrillos, "
+                      "un trabajo pesado. El segundo dijo que levantaba "
+                      "un muro para cobrar e irse. El tercero, "
+                      "sonriendo, dijo que construía una catedral donde "
+                      "la gente se encontraría dentro de cien años.",
+             "pregunta": "¿Qué respondió el tercer albañil?",
+             "opciones": ["Que estaba construyendo una catedral",
+                          "Que solo pegaba ladrillos",
+                          "Que quería terminar rápido"],
+             "correcta": "Que estaba construyendo una catedral"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El niño que dibujaba mapas",
+             "texto": "Un niño de un pueblo alejado dibujaba mapas de "
+                      "su comunidad con un palo en la tierra. Sus "
+                      "compañeros se burlaban. Un día una brigada de "
+                      "salud no encontraba el camino a los caseríos "
+                      "altos, y el niño dibujó la ruta exacta en una "
+                      "hoja. La brigada llegó a tiempo gracias a él.",
+             "pregunta": "¿Para qué sirvieron los mapas del niño al final?",
+             "opciones": ["Para guiar a una brigada de salud",
+                          "Para ganar un concurso escolar",
+                          "Para vender en el mercado"],
+             "correcta": "Para guiar a una brigada de salud"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "El puente de los monos",
+             "texto": "Un grupo de monos vivía junto a un río y un rey "
+                      "los quiso cazar. El jefe de los monos vio que sus "
+                      "compañeros no alcanzaban a saltar al otro árbol, "
+                      "así que se estiró entre las ramas y formó un "
+                      "puente con su propio cuerpo para que todos "
+                      "cruzaran a salvo.",
+             "pregunta": "¿Cómo salvó el jefe de los monos a los demás?",
+             "opciones": ["Formando un puente con su cuerpo",
+                          "Peleando contra el rey",
+                          "Escondiéndolos en una cueva"],
+             "correcta": "Formando un puente con su cuerpo"},
+            {"tipo": "lectura", "d": 2,
+             "titulo": "María Reiche y las líneas de Nazca",
+             "texto": "María Reiche llegó al Perú desde Alemania y "
+                      "encontró en el desierto de Nazca unas líneas "
+                      "enormes trazadas hace más de mil quinientos "
+                      "años. Vivió en el desierto midiendo y dibujando "
+                      "cada figura durante décadas, y barría las líneas "
+                      "con una escoba para que la arena no las cubriera.",
+             "pregunta": "¿Con qué barría María Reiche las líneas de Nazca?",
+             "opciones": ["Con una escoba", "Con un rastrillo",
+                         "Con sus manos"],
+             "correcta": "Con una escoba"},
+            {"tipo": "lectura", "d": 3,
+             "titulo": "Por qué olvidamos lo que estudiamos",
+             "texto": "Un investigador descubrió que olvidamos muy "
+                      "rápido: en 24 horas se pierde buena parte de lo "
+                      "estudiado. Pero cada vez que repasamos, la curva "
+                      "del olvido baja más lento. Repasar el mismo día, "
+                      "luego a los tres días y luego a la semana hace "
+                      "que el recuerdo dure meses, mejor que releer "
+                      "muchas veces seguidas.",
+             "pregunta": "¿Qué ayuda a recordar durante más tiempo, según el texto?",
+             "opciones": ["Repasar espaciado en varios días",
+                          "Leer una sola vez con atención",
+                          "Releer todo diez veces seguidas el mismo día"],
+             "correcta": "Repasar espaciado en varios días"},
+        ],
         "Matemática": [
             {"tipo": "opcion", "emoji": "✖️", "d": 1, "pregunta": "7 × 8 =",
              "opciones": ["54", "56", "64"], "correcta": "56"},
@@ -564,6 +1106,16 @@ body:fullscreen .faja{height:32px}
 .emoji{font-size:3.6rem;line-height:1.2;margin-bottom:10px}
 .pregunta{font-size:1.35rem;font-weight:900;margin-bottom:20px;line-height:1.35}
 
+.cuento{background:#F8FAFC;border:2px solid var(--borde);border-radius:16px;
+  padding:16px 18px;margin-bottom:14px;text-align:left;font-size:1.08rem;
+  line-height:1.6;color:var(--tinta);max-height:260px;overflow-y:auto}
+.btn-audio{display:inline-flex;align-items:center;gap:8px;background:var(--jade);
+  color:#fff;border:none;border-radius:14px;padding:12px 22px;font-family:inherit;
+  font-size:1.05rem;font-weight:900;cursor:pointer;margin-bottom:14px;
+  box-shadow:0 4px 0 #06554D}
+.btn-audio:active{transform:translateY(3px);box-shadow:none}
+.btn-audio.hablando{background:var(--carmesi);box-shadow:0 4px 0 #7A0F13}
+.btn-audio[disabled]{opacity:.45;cursor:not-allowed}
 .ops{display:grid;gap:12px}
 .op{background:#fff;border:3px solid var(--borde);border-radius:16px;
   padding:18px 18px;font-size:1.25rem;font-weight:800;cursor:pointer;
@@ -660,6 +1212,7 @@ function aviso(ok,txt){
 }
 
 function siguiente(){
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
   i++; seleccion=null; orden=[]; bloqueado=false;
   if(vidas<=0 || i>=EJ.length){ final(); } else { render(); }
   pintarBarra();
@@ -700,6 +1253,56 @@ function render(){
     em.textContent=e.emoji; t.appendChild(em); }
   const p=document.createElement('div'); p.className='pregunta';
   p.textContent=e.pregunta; t.appendChild(p);
+
+  if(e.tipo==='lectura'){
+    const cu=document.createElement('div'); cu.className='cuento';
+    cu.textContent=e.texto; t.appendChild(cu);
+
+    const btnA=document.createElement('button'); btnA.className='btn-audio';
+    btnA.innerHTML='🔊 Escuchar el cuento';
+    btnA.onclick=()=>{
+      if(!('speechSynthesis' in window)){
+        btnA.textContent='😕 Este dispositivo no lee en voz alta';
+        btnA.disabled=true; return;
+      }
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(e.texto);
+      u.lang='es-ES'; u.rate=0.92; u.pitch=1.05;
+      u.onstart=()=>{ btnA.classList.add('hablando');
+        btnA.innerHTML='⏹️ Detener'; };
+      u.onend=()=>{ btnA.classList.remove('hablando');
+        btnA.innerHTML='🔊 Escuchar otra vez'; };
+      if(btnA.classList.contains('hablando')){
+        window.speechSynthesis.cancel();
+        btnA.classList.remove('hablando'); btnA.innerHTML='🔊 Escuchar otra vez';
+      } else {
+        window.speechSynthesis.speak(u);
+      }
+    };
+    t.appendChild(btnA);
+
+    const preg=document.createElement('div'); preg.className='pregunta';
+    preg.style.fontSize='1.1rem';
+    preg.textContent=e.pregunta; t.appendChild(preg);
+
+    const c=document.createElement('div'); c.className='ops';
+    const ops=[...e.opciones].sort(()=>Math.random()-.5);
+    ops.forEach(o=>{
+      const b=document.createElement('button'); b.className='op'; b.textContent=o;
+      b.onclick=()=>{
+        if(bloqueado) return; bloqueado=true;
+        if('speechSynthesis' in window) window.speechSynthesis.cancel();
+        c.querySelectorAll('.op').forEach(x=>x.disabled=true);
+        if(o===e.correcta){ b.classList.add('ok'); acertar(); }
+        else{ b.classList.add('mal');
+          c.querySelectorAll('.op').forEach(x=>{
+            if(x.textContent===e.correcta) x.classList.add('ok'); });
+          fallar('La respuesta correcta es: '+e.correcta); }
+      };
+      c.appendChild(b);
+    });
+    t.appendChild(c);
+  }
 
   if(e.tipo==='opcion'){
     const c=document.createElement('div'); c.className='ops';
@@ -804,7 +1407,9 @@ function final(){
   pintarBarra();
 }
 
-function reiniciar(){ i=0; aciertos=0; vidas=3; bloqueado=false;
+function reiniciar(){
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  i=0; aciertos=0; vidas=3; bloqueado=false;
   seleccion=null; orden=[]; function pantallaCompleta(){
   const el = document.documentElement;
   if(!document.fullscreenElement){
