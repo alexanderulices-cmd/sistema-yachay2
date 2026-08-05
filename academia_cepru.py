@@ -70,9 +70,29 @@ try:
 except ImportError:
     pass
 
+try:
+    from fichas_comunicativa import COMUNICATIVA_TEMAS as _BAL_COMUNI
+    AREAS_CEPRU.append({
+        "nombre": "🗣️ Competencia Comunicativa", "balotas": _BAL_COMUNI,
+        "area_pie": "Competencia Comunicativa", "prefijo": "cecc",
+        "completo": len(_BAL_COMUNI) >= 16, "total_oficial": 16,
+    })
+except ImportError:
+    pass
+
+try:
+    from fichas_economia import ECONOMIA_TEMAS as _BAL_ECONOMIA
+    AREAS_CEPRU.append({
+        "nombre": "💰 Economía", "balotas": _BAL_ECONOMIA,
+        "area_pie": "Economía", "prefijo": "cee",
+        "completo": len(_BAL_ECONOMIA) >= 18, "total_oficial": 18,
+    })
+except ImportError:
+    pass
+
 # Cursos anunciados pero aún no escritos: aparecen en el selector como
 # "próximamente" en vez de desaparecer sin explicación.
-PENDIENTES = ["🔢 Aritmética", "🗣️ Competencia Comunicativa", "💰 Economía"]
+PENDIENTES = ["🔢 Aritmética"]
 
 
 def tab_academia_cepru(config=None):
@@ -108,7 +128,8 @@ def tab_academia_cepru(config=None):
 def _render_curso(balotas, area_pie, pfx):
     """Interfaz de un curso: idéntica para todas las áreas, cambiando
     solo la fuente de datos y el prefijo de claves de sesión."""
-    opciones = {f"{'Balota' if area_pie!='Geografía' else 'Tema'} "
+    _usa_tema = area_pie in ("Geografía", "Competencia Comunicativa", "Economía")
+    opciones = {f"{'Tema' if _usa_tema else 'Balota'} "
                 f"{t['num']} — {t['titulo']}": t for t in balotas}
     sel = st.selectbox("Balota / Tema:", list(opciones.keys()),
                        key=f"{pfx}_sel")
