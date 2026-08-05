@@ -86,6 +86,13 @@ try:
 except ImportError:
     FICHAS_FILOSOFIA_OK = False
 
+# Carpeta única de la Academia CEPRU (Historia, Filosofía, Geografía, Cívica...)
+try:
+    from academia_cepru import tab_academia_cepru
+    ACADEMIA_CEPRU_OK = True
+except ImportError:
+    ACADEMIA_CEPRU_OK = False
+
 # Simulador de la Prueba Nacional de Nombramiento Docente
 try:
     from simulador_nombramiento import tab_simulador_nombramiento
@@ -32696,8 +32703,7 @@ def main():
                 ("📚", "Avance Temario", "avance_temario", "#0891b2"),
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
-                ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
-                ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
+                ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
             ]
 
             # Grid de módulos
@@ -32799,10 +32805,8 @@ def main():
                 tab_fichas_primaria(config)
             elif mod == "aprendo_jugando":
                 tab_aprendo_jugando(config)
-            elif mod == "fichas_historia":
-                tab_fichas_historia(config)
-            elif mod == "fichas_filosofia":
-                tab_fichas_filosofia(config)
+            elif mod == "academia_cepru":
+                tab_academia_cepru(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -32850,8 +32854,7 @@ def main():
                 ("🏆", "Simulacro / Becas", "simulacro_becas", "#b45309"),
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
-                ("📜", "Historia CEPRU", "fichas_historia", "#7c3aed"),
-                ("🧠", "Filosofía CEPRU", "fichas_filosofia", "#0e7490"),
+                ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -32977,10 +32980,8 @@ def main():
                 tab_fichas_primaria(config)
             elif mod == "aprendo_jugando":
                 tab_aprendo_jugando(config)
-            elif mod == "fichas_historia":
-                tab_fichas_historia(config)
-            elif mod == "fichas_filosofia":
-                tab_fichas_filosofia(config)
+            elif mod == "academia_cepru":
+                tab_academia_cepru(config)
             elif mod == "simulador_nomb":
                 tab_simulador_nombramiento(config)
             elif mod == "predictivo":
