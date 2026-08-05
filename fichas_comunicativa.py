@@ -826,4 +826,510 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'En cualquier contexto',
                                   'Solo en el habla informal',
                                   'Solo en la escritura'],
-                 'correcta': 'B'}]}]
+                 'correcta': 'B'}]},
+ {'num': 4,
+  'titulo': 'La Sílaba',
+  'secciones': [{'titulo': '4.1 CONCEPTO',
+                 'items': ['La sílaba es la unidad estructural que actúa '
+                           'como principio {organizador} de la lengua.',
+                           'La sílaba se agrupa en torno al segmento de '
+                           'máxima {sonoridad}, que constituye su núcleo.',
+                           'En español, el núcleo silábico es siempre '
+                           '{vocálico}.',
+                           'En la palabra «pan», la vocal /a/ constituye el '
+                           'pico de sonoridad, y las consonantes /p/ y /n/ '
+                           'son los {márgenes} consonánticos.']},
+                {'titulo': '4.2 CONSTITUYENTES SILÁBICOS',
+                 'items': ['El {núcleo} es la cumbre o centro de la sílaba, '
+                           'constituido por una sola vocal.',
+                           'El {inicio} o ataque es el margen silábico '
+                           'anterior, de naturaleza consonántica, en '
+                           'posición explosiva.',
+                           'La {coda} es el margen silábico posterior, de '
+                           'naturaleza consonántica, en posición implosiva.',
+                           'La {rima} silábica está constituida por el '
+                           'núcleo y la coda, o solo por el núcleo.']},
+                {'titulo': '4.3 EL SILABEO O DIVISIÓN SILÁBICA',
+                 'items': ['El {silabeo} consiste en pronunciar o escribir '
+                           'en forma separada las sílabas de una palabra.',
+                           'Una consonante entre dos vocales siempre forma '
+                           'sílaba con la vocal que la {sigue}: pa-to.',
+                           'Los grupos tautosilábicos como pr, br, tr, cr, '
+                           'pl, bl, cl son {inseparables} y forman sílaba '
+                           'con la vocal siguiente.',
+                           'Cuando una sílaba termina en consonante y la '
+                           'siguiente comienza en otra consonante, se '
+                           '{separan} entre ambas: as-ma.',
+                           'No existe en español frontera silábica en la '
+                           'secuencia {consonante-vocal}.']},
+                {'titulo': 'DATOS COMPLEMENTARIOS',
+                 'items': ['La sílaba se define como la unidad estructural '
+                           'que actúa como principio {Organizador de la '
+                           'lengua}.',
+                           'La sílaba se agrupa en torno al segmento de '
+                           'máxima {Sonoridad}.',
+                           'En español, el núcleo silábico es siempre de '
+                           'naturaleza {Vocálica}.',
+                           'El constituyente silábico que es la cumbre o '
+                           'centro de la sílaba es {El núcleo}.',
+                           'El margen silábico anterior, de naturaleza '
+                           'consonántica, se llama {Inicio o ataque}.',
+                           'El margen silábico posterior, en posición '
+                           'implosiva, se llama {Coda}.',
+                           'La rima silábica está constituida por {El núcleo '
+                           'y la coda}.',
+                           'El silabeo consiste en {Pronunciar o escribir '
+                           'separadas las sílabas de una palabra}.',
+                           'Una consonante entre dos vocales siempre forma '
+                           'sílaba con la vocal que {La sigue}.',
+                           'En la palabra «pato», la separación silábica '
+                           'correcta es {Pa-to}.',
+                           'Los grupos tautosilábicos pr, br, tr, cr, pl, '
+                           'bl, cl se caracterizan por ser {Inseparables}.',
+                           'En la palabra «apretar», el grupo «pr» se '
+                           'mantiene {Junto, formando sílaba con la vocal '
+                           'siguiente}.',
+                           'Cuando una sílaba termina en consonante y la '
+                           'siguiente comienza en otra consonante, ambas se '
+                           '{Separan entre ambas consonantes}.',
+                           'En la palabra «asma», la separación silábica es '
+                           '{As-ma}.',
+                           'En la palabra «Cuba», la separación silábica '
+                           'correcta es {Cu-ba}.',
+                           'Un vocablo monosilábico, como «pan», tiene {Una '
+                           'sola sílaba}.',
+                           'La palabra «amor» se divide silábicamente como '
+                           '{A-mor}.',
+                           'El núcleo silábico, según el texto, resulta '
+                           'determinante para asignar {El acento léxico}.',
+                           'Un sonido o grupo de sonidos pronunciados en un '
+                           'solo golpe de voz constituye {Una sílaba}.',
+                           'Las vocales solas, por sí mismas, pueden '
+                           'constituir {Sílabas}.']}],
+  'cuadros': [{'titulo': '4.2 CONSTITUYENTES DE LA SÍLABA',
+               'encabezados': ['Constituyente', 'Posición', 'Naturaleza'],
+               'filas': [['{Núcleo}', 'Centro', '{Vocálica}'],
+                         ['{Inicio}', 'Margen anterior', '{Consonántica}'],
+                         ['{Coda}', 'Margen posterior', 'Consonántica']]}],
+  'preguntas': [{'pregunta': 'La sílaba se define como la unidad estructural '
+                             'que actúa como principio:',
+                 'alternativas': ['Semántico',
+                                  'Organizador de la lengua',
+                                  'Morfológico exclusivo',
+                                  'Sintáctico',
+                                  'Pragmático'],
+                 'correcta': 'B'},
+                {'pregunta': 'La sílaba se agrupa en torno al segmento de '
+                             'máxima:',
+                 'alternativas': ['Consonancia',
+                                  'Sonoridad',
+                                  'Duración',
+                                  'Intensidad tonal',
+                                  'Frecuencia'],
+                 'correcta': 'B'},
+                {'pregunta': 'En español, el núcleo silábico es siempre de '
+                             'naturaleza:',
+                 'alternativas': ['Consonántica',
+                                  'Vocálica',
+                                  'Mixta obligatoria',
+                                  'Nasal',
+                                  'Fricativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El constituyente silábico que es la cumbre o '
+                             'centro de la sílaba es:',
+                 'alternativas': ['El inicio',
+                                  'El núcleo',
+                                  'La coda',
+                                  'La rima',
+                                  'El ataque'],
+                 'correcta': 'B'},
+                {'pregunta': 'El margen silábico anterior, de naturaleza '
+                             'consonántica, se llama:',
+                 'alternativas': ['Coda',
+                                  'Inicio o ataque',
+                                  'Núcleo',
+                                  'Rima',
+                                  'Centro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El margen silábico posterior, en posición '
+                             'implosiva, se llama:',
+                 'alternativas': ['Inicio',
+                                  'Coda',
+                                  'Núcleo',
+                                  'Ataque',
+                                  'Centro'],
+                 'correcta': 'B'},
+                {'pregunta': 'La rima silábica está constituida por:',
+                 'alternativas': ['Solo el inicio',
+                                  'El núcleo y la coda',
+                                  'Solo la coda',
+                                  'El inicio y la coda',
+                                  'Ningún elemento fijo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El silabeo consiste en:',
+                 'alternativas': ['Unir todas las sílabas',
+                                  'Pronunciar o escribir separadas las '
+                                  'sílabas de una palabra',
+                                  'Eliminar las vocales',
+                                  'Contar las consonantes',
+                                  'Acentuar todas las palabras'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una consonante entre dos vocales siempre forma '
+                             'sílaba con la vocal que:',
+                 'alternativas': ['La precede',
+                                  'La sigue',
+                                  'Es tónica',
+                                  'Es átona',
+                                  'Está más lejos'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la palabra «pato», la separación silábica '
+                             'correcta es:',
+                 'alternativas': ['Pat-o',
+                                  'Pa-to',
+                                  'P-ato',
+                                  'Pato completo',
+                                  'Pa-t-o'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los grupos tautosilábicos pr, br, tr, cr, pl, '
+                             'bl, cl se caracterizan por ser:',
+                 'alternativas': ['Separables siempre',
+                                  'Inseparables',
+                                  'Vocálicos',
+                                  'Nulos en español',
+                                  'Solo finales de palabra'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la palabra «apretar», el grupo «pr» se '
+                             'mantiene:',
+                 'alternativas': ['Separado en dos sílabas',
+                                  'Junto, formando sílaba con la vocal '
+                                  'siguiente',
+                                  'Eliminado',
+                                  'Sustituido por otra letra',
+                                  'Acentuado siempre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando una sílaba termina en consonante y la '
+                             'siguiente comienza en otra consonante, ambas '
+                             'se:',
+                 'alternativas': ['Unen en una sola sílaba',
+                                  'Separan entre ambas consonantes',
+                                  'Eliminan',
+                                  'Convierten en vocales',
+                                  'Ignoran en el silabeo'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la palabra «asma», la separación silábica '
+                             'es:',
+                 'alternativas': ['A-sma',
+                                  'As-ma',
+                                  'Asm-a',
+                                  'A-s-ma',
+                                  'Asma sin dividir'],
+                 'correcta': 'B'},
+                {'pregunta': 'En español NO existe frontera silábica en la '
+                             'secuencia:',
+                 'alternativas': ['Vocal-consonante',
+                                  'Consonante-vocal',
+                                  'Consonante-consonante',
+                                  'Vocal-vocal',
+                                  'Diptongo-consonante'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la palabra «Cuba», la separación silábica '
+                             'correcta es:',
+                 'alternativas': ['Cub-a',
+                                  'Cu-ba',
+                                  'C-uba',
+                                  'Cu-b-a',
+                                  'Cuba sin dividir'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un vocablo monosilábico, como «pan», tiene:',
+                 'alternativas': ['Ninguna sílaba',
+                                  'Una sola sílaba',
+                                  'Dos sílabas',
+                                  'Tres sílabas',
+                                  'Cuatro sílabas o más'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «amor» se divide silábicamente '
+                             'como:',
+                 'alternativas': ['Am-or',
+                                  'A-mor',
+                                  'Amo-r',
+                                  'A-m-or',
+                                  'Amor sin dividir'],
+                 'correcta': 'B'},
+                {'pregunta': 'El núcleo silábico, según el texto, resulta '
+                             'determinante para asignar:',
+                 'alternativas': ['El género gramatical',
+                                  'El acento léxico',
+                                  'El número gramatical',
+                                  'La categoría sintáctica',
+                                  'El sujeto de la oración'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un sonido o grupo de sonidos pronunciados en '
+                             'un solo golpe de voz constituye:',
+                 'alternativas': ['Un morfema',
+                                  'Una sílaba',
+                                  'Un fonema aislado',
+                                  'Una oración',
+                                  'Un sintagma'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las vocales solas, por sí mismas, pueden '
+                             'constituir:',
+                 'alternativas': ['Solo consonantes',
+                                  'Sílabas',
+                                  'Solo diptongos',
+                                  'Solo palabras compuestas',
+                                  'Ningún elemento fónico'],
+                 'correcta': 'B'}]},
+ {'num': 5,
+  'titulo': 'Acentuación Gráfica o Tildación',
+  'secciones': [{'titulo': '5.1 CONCEPTO Y ACENTO PROSÓDICO',
+                 'items': ['La {tilde}, o acento gráfico, es el signo '
+                           'diacrítico que marca la acentuación de una '
+                           'palabra por escrito.',
+                           'No todas las palabras {tónicas} se escriben con '
+                           'tilde sobre su sílaba tónica.',
+                           'El acento {prosódico} diferencia en la '
+                           'pronunciación una sílaba determinada, '
+                           'contrastándola con el resto.',
+                           'La función {contrastiva} del acento permite '
+                           'diferenciar unidades acentuadas de inacentuadas.',
+                           'La función {distintiva} permite diferenciar el '
+                           'significado de palabras que solo se distinguen '
+                           'por la tonicidad, como «médico» y «medicó».',
+                           'La función {culminativa} permite percibir los '
+                           'grupos acentuales que componen el discurso.']},
+                {'titulo': '5.2 REGLAS SEGÚN LA POSICIÓN DEL ACENTO',
+                 'items': ['Las palabras {monosilábicas} nunca se acentúan '
+                           'gráficamente, salvo en los casos de tilde '
+                           '{diacrítica}.',
+                           'Las palabras {agudas} u oxítonas tienen la '
+                           'sílaba tónica en la última posición.',
+                           'Las palabras agudas llevan tilde cuando terminan '
+                           'en {n}, {s} o vocal.',
+                           'Las palabras {llanas} o graves, paroxítonas, '
+                           'tienen la sílaba tónica en la penúltima '
+                           'posición.',
+                           'Las palabras llanas llevan tilde cuando terminan '
+                           'en consonante distinta de {n}, s o vocal.',
+                           'Las palabras {esdrújulas} o proparoxítonas '
+                           'tienen la sílaba tónica en la antepenúltima '
+                           'posición, y todas llevan {tilde}.',
+                           'Las palabras {sobresdrújulas} tienen la sílaba '
+                           'tónica anterior a la antepenúltima; son '
+                           'compuestas y todas llevan tilde.']},
+                {'titulo': 'DATOS COMPLEMENTARIOS',
+                 'items': ['El signo diacrítico que marca la acentuación de '
+                           'una palabra por escrito se llama {Tilde}.',
+                           'El acento que diferencia en la pronunciación una '
+                           'sílaba, contrastándola con el resto, es el '
+                           'acento {Prosódico}.',
+                           'La función del acento que diferencia unidades '
+                           'acentuadas de inacentuadas es la función '
+                           '{Contrastiva}.',
+                           'La función del acento que diferencia el '
+                           'significado de palabras como «médico» y «medicó» '
+                           'es la función {Distintiva}.',
+                           'La función que permite percibir los grupos '
+                           'acentuales del discurso es la función '
+                           '{Culminativa}.',
+                           'Las palabras monosilábicas, por regla general '
+                           '{Nunca se acentúan gráficamente, salvo tilde '
+                           'diacrítica}.',
+                           'Las palabras agudas tienen la sílaba tónica en '
+                           'la posición {Última}.',
+                           'Las palabras agudas llevan tilde cuando terminan '
+                           'en {N, s o vocal}.',
+                           'Las palabras llanas o graves tienen la sílaba '
+                           'tónica en la posición {Penúltima}.',
+                           'Las palabras llanas llevan tilde cuando terminan '
+                           'en {Consonante distinta de n, s o vocal}.',
+                           'Las palabras esdrújulas tienen la sílaba tónica '
+                           'en la posición {Antepenúltima}.',
+                           'Las palabras esdrújulas, en cuanto a la tilde '
+                           '{Todas llevan tilde}.',
+                           'Las palabras sobresdrújulas tienen la sílaba '
+                           'tónica {Anterior a la antepenúltima}.',
+                           'Las palabras sobresdrújulas se caracterizan por '
+                           'ser {Compuestas, y todas llevan tilde}.',
+                           'La palabra «cuéntaselo» es un ejemplo de palabra '
+                           '{Sobresdrújula}.',
+                           'La palabra «césped» es un ejemplo de palabra '
+                           '{Llana}.',
+                           'La palabra «comité» lleva tilde porque es aguda '
+                           'terminada en {Vocal}.',
+                           'La palabra «botón» lleva tilde porque es aguda '
+                           'terminada en {N}.',
+                           'La palabra «jueves» no lleva tilde porque, '
+                           'siendo llana, termina en {S}.',
+                           'La palabra «música» es un ejemplo de palabra '
+                           '{Esdrújula}.']}],
+  'cuadros': [{'titulo': '5.2 REGLAS DE ACENTUACIÓN SEGÚN LA POSICIÓN',
+               'encabezados': ['Tipo', 'Sílaba tónica', 'Regla de tilde'],
+               'filas': [['{Aguda}', '{Última}', 'Termina en n, s o vocal'],
+                         ['{Llana}',
+                          '{Penúltima}',
+                          'No termina en n, s ni vocal'],
+                         ['{Esdrújula}',
+                          '{Antepenúltima}',
+                          'Siempre lleva tilde'],
+                         ['{Sobresdrújula}',
+                          'Anterior a la antepenúltima',
+                          'Siempre lleva {tilde}']]}],
+  'preguntas': [{'pregunta': 'El signo diacrítico que marca la acentuación '
+                             'de una palabra por escrito se llama:',
+                 'alternativas': ['Diéresis',
+                                  'Tilde',
+                                  'Cedilla',
+                                  'Apóstrofo',
+                                  'Guion'],
+                 'correcta': 'B'},
+                {'pregunta': 'El acento que diferencia en la pronunciación '
+                             'una sílaba, contrastándola con el resto, es el '
+                             'acento:',
+                 'alternativas': ['Gráfico',
+                                  'Prosódico',
+                                  'Diacrítico',
+                                  'Ortográfico exclusivo',
+                                  'Fonológico puro'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del acento que diferencia unidades '
+                             'acentuadas de inacentuadas es la función:',
+                 'alternativas': ['Distintiva',
+                                  'Contrastiva',
+                                  'Culminativa',
+                                  'Gráfica',
+                                  'Semántica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del acento que diferencia el '
+                             'significado de palabras como «médico» y '
+                             '«medicó» es la función:',
+                 'alternativas': ['Contrastiva',
+                                  'Distintiva',
+                                  'Culminativa',
+                                  'Ortográfica',
+                                  'Prosódica pura'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función que permite percibir los grupos '
+                             'acentuales del discurso es la función:',
+                 'alternativas': ['Distintiva',
+                                  'Culminativa',
+                                  'Contrastiva',
+                                  'Gráfica',
+                                  'Semántica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras monosilábicas, por regla general:',
+                 'alternativas': ['Siempre llevan tilde',
+                                  'Nunca se acentúan gráficamente, salvo '
+                                  'tilde diacrítica',
+                                  'Llevan tilde si son agudas',
+                                  'Se acentúan según el contexto',
+                                  'Llevan doble tilde'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras agudas tienen la sílaba tónica en '
+                             'la posición:',
+                 'alternativas': ['Primera',
+                                  'Última',
+                                  'Penúltima',
+                                  'Antepenúltima',
+                                  'Anterior a la antepenúltima'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras agudas llevan tilde cuando '
+                             'terminan en:',
+                 'alternativas': ['Cualquier consonante',
+                                  'N, s o vocal',
+                                  'Solo consonantes dobles',
+                                  'La letra y siempre',
+                                  'Ninguna terminación específica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras llanas o graves tienen la sílaba '
+                             'tónica en la posición:',
+                 'alternativas': ['Última',
+                                  'Penúltima',
+                                  'Antepenúltima',
+                                  'Primera',
+                                  'Anterior a la antepenúltima'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras llanas llevan tilde cuando '
+                             'terminan en:',
+                 'alternativas': ['N, s o vocal',
+                                  'Consonante distinta de n, s o vocal',
+                                  'Solo vocal',
+                                  'Solo la letra y',
+                                  'Ninguna terminación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras esdrújulas tienen la sílaba '
+                             'tónica en la posición:',
+                 'alternativas': ['Última',
+                                  'Penúltima',
+                                  'Antepenúltima',
+                                  'Anterior a la antepenúltima',
+                                  'Primera exclusivamente'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las palabras esdrújulas, en cuanto a la tilde:',
+                 'alternativas': ['Nunca llevan tilde',
+                                  'Todas llevan tilde',
+                                  'Solo algunas llevan tilde',
+                                  'Llevan tilde solo si terminan en vocal',
+                                  'Dependen del contexto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras sobresdrújulas tienen la sílaba '
+                             'tónica:',
+                 'alternativas': ['En la última posición',
+                                  'Anterior a la antepenúltima',
+                                  'En la penúltima',
+                                  'En la antepenúltima',
+                                  'Sin posición fija'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras sobresdrújulas se caracterizan '
+                             'por ser:',
+                 'alternativas': ['Siempre simples',
+                                  'Compuestas, y todas llevan tilde',
+                                  'Monosilábicas',
+                                  'Sin tilde nunca',
+                                  'Solo verbos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «cuéntaselo» es un ejemplo de '
+                             'palabra:',
+                 'alternativas': ['Aguda',
+                                  'Llana',
+                                  'Esdrújula',
+                                  'Sobresdrújula',
+                                  'Monosilábica'],
+                 'correcta': 'D'},
+                {'pregunta': 'La palabra «césped» es un ejemplo de palabra:',
+                 'alternativas': ['Aguda',
+                                  'Llana',
+                                  'Esdrújula',
+                                  'Sobresdrújula',
+                                  'Monosilábica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «comité» lleva tilde porque es '
+                             'aguda terminada en:',
+                 'alternativas': ['Consonante distinta de n o s',
+                                  'N',
+                                  'S',
+                                  'Vocal',
+                                  'Consonante doble'],
+                 'correcta': 'D'},
+                {'pregunta': 'La palabra «botón» lleva tilde porque es aguda '
+                             'terminada en:',
+                 'alternativas': ['Vocal',
+                                  'N',
+                                  'S',
+                                  'Consonante doble',
+                                  'La letra y'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «jueves» no lleva tilde porque, '
+                             'siendo llana, termina en:',
+                 'alternativas': ['Consonante distinta de n o s',
+                                  'S',
+                                  'Vocal abierta tónica',
+                                  'Consonante doble',
+                                  'La letra y'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «música» es un ejemplo de palabra:',
+                 'alternativas': ['Aguda',
+                                  'Llana',
+                                  'Esdrújula',
+                                  'Sobresdrújula',
+                                  'Monosilábica'],
+                 'correcta': 'C'}]}]
