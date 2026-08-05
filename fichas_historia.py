@@ -30,9 +30,9 @@ import streamlit as st
 
 ENCABEZADO_L1 = "I.E.P. YACHAY  ·  ACADEMIA YACHAY"
 ENCABEZADO_L2 = "PIONEROS EN LA EDUCACIÓN DE CALIDAD"
-def pie_legal(area):
+def pie_legal(area, profesor="Prof. Alexander Córdova"):
     return (f"Derechos reservados — ACADEMIA YACHAY · Área: {area} · "
-            f"Prof. Alexander Córdova · "
+            f"{profesor} · "
             f"Uso exclusivo de estudiantes y docentes de la academia")
 
 
@@ -188,6 +188,7 @@ def _pie(canvas, doc):
     from reportlab.lib.units import cm
     import os
     area = getattr(doc, "area_actual", "Historia")
+    profesor = getattr(doc, "profesor_actual", "Prof. Alexander Córdova")
     canvas.saveState()
 
     # Marca de agua tenue centrada en la hoja
@@ -204,7 +205,7 @@ def _pie(canvas, doc):
 
     canvas.setFont("Helvetica", 6)
     canvas.setFillColorRGB(0.42, 0.45, 0.50)
-    canvas.drawCentredString(doc.pagesize[0] / 2, 0.7 * cm, pie_legal(area))
+    canvas.drawCentredString(doc.pagesize[0] / 2, 0.7 * cm, pie_legal(area, profesor))
     canvas.drawRightString(doc.pagesize[0] - 1.2 * cm, 0.7 * cm,
                            f"Pág. {canvas.getPageNumber()}")
     canvas.setStrokeColorRGB(0.80, 0.83, 0.87)
@@ -214,7 +215,8 @@ def _pie(canvas, doc):
 
 
 def generar_ficha_texto(tema, con_claves=False, grado_txt="",
-                        institucion="ACADEMIA YACHAY", area="Historia"):
+                        institucion="ACADEMIA YACHAY", area="Historia",
+                        profesor="Prof. Alexander Córdova"):
     """Ficha de estudio a dos columnas con espacios para completar."""
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame,
@@ -250,6 +252,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                  leftPadding=6, rightPadding=0, topPadding=0, bottomPadding=0)
 
     doc.area_actual = area
+    doc.profesor_actual = profesor
     doc.addPageTemplates([
         PageTemplate(id="primera", frames=[f_enc, f_c1, f_c2], onPage=_pie),
         PageTemplate(id="resto", frames=[g_c1, g_c2], onPage=_pie),
@@ -365,8 +368,48 @@ def balancear(preguntas, semilla=7):
     return salida
 
 
+def generar_qr_claves(tema, area, profesor):
+    """QR con las claves del examen codificadas como texto plano.
+
+    No apunta a ningún servidor: el propio código contiene el texto.
+    Cualquier lector de QR del celular lo muestra de inmediato, sin
+    internet ni nada externo, incluso años después de impreso.
+
+    El contenido va sin tildes: muchos lectores de QR de celular no
+    respetan la codificación UTF-8 y muestran caracteres corruptos
+    («Perú» sale como «Per??»). Quitar los acentos es más legible que
+    arriesgarse a que se vea mal en algún teléfono.
+    """
+    import qrcode
+    import unicodedata
+
+    def sin_tildes(s):
+        return ''.join(c for c in unicodedata.normalize('NFD', str(s))
+                       if unicodedata.category(c) != 'Mn')
+
+    claves = " ".join(
+        f"{i}-{p['correcta']}"
+        for i, p in enumerate(tema.get("preguntas", []), start=1))
+    contenido = sin_tildes(
+        f"ACADEMIA YACHAY - PIONEROS EN LA EDUCACION DE CALIDAD\n"
+        f"{area} - Balota {tema['num']}: {tema['titulo']}\n"
+        f"{profesor}\n"
+        f"CLAVES: {claves}"
+    )
+    qr = qrcode.QRCode(version=None, error_correction=qrcode.constants.ERROR_CORRECT_M,
+                       box_size=10, border=2)
+    qr.add_data(contenido)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#12307F", back_color="white")
+    buf_qr = io.BytesIO()
+    img.save(buf_qr, format="PNG")
+    buf_qr.seek(0)
+    return buf_qr
+
+
 def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
-                            institucion="ACADEMIA YACHAY", area="Historia"):
+                            institucion="ACADEMIA YACHAY", area="Historia",
+                            profesor="Prof. Alexander Córdova"):
     """20 preguntas con cinco alternativas, impresas a DOS COLUMNAS.
 
     A una columna, un banco de 20 preguntas ocupaba tres hojas. A dos
@@ -404,6 +447,7 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
     g2 = Frame(MX + col_w + 0.7 * cm, 1.4 * cm, col_w, altoF, id="d",
                leftPadding=8, rightPadding=0, topPadding=0, bottomPadding=0)
     doc.area_actual = area
+    doc.profesor_actual = profesor
     doc.addPageTemplates([
         PageTemplate(id="p1", frames=[f_enc, f1, f2], onPage=_pie),
         PageTemplate(id="pn", frames=[g1, g2], onPage=_pie)])
@@ -464,6 +508,30 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
             t.setStyle(estilo_t)
             story.append(t)
             story.append(Spacer(1, 3))
+
+        # QR con las claves, solo en la version del alumno: no aparece
+        # en la version del docente porque ahi las claves ya estan
+        # impresas en rojo, y duplicarlas en un QR seria redundante.
+        try:
+            from reportlab.platypus import Image as RLImage
+            qr_buf = generar_qr_claves(tema, area, profesor)
+            story.append(Spacer(1, 6))
+            qr_tabla = Table([[
+                RLImage(qr_buf, width=2.1 * cm, height=2.1 * cm),
+                Paragraph(
+                    "<b>Escanea para ver las claves</b><br/>"
+                    "(revisa tu examen en casa)<br/>"
+                    "<font size=6.5 color='#64748B'>ACADEMIA YACHAY · "
+                    "PIONEROS EN LA EDUCACIÓN DE CALIDAD<br/>"
+                    f"{profesor}</font>", est["cel"]),
+            ]], colWidths=[2.3 * cm, col_w - 2.3 * cm])
+            qr_tabla.setStyle(TableStyle([
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ]))
+            story.append(qr_tabla)
+        except Exception:
+            pass
     else:
         story.append(Spacer(1, 6))
         claves = " · ".join(
