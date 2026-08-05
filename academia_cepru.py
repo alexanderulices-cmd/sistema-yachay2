@@ -90,6 +90,16 @@ try:
 except ImportError:
     pass
 
+try:
+    from fichas_biologia import BIOLOGIA_TEMAS as _BAL_BIOLOGIA
+    AREAS_CEPRU.append({
+        "nombre": "🧬 Biología", "balotas": _BAL_BIOLOGIA,
+        "area_pie": "Biología", "prefijo": "cebi",
+        "completo": len(_BAL_BIOLOGIA) >= 16, "total_oficial": 16,
+    })
+except ImportError:
+    pass
+
 # Cursos anunciados pero aún no escritos: aparecen en el selector como
 # "próximamente" en vez de desaparecer sin explicación.
 PENDIENTES = ["🔢 Aritmética"]
@@ -128,7 +138,7 @@ def tab_academia_cepru(config=None):
 def _render_curso(balotas, area_pie, pfx):
     """Interfaz de un curso: idéntica para todas las áreas, cambiando
     solo la fuente de datos y el prefijo de claves de sesión."""
-    _usa_tema = area_pie in ("Geografía", "Competencia Comunicativa", "Economía")
+    _usa_tema = area_pie in ("Geografía", "Competencia Comunicativa", "Economía", "Biología")
     opciones = {f"{'Tema' if _usa_tema else 'Balota'} "
                 f"{t['num']} — {t['titulo']}": t for t in balotas}
     sel = st.selectbox("Balota / Tema:", list(opciones.keys()),
