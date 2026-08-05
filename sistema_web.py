@@ -10544,6 +10544,24 @@ def generar_stickers_codigo_barras(lista_datos, anio, cols=4, filas=12,
         Un código rasterizado y luego estirado pierde definición y el
         escáner falla. En vector las barras salen exactas a cualquier
         tamaño, que es lo que hace que la etiqueta sea leíble.
+
+        Los códigos PROV0001 llevan letras además de números. Code128
+        necesita un símbolo por cada letra, pero comprime los números de
+        dos en dos, así que a la misma longitud visible un código con
+        letras ocupa más símbolos que uno solo de dígitos. Si ambos se
+        fuerzan al mismo ancho de etiqueta, el de letras sale con las
+        barras más finas — por eso los PROV no escaneaban aunque los
+        DNI sí.
+
+        La corrección usa como referencia el grosor que un celular de 9
+        dígitos obtendría en esta misma etiqueta — ese código ya se
+        confirmó que escanea bien. Ningún código se dibuja con barras
+        más finas que esa referencia, así que un PROV puede desbordar
+        levemente el recuadro, pero nunca más que un número de 9
+        cifras. Un mínimo fijo en milímetros se probó primero y
+        desbordaba varios centímetros hacia la etiqueta vecina: esta
+        referencia relativa evita ese problema.
+
         Devuelve True si se pudo dibujar.
         """
         try:
@@ -10551,17 +10569,31 @@ def generar_stickers_codigo_barras(lista_datos, anio, cols=4, filas=12,
         except Exception:
             return False
         try:
-            # Primer trazo de prueba para medir cuánto ocupa
-            prueba = code128.Code128(str(dni), barWidth=0.01*_cms,
+            BASE = 0.01 * _cms
+            prueba = code128.Code128(str(dni), barWidth=BASE,
                                      barHeight=bh, humanReadable=False,
                                      quiet=True)
             if prueba.width <= 0:
                 return False
-            escala = bw / prueba.width
-            bc = code128.Code128(str(dni), barWidth=0.01*_cms*escala,
+            escala_para_caber = bw / prueba.width
+
+            # Referencia: el ancho natural de un celular de 9 dígitos,
+            # el caso numérico más largo que ya funciona en la práctica.
+            referencia = code128.Code128("999999999", barWidth=BASE,
+                                         barHeight=bh, humanReadable=False,
+                                         quiet=True)
+            escala_minima = bw / referencia.width if referencia.width > 0 else 0
+
+            escala = max(escala_para_caber, escala_minima)
+            bc = code128.Code128(str(dni), barWidth=BASE * escala,
                                  barHeight=bh, humanReadable=False,
                                  quiet=True)
-            bc.drawOn(c, bx, by)
+            # Si el código quedó más ancho que el recuadro, se centra
+            # sobre el mismo eje en vez de arrancar pegado al borde
+            # izquierdo, para que el sobrante se reparta a ambos lados.
+            ancho_final = prueba.width * escala
+            bx_centrado = bx - max(0, (ancho_final - bw) / 2)
+            bc.drawOn(c, bx_centrado, by)
             return True
         except Exception:
             return False
