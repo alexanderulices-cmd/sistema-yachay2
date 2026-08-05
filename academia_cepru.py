@@ -30,6 +30,7 @@ try:
     AREAS_CEPRU.append({
         "nombre": "📜 Historia", "balotas": _BAL_HISTORIA,
         "area_pie": "Historia", "prefijo": "ceh", "completo": True,
+        "total_oficial": 19,
     })
 except ImportError:
     pass
@@ -39,6 +40,7 @@ try:
     AREAS_CEPRU.append({
         "nombre": "🧠 Filosofía y Lógica", "balotas": _BAL_FILOSOFIA,
         "area_pie": "Filosofía y Lógica", "prefijo": "cef", "completo": True,
+        "total_oficial": 17,
     })
 except ImportError:
     pass
@@ -48,7 +50,11 @@ try:
     AREAS_CEPRU.append({
         "nombre": "🌎 Geografía", "balotas": _BAL_GEOGRAFIA,
         "area_pie": "Geografía", "prefijo": "ceg",
-        "completo": len(_BAL_GEOGRAFIA) >= 18,
+        # El temario oficial tiene 20 temas; el material fuente
+        # disponible solo cubre 18 (faltan Transporte y Geografía de
+        # otros continentes, sin PDF fuente todavía).
+        "completo": len(_BAL_GEOGRAFIA) >= 20,
+        "total_oficial": 20,
     })
 except ImportError:
     pass
@@ -59,6 +65,7 @@ try:
         "nombre": "⚖️ Educación Cívica", "balotas": _BAL_CIVICA,
         "area_pie": "Educación Cívica", "prefijo": "cec",
         "completo": len(_BAL_CIVICA) >= 18,
+        "total_oficial": 18,
     })
 except ImportError:
     pass
@@ -85,9 +92,10 @@ def tab_academia_cepru(config=None):
     area = next(a for a in AREAS_CEPRU if a["nombre"] == sel_area)
 
     if not area["completo"]:
+        total = area.get("total_oficial", len(area["balotas"]))
         st.warning(
             f"⚠️ {sel_area} está en construcción: por ahora tiene "
-            f"{len(area['balotas'])} de 18 temas. Los demás se irán "
+            f"{len(area['balotas'])} de {total} temas. Los demás se irán "
             f"agregando — lo que ya está aquí funciona normalmente.")
 
     if PENDIENTES:
@@ -111,8 +119,14 @@ def _render_curso(balotas, area_pie, pfx):
     c2.metric("Preguntas", len(tema["preguntas"]))
     c3.metric("Cuadros", len(tema.get("cuadros", [])))
 
-    grado_txt = st.text_input("Grupo (se imprime en la ficha):",
-                              placeholder="GRUPO CD", key=f"{pfx}_grado")
+    c_g, c_p = st.columns(2)
+    with c_g:
+        grado_txt = st.text_input("Grupo (se imprime en la ficha):",
+                                  placeholder="GRUPO CD", key=f"{pfx}_grado")
+    with c_p:
+        profesor_txt = st.text_input(
+            "Profesor (aparece en el pie y en el QR del examen):",
+            value="Prof. Alexander Córdova", key=f"{pfx}_prof")
 
     st.markdown("##### Descargar")
     d1, d2 = st.columns(2)
@@ -122,14 +136,14 @@ def _render_curso(balotas, area_pie, pfx):
             st.download_button(
                 "📄 Versión del alumno",
                 data=generar_ficha_texto(tema, False, grado_txt,
-                                         area=area_pie),
+                                         area=area_pie, profesor=profesor_txt),
                 file_name=f"ficha_{pfx}_{tema['num']}_alumno.pdf",
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_fa")
             st.download_button(
                 "🔑 Versión del docente (con claves)",
                 data=generar_ficha_texto(tema, True, grado_txt,
-                                         area=area_pie),
+                                         area=area_pie, profesor=profesor_txt),
                 file_name=f"ficha_{pfx}_{tema['num']}_docente.pdf",
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_fd")
@@ -143,14 +157,14 @@ def _render_curso(balotas, area_pie, pfx):
             st.download_button(
                 "📝 Examen para el alumno",
                 data=generar_banco_preguntas(tema_b, False, grado_txt,
-                                             area=area_pie),
+                                             area=area_pie, profesor=profesor_txt),
                 file_name=f"preguntas_{pfx}_{tema['num']}_alumno.pdf",
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_pa")
             st.download_button(
                 "🔑 Con claves para el docente",
                 data=generar_banco_preguntas(tema_b, True, grado_txt,
-                                             area=area_pie),
+                                             area=area_pie, profesor=profesor_txt),
                 file_name=f"preguntas_{pfx}_{tema['num']}_claves.pdf",
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_pd")
