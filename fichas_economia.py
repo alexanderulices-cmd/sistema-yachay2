@@ -538,4 +538,257 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo tiempo libre',
                                   'Solo información',
                                   'Solo tecnología'],
+                 'correcta': 'B'}]},
+ {'num': 3,
+  'titulo': 'Bienes y Servicios',
+  'secciones': [{'titulo': '3.1 CONCEPTO DE BIENES Y RECURSOS ECONÓMICOS',
+                 'items': ['Los bienes son objetos que satisfacen '
+                           'necesidades humanas; también se les conoce como '
+                           '{satisfactores}.',
+                           'Un {recurso económico} es todo recurso natural '
+                           'susceptible de ser transformado en bienes y '
+                           'riqueza.']},
+                {'titulo': '3.2 BIENES LIBRES Y BIENES ECONÓMICOS',
+                 'items': ['Los bienes {no económicos} o libres son '
+                           'abundantes en la naturaleza y no tienen relación '
+                           'de {pertenencia}.',
+                           'Los bienes libres se aprovechan con un {mínimo} '
+                           'esfuerzo; ejemplo: el aire y la energía solar.',
+                           'Los bienes {económicos} requieren de la '
+                           'intervención del ser humano para extraerlos o '
+                           'transformarlos.',
+                           'Los bienes económicos son {escasos}, lo que les '
+                           'genera valor de {cambio}.',
+                           'Los bienes económicos son útiles porque poseen '
+                           'valor de {uso}, y son susceptibles de ser '
+                           '{transados} o vendidos.']},
+                {'titulo': '3.3 CLASIFICACIÓN DE LOS BIENES ECONÓMICOS',
+                 'items': ['Por su naturaleza, los bienes pueden ser '
+                           '{materiales} o tangibles, y {inmateriales} o '
+                           'intangibles.',
+                           'Por su función, los bienes {intermedios} '
+                           'requieren transformación previa; los bienes '
+                           '{finales} están listos para el consumo.',
+                           'Los bienes intermedios también se llaman '
+                           '{presatisfacientes}; los bienes finales se '
+                           'llaman {satisfacientes}.',
+                           'Por su duración, los bienes {fungibles} se '
+                           'utilizan una sola vez, como los alimentos.',
+                           'Los bienes {infungibles} se utilizan varias '
+                           'veces y no se agotan en su primer uso, como los '
+                           'vestidos.',
+                           'Según el Código Civil peruano de {1984}, los '
+                           'bienes se clasifican en muebles e {inmuebles}.']},
+                {'titulo': 'DATOS COMPLEMENTARIOS',
+                 'items': ['Los bienes también son conocidos con el nombre '
+                           'de {Satisfactores}.',
+                           'Un recurso económico se define como aquel '
+                           'susceptible de ser transformado en {Bienes y '
+                           'riqueza}.',
+                           'Los bienes no económicos o libres se '
+                           'caracterizan por ser {Abundantes en la '
+                           'naturaleza}.',
+                           'Los bienes libres se caracterizan porque {No '
+                           'tienen relación de pertenencia}.',
+                           'Un ejemplo típico de bien libre es {El aire}.',
+                           'Los bienes económicos requieren, para obtenerse, '
+                           'la intervención de {El ser humano con su '
+                           'esfuerzo}.',
+                           'Los bienes económicos son escasos, lo que les '
+                           'genera {Valor de cambio}.',
+                           'Por su naturaleza, los bienes que pueden ser '
+                           'percibidos por los sentidos se llaman bienes '
+                           '{Materiales o tangibles}.',
+                           'Las ideas, teorías y derechos de autor son '
+                           'ejemplos de bienes {Inmateriales o intangibles}.',
+                           'Los bienes que requieren transformación previa '
+                           'antes de consumirse se llaman bienes '
+                           '{Intermedios}.',
+                           'Los bienes intermedios también se denominan '
+                           'bienes {Presatisfacientes}.',
+                           'Los bienes listos para el consumo directo se '
+                           'llaman bienes {Finales o satisfacientes}.',
+                           'La harina para hacer fideos es un ejemplo de '
+                           'bien {Intermedio}.',
+                           'El pan, la ropa y la leche son ejemplos de '
+                           'bienes {Finales}.',
+                           'Los bienes que se utilizan una sola vez y '
+                           'desaparecen en su primer uso se llaman bienes '
+                           '{Fungibles}.',
+                           'Los bienes que se utilizan varias veces sin '
+                           'agotarse en el primer uso se llaman bienes '
+                           '{Infungibles o duraderos}.',
+                           'Los alimentos y las materias primas son ejemplos '
+                           'de bienes {Fungibles}.',
+                           'Los vestidos, zapatos y libros son ejemplos de '
+                           'bienes {Infungibles}.',
+                           'El Código Civil peruano que clasifica los bienes '
+                           'en muebles e inmuebles está vigente desde '
+                           '{1984}.',
+                           'Los bienes muebles se caracterizan porque pueden '
+                           'trasladarse de un lugar a otro {Con suma '
+                           'facilidad y sin ser destruidos}.']}],
+  'cuadros': [{'titulo': '3.2 BIENES LIBRES FRENTE A BIENES ECONÓMICOS',
+               'encabezados': ['Aspecto',
+                               'Bienes libres',
+                               'Bienes económicos'],
+               'filas': [['Abundancia', '{Abundantes}', '{Escasos}'],
+                         ['Propietario', '{No} tienen', '{Sí} tienen'],
+                         ['Esfuerzo',
+                          '{Mínimo}',
+                          'Con {tecnología} y trabajo']]}],
+  'preguntas': [{'pregunta': 'Los bienes también son conocidos con el nombre '
+                             'de:',
+                 'alternativas': ['Recursos naturales',
+                                  'Satisfactores',
+                                  'Factores productivos',
+                                  'Insumos exclusivos',
+                                  'Servicios'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un recurso económico se define como aquel '
+                             'susceptible de ser transformado en:',
+                 'alternativas': ['Dinero exclusivamente',
+                                  'Bienes y riqueza',
+                                  'Impuestos',
+                                  'Deuda pública',
+                                  'Inflación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes no económicos o libres se '
+                             'caracterizan por ser:',
+                 'alternativas': ['Escasos',
+                                  'Abundantes en la naturaleza',
+                                  'Producidos por el hombre',
+                                  'Costosos',
+                                  'Transables en el mercado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes libres se caracterizan porque:',
+                 'alternativas': ['Tienen propietario',
+                                  'No tienen relación de pertenencia',
+                                  'Requieren gran esfuerzo',
+                                  'Son transformados industrialmente',
+                                  'Generan valor de cambio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un ejemplo típico de bien libre es:',
+                 'alternativas': ['Un automóvil',
+                                  'El aire',
+                                  'Una computadora',
+                                  'Una vivienda',
+                                  'Un libro'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes económicos requieren, para '
+                             'obtenerse, la intervención de:',
+                 'alternativas': ['La naturaleza sin más',
+                                  'El ser humano con su esfuerzo',
+                                  'Ningún factor productivo',
+                                  'Solo el clima',
+                                  'Solo el azar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes económicos son escasos, lo que les '
+                             'genera:',
+                 'alternativas': ['Valor de uso únicamente',
+                                  'Valor de cambio',
+                                  'Abundancia',
+                                  'Gratuidad',
+                                  'Ausencia de mercado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por su naturaleza, los bienes que pueden ser '
+                             'percibidos por los sentidos se llaman bienes:',
+                 'alternativas': ['Inmateriales',
+                                  'Materiales o tangibles',
+                                  'Intermedios',
+                                  'Fungibles',
+                                  'Finales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las ideas, teorías y derechos de autor son '
+                             'ejemplos de bienes:',
+                 'alternativas': ['Materiales',
+                                  'Inmateriales o intangibles',
+                                  'Fungibles',
+                                  'De consumo industrial',
+                                  'Muebles'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes que requieren transformación previa '
+                             'antes de consumirse se llaman bienes:',
+                 'alternativas': ['Finales',
+                                  'Intermedios',
+                                  'Fungibles',
+                                  'Libres',
+                                  'Inmuebles'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes intermedios también se denominan '
+                             'bienes:',
+                 'alternativas': ['Satisfacientes',
+                                  'Presatisfacientes',
+                                  'Finales',
+                                  'Muebles',
+                                  'Libres'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes listos para el consumo directo se '
+                             'llaman bienes:',
+                 'alternativas': ['Intermedios',
+                                  'Finales o satisfacientes',
+                                  'Presatisfacientes',
+                                  'Libres',
+                                  'Inmuebles'],
+                 'correcta': 'B'},
+                {'pregunta': 'La harina para hacer fideos es un ejemplo de '
+                             'bien:',
+                 'alternativas': ['Final',
+                                  'Intermedio',
+                                  'Libre',
+                                  'Inmueble',
+                                  'Fungible exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El pan, la ropa y la leche son ejemplos de '
+                             'bienes:',
+                 'alternativas': ['Intermedios',
+                                  'Finales',
+                                  'Libres',
+                                  'Inmuebles',
+                                  'No económicos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes que se utilizan una sola vez y '
+                             'desaparecen en su primer uso se llaman bienes:',
+                 'alternativas': ['Infungibles',
+                                  'Fungibles',
+                                  'Inmuebles',
+                                  'Intermedios',
+                                  'Libres'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes que se utilizan varias veces sin '
+                             'agotarse en el primer uso se llaman bienes:',
+                 'alternativas': ['Fungibles',
+                                  'Infungibles o duraderos',
+                                  'Libres',
+                                  'Presatisfacientes',
+                                  'Muebles exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los alimentos y las materias primas son '
+                             'ejemplos de bienes:',
+                 'alternativas': ['Infungibles',
+                                  'Fungibles',
+                                  'Inmuebles',
+                                  'Finales exclusivos',
+                                  'Libres'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los vestidos, zapatos y libros son ejemplos de '
+                             'bienes:',
+                 'alternativas': ['Fungibles',
+                                  'Infungibles',
+                                  'Libres',
+                                  'Intermedios exclusivos',
+                                  'No económicos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Código Civil peruano que clasifica los '
+                             'bienes en muebles e inmuebles está vigente '
+                             'desde:',
+                 'alternativas': ['1970', '1984', '1993', '2000', '1950'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes muebles se caracterizan porque '
+                             'pueden trasladarse de un lugar a otro:',
+                 'alternativas': ['Solo con gran dificultad',
+                                  'Con suma facilidad y sin ser destruidos',
+                                  'Nunca',
+                                  'Solo destruyéndolos',
+                                  'Solo con maquinaria pesada'],
                  'correcta': 'B'}]}]
