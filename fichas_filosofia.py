@@ -639,7 +639,9 @@ BALOTAS_FILO = [{'num': 1,
                            'Sostuvo la doctrina de la {iluminación}: Dios '
                            'ilumina la mente para conocer la {verdad}.',
                            'Su lema fue «{cree} para comprender y comprende '
-                           'para creer».']},
+                           'para creer».',
+                           'San Agustín nació en {Tagaste}, en la actual '
+                           '{Argelia}.']},
                 {'titulo': '3.3 LA ESCOLÁSTICA',
                  'items': ['Método de enseñanza medieval basado en la '
                            '{disputa} y el comentario de textos.',
@@ -655,73 +657,16 @@ BALOTAS_FILO = [{'num': 1,
                            '{hombre} pasa a ser el centro.',
                            'Recuperación de la cultura {grecolatina} y '
                            'valoración del {humanismo}.',
+                           '{Nicolás Copérnico}, astrónomo polaco '
+                           '(1473-1543), formuló la teoría {heliocéntrica}: '
+                           'la Tierra gira sobre su eje y orbita alrededor '
+                           'del Sol.',
+                           'Su obra «{De Revolutionibus Orbium Coelestium}» '
+                           'resolvía los problemas del modelo geocéntrico de '
+                           '{Ptolomeo}.',
                            '{Nicolás Maquiavelo}: autor de «El {Príncipe}». '
                            'Separó la {política} de la moral; se le atribuye '
-                           'la máxima «el {fin} justifica los medios».']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El pensamiento medieval se caracterizó por ser '
-                           '{Teocéntrico}.',
-                           'En la Edad Media la filosofía fue considerada '
-                           '{Sierva de la teología}.',
-                           'El problema central de la filosofía medieval fue '
-                           'la relación entre {Razón y fe}.',
-                           'San Agustín de Hipona estuvo influido '
-                           'principalmente por {Platón}.',
-                           'Una obra fundamental de San Agustín es {La '
-                           'ciudad de Dios}.',
-                           'La doctrina agustiniana según la cual Dios '
-                           'ilumina la mente humana se llama {Iluminación}.',
-                           'La etapa de los Padres de la Iglesia se denomina '
-                           '{Patrística}.',
-                           'Santo Tomás de Aquino estuvo influido '
-                           'principalmente por {Aristóteles}.',
-                           'La obra principal de Santo Tomás de Aquino es '
-                           '{Suma Teológica}.',
-                           'Santo Tomás formuló para demostrar la existencia '
-                           'de Dios {Las cinco vías}.',
-                           'Para Santo Tomás, la razón y la fe {Se '
-                           'complementan}.',
-                           'La escolástica se basó como método en {La '
-                           'disputa y el comentario de textos}.',
-                           'El Renacimiento se caracterizó por el '
-                           '{Antropocentrismo}.',
-                           'El autor de «El Príncipe» fue {Nicolás '
-                           'Maquiavelo}.',
-                           'Maquiavelo es conocido por separar la política '
-                           'de {La moral}.',
-                           'La máxima «el fin justifica los medios» se '
-                           'atribuye a {Maquiavelo}.',
-                           'El Renacimiento recuperó la cultura '
-                           '{Grecolatina}.',
-                           'El movimiento que valoró la dignidad y las '
-                           'capacidades del ser humano se llamó {Humanismo}.',
-                           'La expresión latina «ancilla theologiae» '
-                           'significa que la filosofía era {Sierva de la '
-                           'teología}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['San Agustín de Hipona nació en Tagaste, en la '
-                           'actual {Argelia}.',
-                           'Copérnico publicó en 1514 un breve reporte '
-                           'llamado «{Pequeño Comentario}», donde exponía '
-                           'por primera vez su teoría heliocéntrica.',
-                           'La obra principal de Copérnico se tituló «De '
-                           'Revolutionibus Orbium {Coelestium}», sobre los '
-                           'giros de los orbes celestes.',
-                           'Maquiavelo, autor de «El Príncipe», sostenía que '
-                           'la mejor forma de gobierno era la {República}.',
-                           'Francis Bacon tituló a su obra principal «{Novum '
-                           'Organum}», el nuevo instrumento de la '
-                           'investigación, en oposición a la lógica '
-                           'aristotélica.',
-                           'Para Descartes, la sustancia espiritual tiene '
-                           'como esencia el pensamiento, llamada «res '
-                           '{cogitans}».',
-                           'John Locke sostenía que la mente humana al nacer '
-                           'es como un «papel en {blanco}», sin ideas '
-                           'previas.',
-                           'Thomas Hobbes sostenía que las leyes que rigen '
-                           'el comportamiento humano son las mismas que '
-                           'rigen el {universo}, de origen divino.']}],
+                           'la máxima «el {fin} justifica los medios».']}],
   'cuadros': [{'titulo': '3. DOS ETAPAS DEL PENSAMIENTO MEDIEVAL',
                'encabezados': ['Etapa', 'Representante', 'Influencia'],
                'filas': [['{Patrística}', 'San {Agustín}', '{Platón}'],
@@ -879,18 +824,85 @@ BALOTAS_FILO = [{'num': 1,
                                   'Madre de la lógica',
                                   'Reina de las ciencias',
                                   'Enemiga de la fe'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El astrónomo polaco que formuló la teoría '
+                             'heliocéntrica en el Renacimiento fue:',
+                 'alternativas': ['Galileo Galilei',
+                                  'Nicolás Copérnico',
+                                  'Johannes Kepler',
+                                  'Giordano Bruno',
+                                  'Tycho Brahe'],
+                 'correcta': 'B'},
+                {'pregunta': 'La obra de Copérnico que expone la teoría '
+                             'heliocéntrica se titula:',
+                 'alternativas': ['Novum Organum',
+                                  'De Revolutionibus Orbium Coelestium',
+                                  'Almagesto',
+                                  'Diálogo sobre los dos máximos sistemas',
+                                  'Sidereus Nuncius'],
+                 'correcta': 'B'},
+                {'pregunta': 'La teoría heliocéntrica de Copérnico resolvía '
+                             'los problemas del modelo geocéntrico planteado '
+                             'por:',
+                 'alternativas': ['Aristóteles',
+                                  'Ptolomeo',
+                                  'Pitágoras',
+                                  'Platón',
+                                  'Eratóstenes'],
+                 'correcta': 'B'},
+                {'pregunta': 'San Agustín de Hipona nació en la ciudad de '
+                             'Tagaste, ubicada en la actual:',
+                 'alternativas': ['Egipto',
+                                  'Argelia',
+                                  'Túnez',
+                                  'Marruecos',
+                                  'Libia'],
+                 'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'La filosofía moderna y filosofía en el Perú',
   'secciones': [{'titulo': '4.1 RACIONALISMO Y EMPIRISMO',
-                 'items': ['{René Descartes}, padre de la filosofía moderna, '
+                 'items': ['{Francisco Bacon}, materialista inglés, propuso '
+                           'el método {inductivo} en su obra «{Novum '
+                           'Organum}».',
+                           'Bacon sostuvo que antes de investigar hay que '
+                           'eliminar los {ídolos} de la mente: prejuicios '
+                           'que impiden el conocimiento verdadero.',
+                           'Los cuatro ídolos de Bacon son: de la {tribu} '
+                           '(interpretación antropomórfica), de la {caverna} '
+                           '(prejuicios personales), del {foro} (mal uso del '
+                           'lenguaje) y del {teatro} (aceptación acrítica de '
+                           'autoridades).',
+                           '{René Descartes}, padre de la filosofía moderna, '
                            'fundó el {racionalismo}. Su método parte de la '
                            '{duda} metódica.',
                            'Su principio fundamental es «pienso, luego '
                            '{existo}» ({cogito ergo sum}).',
+                           'Descartes distinguió tres sustancias: la {res '
+                           'extensa} (sustancia corporal), la {res cogitans} '
+                           '(sustancia espiritual o pensamiento), y la res '
+                           '{necesaria} (Dios).',
                            '{John Locke}: fundador del {empirismo}. La mente '
                            'al nacer es una {tabla rasa}; todo conocimiento '
-                           'proviene de la {experiencia}.']},
+                           'proviene de la {experiencia}.',
+                           'Locke distinguió dos tipos de experiencia: la '
+                           '{externa}, por contacto con los objetos mediante '
+                           'los sentidos, y la {interna}, por reflexión de '
+                           'la mente sobre sí misma.']},
+                {'titulo': '4.1.1 THOMAS HOBBES Y EL CONTRATO SOCIAL',
+                 'items': ['{Tomás Hobbes}, filósofo inglés, sostuvo que las '
+                           'leyes que rigen al hombre son las mismas que '
+                           'rigen el {universo}.',
+                           'Para Hobbes, en estado natural el hombre es '
+                           '{antisocial} y se mueve por el deseo y el '
+                           '{temor}.',
+                           'Su célebre frase «el {hombre} es un lobo para el '
+                           'hombre» describe el estado de «{guerra} de todos '
+                           'contra todos».',
+                           'Para superar ese estado, los hombres deben '
+                           'establecer un «{contrato social}», transfiriendo '
+                           'sus derechos a un {soberano} absoluto.',
+                           'Su obra más conocida, donde expone esta teoría, '
+                           'es el «{Leviatán}».']},
                 {'titulo': '4.2 KANT Y HEGEL',
                  'items': ['{Immanuel Kant}: realizó la síntesis entre '
                            'racionalismo y empirismo, llamada {criticismo}. '
@@ -904,6 +916,27 @@ BALOTAS_FILO = [{'num': 1,
                            '{Hegel}: desarrolló el método {dialéctico}, con '
                            'tres momentos: {tesis}, {antítesis} y '
                            '{síntesis}. Su sistema es {idealista}.']},
+                {'titulo': '4.2.1 FRIEDRICH NIETZSCHE',
+                 'items': ['{Friedrich Nietzsche} es considerado el filósofo '
+                           'más importante del {voluntarismo} del siglo XIX.',
+                           'Estuvo influenciado por {Schopenhauer} y su obra '
+                           '«El mundo como voluntad y {representación}».',
+                           'Distinguió dos tipos de moral: la moral del '
+                           '{amo}, que exalta la fuerza y la nobleza, y la '
+                           'moral del {esclavo}, que exalta la compasión y '
+                           'la {resignación}.',
+                           'Para Nietzsche, la moral del esclavo es la moral '
+                           'de los {cristianos}, que predican el amor al '
+                           'prójimo y la renuncia a la vida.',
+                           'Proclamó la «{muerte de Dios}»: solo tras ella '
+                           'surgirá un nuevo hombre que acepte la vida y el '
+                           '{eterno retorno}.',
+                           'Planteó el ideal del {superhombre}, que acepta '
+                           'la muerte de Dios y vive fiel a la {tierra}, sin '
+                           'buscar mundos trascendentes.',
+                           'Entre sus obras principales figuran «Así habló '
+                           '{Zaratustra}», «Más allá del bien y del mal» y '
+                           '«La genealogía de la {moral}».']},
                 {'titulo': '4.3 MARX Y EL MATERIALISMO',
                  'items': ['{Carlos Marx}: invirtió la dialéctica de Hegel y '
                            'creó el materialismo {dialéctico} e histórico.',
@@ -913,6 +946,27 @@ BALOTAS_FILO = [{'num': 1,
                            '«Los filósofos se han limitado a interpretar el '
                            'mundo; de lo que se trata es de '
                            '{transformarlo}».']},
+                {'titulo': '4.4.1 MANUEL GONZÁLEZ PRADA',
+                 'items': ['{Manuel González Prada} (1846-1918) mostró su '
+                           'inclinación al {positivismo} peruano, como '
+                           'respuesta a la crisis tras el caudillismo y la '
+                           'guerra con Chile.',
+                           'Su balance de la Independencia peruana fue '
+                           '{pesimista}: la calificó de una «orgía» que dejó '
+                           'heces, manchada por la guerra civil.',
+                           'Según González Prada, la {ignorancia} y el '
+                           'espíritu de servidumbre determinaron la derrota '
+                           'del Perú en la Guerra del {Pacífico}.',
+                           'Fue {antirreligioso}, anarquista y {anti '
+                           'hispanista}; consideró al Estado un instrumento '
+                           'de los poderosos para perpetuar la '
+                           '{servidumbre}.',
+                           'Sostuvo que el Perú verdadero y profundo es el '
+                           'que pertenece a los {indígenas}, y culpó a la '
+                           '{oligarquía} de la crisis nacional.',
+                           'Su obra principal, «{Páginas Libres}», influyó '
+                           'profundamente en Abraham Valdelomar, Haya de la '
+                           'Torre y {Mariátegui}.']},
                 {'titulo': '4.4 FILOSOFÍA EN EL PERÚ',
                  'items': ['{José Carlos Mariátegui}: autor de «{7 ensayos} '
                            'de interpretación de la realidad peruana». '
@@ -922,75 +976,7 @@ BALOTAS_FILO = [{'num': 1,
                            '{Augusto Salazar Bondy}: autor de «¿Existe una '
                            'filosofía de nuestra {América}?». Sostuvo que '
                            'nuestra filosofía ha sido {imitativa} por ser '
-                           'reflejo de una sociedad {dominada}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El padre de la filosofía moderna es {René '
-                           'Descartes}.',
-                           'El principio «pienso, luego existo» pertenece a '
-                           '{Descartes}.',
-                           'El método cartesiano parte de {La duda '
-                           'metódica}.',
-                           'Para el empirismo, todo conocimiento proviene de '
-                           '{La experiencia}.',
-                           'John Locke sostuvo que la mente al nacer es {Una '
-                           'tabla rasa}.',
-                           'La síntesis entre racionalismo y empirismo fue '
-                           'realizada por {Kant}.',
-                           'El lema «atrévete a saber» corresponde a {Kant}.',
-                           'Kant llamó «noúmeno» a {La cosa en sí, '
-                           'incognoscible}.',
-                           'El imperativo categórico de Kant exige obrar de '
-                           'modo que la acción pueda ser {Ley universal}.',
-                           'Los tres momentos de la dialéctica hegeliana son '
-                           '{Tesis, antítesis y síntesis}.',
-                           'El sistema filosófico de Hegel es {Idealista}.',
-                           'Marx invirtió la dialéctica de Hegel y '
-                           'desarrolló {El materialismo dialéctico e '
-                           'histórico}.',
-                           'Para Marx, la infraestructura económica '
-                           'determina {La superestructura jurídica, política '
-                           'e ideológica}.',
-                           'El autor de «7 ensayos de interpretación de la '
-                           'realidad peruana» es {José Carlos Mariátegui}.',
-                           'Para Mariátegui, el problema del indio es '
-                           'fundamentalmente un problema {De la tierra}.',
-                           'El autor de «¿Existe una filosofía de nuestra '
-                           'América?» es {Augusto Salazar Bondy}.',
-                           'Según Salazar Bondy, la filosofía '
-                           'latinoamericana ha sido {Imitativa, reflejo de '
-                           'una sociedad dominada}.',
-                           'Mariátegui aplicó al análisis del Perú el método '
-                           '{Marxista}.',
-                           'El criticismo kantiano sostiene que el '
-                           'conocimiento resulta de {La unión de razón y '
-                           'experiencia}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Para Hegel, la realidad se estructura en tres '
-                           'momentos: espíritu subjetivo, espíritu objetivo '
-                           'y espíritu {absoluto}.',
-                           'Entre las obras de Carlos Marx figuran «El '
-                           'Capital» y «{Miseria} de la filosofía».',
-                           'Engels vivió y trabajó en Manchester, donde '
-                           'conoció de cerca las condiciones de vida de los '
-                           '{obreros}.',
-                           'Nietzsche estuvo influenciado por '
-                           '{Schopenhauer}, cuya obra «El mundo como '
-                           'voluntad y representación» estudió a fondo.',
-                           'En «Así habló Zaratustra», Nietzsche distingue '
-                           'entre la moral del amo y la moral del {esclavo}.',
-                           'González Prada expresó su crítica más dura a la '
-                           'clase dirigente en su obra «{Páginas Libres}».',
-                           'Mariátegui fundó en 1926 la revista {Amauta}, '
-                           'que fue clausurada en 1927 bajo la acusación de '
-                           'un supuesto complot comunista.',
-                           'En 1929, Mariátegui fundó la {Confederación '
-                           'General de Trabajadores} del Perú.',
-                           'Una crisis de su enfermedad obligó a amputarle '
-                           'una pierna a Mariátegui en el año {1924}, '
-                           'condenándolo a usar silla de ruedas.',
-                           'Salazar Bondy fue uno de los ideólogos de la '
-                           'Reforma Educativa durante el gobierno militar de '
-                           '{Velasco Alvarado}.']}],
+                           'reflejo de una sociedad {dominada}.']}],
   'cuadros': [{'titulo': '4. CORRIENTES DE LA FILOSOFÍA MODERNA',
                'encabezados': ['Corriente',
                                'Representante',
@@ -1156,7 +1142,246 @@ BALOTAS_FILO = [{'num': 1,
                                   'La revelación divina',
                                   'La tradición',
                                   'Solo los sentidos'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El filósofo inglés materialista que propuso el '
+                             'método inductivo en su obra Novum Organum fue:',
+                 'alternativas': ['John Locke',
+                                  'Francisco Bacon',
+                                  'Tomás Hobbes',
+                                  'David Hume',
+                                  'Thomas Aquino'],
+                 'correcta': 'B'},
+                {'pregunta': 'Bacon sostuvo que antes de investigar hay que '
+                             'eliminar de la mente los:',
+                 'alternativas': ['Silogismos',
+                                  'Ídolos',
+                                  'Axiomas',
+                                  'Postulados',
+                                  'Dogmas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ídolo baconiano que consiste en interpretar '
+                             'antropomórficamente la naturaleza se llama '
+                             'ídolo de la:',
+                 'alternativas': ['Caverna',
+                                  'Tribu',
+                                  'Foro',
+                                  'Teatro',
+                                  'Ciudad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ídolo baconiano originado en los prejuicios '
+                             'personales de cada individuo se llama ídolo de '
+                             'la:',
+                 'alternativas': ['Tribu',
+                                  'Caverna',
+                                  'Foro',
+                                  'Teatro',
+                                  'Escuela'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ídolo baconiano relacionado con el mal uso '
+                             'del lenguaje se llama ídolo del:',
+                 'alternativas': ['Teatro',
+                                  'Foro',
+                                  'Tribu',
+                                  'Templo',
+                                  'Palacio'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ídolo baconiano relacionado con la '
+                             'aceptación acrítica de autoridades se llama '
+                             'ídolo del:',
+                 'alternativas': ['Foro',
+                                  'Teatro',
+                                  'Tribu',
+                                  'Caverna',
+                                  'Mercado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Descartes distinguió tres sustancias: la res '
+                             'extensa, la res necesaria y la:',
+                 'alternativas': ['Res publica',
+                                  'Res cogitans',
+                                  'Res divina exclusiva',
+                                  'Res naturae',
+                                  'Res finita'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la filosofía cartesiana, la sustancia '
+                             'espiritual, cuya esencia es el pensamiento, se '
+                             'llama:',
+                 'alternativas': ['Res extensa',
+                                  'Res cogitans',
+                                  'Res necesaria',
+                                  'Res corporal',
+                                  'Res mundi'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la filosofía cartesiana, la sustancia '
+                             'corporal, cuya esencia es la extensión, se '
+                             'llama:',
+                 'alternativas': ['Res cogitans',
+                                  'Res extensa',
+                                  'Res necesaria',
+                                  'Res divina',
+                                  'Res mentis'],
+                 'correcta': 'B'},
+                {'pregunta': 'John Locke distinguió dos tipos de '
+                             'experiencia: la interna y la:',
+                 'alternativas': ['Trascendental',
+                                  'Externa',
+                                  'Espiritual',
+                                  'Innata',
+                                  'Racional'],
+                 'correcta': 'B'},
+                {'pregunta': 'La experiencia que surge cuando la mente '
+                             'reflexiona sobre sus propias sensaciones, '
+                             'según Locke, se llama experiencia:',
+                 'alternativas': ['Externa',
+                                  'Interna',
+                                  'Sensorial exclusiva',
+                                  'Innata',
+                                  'Trascendental'],
+                 'correcta': 'B'},
+                {'pregunta': 'Tomás Hobbes sostuvo que en estado natural el '
+                             'hombre es:',
+                 'alternativas': ['Sociable por naturaleza',
+                                  'Antisocial, movido por el deseo y el '
+                                  'temor',
+                                  'Racional puro',
+                                  'Altruista',
+                                  'Pacífico por instinto'],
+                 'correcta': 'B'},
+                {'pregunta': 'La célebre frase de Hobbes que describe la '
+                             'naturaleza humana en estado natural es:',
+                 'alternativas': ['«El hombre es la medida de todas las '
+                                  'cosas»',
+                                  '«El hombre es un lobo para el hombre»',
+                                  '«El hombre nace bueno»',
+                                  '«El hombre es un animal político»',
+                                  '«El hombre es un junco pensante»'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Hobbes, para superar el estado de guerra '
+                             'de todos contra todos, los hombres deben '
+                             'establecer un:',
+                 'alternativas': ['Imperio universal',
+                                  'Contrato social',
+                                  'Sistema feudal',
+                                  'Gobierno directo',
+                                  'Concilio religioso'],
+                 'correcta': 'B'},
+                {'pregunta': 'La obra más conocida de Hobbes, donde expone '
+                             'su teoría del contrato social, es:',
+                 'alternativas': ['El Príncipe',
+                                  'El Leviatán',
+                                  'Utopía',
+                                  'El Contrato Social',
+                                  'Dos Tratados sobre el Gobierno'],
+                 'correcta': 'B'},
+                {'pregunta': 'Friedrich Nietzsche es considerado el filósofo '
+                             'más importante del siglo XIX en la corriente '
+                             'del:',
+                 'alternativas': ['Racionalismo',
+                                  'Voluntarismo',
+                                  'Empirismo',
+                                  'Positivismo',
+                                  'Idealismo absoluto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Nietzsche estuvo influenciado principalmente '
+                             'por el filósofo:',
+                 'alternativas': ['Hegel',
+                                  'Schopenhauer',
+                                  'Kant',
+                                  'Descartes',
+                                  'Locke'],
+                 'correcta': 'B'},
+                {'pregunta': 'Nietzsche distinguió la moral del amo, que '
+                             'exalta la fuerza, de la moral:',
+                 'alternativas': ['Divina',
+                                  'Del esclavo',
+                                  'Universal',
+                                  'Racional',
+                                  'Científica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para Nietzsche, la moral del esclavo, que '
+                             'exalta la compasión y la resignación, es la '
+                             'moral de los:',
+                 'alternativas': ['Filósofos griegos',
+                                  'Cristianos',
+                                  'Guerreros',
+                                  'Científicos',
+                                  'Comerciantes'],
+                 'correcta': 'B'},
+                {'pregunta': 'Nietzsche proclamó una idea célebre conocida '
+                             'como:',
+                 'alternativas': ['El nacimiento de Dios',
+                                  'La muerte de Dios',
+                                  'El regreso de Dios',
+                                  'La duda de Dios',
+                                  'El silencio de Dios'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ideal nietzscheano del hombre que acepta la '
+                             'muerte de Dios y vive fiel a la tierra se '
+                             'llama:',
+                 'alternativas': ['El hombre racional',
+                                  'El superhombre',
+                                  'El hombre virtuoso',
+                                  'El hombre sabio',
+                                  'El hombre justo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una de las obras principales de Nietzsche es:',
+                 'alternativas': ['El Príncipe',
+                                  'Así habló Zaratustra',
+                                  'Utopía',
+                                  'El Leviatán',
+                                  'Confesiones'],
+                 'correcta': 'B'},
+                {'pregunta': 'Manuel González Prada mostró su inclinación '
+                             'filosófica hacia el:',
+                 'alternativas': ['Idealismo',
+                                  'Positivismo',
+                                  'Racionalismo',
+                                  'Empirismo puro',
+                                  'Existencialismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El balance que hizo González Prada de la '
+                             'Independencia del Perú fue:',
+                 'alternativas': ['Optimista',
+                                  'Pesimista',
+                                  'Neutral',
+                                  'Indiferente',
+                                  'Triunfalista'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según González Prada, la derrota del Perú en '
+                             'la Guerra del Pacífico se debió principalmente '
+                             'a:',
+                 'alternativas': ['La superioridad militar chilena '
+                                  'exclusivamente',
+                                  'La ignorancia y el espíritu de '
+                                  'servidumbre',
+                                  'La falta de armamento',
+                                  'El clima',
+                                  'La distancia geográfica'],
+                 'correcta': 'B'},
+                {'pregunta': 'González Prada consideraba que el Estado era '
+                             'un instrumento de los poderosos para '
+                             'perpetuar:',
+                 'alternativas': ['El progreso',
+                                  'La servidumbre de los más débiles',
+                                  'La ciencia',
+                                  'La educación',
+                                  'El comercio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para González Prada, el Perú verdadero y '
+                             'profundo es el que pertenece a:',
+                 'alternativas': ['Los criollos',
+                                  'Los indígenas',
+                                  'La oligarquía',
+                                  'El clero',
+                                  'Los extranjeros'],
+                 'correcta': 'B'},
+                {'pregunta': 'La obra principal de González Prada, que '
+                             'influyó en Mariátegui y Haya de la Torre, es:',
+                 'alternativas': ['Horas de lucha',
+                                  'Páginas Libres',
+                                  'Anarquía',
+                                  'Nuevas páginas libres',
+                                  'El Perú profundo'],
+                 'correcta': 'B'}]},
  {'num': 5,
   'titulo': 'Antropología filosófica: el problema del hombre',
   'secciones': [{'titulo': '5.1 CONCEPTO',
@@ -1173,8 +1398,10 @@ BALOTAS_FILO = [{'num': 1,
                            '{Evolucionismo}: el hombre es producto de un '
                            'proceso de {evolución}; formulado por Charles '
                            '{Darwin} mediante la selección {natural}.',
-                           '{Neodarwinismo}: complementa a Darwin con los '
-                           'aportes de la {genética} y las {mutaciones}.']},
+                           '{Neodarwinismo} o Teoría Sintética: complementa '
+                           'a Darwin con los aportes de la genética; sus '
+                           'representantes son {Dobzhansky}, Mayr y '
+                           '{Simpson}.']},
                 {'titulo': '5.3 y 5.4 EL HOMBRE COMO SER NATURAL Y '
                            'ESPIRITUAL',
                  'items': ['Como ser {natural}: posee un cuerpo {biológico} '
@@ -1187,66 +1414,7 @@ BALOTAS_FILO = [{'num': 1,
                            'según {Aristóteles} («zoon politikon»).',
                            'Es también un ser {racional}, capaz de '
                            '{lenguaje} simbólico y de trabajo '
-                           'transformador.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La disciplina filosófica que estudia al hombre '
-                           'en su totalidad es {Antropología filosófica}.',
-                           'La antropología filosófica se diferencia de la '
-                           'cultural porque {Reflexiona sobre el ser del '
-                           'hombre}.',
-                           'El creacionismo sostiene que el hombre fue '
-                           '{Creado por un ser superior}.',
-                           'El mito griego que explica el origen del hombre '
-                           'mediante un titán es el de {Prometeo}.',
-                           'La teoría de la evolución por selección natural '
-                           'fue formulada por {Charles Darwin}.',
-                           'El neodarwinismo complementa a Darwin con los '
-                           'aportes de {La genética y las mutaciones}.',
-                           'Como ser natural, el hombre se caracteriza por '
-                           '{Poseer un cuerpo biológico sujeto a leyes '
-                           'naturales}.',
-                           'Como ser espiritual, el hombre posee '
-                           '{Conciencia, libertad y capacidad de crear '
-                           'cultura}.',
-                           'La expresión «zoon politikon», que define al '
-                           'hombre como ser social, es de {Aristóteles}.',
-                           'Lo que distingue al hombre del resto de '
-                           'animales, según la antropología filosófica, es '
-                           '{Su racionalidad y capacidad simbólica}.',
-                           'La capacidad humana de transformar la naturaleza '
-                           'mediante la actividad consciente es {El '
-                           'trabajo}.',
-                           'La tradición judeocristiana corresponde a la '
-                           'teoría {Creacionista}.',
-                           'El hombre es considerado un ser bidimensional '
-                           'porque es a la vez {Natural y espiritual}.',
-                           'El lenguaje simbólico es una característica '
-                           '{Propia del ser humano}.',
-                           'La antropología filosófica se pregunta '
-                           'fundamentalmente por {La esencia y el sentido de '
-                           'la existencia humana}.',
-                           'La cultura, según la antropología filosófica, es '
-                           'producto de la dimensión {Espiritual}.',
-                           'La libertad humana implica fundamentalmente la '
-                           'capacidad de {Elegir y responder por los propios '
-                           'actos}.',
-                           'Para el evolucionismo, el hombre y los primates '
-                           'actuales comparten {Un antepasado común}.',
-                           'Las necesidades e instintos corresponden a la '
-                           'dimensión humana {Natural o biológica}.',
-                           'El ser humano crea valores, normas y símbolos '
-                           'porque es un ser {Cultural y espiritual}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Según la teoría dualista, el hombre está '
-                           'constituido por materia y espíritu: un cuerpo '
-                           'mortal y un {alma} o espíritu.',
-                           'El creacionismo bíblico sostiene que el hombre '
-                           'fue creado a imagen y {semejanza} de Dios.',
-                           'Charles Darwin es considerado el biólogo más '
-                           'importante de la historia, comparable en '
-                           'trascendencia científica a {Isaac Newton}.',
-                           'Entre los representantes del evolucionismo '
-                           'moderno figuran Dobzhansky, Mayr y {Simpson}.']}],
+                           'transformador.']}],
   'cuadros': [{'titulo': '5.2 TEORÍAS SOBRE EL ORIGEN DEL HOMBRE',
                'encabezados': ['Teoría', 'Sostiene', 'Representante'],
                'filas': [['{Creacionismo}',
@@ -1419,7 +1587,15 @@ BALOTAS_FILO = [{'num': 1,
                                   'Puramente biológico',
                                   'Cultural y espiritual',
                                   'Determinado genéticamente'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'Los representantes de la Teoría Sintética o '
+                             'Neodarwinismo son Dobzhansky, Mayr y:',
+                 'alternativas': ['Lamarck',
+                                  'Simpson',
+                                  'Wallace',
+                                  'Mendel',
+                                  'Haeckel'],
+                 'correcta': 'B'}]},
  {'num': 6,
   'titulo': 'Gnoseología: problema del conocimiento',
   'secciones': [{'titulo': '6.1 CONCEPTO',
@@ -1452,69 +1628,7 @@ BALOTAS_FILO = [{'num': 1,
                            'resulta {útil} o funciona en la práctica.',
                            'Teoría de la {coherencia}: un enunciado es '
                            'verdadero si no {contradice} al conjunto del '
-                           'sistema.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La disciplina que estudia el conocimiento en '
-                           'general se denomina {Gnoseología}.',
-                           'Etimológicamente, gnoseología proviene de '
-                           'gnosis, que significa {Conocimiento}.',
-                           'El elemento del conocimiento que designa a quien '
-                           'conoce es {El sujeto cognoscente}.',
-                           'La representación mental que el sujeto elabora '
-                           'del objeto se denomina {Imagen}.',
-                           'En el acto de conocer, el objeto {Permanece '
-                           'inalterado}.',
-                           'El conocimiento obtenido a través de los '
-                           'sentidos es {Sensible}.',
-                           'El conocimiento sensible se caracteriza por ser '
-                           '{Singular, concreto y subjetivo}.',
-                           'El conocimiento racional se caracteriza por ser '
-                           '{Universal, abstracto y objetivo}.',
-                           'El conocimiento espontáneo, no verificado ni '
-                           'sistemático es el {Vulgar}.',
-                           'El conocimiento científico se caracteriza por '
-                           'ser {Metódico, sistemático y verificable}.',
-                           'La teoría que define la verdad como adecuación '
-                           'entre el pensamiento y la realidad es la de {La '
-                           'correspondencia}.',
-                           'La concepción clásica de la verdad se atribuye a '
-                           '{Aristóteles}.',
-                           'Para la teoría pragmática, es verdadero aquello '
-                           'que {Resulta útil o funciona en la práctica}.',
-                           'Según la teoría de la coherencia, un enunciado '
-                           'es verdadero si {No contradice al sistema del '
-                           'que forma parte}.',
-                           'Los tres elementos del conocimiento son sujeto, '
-                           'objeto e {Imagen}.',
-                           'La gnoseología estudia del conocimiento su '
-                           'origen, su esencia y sus {Límites}.',
-                           'Percibir el color rojo de una manzana '
-                           'corresponde al conocimiento {Sensible}.',
-                           'Comprender el concepto de «justicia» corresponde '
-                           'al conocimiento {Racional}.',
-                           'En la relación cognoscitiva, aquello que es '
-                           'conocido se denomina {Objeto}.',
-                           'La afirmación «la nieve es blanca es verdadera '
-                           'si la nieve es blanca» ilustra la teoría de {La '
-                           'correspondencia}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El acto de conocer requiere de dos elementos '
-                           'fundamentales: el sujeto {cognoscente} y el '
-                           'objeto de conocimiento.',
-                           'La validez a priori es independiente de la '
-                           'experiencia y corresponde a las ciencias '
-                           '{formales}; la validez a posteriori depende de '
-                           'la experiencia y corresponde a las ciencias '
-                           'fácticas.',
-                           'Entre las características de la ciencia figuran '
-                           'ser especializada, metódica, sistemática, '
-                           'objetiva, explicativa, experimental, falible y '
-                           '{predictiva}.',
-                           'Mario Bunge clasificó las ciencias en formales, '
-                           'que usan el método {deductivo} a partir de '
-                           'axiomas, y fácticas.',
-                           'Los axiomas son enunciados que se presentan con '
-                           'tal claridad que no requieren {demostración}.']}],
+                           'sistema.']}],
   'cuadros': [{'titulo': '6.3 CLASES DE CONOCIMIENTO',
                'encabezados': ['Clase', 'Se obtiene por', 'Carácter'],
                'filas': [['{Sensible}',
@@ -1687,22 +1801,34 @@ BALOTAS_FILO = [{'num': 1,
   'titulo': 'Corrientes del problema del conocimiento',
   'secciones': [{'titulo': '7.1 POSIBILIDAD DEL CONOCIMIENTO',
                  'items': ['{Dogmatismo}: sostiene que el conocimiento es '
-                           '{posible} y seguro, sin cuestionar la capacidad '
-                           'del sujeto.',
+                           '{posible} y seguro; representantes: los '
+                           '{presocráticos}.',
                            '{Escepticismo}: niega la posibilidad de alcanzar '
                            'un conocimiento {seguro}. Su representante '
                            'clásico es {Pirrón} de Elis.',
+                           'El escepticismo {radical} o absoluto, '
+                           'representado por {Gorgias}, niega toda '
+                           'posibilidad de conocer.',
+                           'El escepticismo {relativo}, representado por '
+                           '{Protágoras}, sostiene que toda verdad es '
+                           'relativa.',
                            'El escepticismo {absoluto} niega toda '
                            'posibilidad de conocer; el {relativo} solo la '
                            'duda en algunos campos.',
                            '{Criticismo}: posición intermedia sostenida por '
                            '{Kant}; el conocimiento es posible pero con '
-                           '{límites}.']},
+                           '{límites}.',
+                           'El {agnosticismo}, sostenido también por {Kant}, '
+                           'admite la imposibilidad de conocer la «cosa en '
+                           'sí».']},
                 {'titulo': '7.2 ORIGEN DEL CONOCIMIENTO',
                  'items': ['{Racionalismo}: el origen del conocimiento es la '
-                           '{razón}. Representante: {Descartes}.',
-                           '{Empirismo}: el origen es la {experiencia}. '
-                           'Representantes: {Locke} y Hume.',
+                           '{razón}; su método es la deducción. '
+                           'Representantes: {Descartes}, Leibniz, Spinoza y '
+                           '{Malebranche}.',
+                           '{Empirismo}: el origen es la {experiencia}; su '
+                           'método es la inducción. Representantes: {Locke}, '
+                           'Hume, Bacon y {Berkeley}.',
                            '{Criticismo}: razón y experiencia se '
                            '{complementan}; «los conceptos sin intuiciones '
                            'son {vacíos}, las intuiciones sin conceptos son '
@@ -1714,65 +1840,12 @@ BALOTAS_FILO = [{'num': 1,
                            'Idealismo {objetivo}: existe una realidad ideal '
                            'independiente del sujeto, como las Ideas de '
                            '{Platón} o el Espíritu de {Hegel}.',
-                           '{Materialismo}: la {materia} es lo primario y la '
-                           'conciencia es un producto de ella.',
+                           '{Materialismo}: la {materia} es lo primario; el '
+                           'mundo es cognoscible y la {praxis} es el '
+                           'criterio de verdad.',
                            '{Fenomenalismo}: solo conocemos los {fenómenos}, '
-                           'no la cosa en sí.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La corriente que sostiene que el conocimiento es '
-                           'posible y seguro, sin cuestionamientos, es el '
-                           '{Dogmatismo}.',
-                           'El escepticismo niega la posibilidad de alcanzar '
-                           '{Un conocimiento seguro}.',
-                           'El representante clásico del escepticismo es '
-                           '{Pirrón de Elis}.',
-                           'La posición intermedia que afirma que el '
-                           'conocimiento es posible pero con límites es el '
-                           '{Criticismo}.',
-                           'El criticismo fue formulado por {Kant}.',
-                           'Para el racionalismo, el origen del conocimiento '
-                           'es {La razón}.',
-                           'El principal representante del empirismo es '
-                           '{John Locke}.',
-                           'La frase «ser es ser percibido» pertenece a '
-                           '{Berkeley}.',
-                           'El idealismo subjetivo sostiene que la realidad '
-                           'depende de {La conciencia del sujeto}.',
-                           'El idealismo objetivo afirma que existe una '
-                           'realidad ideal {Independiente del sujeto}.',
-                           'Las Ideas de Platón y el Espíritu de Hegel son '
-                           'ejemplos de {Idealismo objetivo}.',
-                           'El materialismo sostiene que lo primario es {La '
-                           'materia}.',
-                           'El fenomenalismo sostiene que solo conocemos '
-                           '{Los fenómenos}.',
-                           'El escepticismo que niega toda posibilidad de '
-                           'conocer se denomina {Absoluto}.',
-                           'El problema de la POSIBILIDAD del conocimiento '
-                           'se pregunta si {Si es posible conocer con '
-                           'certeza}.',
-                           'El problema del ORIGEN del conocimiento se '
-                           'pregunta {De dónde proviene el conocimiento}.',
-                           'Descartes es representante del {Racionalismo}.',
-                           'El criticismo kantiano supera la oposición entre '
-                           '{Racionalismo y empirismo}.',
-                           'Para el materialismo, la conciencia es {Un '
-                           'producto de la materia}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El dogmatismo confía en la posibilidad del '
-                           'conocimiento sin cuestionarla; el escepticismo, '
-                           'representado por los presocráticos, la niega por '
-                           'completo.',
-                           'Para el racionalismo, fundado por Descartes, '
-                           'solo el conocimiento racional es {universal} y '
-                           'necesario.',
-                           'El empirismo, representado por Locke, distingue '
-                           'dos tipos de experiencia: la {externa}, de los '
-                           'sentidos, y la interna, de la reflexión.',
-                           'El idealismo considera que los objetos son '
-                           'creados por el {pensamiento}; el realismo '
-                           'sostiene que el mundo y las cosas son reales y '
-                           'objetivos.']}],
+                           'no la cosa en sí o {noúmeno}; representante: '
+                           '{Kant}.']}],
   'cuadros': [{'titulo': '7. CORRIENTES GNOSEOLÓGICAS',
                'encabezados': ['Problema', 'Corriente', 'Representante'],
                'filas': [['Posibilidad', '{Escepticismo}', '{Pirrón}'],
@@ -1934,6 +2007,247 @@ BALOTAS_FILO = [{'num': 1,
                                   'Una sustancia separada',
                                   'Lo primario',
                                   'Independiente del cerebro'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente que sostiene que la experiencia '
+                             'es la única fuente del conocimiento se llama:',
+                 'alternativas': ['Racionalismo',
+                                  'Empirismo',
+                                  'Criticismo',
+                                  'Dogmatismo',
+                                  'Idealismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El método propio del empirismo es:',
+                 'alternativas': ['La deducción',
+                                  'La inducción',
+                                  'La intuición exclusiva',
+                                  'La dialéctica',
+                                  'La analogía'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los representantes del empirismo figuran '
+                             'Locke, Hume, Berkeley y:',
+                 'alternativas': ['Descartes',
+                                  'Francisco Bacon',
+                                  'Leibniz',
+                                  'Spinoza',
+                                  'Malebranche'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente que sostiene que la razón es la '
+                             'única fuente del conocimiento se llama:',
+                 'alternativas': ['Empirismo',
+                                  'Racionalismo',
+                                  'Escepticismo',
+                                  'Agnosticismo',
+                                  'Fenomenalismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El método propio del racionalismo es:',
+                 'alternativas': ['La inducción',
+                                  'La deducción',
+                                  'La observación exclusiva',
+                                  'El experimento exclusivo',
+                                  'La intuición sensible'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los representantes del racionalismo '
+                             'figuran Descartes, Spinoza y:',
+                 'alternativas': ['Locke',
+                                  'Leibniz',
+                                  'Hume',
+                                  'Berkeley',
+                                  'Bacon'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente que sostiene que el conocimiento '
+                             'surge de la unión de experiencia y razón se '
+                             'llama:',
+                 'alternativas': ['Empirismo',
+                                  'Criticismo',
+                                  'Racionalismo puro',
+                                  'Dogmatismo',
+                                  'Escepticismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El representante del criticismo, autor de la '
+                             'frase «no hay experiencia sin razón ni razón '
+                             'sin experiencia», fue:',
+                 'alternativas': ['Descartes',
+                                  'Manuel Kant',
+                                  'Locke',
+                                  'Hegel',
+                                  'Hume'],
+                 'correcta': 'B'},
+                {'pregunta': 'La postura que admite que el conocimiento sí '
+                             'es posible se llama:',
+                 'alternativas': ['Escepticismo',
+                                  'Dogmatismo',
+                                  'Agnosticismo',
+                                  'Fenomenalismo',
+                                  'Idealismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los representantes del dogmatismo, según el '
+                             'texto, fueron los:',
+                 'alternativas': ['Sofistas',
+                                  'Presocráticos',
+                                  'Estoicos',
+                                  'Escolásticos',
+                                  'Positivistas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fundador del escepticismo, quien afirmaba '
+                             'que el conocimiento no es posible, fue:',
+                 'alternativas': ['Gorgias',
+                                  'Pirrón de Elis',
+                                  'Protágoras',
+                                  'Sócrates',
+                                  'Demócrito'],
+                 'correcta': 'B'},
+                {'pregunta': 'El escepticismo radical o absoluto, que afirma '
+                             'que el conocimiento es imposible, tiene como '
+                             'representante a:',
+                 'alternativas': ['Protágoras',
+                                  'Gorgias',
+                                  'Pirrón',
+                                  'Sócrates',
+                                  'Platón'],
+                 'correcta': 'B'},
+                {'pregunta': 'El escepticismo relativo, que afirma que toda '
+                             'verdad es relativa, tiene como representante '
+                             'a:',
+                 'alternativas': ['Gorgias',
+                                  'Protágoras',
+                                  'Pirrón',
+                                  'Heráclito',
+                                  'Demócrito'],
+                 'correcta': 'B'},
+                {'pregunta': 'La postura que admite la imposibilidad de '
+                             'conocer la «cosa en sí» se llama:',
+                 'alternativas': ['Dogmatismo',
+                                  'Agnosticismo',
+                                  'Escepticismo radical',
+                                  'Materialismo',
+                                  'Idealismo objetivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El representante del agnosticismo, según el '
+                             'texto, fue:',
+                 'alternativas': ['Pirrón',
+                                  'Manuel Kant',
+                                  'Gorgias',
+                                  'Protágoras',
+                                  'Berkeley'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente que sostiene que el objeto del '
+                             'conocimiento no es real sino ideal se llama:',
+                 'alternativas': ['Materialismo',
+                                  'Idealismo',
+                                  'Fenomenalismo',
+                                  'Empirismo',
+                                  'Dogmatismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El idealismo subjetivo, que afirma que toda '
+                             'realidad está encerrada en la conciencia, '
+                             'tiene como representante a:',
+                 'alternativas': ['Platón',
+                                  'Berkeley',
+                                  'Hegel',
+                                  'Kant',
+                                  'Aristóteles'],
+                 'correcta': 'B'},
+                {'pregunta': 'El idealismo objetivo, que sostiene que las '
+                             'ideas existen por sí mismas, tiene como '
+                             'representantes a Platón y:',
+                 'alternativas': ['Berkeley',
+                                  'Hegel',
+                                  'Kant',
+                                  'Descartes',
+                                  'Locke'],
+                 'correcta': 'B'},
+                {'pregunta': 'El materialismo sostiene que el criterio de '
+                             'verdad del conocimiento es:',
+                 'alternativas': ['La fe',
+                                  'La praxis',
+                                  'La intuición',
+                                  'La revelación',
+                                  'La autoridad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fenomenalismo sostiene que el sujeto solo '
+                             'puede captar el fenómeno, mas no:',
+                 'alternativas': ['La apariencia',
+                                  'La esencia o noúmeno',
+                                  'Los sentidos',
+                                  'La experiencia',
+                                  'El lenguaje'],
+                 'correcta': 'B'},
+                {'pregunta': 'El representante del fenomenalismo, según el '
+                             'texto, fue:',
+                 'alternativas': ['Berkeley',
+                                  'Manuel Kant',
+                                  'Hegel',
+                                  'Platón',
+                                  'Locke'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los representantes del dogmatismo, corriente '
+                             'que confía en la posibilidad del conocimiento, '
+                             'fueron los:',
+                 'alternativas': ['Sofistas',
+                                  'Presocráticos',
+                                  'Escépticos',
+                                  'Estoicos',
+                                  'Positivistas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El escepticismo radical o absoluto, que niega '
+                             'toda posibilidad de conocer, está representado '
+                             'por:',
+                 'alternativas': ['Protágoras',
+                                  'Gorgias',
+                                  'Pirrón',
+                                  'Sócrates',
+                                  'Platón'],
+                 'correcta': 'B'},
+                {'pregunta': 'El escepticismo relativo, que sostiene que '
+                             'toda verdad es relativa, está representado '
+                             'por:',
+                 'alternativas': ['Gorgias',
+                                  'Protágoras',
+                                  'Pirrón',
+                                  'Demócrito',
+                                  'Heráclito'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además del criticismo, la imposibilidad de '
+                             'conocer la «cosa en sí» también es sostenida, '
+                             'bajo el nombre de agnosticismo, por:',
+                 'alternativas': ['Descartes',
+                                  'Kant',
+                                  'Locke',
+                                  'Hume',
+                                  'Berkeley'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los representantes del racionalismo, '
+                             'además de Descartes, figuran Leibniz, Spinoza '
+                             'y:',
+                 'alternativas': ['Locke',
+                                  'Malebranche',
+                                  'Hume',
+                                  'Bacon',
+                                  'Berkeley'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los representantes del empirismo, además '
+                             'de Locke y Hume, figuran Bacon y:',
+                 'alternativas': ['Descartes',
+                                  'Berkeley',
+                                  'Leibniz',
+                                  'Spinoza',
+                                  'Malebranche'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para el materialismo, el criterio de verdad '
+                             'del conocimiento es:',
+                 'alternativas': ['La fe',
+                                  'La praxis',
+                                  'La revelación',
+                                  'La autoridad',
+                                  'La intuición'],
+                 'correcta': 'B'},
+                {'pregunta': 'El representante del fenomenalismo, que '
+                             'sostiene que solo conocemos los fenómenos, es:',
+                 'alternativas': ['Berkeley',
+                                  'Kant',
+                                  'Platón',
+                                  'Hegel',
+                                  'Locke'],
                  'correcta': 'B'}]},
  {'num': 8,
   'titulo': 'Problema de la ciencia: epistemología',
