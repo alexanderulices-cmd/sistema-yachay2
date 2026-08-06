@@ -10503,6 +10503,11 @@ def tab_documentos(config):
         _rol_act = st.session_state.get('rol', '')
         if _rol_act == 'auxiliar':
             st.info("📌 El auxiliar tiene acceso solo a los documentos de **Control de Asistencia**.")
+            st.caption(
+                "ℹ️ Esta plantilla es para llenar asistencia **a mano**. Si buscas el "
+                "**reporte con la asistencia ya registrada** por QR/código, ve al botón "
+                "**📈 Reportes** (arriba) → pestaña **📋 Asistencia Mensual**."
+            )
             _seccion_documentos_auxiliar(config, solo_asistencia=True)
         elif _rol_act in ('admin', 'directivo', 'docente'):
             _seccion_documentos_auxiliar(config)
@@ -10785,6 +10790,17 @@ def tab_carnets(config):
             st.info(f"📊 {len(df_doc)} carnets de docentes")
             st.dataframe(df_doc[['Nombre', 'DNI', 'Cargo']],
                          use_container_width=True, hide_index=True)
+            # Aviso de docentes sin DNI: antes el carnet se generaba igual pero
+            # sin QR ni código de barras funcional, sin ningún aviso.
+            if 'DNI' in df_doc.columns:
+                _sin_dni_doc = df_doc[df_doc['DNI'].astype(str).str.strip().isin(['', 'nan', 'None'])]
+                if not _sin_dni_doc.empty:
+                    _nombres_sin_dni = ", ".join(_sin_dni_doc['Nombre'].astype(str).tolist())
+                    st.warning(
+                        f"⚠️ {len(_sin_dni_doc)} docente(s) sin DNI registrado — su carnet "
+                        f"se generará SIN código QR ni de barras funcional: {_nombres_sin_dni}. "
+                        f"Completa su DNI en Gestionar Usuarios antes de imprimir."
+                    )
             if st.button("🚀 GENERAR PDF CARNETS DOCENTES", type="primary",
                          use_container_width=True, key="gld"):
                 lista = df_doc.to_dict('records')
@@ -12879,7 +12895,6 @@ def tab_asistencias():
                 _asis_sem = _jps.load(_fs)
 
         # 2. Complementar con GSheets si faltan dias de la semana
-        _dias_en_local = [iso for iso,_ in _dias_semana if _asis_sem.get(iso) or _asis_sem.get(disp)]
         _dias_faltantes = [iso for iso,_ in _dias_semana if not _asis_sem.get(iso)]
         if _dias_faltantes:
             try:
@@ -13588,7 +13603,8 @@ def _cmb_enviar(celular, mensaje, apikey):
 def _cmb_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
     """Envía WhatsApp automático al padre via CallMeBot."""
     subs = _cmb_cargar_subs()
-    entry = subs.get(str(dni_alumno).strip())
+    _cod_norm_cmb = normalizar_codigo_estudiante(dni_alumno)
+    entry = subs.get(_cod_norm_cmb) or subs.get(str(dni_alumno).strip())
     if not entry: return
     celular = entry.get('celular','') if isinstance(entry, dict) else ''
     apikey  = entry.get('apikey','')  if isinstance(entry, dict) else ''
@@ -13709,10 +13725,24 @@ def _tg_guardar_config(data):
     except Exception: pass
     _tg_gs_set('telegram_config', data)
 
+def _tg_normalizar_claves_subs(subs_dict):
+    """Normaliza las claves (DNI/código) del dict de suscriptores a mayúsculas,
+    igual que normalizar_codigo_estudiante(). Corrige de forma retroactiva
+    suscriptores guardados antes de esta corrección con distinta capitalización
+    (ej. 'prov0021' vs 'PROV0021'), que hacían fallar la notificación en silencio."""
+    if not isinstance(subs_dict, dict):
+        return subs_dict
+    normalizado = {}
+    for clave, valor in subs_dict.items():
+        clave_norm = normalizar_codigo_estudiante(clave) or str(clave).strip()
+        normalizado[clave_norm] = valor
+    return normalizado
+
 def _tg_cargar_subs():
     """Carga suscriptores: primero GSheets, fallback local."""
     subs_gs = _tg_gs_get('telegram_suscriptores')
     if subs_gs:
+        subs_gs = _tg_normalizar_claves_subs(subs_gs)
         try:
             with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
                 json.dump(subs_gs, f, ensure_ascii=False)
@@ -13721,7 +13751,7 @@ def _tg_cargar_subs():
     try:
         if Path(_TG_SUBS_PATH).exists():
             with open(_TG_SUBS_PATH,"r",encoding="utf-8") as f:
-                return json.load(f)
+                return _tg_normalizar_claves_subs(json.load(f))
     except Exception: pass
     return {}
 
@@ -13772,7 +13802,8 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
     token = _tg_limpiar_token(cfg.get("bot_token",""))
     if not token: return
     subs = _tg_cargar_subs()
-    entry = subs.get(str(dni_alumno).strip())
+    _cod_norm = normalizar_codigo_estudiante(dni_alumno)
+    entry = subs.get(_cod_norm) or subs.get(str(dni_alumno).strip())
     if not entry: return
     chat_id = entry if isinstance(entry,(int,str)) else entry.get("chat_id","")
     if not chat_id: return
@@ -33219,12 +33250,17 @@ def tab_telegram_notificaciones(config):
                         _nombre_pad = f"{_fn} {_ln}".strip()
                         # Acepta "/start XXXXXXXX" o solo el DNI
                         _partes_u = _text_u.split()
-                        if len(_partes_u) >= 2 and _partes_u[0] == "/start":
+                        if len(_partes_u) >= 2 and _partes_u[0].lower() == "/start":
                             _dni_u = _partes_u[1].strip()
                         elif len(_partes_u) == 1 and _partes_u[0].isdigit() and len(_partes_u[0]) == 8:
                             _dni_u = _partes_u[0]
                         else:
                             continue
+                        # Normalizar igual que al marcar asistencia (mayúsculas, sin
+                        # espacios) — evita que un código escrito en minúscula (ej.
+                        # "/start prov0021") quede guardado distinto al usado al
+                        # escanear, lo que hacía fallar la notificación en silencio.
+                        _dni_u = normalizar_codigo_estudiante(_dni_u)
                         if _dni_u not in _subs_act:
                             _subs_act[_dni_u] = {"chat_id":_chat_id_u,"nombre_padre":_nombre_pad,
                                                   "fecha":fecha_peru_str()}
