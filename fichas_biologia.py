@@ -3950,8 +3950,29 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'nervioso {Autónomo o vegetativo}.',
                            'Además de la neurona, otro componente importante '
                            'del sistema nervioso, aunque no todos los '
-                           'animales lo poseen, son {Las células '
-                           'gliales}.']}],
+                           'animales lo poseen, son {Las células gliales}.']},
+                {'titulo': '9.5 SISTEMA NERVIOSO HUMANO',
+                 'items': ['El sistema nervioso humano se divide en {sistema '
+                           'nervioso central} (SNC) y sistema nervioso '
+                           '{periférico} (SNP).',
+                           'El número de neuronas en el cerebro humano ronda '
+                           'los {100 000} millones.',
+                           'El {SNC} está conformado por el encéfalo y la '
+                           '{médula espinal}.',
+                           'El {encéfalo} incluye el bulbo raquídeo, la '
+                           'protuberancia, el mesencéfalo, el cerebelo, el '
+                           'diencéfalo y el cerebro.',
+                           'La {médula espinal} transmite señales entre la '
+                           'periferia y el cerebro, e interviene en el '
+                           '{tacto}.',
+                           'Los {nervios} son cordones de sustancia blanca '
+                           'formados por axones y dendritas.',
+                           'Los nervios {craneales} controlan la cabeza y el '
+                           'cuello; los nervios {espinales} se ramifican en '
+                           'la columna vertebral.',
+                           'Los {ganglios} son estructuras formadas por '
+                           'cuerpos de neuronas ubicados fuera del encéfalo '
+                           'y la médula.']}],
   'cuadros': [{'titulo': '9.2 SISTEMA NERVIOSO POR GRUPO DE INVERTEBRADOS',
                'encabezados': ['Grupo', 'Sistema nervioso'],
                'filas': [['{Cnidarios}', 'Red difusa de {protoneuronas}'],
@@ -4125,6 +4146,89 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Los plaquetas',
                                   'Los linfocitos',
                                   'Los osteocitos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema nervioso humano se divide en '
+                             'sistema nervioso central y sistema nervioso:',
+                 'alternativas': ['Autónomo exclusivo',
+                                  'Periférico',
+                                  'Somático exclusivo',
+                                  'Simpático exclusivo',
+                                  'Voluntario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El número de neuronas en el cerebro humano '
+                             'ronda aproximadamente:',
+                 'alternativas': ['100 millones',
+                                  '100 000 millones',
+                                  '1 millón',
+                                  '10 000 millones',
+                                  '1000 millones'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema nervioso central está conformado '
+                             'por el encéfalo y:',
+                 'alternativas': ['Los nervios periféricos',
+                                  'La médula espinal',
+                                  'Los ganglios',
+                                  'Las neuronas motoras',
+                                  'Los músculos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El encéfalo incluye el bulbo raquídeo, la '
+                             'protuberancia, el mesencéfalo, el cerebelo, el '
+                             'diencéfalo y:',
+                 'alternativas': ['La médula espinal',
+                                  'El cerebro',
+                                  'Los ganglios',
+                                  'Los nervios espinales',
+                                  'Los nervios craneales'],
+                 'correcta': 'B'},
+                {'pregunta': 'La médula espinal interviene en la transmisión '
+                             'del tacto y de señales:',
+                 'alternativas': ['Solo visuales',
+                                  'Sensitivas de músculos y articulaciones',
+                                  'Solo auditivas',
+                                  'Solo olfativas',
+                                  'Solo gustativas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los nervios son cordones de sustancia blanca '
+                             'formados por axones y:',
+                 'alternativas': ['Núcleos',
+                                  'Dendritas',
+                                  'Mitocondrias exclusivas',
+                                  'Ribosomas exclusivos',
+                                  'Lisosomas exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los nervios que se localizan en la cabeza y '
+                             'controlan sus funciones se llaman nervios:',
+                 'alternativas': ['Espinales',
+                                  'Craneales',
+                                  'Periféricos exclusivos',
+                                  'Autónomos exclusivos',
+                                  'Somáticos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los nervios ramificados en pares en las '
+                             'vértebras de la columna se llaman nervios:',
+                 'alternativas': ['Craneales',
+                                  'Espinales',
+                                  'Centrales exclusivos',
+                                  'Autónomos exclusivos',
+                                  'Cerebrales exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las estructuras formadas por cuerpos de '
+                             'neuronas ubicados fuera del encéfalo y la '
+                             'médula se llaman:',
+                 'alternativas': ['Nervios',
+                                  'Ganglios',
+                                  'Sinapsis',
+                                  'Axones',
+                                  'Dendritas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema nervioso humano funciona, en '
+                             'conjunto, como un ente que:',
+                 'alternativas': ['Solo produce hormonas',
+                                  'Organiza, controla y coordina las '
+                                  'funciones corporales',
+                                  'Solo transporta oxígeno',
+                                  'Solo digiere alimentos',
+                                  'Solo filtra la sangre'],
                  'correcta': 'B'}]},
  {'num': 10,
   'titulo': 'Reproducción',
@@ -4214,7 +4318,61 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'es {La meiosis}.',
                            'Rudolf Virchow resumió el concepto de '
                            'continuidad celular con el axioma en latín '
-                           '{Omnis cellula e cellula}.']}],
+                           '{Omnis cellula e cellula}.']},
+                {'titulo': '10.5 LA MEIOSIS',
+                 'items': ['La {meiosis} consiste en dos divisiones '
+                           'celulares sucesivas, que reducen el número de '
+                           'cromosomas a la {mitad}.',
+                           'Los cromosomas iguales que se emparejan durante '
+                           'la meiosis se llaman cromosomas {homólogos}.',
+                           'El número {haploide} (n) tiene una serie de cada '
+                           'cromosoma; el {diploide} (2n) tiene dos series.',
+                           'En el ser humano, el número haploide es {23} y '
+                           'el diploide es {46}.',
+                           'Los {gametos} (óvulos y espermatozoides) llevan '
+                           'el número haploide.',
+                           'Solo las dos últimas divisiones que producen '
+                           'gametos son {meióticas}; las demás son '
+                           '{mitóticas}.',
+                           'En el {paquinema}, ocurre el intercambio de '
+                           'segmentos entre cromátidas homólogas, llamado '
+                           '{recombinación genética} o crossing over.',
+                           'Cada par de cromosomas apareados se llama '
+                           '{bivalente} o tétrada, por tener cuatro '
+                           '{cromátidas}.',
+                           'Las conexiones donde ocurrió el intercambio '
+                           'genético se llaman {quiasmas}.']},
+                {'titulo': '10.6 REPRODUCCIÓN SEXUAL: CONCEPTO Y FECUNDACIÓN',
+                 'items': ['La reproducción {sexual} implica la fusión de '
+                           'dos {gametos} y la mezcla de sus materiales '
+                           'genéticos.',
+                           'La reproducción sexual promueve la {variabilidad '
+                           'genética}, base de la evolución biológica.',
+                           'La unión de dos gametos se llama {fecundación}, '
+                           'y forma un {cigoto} diploide.',
+                           'La fecundación {externa} ocurre en el agua, en '
+                           'invertebrados acuáticos y peces.',
+                           'La fecundación {interna} ocurre dentro del '
+                           'cuerpo de la hembra, en la mayoría de animales '
+                           'terrestres.']},
+                {'titulo': '10.7 GAMETOS Y TIPOS DE ORGANISMOS SEGÚN SU SEXO',
+                 'items': ['Los gametos masculinos, pequeños, se llaman '
+                           '{espermatozoides}; los femeninos, más grandes, '
+                           'se llaman {óvulos}.',
+                           'Los espermatozoides se producen en los '
+                           '{testículos}; los óvulos, en los {ovarios}.',
+                           'Los organismos {monoicos}, o hermafroditas, '
+                           'tienen órganos reproductivos masculinos y '
+                           'femeninos a la vez.',
+                           'Los hermafroditas {simultáneos} producen óvulos '
+                           'y espermatozoides al mismo tiempo, como la '
+                           'tenia.',
+                           'Los hermafroditas {secuenciales} cambian de sexo '
+                           'durante su vida; si nacen macho, se llaman '
+                           '{protándricos}.',
+                           'Los organismos {dioicos}, o unisexuales, tienen '
+                           'sexos separados, como la mayoría de los '
+                           'vertebrados.']}],
   'cuadros': [{'titulo': '10.2 TIPOS DE REPRODUCCIÓN ASEXUAL',
                'encabezados': ['Tipo', 'Ejemplo'],
                'filas': [['{Escisión binaria}', '{Paramecium}, Euglena'],
@@ -4385,6 +4543,157 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Carpe diem',
                                   'Cogito ergo sum',
                                   'Ad astra per aspera'],
+                 'correcta': 'B'},
+                {'pregunta': 'La meiosis consiste en un par de divisiones '
+                             'celulares que reducen el número de cromosomas '
+                             'a:',
+                 'alternativas': ['El doble',
+                                  'La mitad',
+                                  'El triple',
+                                  'Un cuarto',
+                                  'Ninguna reducción'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los cromosomas iguales que se emparejan '
+                             'durante la meiosis se llaman cromosomas:',
+                 'alternativas': ['Autosomas exclusivos',
+                                  'Homólogos',
+                                  'Sexuales exclusivos',
+                                  'Satélite',
+                                  'Acéntricos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El número haploide del ser humano es:',
+                 'alternativas': ['46', '23', '44', '22', '48'],
+                 'correcta': 'B'},
+                {'pregunta': 'El número diploide del ser humano es:',
+                 'alternativas': ['23', '46', '22', '44', '24'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los gametos humanos (óvulos y espermatozoides) '
+                             'llevan el número:',
+                 'alternativas': ['Diploide',
+                                  'Haploide',
+                                  'Triploide',
+                                  'Tetraploide',
+                                  'Ninguno definido'],
+                 'correcta': 'B'},
+                {'pregunta': 'El intercambio de segmentos entre cromátidas '
+                             'homólogas durante la meiosis se llama:',
+                 'alternativas': ['Mitosis',
+                                  'Recombinación genética o crossing over',
+                                  'Fecundación',
+                                  'Gemación',
+                                  'Esporulación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cada par de cromosomas apareados durante la '
+                             'meiosis, con cuatro cromátidas, se llama:',
+                 'alternativas': ['Diploide',
+                                  'Bivalente o tétrada',
+                                  'Haploide',
+                                  'Cigoto',
+                                  'Gameto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las conexiones donde ocurrió el intercambio '
+                             'genético en la meiosis se llaman:',
+                 'alternativas': ['Centrómeros',
+                                  'Quiasmas',
+                                  'Telómeros',
+                                  'Cinetocoros',
+                                  'Nucléolos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La reproducción sexual implica la fusión de '
+                             'dos:',
+                 'alternativas': ['Células somáticas',
+                                  'Gametos',
+                                  'Cigotos',
+                                  'Embriones',
+                                  'Órganos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La reproducción sexual promueve principalmente '
+                             'la:',
+                 'alternativas': ['Identidad genética total',
+                                  'Variabilidad genética',
+                                  'Eliminación de mutaciones',
+                                  'Reducción de la población',
+                                  'Clonación exacta'],
+                 'correcta': 'B'},
+                {'pregunta': 'La unión de dos gametos se llama:',
+                 'alternativas': ['Meiosis',
+                                  'Fecundación',
+                                  'Mitosis',
+                                  'Gemación',
+                                  'Esporulación'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fecundación que ocurre en el agua, fuera '
+                             'del cuerpo, se llama fecundación:',
+                 'alternativas': ['Interna',
+                                  'Externa',
+                                  'Mixta',
+                                  'Artificial',
+                                  'Asexual'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fecundación que ocurre dentro del cuerpo de '
+                             'la hembra se llama fecundación:',
+                 'alternativas': ['Externa',
+                                  'Interna',
+                                  'Mixta',
+                                  'Artificial',
+                                  'Ausente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los gametos masculinos, de menor tamaño, se '
+                             'llaman:',
+                 'alternativas': ['Óvulos',
+                                  'Espermatozoides',
+                                  'Cigotos',
+                                  'Gónadas',
+                                  'Ovocitos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los espermatozoides se producen en:',
+                 'alternativas': ['Los ovarios',
+                                  'Los testículos',
+                                  'El útero',
+                                  'Las trompas',
+                                  'La vagina'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los organismos que tienen órganos '
+                             'reproductivos masculinos y femeninos a la vez '
+                             'se llaman:',
+                 'alternativas': ['Dioicos',
+                                  'Monoicos o hermafroditas',
+                                  'Unisexuales',
+                                  'Partenogenéticos',
+                                  'Ovíparos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los hermafroditas que producen óvulos y '
+                             'espermatozoides al mismo tiempo se llaman '
+                             'hermafroditas:',
+                 'alternativas': ['Secuenciales',
+                                  'Simultáneos',
+                                  'Protándricos exclusivos',
+                                  'Protóginos exclusivos',
+                                  'Dioicos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los hermafroditas que cambian de sexo durante '
+                             'su vida se llaman hermafroditas:',
+                 'alternativas': ['Simultáneos',
+                                  'Secuenciales',
+                                  'Dioicos',
+                                  'Monoicos puros',
+                                  'Asexuales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un organismo que nace macho y luego se '
+                             'transforma en hembra se llama:',
+                 'alternativas': ['Protógino',
+                                  'Protándrico',
+                                  'Dioico',
+                                  'Monoico puro',
+                                  'Hermafrodita simultáneo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los organismos con sexos separados, como la '
+                             'mayoría de los vertebrados, se llaman:',
+                 'alternativas': ['Monoicos',
+                                  'Dioicos o unisexuales',
+                                  'Hermafroditas',
+                                  'Andróginos',
+                                  'Partenogenéticos'],
                  'correcta': 'B'}]},
  {'num': 11,
   'titulo': 'Genética',
@@ -4752,7 +5061,69 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'conocer por {Theodosius Dobzhansky}.',
                            'La Teoría Sintética combina la selección natural '
                            'con las leyes de la herencia de Mendel y {El '
-                           'mutacionismo}.']}],
+                           'mutacionismo}.']},
+                {'titulo': '12.5 TEORÍAS DEL ORIGEN DE LA VIDA',
+                 'items': ['Entre las principales teorías del origen de la '
+                           'vida están el creacionismo, la {generación '
+                           'espontánea}, la biogénesis, la panspermia y la '
+                           'teoría {quimiosintética}.',
+                           'La teoría de la {generación espontánea}, o '
+                           'abiogénesis, sostenía que la vida surgía de '
+                           'materia inerte sin reproducción.']},
+                {'titulo': '12.6 EXPERIMENTOS CLAVE: REDI, SPALLANZANI Y '
+                           'PASTEUR',
+                 'items': ['En el siglo XVII, el italiano Francisco {Redi} '
+                           'demostró con frascos de carne que la vida no '
+                           'surgía de materia inerte.',
+                           'En 1745, el inglés {John Needham} defendió la '
+                           'generación espontánea con un experimento de '
+                           'caldo hervido mal sellado.',
+                           'El italiano {Lázaro Spallanzani} repitió el '
+                           'experimento sellando bien los frascos, refutando '
+                           'a Needham.',
+                           'En el siglo XIX, {Louis Pasteur} puso fin '
+                           'definitivo a la generación espontánea usando '
+                           'matraces de «cuello de {cisne}».']},
+                {'titulo': '12.7 TEORÍA COSMOZOICA O PANSPERMIA',
+                 'items': ['La teoría de la {panspermia} fue propuesta en '
+                           '1879 por {Herman Von Helmholtz}.',
+                           'El químico sueco {Svante Arrhenius} popularizó '
+                           'la panspermia en {1908}.',
+                           'Según la panspermia, la vida se originó en el '
+                           '{espacio}, llegando a la Tierra en '
+                           '{meteoritos}.']},
+                {'titulo': '12.8 TEORÍA DE LA QUIMIOSÍNTESIS',
+                 'items': ['La teoría quimiosintética fue planteada en '
+                           '{1921} por el bioquímico ruso {Alexander '
+                           'Oparin}.',
+                           'Oparin propuso que la atmósfera primitiva era '
+                           'rica en metano, amoniaco, CO2 y agua, y muy '
+                           'pobre en {oxígeno}.',
+                           'Oparin propuso también la teoría de la '
+                           '{coacervación}: macromoléculas que formaban '
+                           'agregados llamados {coacervados}.',
+                           'Los coacervados, rodeados de una membrana '
+                           'simple, formaron {precélulas} sujetas a la '
+                           'selección natural.',
+                           'En {1924}, {John Haldane} llegó a conclusiones '
+                           'semejantes a las de Oparin, hablando de una '
+                           '«sopa primigenia».']},
+                {'titulo': '12.9 EL EXPERIMENTO DE MILLER Y UREY',
+                 'items': ['En {1953}, {Stanley Miller} y Harold Urey '
+                           'simularon en laboratorio las condiciones de la '
+                           'atmósfera primitiva.',
+                           'El experimento de Miller y Urey usó una mezcla '
+                           'de hidrógeno, vapor de agua, amoniaco y '
+                           '{metano}, con descargas eléctricas.',
+                           'El experimento produjo aminoácidos como ácido '
+                           'glutámico, ácido aspártico, {glicina} y alanina.',
+                           'Una conclusión clave fue que sin oxígeno libre '
+                           'se formaron compuestos {orgánicos}; con oxígeno, '
+                           'solo hubo {oxidación}.',
+                           'Las etapas del origen de la vida según esta '
+                           'teoría son: síntesis de moléculas simples, '
+                           'formación de {polímeros}, formación de '
+                           'membranas, e inicio de la {herencia}.']}],
   'cuadros': [{'titulo': '12.1-12.4 TEORÍAS DE LA EVOLUCIÓN',
                'encabezados': ['Teoría', 'Autor'],
                'filas': [['{Transformismo}', '{Lamarck}'],
@@ -4919,6 +5290,155 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La teoría celular',
                                   'El transformismo puro',
                                   'La teoría del big bang'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las principales teorías del origen de la '
+                             'vida figuran el creacionismo, la generación '
+                             'espontánea, la biogénesis y:',
+                 'alternativas': ['La selección natural',
+                                  'La panspermia',
+                                  'El mutacionismo',
+                                  'El transformismo',
+                                  'La herencia adquirida'],
+                 'correcta': 'B'},
+                {'pregunta': 'La teoría que sostenía que la vida surgía de '
+                             'materia inerte sin reproducción se llama:',
+                 'alternativas': ['Biogénesis',
+                                  'Generación espontánea o abiogénesis',
+                                  'Panspermia',
+                                  'Quimiosíntesis',
+                                  'Selección natural'],
+                 'correcta': 'B'},
+                {'pregunta': 'El científico que en el siglo XVII demostró '
+                             'con frascos de carne que la vida no surge de '
+                             'materia inerte fue:',
+                 'alternativas': ['Pasteur',
+                                  'Francisco Redi',
+                                  'Spallanzani',
+                                  'Needham',
+                                  'Oparin'],
+                 'correcta': 'B'},
+                {'pregunta': 'El inglés que en 1745 defendió la generación '
+                             'espontánea con un caldo mal sellado fue:',
+                 'alternativas': ['Redi',
+                                  'John Needham',
+                                  'Spallanzani',
+                                  'Pasteur',
+                                  'Haldane'],
+                 'correcta': 'B'},
+                {'pregunta': 'El italiano que refutó a Needham sellando bien '
+                             'los frascos fue:',
+                 'alternativas': ['Redi',
+                                  'Lázaro Spallanzani',
+                                  'Pasteur',
+                                  'Oparin',
+                                  'Miller'],
+                 'correcta': 'B'},
+                {'pregunta': 'El científico que puso fin definitivo a la '
+                             'generación espontánea con matraces de cuello '
+                             'de cisne fue:',
+                 'alternativas': ['Redi',
+                                  'Spallanzani',
+                                  'Louis Pasteur',
+                                  'Needham',
+                                  'Haldane'],
+                 'correcta': 'B'},
+                {'pregunta': 'La teoría de la panspermia fue propuesta en '
+                             '1879 por:',
+                 'alternativas': ['Svante Arrhenius',
+                                  'Herman Von Helmholtz',
+                                  'Oparin',
+                                  'Haldane',
+                                  'Pasteur'],
+                 'correcta': 'B'},
+                {'pregunta': 'El químico sueco que popularizó la panspermia '
+                             'en 1908 fue:',
+                 'alternativas': ['Von Helmholtz',
+                                  'Svante Arrhenius',
+                                  'Oparin',
+                                  'Redi',
+                                  'Miller'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la panspermia, la vida se originó en el '
+                             'espacio y llegó a la Tierra mediante:',
+                 'alternativas': ['Rayos cósmicos',
+                                  'Meteoritos',
+                                  'Ondas de radio',
+                                  'Explosiones solares',
+                                  'Corrientes marinas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La teoría quimiosintética fue planteada en '
+                             '1921 por el bioquímico ruso:',
+                 'alternativas': ['John Haldane',
+                                  'Alexander Oparin',
+                                  'Stanley Miller',
+                                  'Louis Pasteur',
+                                  'Charles Darwin'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Oparin, la atmósfera primitiva era rica '
+                             'en metano, amoniaco, CO2 y agua, pero pobre '
+                             'en:',
+                 'alternativas': ['Nitrógeno',
+                                  'Oxígeno',
+                                  'Hidrógeno',
+                                  'Carbono',
+                                  'Azufre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Oparin propuso que las macromoléculas formaban '
+                             'agregados llamados:',
+                 'alternativas': ['Cigotos',
+                                  'Coacervados',
+                                  'Gametos',
+                                  'Ribosomas',
+                                  'Plásmidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'John Haldane, en 1924, habló de una:',
+                 'alternativas': ['Generación espontánea directa',
+                                  'Sopa primigenia',
+                                  'Panspermia dirigida',
+                                  'Selección artificial',
+                                  'Mutación espontánea masiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El experimento clave que simuló la atmósfera '
+                             'primitiva en laboratorio fue realizado en 1953 '
+                             'por:',
+                 'alternativas': ['Oparin y Haldane',
+                                  'Stanley Miller y Harold Urey',
+                                  'Redi y Spallanzani',
+                                  'Pasteur y Needham',
+                                  'Darwin y Wallace'],
+                 'correcta': 'B'},
+                {'pregunta': 'El experimento de Miller y Urey usó una mezcla '
+                             'de hidrógeno, vapor de agua, amoniaco y:',
+                 'alternativas': ['Oxígeno',
+                                  'Metano',
+                                  'Nitrógeno puro',
+                                  'Dióxido de azufre',
+                                  'Ozono'],
+                 'correcta': 'B'},
+                {'pregunta': 'El experimento de Miller y Urey produjo, entre '
+                             'otros compuestos, aminoácidos como:',
+                 'alternativas': ['Solo agua y sal',
+                                  'Ácido glutámico y glicina',
+                                  'Solo minerales',
+                                  'Solo ADN completo',
+                                  'Solo proteínas complejas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una conclusión clave del experimento de Miller '
+                             'y Urey fue que sin oxígeno libre se formaron:',
+                 'alternativas': ['Solo minerales',
+                                  'Compuestos orgánicos',
+                                  'Solo agua',
+                                  'Solo gases inertes',
+                                  'Ninguna sustancia nueva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Con presencia de oxígeno en el experimento de '
+                             'Miller y Urey, solo se produjeron reacciones '
+                             'de:',
+                 'alternativas': ['Síntesis orgánica',
+                                  'Oxidación',
+                                  'Fermentación',
+                                  'Fotosíntesis',
+                                  'Reducción exclusiva'],
                  'correcta': 'B'}]},
  {'num': 13,
   'titulo': 'Ecología, Factores Ecológicos y Ecosistemas',
@@ -5001,7 +5521,96 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'ecológicas}.',
                            'El ecologismo surge como una nueva forma de '
                            'hacer política centrada en {El desarrollo '
-                           'sostenible}.']}],
+                           'sostenible}.']},
+                {'titulo': '13.4 EL ECOSISTEMA: CONCEPTO Y TÉRMINOS '
+                           'RELACIONADOS',
+                 'items': ['El término «ecosistema» fue acuñado por {Arthur '
+                           'Tansley} en {1935}, como el complejo de '
+                           'organismos y factores físicos del ambiente.',
+                           'Un ecosistema es un sistema {abierto}: hay una '
+                           'corriente continua de captación y pérdida de '
+                           'sustancias y {energía}.',
+                           'El ecosistema más grande que se puede concebir '
+                           'es la {biosfera}.',
+                           'La {biocenosis} es la comunidad biótica formada '
+                           'por todos los organismos vivos de un lugar.',
+                           'El {biotopo} es el espacio físico donde vive una '
+                           'biocenosis, caracterizado por factores '
+                           '{abióticos}.',
+                           'El {hábitat} es el lugar donde un organismo '
+                           'encuentra condiciones favorables para vivir; es '
+                           'su «{dirección}» ecológica.',
+                           'El {nicho ecológico} son las necesidades '
+                           'especiales de una población respecto a alimento, '
+                           'luz y humedad.',
+                           'Dos organismos en un mismo lugar nunca tienen el '
+                           'mismo {nicho ecológico}, o entrarían en '
+                           '{competencia}.']},
+                {'titulo': '13.5 COMPONENTES ABIÓTICOS DEL ECOSISTEMA',
+                 'items': ['La {luz solar} es la fuente de energía de la '
+                           'mayoría de los ecosistemas.',
+                           'Los {nutrientes} principales del tejido vivo son '
+                           'carbono, nitrógeno, oxígeno, hidrógeno, fósforo '
+                           'y {azufre}.',
+                           'Los factores {climáticos} determinan la '
+                           'distribución geográfica de los componentes del '
+                           'ecosistema.',
+                           'El {suelo} está compuesto de roca y minerales, '
+                           'más un componente orgánico de materia animal y '
+                           'vegetal muerta.']},
+                {'titulo': '13.6 RELACIONES INTRAESPECÍFICAS',
+                 'items': ['Las relaciones {intraespecíficas} u homotípicas '
+                           'se dan entre individuos de la {misma} especie.',
+                           'Las {agrupaciones casuales} o agregaciones no '
+                           'generan vínculos, como guacamayos en colpas o '
+                           'mariposas en flores.',
+                           'La {asociación} o sociedad es la relación '
+                           'temporal o permanente con vínculos, como la '
+                           'defensa común.',
+                           'Las {colmenas} son familias con diferenciación '
+                           'morfológica: reinas, zánganos, obreras y '
+                           '{soldados}.',
+                           'La agrupación de individuos puede producir tres '
+                           'efectos: {cooperación}, competencia e '
+                           '{interferencia}.']},
+                {'titulo': '13.7 RELACIONES INTERESPECÍFICAS',
+                 'items': ['Las relaciones {interespecíficas} u '
+                           'heterotípicas se dan entre individuos de '
+                           'especies {diferentes}.',
+                           'La {sinequia} ocurre cuando dos organismos viven '
+                           'juntos y se toleran sin hacerse {daño}.',
+                           'El {epifitismo} ocurre cuando plantas crecen '
+                           'sobre otras, usándolas de soporte sin '
+                           'dañarlas.']},
+                {'titulo': '13.8 FUNCIONES DE LOS ECOSISTEMAS: SUCESIÓN '
+                           'ECOLÓGICA',
+                 'items': ['La {sucesión ecológica} es la secuencia de '
+                           'cambios que experimenta un ecosistema a través '
+                           'del tiempo.',
+                           'Las sucesiones llevan a un ecosistema a su '
+                           'máxima expresión armónica, llamada {comunidad '
+                           'clímax}.',
+                           'La {sucesión primaria} comienza cuando especies '
+                           'pioneras colonizan un hábitat sin suelo, como '
+                           'una isla volcánica.',
+                           'Los pioneros típicos de la sucesión primaria son '
+                           '{musgos} y líquenes.',
+                           'La {sucesión secundaria} comienza donde ya '
+                           'existía suelo, tras una perturbación como un '
+                           'incendio o tala.']},
+                {'titulo': '13.9 ECOSISTEMAS DEL PERÚ',
+                 'items': ['Los {biomas} son áreas climáticas definidas con '
+                           'condiciones ecológicas similares.',
+                           'Las {zonas de vida} de Holdridge se definen por '
+                           'biotemperatura, precipitación, humedad y '
+                           '{altitud}.',
+                           'Una {ecorregión} es un área geográfica con '
+                           'condiciones homogéneas de clima, suelo, flora y '
+                           'fauna.',
+                           'Según {Antonio Brack}, el Perú tiene {11} '
+                           'ecorregiones.',
+                           'La primera ecorregión es el {mar frío} de la '
+                           'Corriente Peruana, o Corriente de {Humboldt}.']}],
   'cuadros': [{'titulo': '13.3 FACTORES AMBIENTALES',
                'encabezados': ['Tipo', 'Corresponde a'],
                'filas': [['{Bióticos}', 'Seres {vivos}'],
@@ -5156,6 +5765,198 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La industrialización acelerada',
                                   'La explotación de recursos',
                                   'El comercio internacional'],
+                 'correcta': 'B'},
+                {'pregunta': 'El término «ecosistema» fue acuñado por:',
+                 'alternativas': ['Charles Darwin',
+                                  'Arthur Tansley',
+                                  'Ernest Haeckel',
+                                  'Antonio Brack',
+                                  'Odum'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un ecosistema es considerado un sistema:',
+                 'alternativas': ['Cerrado',
+                                  'Abierto',
+                                  'Aislado',
+                                  'Estático',
+                                  'Sin energía'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ecosistema más grande que se puede concebir '
+                             'es:',
+                 'alternativas': ['Un bioma',
+                                  'La biosfera',
+                                  'Una ecorregión',
+                                  'Un biotopo',
+                                  'Una biocenosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'La comunidad biótica formada por todos los '
+                             'organismos vivos de un lugar se llama:',
+                 'alternativas': ['Biotopo',
+                                  'Biocenosis',
+                                  'Hábitat',
+                                  'Nicho ecológico',
+                                  'Bioma'],
+                 'correcta': 'B'},
+                {'pregunta': 'El espacio físico donde vive una biocenosis, '
+                             'caracterizado por factores abióticos, se '
+                             'llama:',
+                 'alternativas': ['Biocenosis',
+                                  'Biotopo',
+                                  'Nicho',
+                                  'Hábitat',
+                                  'Ecorregión'],
+                 'correcta': 'B'},
+                {'pregunta': 'El lugar donde un organismo encuentra '
+                             'condiciones favorables para vivir se llama:',
+                 'alternativas': ['Nicho ecológico',
+                                  'Hábitat',
+                                  'Biotopo',
+                                  'Biocenosis',
+                                  'Bioma'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las necesidades especiales de una población '
+                             'respecto a alimento, luz y humedad se llaman:',
+                 'alternativas': ['Hábitat',
+                                  'Nicho ecológico',
+                                  'Biotopo',
+                                  'Biocenosis',
+                                  'Ecorregión'],
+                 'correcta': 'B'},
+                {'pregunta': 'Dos organismos que viven en el mismo lugar '
+                             'nunca comparten el mismo:',
+                 'alternativas': ['Hábitat',
+                                  'Nicho ecológico',
+                                  'Biotopo',
+                                  'Bioma',
+                                  'Clima'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fuente de energía de la mayoría de los '
+                             'ecosistemas es:',
+                 'alternativas': ['El suelo',
+                                  'La luz solar',
+                                  'El agua',
+                                  'El aire',
+                                  'Los minerales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las relaciones que se dan entre individuos de '
+                             'la misma especie se llaman relaciones:',
+                 'alternativas': ['Interespecíficas',
+                                  'Intraespecíficas',
+                                  'Tróficas exclusivas',
+                                  'Simbióticas exclusivas',
+                                  'Predatorias exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las relaciones que se dan entre individuos de '
+                             'especies diferentes se llaman relaciones:',
+                 'alternativas': ['Intraespecíficas',
+                                  'Interespecíficas',
+                                  'Homotípicas',
+                                  'Familiares exclusivas',
+                                  'De colmena exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las agrupaciones sin vínculos ni trascendencia '
+                             'ecológica, como mariposas en flores, se '
+                             'llaman:',
+                 'alternativas': ['Sociedades',
+                                  'Agrupaciones casuales o agregaciones',
+                                  'Colmenas',
+                                  'Familias',
+                                  'Clanes'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las familias con diferenciación morfológica en '
+                             'reinas, zánganos y obreras se llaman:',
+                 'alternativas': ['Agregaciones',
+                                  'Colmenas',
+                                  'Sociedades simples',
+                                  'Manadas',
+                                  'Clanes'],
+                 'correcta': 'B'},
+                {'pregunta': 'La agrupación de individuos puede producir '
+                             'tres efectos: cooperación, interferencia y:',
+                 'alternativas': ['Simbiosis',
+                                  'Competencia',
+                                  'Depredación',
+                                  'Parasitismo',
+                                  'Comensalismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando dos organismos viven juntos y se '
+                             'toleran sin hacerse daño, la relación se '
+                             'llama:',
+                 'alternativas': ['Epifitismo',
+                                  'Sinequia',
+                                  'Parasitismo',
+                                  'Depredación',
+                                  'Competencia'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando una planta crece sobre otra usándola de '
+                             'soporte sin dañarla, ocurre:',
+                 'alternativas': ['Sinequia',
+                                  'Epifitismo',
+                                  'Parasitismo',
+                                  'Depredación',
+                                  'Mutualismo exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La secuencia de cambios que experimenta un '
+                             'ecosistema a través del tiempo se llama:',
+                 'alternativas': ['Comunidad clímax',
+                                  'Sucesión ecológica',
+                                  'Nicho ecológico',
+                                  'Biocenosis',
+                                  'Bioma'],
+                 'correcta': 'B'},
+                {'pregunta': 'La máxima expresión armónica de las '
+                             'poblaciones de un ecosistema se llama:',
+                 'alternativas': ['Sucesión primaria',
+                                  'Comunidad clímax',
+                                  'Biotopo',
+                                  'Nicho ecológico',
+                                  'Ecorregión'],
+                 'correcta': 'B'},
+                {'pregunta': 'La sucesión que comienza en un hábitat sin '
+                             'suelo, como una isla volcánica, se llama '
+                             'sucesión:',
+                 'alternativas': ['Secundaria',
+                                  'Primaria',
+                                  'Clímax',
+                                  'Terciaria',
+                                  'Antrópica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los organismos pioneros típicos de la sucesión '
+                             'primaria son:',
+                 'alternativas': ['Árboles grandes',
+                                  'Musgos y líquenes',
+                                  'Mamíferos',
+                                  'Aves',
+                                  'Peces'],
+                 'correcta': 'B'},
+                {'pregunta': 'La sucesión que comienza donde ya existía '
+                             'suelo, tras una perturbación, se llama '
+                             'sucesión:',
+                 'alternativas': ['Primaria',
+                                  'Secundaria',
+                                  'Clímax exclusiva',
+                                  'Terciaria',
+                                  'Ninguna de las anteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las zonas de vida de Holdridge se definen en '
+                             'función de biotemperatura, precipitación, '
+                             'humedad y:',
+                 'alternativas': ['Latitud',
+                                  'Altitud',
+                                  'Longitud',
+                                  'Presión atmosférica',
+                                  'Salinidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Antonio Brack, el Perú tiene un número '
+                             'de ecorregiones igual a:',
+                 'alternativas': ['8', '11', '15', '20', '5'],
+                 'correcta': 'B'},
+                {'pregunta': 'La primera ecorregión del Perú, según Brack, '
+                             'es:',
+                 'alternativas': ['El mar tropical',
+                                  'El mar frío de la Corriente Peruana',
+                                  'El desierto costero',
+                                  'La puna',
+                                  'La selva alta'],
                  'correcta': 'B'}]},
  {'num': 14,
   'titulo': 'Flujo de Energía y Ciclos Biogeoquímicos',
@@ -5254,7 +6055,83 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'carbono}.',
                            'La energía almacenada en los enlaces químicos de '
                            'los carbohidratos proviene originalmente de {La '
-                           'fotosíntesis}.']}],
+                           'fotosíntesis}.']},
+                {'titulo': '14.4 NIVELES TRÓFICOS',
+                 'items': ['El {primer} nivel trófico lo forman los '
+                           '{productores}, organismos autótrofos que '
+                           'fabrican su propio alimento.',
+                           'El {segundo} nivel trófico lo forman los '
+                           '{consumidores primarios} o herbívoros.',
+                           'El {tercer} nivel trófico lo forman los '
+                           '{consumidores secundarios} o carnívoros, también '
+                           'llamados depredadores.',
+                           'El animal del que se alimenta un depredador se '
+                           'llama su {presa}.',
+                           'El {cuarto} nivel trófico lo forman los '
+                           'carroñeros o consumidores {terciarios}, como el '
+                           'gallinazo y el cóndor.',
+                           'Los organismos {omnívoros}, como el hombre, se '
+                           'alimentan de plantas y carne a la vez.',
+                           'Los {descomponedores} o desintegradores, como '
+                           'hongos y bacterias, desintegran la materia '
+                           'orgánica muerta.']},
+                {'titulo': '14.5 CADENAS, REDES Y PIRÁMIDES TRÓFICAS',
+                 'items': ['Una {cadena alimenticia} muestra cómo la energía '
+                           'fluye de un organismo a otro a través de cada '
+                           'nivel trófico.',
+                           'En ecosistemas marinos, las cadenas tróficas '
+                           'llegan hasta {6} eslabones; en ecosistemas '
+                           'pequeños, hasta {3}.',
+                           'El conjunto de todas las cadenas alimenticias '
+                           'interconectadas de una comunidad forma una {red '
+                           'trófica}.',
+                           'Las {pirámides tróficas} muestran el flujo de '
+                           'energía, con los {productores} en la base '
+                           'representando la mayor energía.']},
+                {'titulo': '14.6 CICLOS BIOGEOQUÍMICOS: CONCEPTO Y '
+                           'CLASIFICACIÓN',
+                 'items': ['Los {ciclos biogeoquímicos} son el movimiento '
+                           'circular de elementos y compuestos entre el '
+                           'ambiente y los organismos.',
+                           'Se llaman biogeoquímicos porque involucran '
+                           'componentes {geológicos}, biológicos y '
+                           '{químicos}.',
+                           'Los componentes geológicos son la {atmósfera}, '
+                           'la litósfera y la {hidrósfera}.',
+                           'Los ciclos {gaseosos}, como el carbono, oxígeno '
+                           'y nitrógeno, tienen a la atmósfera como '
+                           'principal reservorio.',
+                           'Los ciclos {sedimentarios}, como el fósforo y el '
+                           'azufre, tienen a las rocas sedimentarias como '
+                           'reservorio y son más {lentos}.']},
+                {'titulo': '14.7 EL CICLO DEL CARBONO',
+                 'items': ['Los dos procesos básicos que participan en el '
+                           'ciclo del carbono son la {fotosíntesis} y la '
+                           'respiración {celular}.',
+                           'Cada año se fijan aproximadamente {200} billones '
+                           'de toneladas de carbono mediante fotosíntesis; '
+                           'el 90% lo fijan las {algas} oceánicas.',
+                           'Los {moluscos} combinan CO2 disuelto con calcio '
+                           'para formar carbonato de calcio en sus '
+                           '{conchas}.',
+                           'Los {combustibles fósiles} —carbón, petróleo y '
+                           'gas— se forman de restos orgánicos por presión y '
+                           'temperatura durante millones de años.']},
+                {'titulo': '14.8 EL CICLO DEL NITRÓGENO',
+                 'items': ['La atmósfera está formada por aproximadamente '
+                           '{78}% de gas nitrógeno libre (N2).',
+                           'Las plantas y animales {no} pueden usar el '
+                           'nitrógeno atmosférico directamente; debe '
+                           'convertirse en {nitratos}.',
+                           'El ciclo del nitrógeno incluye fijación, '
+                           '{amonificación}, nitrificación y '
+                           '{desnitrificación}.',
+                           'En la {fijación} de nitrógeno, bacterias '
+                           'convierten el N2 atmosférico en {amoníaco} '
+                           '(NH3).',
+                           'Las bacterias fijadoras de nitrógeno viven en '
+                           'nódulos de las raíces de {leguminosas}, como el '
+                           'frijol.']}],
   'cuadros': [{'titulo': '14.2 LAS DOS LEYES DE LA TERMODINÁMICA',
                'encabezados': ['Ley', 'Enunciado'],
                'filas': [['{Primera}',
@@ -5427,6 +6304,196 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La quimiosíntesis exclusiva',
                                   'La descomposición',
                                   'La glucólisis'],
+                 'correcta': 'B'},
+                {'pregunta': 'El primer nivel trófico está formado por:',
+                 'alternativas': ['Los carnívoros',
+                                  'Los productores u organismos autótrofos',
+                                  'Los descomponedores',
+                                  'Los omnívoros',
+                                  'Los carroñeros'],
+                 'correcta': 'B'},
+                {'pregunta': 'El segundo nivel trófico está formado por:',
+                 'alternativas': ['Los productores',
+                                  'Los consumidores primarios o herbívoros',
+                                  'Los carnívoros',
+                                  'Los descomponedores',
+                                  'Los carroñeros'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tercer nivel trófico está formado por los '
+                             'consumidores secundarios, también llamados:',
+                 'alternativas': ['Herbívoros',
+                                  'Depredadores o carnívoros',
+                                  'Productores',
+                                  'Descomponedores',
+                                  'Omnívoros exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El animal del que se alimenta un depredador se '
+                             'llama su:',
+                 'alternativas': ['Huésped',
+                                  'Presa',
+                                  'Simbionte',
+                                  'Hospedero',
+                                  'Parásito'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los organismos que se alimentan tanto de '
+                             'plantas como de carne se llaman:',
+                 'alternativas': ['Herbívoros',
+                                  'Omnívoros',
+                                  'Carnívoros puros',
+                                  'Descomponedores',
+                                  'Detritívoros exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los hongos y bacterias que desintegran materia '
+                             'orgánica muerta se llaman:',
+                 'alternativas': ['Productores',
+                                  'Descomponedores',
+                                  'Consumidores primarios',
+                                  'Consumidores secundarios',
+                                  'Herbívoros'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una cadena alimenticia muestra cómo fluye la '
+                             'energía de un organismo a otro a través de:',
+                 'alternativas': ['Un solo nivel trófico',
+                                  'Cada nivel trófico',
+                                  'Ningún nivel definido',
+                                  'Solo los productores',
+                                  'Solo los depredadores'],
+                 'correcta': 'B'},
+                {'pregunta': 'En ecosistemas marinos, las cadenas tróficas '
+                             'pueden llegar hasta:',
+                 'alternativas': ['2 eslabones',
+                                  '6 eslabones',
+                                  '20 eslabones',
+                                  '1 eslabón',
+                                  '10 eslabones'],
+                 'correcta': 'B'},
+                {'pregunta': 'El conjunto de todas las cadenas alimenticias '
+                             'interconectadas de una comunidad forma:',
+                 'alternativas': ['Una pirámide trófica',
+                                  'Una red trófica',
+                                  'Un nicho ecológico',
+                                  'Un bioma',
+                                  'Una ecorregión'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las pirámides tróficas, los productores se '
+                             'ubican en:',
+                 'alternativas': ['La cúspide',
+                                  'La base',
+                                  'El centro',
+                                  'Fuera de la pirámide',
+                                  'No aparecen'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ciclos biogeoquímicos se definen como el '
+                             'movimiento circular de elementos entre:',
+                 'alternativas': ['Solo los organismos',
+                                  'El ambiente y los organismos',
+                                  'Solo la atmósfera',
+                                  'Solo el suelo',
+                                  'Solo el agua'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ciclos biogeoquímicos involucran '
+                             'componentes geológicos, biológicos y:',
+                 'alternativas': ['Sociales',
+                                  'Químicos',
+                                  'Económicos',
+                                  'Políticos',
+                                  'Culturales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los componentes geológicos de los ciclos '
+                             'biogeoquímicos son atmósfera, litósfera e:',
+                 'alternativas': ['Ionósfera',
+                                  'Hidrósfera',
+                                  'Estratósfera',
+                                  'Exósfera',
+                                  'Termósfera'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ciclos que tienen a la atmósfera como '
+                             'principal reservorio se llaman ciclos:',
+                 'alternativas': ['Sedimentarios',
+                                  'Gaseosos',
+                                  'Hídricos exclusivos',
+                                  'Minerales exclusivos',
+                                  'Orgánicos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ciclos que tienen a las rocas '
+                             'sedimentarias como reservorio, y son más '
+                             'lentos, se llaman ciclos:',
+                 'alternativas': ['Gaseosos',
+                                  'Sedimentarios',
+                                  'Rápidos',
+                                  'Atmosféricos',
+                                  'Hídricos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los dos procesos básicos que participan en el '
+                             'ciclo del carbono son fotosíntesis y:',
+                 'alternativas': ['Fermentación',
+                                  'Respiración celular',
+                                  'Digestión',
+                                  'Excreción',
+                                  'Transcripción'],
+                 'correcta': 'B'},
+                {'pregunta': 'La mayor parte del carbono fijado anualmente '
+                             'por fotosíntesis, un 90%, es fijado por:',
+                 'alternativas': ['Los bosques',
+                                  'Las algas oceánicas',
+                                  'Los animales',
+                                  'Los hongos',
+                                  'Las bacterias del suelo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los moluscos combinan CO2 disuelto con calcio '
+                             'para formar:',
+                 'alternativas': ['Ácido carbónico',
+                                  'Carbonato de calcio en sus conchas',
+                                  'Dióxido de carbono puro',
+                                  'Metano',
+                                  'Bicarbonato de sodio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los combustibles fósiles, como el carbón y el '
+                             'petróleo, se forman de restos orgánicos '
+                             'transformados por:',
+                 'alternativas': ['Reacciones químicas instantáneas',
+                                  'Alta temperatura y presión durante '
+                                  'millones de años',
+                                  'Fotosíntesis directa',
+                                  'Congelación',
+                                  'Radiación solar directa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La atmósfera está formada por gas nitrógeno '
+                             'libre en una proporción aproximada de:',
+                 'alternativas': ['21%', '78%', '50%', '10%', '95%'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las plantas y animales no pueden usar '
+                             'directamente el nitrógeno atmosférico porque '
+                             'debe convertirse primero en:',
+                 'alternativas': ['Oxígeno',
+                                  'Nitratos',
+                                  'Dióxido de carbono',
+                                  'Metano',
+                                  'Ozono'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ciclo del nitrógeno incluye los procesos de '
+                             'fijación, amonificación, nitrificación y:',
+                 'alternativas': ['Fotosíntesis',
+                                  'Desnitrificación',
+                                  'Respiración',
+                                  'Fermentación',
+                                  'Glucólisis'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la fijación de nitrógeno, las bacterias '
+                             'convierten el N2 atmosférico en:',
+                 'alternativas': ['Nitratos directamente',
+                                  'Amoníaco (NH3)',
+                                  'Dióxido de carbono',
+                                  'Ácido sulfúrico',
+                                  'Oxígeno'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las bacterias fijadoras de nitrógeno viven en '
+                             'nódulos de las raíces de plantas llamadas:',
+                 'alternativas': ['Gramíneas',
+                                  'Leguminosas, como el frijol',
+                                  'Cactáceas',
+                                  'Coníferas',
+                                  'Helechos'],
                  'correcta': 'B'}]},
  {'num': 15,
   'titulo': 'Diversidad Biológica y Deterioro de la Flora y la Fauna',
@@ -5518,7 +6585,64 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Además de los tres componentes clásicos, en la '
                            'actualidad se reconoce también como componente '
                            'de la biodiversidad a la diversidad '
-                           '{Cultural}.']}],
+                           '{Cultural}.']},
+                {'titulo': '15.3 BENEFICIOS DE LA DIVERSIDAD BIOLÓGICA',
+                 'items': ['Los servicios de {aprovisionamiento} suministran '
+                           'bienes con valor monetario directo: alimentos, '
+                           'agua, madera.',
+                           'Los servicios {reguladores} incluyen la '
+                           'regulación del clima, el control de erosión y la '
+                           '{polinización}.',
+                           'Los servicios {culturales} incluyen valor '
+                           'espiritual, recreación, ecoturismo y '
+                           '{educación}.',
+                           'Los servicios de {apoyo} o soporte son '
+                           'esenciales para el ecosistema: formación de '
+                           'suelos, ciclos de nutrientes.',
+                           'En el Perú, la {pesquería} es una de las '
+                           'actividades más rentables relacionadas con la '
+                           'biodiversidad.']},
+                {'titulo': '15.4 PELIGROS PARA LA DIVERSIDAD BIOLÓGICA',
+                 'items': ['La causa principal de extinción de especies es '
+                           'la {destrucción} del hábitat por expansión de '
+                           'poblaciones humanas.',
+                           'Entre las causas de pérdida de biodiversidad '
+                           'están el cambio de uso de suelo, la '
+                           '{sobreexplotación} de recursos, y especies '
+                           '{exóticas invasivas}.',
+                           'En el Perú, el cambio de uso de suelo por '
+                           'monocultivos y {deforestación} afecta gravemente '
+                           'la Amazonía.',
+                           'Otro peligro es la introducción de {organismos '
+                           'vivos modificados} (OVM).']},
+                {'titulo': '15.5 DETERIORO DE LA FLORA Y FAUNA',
+                 'items': ['La flora y fauna son recursos naturales '
+                           '{renovables}, que se regeneran por reproducción '
+                           'o {propagación}.',
+                           'El uso insostenible de flora y fauna genera '
+                           'deterioro de {hábitat}, extinción de especies y '
+                           'erosión {genética}.',
+                           'La {erosión genética} es la pérdida o reducción '
+                           'de la {variabilidad genética} de una especie.',
+                           'Una causa de erosión genética es la introducción '
+                           'de variedades {exóticas} en lugar de las '
+                           'nativas.',
+                           'La {chinchilla} es un caso emblemático de '
+                           'especie extinta en su hábitat natural andino por '
+                           'sobreexplotación.']},
+                {'titulo': '15.6 TIPOS DE DETERIORO',
+                 'items': ['El {uso excesivo de biomasa} es la utilización '
+                           'insostenible de materia orgánica de plantas y '
+                           'animales.',
+                           'La {extracción selectiva} sin control afecta '
+                           'especies de alta demanda comercial, como el '
+                           '{cedro} y la caoba.',
+                           'Entre la fauna afectada por extracción selectiva '
+                           'están la {vicuña}, el lobo marino y la tortuga '
+                           '{charapa}.',
+                           'La {pesca no planificada} es la pesca '
+                           'insostenible sin respetar las épocas de '
+                           '{veda}.']}],
   'cuadros': [{'titulo': '15.2 LOS TRES COMPONENTES DE LA BIODIVERSIDAD',
                'encabezados': ['Componente', 'Se refiere a'],
                'filas': [['{Genética}',
@@ -5682,6 +6806,158 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Política',
                                   'Religiosa',
                                   'Militar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios que suministran bienes con valor '
+                             'monetario directo, como alimentos y madera, se '
+                             'llaman servicios de:',
+                 'alternativas': ['Regulación',
+                                  'Aprovisionamiento',
+                                  'Apoyo',
+                                  'Culturales',
+                                  'Ninguno de los anteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios que incluyen la regulación del '
+                             'clima y la polinización se llaman servicios:',
+                 'alternativas': ['De aprovisionamiento',
+                                  'Reguladores',
+                                  'Culturales',
+                                  'De apoyo',
+                                  'Ninguno de los anteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios que incluyen valor espiritual, '
+                             'recreación y ecoturismo se llaman servicios:',
+                 'alternativas': ['De apoyo',
+                                  'Culturales',
+                                  'Reguladores',
+                                  'De aprovisionamiento',
+                                  'Ninguno de los anteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios esenciales para el '
+                             'funcionamiento del ecosistema, como la '
+                             'formación de suelos, se llaman servicios de:',
+                 'alternativas': ['Aprovisionamiento',
+                                  'Apoyo o soporte',
+                                  'Regulación',
+                                  'Cultura',
+                                  'Ninguno de los anteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el Perú, una de las actividades más '
+                             'rentables relacionadas con la biodiversidad '
+                             'es:',
+                 'alternativas': ['La minería exclusiva',
+                                  'La pesquería',
+                                  'El comercio internacional',
+                                  'La industria textil',
+                                  'La banca'],
+                 'correcta': 'B'},
+                {'pregunta': 'La causa principal de extinción de especies en '
+                             'la actualidad es:',
+                 'alternativas': ['Los desastres naturales exclusivos',
+                                  'La destrucción del hábitat por '
+                                  'actividades humanas',
+                                  'Las enfermedades exclusivas',
+                                  'El cambio de estaciones',
+                                  'La competencia natural exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las causas de pérdida de biodiversidad '
+                             'figuran el cambio de uso de suelo y:',
+                 'alternativas': ['El crecimiento de bosques',
+                                  'La sobreexplotación de recursos bióticos',
+                                  'La reforestación',
+                                  'La conservación estricta',
+                                  'El aumento de áreas protegidas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Amazonía peruana, el cambio de uso de '
+                             'suelo se debe principalmente a monocultivos '
+                             'extensivos y:',
+                 'alternativas': ['La reforestación',
+                                  'La deforestación por tala y quema',
+                                  'La protección estatal',
+                                  'El turismo sostenible',
+                                  'La investigación científica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un peligro adicional para la biodiversidad es '
+                             'la introducción de:',
+                 'alternativas': ['Especies nativas',
+                                  'Organismos vivos modificados (OVM)',
+                                  'Áreas protegidas',
+                                  'Parques nacionales',
+                                  'Reservas comunales'],
+                 'correcta': 'B'},
+                {'pregunta': 'La flora y la fauna son recursos naturales:',
+                 'alternativas': ['No renovables',
+                                  'Renovables',
+                                  'Inagotables sin límite',
+                                  'Artificiales',
+                                  'Inexistentes en el Perú'],
+                 'correcta': 'B'},
+                {'pregunta': 'La pérdida o reducción de la variabilidad '
+                             'genética de una especie se llama:',
+                 'alternativas': ['Selección natural',
+                                  'Erosión genética',
+                                  'Mutación dirigida',
+                                  'Deriva génica',
+                                  'Especiación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una causa de erosión genética es la '
+                             'introducción de variedades exóticas en lugar '
+                             'de:',
+                 'alternativas': ['Variedades híbridas',
+                                  'Las variedades nativas o locales',
+                                  'Variedades transgénicas',
+                                  'Ninguna variedad',
+                                  'Variedades importadas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La chinchilla es un ejemplo emblemático de '
+                             'especie extinta en su hábitat andino debido a:',
+                 'alternativas': ['El cambio climático exclusivo',
+                                  'La sobreexplotación',
+                                  'La competencia natural',
+                                  'Una enfermedad viral',
+                                  'La migración voluntaria'],
+                 'correcta': 'B'},
+                {'pregunta': 'El uso excesivo de biomasa se refiere a la '
+                             'utilización insostenible de materia orgánica '
+                             'de:',
+                 'alternativas': ['Solo minerales',
+                                  'Plantas y animales',
+                                  'Solo rocas',
+                                  'Solo agua',
+                                  'Solo aire'],
+                 'correcta': 'B'},
+                {'pregunta': 'La extracción selectiva sin control afecta '
+                             'especies de alta demanda comercial como el '
+                             'cedro y:',
+                 'alternativas': ['El eucalipto',
+                                  'La caoba',
+                                  'El pino',
+                                  'El ciprés',
+                                  'El sauce'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre la fauna peruana afectada por extracción '
+                             'selectiva figuran la vicuña y:',
+                 'alternativas': ['El gato doméstico',
+                                  'La tortuga charapa',
+                                  'La paloma común',
+                                  'El ratón',
+                                  'La rana común'],
+                 'correcta': 'B'},
+                {'pregunta': 'La pesca insostenible que no respeta las '
+                             'épocas de veda se llama:',
+                 'alternativas': ['Pesca artesanal',
+                                  'Pesca no planificada',
+                                  'Pesca deportiva',
+                                  'Acuicultura',
+                                  'Pesca sostenible'],
+                 'correcta': 'B'},
+                {'pregunta': 'Especies como la anchoveta, sardina y merluza '
+                             'han reducido sus poblaciones debido a:',
+                 'alternativas': ['Causas exclusivamente naturales',
+                                  'Actividades antrópicas como la pesca no '
+                                  'planificada',
+                                  'El aumento de depredadores naturales',
+                                  'La migración voluntaria',
+                                  'Cambios genéticos espontáneos'],
                  'correcta': 'B'}]},
  {'num': 16,
   'titulo': 'Contaminación, Problemas Ambientales y Conservación',
@@ -5784,7 +7060,58 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'ecosistema {Deben emigrar o morir}.',
                            'Durante los últimos 200 años, el hombre ha '
                            'agregado al ambiente grandes cantidades de '
-                           '{Productos químicos y agentes físicos}.']}],
+                           '{Productos químicos y agentes físicos}.']},
+                {'titulo': '16.5 CONSERVACIÓN DEL MEDIO AMBIENTE',
+                 'items': ['Según la {UICN} (1980), la conservación es la '
+                           'gestión de la biosfera para el mayor beneficio '
+                           'sostenido de las generaciones {presentes} y '
+                           'futuras.',
+                           'Los tres objetivos de la conservación son: '
+                           'mantener procesos ecológicos, preservar la '
+                           'diversidad {genética}, y asegurar el '
+                           'aprovechamiento {sostenido}.',
+                           'El {proteccionismo} sostiene que los recursos '
+                           'deben mantenerse sin tocar, «bajo llave».',
+                           'El {conservacionismo} se basa en el desarrollo '
+                           'sostenible: uso racional y equilibrado de los '
+                           'recursos.',
+                           'La conservación {ex situ} protege componentes de '
+                           'la biodiversidad fuera de su hábitat natural.',
+                           'La conservación {in situ} mantiene poblaciones '
+                           'viables de especies en sus entornos naturales, '
+                           'como en las áreas naturales protegidas.']},
+                {'titulo': '16.6 FORESTACIÓN Y REFORESTACIÓN',
+                 'items': ['La {forestación} es poblar con árboles áreas que '
+                           'nunca o hace mucho tiempo tuvieron bosque.',
+                           'La {reforestación} es repoblar con especies '
+                           'arbóreas suelos que sí tuvieron cobertura '
+                           'forestal antes.',
+                           'En la cuenca de {Patacancha}, Ollantaytambo, se '
+                           'ha forestado con Polylepis sp. o {queuña}.',
+                           'En la cuenca de {Tambomachay}, Cusco, se ha '
+                           'reforestado también con {queuña}.']},
+                {'titulo': '16.7 ÁREAS NATURALES PROTEGIDAS DEL PERÚ (ANP)',
+                 'items': ['Las ANP están reguladas por la Ley N° {29834}, '
+                           'para conservar la diversidad biológica y valores '
+                           'culturales asociados.',
+                           'El artículo {68} de la Constitución obliga al '
+                           'Estado a promover la conservación de la '
+                           'diversidad biológica y las ANP.',
+                           'El {SERNANP} es el Servicio Nacional de Áreas '
+                           'Naturales Protegidas por el Estado, ente rector '
+                           'del sistema.',
+                           'El {SINANPE} es el Sistema Nacional de Áreas '
+                           'Naturales Protegidas, conformado por las áreas '
+                           'de administración {nacional}.',
+                           'Las ANP con estatus definitivo se clasifican en '
+                           '{nueve} categorías: 3 de uso indirecto y {6} de '
+                           'uso directo.',
+                           'Las áreas de uso {indirecto} permiten '
+                           'investigación y turismo, pero no la extracción '
+                           'de recursos; incluyen Parques y Santuarios '
+                           '{Nacionales}.',
+                           'Las áreas de uso {directo} sí permiten el '
+                           'aprovechamiento de recursos naturales.']}],
   'cuadros': [{'titulo': '16.3 TIPOS DE CONTAMINANTES',
                'encabezados': ['Tipo', 'Ejemplo'],
                'filas': [['{Biológico}', 'Bacterias, {virus}, hongos'],
@@ -5956,4 +7283,149 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Solo oxígeno',
                                   'Solo nitrógeno',
                                   'Solo materia orgánica natural'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la UICN (1980), la conservación es la '
+                             'gestión de la biosfera para beneficio de las '
+                             'generaciones presentes y:',
+                 'alternativas': ['Pasadas exclusivamente',
+                                  'Futuras',
+                                  'Ninguna otra generación',
+                                  'Solo la actual',
+                                  'Solo las próximas dos décadas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Uno de los tres objetivos de la conservación '
+                             'es preservar la diversidad:',
+                 'alternativas': ['Económica',
+                                  'Genética',
+                                  'Política',
+                                  'Cultural exclusiva',
+                                  'Religiosa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente que sostiene que los recursos '
+                             'naturales deben mantenerse sin tocar, «bajo '
+                             'llave», se llama:',
+                 'alternativas': ['Conservacionismo',
+                                  'Proteccionismo',
+                                  'Mito de la inagotabilidad',
+                                  'Desarrollismo',
+                                  'Extractivismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La corriente basada en el desarrollo '
+                             'sostenible y el uso racional de los recursos '
+                             'se llama:',
+                 'alternativas': ['Proteccionismo',
+                                  'Conservacionismo',
+                                  'Mito de la inagotabilidad',
+                                  'Extractivismo',
+                                  'Explotacionismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La conservación de componentes de la '
+                             'biodiversidad fuera de su hábitat natural se '
+                             'llama conservación:',
+                 'alternativas': ['In situ',
+                                  'Ex situ',
+                                  'Mixta',
+                                  'Directa',
+                                  'Indirecta'],
+                 'correcta': 'B'},
+                {'pregunta': 'La conservación de especies dentro de sus '
+                             'entornos naturales, como en áreas protegidas, '
+                             'se llama conservación:',
+                 'alternativas': ['Ex situ',
+                                  'In situ',
+                                  'Artificial',
+                                  'Externa',
+                                  'Indirecta'],
+                 'correcta': 'B'},
+                {'pregunta': 'Poblar con árboles áreas que nunca tuvieron '
+                             'bosque se llama:',
+                 'alternativas': ['Reforestación',
+                                  'Forestación',
+                                  'Deforestación',
+                                  'Silvicultura exclusiva',
+                                  'Agroforestería'],
+                 'correcta': 'B'},
+                {'pregunta': 'Repoblar con árboles suelos que sí tuvieron '
+                             'cobertura forestal antes se llama:',
+                 'alternativas': ['Forestación',
+                                  'Reforestación',
+                                  'Deforestación',
+                                  'Tala selectiva',
+                                  'Extracción forestal'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la cuenca de Patacancha, Ollantaytambo, se '
+                             'ha forestado principalmente con:',
+                 'alternativas': ['Eucalipto',
+                                  'Queuña (Polylepis sp.)',
+                                  'Pino',
+                                  'Ciprés',
+                                  'Molle'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las Áreas Naturales Protegidas del Perú están '
+                             'reguladas por la Ley N°:',
+                 'alternativas': ['28611',
+                                  '29834',
+                                  '27444',
+                                  '30220',
+                                  '26300'],
+                 'correcta': 'B'},
+                {'pregunta': 'El artículo de la Constitución que obliga al '
+                             'Estado a promover la conservación de las ANP '
+                             'es el:',
+                 'alternativas': ['Artículo 2',
+                                  'Artículo 68',
+                                  'Artículo 189',
+                                  'Artículo 200',
+                                  'Artículo 24'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo que asegura la conservación de '
+                             'las Áreas Naturales Protegidas del Perú es:',
+                 'alternativas': ['El MINAM exclusivamente',
+                                  'El SERNANP',
+                                  'La SUNAT',
+                                  'El INEI',
+                                  'El MINAGRI'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Sistema Nacional de Áreas Naturales '
+                             'Protegidas por el Estado se conoce por las '
+                             'siglas:',
+                 'alternativas': ['SERNANP',
+                                  'SINANPE',
+                                  'MINAM',
+                                  'SUNARP',
+                                  'INRENA'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las Áreas Naturales Protegidas con estatus '
+                             'definitivo se clasifican en un número de '
+                             'categorías igual a:',
+                 'alternativas': ['Cinco', 'Nueve', 'Tres', 'Doce', 'Seis'],
+                 'correcta': 'B'},
+                {'pregunta': 'De las nueve categorías de ANP, el número de '
+                             'categorías de uso indirecto es:',
+                 'alternativas': ['Seis', 'Tres', 'Nueve', 'Uno', 'Cinco'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las áreas de uso indirecto permiten '
+                             'investigación científica y turismo, pero no '
+                             'permiten:',
+                 'alternativas': ['La visita de turistas',
+                                  'La extracción de recursos naturales',
+                                  'La investigación académica',
+                                  'El acceso de científicos',
+                                  'La educación ambiental'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las áreas de uso indirecto se cuentan '
+                             'los Parques Nacionales y los:',
+                 'alternativas': ['Cotos de caza',
+                                  'Santuarios Nacionales',
+                                  'Bosques de protección',
+                                  'Reservas comunales',
+                                  'Refugios de vida silvestre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las áreas de uso directo, a diferencia de las '
+                             'de uso indirecto, sí permiten:',
+                 'alternativas': ['Solo investigación',
+                                  'El aprovechamiento de recursos naturales',
+                                  'Solo turismo',
+                                  'Ninguna actividad',
+                                  'Solo educación'],
                  'correcta': 'B'}]}]
