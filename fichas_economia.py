@@ -627,7 +627,39 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '{1984}.',
                            'Los bienes muebles se caracterizan porque pueden '
                            'trasladarse de un lugar a otro {Con suma '
-                           'facilidad y sin ser destruidos}.']}],
+                           'facilidad y sin ser destruidos}.']},
+                {'titulo': '3.5 BIENES PÚBLICOS',
+                 'items': ['Un {bien público} es aquel cuyo consumo es '
+                           '{indivisible} y puede ser compartido por todos '
+                           'sin exclusión.',
+                           'Los bienes públicos {puros} tienen coste '
+                           'marginal {nulo} por cada usuario adicional, como '
+                           'la defensa nacional.',
+                           'Los bienes públicos {impuros} tienen consumo '
+                           'parcialmente {rival}, como las vías públicas.',
+                           'Los bienes públicos se caracterizan por '
+                           'consumirse {conjuntamente}, sin poder excluir a '
+                           'nadie, y sin {rivalidad}.']},
+                {'titulo': '3.6 LOS SERVICIOS: CONCEPTO Y CARACTERÍSTICAS',
+                 'items': ['Los {servicios} son actividades económicas que '
+                           'satisfacen directamente necesidades de otras '
+                           'personas.',
+                           'Los servicios también se conocen como trabajo '
+                           '{no productivo}, a diferencia del trabajo que '
+                           'crea bienes materiales.',
+                           'Los servicios son {inmateriales} o intangibles: '
+                           'no pueden percibirse materialmente.',
+                           'Los servicios se {consumen} al mismo tiempo que '
+                           'se producen, por lo que no pueden {acumularse} '
+                           'ni ahorrarse.',
+                           'La prestación de un servicio requiere del uso de '
+                           '{bienes} necesarios para realizarla.']},
+                {'titulo': '3.7 CLASIFICACIÓN DE LOS SERVICIOS',
+                 'items': ['Según quién los brinda, los servicios pueden ser '
+                           '{privados}, administrados por la empresa '
+                           'privada, o {públicos}.',
+                           'Los servicios económicos tienen como precio una '
+                           '{tarifa}.']}],
   'cuadros': [{'titulo': '3.2 BIENES LIBRES FRENTE A BIENES ECONÓMICOS',
                'encabezados': ['Aspecto',
                                'Bienes libres',
@@ -791,6 +823,127 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Nunca',
                                   'Solo destruyéndolos',
                                   'Solo con maquinaria pesada'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un bien público se caracteriza porque su '
+                             'consumo es:',
+                 'alternativas': ['Exclusivo de quien paga',
+                                  'Indivisible y compartido sin exclusión',
+                                  'Solo para el Estado',
+                                  'Prohibido para particulares',
+                                  'Limitado a una sola persona'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes públicos puros tienen un coste '
+                             'marginal, por cada usuario adicional, que es:',
+                 'alternativas': ['Muy alto',
+                                  'Nulo',
+                                  'Variable según el consumidor',
+                                  'Igual al precio de mercado',
+                                  'Creciente exponencialmente'],
+                 'correcta': 'B'},
+                {'pregunta': 'La defensa nacional es un ejemplo típico de '
+                             'bien público:',
+                 'alternativas': ['Impuro',
+                                  'Puro',
+                                  'Privado',
+                                  'Mixto exclusivo',
+                                  'Rival'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes públicos impuros, como las vías '
+                             'públicas, tienen un consumo:',
+                 'alternativas': ['No rival en absoluto',
+                                  'Parcialmente rival',
+                                  'Totalmente excluyente',
+                                  'Solo privado',
+                                  'Inexistente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes públicos se caracterizan por '
+                             'consumirse conjuntamente y sin:',
+                 'alternativas': ['Costo alguno',
+                                  'Rivalidad',
+                                  'Ningún usuario',
+                                  'Producción estatal',
+                                  'Regulación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios se definen como actividades '
+                             'económicas que satisfacen directamente '
+                             'necesidades de:',
+                 'alternativas': ['Solo quien las produce',
+                                  'Otras personas',
+                                  'Solo el Estado',
+                                  'Ninguna persona en particular',
+                                  'Solo empresas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios también se conocen con el nombre '
+                             'de trabajo:',
+                 'alternativas': ['Productivo',
+                                  'No productivo',
+                                  'Manual exclusivo',
+                                  'Intelectual exclusivo',
+                                  'Físico exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios se caracterizan por ser '
+                             'inmateriales, es decir:',
+                 'alternativas': ['Se pueden almacenar',
+                                  'No pueden percibirse materialmente',
+                                  'Son siempre gratuitos',
+                                  'Solo los presta el Estado',
+                                  'Duran para siempre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios se consumen al mismo tiempo que '
+                             'se:',
+                 'alternativas': ['Almacenan',
+                                  'Producen',
+                                  'Exportan',
+                                  'Prohíben',
+                                  'Regulan'],
+                 'correcta': 'B'},
+                {'pregunta': 'Debido a que se consumen al momento de '
+                             'producirse, los servicios no pueden:',
+                 'alternativas': ['Venderse',
+                                  'Acumularse o ahorrarse',
+                                  'Prestarse',
+                                  'Tener tarifa',
+                                  'Ser regulados'],
+                 'correcta': 'B'},
+                {'pregunta': 'La prestación de cualquier servicio requiere '
+                             'del uso de:',
+                 'alternativas': ['Ningún recurso adicional',
+                                  'Bienes u objetos necesarios',
+                                  'Solo dinero',
+                                  'Solo mano de obra sin herramientas',
+                                  'Solo tecnología avanzada'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según quién los brinda, los servicios pueden '
+                             'clasificarse en privados y:',
+                 'alternativas': ['Informales',
+                                  'Públicos',
+                                  'Ilegales',
+                                  'Extranjeros exclusivos',
+                                  'Gratuitos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los servicios privados son administrados y '
+                             'organizados por:',
+                 'alternativas': ['El Estado exclusivamente',
+                                  'La empresa privada',
+                                  'Organismos internacionales',
+                                  'El gobierno regional exclusivo',
+                                  'Ninguna institución'],
+                 'correcta': 'B'},
+                {'pregunta': 'Se considera que un servicio es económico '
+                             'cuando tiene como precio:',
+                 'alternativas': ['Un impuesto',
+                                  'Una tarifa',
+                                  'Un salario',
+                                  'Una multa',
+                                  'Un subsidio'],
+                 'correcta': 'B'},
+                {'pregunta': 'La atención médica, la educación y el '
+                             'transporte público son ejemplos de:',
+                 'alternativas': ['Bienes tangibles',
+                                  'Servicios',
+                                  'Bienes públicos puros exclusivos',
+                                  'Materias primas',
+                                  'Bienes de capital'],
                  'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'Proceso Económico',
@@ -889,7 +1042,73 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'Bajo el capitalismo, según el texto, entre '
                            'producción y consumo puede surgir {Una '
                            'contradicción cuando el consumo se retrasa de la '
-                           'producción}.']}],
+                           'producción}.']},
+                {'titulo': '4.4 LA PRODUCCIÓN Y LOS FACTORES PRODUCTIVOS',
+                 'items': ['La {producción} es la primera fase del proceso '
+                           'económico, donde se combinan racionalmente los '
+                           'factores para transformar recursos en bienes.',
+                           'El {proceso productivo} son las etapas donde las '
+                           'materias primas se transforman agregando valor, '
+                           'mediante {trabajo} y capital.',
+                           'Los {factores productivos básicos o clásicos} '
+                           'son naturaleza, trabajo, capital y empresa.',
+                           'Los {factores productivos modernos} incluyen al '
+                           'Estado como regulador y estabilizador.']},
+                {'titulo': '4.5 RETRIBUCIÓN DE LOS FACTORES PRODUCTIVOS',
+                 'items': ['El factor {naturaleza} recibe como retribución '
+                           'la {renta}.',
+                           'El factor {trabajo} recibe como retribución el '
+                           '{salario}.',
+                           'El factor {capital} recibe como retribución el '
+                           '{interés}.',
+                           'El factor {empresa} recibe como retribución la '
+                           '{ganancia} o utilidad.',
+                           'El factor {Estado} recibe como retribución los '
+                           '{impuestos} o tributación.',
+                           'La {empresa} es considerada el factor productivo '
+                           '{organizador}, que reúne y combina a los demás '
+                           'factores.']},
+                {'titulo': '4.6 LA FUNCIÓN DE PRODUCCIÓN',
+                 'items': ['La {función de producción} es una relación '
+                           'técnica que expresa los máximos niveles de '
+                           'producción según la combinación de factores.',
+                           'En la función de producción, tanto el producto '
+                           'como los factores se miden en unidades '
+                           '{físicas}, no monetarias.',
+                           'Los factores productivos {fijos} no se pueden '
+                           'modificar en el corto plazo, como fábricas y '
+                           'maquinaria.',
+                           'Los factores productivos {variables} sí se '
+                           'pueden modificar en el corto plazo, como '
+                           'materias primas e insumos.']},
+                {'titulo': '4.7 PRODUCTIVIDAD',
+                 'items': ['La {productividad} mide cuántos bienes y '
+                           'servicios se producen por cada factor utilizado '
+                           'en un periodo.',
+                           'El objetivo de la productividad es medir la '
+                           '{eficiencia} de producción por cada factor o '
+                           'recurso.',
+                           'A menor cantidad de recursos necesarios para '
+                           'producir lo mismo, {mayor} es la productividad.',
+                           'La {productividad media} se obtiene dividiendo '
+                           'la producción total entre el total de unidades '
+                           'del factor utilizado.']},
+                {'titulo': '4.8 COMPETITIVIDAD',
+                 'items': ['La {competitividad} es la capacidad de una '
+                           'empresa de desarrollar y mantener {ventajas '
+                           'comparativas}.',
+                           'Una {ventaja comparativa} es un recurso o '
+                           'atributo que posee una empresa y del que carecen '
+                           'sus {competidores}.',
+                           'Según {Michael Porter}, la ventaja competitiva '
+                           'se relaciona con el valor que una empresa crea '
+                           'para sus {compradores}.',
+                           'La competitividad {interna} busca la mayor '
+                           'eficiencia posible de los recursos propios de la '
+                           'organización.',
+                           'La competitividad {externa} busca ventajas '
+                           'competitivas en el contexto del {mercado}, '
+                           'evaluando factores como la innovación.']}],
   'cuadros': [{'titulo': '4.3 LOS TRES SECTORES PRODUCTIVOS',
                'encabezados': ['Sector', 'Actividad principal'],
                'filas': [['{Primario}', 'Agricultura, ganadería y {pesca}'],
@@ -1047,6 +1266,176 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Un equilibrio automático total',
                                   'La eliminación de la escasez',
                                   'Un crecimiento sin límites'],
+                 'correcta': 'B'},
+                {'pregunta': 'La producción se define como la primera fase '
+                             'del proceso económico donde se combinan:',
+                 'alternativas': ['Solo el capital',
+                                  'Racionalmente los factores de producción',
+                                  'Solo el trabajo',
+                                  'Solo la naturaleza',
+                                  'Solo el Estado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los factores productivos básicos o clásicos '
+                             'son naturaleza, trabajo, capital y:',
+                 'alternativas': ['Estado',
+                                  'Empresa',
+                                  'Dinero',
+                                  'Tecnología',
+                                  'Comercio'],
+                 'correcta': 'B'},
+                {'pregunta': 'El factor productivo naturaleza recibe como '
+                             'retribución:',
+                 'alternativas': ['El salario',
+                                  'La renta',
+                                  'El interés',
+                                  'La ganancia',
+                                  'El impuesto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El factor productivo trabajo recibe como '
+                             'retribución:',
+                 'alternativas': ['La renta',
+                                  'El salario',
+                                  'El interés',
+                                  'La ganancia',
+                                  'El impuesto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El factor productivo capital recibe como '
+                             'retribución:',
+                 'alternativas': ['El salario',
+                                  'El interés',
+                                  'La renta',
+                                  'El impuesto',
+                                  'La tarifa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El factor productivo empresa recibe como '
+                             'retribución:',
+                 'alternativas': ['El salario',
+                                  'La ganancia o utilidad',
+                                  'La renta',
+                                  'El interés',
+                                  'El impuesto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El factor productivo Estado recibe como '
+                             'retribución:',
+                 'alternativas': ['El salario',
+                                  'Los impuestos o tributación',
+                                  'La renta',
+                                  'El interés',
+                                  'La ganancia'],
+                 'correcta': 'B'},
+                {'pregunta': 'La empresa es considerada el factor '
+                             'productivo:',
+                 'alternativas': ['Pasivo',
+                                  'Organizador',
+                                  'Regulador exclusivo',
+                                  'Estabilizador exclusivo',
+                                  'Originario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Estado, como factor productivo moderno, '
+                             'cumple un papel:',
+                 'alternativas': ['Pasivo',
+                                  'Regulador y estabilizador',
+                                  'Solo consultivo',
+                                  'Nulo en la economía',
+                                  'Solo simbólico'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función de producción expresa los máximos '
+                             'niveles de producción según la combinación de:',
+                 'alternativas': ['Solo el capital',
+                                  'Los factores productivos',
+                                  'Solo el trabajo',
+                                  'Solo la naturaleza',
+                                  'Solo la tecnología'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la función de producción, el producto y los '
+                             'factores se miden en unidades:',
+                 'alternativas': ['Monetarias',
+                                  'Físicas',
+                                  'Porcentuales',
+                                  'Relativas exclusivamente',
+                                  'Subjetivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los factores productivos que no se pueden '
+                             'modificar en el corto plazo, como fábricas, se '
+                             'llaman factores:',
+                 'alternativas': ['Variables',
+                                  'Fijos',
+                                  'Externos',
+                                  'Modernos exclusivos',
+                                  'Clásicos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los factores productivos que sí se pueden '
+                             'modificar en el corto plazo, como insumos, se '
+                             'llaman factores:',
+                 'alternativas': ['Fijos',
+                                  'Variables',
+                                  'Externos exclusivos',
+                                  'Básicos exclusivos',
+                                  'Modernos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La productividad mide cuántos bienes y '
+                             'servicios se producen por cada:',
+                 'alternativas': ['Unidad monetaria exclusiva',
+                                  'Factor utilizado',
+                                  'Cliente atendido',
+                                  'Impuesto pagado',
+                                  'Trabajador despedido'],
+                 'correcta': 'B'},
+                {'pregunta': 'A menor cantidad de recursos necesarios para '
+                             'producir la misma cantidad, la productividad:',
+                 'alternativas': ['Disminuye',
+                                  'Aumenta',
+                                  'Se mantiene igual siempre',
+                                  'Desaparece',
+                                  'Se vuelve negativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La productividad media se obtiene dividiendo '
+                             'la producción total entre:',
+                 'alternativas': ['El precio de mercado',
+                                  'El total de unidades del factor utilizado',
+                                  'Los ingresos totales',
+                                  'El número de empresas',
+                                  'La inflación acumulada'],
+                 'correcta': 'B'},
+                {'pregunta': 'La competitividad es la capacidad de una '
+                             'empresa de desarrollar y mantener:',
+                 'alternativas': ['Deudas',
+                                  'Ventajas comparativas',
+                                  'Pérdidas constantes',
+                                  'Menor producción',
+                                  'Menor calidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una ventaja comparativa es un recurso o '
+                             'atributo del que carecen:',
+                 'alternativas': ['Los clientes',
+                                  'Los competidores',
+                                  'Los proveedores',
+                                  'El Estado',
+                                  'Los trabajadores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Michael Porter, la ventaja competitiva '
+                             'se relaciona con el valor creado para:',
+                 'alternativas': ['El Estado',
+                                  'Los compradores',
+                                  'Los competidores',
+                                  'Los proveedores exclusivos',
+                                  'El gobierno'],
+                 'correcta': 'B'},
+                {'pregunta': 'La competitividad interna busca la mayor '
+                             'eficiencia posible de los recursos:',
+                 'alternativas': ['Externos exclusivamente',
+                                  'Propios de la organización',
+                                  'Del gobierno',
+                                  'De la competencia',
+                                  'Del mercado internacional'],
+                 'correcta': 'B'},
+                {'pregunta': 'La competitividad externa evalúa factores como '
+                             'la innovación y:',
+                 'alternativas': ['Solo los precios internos',
+                                  'La estabilidad económica',
+                                  'Solo el clima laboral',
+                                  'Solo los salarios internos',
+                                  'Solo la ubicación geográfica'],
                  'correcta': 'B'}]},
  {'num': 5,
   'titulo': 'Trabajo',
@@ -1161,7 +1550,35 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'aspectos, la estructura de tareas y su '
                            '{Sincronización}.',
                            'La mejora continua busca optimizar la calidad de '
-                           'un producto, proceso o {Servicio}.']}],
+                           'un producto, proceso o {Servicio}.']},
+                {'titulo': '5.5 MODALIDADES DE LA DIVISIÓN DEL TRABAJO',
+                 'items': ['La división {social} del trabajo surge cuando '
+                           'los seres humanos se dedican a actividades '
+                           'especializadas diversas.',
+                           'La división {interna} del trabajo es propia de '
+                           'la industria moderna, cuando cada obrero realiza '
+                           'una parte de un trabajo complejo.',
+                           'La división {internacional} del trabajo es la '
+                           'especialización de los países, produciendo lo '
+                           'que son más {eficientes}.']},
+                {'titulo': '5.6 EL SALARIO: CONCEPTO Y ORIGEN',
+                 'items': ['El {salario}, o remuneración, es la suma de '
+                           'dinero que recibe un trabajador de su empleador '
+                           'por su trabajo.',
+                           'El pago diario del salario recibe el nombre de '
+                           '{jornal}, del término jornada.',
+                           'El término «salario» proviene del vocablo latino '
+                           '«{salarium}», que significa «pago de {sal}».',
+                           'En la antigua Roma, la sal era un bien escaso '
+                           'usado como antiséptico, y se pagaba a los '
+                           'legionarios que custodiaban la «Vía '
+                           '{Salaria}».']},
+                {'titulo': '5.7 FORMAS DE REMUNERACIÓN',
+                 'items': ['El {jornal} es la retribución que recibe el '
+                           'obrero por cada jornada laboral, pagada por lo '
+                           'general semanalmente.',
+                           'El {sueldo}, o haber, es el pago que perciben '
+                           'los empleados del sector público o {privado}.']}],
   'cuadros': [{'titulo': '5.2 LAS CUATRO ETAPAS DEL CICLO PHVA',
                'encabezados': ['Etapa', 'Acción'],
                'filas': [['{Planificar}',
@@ -1338,6 +1755,104 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo el empaque',
                                   'Solo la publicidad',
                                   'Solo el transporte'],
+                 'correcta': 'B'},
+                {'pregunta': 'La división del trabajo en la que los seres '
+                             'humanos se dedican a actividades diversas '
+                             'desde la antigüedad se llama división:',
+                 'alternativas': ['Interna',
+                                  'Social',
+                                  'Internacional',
+                                  'Técnica exclusiva',
+                                  'Empresarial'],
+                 'correcta': 'B'},
+                {'pregunta': 'La división del trabajo propia de la industria '
+                             'moderna, donde cada obrero realiza una parte '
+                             'de un proceso, se llama división:',
+                 'alternativas': ['Social',
+                                  'Interna',
+                                  'Internacional',
+                                  'Rural',
+                                  'Artesanal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La especialización de los países en producir '
+                             'lo que son más eficientes se llama división:',
+                 'alternativas': ['Social del trabajo',
+                                  'Internacional del trabajo',
+                                  'Interna del trabajo',
+                                  'Rural del trabajo',
+                                  'Artesanal del trabajo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El salario se define como la suma de dinero '
+                             'que recibe periódicamente un trabajador de su:',
+                 'alternativas': ['Familia',
+                                  'Empleador',
+                                  'Sindicato',
+                                  'Gobierno exclusivamente',
+                                  'Banco'],
+                 'correcta': 'B'},
+                {'pregunta': 'El pago diario del salario recibe el nombre '
+                             'de:',
+                 'alternativas': ['Sueldo',
+                                  'Jornal',
+                                  'Haber',
+                                  'Estipendio exclusivo',
+                                  'Honorario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El término «salario» proviene del vocablo '
+                             'latino «salarium», que significa:',
+                 'alternativas': ['Pago de oro',
+                                  'Pago de sal',
+                                  'Pago de trigo',
+                                  'Pago de agua',
+                                  'Pago de vino'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la antigua Roma, la sal era un bien escaso '
+                             'usado como:',
+                 'alternativas': ['Moneda exclusiva',
+                                  'Antiséptico y preservante de alimentos',
+                                  'Combustible',
+                                  'Material de construcción',
+                                  'Colorante'],
+                 'correcta': 'B'},
+                {'pregunta': 'La ruta romana por la cual ingresaba la sal a '
+                             'Roma se llamaba:',
+                 'alternativas': ['Vía Apia',
+                                  'Vía Salaria',
+                                  'Vía Flaminia',
+                                  'Vía Aurelia',
+                                  'Vía Domicia'],
+                 'correcta': 'B'},
+                {'pregunta': 'El jornal es la retribución que recibe el '
+                             'obrero por cada:',
+                 'alternativas': ['Mes trabajado',
+                                  'Jornada laboral',
+                                  'Año de servicio',
+                                  'Proyecto terminado',
+                                  'Cliente atendido'],
+                 'correcta': 'B'},
+                {'pregunta': 'El jornal se paga, por lo general, de forma:',
+                 'alternativas': ['Mensual',
+                                  'Semanal',
+                                  'Anual',
+                                  'Trimestral',
+                                  'Solo al final del contrato'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sueldo, también llamado haber, es el pago '
+                             'que perciben:',
+                 'alternativas': ['Solo los obreros',
+                                  'Los empleados del sector público o '
+                                  'privado',
+                                  'Solo los desempleados',
+                                  'Solo los jubilados',
+                                  'Solo los estudiantes'],
+                 'correcta': 'B'},
+                {'pregunta': 'El trabajo es considerado en la actualidad un '
+                             'derecho:',
+                 'alternativas': ['Exclusivo de adultos mayores',
+                                  'Humano social',
+                                  'Solo comercial',
+                                  'Solo privado',
+                                  'Opcional del Estado'],
                  'correcta': 'B'}]},
  {'num': 6,
   'titulo': 'Capital',
@@ -1444,7 +1959,36 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El proceso de acumulación por excedente '
                            'económico se dio principalmente en modos de '
                            'producción {Precapitalistas y las primeras fases '
-                           'del capitalismo}.']}],
+                           'del capitalismo}.']},
+                {'titulo': '6.5 CLASES DE CAPITAL (TEORÍA CLÁSICA)',
+                 'items': ['El {capital productivo} son bienes usados en la '
+                           'producción de nuevos bienes, como maquinaria '
+                           'industrial.',
+                           'El {capital fijo} son bienes que sirven en '
+                           'varios procesos productivos, trasladando su '
+                           'valor por {partes}.',
+                           'El {capital circulante} son bienes empleados en '
+                           'un solo proceso productivo, como el trigo o el '
+                           'algodón.',
+                           'El {capital lucrativo} son bienes que sin '
+                           'destinarse a la producción generan renta, como '
+                           'una casa en {alquiler}.']},
+                {'titulo': '6.6 OTROS TIPOS DE CAPITAL',
+                 'items': ['El {capital comercial} se originó en la fase '
+                           'mercantilista del capitalismo, con el excedente '
+                           'del comercio {exterior}.',
+                           'El {capital industrial} se originó en la etapa '
+                           'industrial, para adquirir materias primas, mano '
+                           'de obra y {maquinaria}.',
+                           'El {capital bancario} surgió cuando la burguesía '
+                           'industrial creó las primeras entidades '
+                           '{financieras}.',
+                           'Los bancos generan excedente porque cobran mayor '
+                           'tasa de interés en {préstamos} que la que pagan '
+                           'a los {ahorristas}.',
+                           'El {capital financiero} corresponde a la etapa '
+                           'monopólica del capitalismo, y surge de la fusión '
+                           'del capital industrial y {bancario}.']}],
   'cuadros': [{'titulo': '6.2 FORMAS DE OBTENCIÓN DEL CAPITAL',
                'encabezados': ['Forma', 'Mecanismo'],
                'filas': [['Acción del {hombre}', 'Sobre la {naturaleza}'],
@@ -1617,6 +2161,91 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo socialistas',
                                   'Solo feudales tardíos',
                                   'Solo poscapitalistas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la teoría clásica, los bienes usados en '
+                             'la producción de nuevos bienes, como '
+                             'maquinaria, forman el capital:',
+                 'alternativas': ['Lucrativo',
+                                  'Productivo',
+                                  'Bancario',
+                                  'Comercial',
+                                  'Financiero'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital que sirve en varios procesos '
+                             'productivos, trasladando su valor por partes, '
+                             'es el capital:',
+                 'alternativas': ['Circulante',
+                                  'Fijo',
+                                  'Lucrativo',
+                                  'Comercial',
+                                  'Bancario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital empleado en un solo proceso '
+                             'productivo, como el trigo o el algodón, es el '
+                             'capital:',
+                 'alternativas': ['Fijo',
+                                  'Circulante',
+                                  'Lucrativo',
+                                  'Industrial',
+                                  'Financiero'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital que genera renta sin destinarse '
+                             'directamente a la producción, como una casa en '
+                             'alquiler, es el capital:',
+                 'alternativas': ['Fijo',
+                                  'Lucrativo',
+                                  'Circulante',
+                                  'Productivo',
+                                  'Bancario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital comercial se originó en la fase '
+                             'mercantilista del capitalismo, priorizando:',
+                 'alternativas': ['La industria pesada',
+                                  'El comercio exterior',
+                                  'La banca',
+                                  'La agricultura exclusiva',
+                                  'La minería exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital industrial se originó en la etapa '
+                             'industrial para adquirir, entre otros '
+                             'recursos:',
+                 'alternativas': ['Solo dinero',
+                                  'Materias primas, mano de obra y '
+                                  'maquinaria',
+                                  'Solo tierras',
+                                  'Solo patentes',
+                                  'Solo software'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital bancario surgió cuando la burguesía '
+                             'industrial creó las primeras:',
+                 'alternativas': ['Fábricas',
+                                  'Entidades financieras (bancos)',
+                                  'Colonias',
+                                  'Universidades',
+                                  'Bolsas de valores exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bancos generan excedente porque la tasa de '
+                             'interés que cobran en préstamos es:',
+                 'alternativas': ['Igual a la que pagan a ahorristas',
+                                  'Mayor a la que pagan a los ahorristas',
+                                  'Menor a la que pagan a ahorristas',
+                                  'Inexistente',
+                                  'Regulada por otro banco'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital financiero corresponde a la etapa:',
+                 'alternativas': ['Mercantilista',
+                                  'Monopólica del capitalismo',
+                                  'Feudal',
+                                  'Precapitalista',
+                                  'Socialista'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital financiero surge de la fusión del '
+                             'capital industrial y el capital:',
+                 'alternativas': ['Comercial',
+                                  'Bancario',
+                                  'Lucrativo',
+                                  'Fijo',
+                                  'Circulante'],
                  'correcta': 'B'}]},
  {'num': 7,
   'titulo': 'Naturaleza',
@@ -1971,7 +2600,40 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'productividad}.',
                            'La empresa es descrita como el centro del '
                            'proceso productivo en una economía '
-                           '{Capitalista}.']}],
+                           '{Capitalista}.']},
+                {'titulo': '8.5 LA EMPRESA INDIVIDUAL DE RESPONSABILIDAD '
+                           'LIMITADA (EIRL)',
+                 'items': ['En la {EIRL}, el propietario único acude al '
+                           'Registro Mercantil, constituyendo una persona '
+                           'jurídica con patrimonio {propio}.',
+                           'En la EIRL, la responsabilidad está {limitada} '
+                           'al patrimonio de la empresa; el titular no '
+                           'responde con su patrimonio personal.',
+                           'En la EIRL, el {titular} es el órgano máximo; la '
+                           '{gerencia} administra y representa a la '
+                           'empresa.']},
+                {'titulo': '8.6 EMPRESAS SOCIETARIAS',
+                 'items': ['La {sociedad civil} agrupa a personas que '
+                           'aportan bienes o servicios para ejercer una '
+                           'profesión, como estudios de {abogados}.',
+                           'Las {sociedades mercantiles} se forman para '
+                           'desarrollar actividades con fines {lucrativos}.',
+                           'En la {Sociedad Colectiva}, los socios responden '
+                           'de forma {ilimitada} y solidaria por las deudas '
+                           'sociales.',
+                           'En la {Sociedad Comercial de Responsabilidad '
+                           'Limitada} (S.R.L.), participan entre {2} y 20 '
+                           'socios, llamados {participacionistas}.',
+                           'En la S.R.L., la responsabilidad de los socios '
+                           'está {limitada} al monto aportado al capital '
+                           'social.',
+                           'La {Sociedad Anónima} (S.A.) tiene su capital '
+                           'representado por {acciones} nominativas.',
+                           'En la Sociedad Anónima, los socios se llaman '
+                           '{accionistas}, y ninguno responde con su '
+                           'patrimonio personal por las deudas.',
+                           'La {Junta General de Accionistas} es el órgano '
+                           'máximo y soberano de la Sociedad Anónima.']}],
   'cuadros': [{'titulo': '8.3 CLASIFICACIÓN DE LA EMPRESA SEGÚN EL '
                          'PROPIETARIO',
                'encabezados': ['Tipo', 'Aportante del capital'],
@@ -2142,6 +2804,114 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Primitiva',
                                   'De trueque',
                                   'Autárquica'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la EIRL, el propietario único acude al '
+                             'Registro Mercantil para constituir una persona '
+                             'jurídica con:',
+                 'alternativas': ['Patrimonio del propietario exclusivamente',
+                                  'Patrimonio propio, independiente del '
+                                  'propietario',
+                                  'Ningún patrimonio',
+                                  'Patrimonio compartido con el Estado',
+                                  'Patrimonio de terceros'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la EIRL, la responsabilidad de la empresa '
+                             'está limitada a:',
+                 'alternativas': ['El patrimonio personal del titular',
+                                  'El patrimonio de la empresa',
+                                  'Ningún límite',
+                                  'El doble del capital aportado',
+                                  'La mitad del capital aportado'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la EIRL, el órgano máximo que decide sobre '
+                             'los bienes y actividades es:',
+                 'alternativas': ['La gerencia',
+                                  'El titular',
+                                  'La junta de socios',
+                                  'El directorio',
+                                  'Los accionistas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La sociedad civil es utilizada frecuentemente '
+                             'por estudios de abogados y otras:',
+                 'alternativas': ['Fábricas industriales',
+                                  'Asociaciones profesionales',
+                                  'Minas',
+                                  'Granjas',
+                                  'Empresas navieras'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las sociedades mercantiles se forman con la '
+                             'finalidad de desarrollar actividades:',
+                 'alternativas': ['Sin fines de lucro',
+                                  'Con fines lucrativos',
+                                  'Solo educativas',
+                                  'Solo benéficas',
+                                  'Solo religiosas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Sociedad Colectiva, los socios responden '
+                             'por las deudas sociales de forma:',
+                 'alternativas': ['Limitada',
+                                  'Ilimitada y solidaria',
+                                  'Nula',
+                                  'Proporcional exclusivamente',
+                                  'Estatal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Sociedad Comercial de Responsabilidad '
+                             'Limitada (S.R.L.) puede tener entre 2 y un '
+                             'máximo de:',
+                 'alternativas': ['10 socios',
+                                  '20 socios',
+                                  '50 socios',
+                                  '100 socios',
+                                  '5 socios'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la S.R.L., los socios se denominan:',
+                 'alternativas': ['Accionistas',
+                                  'Socios participacionistas',
+                                  'Socios colectivos',
+                                  'Titulares',
+                                  'Gerentes'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la S.R.L., la responsabilidad de los socios '
+                             'está limitada a:',
+                 'alternativas': ['Todo su patrimonio personal',
+                                  'El monto aportado al capital social',
+                                  'El doble del aporte',
+                                  'Ningún límite',
+                                  'La ganancia obtenida'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capital de la Sociedad Anónima (S.A.) está '
+                             'representado por:',
+                 'alternativas': ['Participaciones',
+                                  'Acciones nominativas',
+                                  'Bonos',
+                                  'Cuotas fijas',
+                                  'Aportes simples'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Sociedad Anónima, los socios reciben el '
+                             'nombre de:',
+                 'alternativas': ['Participacionistas',
+                                  'Accionistas',
+                                  'Socios colectivos',
+                                  'Titulares',
+                                  'Gestores'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Sociedad Anónima, la responsabilidad de '
+                             'los accionistas frente a las deudas de la '
+                             'empresa es:',
+                 'alternativas': ['Ilimitada y personal',
+                                  'Limitada, sin comprometer su patrimonio '
+                                  'personal',
+                                  'Solidaria total',
+                                  'Inexistente legalmente',
+                                  'Compartida con el Estado'],
+                 'correcta': 'B'},
+                {'pregunta': 'El órgano máximo y soberano de la Sociedad '
+                             'Anónima es:',
+                 'alternativas': ['El Directorio',
+                                  'La Junta General de Accionistas',
+                                  'La Gerencia General',
+                                  'El Titular',
+                                  'El Consejo de Vigilancia'],
                  'correcta': 'B'}]},
  {'num': 9,
   'titulo': 'Demanda',
@@ -2237,7 +3007,32 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'de pollo probablemente {Aumentará}.',
                            'Las inversiones en publicidad buscan influir '
                            'principalmente en {Los gustos y preferencias de '
-                           'los consumidores}.']}],
+                           'los consumidores}.']},
+                {'titulo': '9.5 ELASTICIDAD PRECIO DE LA DEMANDA',
+                 'items': ['La {elasticidad precio} de la demanda mide el '
+                           'grado de sensibilidad de la cantidad demandada '
+                           'ante variaciones del {precio}.',
+                           'La elasticidad expresa la variación {porcentual} '
+                           'de la cantidad demandada ante la variación '
+                           'porcentual del precio.',
+                           'El signo de la elasticidad precio siempre es '
+                           '{negativo}, porque la demanda tiene pendiente '
+                           'negativa.',
+                           'Con fines prácticos, se prefiere utilizar el '
+                           'valor {absoluto} de la elasticidad.']},
+                {'titulo': '9.6 TIPOS DE ELASTICIDAD PRECIO',
+                 'items': ['La demanda {perfectamente elástica} tiene un '
+                           'valor de elasticidad {infinito}; el bien tiene '
+                           'sustitutos perfectos.',
+                           'La demanda {relativamente elástica} tiene valor '
+                           'absoluto {mayor} a 1: la cantidad reacciona más '
+                           'que proporcionalmente.',
+                           'La demanda {unitaria} tiene valor absoluto igual '
+                           'a {1}: la cantidad varía en el mismo porcentaje '
+                           'que el precio.',
+                           'La demanda {relativamente inelástica} tiene '
+                           'valor absoluto {menor} a 1: la cantidad '
+                           'reacciona menos que proporcionalmente.']}],
   'cuadros': [{'titulo': '9.3 SUSTITUTOS FRENTE A COMPLEMENTARIOS',
                'encabezados': ['Tipo de bien',
                                'Efecto del alza de precio de uno sobre el '
@@ -2410,6 +3205,102 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'La tasa de interés',
                                   'El tipo de cambio',
                                   'La oferta monetaria'],
+                 'correcta': 'B'},
+                {'pregunta': 'La elasticidad precio de la demanda mide el '
+                             'grado de sensibilidad de la cantidad demandada '
+                             'ante variaciones del:',
+                 'alternativas': ['Ingreso',
+                                  'Precio',
+                                  'Gusto del consumidor',
+                                  'Clima',
+                                  'Costo de producción'],
+                 'correcta': 'B'},
+                {'pregunta': 'La elasticidad precio expresa la variación '
+                             'porcentual de la cantidad demandada ante la '
+                             'variación:',
+                 'alternativas': ['Absoluta del ingreso',
+                                  'Porcentual del precio',
+                                  'Del tipo de cambio',
+                                  'De la oferta monetaria',
+                                  'Del PBI'],
+                 'correcta': 'B'},
+                {'pregunta': 'El signo de la elasticidad precio de la '
+                             'demanda siempre es:',
+                 'alternativas': ['Positivo',
+                                  'Negativo',
+                                  'Cero',
+                                  'Indefinido',
+                                  'Variable según el país'],
+                 'correcta': 'B'},
+                {'pregunta': 'Con fines prácticos, para interpretar la '
+                             'elasticidad se prefiere utilizar su valor:',
+                 'alternativas': ['Relativo',
+                                  'Absoluto',
+                                  'Negativo directo',
+                                  'Porcentual sin signo alguno',
+                                  'Promedio histórico'],
+                 'correcta': 'B'},
+                {'pregunta': 'La demanda perfectamente elástica tiene un '
+                             'valor de elasticidad:',
+                 'alternativas': ['Igual a cero',
+                                  'Infinito',
+                                  'Igual a uno',
+                                  'Negativo puro',
+                                  'Indeterminado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un bien con demanda perfectamente elástica se '
+                             'caracteriza por tener:',
+                 'alternativas': ['Ningún sustituto',
+                                  'Gran cantidad de sustitutos perfectos',
+                                  'Un solo comprador',
+                                  'Precio fijo por ley',
+                                  'Oferta ilimitada'],
+                 'correcta': 'B'},
+                {'pregunta': 'La demanda relativamente elástica tiene un '
+                             'valor absoluto de elasticidad:',
+                 'alternativas': ['Menor a 1',
+                                  'Mayor a 1',
+                                  'Igual a 1',
+                                  'Igual a cero',
+                                  'Negativo sin valor'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la demanda relativamente elástica, la '
+                             'cantidad demandada reacciona, frente al '
+                             'precio, de forma:',
+                 'alternativas': ['Menos que proporcional',
+                                  'Más que proporcional',
+                                  'Idéntica siempre',
+                                  'Nula',
+                                  'Aleatoria'],
+                 'correcta': 'B'},
+                {'pregunta': 'La demanda de elasticidad unitaria tiene un '
+                             'valor absoluto igual a:',
+                 'alternativas': ['0', '1', 'Infinito', '2', '0,5'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la demanda unitaria, si el precio sube 1%, '
+                             'la cantidad demandada se reduce en:',
+                 'alternativas': ['0,5%',
+                                  '1%',
+                                  '2%',
+                                  '10%',
+                                  'Ninguna variación'],
+                 'correcta': 'B'},
+                {'pregunta': 'La demanda relativamente inelástica tiene un '
+                             'valor absoluto de elasticidad:',
+                 'alternativas': ['Mayor a 1',
+                                  'Menor a 1',
+                                  'Igual a 1',
+                                  'Infinito',
+                                  'Negativo puro'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la demanda relativamente inelástica, la '
+                             'cantidad demandada reacciona ante el precio de '
+                             'forma:',
+                 'alternativas': ['Más que proporcional',
+                                  'Menos que proporcional',
+                                  'Idéntica al precio',
+                                  'Inversa exacta',
+                                  'Nula'],
                  'correcta': 'B'}]},
  {'num': 10,
   'titulo': 'Oferta',
@@ -2504,7 +3395,28 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '{Ganancia del productor}.',
                            'La oferta expresa, en esencia, los deseos de '
                            'venta o producción en función de {Los distintos '
-                           'precios existentes en el mercado}.']}],
+                           'precios existentes en el mercado}.']},
+                {'titulo': '10.5 EL EQUILIBRIO DEL MERCADO',
+                 'items': ['El {equilibrio del mercado} es la situación en '
+                           'la que el nivel de producción (oferta) coincide '
+                           'con el nivel de {consumo} (demanda).',
+                           'En el equilibrio, la cantidad {ofertada} es '
+                           'igual a la cantidad {demandada}: Qd = Qo.',
+                           'La {cantidad de equilibrio} es aquella en que '
+                           'coinciden las decisiones de ofertantes y '
+                           'demandantes.',
+                           'El {precio de equilibrio} es aquel en el cual la '
+                           'cantidad ofertada es igual a la cantidad '
+                           'demandada.',
+                           'Gráficamente, el equilibrio se forma en la '
+                           '{intersección} entre las curvas de oferta y '
+                           'demanda.',
+                           'Cuando el precio está por debajo del equilibrio, '
+                           'se genera {escasez}, con presión al {alza} sobre '
+                           'el precio.',
+                           'Cuando el precio está por encima del equilibrio, '
+                           'se genera {abundancia} o sobreproducción, con '
+                           'presión a la {baja}.']}],
   'cuadros': [{'titulo': '10.4 FACTORES QUE AFECTAN LA OFERTA',
                'encabezados': ['Factor', 'Efecto'],
                'filas': [['{Precio} del producto',
@@ -2674,6 +3586,88 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'La publicidad exclusivamente',
                                   'El clima únicamente',
                                   'La moda del momento'],
+                 'correcta': 'B'},
+                {'pregunta': 'El equilibrio del mercado se define como la '
+                             'situación en que el nivel de oferta coincide '
+                             'con el nivel de:',
+                 'alternativas': ['Producción industrial',
+                                  'Consumo o demanda',
+                                  'Importaciones',
+                                  'Exportaciones',
+                                  'Inversión pública'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el equilibrio de mercado, la cantidad '
+                             'ofertada es:',
+                 'alternativas': ['Mayor que la demandada siempre',
+                                  'Igual a la cantidad demandada',
+                                  'Menor que la demandada siempre',
+                                  'Independiente de la demanda',
+                                  'Cero'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cantidad en que coinciden las decisiones de '
+                             'ofertantes y demandantes se llama:',
+                 'alternativas': ['Cantidad óptima',
+                                  'Cantidad de equilibrio',
+                                  'Cantidad máxima',
+                                  'Cantidad mínima',
+                                  'Cantidad neta'],
+                 'correcta': 'B'},
+                {'pregunta': 'El precio en el cual la cantidad ofertada es '
+                             'igual a la cantidad demandada se llama:',
+                 'alternativas': ['Precio de mercado libre',
+                                  'Precio de equilibrio',
+                                  'Precio máximo',
+                                  'Precio mínimo',
+                                  'Precio sombra'],
+                 'correcta': 'B'},
+                {'pregunta': 'Gráficamente, el equilibrio del mercado se '
+                             'forma en:',
+                 'alternativas': ['El origen de coordenadas',
+                                  'La intersección de las curvas de oferta y '
+                                  'demanda',
+                                  'El punto más alto de la curva de oferta',
+                                  'El punto más bajo de la curva de demanda',
+                                  'Un punto fuera del gráfico'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando el precio está por debajo del '
+                             'equilibrio, se genera una situación de:',
+                 'alternativas': ['Abundancia',
+                                  'Escasez',
+                                  'Equilibrio perfecto',
+                                  'Sobreproducción',
+                                  'Estabilidad total'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando hay escasez en el mercado, la presión '
+                             'sobre el precio es:',
+                 'alternativas': ['A la baja',
+                                  'Al alza',
+                                  'Nula',
+                                  'Indeterminada',
+                                  'Negativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando el precio está por encima del '
+                             'equilibrio, se genera una situación de:',
+                 'alternativas': ['Escasez',
+                                  'Abundancia o sobreproducción',
+                                  'Equilibrio estable',
+                                  'Déficit',
+                                  'Inflación directa'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando hay abundancia en el mercado, la '
+                             'presión sobre el precio es:',
+                 'alternativas': ['Al alza',
+                                  'A la baja',
+                                  'Nula',
+                                  'Estable siempre',
+                                  'Indefinida'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el punto de equilibrio, se vende todo lo '
+                             'que se ofrece y se puede comprar:',
+                 'alternativas': ['Solo una parte de lo demandado',
+                                  'Todo lo que se desea demandar',
+                                  'Nada en absoluto',
+                                  'El doble de lo ofertado',
+                                  'Solo productos de lujo'],
                  'correcta': 'B'}]},
  {'num': 11,
   'titulo': 'Mercado',
@@ -3042,7 +4036,36 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'metálico o {De papel}.',
                            'El dinero metálico tipo, acuñado con oro o '
                            'plata, tiene un poder cancelatorio '
-                           '{Ilimitado}.']}],
+                           '{Ilimitado}.']},
+                {'titulo': '12.5 LA INFLACIÓN: CONCEPTO Y MEDICIÓN',
+                 'items': ['La {inflación} es un incremento generalizado y '
+                           'continuo de precios, equivalente a la '
+                           '{desvalorización} de la moneda.',
+                           'Una caída generalizada y continua de precios se '
+                           'llama {deflación}.',
+                           'La inflación se mide por la variación del '
+                           '{Índice de Precios al Consumidor} (IPC).',
+                           'El {IPC} mide el nivel de variación mensual de '
+                           'los precios de la {canasta familiar}.',
+                           'La {tasa de inflación} es el cambio porcentual '
+                           'del nivel de precios en un periodo, generalmente '
+                           'un {mes}.']},
+                {'titulo': '12.6 CLASES DE INFLACIÓN',
+                 'items': ['La inflación {moderada} tiene precios que suben '
+                           'entre {0}% y 10% anual, con tasa de un dígito.',
+                           'La inflación {galopante} varía entre 10% y '
+                           '{1000}% anual, con tasa de dos o tres dígitos.',
+                           'La {hiperinflación} supera el {1000}% anual, o '
+                           'el 50% mensual, con tasa mayor a cuatro '
+                           'dígitos.']},
+                {'titulo': '12.7 CONSECUENCIAS DE LA INFLACIÓN',
+                 'items': ['Entre las consecuencias de la inflación están la '
+                           'pérdida del {poder adquisitivo}, la disminución '
+                           'del salario {real}, y la {dolarización} de la '
+                           'economía.',
+                           'La inflación también genera {especulación} y '
+                           'acaparamiento, disminución del {ahorro}, y '
+                           'empobrecimiento de los {trabajadores}.']}],
   'cuadros': [{'titulo': '12.1 LAS CUATRO FUNCIONES DEL DINERO',
                'encabezados': ['Función', 'Utilidad'],
                'filas': [['{Medio de pago}', 'Facilita {transacciones}'],
@@ -3212,6 +4235,116 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Nulo',
                                   'Temporal exclusivo',
                                   'Solo simbólico'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación se define como un incremento '
+                             'generalizado y continuo de:',
+                 'alternativas': ['Salarios',
+                                  'Precios',
+                                  'Impuestos',
+                                  'Exportaciones',
+                                  'Ahorros'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación equivale a la desvalorización de:',
+                 'alternativas': ['Los bienes de capital',
+                                  'La moneda',
+                                  'Las exportaciones',
+                                  'Los salarios exclusivamente',
+                                  'El PBI'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una caída generalizada y continua de precios '
+                             'se llama:',
+                 'alternativas': ['Estanflación',
+                                  'Deflación',
+                                  'Hiperinflación',
+                                  'Recesión',
+                                  'Devaluación'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación se mide oficialmente por la '
+                             'variación del:',
+                 'alternativas': ['PBI nominal',
+                                  'Índice de Precios al Consumidor (IPC)',
+                                  'Tipo de cambio',
+                                  'Salario mínimo',
+                                  'Índice de desarrollo humano'],
+                 'correcta': 'B'},
+                {'pregunta': 'El IPC mide el nivel de variación mensual de '
+                             'los precios de:',
+                 'alternativas': ['Solo bienes de lujo',
+                                  'La canasta familiar de bienes y servicios',
+                                  'Solo insumos industriales',
+                                  'Solo bienes importados',
+                                  'Solo bienes exportados'],
+                 'correcta': 'B'},
+                {'pregunta': 'La tasa de inflación es el cambio porcentual '
+                             'del nivel de precios, generalmente medido en:',
+                 'alternativas': ['Un día',
+                                  'Un mes',
+                                  'Un lustro',
+                                  'Una década',
+                                  'Un semestre exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación moderada se presenta cuando los '
+                             'precios suben en un rango de:',
+                 'alternativas': ['0% a 10% anual',
+                                  '10% a 1000% anual',
+                                  'Más de 1000% anual',
+                                  'Solo 50% mensual',
+                                  'Ningún rango definido'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación con tasa porcentual de un solo '
+                             'dígito se llama inflación:',
+                 'alternativas': ['Galopante',
+                                  'Moderada',
+                                  'Hiperinflación',
+                                  'Estructural',
+                                  'Importada'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación galopante varía en un rango de:',
+                 'alternativas': ['0% a 10% anual',
+                                  '10% a 1000% anual',
+                                  'Más de 5000% anual',
+                                  'Solo negativo',
+                                  '0% exacto'],
+                 'correcta': 'B'},
+                {'pregunta': 'La hiperinflación se caracteriza por superar '
+                             'un incremento anual de:',
+                 'alternativas': ['10%', '1000%', '100%', '50%', '5%'],
+                 'correcta': 'B'},
+                {'pregunta': 'La hiperinflación también puede medirse cuando '
+                             'supera un incremento mensual de:',
+                 'alternativas': ['5%', '50%', '10%', '1%', '500%'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las consecuencias de la inflación figura '
+                             'la pérdida del poder:',
+                 'alternativas': ['Legislativo',
+                                  'Adquisitivo del dinero',
+                                  'Judicial',
+                                  'Ejecutivo',
+                                  'Electoral'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación provoca que el salario real:',
+                 'alternativas': ['Aumente siempre',
+                                  'Disminuya',
+                                  'Se mantenga igual siempre',
+                                  'Desaparezca',
+                                  'Se duplique'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un fenómeno que ocurre en economías con alta '
+                             'inflación es la creciente sustitución de la '
+                             'moneda local por moneda extranjera, llamada:',
+                 'alternativas': ['Euroización',
+                                  'Dolarización',
+                                  'Nacionalización monetaria',
+                                  'Estatización',
+                                  'Regionalización'],
+                 'correcta': 'B'},
+                {'pregunta': 'La inflación provoca, entre otras '
+                             'consecuencias, la disminución del:',
+                 'alternativas': ['Consumo exclusivo',
+                                  'Ahorro',
+                                  'Gasto público',
+                                  'Comercio exterior',
+                                  'Tipo de cambio'],
                  'correcta': 'B'}]},
  {'num': 13,
   'titulo': 'Sistema Financiero y Crédito',
