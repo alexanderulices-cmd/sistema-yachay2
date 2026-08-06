@@ -2187,70 +2187,7 @@ BALOTAS = [{'num': 1,
                            'ciudad de {barro} más grande de América. '
                            'Destacaron en {orfebrería}.',
                            '{Chanca}: región de Apurímac y Ayacucho; fueron '
-                           'derrotados por los {incas}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['Caral fue investigada principalmente por {Ruth '
-                           'Shady}.',
-                           'Chavín de Huántar se ubica en el departamento de '
-                           '{Áncash}.',
-                           'La organización política de Chavín fue '
-                           '{Teocrática}.',
-                           'Las cabezas clavas eran consideradas {Guardianes '
-                           'del templo}.',
-                           'La capital de Paracas Necrópolis fue {Topará}.',
-                           'Los acueductos de Cantalloc pertenecen a la '
-                           'cultura {Nasca}.',
-                           'La cerámica retrato o realista es característica '
-                           'de {Mochica}.',
-                           'El Señor de Sipán pertenece a la cultura '
-                           '{Mochica}.',
-                           'La Portada del Sol corresponde a la cultura '
-                           '{Tiahuanaco}.',
-                           'El primer imperio andino, con capital en '
-                           'Ayacucho, fue {Wari}.',
-                           'Chan Chan, la ciudad de barro más grande de '
-                           'América, perteneció a {Chimú}.',
-                           'Los chancas se desarrollaron principalmente en '
-                           '{Apurímac y Ayacucho}.',
-                           'Tiahuanaco se desarrolló en el altiplano del '
-                           'lago {Titicaca}.',
-                           'Paracas se ubicó en la provincia de Pisco, '
-                           'departamento de {Ica}.',
-                           'El Lanzón monolítico y la estela Raimondi '
-                           'pertenecen a {Chavín}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Caral fue declarada Patrimonio Cultural de la '
-                           'Humanidad por la UNESCO en Sevilla, el 28 de '
-                           'junio del {2009}.',
-                           'En Chavín, Julio C. Tello interpretó la estela '
-                           'Raimondi como una imagen del dios {Viracocha} en '
-                           'forma de jaguar coronado.',
-                           'Paracas se ubicó entre Cañete por el norte y '
-                           '{Yauca} por el sur, en la bahía de Paracas, '
-                           'departamento de Ica.',
-                           'La cultura Mochica se desarrolló en los valles '
-                           'de Moche, Chicama y Virú, en el departamento de '
-                           '{La Libertad}.',
-                           'La capital del imperio Wari, también llamada '
-                           'Viñaque, se ubicó cerca de la actual ciudad de '
-                           '{Ayacucho}.',
-                           'El Estado chimú tuvo su capital en Chan Chan y '
-                           'llegó a extenderse desde Tumbes por el norte '
-                           'hasta {Carabayllo}, en Lima, por el sur.',
-                           'La confederación chanca surgió tras la caída del '
-                           'imperio Wari, y sus fundadores míticos fueron '
-                           '{Uscovilca} y Ancovilca.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La civilización más antigua de América es '
-                           '{Caral}.',
-                           'Julio C. Tello denominó a Chavín como la cultura '
-                           '{Matriz de la civilización andina}.',
-                           'La cerámica de Paracas Cavernas es {Polícroma en '
-                           'post-cocción}.',
-                           'Paracas destacó notablemente por sus '
-                           '{Trepanaciones craneanas y mantos bordados}.',
-                           'Las líneas de Nasca fueron estudiadas durante '
-                           'décadas por {María Reiche}.']}],
+                           'derrotados por los {incas}.']}],
   'cuadros': [{'titulo': '6. CULTURAS Y SUS RASGOS',
                'encabezados': ['Cultura', 'Ubicación', 'Rasgo distintivo'],
                'filas': [['Caral',
@@ -2449,6 +2386,26 @@ BALOTAS = [{'num': 1,
                            'El imperio se llamó {Tahuantinsuyo}, «las cuatro '
                            'regiones unidas»: Chinchaysuyo, {Antisuyo}, '
                            'Collasuyo y {Contisuyo}.']},
+                {'titulo': '7.4 ADMINISTRACIÓN Y CONTROL DE PISOS ECOLÓGICOS',
+                 'items': ['El {curaca} era el jefe del ayllu, encargado de '
+                           'la administración directa del territorio '
+                           'comunal.',
+                           'El {Tucuyricuy}, «el que todo lo ve», actuaba '
+                           'como inspector del Inca en las provincias.',
+                           'El Tahuantinsuyo, como institución consolidada, '
+                           'fue obra del inca {Pachacútec}.',
+                           'Solo las {acllas}, mujeres escogidas, estaban '
+                           'autorizadas para tejer los ropajes destinados al '
+                           'Inca.',
+                           'Los {collcas} y tambos eran los depósitos '
+                           'estatales donde se almacenaban productos del '
+                           'Tahuantinsuyo.',
+                           'El {control de pisos ecológicos} consistía en '
+                           'que un mismo ayllu cultivara tierras en '
+                           'distintas zonas climáticas, como hicieron los '
+                           '{lupacas} del altiplano con tierras en la costa.',
+                           'Los andenes tuvieron como finalidad ampliar y '
+                           'proteger la frontera {agrícola}.']},
                 {'titulo': '7.5 LO ECONÓMICO',
                  'items': ['La base económica fue la {agricultura}, apoyada '
                            'en los {andenes} y en obras de irrigación.',
@@ -2467,68 +2424,7 @@ BALOTAS = [{'num': 1,
                            'Textilería: los tejidos finos se llamaban '
                            '{cumbi} y los toscos {abasca}.',
                            'El registro de información se hacía mediante los '
-                           '{quipus}, a cargo de los {quipucamayocs}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La célula básica de la sociedad andina fue {El '
-                           'ayllu}.',
-                           'La ayuda mutua y recíproca entre familias se '
-                           'denominaba {Ayni}.',
-                           'El trabajo por turnos al servicio del Estado '
-                           'inca se llamaba {Mita}.',
-                           'El trabajo comunal en beneficio del propio ayllu '
-                           'se denominaba {Minka}.',
-                           'La esposa principal del Inca recibía el nombre '
-                           'de {Coya}.',
-                           'El funcionario inspector llamado «el que todo lo '
-                           've» fue {Tucuyricuy}.',
-                           'El gobernador provincial en el Tahuantinsuyo fue '
-                           '{Apunchic}.',
-                           'El principio por el cual el Estado repartía lo '
-                           'acumulado se denomina {Redistribución}.',
-                           'El tejido más fino de los incas se denominaba '
-                           '{Cumbi}.',
-                           'Los encargados de leer y elaborar los quipus '
-                           'fueron los {Quipucamayocs}.',
-                           'La nobleza inca se dividía en nobleza de sangre '
-                           'y nobleza de {Privilegio}.',
-                           'El Consejo Imperial que asesoraba al Inca se '
-                           'denominaba {Tahuantinsuyo Camachic}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['La sociedad inca reconocía cinco periodos en su '
-                           'evolución histórica, comenzando por uno conocido '
-                           'a través de la {tradición oral}.',
-                           'El Tahuantinsuyo, como institución, fue '
-                           'consolidado por el inca {Pachacútec}.',
-                           'El Tucuyricuy, «el que todo lo ve», actuaba como '
-                           'los ojos y oídos del {Qhapaq} Inca en las '
-                           'provincias.',
-                           'El ayllu tenía como jefe al {curaca}, encargado '
-                           'de la administración directa del territorio '
-                           'comunal.',
-                           'Los pueblos como los lupacas, del altiplano, '
-                           'mantenían tierras cultivadas también en la '
-                           'costa, lo que se conoce como control de {pisos '
-                           'ecológicos}.',
-                           'La vestimenta de la nobleza inca se llamaba '
-                           '{cumbi}, confeccionada con fina lana de vicuña, '
-                           'mientras la del pueblo se llamaba abasca.',
-                           'Solo las {acllas} estaban autorizadas para tejer '
-                           'los ropajes destinados al Inca.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Los depósitos estatales incas donde se '
-                           'almacenaban productos se llamaban {Collcas y '
-                           'tambos}.',
-                           'La tierra en el Tahuantinsuyo se dividía en '
-                           'tierras del Sol, del Inca y {Del pueblo o '
-                           'ayllu}.',
-                           'El recipiente cerámico de base cónica usado para '
-                           'la chicha fue {El aríbalo}.',
-                           'El templo principal del Cusco, dedicado al Sol, '
-                           'fue {El Coricancha}.',
-                           'La base de la economía inca fue {La '
-                           'agricultura}.',
-                           'Los andenes tuvieron como finalidad principal '
-                           '{Ampliar y proteger la frontera agrícola}.']}],
+                           '{quipus}, a cargo de los {quipucamayocs}.']}],
   'cuadros': [{'titulo': '7. FORMAS DE TRABAJO',
                'encabezados': ['Forma', 'Definición'],
                'filas': [['{Ayni}',
@@ -2691,7 +2587,76 @@ BALOTAS = [{'num': 1,
                                   'Panaca',
                                   'Tahuantinsuyo Camachic',
                                   'Curacazgo'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'El jefe del ayllu, encargado de la '
+                             'administración directa del territorio comunal, '
+                             'era el:',
+                 'alternativas': ['Apunchic',
+                                  'Curaca',
+                                  'Tucuyricuy',
+                                  'Coya',
+                                  'Quipucamayoc'],
+                 'correcta': 'B'},
+                {'pregunta': 'El funcionario inca conocido como «el que todo '
+                             'lo ve», inspector en las provincias, era el:',
+                 'alternativas': ['Curaca',
+                                  'Tucuyricuy',
+                                  'Apunchic',
+                                  'Sinchi',
+                                  'Villac Umu'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Tahuantinsuyo, como institución '
+                             'consolidada, fue obra principalmente del inca:',
+                 'alternativas': ['Manco Cápac',
+                                  'Pachacútec',
+                                  'Huayna Cápac',
+                                  'Túpac Yupanqui',
+                                  'Huáscar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las mujeres escogidas, autorizadas '
+                             'exclusivamente para tejer los ropajes del '
+                             'Inca, se llamaban:',
+                 'alternativas': ['Coyas',
+                                  'Acllas',
+                                  'Ñustas',
+                                  'Pallas',
+                                  'Mamaconas exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los depósitos estatales incas donde se '
+                             'almacenaban productos del Tahuantinsuyo se '
+                             'llamaban:',
+                 'alternativas': ['Andenes',
+                                  'Collcas y tambos',
+                                  'Kanchas',
+                                  'Ushnus',
+                                  'Chullpas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema por el cual un mismo ayllu '
+                             'cultivaba tierras en distintas zonas '
+                             'climáticas se llama:',
+                 'alternativas': ['Reciprocidad',
+                                  'Control de pisos ecológicos',
+                                  'Redistribución',
+                                  'Mitmaq exclusivo',
+                                  'Ayni'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los lupacas, pobladores del altiplano, '
+                             'ejemplificaron el control de pisos ecológicos '
+                             'al mantener tierras cultivadas también en:',
+                 'alternativas': ['La selva',
+                                  'La costa',
+                                  'La sierra alta exclusivamente',
+                                  'Otro país',
+                                  'El desierto de Atacama'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los andenes incas tuvieron como finalidad '
+                             'principal:',
+                 'alternativas': ['Solo la defensa militar',
+                                  'Ampliar y proteger la frontera agrícola',
+                                  'Solo el almacenamiento de agua',
+                                  'Solo la vivienda',
+                                  'Solo el culto religioso'],
+                 'correcta': 'B'}]},
  {'num': 8,
   'titulo': 'Mundo medieval y el tránsito al mundo moderno',
   'secciones': [{'titulo': '8.1 EL FEUDALISMO: CONCEPTO',
@@ -2721,79 +2686,42 @@ BALOTAS = [{'num': 1,
                            'señorial y los {mansos}.',
                            'Los {siervos} de la gleba estaban {adscritos} a '
                            'la tierra y no podían abandonarla.']},
-                {'titulo': '8.5 al 8.7 EL TRÁNSITO AL MUNDO MODERNO',
-                 'items': ['El renacer del comercio y de las ciudades '
-                           'favoreció el surgimiento de la {burguesía}, '
-                           'formada por comerciantes y artesanos.',
-                           'El {capitalismo} mercantil se basó en el '
-                           'comercio, la banca y la acumulación de '
-                           '{capital}.',
-                           'El {Renacimiento} fue el movimiento cultural que '
-                           'recuperó la cultura {grecolatina} y colocó al '
-                           'ser humano en el centro: el {humanismo}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El acto por el cual el vasallo juraba fidelidad '
-                           'al señor se llamaba {Homenaje}.',
-                           'La extensión de tierra entregada a cambio de '
-                           'servicios se denominaba {Feudo}.',
-                           'El señor feudal otorgaba a sus vasallos '
-                           'principalmente {Protección y tierras}.',
-                           'Las parcelas del feudo trabajadas por los '
-                           'campesinos se llamaban {Mansos}.',
-                           'La burguesía estuvo formada principalmente por '
-                           '{Comerciantes y artesanos}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Económicamente, el feudalismo se caracterizó por '
-                           'el {monopolio} de la tierra en manos de los '
-                           'señores feudales.',
-                           'El señor feudal era dueño absoluto del feudo y '
-                           'brindaba protección a sus vasallos a cambio de '
-                           'un vínculo de {fidelidad}.',
-                           'Los siervos carecían de medios de producción '
-                           'propios; poseían solo su {fuerza de trabajo} '
-                           'para servir en el feudo.',
-                           'En el Renacimiento, Sandro Botticelli es '
-                           'reconocido por «El nacimiento de la Venus» y «La '
-                           'Primavera», y Miguel Ángel por «El Juicio '
-                           'Final», Moisés, David y la {Piedad}.',
-                           'Leonardo da Vinci destacó como ingeniero, '
-                           'naturalista, pintor e {inventor} del '
-                           'Renacimiento.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El feudalismo predominó en Europa entre los '
-                           'siglos {IX y XV}.',
-                           'La base fundamental del sistema feudal fue {La '
-                           'posesión de la tierra}.',
-                           'El feudalismo surgió principalmente tras {La '
-                           'caída del Imperio Romano de Occidente y las '
-                           'invasiones bárbaras}.',
-                           'La economía feudal se caracterizó por ser {Rural '
-                           'y autosuficiente}.',
-                           'El campesino adscrito a la tierra, que no podía '
-                           'abandonarla, era el {Siervo de la gleba}.',
-                           'El poder político durante el feudalismo se '
-                           'caracterizó por estar {Fragmentado o '
-                           'descentralizado}.',
-                           'La nueva clase social surgida con el renacer del '
-                           'comercio y las ciudades fue {La burguesía}.',
-                           'La sociedad feudal se caracterizó por ser '
-                           '{Estamental y rígida}.',
-                           'El movimiento cultural que recuperó la cultura '
-                           'grecolatina fue {El Renacimiento}.',
-                           'La corriente que colocó al ser humano en el '
-                           'centro del pensamiento fue {El humanismo}.',
-                           'El capitalismo mercantil se basó principalmente '
-                           'en {El comercio, la banca y la acumulación de '
-                           'capital}.',
-                           'La función social de la nobleza feudal era '
-                           '{Guerrear y proteger}.',
-                           'La función social del clero en la sociedad '
-                           'feudal era {Orar y administrar lo religioso}.',
-                           'El feudalismo fue un sistema {Político, '
-                           'económico y social}.',
-                           'El renacer de las ciudades en la Baja Edad Media '
-                           'se relaciona directamente con {La reactivación '
-                           'del comercio}.']}],
+                {'titulo': '8.5 EL SURGIMIENTO DE LA BURGUESÍA',
+                 'items': ['El origen de la burguesía se remonta al siglo '
+                           '{XII}, con villanos o campesinos libres que '
+                           'residían en los {burgos} o ciudades.',
+                           'La actividad comercial burguesa no era bien '
+                           'vista por la {Iglesia}, por su fin de lucro.',
+                           'Los burgueses enriquecidos obtuvieron de los '
+                           'señores feudales permisos de autogobierno, '
+                           'escritos en las llamadas «{cartas de '
+                           'franquicia}».']},
+                {'titulo': '8.6 EL CAPITALISMO MERCANTIL',
+                 'items': ['El capitalismo mercantil se basaba en la premisa '
+                           'de que la riqueza de una nación aumentaba '
+                           'exportando más y recibiendo {metales preciosos}.',
+                           'Bajo este sistema, el {Estado} ejerció mucho '
+                           'control sobre la vida económica, compañías y '
+                           'colonias.',
+                           'El capitalismo mercantil impulsó los viajes de '
+                           '{descubrimiento} e invasión de las metrópolis '
+                           'europeas sobre América y África.']},
+                {'titulo': '8.7 EL RENACIMIENTO: REPRESENTANTES',
+                 'items': ['El Renacimiento sustituyó la concepción '
+                           '{teocentrista} medieval por el '
+                           '{antropocentrismo}.',
+                           'La huida de eruditos bizantinos a Occidente se '
+                           'debió a la captura de {Constantinopla} por los '
+                           'turcos, en {1453}.',
+                           '{Nicolás Maquiavelo}, considerado padre de la '
+                           'ciencia política, escribió «El Príncipe».',
+                           '{Tomás Moro}, autor de «Utopía», idealizó una '
+                           'república con propiedad común de los bienes.',
+                           '{Leonardo Da Vinci} destacó por sus pinturas La '
+                           'Última Cena y la Gioconda, y el dibujo El Hombre '
+                           'de {Vitruvio}.',
+                           '{Miguel Ángel} destacó por la escultura de '
+                           'David, Moisés y la Piedad.']}],
   'cuadros': [{'titulo': '8. SOCIEDAD FEUDAL',
                'encabezados': ['Estamento', 'Función'],
                'filas': [['{Nobleza}', 'Guerrear y {proteger}'],
@@ -2955,7 +2883,103 @@ BALOTAS = [{'num': 1,
                                   'La reactivación del comercio',
                                   'La expansión de la servidumbre',
                                   'El fin del comercio'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'El origen de la burguesía se remonta al siglo '
+                             'XII, con villanos que residían en:',
+                 'alternativas': ['Los feudos',
+                                  'Los burgos o ciudades',
+                                  'Los monasterios',
+                                  'Los castillos',
+                                  'Las cortes reales'],
+                 'correcta': 'B'},
+                {'pregunta': 'La actividad comercial de los burgueses no era '
+                             'bien vista por:',
+                 'alternativas': ['Los reyes',
+                                  'La Iglesia',
+                                  'Los artesanos',
+                                  'Los campesinos',
+                                  'Los mercaderes'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los permisos de autogobierno que obtenían los '
+                             'burgueses se escribían en documentos llamados:',
+                 'alternativas': ['Bulas papales',
+                                  'Cartas de franquicia',
+                                  'Tratados de paz',
+                                  'Códigos civiles',
+                                  'Decretos reales'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capitalismo mercantil se basaba en la '
+                             'premisa de que la riqueza de una nación '
+                             'aumentaba al exportar más y recibir:',
+                 'alternativas': ['Esclavos',
+                                  'Metales preciosos',
+                                  'Tierras',
+                                  'Alimentos exclusivamente',
+                                  'Armas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Bajo el capitalismo mercantil, el control '
+                             'sobre la vida económica lo ejercía '
+                             'principalmente:',
+                 'alternativas': ['La Iglesia',
+                                  'El Estado',
+                                  'Los gremios exclusivamente',
+                                  'Los burgueses exclusivamente',
+                                  'Los campesinos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El capitalismo mercantil impulsó los viajes de '
+                             'descubrimiento e invasión sobre América y:',
+                 'alternativas': ['Oceanía',
+                                  'África',
+                                  'La Antártida',
+                                  'El Ártico',
+                                  'Ninguna otra región'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Renacimiento sustituyó la concepción '
+                             'teocentrista medieval por:',
+                 'alternativas': ['El feudalismo',
+                                  'El antropocentrismo',
+                                  'El mercantilismo',
+                                  'El absolutismo',
+                                  'El escolasticismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La huida de eruditos bizantinos a Occidente se '
+                             'debió a la captura de Constantinopla por los '
+                             'turcos en:',
+                 'alternativas': ['1453', '1492', '1517', '1400', '1600'],
+                 'correcta': 'A'},
+                {'pregunta': 'El autor de «El Príncipe», considerado padre '
+                             'de la ciencia política, fue:',
+                 'alternativas': ['Tomás Moro',
+                                  'Nicolás Maquiavelo',
+                                  'Leonardo Da Vinci',
+                                  'Miguel Ángel',
+                                  'Botticelli'],
+                 'correcta': 'B'},
+                {'pregunta': 'El autor de «Utopía», que idealizó una '
+                             'república con propiedad común de los bienes, '
+                             'fue:',
+                 'alternativas': ['Maquiavelo',
+                                  'Tomás Moro',
+                                  'Da Vinci',
+                                  'Botticelli',
+                                  'Miguel Ángel'],
+                 'correcta': 'B'},
+                {'pregunta': 'Leonardo Da Vinci destacó por pinturas como la '
+                             'Gioconda y el dibujo:',
+                 'alternativas': ['El Nacimiento de Venus',
+                                  'El Hombre de Vitruvio',
+                                  'La Piedad',
+                                  'El Juicio Final',
+                                  'David'],
+                 'correcta': 'B'},
+                {'pregunta': 'Miguel Ángel destacó por esculturas como '
+                             'David, Moisés y:',
+                 'alternativas': ['El Hombre de Vitruvio',
+                                  'La Piedad',
+                                  'La Gioconda',
+                                  'La Primavera',
+                                  'El Nacimiento de Venus'],
+                 'correcta': 'B'}]},
  {'num': 9,
   'titulo': 'Expansión europea',
   'secciones': [{'titulo': '9.1 DESCUBRIMIENTOS GEOGRÁFICOS',
