@@ -768,10 +768,10 @@ def tab_avance_coordinacion(config=None):
         else:
             st.warning(f"**{ciclo}** — la fecha del examen ya pasó.")
 
-    tab1, tab4, tab2, tab5, tab6, tab3 = st.tabs(
+    tab1, tab4, tab2, tab5, tab6, tab3, tab7 = st.tabs(
         ["🚦 Semáforo por curso", "🎯 Dictado vs Aprendido",
          "👤 Por docente", "📋 Cronograma docentes", "📅 Calendario",
-         "📥 Reportes"])
+         "📥 Reportes", "✏️ Marcar Avance"])
 
     # ---------- Semáforo ----------
     with tab1:
@@ -1114,6 +1114,75 @@ def tab_avance_coordinacion(config=None):
                 key="av_rep_pdf_ind")
         except Exception as e:
             st.caption(f"No se pudo preparar el PDF: {e}")
+
+    # ---------- Marcar Avance (edición directa desde Control Academia) ----------
+    with tab7:
+        st.caption(
+            "Marca el avance de cualquier grupo/curso sin salir de Control "
+            "Academia — lo mismo que ve un docente en su propia vista, pero "
+            "accesible aquí para coordinación."
+        )
+        info_ma = st.session_state.get("docente_info", {}) or {}
+        docente_ma = st.text_input(
+            "Registrar avance a nombre de:",
+            value=info_ma.get("label") or st.session_state.get("usuario_actual", "Coordinación"),
+            key="av_ma_docente")
+
+        cma1, cma2 = st.columns(2)
+        with cma1:
+            grupo_ma = st.selectbox("Grupo", list(GRUPOS.keys()), key="av_ma_grupo")
+        with cma2:
+            cursos_ma = cursos_de_grupo(grupo_ma)
+            curso_ma = st.selectbox("Curso", cursos_ma, key="av_ma_curso")
+
+        temas_ma = TEMARIO.get(curso_ma, [])
+        fecha_ma = st.date_input("Fecha de la sesión", value=date.today(), key="av_ma_fecha")
+
+        cambios_ma = []
+        for i, tema in enumerate(temas_ma, start=1):
+            clave_ma = _clave(anio, ciclo, grupo_ma, curso_ma, i)
+            actual_ma = avance.get(clave_ma, {})
+            estado_prev_ma = actual_ma.get("estado", "Pendiente")
+            if estado_prev_ma not in ESTADOS:
+                estado_prev_ma = "Pendiente"
+
+            col_tm, col_em, col_om = st.columns([5, 2, 3])
+            with col_tm:
+                punto_ma = ESTADO_COLOR[estado_prev_ma]
+                st.markdown(
+                    f"<div style='padding:6px 0;'>"
+                    f"<span style='display:inline-block;width:10px;height:10px;"
+                    f"border-radius:50%;background:{punto_ma};margin-right:8px;'></span>"
+                    f"<b>{i}.</b> {tema}</div>", unsafe_allow_html=True)
+            with col_em:
+                nuevo_ma = st.selectbox("Estado", ESTADOS,
+                                        index=ESTADOS.index(estado_prev_ma),
+                                        key=f"av_ma_est_{clave_ma}",
+                                        label_visibility="collapsed")
+            with col_om:
+                obs_ma = st.text_input("Observación", value=actual_ma.get("observacion", ""),
+                                       key=f"av_ma_obs_{clave_ma}",
+                                       placeholder="Sesión, dificultad, pendiente…",
+                                       label_visibility="collapsed")
+
+            if nuevo_ma != estado_prev_ma or obs_ma != actual_ma.get("observacion", ""):
+                cambios_ma.append({
+                    "clave": clave_ma, "anio": anio, "ciclo": ciclo,
+                    "grupo": grupo_ma, "curso": curso_ma, "tema_num": i,
+                    "tema": tema, "estado": nuevo_ma,
+                    "fecha": fecha_ma.strftime("%Y-%m-%d"),
+                    "sesion": actual_ma.get("sesion", ""),
+                    "docente": docente_ma, "observacion": obs_ma,
+                })
+
+        st.markdown("---")
+        if cambios_ma:
+            st.info(f"Tienes {len(cambios_ma)} cambio(s) sin guardar.")
+        if st.button("💾 GUARDAR AVANCE", type="primary", use_container_width=True,
+                     disabled=not cambios_ma, key="av_ma_guardar"):
+            ok_ma, msg_ma = guardar_avance(cambios_ma)
+            (st.success if ok_ma else st.warning)(msg_ma)
+            st.rerun()
 
 
 # ================================================================
