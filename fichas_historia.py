@@ -1138,66 +1138,67 @@ BALOTAS = [{'num': 1,
                            'Pueblos que la habitaron: sumerios, acadios, '
                            'babilonios, {hititas}, caldeos, medos y '
                            '{persas}.']},
-                {'titulo': '3.1.2 PROCESO HISTÓRICO',
+                {'titulo': '3.1.2 MESOPOTAMIA: PROCESO HISTÓRICO',
                  'items': ['Los {sumerios} (3000 a.C.) crearon las primeras '
-                           '{Ciudades-Estado}: Kish, Uruk, Ur y Lagash. '
-                           'Inventaron la escritura {cuneiforme} y '
-                           'conocieron la {rueda}.',
+                           'Ciudades-Estado: Kish, Uruk, Ur y {Lagash}. '
+                           'Inventaron la escritura cuneiforme y conocieron '
+                           'la rueda.',
                            'Los acadios, dirigidos por {Sargón}, '
                            'conquistaron las ciudades sumerias y fijaron su '
                            'capital en {Akkad}.',
                            'En el Primer Imperio Babilónico, el rey '
                            '{Hammurabi} unificó las ciudades sumerias y '
-                           'estableció su famoso {código} jurídico.',
+                           'estableció su famoso código jurídico.',
                            'En el Imperio Asirio destacó {Asurbanipal}, '
                            'quien mandó construir la biblioteca de {Nínive}.',
-                           'En el Segundo Imperio Babilónico, {Nabucodonosor '
-                           'II} conquistó Jerusalén —hecho conocido como el '
-                           '{cautiverio} babilónico— y mandó construir los '
-                           '{jardines colgantes}.']},
-                {'titulo': '3.1.4 EXPRESIONES CULTURALES',
-                 'items': ['Arquitectura: el {zigurat}. Fueron los primeros '
-                           'en construir el {arco}, la bóveda y la {cúpula}.',
+                           'En el Segundo Imperio Babilónico, {Nabopolasar} '
+                           'fue el artífice de la caída del imperio asirio.',
+                           '{Nabucodonosor II} forjó la grandeza de '
+                           'Babilonia, conquistó Jerusalén —el «{cautiverio '
+                           'babilónico}» de los judíos— y mandó construir '
+                           'los jardines {colgantes}.']},
+                {'titulo': '3.1.3 MESOPOTAMIA: ORGANIZACIÓN POLÍTICA Y '
+                           'SOCIAL',
+                 'items': ['A diferencia de Egipto, Mesopotamia no tenía '
+                           'fronteras {naturales}, lo que generó constantes '
+                           'invasiones semitas, indoeuropeas y asiáticas.',
+                           'Las primeras unidades políticas se organizaron '
+                           'bajo el modelo de {Ciudad-Estado}, con gobiernos '
+                           'autónomos, leyes y dioses propios.',
+                           'En las ciudades-estado gobernaron inicialmente '
+                           'los {reyes-sacerdotes}, elegidos por los '
+                           'pobladores; con el tiempo el cargo se volvió '
+                           '{hereditario}.']},
+                {'titulo': '3.1.4 MESOPOTAMIA: EXPRESIONES CULTURALES',
+                 'items': ['Arquitectura: destacó el {zigurat}. Fueron los '
+                           'primeros en construir el arco, la bóveda y la '
+                           '{cúpula}, desconocidos por los egipcios.',
                            'Escultura: los toros {alados} con cabeza humana '
                            'del palacio de Sargón II en Korsabad; la estatua '
-                           'del príncipe {Gudea}.',
+                           'en mármol del príncipe {Gudea}.',
+                           'También destaca la estatua del rey {Hammurabi}, '
+                           'guerrero y conquistador, célebre por su código '
+                           '{moral}.',
                            'Escritura: la {cuneiforme}, con signos en forma '
                            'de cuña. La roca de {Behistún} fue descifrada '
                            'por {Henry Rawlinson}.']},
-                {'titulo': '3.2 EGIPTO',
+                {'titulo': '3.2 EGIPTO — UBICACIÓN',
                  'items': ['Situado al {noreste} del continente africano, en '
                            'torno al río {Nilo}, llamado por Heródoto «don '
                            'del Nilo».',
                            'Limitaba al norte con el mar {Mediterráneo}, al '
                            'este con el istmo de {Suez}, al sur con Nubia y '
                            'al oeste con el desierto de {Libia}.']},
-                {'titulo': '3.1.3 MESOPOTAMIA: ORGANIZACIÓN POLÍTICA Y '
-                           'SOCIAL',
-                 'items': ['A diferencia de Egipto, Mesopotamia no tenía '
-                           'fronteras {naturales}, lo que generó constantes '
-                           'invasiones semitas, indoeuropeas y asiáticas.',
-                           'Las primeras unidades políticas de Mesopotamia '
-                           'se organizaron bajo el modelo de '
-                           '{Ciudad-Estado}, con gobiernos autónomos.',
-                           'En las ciudades-estado gobernaron inicialmente '
-                           'los {reyes-sacerdotes}, elegidos por los '
-                           'pobladores; con el tiempo el cargo se volvió '
-                           '{hereditario}.',
-                           'En arquitectura, los mesopotámicos fueron los '
-                           'primeros en construir el {arco}, la bóveda y la '
-                           'cúpula, aporte desconocido por los {egipcios}.',
-                           'La escultura mesopotámica fue realista, salvo '
-                           'los {toros alados} con cabeza humana del palacio '
-                           'de Sargón II.',
-                           'La escritura mesopotámica fue la {cuneiforme}, '
-                           'con signos en forma de cuñas, descifrada en la '
-                           'roca de Behistún por {Henry Rawlinson}.']},
                 {'titulo': '3.2.2 EGIPTO: LOS TRES IMPERIOS',
                  'items': ['El {Imperio Antiguo} (2600-2150 a.C.) consolidó '
-                           'el poder del Estado en la figura del {Faraón}.',
-                           'En el Imperio Antiguo destaca la Gran Pirámide '
-                           'de Guiza, atribuida a {Keops}, junto con las de '
-                           'Kefrén y Micerino.',
+                           'el poder del Estado en la figura del Faraón.',
+                           'En la tercera dinastía destacó {Dyeser} (Zocer), '
+                           'por el dominio del arte y la arquitectura '
+                           'monumental en piedra.',
+                           'De esta época datan las tres pirámides de '
+                           '{Seneferu}, y la Gran Pirámide de Guiza, '
+                           'atribuida a {Keops} por Heródoto, junto con las '
+                           'de Kefrén y Micerino.',
                            'La capital del Imperio Antiguo se estableció en '
                            '{Menfis}.',
                            'El {Imperio Medio} (2150-1785 a.C.) reunificó '
@@ -1216,22 +1217,35 @@ BALOTAS = [{'num': 1,
                            'Las clases sociales de Egipto eran: sacerdotes, '
                            'escribas, comerciantes, el pueblo y los '
                            '{esclavos}.']},
-                {'titulo': '3.2.4 EGIPTO: EXPRESIONES CULTURALES',
-                 'items': ['Las {pirámides} se levantaron en Guiza para '
-                           'enterrar a los faraones de la cuarta dinastía.',
-                           'Las {mastabas} fueron sepulcros para nobles, en '
-                           'forma de pequeñas pirámides truncas.',
-                           'Los {hipogeos} fueron tumbas subterráneas '
-                           'excavadas en roca, donde se enterraba al pueblo.',
+                {'titulo': '3.2.4 EGIPTO: ARQUITECTURA Y ESCULTURA',
+                 'items': ['Las tumbas fueron de tres tipos: {pirámides} '
+                           '(faraones), {mastabas} (nobles, pirámides '
+                           'truncas) e {hipogeos} (pueblo, excavadas en '
+                           'roca).',
                            'Los templos más representativos, en Tebas, son '
                            'los de {Karnak} y Luxor.',
+                           'Los {capiteles} florales de las columnas '
+                           'tuvieron motivos palmiformes, {lotiformes}, '
+                           'papiriformes y atónicas (dios Atón).',
                            'Los {Colosos de Memnón} son estatuas gigantescas '
                            'de faraones sentados, en la entrada de templos.',
                            'La {Esfinge} de Gizeh representa el rostro del '
                            'faraón {Kefrén} con cuerpo de león.',
                            'El {Escriba Sentado} es una escultura de un '
-                           'funcionario real dedicado a anotar los ingresos '
-                           'del reino.']}],
+                           'funcionario dedicado a anotar los ingresos del '
+                           'reino desde la {IV} dinastía.',
+                           'Otras esculturas representan a la reina '
+                           '{Nefertiti} y al faraón {Amenofis}.']},
+                {'titulo': '3.2.4.3 EGIPTO: LA ESCRITURA',
+                 'items': ['La escritura {jeroglífica}, la más antigua, '
+                           'formada por imágenes de objetos, se usaba en '
+                           'tumbas y templos.',
+                           'La piedra {Rosetta}, escrita en jeroglífico, fue '
+                           'descifrada por el francés {Champollion} en 1822.',
+                           'La escritura {hierática}, más sencilla, era '
+                           'empleada por escribas y sacerdotes.',
+                           'La escritura {demótica} era la escritura '
+                           'popular, más simple, utilizada por el pueblo.']}],
   'cuadros': [{'titulo': '3.1 ETAPAS DE MESOPOTAMIA',
                'encabezados': ['Etapa', 'Personaje / Aporte'],
                'filas': [['Sumerios',
@@ -1574,6 +1588,95 @@ BALOTAS = [{'num': 1,
                                   'Custodiar tumbas',
                                   'Dirigir el ejército',
                                   'Presidir ceremonias religiosas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El artífice de la caída del Imperio Asirio, '
+                             'gobernante del Segundo Imperio Babilónico, '
+                             'fue:',
+                 'alternativas': ['Nabucodonosor II',
+                                  'Nabopolasar',
+                                  'Sargón',
+                                  'Hammurabi',
+                                  'Asurbanipal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además de los toros alados y el príncipe '
+                             'Gudea, la escultura mesopotámica destacó con '
+                             'la estatua de:',
+                 'alternativas': ['Sargón II',
+                                  'El rey Hammurabi',
+                                  'Nabucodonosor',
+                                  'Asurbanipal',
+                                  'Nabopolasar'],
+                 'correcta': 'B'},
+                {'pregunta': 'El faraón de la tercera dinastía, destacado '
+                             'por el dominio del arte y la arquitectura '
+                             'monumental en piedra, fue:',
+                 'alternativas': ['Keops',
+                                  'Dyeser (Zocer)',
+                                  'Kefrén',
+                                  'Micerino',
+                                  'Amenofis IV'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las tres pirámides colosales que datan del '
+                             'Imperio Antiguo, previas a las de Guiza, '
+                             'fueron construidas por:',
+                 'alternativas': ['Keops',
+                                  'Seneferu',
+                                  'Kefrén',
+                                  'Micerino',
+                                  'Tutmosis III'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los motivos florales esculpidos en los '
+                             'capiteles egipcios incluían palmiformes, '
+                             'papiriformes, atónicas y:',
+                 'alternativas': ['Rosáceos',
+                                  'Lotiformes (hoja de loto)',
+                                  'Espinosos',
+                                  'Cactiformes',
+                                  'Ramiformes'],
+                 'correcta': 'B'},
+                {'pregunta': 'El motivo de capitel llamado «atónicas» hace '
+                             'referencia al dios:',
+                 'alternativas': ['Osiris', 'Atón', 'Ra', 'Anubis', 'Horus'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además del Escriba Sentado, otras esculturas '
+                             'egipcias representan a la reina Nefertiti y al '
+                             'faraón:',
+                 'alternativas': ['Keops',
+                                  'Amenofis',
+                                  'Kefrén',
+                                  'Micerino',
+                                  'Tutmosis III'],
+                 'correcta': 'B'},
+                {'pregunta': 'La escritura egipcia más antigua, usada en '
+                             'tumbas y templos con imágenes de objetos, es '
+                             'la escritura:',
+                 'alternativas': ['Hierática',
+                                  'Jeroglífica',
+                                  'Demótica',
+                                  'Cuneiforme',
+                                  'Rúnica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La piedra Rosetta, escrita en jeroglífico '
+                             'egipcio, fue descifrada por el francés '
+                             'Champollion en el año:',
+                 'alternativas': ['1799', '1822', '1453', '1900', '1750'],
+                 'correcta': 'B'},
+                {'pregunta': 'La escritura egipcia empleada por escribas y '
+                             'sacerdotes, más sencilla que la jeroglífica, '
+                             'se llama escritura:',
+                 'alternativas': ['Demótica',
+                                  'Hierática',
+                                  'Cuneiforme',
+                                  'Rúnica',
+                                  'Jeroglífica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La escritura egipcia popular, la más simple, '
+                             'utilizada por el pueblo, se llama escritura:',
+                 'alternativas': ['Hierática',
+                                  'Demótica',
+                                  'Jeroglífica',
+                                  'Cuneiforme',
+                                  'Ideográfica'],
                  'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'Mundo greco romano',
@@ -2989,7 +3092,9 @@ BALOTAS = [{'num': 1,
                            'Avances técnicos que lo hicieron posible: la '
                            '{brújula}, el {astrolabio} y la carabela.',
                            '{Portugal} y {España} encabezaron la expansión '
-                           'ultramarina.']},
+                           'ultramarina.',
+                           'Los navegantes portugueses llegaron a las Indias '
+                           'bordeando África: {Vasco de Gama} en {1499}.']},
                 {'titulo': '9.2 y 9.3 COLÓN Y LA CAPITULACIÓN',
                  'items': ['{Cristóbal Colón} propuso llegar a las Indias '
                            'navegando hacia el {occidente}, sosteniendo la '
@@ -3009,68 +3114,10 @@ BALOTAS = [{'num': 1,
                            'Tercer viaje (1498): llegó a la desembocadura '
                            'del {Orinoco}, tierra firme del continente.',
                            'Cuarto viaje (1502): recorrió las costas de '
-                           'América {Central}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La caída de Constantinopla en manos de los '
-                           'turcos ocurrió en {1453}.',
-                           'La Capitulación de Santa Fe se firmó en el año '
-                           '{1492}.',
-                           'Colón zarpó en su primer viaje desde el puerto '
-                           'de {Palos}.',
-                           'La primera isla a la que llegó Colón fue '
-                           '{Guanahaní}.',
-                           'En su tercer viaje, Colón llegó a la '
-                           'desembocadura del río {Orinoco}.',
-                           'En su segundo viaje, Colón fundó {La Isabela}.',
-                           'El cuarto viaje de Colón se realizó en {1502}.',
-                           'Colón llamó a la isla de Guanahaní {San '
-                           'Salvador}.',
-                           'La embarcación ligera y maniobrable usada en los '
-                           'viajes de exploración fue {La carabela}.',
-                           'El primer viaje de Colón se realizó en el año '
-                           '{1492}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['La toma de Constantinopla por los turcos en 1453 '
-                           'interrumpió el comercio con el sureste de Europa '
-                           'y Asia, obligando a buscar {rutas alternas}.',
-                           'El financiamiento del proyecto de Colón contó '
-                           'con el apoyo de los banqueros {Pinzón} y del '
-                           'judío portugués Luis de Santángel.',
-                           'Colón partió el 3 de agosto de 1492 desde el '
-                           'puerto de Palos, en la ciudad de {Moguer}.',
-                           'La nao Santa María iba al mando de Colón; la '
-                           'Pinta, al mando de Martín Alonso Pinzón; y la '
-                           'Niña, conducida por {Vicente Yáñez Pinzón}.',
-                           'En su segundo viaje, Colón fundó la ciudad de La '
-                           'Isabela en homenaje a la reina {Isabel de '
-                           'Castilla}.',
-                           'El nombre «América» proviene de otro navegante '
-                           'italiano, {Américo Vespucio}, quien llegó al '
-                           'continente después del segundo viaje de Colón.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El documento que fijó los títulos y beneficios '
-                           'de Colón fue {La Capitulación de Santa Fe}.',
-                           'Las naves del primer viaje de Colón fueron '
-                           '{Pinta, Niña y Santa María}.',
-                           'Colón sostenía, para justificar su proyecto, la '
-                           '{Esfericidad de la Tierra}.',
-                           'Los Reyes Católicos que apoyaron a Colón fueron '
-                           '{Isabel de Castilla y Fernando de Aragón}.',
-                           'El título que recibió Colón según la '
-                           'Capitulación fue {Almirante, virrey y '
-                           'gobernador}.',
-                           'Instrumento náutico fundamental para la '
-                           'orientación en alta mar {La brújula}.',
-                           'Los países que encabezaron la expansión '
-                           'ultramarina europea fueron {Portugal y España}.',
-                           'La causa económica principal de los '
-                           'descubrimientos geográficos fue {La búsqueda de '
-                           'una nueva ruta a las Indias}.',
-                           'El astrolabio servía para {Determinar la latitud '
-                           'mediante los astros}.',
-                           'En su cuarto viaje, Colón recorrió '
-                           'principalmente {Las costas de América '
-                           'Central}.']}],
+                           'América {Central}.',
+                           'El nombre «{América}» proviene del navegante '
+                           'italiano {Américo Vespucio}, quien reconoció que '
+                           'se trataba de un nuevo continente.']}],
   'cuadros': [{'titulo': '9.4 LOS CUATRO VIAJES',
                'encabezados': ['Viaje', 'Año', 'Hecho principal'],
                'filas': [['Primero', '{1492}', 'Llegó a {Guanahaní}'],
@@ -3216,7 +3263,23 @@ BALOTAS = [{'num': 1,
                                   'El Río de la Plata',
                                   'La costa del Pacífico',
                                   'Las Antillas Mayores'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El nombre «América» proviene del navegante '
+                             'italiano:',
+                 'alternativas': ['Cristóbal Colón',
+                                  'Américo Vespucio',
+                                  'Fernando de Magallanes',
+                                  'Vasco da Gama',
+                                  'Hernán Cortés'],
+                 'correcta': 'B'},
+                {'pregunta': 'El navegante portugués que llegó a la India '
+                             'bordeando las costas de África en 1499 fue:',
+                 'alternativas': ['Cristóbal Colón',
+                                  'Vasco de Gama',
+                                  'Fernando de Magallanes',
+                                  'Américo Vespucio',
+                                  'Enrique el Navegante'],
+                 'correcta': 'B'}]},
  {'num': 10,
   'titulo': 'Conquista del Perú',
   'secciones': [{'titulo': '10.1 y 10.2 LA EMPRESA DE CONQUISTA',
@@ -3260,79 +3323,7 @@ BALOTAS = [{'num': 1,
                            'Batalla de {Añaquito} (1546): muerte del primer '
                            'virrey {Blasco Núñez de Vela}.',
                            'Batalla de {Jaquijahuana} (1548): derrota y '
-                           'ejecución de Gonzalo {Pizarro}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El episodio de los Trece del Gallo ocurrió '
-                           'durante el {Segundo viaje}.',
-                           'La Capitulación de Toledo se firmó en el año '
-                           '{1529}.',
-                           'La captura del Inca ocurrió en la plaza de '
-                           '{Cajamarca}.',
-                           'El sacerdote que entregó la Biblia a Atahualpa '
-                           'fue {Vicente Valverde}.',
-                           'El Inca que encabezó la resistencia y sitió el '
-                           'Cusco en 1536 fue {Manco Inca}.',
-                           'El Estado neoinca de resistencia se estableció '
-                           'en {Vilcabamba}.',
-                           'El último inca de Vilcabamba, ejecutado en 1572, '
-                           'fue {Túpac Amaru I}.',
-                           'En la batalla de las Salinas (1538) fue '
-                           'derrotado {Diego de Almagro}.',
-                           'El primer virrey del Perú, muerto en la batalla '
-                           'de Añaquito, fue {Blasco Núñez de Vela}.',
-                           'El tercer viaje de la conquista partió de Panamá '
-                           'en el año {1531}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['En el primer viaje de la conquista, Pizarro '
-                           'partió de Panamá el 14 de noviembre de 1524 con '
-                           'permiso del gobernador {Pedrarias} Dávila.',
-                           'En el segundo viaje participó el piloto '
-                           'profesional {Bartolomé Ruiz}, quien guio la '
-                           'expedición por la costa.',
-                           'La Capitulación de Toledo asignó a Pizarro un '
-                           'sueldo anual de 725 000 maravedíes, y a Diego de '
-                           'Almagro el título de gobernador de la {Fortaleza '
-                           'de Tumbes}.',
-                           'Hernando de Luque fue nombrado vicario de Tumbes '
-                           'y {Protector} de los indios en la Capitulación '
-                           'de Toledo.',
-                           'La primera ciudad española en el Perú, San '
-                           'Miguel, se fundó en 1532 a orillas del río '
-                           '{Chira}, en el valle de Tangarará.',
-                           'Antes de ser ejecutado, Atahualpa aceptó el '
-                           'bautismo cristiano, adoptando el nombre de {Juan '
-                           'Francisco Atahuallpa}.',
-                           'Tras la captura del Inca, los españoles fueron '
-                           'hostilizados en su avance por las fuerzas del '
-                           'general atahualpista {Quisquis}.',
-                           'El Virreinato del Perú fue creado el 20 de '
-                           'noviembre de 1542 mediante las llamadas {Nuevas '
-                           'Leyes} del rey Carlos V.',
-                           'La Capitulación de Ayacucho puso fin a la guerra '
-                           'civil entre Gonzalo Pizarro y el sacerdote '
-                           '{Pedro de la Gasca}, enviado por el rey con el '
-                           'título de Pacificador.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Los socios de la empresa de conquista del Perú '
-                           'fueron {Pizarro, Almagro y Luque}.',
-                           'La Capitulación de Toledo nombró a Pizarro '
-                           '{Gobernador y capitán general}.',
-                           'La captura de Atahualpa se produjo el {16 de '
-                           'noviembre de 1532}.',
-                           'La primera ciudad española fundada en el Perú '
-                           'fue {San Miguel de Tangarará}.',
-                           'Lima fue fundada por Pizarro el {18 de enero de '
-                           '1535}.',
-                           'La ejecución de Túpac Amaru I fue ordenada por '
-                           'el virrey {Francisco de Toledo}.',
-                           'En la batalla de Jaquijahuana (1548) fue '
-                           'derrotado {Gonzalo Pizarro}.',
-                           'El primer viaje de la conquista llegó hasta '
-                           '{Puerto del Hambre}.',
-                           'El rescate ofrecido por Atahualpa consistió en '
-                           '{Un cuarto de oro y dos de plata}.',
-                           'El acto formal de sometimiento leído a Atahualpa '
-                           'se conoce como {El Requerimiento}.']}],
+                           'ejecución de Gonzalo {Pizarro}.']}],
   'cuadros': [{'titulo': '10.5 BATALLAS DE LAS GUERRAS CIVILES',
                'encabezados': ['Batalla', 'Año', 'Resultado'],
                'filas': [['Las {Salinas}', '{1538}', 'Derrota de {Almagro}'],
@@ -3531,93 +3522,21 @@ BALOTAS = [{'num': 1,
                            'La educación fue {elitista}. Se crearon colegios '
                            'especiales para hijos de {caciques}, como el '
                            'Colegio de San {Borja} en el Cusco.',
-                           'La educación superior estuvo a cargo de las '
-                           '{universidades}, como San Marcos ({1551}) y San '
-                           'Antonio Abad del Cusco ({1692}).']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La entrega de un grupo de indígenas a un español '
-                           'a cambio de protegerlos y evangelizarlos se '
-                           'llamó {Encomienda}.',
-                           'El virrey que organizó el virreinato peruano y '
-                           'creó las reducciones fue {Francisco de Toledo}.',
-                           'El principal centro minero de plata en el '
-                           'virreinato fue {Potosí}.',
-                           'Huancavelica fue famosa por la producción de '
-                           '{Mercurio o azogue}.',
-                           'El comercio colonial se caracterizó por ser '
-                           '{Monopólico}.',
-                           'Los pueblos donde se concentró a la población '
-                           'indígena para controlarla se llamaron '
-                           '{Reducciones}.',
-                           'La Universidad Nacional de San Antonio Abad del '
-                           'Cusco fue fundada en {1692}.',
-                           'La Universidad Nacional Mayor de San Marcos fue '
-                           'fundada en {1551}.',
-                           'La educación colonial se caracterizó por ser '
-                           '{Elitista}.',
-                           'El repartimiento consistió principalmente en {El '
-                           'reparto de indígenas entre los '
-                           'conquistadores}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Entre 1532 y 1824 gobernaron las colonias '
-                           'americanas reyes de dos dinastías distintas, '
-                           'sucesivamente.',
-                           'Al término de su mandato, los virreyes se '
-                           'sometían a un proceso llamado {Juicio de '
-                           'Residencia} ante el Consejo de Indias.',
-                           'La Real Audiencia era un tribunal colegiado '
-                           'integrado por oidores, jueces, fiscales y '
-                           '{escribanos}.',
-                           'Las intendencias reemplazaron a los corregidores '
-                           'por decisión de los monarcas {Borbones}, ante el '
-                           'descrédito de estos últimos.',
-                           'El Perú virreinal estuvo dividido en ocho '
-                           '{intendencias}.',
-                           'En circunstancias excepcionales se convocaba a '
-                           'un Cabildo Abierto, donde los vecinos expresaban '
-                           'libremente sus puntos de vista.',
-                           'El cerro rico de Potosí, corazón de la minería '
-                           'colonial, fue descubierto en el año {1545}.',
-                           'La mita minera colonial fue implantada por el '
-                           'virrey {Francisco de Toledo}.',
-                           'Entre los principales impuestos coloniales '
-                           'figuraban el almojarifazgo, la alcabala, el '
-                           'diezmo, la media anata y la {avería}.',
-                           'La sociedad virreinal se organizó en estratos: '
-                           'nobleza, clase media, bajo pueblo y '
-                           '{aborígenes}, cada uno con derechos distintos.',
-                           'Desde 1552, una disposición eclesiástica ordenó '
-                           'la creación de escuelas primarias en todas las '
-                           '{catedrales}.',
-                           'La Universidad de San Marcos fue fundada '
-                           'originalmente como Real y Pontificia '
-                           'Universidad, tomando su nombre actual en {1574}.',
-                           'La Universidad San Antonio Abad del Cusco se '
-                           'originó en el seminario cusqueño creado por el '
-                           'obispo {Antonio de la Raya}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La encomienda otorgaba al encomendero el derecho '
-                           'a recibir {El tributo de los indígenas}.',
-                           'El organismo con sede en España encargado de '
-                           'legislar sobre América fue {El Consejo de '
-                           'Indias}.',
-                           'La institución que controlaba el comercio con '
-                           'América, con sede en Sevilla, fue {La Casa de '
-                           'Contratación}.',
-                           'El máximo tribunal de justicia en América '
-                           'colonial fue {La Audiencia}.',
-                           'El impuesto sobre la producción minera entregado '
-                           'a la Corona fue {El quinto real}.',
-                           'La sociedad colonial se organizó de manera '
-                           '{Estamental según el origen étnico}.',
-                           'El colegio colonial destinado a los hijos de '
-                           'caciques en el Cusco fue {San Borja}.',
-                           'La mita minera colonial consistió en {Trabajo '
-                           'obligatorio por turnos en las minas}.',
-                           'El funcionario encargado de cobrar tributos en '
-                           'las provincias fue {El corregidor}.',
-                           'El sistema de transporte comercial entre España '
-                           'y América se basó en {Flotas y galeones}.']}],
+                           'La Universidad de San Marcos fue fundada en '
+                           '{1551} como Real y Pontificia Universidad, '
+                           'nombrada así por el papa {Pío V}.',
+                           'La Universidad de San Antonio Abad del Cusco se '
+                           'originó en el seminario creado por el obispo '
+                           '{Antonio de la Raya}.',
+                           'El gestor de la creación de la Universidad de '
+                           'San Antonio Abad fue el obispo {Manuel de '
+                           'Mollinedo y Angulo}.',
+                           'El papa {Inocencio XII} emitió en {1692} el '
+                           'breve pontificio que creó la Universidad de San '
+                           'Antonio Abad del Cusco.',
+                           'El primer rector de la Universidad de San '
+                           'Antonio Abad del Cusco fue el Dr. {Juan Cárdenas '
+                           'y Céspedes}.']}],
   'cuadros': [{'titulo': '11.3 INSTITUCIONES COLONIALES',
                'encabezados': ['Institución', 'Sede', 'Función'],
                'filas': [['Consejo de {Indias}',
@@ -3784,7 +3703,46 @@ BALOTAS = [{'num': 1,
                                   'Caravanas terrestres',
                                   'Flotas y galeones',
                                   'Compañías privadas holandesas'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'La Universidad de San Marcos fue fundada en el '
+                             'año:',
+                 'alternativas': ['1538', '1551', '1600', '1692', '1492'],
+                 'correcta': 'B'},
+                {'pregunta': 'El obispo que creó el seminario del que se '
+                             'originó la Universidad de San Antonio Abad del '
+                             'Cusco fue:',
+                 'alternativas': ['Manuel de Mollinedo y Angulo',
+                                  'Antonio de la Raya',
+                                  'Juan Cárdenas y Céspedes',
+                                  'Vicente de Valverde',
+                                  'Jerónimo de Loayza'],
+                 'correcta': 'B'},
+                {'pregunta': 'El gestor de la creación de la Universidad de '
+                             'San Antonio Abad del Cusco como universidad '
+                             'fue el obispo:',
+                 'alternativas': ['Antonio de la Raya',
+                                  'Manuel de Mollinedo y Angulo',
+                                  'Juan Cárdenas y Céspedes',
+                                  'Vicente de Valverde',
+                                  'Jerónimo de Loayza'],
+                 'correcta': 'B'},
+                {'pregunta': 'El papa que emitió el breve pontificio de '
+                             'creación de la Universidad de San Antonio Abad '
+                             'del Cusco, en 1692, fue:',
+                 'alternativas': ['Pío V',
+                                  'Inocencio XII',
+                                  'Pío VII',
+                                  'Gregorio XIII',
+                                  'León X'],
+                 'correcta': 'B'},
+                {'pregunta': 'El primer rector de la Universidad de San '
+                             'Antonio Abad del Cusco fue:',
+                 'alternativas': ['Antonio de la Raya',
+                                  'Juan Cárdenas y Céspedes',
+                                  'Manuel de Mollinedo',
+                                  'Juan Bautista de la Roca',
+                                  'Fray Vicente de Valverde'],
+                 'correcta': 'B'}]},
  {'num': 12,
   'titulo': 'El mundo durante el siglo XVIII',
   'secciones': [{'titulo': '12.1 LA ILUSTRACIÓN',
@@ -3807,59 +3765,7 @@ BALOTAS = [{'num': 1,
                            'pero {sin} el pueblo».',
                            'Los monarcas impulsaron reformas en {educación}, '
                            'economía y administración, pero mantuvieron el '
-                           'poder {absoluto}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La Ilustración corresponde al siglo {XVIII}.',
-                           'La teoría de la división de poderes fue '
-                           'formulada por {Montesquieu}.',
-                           'El autor de «El contrato social» fue {Rousseau}.',
-                           'El principio de la soberanía popular se atribuye '
-                           'a {Rousseau}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['La Ilustración fue un movimiento cultural y '
-                           'filosófico surgido en Europa durante el {siglo '
-                           'XVIII}.',
-                           'Los ilustrados exaltaban el poder de la razón '
-                           'frente al absolutismo dogmático y confiaban en '
-                           'el {progreso}.',
-                           'A pesar de su espíritu crítico, los filósofos '
-                           'ilustrados no proponían abiertamente cambios '
-                           '{revolucionarios} políticos o sociales.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La Ilustración es conocida también como {Siglo '
-                           'de las Luces}.',
-                           'Para los ilustrados, la vida humana debía '
-                           'guiarse por {La razón}.',
-                           'Voltaire destacó especialmente por su defensa de '
-                           '{La tolerancia}.',
-                           'El despotismo ilustrado se resume en la frase '
-                           '{«Todo para el pueblo, pero sin el pueblo»}.',
-                           'El despotismo ilustrado mantuvo {El poder '
-                           'absoluto del monarca}.',
-                           'Las ideas ilustradas influyeron directamente en '
-                           '{La Independencia de Estados Unidos y la '
-                           'Revolución Francesa}.',
-                           'Los ilustrados se opusieron principalmente a {La '
-                           'superstición y la tradición irracional}.',
-                           'Los monarcas del despotismo ilustrado impulsaron '
-                           'reformas en {Educación, economía y '
-                           'administración}.',
-                           'La Ilustración cuestionó fundamentalmente el '
-                           'poder basado en {El derecho divino de los '
-                           'reyes}.',
-                           'El despotismo ilustrado puede definirse como una '
-                           'forma de {Absolutismo con reformas ilustradas}.',
-                           'La división de poderes propuesta comprende '
-                           '{Ejecutivo, legislativo y judicial}.',
-                           'La Ilustración se desarrolló principalmente en '
-                           '{Europa}.',
-                           'Los ilustrados confiaron en el progreso a través '
-                           'de {La educación y la ciencia}.',
-                           'Una consecuencia política de la Ilustración fue '
-                           '{El cuestionamiento del absolutismo}.',
-                           'El pensamiento ilustrado se difundió '
-                           'principalmente a través de {Los libros, salones '
-                           'y la Enciclopedia}.']}],
+                           'poder {absoluto}.']}],
   'cuadros': [{'titulo': '12.1 PENSADORES DE LA ILUSTRACIÓN',
                'encabezados': ['Pensador', 'Aporte principal'],
                'filas': [['{Montesquieu}', 'División de {poderes}'],
@@ -4059,71 +3965,21 @@ BALOTAS = [{'num': 1,
                            'Consecuencias: se prohibió el uso del {quechua} '
                            'en documentos, los títulos de nobleza indígena y '
                            'los Comentarios Reales del Inca {Garcilaso}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['Las reformas borbónicas fueron aplicadas por la '
-                           'dinastía de los {Borbones}.',
-                           'Las reformas borbónicas desplazaron de los '
-                           'cargos públicos a los {Criollos}.',
-                           'La rebelión de Juan Santos Atahualpa se inició '
-                           'en el año {1742}.',
-                           'Juan Santos Atahualpa desarrolló su rebelión en '
-                           '{La selva central}.',
-                           'El verdadero nombre de Túpac Amaru II fue {José '
-                           'Gabriel Condorcanqui}.',
-                           'La revolución de Túpac Amaru II se inició con la '
-                           'captura del corregidor {Antonio de Arriaga}.',
-                           'Túpac Amaru II obtuvo su principal victoria en '
-                           'la batalla de {Sangarará}.',
-                           'Túpac Amaru II era cacique de {Tungasuca}.',
-                           'La obra prohibida tras la rebelión, escrita por '
-                           'el Inca Garcilaso, fue {Los Comentarios Reales}.',
-                           'Túpac Amaru II fue entregado a los españoles por '
-                           'la traición de {Francisco Santa Cruz}.',
-                           'Las reformas borbónicas tuvieron como objetivo '
-                           'principal {Recuperar el control económico y '
-                           'político de las colonias}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['Una de las medidas más importantes de las '
-                           'reformas borbónicas fue la creación del '
-                           'virreinato del Río de la Plata, en la actual '
-                           '{Argentina}.',
-                           'Juan Santos Atahualpa se proclamó sucesor del '
-                           'último inca del Tahuantinsuyo y extendió su '
-                           'rebelión por la {selva central}.',
-                           'La rebelión de Juan Santos Atahualpa nunca fue '
-                           'derrotada; su líder murió, sin vencer ni ser '
-                           'vencido, alrededor del año {1756}.',
-                           'Túpac Amaru II fue descendiente de Felipe Túpac '
-                           'Amaru, el último inca de {Vilcabamba}, y estudió '
-                           'en el Colegio San Francisco de Borja.',
-                           'El corregidor Antonio de Arriaga fue ejecutado '
-                           'por el zambo {Antonio Oblitas}, su antiguo '
-                           'esclavo.',
+                {'titulo': '13.3 LA REVOLUCIÓN DE TÚPAC AMARU II: OTROS '
+                           'DATOS',
+                 'items': ['{Micaela Bastidas} fue esposa y colíder de Túpac '
+                           'Amaru II; fue traicionada por {Ventura '
+                           'Landaeta}.',
+                           'El corregidor {Antonio de Arriaga}, capturado al '
+                           'inicio de la rebelión, fue ejecutado por el '
+                           'zambo {Antonio Oblitas}, su antiguo esclavo.',
                            'Túpac Amaru II proclamó la libertad de los '
-                           'esclavos negros el {16} de noviembre de 1780.',
-                           'Micaela Bastidas fue traicionada por {Ventura '
-                           'Landaeta} y conducida junto a Túpac Amaru ante '
-                           'el visitador Areche.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Las intendencias reemplazaron a {Los '
-                           'corregimientos}.',
-                           'Una consecuencia territorial de las reformas '
-                           'borbónicas fue {La creación de los virreinatos '
-                           'de Nueva Granada y del Río de la Plata}.',
-                           'Un rasgo singular de la rebelión de Juan Santos '
-                           'Atahualpa fue que {Nunca fue derrotada '
-                           'militarmente}.',
-                           'La revolución de Túpac Amaru II se inició el {4 '
-                           'de noviembre de 1780}.',
-                           'Túpac Amaru II fue ejecutado en la plaza del '
-                           'Cusco el {18 de mayo de 1781}.',
-                           'Una consecuencia cultural de la derrota de Túpac '
-                           'Amaru II fue {La prohibición del quechua en '
-                           'documentos y de los Comentarios Reales}.',
-                           'El impuesto colonial incrementado por las '
-                           'reformas borbónicas fue {La alcabala}.',
-                           'Juan Santos Atahualpa se proclamó descendiente '
-                           'de {Los incas}.']}],
+                           'esclavos negros el {16} de noviembre de {1780}.',
+                           'Tras la rebelión, se prohibió la difusión de los '
+                           '{Comentarios Reales} del Inca Garcilaso de la '
+                           'Vega.',
+                           'Túpac Amaru II era descendiente de {Felipe Túpac '
+                           'Amaru}, el último inca de {Vilcabamba}.']}],
   'cuadros': [{'titulo': '13.2 ETAPAS DE LA REVOLUCIÓN DE TÚPAC AMARU II',
                'encabezados': ['Etapa', 'Hecho'],
                'filas': [['Inicio',
@@ -4285,7 +4141,52 @@ BALOTAS = [{'num': 1,
                                   'Los incas',
                                   'Los chancas',
                                   'Los reyes españoles'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'La esposa y colíder de Túpac Amaru II en la '
+                             'revolución fue:',
+                 'alternativas': ['Cecilia Túpac Amaru',
+                                  'Micaela Bastidas',
+                                  'Bartolina Sisa',
+                                  'Tomasa Titu Condemayta',
+                                  'Marcela Castro'],
+                 'correcta': 'B'},
+                {'pregunta': 'Micaela Bastidas fue traicionada y capturada '
+                             'por:',
+                 'alternativas': ['Francisco Santa Cruz',
+                                  'Ventura Landaeta',
+                                  'Antonio de Arriaga',
+                                  'Antonio Oblitas',
+                                  'José Antonio de Areche'],
+                 'correcta': 'B'},
+                {'pregunta': 'El corregidor Antonio de Arriaga fue ejecutado '
+                             'por:',
+                 'alternativas': ['Micaela Bastidas',
+                                  'Antonio Oblitas, su antiguo esclavo',
+                                  'Francisco Santa Cruz',
+                                  'Ventura Landaeta',
+                                  'Diego Cristóbal Túpac Amaru'],
+                 'correcta': 'B'},
+                {'pregunta': 'Túpac Amaru II proclamó la libertad de los '
+                             'esclavos negros el 16 de noviembre de:',
+                 'alternativas': ['1778', '1780', '1781', '1783', '1776'],
+                 'correcta': 'B'},
+                {'pregunta': 'Tras la rebelión de Túpac Amaru II, la Corona '
+                             'prohibió la difusión de una obra escrita por '
+                             'el Inca Garcilaso de la Vega llamada:',
+                 'alternativas': ['La Florida del Inca',
+                                  'Los Comentarios Reales',
+                                  'Historia General del Perú',
+                                  'Suma y Narración de los Incas',
+                                  'Nueva Corónica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Túpac Amaru II era descendiente del último '
+                             'inca de Vilcabamba, llamado:',
+                 'alternativas': ['Manco Inca',
+                                  'Felipe Túpac Amaru',
+                                  'Sayri Túpac',
+                                  'Titu Cusi Yupanqui',
+                                  'Huáscar'],
+                 'correcta': 'B'}]},
  {'num': 14,
   'titulo': 'Tiempo de las revoluciones',
   'secciones': [{'titulo': '14.1 INDEPENDENCIA DE ESTADOS UNIDOS',
@@ -4319,78 +4220,7 @@ BALOTAS = [{'num': 1,
                            'Derechos del {Hombre} y del Ciudadano.',
                            'Consecuencias: fin del {absolutismo} y del '
                            'régimen feudal, y difusión de las ideas '
-                           '{liberales} por Europa y América.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El número de colonias inglesas que se '
-                           'independizaron en Norteamérica fue {Trece}.',
-                           'El primer presidente de Estados Unidos fue '
-                           '{George Washington}.',
-                           'La Revolución Francesa se inició en el año '
-                           '{1789}.',
-                           'La etapa del Terror durante la Revolución '
-                           'Francesa estuvo dirigida por {Robespierre}.',
-                           'Entre las causas de la Revolución Francesa '
-                           'figura {La desigualdad entre los estamentos}.',
-                           'El órgano revolucionario francés que juzgó y '
-                           'ejecutó al rey fue {La Convención}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['La colonización británica de Norteamérica se '
-                           'inició en 1607 con la fundación de {Jamestown}, '
-                           'en la actual Virginia.',
-                           'El Segundo Congreso Continental, reunido en '
-                           'Filadelfia, proclamó la independencia de las '
-                           'trece colonias el {4 de julio} de 1776.',
-                           'La primera victoria de los colonos '
-                           'norteamericanos fue en {Saratoga}, en 1777.',
-                           'La batalla de {Yorktown}, en 1781, con apoyo del '
-                           'mariscal francés Lafayette, selló la derrota '
-                           'británica.',
-                           'En 1788 se aprobó la Constitución de la nueva '
-                           'república de Estados Unidos, siendo su primer '
-                           'presidente {George Washington}.',
-                           'La Revolución Francesa estableció la monarquía '
-                           'constitucional en 1791, y recién en 1792 se '
-                           'abolió la monarquía y se proclamó la '
-                           '{República}.',
-                           'El periodo revolucionario francés terminó cuando '
-                           '{Napoleón Bonaparte} dio un golpe de Estado en '
-                           '1799.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La Declaración de Independencia de Estados '
-                           'Unidos se firmó el {4 de julio de 1776}.',
-                           'El principal redactor de la Declaración de '
-                           'Independencia norteamericana fue {Thomas '
-                           'Jefferson}.',
-                           'El lema «no hay impuestos sin representación» '
-                           'corresponde a {La independencia de Estados '
-                           'Unidos}.',
-                           'El hecho que precipitó la rebelión de las '
-                           'colonias inglesas fue {El Motín del Té de '
-                           'Boston}.',
-                           'El hecho simbólico del inicio de la Revolución '
-                           'Francesa fue {La toma de la Bastilla}.',
-                           'El lema de la Revolución Francesa fue '
-                           '{«Libertad, igualdad, fraternidad»}.',
-                           'El documento fundamental proclamado por la '
-                           'Revolución Francesa fue {La Declaración de los '
-                           'Derechos del Hombre y del Ciudadano}.',
-                           'El Directorio francés terminó con {El golpe de '
-                           'Estado de Napoleón}.',
-                           'Una consecuencia política central de la '
-                           'Revolución Francesa fue {El fin del absolutismo '
-                           'y del régimen feudal}.',
-                           'La independencia de Estados Unidos influyó en '
-                           'Hispanoamérica al {Servir de ejemplo a los '
-                           'movimientos independentistas}.',
-                           'El sistema de gobierno adoptado por Estados '
-                           'Unidos fue {República federal y '
-                           'presidencialista}.',
-                           'La corriente de pensamiento que influyó '
-                           'decisivamente en ambas revoluciones fue {La '
-                           'Ilustración}.',
-                           'La toma de la Bastilla ocurrió el {14 de julio}.',
-                           'La sociedad francesa previa a la revolución '
-                           'estaba dividida en {Tres estamentos}.']}],
+                           '{liberales} por Europa y América.']}],
   'cuadros': [{'titulo': '14. DOS REVOLUCIONES',
                'encabezados': ['Revolución', 'Año de inicio', 'Aporte'],
                'filas': [['Independencia de {EE.UU.}',
@@ -4582,68 +4412,7 @@ BALOTAS = [{'num': 1,
                            '1824): dirigida por {Antonio José de Sucre}; '
                            'selló la independencia.',
                            'La {Capitulación} de Ayacucho fue firmada por el '
-                           'virrey {José de la Serna}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La invasión napoleónica a España se produjo en '
-                           '{1808}.',
-                           'La Constitución liberal española de 1812 se '
-                           'conoce como Constitución de {Cádiz}.',
-                           'San Martín desembarcó en el Perú en la bahía de '
-                           '{Paracas}.',
-                           'San Martín asumió el gobierno del Perú con el '
-                           'título de {Protector}.',
-                           'La conferencia entre San Martín y Bolívar se '
-                           'realizó en {Guayaquil}.',
-                           'Bolívar llegó al Perú en el año {1823}.',
-                           'La batalla de Ayacucho fue dirigida por {Antonio '
-                           'José de Sucre}.',
-                           'La Capitulación de Ayacucho fue firmada por el '
-                           'virrey {José de la Serna}.',
-                           'Antes de llegar al Perú, San Martín liberó '
-                           '{Chile}.',
-                           'Bolívar recibió en el Perú poderes de '
-                           '{Dictador}.',
-                           'La proclamación de la Independencia se realizó '
-                           'en {La plaza de armas de Lima}.',
-                           'La batalla que selló definitivamente la '
-                           'independencia del Perú fue {Ayacucho}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['La invasión de Napoleón a España, entre 1808 y '
-                           '1813, es un factor externo clave del proceso de '
-                           'independencia hispanoamericana.',
-                           'Ante la ausencia del poder monárquico español, '
-                           'los criollos instauraron {Juntas de Gobierno} '
-                           'que reclamaban autogobierno.',
-                           'La Constitución de Cádiz fue jurada el {19 de '
-                           'marzo} de 1812 bajo el título de Constitución '
-                           'Política de la Monarquía Española.',
-                           'Entre 1809 y 1810 se formaron juntas '
-                           'gubernativas en casi todos los virreinatos '
-                           'sudamericanos, excepto en el del {Perú}.',
-                           'La proclamación de la Independencia se decidió '
-                           'el 15 de julio de 1821, cuando San Martín '
-                           'convocó al {Cabildo} de Lima.',
-                           'En enero de 1824, Bolívar estableció su cuartel '
-                           'general en Pativilca y nombró secretario a '
-                           '{Faustino Sánchez Carrión}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Napoleón colocó en el trono español a {José '
-                           'Bonaparte}.',
-                           'El desembarco de San Martín en el Perú ocurrió '
-                           'el {8 de septiembre de 1820}.',
-                           'La Independencia del Perú fue proclamada el {28 '
-                           'de julio de 1821}.',
-                           'Institución cultural creada por San Martín {La '
-                           'Biblioteca Nacional}.',
-                           'La batalla de Junín se libró el {6 de agosto de '
-                           '1824}.',
-                           'Un rasgo distintivo de la batalla de Junín fue '
-                           'que {Se libró sin usar armas de fuego}.',
-                           'La batalla de Ayacucho se libró el {9 de '
-                           'diciembre de 1824}.',
-                           'Ante el vacío de poder por la invasión '
-                           'napoleónica se formaron {Las juntas de '
-                           'gobierno}.']}],
+                           'virrey {José de la Serna}.']}],
   'cuadros': [{'titulo': '15. BATALLAS DECISIVAS',
                'encabezados': ['Batalla', 'Fecha', 'Jefe patriota'],
                'filas': [['{Junín}', '{6} agosto 1824', '{Bolívar}'],
@@ -4836,73 +4605,7 @@ BALOTAS = [{'num': 1,
                            'de Francisco {Bolognesi}.',
                            'La guerra terminó con el Tratado de {Ancón} '
                            '({1883}): el Perú cedió {Tarapacá} y Tacna y '
-                           'Arica quedaron en poder chileno por 10 años.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['La primera Constitución del Perú fue promulgada '
-                           'en {1823}.',
-                           'La Confederación Perú-Boliviana fue disuelta '
-                           'tras la batalla de {Yungay}.',
-                           'Los Estados que integraron la Confederación '
-                           'fueron Nor Peruano, Sur Peruano y {Boliviano}.',
-                           'La principal fuente de ingresos del Estado '
-                           'peruano desde 1840 fue {El guano}.',
-                           'El tratado que unía a Perú y Bolivia era de '
-                           'alianza {Defensiva}.',
-                           'Miguel Grau murió heroicamente en el combate de '
-                           '{Angamos}.',
-                           'Francisco Bolognesi murió en la batalla de '
-                           '{Arica}.',
-                           'La Guerra del Pacífico terminó con el Tratado de '
-                           '{Ancón}.',
-                           'Por el Tratado de Ancón el Perú cedió '
-                           'definitivamente {Tarapacá}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El primer Congreso Constituyente del Perú, '
-                           'instalado el 20 de setiembre de 1822, fue la '
-                           'primera institución elegida {democráticamente} '
-                           'en el país.',
-                           'La primera Constitución del Perú independiente, '
-                           'de carácter liberal, fue promulgada por el '
-                           'presidente {Torre Tagle} el 12 de noviembre de '
-                           '1823.',
-                           'La Constitución de 1823 fue restaurada el 11 de '
-                           'junio de {1827}, tras la caída del régimen '
-                           'vitalicio bolivariano.',
-                           'El historiador Jorge Basadre denominó '
-                           '«Prosperidad falaz» al periodo económico '
-                           'sostenido por el auge del {guano}.',
-                           'La Guerra del Pacífico se precipitó cuando, en '
-                           '1841, se descubrieron yacimientos de salitre en '
-                           'el territorio boliviano de {Antofagasta}.',
-                           'Por el Tratado de Ancón, el Perú cedió a '
-                           'perpetuidad la provincia de {Tarapacá}, y Tacna '
-                           'y Arica quedaron en poder chileno por diez '
-                           'años.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El primer gobierno del Perú independiente fue '
-                           '{El Protectorado de San Martín}.',
-                           'El primer presidente del Perú fue {José de la '
-                           'Riva Agüero}.',
-                           'La Confederación Perú-Boliviana fue creada por '
-                           '{Andrés de Santa Cruz}.',
-                           'El contrato Dreyfus se firmó en 1869 durante el '
-                           'gobierno de {José Balta}.',
-                           'La abolición de la esclavitud y del tributo '
-                           'indígena se produjo bajo el gobierno de {Ramón '
-                           'Castilla}.',
-                           'El primer ferrocarril de Sudamérica unió {Lima y '
-                           'Callao}.',
-                           'La causa inmediata de la Guerra del Pacífico fue '
-                           '{El impuesto de los 10 centavos al salitre}.',
-                           'El combate de Angamos se produjo el {8 de '
-                           'octubre de 1879}.',
-                           'La campaña de resistencia en la sierra central '
-                           'fue dirigida por {Andrés A. Cáceres}.',
-                           'El caudillismo militar se caracterizó porque el '
-                           'poder fue disputado por {Los jefes militares de '
-                           'la independencia}.',
-                           'El sistema de comercialización del guano previo '
-                           'al contrato Dreyfus fue {Las consignaciones}.']}],
+                           'Arica quedaron en poder chileno por 10 años.']}],
   'cuadros': [{'titulo': '16.7 HÉROES Y BATALLAS',
                'encabezados': ['Combate/Batalla', 'Fecha', 'Héroe'],
                'filas': [['{Angamos}', '{8} oct. 1879', 'Miguel {Grau}'],
@@ -5099,72 +4802,10 @@ BALOTAS = [{'num': 1,
                            'Impulsó los {enclaves} económicos y el '
                            'endeudamiento con {Estados Unidos}.',
                            'Fue derrocado en {1930} por la rebelión de Luis '
-                           'M. {Sánchez Cerro} en Arequipa.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El Contrato Grace se firmó en el año {1889}.',
-                           'La Constitución promulgada durante el Oncenio '
-                           'fue la de {1920}.',
-                           'El Tratado Salomón-Lozano se firmó con '
-                           '{Colombia}.',
-                           'El Tratado de Lima de 1929 se firmó con {Chile}.',
-                           'Por el Tratado de Lima de 1929, Tacna {Volvió al '
-                           'Perú}.',
-                           'Por el Tratado de Lima de 1929, Arica quedó en '
-                           'poder de {Chile}.',
-                           'Durante la República Aristocrática se produjo el '
-                           'auge de la explotación del {Caucho}.',
-                           'El endeudamiento externo del Oncenio se dio '
-                           'principalmente con {Estados Unidos}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El historiador peruano {Jorge Basadre} denominó '
-                           '«República Aristocrática» al periodo dominado '
-                           'por la oligarquía civilista.',
-                           'Durante la República Aristocrática se creó la '
-                           '{Policía Nacional} para reprimir los movimientos '
-                           'sociales, y surgió el movimiento indigenista.',
-                           'El Oncenio de Leguía coincidió con el Crack de '
-                           '1929 en Estados Unidos, conocido como el {jueves '
-                           'negro}.',
-                           'El endeudamiento del Oncenio con banqueros '
-                           'estadounidenses les permitió a estos exigir el '
-                           'control de la {administración aduanera}.',
-                           'Leguía fue derrocado por el golpe de Estado del '
-                           'teniente coronel Luis {Sánchez Cerro} en 1930.',
-                           'Sánchez Cerro fue elegido presidente por voto '
-                           'popular en 1931, derrotando al APRA y al '
-                           '{Partido Comunista}.',
-                           'Durante el gobierno de Sánchez Cerro se produjo '
-                           'el conflicto internacional con Colombia por '
-                           '{Leticia} y el Trapecio Amazónico.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El periodo posterior a la Guerra del Pacífico se '
-                           'conoce como {Reconstrucción Nacional o Segundo '
-                           'Militarismo}.',
-                           'Por el Contrato Grace el Perú entregó por 66 '
-                           'años {Los ferrocarriles}.',
-                           'La República Aristocrática se inició con el '
-                           'gobierno de {Nicolás de Piérola}.',
-                           'La República Aristocrática abarca los años '
-                           '{1895-1919}.',
-                           'El grupo social que ejerció el poder durante la '
-                           'República Aristocrática fue {La oligarquía '
-                           'civilista}.',
-                           'La economía de la República Aristocrática se '
-                           'basó en {La exportación de materias primas}.',
-                           'El gobierno de Leguía entre 1919 y 1930 se '
-                           'conoce como {La Patria Nueva u Oncenio}.',
-                           'El trabajo obligatorio para construir carreteras '
-                           'durante el Oncenio se llamó {Conscripción vial}.',
-                           'Leguía fue derrocado en 1930 por {Luis M. '
-                           'Sánchez Cerro}.',
-                           'Los enclaves económicos se caracterizaron por '
-                           '{Ser empresas extranjeras con escasa integración '
-                           'a la economía nacional}.',
-                           'El primer presidente del Segundo Militarismo fue '
-                           '{Miguel Iglesias}.',
-                           'La explotación del caucho tuvo como consecuencia '
-                           'principal {Graves abusos contra las poblaciones '
-                           'indígenas amazónicas}.']}],
+                           'M. {Sánchez Cerro} en Arequipa.',
+                           'El Oncenio de Leguía terminó con el golpe de '
+                           'Estado del teniente coronel {Luis Sánchez Cerro} '
+                           'en {1930}.']}],
   'cuadros': [{'titulo': '17.3 TRATADOS LIMÍTROFES DEL ONCENIO',
                'encabezados': ['Tratado', 'Año', 'País'],
                'filas': [['{Salomón-Lozano}', '{1922}', '{Colombia}'],
@@ -5316,7 +4957,15 @@ BALOTAS = [{'num': 1,
                                   'El auge del guano',
                                   'Graves abusos contra las poblaciones '
                                   'indígenas amazónicas'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'El Oncenio de Leguía terminó con el golpe de '
+                             'Estado dirigido por:',
+                 'alternativas': ['Manuel A. Odría',
+                                  'Luis Sánchez Cerro',
+                                  'Óscar R. Benavides',
+                                  'Juan Velasco Alvarado',
+                                  'Andrés A. Cáceres'],
+                 'correcta': 'B'}]},
  {'num': 18,
   'titulo': 'El mundo entre guerras',
   'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL (1914–1918)',
@@ -5348,69 +4997,7 @@ BALOTAS = [{'num': 1,
                            '{ONU}.',
                            'La Guerra {Fría} enfrentó a {Estados Unidos} y '
                            'la {URSS} sin combate directo, dividiendo el '
-                           'mundo en dos {bloques}.']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El asesinato que desencadenó la Primera Guerra '
-                           'Mundial ocurrió en {Sarajevo}.',
-                           'El país más perjudicado por el Tratado de '
-                           'Versalles fue {Alemania}.',
-                           'La Gran Depresión se inició con el crac de la '
-                           'bolsa de {Nueva York}.',
-                           'La Segunda Guerra Mundial se inició con la '
-                           'invasión alemana a {Polonia}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El archiduque Francisco Fernando fue asesinado '
-                           'en Sarajevo por el nacionalista serbio {Gavrilo '
-                           'Princip}.',
-                           'La Triple Alianza agrupó a Alemania, '
-                           'Austria-Hungría e Italia; esta última luego se '
-                           'pasó al bando de la {Triple Entente}.',
-                           'Hacia 1932, más de cinco mil bancos habían '
-                           'quebrado en Estados Unidos como consecuencia de '
-                           'la {Gran Depresión}.',
-                           'El régimen nazi reclamó un «espacio vital» para '
-                           'el pueblo alemán y la devolución de sus antiguas '
-                           '{colonias}.',
-                           'Tras renunciar a las restricciones de desarme '
-                           'del Tratado de Versalles, {Hitler} armó un '
-                           'ejército poderoso e inició su expansión.',
-                           'La Guerra Fría incluyó conflictos como la '
-                           'división de Alemania, el Muro de Berlín, la '
-                           'Guerra de Corea y la Guerra de {Vietnam}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La causa inmediata de la Primera Guerra Mundial '
-                           'fue {El asesinato del archiduque Francisco '
-                           'Fernando}.',
-                           'La Primera Guerra Mundial se desarrolló entre '
-                           '{1914-1918}.',
-                           'El tratado que puso fin a la Primera Guerra '
-                           'Mundial fue {Tratado de Versalles}.',
-                           'El organismo creado tras la Primera Guerra '
-                           'Mundial para preservar la paz fue {La Sociedad '
-                           'de Naciones}.',
-                           'La Gran Depresión mundial se inició en el año '
-                           '{1929}.',
-                           'El programa aplicado en Estados Unidos para '
-                           'superar la crisis fue {El New Deal}.',
-                           'El presidente que aplicó el New Deal fue '
-                           '{Franklin D. Roosevelt}.',
-                           'Las potencias del Eje fueron {Alemania, Italia y '
-                           'Japón}.',
-                           'La Segunda Guerra Mundial terminó con {Las '
-                           'bombas atómicas sobre Hiroshima y Nagasaki}.',
-                           'El organismo internacional creado en 1945 fue '
-                           '{La ONU}.',
-                           'La Guerra Fría enfrentó a {Estados Unidos y la '
-                           'URSS}.',
-                           'Un rasgo característico de la Guerra Fría fue '
-                           '{La ausencia de enfrentamiento militar directo '
-                           'entre las potencias}.',
-                           'Los bandos de la Primera Guerra Mundial fueron '
-                           '{Triple Alianza y Triple Entente}.',
-                           'Una consecuencia social de la Gran Depresión fue '
-                           '{El desempleo masivo}.',
-                           'La Segunda Guerra Mundial se desarrolló entre '
-                           'los años {1939-1945}.']}],
+                           'mundo en dos {bloques}.']}],
   'cuadros': [{'titulo': '18. LAS DOS GUERRAS MUNDIALES',
                'encabezados': ['Guerra', 'Años', 'Fin'],
                'filas': [['Primera', '{1914}–1918', 'Tratado de {Versalles}'],
@@ -5610,84 +5197,7 @@ BALOTAS = [{'num': 1,
                            '{descentralización} y los gobiernos '
                            '{regionales}.',
                            'Segundo gobierno de Alan García (2006–2011) y '
-                           'gobierno de Ollanta {Humala} (2011–2016).']},
-                {'titulo': 'MÁS DATOS PARA REPASAR',
-                 'items': ['El voto a la mujer en el Perú se otorgó durante '
-                           'el gobierno de {Odría}.',
-                           'El gobierno de Velasco reconoció como lengua '
-                           'oficial al {Quechua}.',
-                           'La Constitución promulgada durante el segundo '
-                           'gobierno de Belaunde fue la de {1979}.',
-                           'La violencia de Sendero Luminoso se inició en '
-                           '1980 en {Chuschi, Ayacucho}.',
-                           'La Constitución vigente del Perú fue promulgada '
-                           'en {1993}.',
-                           'Los videos que evidenciaron la corrupción del '
-                           'régimen fujimorista se conocen como '
-                           '{Vladivideos}.',
-                           'La Comisión de la Verdad y Reconciliación fue '
-                           'creada durante el gobierno de {Valentín '
-                           'Paniagua}.']},
-                {'titulo': 'AMPLIACIÓN — MÁS DATOS DEL TEMARIO',
-                 'items': ['El general Manuel A. Odría se pronunció desde '
-                           'Arequipa contra el gobierno de {José Luis '
-                           'Bustamante y Rivero}, a quien acusó de debilidad '
-                           'frente al APRA.',
-                           'El golpe de Estado que derrocó a Belaunde en '
-                           '1968 fue encabezado por el general {Juan Velasco '
-                           'Alvarado}.',
-                           'Durante el primer gobierno de Belaunde se '
-                           'construyeron la carretera Marginal de la Selva y '
-                           'el Aeropuerto Internacional {Jorge Chávez}.',
-                           'Francisco Morales Bermúdez, jefe de la segunda '
-                           'fase del gobierno militar, era nieto del '
-                           'expresidente {Remigio Morales Bermúdez}.',
-                           'Alan García llegó al poder en 1985 representando '
-                           'al APRA, fundado en {1924}, en su primer acceso '
-                           'a la presidencia.',
-                           'Alan García derrotó en las elecciones de 1985 al '
-                           'candidato de Izquierda Unida, {Alfonso Barrantes '
-                           'Lingán}.',
-                           'Fujimori derrotó en 1990 al novelista {Mario '
-                           'Vargas Llosa}, con su movimiento Cambio 90.',
-                           'El sociólogo peruano {Julio Cotler} calificó al '
-                           'gobierno de Alan García como una «democradura», '
-                           'por su carácter dictatorial.',
-                           'En su segundo gobierno, Alan García derrotó en '
-                           'segunda vuelta al candidato {Ollanta Humala}.',
-                           'Ollanta Humala derrotó a Keiko Fujimori en '
-                           'segunda vuelta, con el respaldo público de '
-                           '{Mario Vargas Llosa}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El «Ochenio» corresponde al gobierno de {Manuel '
-                           'A. Odría}.',
-                           'El primer gobierno de Belaunde fue derrocado por '
-                           'el escándalo de {La página once}.',
-                           'La Reforma Agraria fue aplicada en 1969 por '
-                           '{Juan Velasco Alvarado}.',
-                           'La Asamblea Constituyente de 1978 fue presidida '
-                           'por {Víctor Raúl Haya de la Torre}.',
-                           'El primer gobierno de Alan García se caracterizó '
-                           'por {La hiperinflación}.',
-                           'El autogolpe de Estado de Fujimori se produjo el '
-                           '{5 de abril de 1992}.',
-                           'El líder de Sendero Luminoso capturado en 1992 '
-                           'fue {Abimael Guzmán}.',
-                           'Fujimori renunció a la presidencia en el año '
-                           '2000 mediante {Un fax desde Japón}.',
-                           'El gobierno transitorio del año 2000-2001 fue '
-                           'presidido por {Valentín Paniagua}.',
-                           'El gobierno de Alejandro Toledo impulsó '
-                           'principalmente {La descentralización y los '
-                           'gobiernos regionales}.',
-                           'El gobierno militar de la segunda fase '
-                           '(1975-1980) estuvo encabezado por {Francisco '
-                           'Morales Bermúdez}.',
-                           'El gobierno de Ollanta Humala corresponde al '
-                           'periodo {2011-2016}.',
-                           'Una medida económica central del primer gobierno '
-                           'de Alan García fue {La estatización de la '
-                           'banca}.']}],
+                           'gobierno de Ollanta {Humala} (2011–2016).']}],
   'cuadros': [{'titulo': '19. GOBIERNOS Y HECHOS CLAVE',
                'encabezados': ['Gobernante', 'Periodo', 'Hecho principal'],
                'filas': [['Manuel A. {Odría}',
