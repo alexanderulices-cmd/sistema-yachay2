@@ -19088,7 +19088,7 @@ def tab_reportes(config):
     st.subheader("📊 Reportes e Historial")
 
     subtab = st.radio("Seleccionar:", [
-        "📋 Asistencia Mensual", "DOCENTE Asistencia Docentes",
+        "📋 Asistencia Mensual", "👨‍🏫 Asistencia de Docentes",
         "📊 Reporte Integral",
         "📄 Reporte ZipGrade", "🏆 Historial de Evaluaciones",
         "📁 Fichas Docentes",
@@ -19147,7 +19147,7 @@ def tab_reportes(config):
             st.info("No hay evaluaciones para los filtros seleccionados.")
         return
 
-    if subtab == "DOCENTE Asistencia Docentes":
+    if subtab == "👨‍🏫 Asistencia de Docentes":
         st.markdown("""<div style='background:linear-gradient(135deg,#001e7c,#0044cc);color:white;
             padding:15px 20px;border-radius:12px;margin-bottom:15px;text-align:center;'>
             <h3 style='margin:0;color:white;'>DOCENTE I.E.P. ALTERNATIVO YACHAY</h3>
@@ -19567,9 +19567,35 @@ def tab_reportes(config):
                         st.warning("⚠️ Debe ingresar el motivo de la modificación.")
 
             elif modo == "⏱️ Horas Sec/PreU":
-                # ── Horas de trabajo Sec/PreU ────────────────────────────
-                st.markdown("### ⏱️ Control de Horas — Docentes Secundaria / PreUniversitario")
-                st.caption("Docentes que trabajan por horas: registro de horas por día, semana y mes")
+                # ── Horas de trabajo: Secundaria (mañana) vs Academia (tarde) ──
+                st.markdown("### ⏱️ Control de Horas — Secundaria y Academia")
+                st.caption(
+                    "Turno mañana (entrada/salida) = **Secundaria**. "
+                    "Turno tarde (entrada_tarde/salida_tarde) = **Academia CEPRU**. "
+                    "Horas exactas en horas y minutos, para cálculo de pago."
+                )
+
+                def _min_entre(ent, sal):
+                    """Minutos entre dos horas 'HH:MM'. 0 si falta algún dato."""
+                    if not ent or not sal:
+                        return 0
+                    try:
+                        h1, m1 = ent.split(':')[:2]
+                        h2, m2 = sal.split(':')[:2]
+                        mins = (int(h2) * 60 + int(m2)) - (int(h1) * 60 + int(m1))
+                        return max(0, mins)
+                    except Exception:
+                        return 0
+
+                def _fmt_hm(minutos):
+                    """Minutos totales -> 'Xh Ymin' legible."""
+                    h, m = divmod(int(round(minutos)), 60)
+                    if h and m: return f"{h}h {m:02d}min"
+                    if h: return f"{h}h"
+                    return f"{m}min"
+
+                vista_h = st.radio("Vista:", ["📆 Mensual", "📅 Semanal"],
+                                    horizontal=True, key="horas_vista")
 
                 mes_h = st.selectbox("📆 Mes:", meses_esc,
                                       format_func=lambda x: x[1],
@@ -19577,91 +19603,124 @@ def tab_reportes(config):
                 mes_num_h = mes_h[0]
                 mes_nombre_h = mes_h[1]
                 anio_h = hora_peru().year
+                semanas_h = _semanas_del_mes(mes_num_h, anio_h)
 
-                # Calcular horas por docente
-                horas_data = []
+                # ── Minutos por docente y por día, separados sec/academia ──
+                min_por_docente = {}  # nombre -> {fecha: {'sec': min, 'aca': min}}
                 for nm in sorted(docentes_asist.keys()):
-                    horas_dia = {}
-                    total_horas_mes = 0.0
+                    por_dia = {}
                     for fecha_str, reg in docentes_asist[nm].items():
                         try:
                             fd = datetime.strptime(fecha_str, '%Y-%m-%d').date()
-                            if fd.month == mes_num_h and fd.year == anio_h:
-                                ent = reg.get('entrada', '')
-                                sal = reg.get('salida', '')
-                                horas_d = 0.0
-                                if ent and sal:
-                                    try:
-                                        h1, m1 = ent.split(':')[:2]
-                                        h2, m2 = sal.split(':')[:2]
-                                        min1 = int(h1) * 60 + int(m1)
-                                        min2 = int(h2) * 60 + int(m2)
-                                        horas_d = max(0, (min2 - min1) / 60)
-                                    except Exception:
-                                        pass
-                                # Sumar turno tarde si existe
-                                ent_t = reg.get('entrada_tarde', '')
-                                sal_t = reg.get('salida_tarde', '')
-                                if ent_t and sal_t:
-                                    try:
-                                        h1t, m1t = ent_t.split(':')[:2]
-                                        h2t, m2t = sal_t.split(':')[:2]
-                                        min1t = int(h1t) * 60 + int(m1t)
-                                        min2t = int(h2t) * 60 + int(m2t)
-                                        horas_d += max(0, (min2t - min1t) / 60)
-                                    except Exception:
-                                        pass
-                                horas_dia[fecha_str] = round(horas_d, 1)
-                                total_horas_mes += horas_d
                         except Exception:
-                            pass
+                            continue
+                        if fd.month != mes_num_h or fd.year != anio_h:
+                            continue
+                        min_sec = _min_entre(reg.get('entrada', ''), reg.get('salida', ''))
+                        min_aca = _min_entre(reg.get('entrada_tarde', ''), reg.get('salida_tarde', ''))
+                        if min_sec or min_aca:
+                            por_dia[fecha_str] = {'sec': min_sec, 'aca': min_aca}
+                    if por_dia:
+                        min_por_docente[nm] = por_dia
 
-                    if horas_dia:
-                        # Calcular por semana
-                        semanas_h = _semanas_del_mes(mes_num_h, anio_h)
-                        horas_por_sem = []
-                        for sem_n, lun_s, vie_s in semanas_h:
-                            h_sem = 0.0
-                            for d in range(5):
-                                dia_s = lun_s + timedelta(days=d)
-                                h_sem += horas_dia.get(dia_s.strftime('%Y-%m-%d'), 0.0)
-                            horas_por_sem.append(round(h_sem, 1))
-
+                if vista_h == "📆 Mensual":
+                    horas_data = []
+                    for nm, por_dia in min_por_docente.items():
+                        tot_sec = sum(d['sec'] for d in por_dia.values())
+                        tot_aca = sum(d['aca'] for d in por_dia.values())
+                        dias_trabajados = len(por_dia)
                         horas_data.append({
                             'Docente': nm,
-                            'Días': len(horas_dia),
-                            'Horas Total': round(total_horas_mes, 1),
-                            'Prom/Día': round(total_horas_mes / max(len(horas_dia), 1), 1),
-                            **{f'Sem {s[0]}': h for s, h in zip(semanas_h, horas_por_sem)},
+                            'Días': dias_trabajados,
+                            'Secundaria': _fmt_hm(tot_sec),
+                            'Academia CEPRU': _fmt_hm(tot_aca),
+                            'Total': _fmt_hm(tot_sec + tot_aca),
+                            '_tot_min': tot_sec + tot_aca,
                         })
 
-                if horas_data:
-                    st.markdown(f"### {mes_nombre_h} {anio_h}")
-                    df_h = pd.DataFrame(horas_data).sort_values('Horas Total', ascending=False)
-                    st.dataframe(df_h, use_container_width=True, hide_index=True)
+                    if horas_data:
+                        st.markdown(f"### {mes_nombre_h} {anio_h}")
+                        df_h = pd.DataFrame(horas_data).sort_values('_tot_min', ascending=False)
+                        df_h_mostrar = df_h.drop(columns=['_tot_min'])
+                        st.dataframe(df_h_mostrar, use_container_width=True, hide_index=True)
 
-                    # Métricas
-                    ch1, ch2, ch3 = st.columns(3)
-                    ch1.metric("DOCENTE Docentes", len(horas_data))
-                    ch2.metric("⏱️ Prom. horas/mes", f"{sum(r['Horas Total'] for r in horas_data)/max(len(horas_data),1):.1f}h")
-                    ch3.metric("⏱️ Total horas", f"{sum(r['Horas Total'] for r in horas_data):.0f}h")
+                        ch1, ch2, ch3 = st.columns(3)
+                        ch1.metric("DOCENTE Docentes", len(horas_data))
+                        _tot_min_todos = sum(r['_tot_min'] for r in horas_data)
+                        ch2.metric("⏱️ Prom. por docente", _fmt_hm(_tot_min_todos / max(len(horas_data), 1)))
+                        ch3.metric("⏱️ Total del mes", _fmt_hm(_tot_min_todos))
 
-                    # Gráfico
-                    import altair as alt
-                    chart_h = []
-                    for r in horas_data:
-                        nm_c = r['Docente'].split()[-1] if ' ' in r['Docente'] else r['Docente']
-                        if len(nm_c) > 12:
-                            nm_c = nm_c[:10] + ".."
-                        chart_h.append({'Docente': nm_c, 'Horas': r['Horas Total']})
-                    df_ch = pd.DataFrame(chart_h)
-                    bar = alt.Chart(df_ch).mark_bar(color='#3b82f6').encode(
-                        x=alt.X('Docente:N', sort='-y', title=''),
-                        y=alt.Y('Horas:Q', title='Horas trabajadas'),
-                    ).properties(height=280, title=f'Horas Trabajadas — {mes_nombre_h} {anio_h}')
-                    st.altair_chart(bar, use_container_width=True)
-                else:
-                    st.info("Sin datos de horas para este mes. Se necesita entrada Y salida registradas.")
+                        import altair as alt
+                        chart_h = []
+                        for r in horas_data:
+                            nm_c = r['Docente'].split()[-1] if ' ' in r['Docente'] else r['Docente']
+                            if len(nm_c) > 12: nm_c = nm_c[:10] + ".."
+                            chart_h.append({'Docente': nm_c, 'Horas': round(r['_tot_min'] / 60, 2)})
+                        df_ch = pd.DataFrame(chart_h)
+                        bar = alt.Chart(df_ch).mark_bar(color='#3b82f6').encode(
+                            x=alt.X('Docente:N', sort='-y', title=''),
+                            y=alt.Y('Horas:Q', title='Horas trabajadas'),
+                        ).properties(height=280, title=f'Horas Trabajadas — {mes_nombre_h} {anio_h}')
+                        st.altair_chart(bar, use_container_width=True)
+
+                        csv_h = df_h_mostrar.to_csv(index=False).encode('utf-8')
+                        st.download_button("⬇️ Descargar tabla (CSV)", csv_h,
+                                           f"Horas_{mes_nombre_h}_{anio_h}.csv",
+                                           "text/csv", use_container_width=True,
+                                           key="horas_csv_mensual")
+                    else:
+                        st.info("Sin datos de horas para este mes. Se necesita entrada Y salida registradas.")
+
+                else:  # Vista semanal
+                    if not semanas_h:
+                        st.info("No hay semanas escolares definidas para este mes.")
+                    else:
+                        sem_sel = st.selectbox(
+                            "📅 Semana:",
+                            semanas_h,
+                            format_func=lambda s: f"Semana {s[0]}  ({s[1].strftime('%d/%m')} al {(s[1]+timedelta(days=4)).strftime('%d/%m')})",
+                            key="horas_semana_sel")
+                        _, lun_sel, _vie_sel = sem_sel
+                        dias_semana_sel = [lun_sel + timedelta(days=d) for d in range(5)]
+                        nombres_dias = ["Lun", "Mar", "Mié", "Jue", "Vie"]
+
+                        filas_sem = []
+                        for nm, por_dia in min_por_docente.items():
+                            tot_sec_s = tot_aca_s = 0
+                            fila = {'Docente': nm}
+                            for nd, dia in zip(nombres_dias, dias_semana_sel):
+                                clave_d = dia.strftime('%Y-%m-%d')
+                                dd = por_dia.get(clave_d, {'sec': 0, 'aca': 0})
+                                tot_sec_s += dd['sec']; tot_aca_s += dd['aca']
+                                tot_dia = dd['sec'] + dd['aca']
+                                fila[nd] = _fmt_hm(tot_dia) if tot_dia else "—"
+                            fila['Secundaria'] = _fmt_hm(tot_sec_s)
+                            fila['Academia CEPRU'] = _fmt_hm(tot_aca_s)
+                            fila['Total sem.'] = _fmt_hm(tot_sec_s + tot_aca_s)
+                            fila['_tot_min'] = tot_sec_s + tot_aca_s
+                            if fila['_tot_min'] > 0:
+                                filas_sem.append(fila)
+
+                        if filas_sem:
+                            st.markdown(
+                                f"### Semana {sem_sel[0]} — {lun_sel.strftime('%d/%m')} al "
+                                f"{(lun_sel+timedelta(days=4)).strftime('%d/%m/%Y')}")
+                            df_sem = pd.DataFrame(filas_sem).sort_values('_tot_min', ascending=False)
+                            df_sem_mostrar = df_sem.drop(columns=['_tot_min'])
+                            st.dataframe(df_sem_mostrar, use_container_width=True, hide_index=True)
+
+                            _tot_min_sem = sum(f['_tot_min'] for f in filas_sem)
+                            cs1, cs2 = st.columns(2)
+                            cs1.metric("DOCENTE Docentes con registro", len(filas_sem))
+                            cs2.metric("⏱️ Total de la semana", _fmt_hm(_tot_min_sem))
+
+                            csv_sem = df_sem_mostrar.to_csv(index=False).encode('utf-8')
+                            st.download_button("⬇️ Descargar tabla (CSV)", csv_sem,
+                                               f"Horas_Semana{sem_sel[0]}_{mes_nombre_h}_{anio_h}.csv",
+                                               "text/csv", use_container_width=True,
+                                               key="horas_csv_semanal")
+                        else:
+                            st.info("Sin datos de horas para esta semana.")
 
             elif modo == "📱 WhatsApp Docentes":
                 # ── WhatsApp Docentes ──────────────────────────────────────
