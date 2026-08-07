@@ -2305,7 +2305,13 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'los demás reinos son eucariotas.',
                            'Según el criterio de tres dominios, {Archaea} y '
                            '{Bacteria} son procariotas, y {Eukarya} agrupa a '
-                           'los eucariotas.']},
+                           'los eucariotas.',
+                           'El ADN procariota no está asociado a {histonas}, '
+                           'y el único organelo que presentan las células '
+                           'procariotas son los {ribosomas}.',
+                           'Las bacterias típicas presentan diferentes '
+                           'formas mantenidas por la pared celular: cocos, '
+                           '{bacilos} y espirilos.']},
                 {'titulo': '5.4 ESTRUCTURA BACTERIANA',
                  'items': ['La {cápsula} es una estructura de polisacáridos '
                            'que forma un glucocálix grueso y rígido, con '
@@ -2330,57 +2336,40 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'a {antibióticos}.',
                            'Los {flagelos} son estructuras filamentosas '
                            'responsables de la {movilidad} bacteriana.']},
-                {'titulo': '5.5 MICOPLASMAS Y CIANOBACTERIAS',
-                 'items': ['Los {micoplasmas} son las bacterias más pequeñas '
-                           'conocidas, y carecen de {pared} celular.',
-                           'Las {cianobacterias}, o algas verde-azules, son '
-                           'procariotas capaces de realizar {fotosíntesis} '
-                           'oxigénica.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La palabra «célula» proviene del latín «cella», '
-                           'que significa {Pequeña habitación o celda}.',
-                           'La célula es considerada la unidad estructural y '
-                           '{Funcional fundamental de los seres vivos}.',
-                           'El científico que introdujo el término «célula» '
-                           'en 1665 fue {Robert Hooke}.',
-                           'Robert Hooke publicó sus observaciones celulares '
-                           'en el libro {Micrographia}.',
-                           'Los fundadores de la teoría celular fueron '
-                           'Schleiden y {Schwann}.',
-                           'Schleiden concluyó que todas las plantas están '
-                           'constituidas por {Células}.',
-                           'Schwann concluyó la misma idea que Schleiden, '
-                           'pero referida a {Los animales}.',
-                           'La célebre frase «omnis cellula ex cellula» fue '
-                           'sintetizada por {Schwann}.',
-                           'La frase «omnis cellula ex cellula» significa '
-                           '{Toda célula se origina de otra célula}.',
-                           'Según la teoría celular, las actividades '
-                           'esenciales de la vida ocurren {En el interior de '
-                           'las células}.',
-                           'Según la teoría celular, las nuevas células se '
-                           'originan de {Células preexistentes, por '
-                           'división}.',
-                           'Las células contienen la información '
-                           'hereditaria, que pasa de {Células progenitoras a '
-                           'células hijas}.',
-                           'El término «procariota» proviene del griego '
-                           '«protos», que significa {Primitivo}.',
-                           'El material genético de la célula procariota es '
-                           'una molécula de ADN {Circular}.',
-                           'En la célula procariota, el ADN se concentra en '
-                           'una región llamada {Nucleoide}.',
-                           'El término «eucariota» proviene del griego «eu», '
-                           'que significa {Verdadero}.',
-                           'En la célula eucariota, el ADN se encuentra '
-                           'dentro de {Un núcleo verdadero con envoltura '
-                           'nuclear}.',
-                           'Solo los organismos del reino monera son de tipo '
-                           'celular {Procariota}.',
-                           'Según el criterio de tres dominios, Archaea y '
-                           'Bacteria agrupan a los organismos {Procariotas}.',
-                           'El dominio Eukarya agrupa a todos los organismos '
-                           '{Eucariotas}.']}],
+                {'titulo': '5.5 MICOPLASMAS',
+                 'items': ['Los {micoplasmas}, también llamados Mollicutes o '
+                           'PPLO, son las bacterias más {pequeñas} '
+                           'conocidas, con diámetro de 0,125 a 0,150 µm.',
+                           'Los micoplasmas son {pleomórficos}: varían su '
+                           'forma (ovoide, esférica, vesicular) según las '
+                           'condiciones del medio.',
+                           'Los micoplasmas son los únicos procariotas '
+                           'conocidos que carecen de {pared celular}.',
+                           'Su membrana plasmática contiene fosfolípidos y '
+                           '{colesterol}, esterol que no se encuentra en '
+                           'otras células procariotas.',
+                           'El protoplasma de los micoplasmas contiene ADN '
+                           'de {doble hélice}, ribosomas y algunas enzimas.',
+                           '{Mycoplasma pneumoniae} causa la neumonía '
+                           'atípica en humanos; {Mycoplasma mycoides} causa '
+                           'la pleuroneumonía bovina.']},
+                {'titulo': '5.6 CIANOBACTERIAS',
+                 'items': ['Las {cianobacterias}, o algas verde-azules, son '
+                           'las bacterias {fotosintéticas} más '
+                           'evolucionadas.',
+                           'Tienen pared celular semejante a la de las '
+                           'bacterias Gram {negativas}, y carecen de cilios '
+                           'o {flagelos}.',
+                           'Además de clorofila, contienen pigmentos '
+                           'llamados {ficobilinas}: la ficocianina (azul) y '
+                           'la ficoeritrina ({roja}).',
+                           'Las cianobacterias pueden fijar {nitrógeno} (N2) '
+                           'y convertirlo en amoniaco, sintetizando '
+                           'aminoácidos y {nucleótidos}.',
+                           'Entre los principales géneros de cianobacterias '
+                           'están {Spirulina}, Anabaena y Nostoc.',
+                           'El género {Nostoc} es comestible y se conoce '
+                           'comúnmente como «{llullucha}» o «murmunta».']}],
   'cuadros': [{'titulo': '5.3 CÉLULA PROCARIOTA FRENTE A EUCARIOTA',
                'encabezados': ['Característica', 'Procariota', 'Eucariota'],
                'filas': [['ADN',
@@ -2638,7 +2627,115 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Quimiosíntesis exclusivamente',
                                   'Fermentación exclusiva',
                                   'Solo respiración anaerobia'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El único organelo presente en las células '
+                             'procariotas son:',
+                 'alternativas': ['Las mitocondrias',
+                                  'Los ribosomas',
+                                  'Los cloroplastos',
+                                  'Los lisosomas',
+                                  'El aparato de Golgi'],
+                 'correcta': 'B'},
+                {'pregunta': 'A diferencia del ADN eucariota, el ADN '
+                             'procariota no está asociado a:',
+                 'alternativas': ['Ribosomas',
+                                  'Histonas',
+                                  'Proteínas de membrana',
+                                  'Enzimas',
+                                  'Fosfolípidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las formas típicas de las bacterias, '
+                             'mantenidas por la pared celular, son cocos, '
+                             'espirilos y:',
+                 'alternativas': ['Esferas',
+                                  'Bacilos',
+                                  'Discos',
+                                  'Filamentos exclusivos',
+                                  'Tubos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los micoplasmas, también llamados Mollicutes o '
+                             'PPLO, se caracterizan por ser:',
+                 'alternativas': ['Las bacterias más grandes conocidas',
+                                  'Las bacterias más pequeñas conocidas',
+                                  'Bacterias exclusivamente marinas',
+                                  'Bacterias con pared muy gruesa',
+                                  'Bacterias fotosintéticas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los micoplasmas varían su forma según las '
+                             'condiciones del medio; esta propiedad se '
+                             'llama:',
+                 'alternativas': ['Polimorfismo genético',
+                                  'Pleomorfismo',
+                                  'Metamorfismo',
+                                  'Heteromorfismo',
+                                  'Isomorfismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los micoplasmas son los únicos procariotas '
+                             'conocidos que carecen de:',
+                 'alternativas': ['Ribosomas',
+                                  'Pared celular',
+                                  'ADN',
+                                  'Membrana plasmática',
+                                  'Enzimas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La membrana plasmática de los micoplasmas '
+                             'contiene fosfolípidos y un esterol llamado:',
+                 'alternativas': ['Ergosterol',
+                                  'Colesterol',
+                                  'Estradiol',
+                                  'Testosterona',
+                                  'Progesterona'],
+                 'correcta': 'B'},
+                {'pregunta': 'La especie de micoplasma causante de la '
+                             'neumonía atípica en humanos es:',
+                 'alternativas': ['Mycoplasma mycoides',
+                                  'Mycoplasma pneumoniae',
+                                  'Mycoplasma genitalium',
+                                  'Mycoplasma hominis',
+                                  'Mycoplasma bovis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las cianobacterias son consideradas las '
+                             'bacterias más evolucionadas de tipo:',
+                 'alternativas': ['Heterótrofo',
+                                  'Fotosintético',
+                                  'Quimiosintético',
+                                  'Parasitario',
+                                  'Saprófito'],
+                 'correcta': 'B'},
+                {'pregunta': 'La pared celular de las cianobacterias es '
+                             'semejante a la de las bacterias:',
+                 'alternativas': ['Gram positivas',
+                                  'Gram negativas',
+                                  'Sin pared',
+                                  'Micoplasmas',
+                                  'Arqueas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además de la clorofila, las cianobacterias '
+                             'contienen pigmentos llamados ficobilinas, '
+                             'entre ellos la ficocianina, de color:',
+                 'alternativas': ['Rojo',
+                                  'Azul',
+                                  'Verde',
+                                  'Amarillo',
+                                  'Café'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las cianobacterias pueden fijar nitrógeno (N2) '
+                             'y convertirlo en:',
+                 'alternativas': ['Nitratos directamente',
+                                  'Amoniaco',
+                                  'Óxido nitroso',
+                                  'Nitrógeno líquido',
+                                  'Urea'],
+                 'correcta': 'B'},
+                {'pregunta': 'El género de cianobacteria comestible, '
+                             'conocido en los Andes como «llullucha» o '
+                             '«murmunta», es:',
+                 'alternativas': ['Spirulina',
+                                  'Nostoc',
+                                  'Anabaena',
+                                  'Oscillatoria',
+                                  'Chlorella'],
+                 'correcta': 'B'}]},
  {'num': 6,
   'titulo': 'Célula Eucariota',
   'secciones': [{'titulo': '6.1 ESTRUCTURA GENERAL',
@@ -2796,53 +2893,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'varones, el {heterogamético} (XY).',
                            'El {centrómero} es el centro cinético del '
                            'cromosoma, esencial para la segregación durante '
-                           'la {mitosis}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['En la célula eucariota, el ADN se encuentra '
-                           'encerrado dentro de {Una doble membrana o '
-                           'envoltura nuclear}.',
-                           'Las tres partes principales de la célula '
-                           'eucariota son membrana, citoplasma y {Núcleo}.',
-                           'El ADN asociado a histonas recibe el nombre de '
-                           '{Cromatina}.',
-                           'Las células eucariotas, en comparación con las '
-                           'procariotas, son {Mucho más grandes}.',
-                           'La pared celular está presente en {Células '
-                           'vegetales y hongos}.',
-                           'El principal componente estructural de la pared '
-                           'celular vegetal es {La celulosa}.',
-                           'Los puentes intercelulares entre células '
-                           'vegetales adyacentes se llaman {Plasmodesmos}.',
-                           'El componente de la pared celular de los hongos '
-                           'es {La quitina}.',
-                           'El glicocálix caracteriza a las células '
-                           '{Animales}.',
-                           'El glicocálix participa principalmente en {El '
-                           'reconocimiento celular}.',
-                           'La membrana plasmática es de naturaleza '
-                           '{Lipoproteica}.',
-                           'El modelo de estructura de la membrana celular '
-                           'se denomina modelo de {Mosaico fluido}.',
-                           'El modelo de mosaico fluido fue propuesto por '
-                           '{Singer y Nicholson}.',
-                           'En la composición de la membrana, los lípidos '
-                           'representan aproximadamente {40%}.',
-                           'En la composición de la membrana, las proteínas '
-                           'representan aproximadamente {52%}.',
-                           'Los componentes lipídicos más abundantes de la '
-                           'membrana son los {Fosfolípidos}.',
-                           'El colesterol de la membrana celular es '
-                           'responsable, entre otras cosas, de {La fluidez '
-                           'de la membrana}.',
-                           'Las proteínas que se localizan en las '
-                           'superficies de la membrana y son solubles en '
-                           'agua se llaman {Periféricas o extrínsecas}.',
-                           'Las proteínas que atraviesan todo el espesor de '
-                           'la membrana se llaman proteínas {Integrales o '
-                           'intrínsecas}.',
-                           'Los carbohidratos de la membrana se encuentran '
-                           'únicamente en {La superficie de la monocapa '
-                           'externa}.']}],
+                           'la {mitosis}.']}],
   'cuadros': [{'titulo': '6.3 COMPOSICIÓN DE LA MEMBRANA CELULAR',
                'encabezados': ['Componente', 'Proporción aproximada'],
                'filas': [['{Lípidos}', '{40}%'],
@@ -3302,51 +3353,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'La fermentación láctica es causada por bacterias '
                            'como {Lactobacillus} y Streptococcus.',
                            'Productos como el yogur se conservan bien porque '
-                           'la fermentación láctica reduce el {pH}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La nutrición celular puede ser de dos tipos: '
-                           'autótrofa y {Heterótrofa}.',
-                           'La nutrición realizada por células que fabrican '
-                           'su propio alimento a partir de compuestos '
-                           'inorgánicos es {Autótrofa}.',
-                           'Los dos procesos de nutrición autótrofa son la '
-                           'quimioautótrofa y la {Fotoautótrofa}.',
-                           'La nutrición quimioautótrofa es característica '
-                           'de los organismos {Procariontes}.',
-                           'Los organismos quimiótrofos utilizan energía '
-                           'química obtenida mediante la oxidación de '
-                           'productos {Inorgánicos}.',
-                           'Los procariontes que oxidan compuestos de azufre '
-                           'se llaman procariontes {Sulfurosos}.',
-                           'Los procariontes sulfurosos producen como '
-                           'resultado de su oxidación {Ácido sulfúrico}.',
-                           'Los procariontes que oxidan el hidrógeno del '
-                           'aire se llaman procariontes {Hidrogenosos}.',
-                           'Los procariontes que oxidan el hierro desde el '
-                           'estado ferroso al férrico se llaman procariontes '
-                           '{Ferrosos}.',
-                           'Los procariontes que oxidan el amoniaco en '
-                           'nitritos y estos en nitratos se llaman '
-                           'procariontes {Nitrificantes}.',
-                           'Las bacterias nitrificantes desempeñan un papel '
-                           'importante en {La fertilidad de los suelos}.',
-                           'El organelo típicamente vegetal necesario para '
-                           'la fotosíntesis es {El cloroplasto}.',
-                           'Las pilas de «monedas» dentro del cloroplasto se '
-                           'llaman {Tilacoides}.',
-                           'El conjunto de tilacoides recibe el nombre de '
-                           '{Grana}.',
-                           'La fotosíntesis transforma la energía luminosa '
-                           'en energía {Química}.',
-                           'Entre los reactivos necesarios para la '
-                           'fotosíntesis figura la clorofila y {Dióxido de '
-                           'carbono, agua y luz solar}.',
-                           'Los productos finales de la fotosíntesis son '
-                           'glucosa y {Oxígeno}.',
-                           'La fase de la fotosíntesis que depende de la luz '
-                           'se llama fase {I o luminosa}.',
-                           'La fase de la fotosíntesis independiente de la '
-                           'luz puede ocurrir {De día y de noche}.']}],
+                           'la fermentación láctica reduce el {pH}.']}],
   'cuadros': [{'titulo': '7.2 TIPOS DE PROCARIONTES QUIMIOAUTÓTROFOS',
                'encabezados': ['Tipo', 'Oxida'],
                'filas': [['{Sulfurosos}', 'Compuestos de {azufre}'],
@@ -3869,59 +3876,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'sanguíneas no atraviesan los capilares '
                            'glomerulares.',
                            'En la {reabsorción}, más del 90% del filtrado '
-                           'regresa a la sangre.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El hombre es un ser de respiración {Aerobia}.',
-                           'El oxígeno interviene en el paso final de la '
-                           'cadena respiratoria, que ocurre en {La membrana '
-                           'mitocondrial}.',
-                           'El dióxido de carbono que se elimina proviene '
-                           'del metabolismo celular, específicamente de la '
-                           'glucólisis y {El ciclo de Krebs}.',
-                           'Las vías respiratorias superiores comprenden la '
-                           'nariz y {La faringe}.',
-                           'Las vías respiratorias inferiores incluyen la '
-                           'laringe, la tráquea, los bronquios y {Los '
-                           'pulmones}.',
-                           'La porción del aparato respiratorio que conduce '
-                           'el aire inspirado y espirado se llama porción '
-                           '{Conductora}.',
-                           'La porción del aparato respiratorio encargada de '
-                           'oxigenar la sangre se llama porción '
-                           '{Respiratoria}.',
-                           'La porción respiratoria comprende bronquiolos '
-                           'respiratorios, conductos alveolares y {Los '
-                           'alvéolos}.',
-                           'El interior de la nariz está dividido en dos '
-                           'cavidades nasales por {El tabique nasal}.',
-                           'Las proyecciones recubiertas en las paredes '
-                           'laterales de la mucosa nasal se llaman '
-                           '{Cornetes}.',
-                           'Las aberturas que comunican las fosas nasales '
-                           'con la faringe se llaman {Coanas}.',
-                           'Entre las funciones de la nariz figura calentar, '
-                           'humedecer y {Filtrar el aire}.',
-                           'La nariz también cumple la función de recibir '
-                           'los impulsos {Olfatorios}.',
-                           'La faringe es un órgano compartido por los '
-                           'aparatos respiratorio y {Digestivo}.',
-                           'La faringe, externamente, mide aproximadamente '
-                           '{12 a 13 cm}.',
-                           'La faringe se ubica por detrás de la cavidad '
-                           'nasal y la boca, y por delante de {Las vértebras '
-                           'cervicales}.',
-                           'La parte superior de la faringe, ubicada detrás '
-                           'de la nariz, se llama {Nasofaringe o '
-                           'rinofaringe}.',
-                           'Los sistemas que comparten la responsabilidad de '
-                           'aportar oxígeno y eliminar dióxido de carbono '
-                           'son el respiratorio y el {Cardiovascular}.',
-                           'Si el sistema respiratorio o cardiovascular '
-                           'fallan, las células empiezan a morir por {Falta '
-                           'de oxígeno y acumulación de CO2}.',
-                           'La constitución anatómica de la faringe incluye '
-                           'un armazón fibroso, músculos y {Un revestimiento '
-                           'mucoso}.']}],
+                           'regresa a la sangre.']}],
   'cuadros': [{'titulo': '8.2 DIVISIÓN FISIOLÓGICA DEL APARATO RESPIRATORIO',
                'encabezados': ['Porción', 'Función'],
                'filas': [['{Conductora}', '{Conducir} el aire'],
@@ -4720,61 +4675,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'la columna vertebral.',
                            'Los {ganglios} son estructuras formadas por '
                            'cuerpos de neuronas ubicados fuera del encéfalo '
-                           'y la médula.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El sistema nervioso lleva información desde los '
-                           'órganos sensoriales hasta {Los centros de '
-                           'control}.',
-                           'La unidad funcional básica del sistema nervioso '
-                           'es {La neurona}.',
-                           'Los organismos más sencillos en tener células '
-                           'nerviosas son los {Cnidarios}.',
-                           'El sistema nervioso de los cnidarios se '
-                           'caracteriza por ser {Una red difusa de '
-                           'protoneuronas}.',
-                           'El primer grupo de animales con sistema nervioso '
-                           'hiponeuro son los {Platelmintos}.',
-                           'El proceso de concentración de células nerviosas '
-                           'en la región anterior del animal se llama '
-                           '{Cefalización}.',
-                           'El sistema nervioso de los nematodos se '
-                           'estructura alrededor de {Un anillo nervioso '
-                           'alrededor del esófago}.',
-                           'Los anélidos presentan un cordón nervioso '
-                           'central que se divide, en cada metámero, en {Dos '
-                           'nervios laterales}.',
-                           'En los cefalópodos, el sistema nervioso alcanza '
-                           'una complejidad similar a la de {Los '
-                           'vertebrados}.',
-                           'El cerebro de los artrópodos está formado por '
-                           'tres pares de ganglios, diferenciados en '
-                           'protocerebro, deutocerebro y {Tritocerebro}.',
-                           'En los vertebrados, el sistema nervioso se forma '
-                           'por invaginación dorsal de {El ectodermo}.',
-                           'La invaginación dorsal del ectodermo en '
-                           'vertebrados da lugar a un cordón hueco llamado '
-                           '{Tubo neural}.',
-                           'En los vertebrados se diferencian dos regiones '
-                           'funcionales del sistema nervioso: el encéfalo y '
-                           '{La médula espinal}.',
-                           'El encéfalo de los vertebrados está protegido '
-                           'por {La caja craneal}.',
-                           'La médula espinal de los vertebrados está '
-                           'protegida por {El canal vertebral}.',
-                           'El sistema nervioso central está formado por el '
-                           'encéfalo y {La médula espinal}.',
-                           'El sistema nervioso periférico está formado por '
-                           '{Los nervios que recorren el organismo}.',
-                           'El sistema nervioso que regula las funciones '
-                           'voluntarias, como el movimiento muscular, se '
-                           'llama sistema nervioso {Somático}.',
-                           'El sistema nervioso que controla las funciones '
-                           'inconscientes del organismo se llama sistema '
-                           'nervioso {Autónomo o vegetativo}.',
-                           'Además de la neurona, otro componente importante '
-                           'del sistema nervioso, aunque no todos los '
-                           'animales lo poseen, son {Las células '
-                           'gliales}.']}],
+                           'y la médula.']}],
   'cuadros': [{'titulo': '9.2 SISTEMA NERVIOSO POR GRUPO DE INVERTEBRADOS',
                'encabezados': ['Grupo', 'Sistema nervioso'],
                'filas': [['{Cnidarios}', 'Red difusa de {protoneuronas}'],
@@ -5125,56 +5026,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{protándricos}.',
                            'Los organismos {dioicos}, o unisexuales, tienen '
                            'sexos separados, como la mayoría de los '
-                           'vertebrados.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['En la reproducción asexual interviene {Un solo '
-                           'organismo}.',
-                           'La descendencia producida por reproducción '
-                           'asexual es, respecto al progenitor '
-                           '{Genéticamente idéntica}.',
-                           'En la reproducción asexual participan células de '
-                           'tipo {Somáticas}.',
-                           'La escisión binaria se da por una estrangulación '
-                           'en {El plano medio del organismo}.',
-                           'La escisión binaria transversal ocurre, por '
-                           'ejemplo, en {Paramecium}.',
-                           'La escisión binaria longitudinal ocurre, por '
-                           'ejemplo, en {Euglena o Astasia}.',
-                           'La formación de una yema o botón que se rodea de '
-                           'citoplasma se llama {Gemación}.',
-                           'La gemación ocurre, entre otros organismos, en '
-                           'poríferos y {Celentéreos}.',
-                           'Una forma especial de gemación, presente en '
-                           'medusas y céstodos, se llama {Estrobilación}.',
-                           'La esporulación consiste en divisiones mitóticas '
-                           'del núcleo que finalmente liberan {Esporas}.',
-                           'El Plasmodium, agente causante de la malaria, se '
-                           'reproduce por {Esporulación}.',
-                           'La escisión del progenitor en dos o más partes, '
-                           'cada una capaz de originar un nuevo animal, se '
-                           'llama {Fragmentación}.',
-                           'La fragmentación se observa, por ejemplo, en '
-                           'estrellas de mar y {Planarias}.',
-                           'El fenómeno por el cual un crustáceo o lagarto '
-                           'desprende un apéndice o la cola ante el peligro '
-                           'se llama {Autotomía}.',
-                           'La reproducción asexual es común en '
-                           'microorganismos, plantas y animales de '
-                           'organización {Simple}.',
-                           'La característica que mejor distingue a los '
-                           'seres vivos de la materia no viva es la '
-                           'capacidad de {Perpetuar su propia especie}.',
-                           'En organismos eucariotas existen dos tipos de '
-                           'división celular: mitosis y {Meiosis}.',
-                           'La división celular que produce células '
-                           'genéticamente idénticas a la célula madre es {La '
-                           'mitosis}.',
-                           'La división celular que produce células con la '
-                           'mitad del contenido genético de la célula madre '
-                           'es {La meiosis}.',
-                           'Rudolf Virchow resumió el concepto de '
-                           'continuidad celular con el axioma en latín '
-                           '{Omnis cellula e cellula}.']}],
+                           'vertebrados.']}],
   'cuadros': [{'titulo': '10.2 TIPOS DE REPRODUCCIÓN ASEXUAL',
                'encabezados': ['Tipo', 'Ejemplo'],
                'filas': [['{Escisión binaria}', '{Paramecium}, Euglena'],
@@ -5539,56 +5391,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{selección artificial} para mejorar especies.',
                            'En {biotecnología}, bacterias y hongos '
                            'manipulados genéticamente sintetizan '
-                           'medicamentos.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El término «genética» deriva de la raíz griega '
-                           '«gen», que significa {Llegar a ser}.',
-                           'La genética es la rama de la biología que '
-                           'estudia {La herencia biológica de los seres '
-                           'vivos}.',
-                           'La rama de la genética que estudia la '
-                           'organización y replicación del ADN es la '
-                           'genética {Molecular}.',
-                           'La rama de la genética que estudia el conjunto '
-                           'de genes de una población, vinculada a la '
-                           'evolución, es la genética {De poblaciones}.',
-                           'La rama de la genética que estudia cómo un '
-                           'organismo hereda y transmite sus genes es la '
-                           'genética {De poblaciones}.',
-                           'El científico asociado a la genética clásica, '
-                           'descubridor de las leyes de la herencia, es '
-                           '{Gregor Mendel}.',
-                           'La unidad de la herencia que produce la '
-                           'expresión característica observable se llama '
-                           '{Gen}.',
-                           'El sitio específico en la cadena nucleotídica '
-                           'donde se encuentra un gen se llama {Locus}.',
-                           'Cada una de las variantes génicas que determinan '
-                           'un carácter se llama {Alelo}.',
-                           'El alelo que se manifiesta siempre, representado '
-                           'con letra mayúscula, se llama alelo {Dominante}.',
-                           'El alelo que solo se manifiesta si no está '
-                           'presente el dominante se llama alelo {Recesivo}.',
-                           'La expresión observable determinada por el '
-                           'genotipo, «lo que se ve», se llama {Fenotipo}.',
-                           'La dotación genética de un individuo para un '
-                           'carácter determinado se llama {Genotipo}.',
-                           'El individuo que porta dos alelos idénticos para '
-                           'un carácter se llama {Homocigoto}.',
-                           'El individuo que porta dos alelos distintos para '
-                           'un carácter se llama {Heterocigoto}.',
-                           'El conjunto de genes de una especie se llama '
-                           '{Genoma}.',
-                           'AA se representa como un ejemplo de genotipo '
-                           '{Homocigoto dominante}.',
-                           'Aa se representa como un ejemplo de genotipo '
-                           '{Heterocigoto}.',
-                           'En agricultura y ganadería, la elección de '
-                           'especies con rasgos deseables se llama '
-                           '{Selección artificial}.',
-                           'En biotecnología, medicamentos son sintetizados '
-                           'por bacterias y hongos que han sido {Manipulados '
-                           'genéticamente}.']}],
+                           'medicamentos.']}],
   'cuadros': [{'titulo': '11.2 TÉRMINOS GENÉTICOS BÁSICOS',
                'encabezados': ['Término', 'Significado'],
                'filas': [['{Gen}', 'Unidad de la {herencia}'],
@@ -5873,59 +5676,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Las etapas del origen de la vida según esta '
                            'teoría son: síntesis de moléculas simples, '
                            'formación de {polímeros}, formación de '
-                           'membranas, e inicio de la {herencia}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La evolución se define como todo cambio en una '
-                           'población mediante el cual se forman {Nuevas '
-                           'especies a lo largo del tiempo}.',
-                           'La palabra «evolución» fue empleada por primera '
-                           'vez por {Charles Bonnet}.',
-                           'La hipótesis que explicaba los fósiles por '
-                           'catástrofes periódicas se llama {Catastrofismo}.',
-                           'La primera hipótesis completa de la evolución '
-                           'fue formulada por {Lamarck}.',
-                           'Lamarck publicó su hipótesis en 1809 en el libro '
-                           '{Filosofía Zoológica}.',
-                           'El principio de Lamarck según el cual las '
-                           'estructuras más usadas se desarrollan se llama '
-                           '{Uso y desuso}.',
-                           'El principio de que las modificaciones por uso y '
-                           'desuso son heredables se llama {Herencia de los '
-                           'caracteres adquiridos}.',
-                           'Lamarck ilustró su teoría con el ejemplo clásico '
-                           'de {El cuello de la jirafa}.',
-                           'El fundador de la teoría de la evolución por '
-                           'selección natural es {Charles Darwin}.',
-                           'Darwin publicó su obra principal, «El origen de '
-                           'las especies», en el año {1859}.',
-                           'El biólogo que llegó a conclusiones similares a '
-                           'Darwin de forma independiente fue {Alfred Russel '
-                           'Wallace}.',
-                           'Los cuatro conceptos centrales de la selección '
-                           'natural son variación, sobreproducción, lucha '
-                           'por la existencia y {Selección natural}.',
-                           'El concepto que sostiene que todos los miembros '
-                           'de una especie difieren entre sí se llama '
-                           '{Variación}.',
-                           'El mecanismo que incrementa las probabilidades '
-                           'de que algunos vástagos sobrevivan se llama '
-                           '{Sobreproducción}.',
-                           'Según la selección natural, los individuos mejor '
-                           'adaptados {Sobreviven y transmiten sus '
-                           'características}.',
-                           'El botánico que publicó «Pangénesis '
-                           'intracelular» en 1889 fue {Hugo De Vries}.',
-                           'De Vries reemplazó la noción de variación '
-                           'continua por la de {Variación discontinua o '
-                           'mutación}.',
-                           'Una mutación se define como la aparición '
-                           'repentina de una variante en {Un gen particular '
-                           'o grupo de genes}.',
-                           'La Teoría Sintética de la evolución fue dada a '
-                           'conocer por {Theodosius Dobzhansky}.',
-                           'La Teoría Sintética combina la selección natural '
-                           'con las leyes de la herencia de Mendel y {El '
-                           'mutacionismo}.']}],
+                           'membranas, e inicio de la {herencia}.']}],
   'cuadros': [{'titulo': '12.1-12.4 TEORÍAS DE LA EVOLUCIÓN',
                'encabezados': ['Teoría', 'Autor'],
                'filas': [['{Transformismo}', '{Lamarck}'],
@@ -6364,55 +6115,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Según {Antonio Brack}, el Perú tiene {11} '
                            'ecorregiones.',
                            'La primera ecorregión es el {mar frío} de la '
-                           'Corriente Peruana, o Corriente de {Humboldt}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El término «ecología» proviene de los vocablos '
-                           'griegos «oikos» y {Logos}.',
-                           'El primer estudioso de las interacciones entre '
-                           'seres vivos y ambiente fue {Teofrasto}.',
-                           'El término «Ecología» fue establecido '
-                           'formalmente por {Ernest Haeckel}.',
-                           'Ernest Haeckel estableció el término «Ecología» '
-                           'en el año {1869}.',
-                           'Haeckel definió la ecología como el estudio de '
-                           'las relaciones de los organismos con su ambiente '
-                           '{Orgánico e inorgánico}.',
-                           'La ecología estudia principalmente {La '
-                           'biosfera}.',
-                           'El activismo de la ecología, como movimiento '
-                           'cívico, se llama {Ecologismo}.',
-                           'El ecologismo tecnicista tiene como objetivo '
-                           '{Reducir la contaminación proponiendo energías '
-                           'alternativas}.',
-                           'El ecologismo naturalista es una corriente '
-                           'filosófica que busca {Evitar la extinción de '
-                           'especies animales}.',
-                           'El ecologismo sociológico-político estudia, '
-                           'entre otros temas, la superpoblación y {La '
-                           'hambruna en el mundo}.',
-                           'Los factores ambientales se clasifican en '
-                           'bióticos y {Abióticos}.',
-                           'Los factores bióticos corresponden a {Todos los '
-                           'seres vivos}.',
-                           'La concentración de individuos de una especie en '
-                           'un área geográfica se llama {Densidad '
-                           'poblacional}.',
-                           'Las relaciones entre individuos de la misma '
-                           'especie se llaman relaciones {Intraespecíficas}.',
-                           'Las relaciones entre individuos de especies '
-                           'distintas se llaman relaciones '
-                           '{Interespecíficas}.',
-                           'El ambiente también se suele denominar entorno, '
-                           'medio ambiente o {Naturaleza}.',
-                           'En el ambiente se agrupan seres en dos '
-                           'categorías: vivos y {No vivos}.',
-                           'Debido a que los humanos forman parte de la red '
-                           'de vida de la Tierra, sus actividades económicas '
-                           'y políticas tienen {Profundas implicaciones '
-                           'ecológicas}.',
-                           'El ecologismo surge como una nueva forma de '
-                           'hacer política centrada en {El desarrollo '
-                           'sostenible}.']}],
+                           'Corriente Peruana, o Corriente de {Humboldt}.']}],
   'cuadros': [{'titulo': '13.3 FACTORES AMBIENTALES',
                'encabezados': ['Tipo', 'Corresponde a'],
                'filas': [['{Bióticos}', 'Seres {vivos}'],
@@ -6876,72 +6579,15 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '(NH3).',
                            'Las bacterias fijadoras de nitrógeno viven en '
                            'nódulos de las raíces de {leguminosas}, como el '
-                           'frijol.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La energía solar llega a la Tierra en forma de '
-                           'partículas energéticas llamadas {Fotones}.',
-                           'La energía en movimiento, como la energía '
-                           'mecánica o el calor, se llama energía '
-                           '{Cinética}.',
-                           'La energía almacenada, disponible para llevar a '
-                           'cabo trabajo, se llama energía {Potencial}.',
-                           'Los ecosistemas son sistemas termodinámicamente '
-                           '{Abiertos}.',
-                           'La primera ley de la termodinámica también se '
-                           'conoce como el principio de {La conservación de '
-                           'la energía}.',
-                           'La primera ley de la termodinámica fue postulada '
-                           'en 1841 por {R. Mayer}.',
-                           'Según la primera ley de la termodinámica, la '
-                           'energía {No se crea ni se destruye, solo se '
-                           'transforma}.',
-                           'La segunda ley de la termodinámica también se '
-                           'conoce como ley de {La entropía o degradación de '
-                           'la energía}.',
-                           'Según la segunda ley de la termodinámica, al '
-                           'transformarse la energía {Parte se degrada en '
-                           'una forma no trasladable}.',
-                           'Cuando la energía se transfiere de un organismo '
-                           'a otro en la cadena alimenticia, gran parte se '
-                           'degrada en forma de {Calor}.',
-                           'Según la Ley del Diezmo Ecológico, al pasar de '
-                           'un nivel trófico a otro se transfiere {El 10% de '
-                           'la energía}.',
-                           'Según la Ley del Diezmo Ecológico, los '
-                           'organismos usan en su propio metabolismo {El 90% '
-                           'de la energía capturada}.',
-                           'Un vegetal aprovecha para sus funciones de '
-                           'supervivencia aproximadamente {90% de la energía '
-                           'solar fijada}.',
-                           'Un herbívoro que consume un vegetal solo puede '
-                           'aprovechar de la energía fijada por este {El '
-                           '10%}.',
-                           'Un carnívoro que consume a un herbívoro solo '
-                           'puede aprovechar de la energía que este recibió '
-                           '{El 10%}.',
-                           'El porcentaje aproximado de la energía '
-                           'disponible en la Tierra que proviene del sol es '
-                           '{99,98%}.',
-                           'Además del sol, otras fuentes de energía '
-                           'terrestre incluyen las mareas, la energía '
-                           'nuclear, la termal y la {Gravitacional}.',
-                           'La radiación solar que llega a la superficie '
-                           'terrestre varía según la latitud, la altura, la '
-                           'orografía y {La nubosidad}.',
-                           'La historia de la energía en un ecosistema está '
-                           'en gran parte relacionada con la historia de {El '
-                           'carbono}.',
-                           'La energía almacenada en los enlaces químicos de '
-                           'los carbohidratos proviene originalmente de {La '
-                           'fotosíntesis}.']}],
+                           'frijol.']}],
   'cuadros': [{'titulo': '14.2 LAS DOS LEYES DE LA TERMODINÁMICA',
-               'encabezados': ['Ley', 'Enunciado'],
-               'filas': [['{Primera}',
-                          'La energía no se crea ni se {destruye}, solo se '
-                          'transforma'],
-                         ['{Segunda}',
-                          'Parte de la energía se {degrada} como calor no '
-                          'aprovechable']]}],
+               'encabezados': ['Ley', 'Ejemplo'],
+               'filas': [['{Primera} ley',
+                          'La luz se transforma en materia orgánica por '
+                          '{fotosíntesis}, y esta en calor y luz'],
+                         ['{Segunda} ley',
+                          'Al quemar carbón, parte de la energía crea vapor '
+                          'y otra se dispersa como {calor}']]}],
   'preguntas': [{'pregunta': 'La energía solar llega a la Tierra en forma de '
                              'partículas energéticas llamadas:',
                  'alternativas': ['Quarks',
@@ -7296,7 +6942,16 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Helechos',
                                   'Leguminosas, como el frijol',
                                   'Cactáceas'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'Cuando se quema carbón en una caldera, parte '
+                             'de la energía crea vapor mientras que la otra '
+                             'se dispersa como calor; esto ilustra:',
+                 'alternativas': ['La primera ley de la termodinámica',
+                                  'La segunda ley de la termodinámica',
+                                  'La Ley del Diezmo Ecológico',
+                                  'La ley de conservación de la masa',
+                                  'La fotosíntesis'],
+                 'correcta': 'B'}]},
  {'num': 15,
   'titulo': 'Diversidad Biológica y Deterioro de la Flora y la Fauna',
   'secciones': [{'titulo': '15.1 EL CONVENIO SOBRE LA DIVERSIDAD BIOLÓGICA',
@@ -7389,62 +7044,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{charapa}.',
                            'La {pesca no planificada} es la pesca '
                            'insostenible sin respetar las épocas de '
-                           '{veda}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El Convenio sobre la Diversidad Biológica se '
-                           'celebró en el marco de la conocida como {Cumbre '
-                           'de la Tierra}.',
-                           'La Cumbre de la Tierra, donde se celebró el CDB, '
-                           'se llevó a cabo en {Río de Janeiro, Brasil}.',
-                           'El Convenio sobre la Diversidad Biológica se '
-                           'celebró en el año {1992}.',
-                           'El CDB define la diversidad biológica como la '
-                           'variabilidad de {Organismos vivos de cualquier '
-                           'fuente}.',
-                           'Según el CDB, la conservación de la diversidad '
-                           'biológica es interés {Común de toda la '
-                           'humanidad}.',
-                           'El Plan Estratégico para la Diversidad Biológica '
-                           '2011-2020 fue adoptado en {Nagoya, Japón}.',
-                           'El Plan Estratégico para la Diversidad Biológica '
-                           'fue adoptado en el año {2010}.',
-                           'Como parte del Plan Estratégico, se trazaron las '
-                           'metas conocidas como {Metas de Aichi}.',
-                           'El Día Internacional de la Diversidad Biológica '
-                           'se celebra el {22 de mayo}.',
-                           'La biodiversidad comprende tres componentes: '
-                           'genética, de especies y de {Ecosistemas}.',
-                           'La diversidad genética se refiere a las '
-                           'diferencias en {El material genético entre '
-                           'poblaciones e individuos}.',
-                           'La diversidad de especies se refiere al número '
-                           'de especies diferentes presentes en {Un área '
-                           'determinada}.',
-                           'La diversidad de especies tiene dos componentes: '
-                           'la riqueza de especies y {Sus abundancias '
-                           'relativas}.',
-                           'La diversidad de ecosistemas se refiere a la '
-                           'variedad de {Sistemas ecológicos en una región}.',
-                           'El Perú es reconocido como un centro mundial de '
-                           'origen de recursos genéticos de plantas como {La '
-                           'papa, el maíz y el tomate}.',
-                           'La riqueza genética del Perú está asociada con '
-                           'la riqueza cultural desarrollada por {Los '
-                           'pueblos indígenas}.',
-                           'La distribución global de la diversidad de '
-                           'especies depende de gradientes latitudinales, de '
-                           'altitud y de {Precipitación}.',
-                           'La conservación de la biodiversidad está '
-                           'íntimamente asociada con el uso de {Los recursos '
-                           'naturales y la tierra}.',
-                           'Cuando las actividades humanas se incrementan '
-                           'por encima de cierto umbral, los efectos sobre '
-                           'los sistemas naturales son {Más significativos y '
-                           'prolongados}.',
-                           'Además de los tres componentes clásicos, en la '
-                           'actualidad se reconoce también como componente '
-                           'de la biodiversidad a la diversidad '
-                           '{Cultural}.']}],
+                           '{veda}.']}],
   'cuadros': [{'titulo': '15.2 LOS TRES COMPONENTES DE LA BIODIVERSIDAD',
                'encabezados': ['Componente', 'Se refiere a'],
                'filas': [['{Genética}',
@@ -7855,65 +7455,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'de recursos; incluyen Parques y Santuarios '
                            '{Nacionales}.',
                            'Las áreas de uso {directo} sí permiten el '
-                           'aprovechamiento de recursos naturales.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La contaminación surge cuando se produce, por '
-                           'presencia de materia o energía, un '
-                           '{Desequilibrio ambiental}.',
-                           'La contaminación se define como la adición de '
-                           'sustancias al ambiente en cantidades que '
-                           '{Sobrepasan los niveles regulares de la '
-                           'naturaleza}.',
-                           'A mayor población e índice de uso de recursos '
-                           'naturales en un área, generalmente se presentan '
-                           '{Más problemas de contaminación}.',
-                           'La contaminación causada por fuentes como '
-                           'volcanes o efectos geoclimáticos se llama '
-                           'contaminación {Natural}.',
-                           'La contaminación producida o distribuida por el '
-                           'ser humano se llama contaminación {Antrópica}.',
-                           'Una de las principales fuentes de contaminación '
-                           'antropogénica es {La agricultura '
-                           'industrializada}.',
-                           'Los contaminantes causados por microorganismos '
-                           'como bacterias y virus se llaman contaminantes '
-                           '{Biológicos}.',
-                           'El vibrión colérico, presente en aguas de ríos '
-                           'latinoamericanos, es un ejemplo de contaminante '
-                           '{Biológico}.',
-                           'Los contaminantes relacionados con la energía, '
-                           'como el ruido o las altas temperaturas, se '
-                           'llaman contaminantes {Físicos}.',
-                           'Los contaminantes físicos pueden influir en el '
-                           'desarrollo de enfermedades humanas de tipo '
-                           '{Psico-neurológicas}.',
-                           'Los contaminantes provocados por sustancias '
-                           'orgánicas o inorgánicas se llaman contaminantes '
-                           '{Químicos}.',
-                           'El impacto más notorio de la contaminación '
-                           'química se dio durante {El auge industrial de la '
-                           'Segunda Guerra Mundial}.',
-                           'La contaminación química actualmente es la '
-                           'principal causante de {El calentamiento global}.',
-                           'Entre los gases que provocan el calentamiento '
-                           'global se mencionan los {CFC '
-                           '(clorofluorocarbonos)}.',
-                           'El agua cubre de la superficie del planeta '
-                           'aproximadamente {71%}.',
-                           'Aunque el agua cubre gran parte del planeta, '
-                           'está disponible en cantidades {Limitadas y '
-                           'distribuidas de forma no uniforme}.',
-                           'Entre las sustancias químicas que contaminan el '
-                           'agua figuran el petróleo y los {Detergentes '
-                           'sintéticos}.',
-                           'Los contaminantes físicos del agua alteran '
-                           'principalmente su {Transparencia}.',
-                           'Cuando se impide la entrada de luz al agua por '
-                           'contaminación física, los productores del '
-                           'ecosistema {Deben emigrar o morir}.',
-                           'Durante los últimos 200 años, el hombre ha '
-                           'agregado al ambiente grandes cantidades de '
-                           '{Productos químicos y agentes físicos}.']}],
+                           'aprovechamiento de recursos naturales.']}],
   'cuadros': [{'titulo': '16.3 TIPOS DE CONTAMINANTES',
                'encabezados': ['Tipo', 'Ejemplo'],
                'filas': [['{Biológico}', 'Bacterias, {virus}, hongos'],
