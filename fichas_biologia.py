@@ -345,7 +345,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los bioelementos se clasifican en '
                            '{macroelementos} (primarios y secundarios) y '
                            '{microelementos} u oligoelementos.']},
-                {'titulo': '2.2 BIOELEMENTOS PRIMARIOS',
+                {'titulo': '2.1.1.A BIOELEMENTOS PRIMARIOS',
                  'items': ['Los macroelementos representan el {99,6}% de la '
                            'materia viva, y están conformados por {11} '
                            'bioelementos.',
@@ -365,7 +365,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'transferencia de energía, como en el {ATP}.',
                            'El {azufre} forma parte de aminoácidos como la '
                            'metionina y la {cisteína}.']},
-                {'titulo': '2.3 BIOELEMENTOS SECUNDARIOS',
+                {'titulo': '2.1.1.B BIOELEMENTOS SECUNDARIOS',
                  'items': ['Los bioelementos {secundarios} son cinco: sodio, '
                            'potasio, calcio, magnesio y {cloro}.',
                            'El {sodio} es el principal ión positivo del '
@@ -373,16 +373,13 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'de impulsos {nerviosos}.',
                            'El {potasio} es el principal catión del interior '
                            'de las {células}.']},
-                {'titulo': '2.4 MICROELEMENTOS (OLIGOELEMENTOS)',
+                {'titulo': '2.1.2.A MICROELEMENTOS NO VARIABLES',
                  'items': ['Los {microelementos}, u oligoelementos, se '
                            'encuentran en los seres vivos en cantidades muy '
                            'pequeñas: apenas {0,4}% de la materia viva.',
                            'Los microelementos {no variables} son: hierro, '
                            'manganeso, cobre, zinc, yodo, flúor, cobalto, '
                            'molibdeno y {boro}.',
-                           'Los microelementos {variables} son: selenio, '
-                           'silicio, cromo, aluminio, litio, níquel y '
-                           '{bromo}.',
                            'El {hierro} forma el grupo prostético hemo de la '
                            'hemoglobina, que transporta {oxígeno} en la '
                            'sangre.',
@@ -394,18 +391,23 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'El {zinc} activa numerosas enzimas y es '
                            'constituyente de proteínas como la {insulina}.',
                            'El {cobalto} está asociado con la funcionalidad '
-                           'de la vitamina {B12} o cobalamina.',
+                           'de la vitamina {B12} o cobalamina.']},
+                {'titulo': '2.1.2.B MICROELEMENTOS VARIABLES',
+                 'items': ['Los microelementos {variables} son: selenio, '
+                           'silicio, cromo, aluminio, litio, níquel y '
+                           '{bromo}.',
                            'El {cromo} tiene una función preponderante en el '
                            'metabolismo de la insulina como factor de '
                            'tolerancia a la {glucosa}.']}],
-  'cuadros': [{'titulo': '2.2 LOS SEIS BIOELEMENTOS PRIMARIOS (ORGANÓGENOS)',
+  'cuadros': [{'titulo': 'LOS SEIS BIOELEMENTOS PRIMARIOS (ORGANÓGENOS)',
                'encabezados': ['Elemento', 'Símbolo', 'Función principal'],
                'filas': [['{Carbono}', 'C', 'Base de moléculas {biológicas}'],
                          ['{Hidrógeno}', 'H', 'Componente {estructural}'],
                          ['{Oxígeno}', 'O', 'Forma parte del {agua}'],
                          ['{Nitrógeno}', 'N', 'Forma {proteínas}'],
                          ['{Fósforo}', 'P', 'Transferencia de {energía}'],
-                         ['{Azufre}', 'S', 'Forma {aminoácidos}']]}],
+                         ['{Azufre}', 'S', 'Forma {aminoácidos}']],
+               'despues_de': '2.1.1.A BIOELEMENTOS PRIMARIOS'}],
   'preguntas': [{'pregunta': 'La materia está formada por un total de '
                              'elementos químicos igual a:',
                  'alternativas': ['118', '92', '20', '40', '11'],
