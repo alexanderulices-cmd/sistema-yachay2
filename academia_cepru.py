@@ -18,6 +18,23 @@ import streamlit as st
 from fichas_historia import (generar_ficha_texto, generar_banco_preguntas,
                              balancear, contar_espacios, LETRAS, _PATRON)
 
+
+def _nombre_archivo(area_pie, tema, tipo, version):
+    """Arma un nombre de archivo legible para las descargas:
+    Academia_Yachay_<Curso>_Tema<N>_<TituloDelTema>_<Ficha|Examen>_<Version>.pdf
+    en vez del anterior 'ficha_ceh_1_alumno.pdf'."""
+    import unicodedata, re
+
+    def slug(s):
+        s = ''.join(c for c in unicodedata.normalize('NFD', str(s))
+                    if unicodedata.category(c) != 'Mn')
+        s = re.sub(r'[^A-Za-z0-9]+', '_', s).strip('_')
+        return s
+
+    curso = slug(area_pie)
+    titulo = slug(tema['titulo'])[:40].rstrip('_')
+    return f"Academia_Yachay_{curso}_Tema{tema['num']}_{titulo}_{tipo}_{version}.pdf"
+
 # ---------------------------------------------------------------
 # Registro de áreas disponibles. Cada entrada: (nombre para mostrar,
 # lista de balotas, nombre de área para el pie de página, prefijo de
@@ -168,14 +185,14 @@ def _render_curso(balotas, area_pie, pfx):
                 "📄 Versión del alumno",
                 data=generar_ficha_texto(tema, False, grado_txt,
                                          area=area_pie, profesor=profesor_txt),
-                file_name=f"ficha_{pfx}_{tema['num']}_alumno.pdf",
+                file_name=_nombre_archivo(area_pie, tema, "Ficha", "Alumno"),
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_fa")
             st.download_button(
                 "🔑 Versión del docente (con claves)",
                 data=generar_ficha_texto(tema, True, grado_txt,
                                          area=area_pie, profesor=profesor_txt),
-                file_name=f"ficha_{pfx}_{tema['num']}_docente.pdf",
+                file_name=_nombre_archivo(area_pie, tema, "Ficha", "Docente_Claves"),
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_fd")
         except Exception as e:
@@ -189,14 +206,14 @@ def _render_curso(balotas, area_pie, pfx):
                 "📝 Examen para el alumno",
                 data=generar_banco_preguntas(tema_b, False, grado_txt,
                                              area=area_pie, profesor=profesor_txt),
-                file_name=f"preguntas_{pfx}_{tema['num']}_alumno.pdf",
+                file_name=_nombre_archivo(area_pie, tema, "Examen", "Alumno"),
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_pa")
             st.download_button(
                 "🔑 Con claves para el docente",
                 data=generar_banco_preguntas(tema_b, True, grado_txt,
                                              area=area_pie, profesor=profesor_txt),
-                file_name=f"preguntas_{pfx}_{tema['num']}_claves.pdf",
+                file_name=_nombre_archivo(area_pie, tema, "Examen", "Docente_Claves"),
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_pd")
         except Exception as e:
