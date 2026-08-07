@@ -624,7 +624,8 @@ BIOLOGIA_TEMAS = [{'num': 1,
                  'correcta': 'B'}]},
  {'num': 3,
   'titulo': 'Biomoléculas Inorgánicas',
-  'secciones': [{'titulo': '3.1 CARACTERÍSTICAS GENERALES',
+  'secciones': [{'titulo': 'CARACTERÍSTICAS GENERALES DE LAS BIOMOLÉCULAS '
+                           'INORGÁNICAS',
                  'items': ['Las biomoléculas inorgánicas se caracterizan por '
                            'la {ausencia} de enlaces carbono-carbono en su '
                            'estructura química.',
@@ -636,7 +637,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los {gases disueltos}, principalmente oxígeno y '
                            'dióxido de carbono, se usan en la respiración y '
                            'la {fotosíntesis}.']},
-                {'titulo': '3.2 LA MOLÉCULA DE AGUA',
+                {'titulo': '3.1 EL AGUA',
                  'items': ['La molécula de agua está formada por dos átomos '
                            'de {hidrógeno} y uno de {oxígeno}, unidos por '
                            'enlaces {covalentes}.',
@@ -651,21 +652,37 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Una sola molécula de agua puede formar puentes '
                            'de hidrógeno hasta con otras {cuatro} moléculas '
                            'de agua.']},
-                {'titulo': '3.3 EL AGUA EN LA CÉLULA',
+                {'titulo': '3.1.1 AGUA EN LA CÉLULA',
                  'items': ['El agua {libre} representa el 95% del agua '
                            'celular, y actúa como solvente estable e '
                            '{ionizante}.',
                            'El agua {ligada} representa el 5% restante, y '
                            'comprende el agua de {imbibición} y el agua de '
                            'constitución.']},
-                {'titulo': '3.4 PROPIEDADES DEL AGUA',
+                {'titulo': '3.1.2 PROPIEDADES DEL AGUA',
                  'items': ['El {poder solvente} del agua es su capacidad de '
                            'disolver gran cantidad de moléculas inorgánicas '
                            'y {orgánicas}.',
                            'La {polaridad} de la molécula de agua favorece '
                            'la disociación de moléculas formadoras de '
                            '{iones}.']},
-                {'titulo': '3.5 SALES MINERALES Y ELECTROLITOS',
+                {'titulo': '3.1.3 FUNCIONES DEL AGUA',
+                 'items': ['La función de {transporte}: el agua transporta '
+                           'sustancias del interior al exterior de la célula '
+                           'y viceversa.',
+                           'La función {estructural}: el agua da forma y '
+                           'volumen a las células.',
+                           'La función {termorreguladora}: el agua actúa en '
+                           'los cambios de temperatura para mantener el '
+                           'cuerpo a temperatura constante, como en la '
+                           '{sudoración}.',
+                           'La función {química}: el agua actúa en '
+                           'reacciones químicas como la hidrólisis o la '
+                           '{condensación}.',
+                           'La función {lubricante}: el agua actúa como '
+                           'amortiguador de roces y golpes en las '
+                           '{articulaciones}.']},
+                {'titulo': '3.2 SALES MINERALES Y ELECTROLITOS',
                  'items': ['Las {sales minerales} son compuestos neutros '
                            'producidos por la reacción de un ácido y una '
                            '{base}.',
@@ -674,76 +691,50 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Cuando una sal se disuelve en agua, se disocia '
                            'en {iones}: cationes y aniones.',
                            'Los {aniones} son iones con carga negativa, como '
-                           'el cloruro (Cl⁻) y los fosfatos.',
+                           'el cloruro (Cl<super>-</super>) y los fosfatos.',
                            'Los {cationes} son iones con carga positiva, '
-                           'como el sodio (Na⁺) y el calcio (Ca²⁺).',
+                           'como el sodio (Na<super>+</super>) y el calcio '
+                           '(Ca<super>2+</super>).',
                            'Las sales minerales más abundantes en el cuerpo '
                            'humano contienen {fósforo} y calcio.']},
-                {'titulo': '3.6 FUNCIONES DE LOS PRINCIPALES ELECTROLITOS',
-                 'items': ['El {sodio} (Na⁺) participa en la regulación '
-                           'osmótica y la conducción {nerviosa}; su exceso '
-                           'produce {hipertensión}.',
-                           'El {potasio} (K⁺) participa en la conducción '
-                           'nerviosa y la {contracción} muscular.',
-                           'El {calcio} (Ca²⁺) participa en la estructura '
-                           'ósea, la coagulación de la sangre y la '
-                           'contracción {muscular}.',
-                           'El {magnesio} (Mg²⁺) actúa como cofactor '
-                           'enzimático y forma parte de la estructura de la '
-                           '{clorofila}.',
-                           'El {cloruro} (Cl⁻) mantiene la '
+                {'titulo': '3.2.1 FUNCIONES DE LOS ELECTROLITOS',
+                 'items': ['El {sodio} (Na<super>+</super>) participa en la '
+                           'regulación osmótica y la conducción {nerviosa}; '
+                           'su exceso produce {hipertensión}.',
+                           'El {potasio} (K<super>+</super>) participa en la '
+                           'conducción nerviosa y la {contracción} muscular.',
+                           'El {calcio} (Ca<super>2+</super>) participa en '
+                           'la estructura ósea, la coagulación de la sangre '
+                           'y la contracción {muscular}.',
+                           'El {magnesio} (Mg<super>2+</super>) actúa como '
+                           'cofactor enzimático y forma parte de la '
+                           'estructura de la {clorofila}.',
+                           'El {cloruro} (Cl<super>-</super>) mantiene la '
                            'electroneutralidad y el equilibrio hídrico '
                            'celular.',
-                           'El {fosfato} (PO₄³⁻) es tampón intracelular y '
-                           'forma parte de nucleótidos, ADN y {ARN}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Las biomoléculas inorgánicas se caracterizan por '
-                           'la ausencia de enlaces {Carbono-carbono}.',
-                           'Los minerales que forman estructuras duras, como '
-                           'huesos y dientes, se llaman {Minerales sólidos}.',
-                           'Los minerales en disolución son electrolitos que '
-                           'participan, entre otras funciones, en {La '
-                           'contracción muscular}.',
-                           'Los gases disueltos que usan los seres vivos son '
-                           'principalmente oxígeno y {Dióxido de carbono}.',
-                           'La molécula de agua está formada por dos átomos '
-                           'de hidrógeno y uno de {Oxígeno}.',
-                           'Los átomos de la molécula de agua se unen '
-                           'mediante enlaces {Covalentes}.',
-                           'La estructura de la molécula de agua se describe '
-                           'como {Tetraédrica}.',
-                           'El ángulo entre los dos átomos de hidrógeno en '
-                           'la molécula de agua es de aproximadamente '
-                           '{104,5°}.',
-                           'La distribución desigual de carga dentro de un '
-                           'enlace se denomina {Dipolo}.',
-                           'En la molécula de agua, el oxígeno tiene una '
-                           'carga parcial {Negativa}.',
-                           'La atracción entre moléculas de agua debido a su '
-                           'polaridad produce el llamado {Puente de '
-                           'hidrógeno}.',
-                           'Una sola molécula de agua puede formar puentes '
-                           'de hidrógeno con hasta otras {Cuatro moléculas}.',
-                           'El agua en estado libre representa del agua '
-                           'celular total aproximadamente {95%}.',
-                           'El agua en estado libre desempeña un papel como '
-                           '{Solvente estable e ionizante}.',
-                           'El agua ligada representa del agua celular total '
-                           'aproximadamente {5%}.',
-                           'El agua ligada comprende el agua de imbibición y '
-                           'el agua de {Constitución}.',
-                           'La capacidad del agua de disolver gran cantidad '
-                           'de moléculas se llama {Poder solvente}.',
-                           'La polaridad de la molécula de agua favorece la '
-                           'disociación de moléculas formadoras de {Iones}.',
-                           'El agua de imbibición está ligada fuertemente a '
-                           'la superficie de {Las proteínas}.',
-                           'Para liberar el agua ligada de las proteínas se '
-                           'requiere {Grandes cantidades de energía}.']}],
-  'cuadros': [{'titulo': '3.3 EL AGUA EN LA CÉLULA',
+                           'El {fosfato} (PO<sub>4</sub><super>3-</super>) '
+                           'es tampón intracelular y forma parte de '
+                           'nucleótidos, ADN y {ARN}.']}],
+  'cuadros': [{'titulo': 'DISTRIBUCIÓN DEL AGUA EN LA CÉLULA',
                'encabezados': ['Forma', 'Porcentaje'],
                'filas': [['Agua {libre}', '{95}%'],
-                         ['Agua {ligada}', '{5}%']]}],
+                         ['Agua {ligada}', '{5}%']],
+               'despues_de': '3.1.1 AGUA EN LA CÉLULA'},
+              {'titulo': 'PRINCIPALES ELECTROLITOS Y SU FUNCIÓN',
+               'despues_de': '3.2.1 FUNCIONES DE LOS ELECTROLITOS',
+               'encabezados': ['Ion', 'Función principal'],
+               'filas': [['{Sodio} (Na<super>+</super>)',
+                          'Regulación osmótica y conducción {nerviosa}'],
+                         ['{Potasio} (K<super>+</super>)',
+                          'Conducción nerviosa y contracción {muscular}'],
+                         ['{Calcio} (Ca<super>2+</super>)',
+                          'Estructura ósea y coagulación de la {sangre}'],
+                         ['{Magnesio} (Mg<super>2+</super>)',
+                          'Cofactor enzimático y parte de la {clorofila}'],
+                         ['{Cloruro} (Cl<super>-</super>)',
+                          'Electroneutralidad y equilibrio {hídrico}'],
+                         ['{Fosfato} (PO<sub>4</sub><super>3-</super>)',
+                          'Tampón intracelular; parte de ADN y {ARN}']]}],
   'preguntas': [{'pregunta': 'Las biomoléculas inorgánicas se caracterizan '
                              'por la ausencia de enlaces:',
                  'alternativas': ['Carbono-carbono',
@@ -962,14 +953,57 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'El fosfato',
                                   'El potasio'],
                  'correcta': 'B'},
-                {'pregunta': 'El fosfato (PO₄³⁻) forma parte de nucleótidos, '
+                {'pregunta': 'El fosfato (PO43-) forma parte de nucleótidos, '
                              'ADN y:',
                  'alternativas': ['Lípidos exclusivamente',
                                   'Proteínas exclusivamente',
                                   'Carbohidratos exclusivamente',
                                   'ARN',
                                   'Vitaminas'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'La función del agua que consiste en llevar '
+                             'sustancias del interior al exterior de la '
+                             'célula se llama función:',
+                 'alternativas': ['Estructural',
+                                  'De transporte',
+                                  'Química',
+                                  'Lubricante',
+                                  'Térmica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del agua que da forma y volumen a '
+                             'las células se llama función:',
+                 'alternativas': ['De transporte',
+                                  'Estructural',
+                                  'Termorreguladora',
+                                  'Química',
+                                  'Lubricante'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del agua que mantiene el cuerpo a '
+                             'temperatura constante, como en la sudoración, '
+                             'se llama función:',
+                 'alternativas': ['Estructural',
+                                  'Termorreguladora',
+                                  'De transporte',
+                                  'Lubricante',
+                                  'Química'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del agua que actúa en reacciones '
+                             'como la hidrólisis o la condensación se llama '
+                             'función:',
+                 'alternativas': ['Estructural',
+                                  'Química',
+                                  'De transporte',
+                                  'Lubricante',
+                                  'Termorreguladora'],
+                 'correcta': 'B'},
+                {'pregunta': 'La función del agua que amortigua roces y '
+                             'golpes en las articulaciones se llama función:',
+                 'alternativas': ['Estructural',
+                                  'Lubricante',
+                                  'De transporte',
+                                  'Química',
+                                  'Termorreguladora'],
+                 'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'Biomoléculas Orgánicas',
   'secciones': [{'titulo': '4.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
