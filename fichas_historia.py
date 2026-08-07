@@ -296,14 +296,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
         ]))
         return t
 
-    for sec in tema.get("secciones", []):
-        st_.append(Spacer(1, 5))
-        st_.append(barra(sec["titulo"]))
-        st_.append(Spacer(1, 3))
-        for it in sec["items"]:
-            st_.append(Paragraph("• " + render_linea(it, con_claves), est["n"]))
-
-    for cu in tema.get("cuadros", []):
+    def _render_cuadro(cu):
         st_.append(Spacer(1, 6))
         st_.append(barra(cu["titulo"]))
         st_.append(Spacer(1, 3))
@@ -325,6 +318,26 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
              [colors.white, colors.HexColor("#F5F7FB")]),
         ]))
         st_.append(t)
+
+    _cuadros_todos = tema.get("cuadros", [])
+    _cuadros_intercalados = {id(cu) for cu in _cuadros_todos if cu.get("despues_de")}
+
+    for sec in tema.get("secciones", []):
+        st_.append(Spacer(1, 5))
+        st_.append(barra(sec["titulo"]))
+        st_.append(Spacer(1, 3))
+        for it in sec["items"]:
+            st_.append(Paragraph("• " + render_linea(it, con_claves), est["n"]))
+        # Cuadro(s) que pertenecen justo después de esta sección
+        for cu in _cuadros_todos:
+            if cu.get("despues_de") == sec["titulo"]:
+                _render_cuadro(cu)
+
+    # Cuadros sin posición asignada (o cuyo 'despues_de' no coincidió con
+    # ninguna sección): se muestran al final, como antes.
+    for cu in _cuadros_todos:
+        if id(cu) not in _cuadros_intercalados:
+            _render_cuadro(cu)
 
     doc.build(st_)
     buf.seek(0)
