@@ -16,7 +16,8 @@ Integración en sistema_web.py:
 import streamlit as st
 
 from fichas_historia import (generar_ficha_texto, generar_banco_preguntas,
-                             balancear, contar_espacios, LETRAS, _PATRON)
+                             balancear, muestrear, TAMANOS_EXAMEN,
+                             contar_espacios, LETRAS, _PATRON)
 
 
 def _nombre_archivo(area_pie, tema, tipo, version):
@@ -198,9 +199,34 @@ def _render_curso(balotas, area_pie, pfx):
         except Exception as e:
             st.error(f"No se pudo generar la ficha: {e}")
     with d2:
-        st.markdown("**Banco de 20 preguntas**")
+        st.markdown("**Banco de preguntas**")
         try:
-            preg = balancear(tema["preguntas"])
+            total_banco = len(tema["preguntas"])
+            tamano_txt = st.radio(
+                "Tamaño del examen:", list(TAMANOS_EXAMEN.keys()),
+                horizontal=True, key=f"{pfx}_tam")
+            cantidad = min(TAMANOS_EXAMEN[tamano_txt], total_banco)
+
+            _clave_semilla = f"{pfx}_semilla_examen"
+            if _clave_semilla not in st.session_state:
+                st.session_state[_clave_semilla] = 0
+
+            c_info, c_btn = st.columns([3, 1])
+            with c_info:
+                st.caption(
+                    f"Banco con {total_banco} preguntas disponibles · "
+                    f"este examen usa {cantidad}."
+                    + (" Puedes generar otra combinación distinta cada vez."
+                       if total_banco > cantidad else ""))
+            with c_btn:
+                if total_banco > cantidad:
+                    if st.button("🔀 Otra combinación", key=f"{pfx}_mezclar",
+                                 use_container_width=True):
+                        st.session_state[_clave_semilla] += 1
+
+            _muestra = muestrear(tema["preguntas"], cantidad,
+                                 semilla=st.session_state[_clave_semilla])
+            preg = balancear(_muestra)
             tema_b = {**tema, "preguntas": preg}
             st.download_button(
                 "📝 Examen para el alumno",
