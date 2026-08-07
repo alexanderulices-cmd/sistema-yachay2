@@ -840,7 +840,99 @@ BALOTAS = [{'num': 1,
                                   'Solo existen desde la invención de la '
                                   'imprenta',
                                   'Solo las escritas son válidas'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'Las inscripciones dejadas por el hombre en '
+                             'diversos materiales como piedras, metales, '
+                             'telas, manuscritos y textos se denominan '
+                             'fuentes: (UNSAAC 2010)',
+                 'alternativas': ['Secundarias',
+                                  'Materiales o monumentales',
+                                  'Orales o tradicionales',
+                                  'Primarias',
+                                  'Escritas'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los fragmentos de restos óseos humanos que '
+                             'sirven para conocer el grado de desarrollo '
+                             'físico del hombre son fuentes: (UNSAAC 2010)',
+                 'alternativas': ['Escritas',
+                                  'Audiovisuales',
+                                  'Orales',
+                                  'Antroposomáticas',
+                                  'Monumentales'],
+                 'correcta': 'C'},
+                {'pregunta': 'Un video sobre Sacsayhuamán es una fuente: '
+                             '(UNSAAC 2011)',
+                 'alternativas': ['Material',
+                                  'Oral',
+                                  'Tradicional',
+                                  'Audiovisual',
+                                  'Escrita'],
+                 'correcta': 'D'},
+                {'pregunta': 'El enunciado «la Universidad Nacional de San '
+                             'Antonio del Cusco fue fundada el 1 de marzo de '
+                             '1692» corresponde a la cronología: (UNSAAC '
+                             '2013)',
+                 'alternativas': ['Verdadera',
+                                  'Absoluta',
+                                  'Relativa',
+                                  'Válida',
+                                  'Aproximada'],
+                 'correcta': 'B'},
+                {'pregunta': 'El mito de los Hermanos Ayar y la Crónica de '
+                             'Inca Garcilaso de la Vega representan, '
+                             'respectivamente, a las fuentes históricas: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Oral - Tradicional',
+                                  'Tradicional - Material',
+                                  'Cronística - Escrita',
+                                  'Antroposomática - Documental',
+                                  'Oral - Escrita'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los mitos y las crónicas pertenecen '
+                             'respectivamente a las fuentes históricas: '
+                             '(UNSAAC 2015)',
+                 'alternativas': ['Monumentales y tradicionales',
+                                  'Tradicionales y materiales',
+                                  'Orales y escritas',
+                                  'Antroposomáticas y etnológicas',
+                                  'Abstractas y concretas'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los restos físicos humanos que sirven para '
+                             'estudiar el grado de desarrollo étnico del '
+                             'hombre corresponden a las fuentes: (UNSAAC '
+                             '2016)',
+                 'alternativas': ['Biológicas',
+                                  'Escritas',
+                                  'Tradicionales',
+                                  'Antroposomáticas',
+                                  'Culturales'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los testimonios tradicionales, costumbres y '
+                             'creencias de los grupos humanos son una '
+                             'fuente: (UNSAAC 2018)',
+                 'alternativas': ['Monumental',
+                                  'Oral',
+                                  'Escrita',
+                                  'Antroposomática',
+                                  'Audiovisual'],
+                 'correcta': 'D'},
+                {'pregunta': 'La institución encargada de cuidar y conservar '
+                             'el patrimonio histórico del Perú es el '
+                             'Ministerio de: (UNSAAC 2022)',
+                 'alternativas': ['Justicia',
+                                  'Cultura',
+                                  'Industria y Turismo',
+                                  'Economía',
+                                  'Educación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las crónicas y los periódicos son fuentes de '
+                             'tipo: (UNSAAC 2023)',
+                 'alternativas': ['Antroposomático',
+                                  'Material',
+                                  'Monumental',
+                                  'Documental',
+                                  'Audiovisual'],
+                 'correcta': 'D'}]},
  {'num': 2,
   'titulo': 'Hombre de la prehistoria',
   'secciones': [{'titulo': '2.1 PROCESO DE HOMINIZACIÓN',
@@ -1164,6 +1256,162 @@ BALOTAS = [{'num': 1,
                                   'Grecia',
                                   'Italia',
                                   'España'],
+                 'correcta': 'B'},
+                {'pregunta': 'El hombre del paleolítico se expresó mediante '
+                             'el: (UNSAAC 2010)',
+                 'alternativas': ['Intercambio de productos',
+                                  'Cultivo',
+                                  'Arte rupestre',
+                                  'Culto religioso',
+                                  'Arte textil'],
+                 'correcta': 'C'},
+                {'pregunta': 'Una de las características del hombre del '
+                             'neolítico fue ser: (UNSAAC 2010)',
+                 'alternativas': ['Pescador',
+                                  'Nómada',
+                                  'Cazador, pescador y recolector',
+                                  'Sedentario',
+                                  'Antropólogo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Se conoce como troglodita al hombre del: '
+                             '(UNSAAC 2011)',
+                 'alternativas': ['Neolítico',
+                                  'Paleolítico',
+                                  'Mesolítico',
+                                  'Palafítico',
+                                  'Epipaleolítico'],
+                 'correcta': 'B'},
+                {'pregunta': 'El hombre del Neolítico se caracteriza por '
+                             'ser: (UNSAAC 2011)',
+                 'alternativas': ['Sedentario, agricultor, ganadero',
+                                  'Cazador, recolector, pescador',
+                                  'Horticultor, recolector, pescador',
+                                  'Nómade, ganadero, horticultor',
+                                  'Agricultor, nómade, pescador'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los raspadores y machacadores son considerados '
+                             'objetos líticos más antiguos que pertenecieron '
+                             'al hombre de: (UNSAAC 2011)',
+                 'alternativas': ['Toquepala',
+                                  'Paccaicasa',
+                                  'Lauricocha',
+                                  'Paiján',
+                                  'Chivateros'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los rasgos fundamentales de la Hominización '
+                             'son la: (UNSAAC 2013)',
+                 'alternativas': ['Bipedación y fabricación de objetos',
+                                  'Sedentarización y domesticación',
+                                  'Culturización y civilización',
+                                  'Sociabilización y diferenciación social',
+                                  'Semisedentarización y totemización'],
+                 'correcta': 'A'},
+                {'pregunta': 'El descubrimiento del fuego ocurrió en: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['El neolítico',
+                                  'La Edad Antigua',
+                                  'La Edad Histórica',
+                                  'El paleolítico',
+                                  'El mesolítico'],
+                 'correcta': 'D'},
+                {'pregunta': 'El periodo mesolítico de la Edad de Piedra se '
+                             'caracterizó por: (UNSAAC 2014)',
+                 'alternativas': ['El surgimiento de la familia y la '
+                                  'propiedad privada',
+                                  'El descubrimiento del fuego',
+                                  'Una economía exclusivamente recolectora',
+                                  'La finalización de las glaciaciones',
+                                  'La práctica del culto al muerto'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los rasgos característicos del proceso de '
+                             'hominización fue la: (UNSAAC 2015)',
+                 'alternativas': ['Capacidad de fabricar objetos',
+                                  'Noción de la existencia de Dios',
+                                  'Domesticación de plantas',
+                                  'Vida sedentaria del hombre',
+                                  'Construcción de las primeras viviendas'],
+                 'correcta': 'A'},
+                {'pregunta': 'La hominización se refiere: (UNSAAC 2015)',
+                 'alternativas': ['A la sedentarización del hombre',
+                                  'A la evolución de la especie humana',
+                                  'Al surgimiento de las primeras '
+                                  'manifestaciones agrícolas',
+                                  'A la evolución de las especies animales y '
+                                  'plantas',
+                                  'Al desarrollo de la civilización humana'],
+                 'correcta': 'B'},
+                {'pregunta': 'El hombre del Paleolítico se caracterizó por: '
+                             '(UNSAAC 2015)',
+                 'alternativas': ['Su iniciación en la organización familiar',
+                                  'Iniciar la sedentarización',
+                                  'Rendir culto a sus muertos',
+                                  'Su notable desarrollo en la pesca con '
+                                  'arpón',
+                                  'Desconocer la agricultura'],
+                 'correcta': 'E'},
+                {'pregunta': 'El periodo del Neolítico se caracterizó por: '
+                             '(UNSAAC 2016)',
+                 'alternativas': ['El desarrollo de la industria microlítica',
+                                  'El desconocimiento de la agricultura, '
+                                  'ganadería y cerámica',
+                                  'La manifestación de arte rupestre en las '
+                                  'cavernas',
+                                  'Surgimiento de la familia, la propiedad '
+                                  'privada, clases sociales y estado',
+                                  'El nomadismo del hombre primitivo'],
+                 'correcta': 'D'},
+                {'pregunta': 'El proceso de Hominización fue explicado por '
+                             'Charles Darwin en su libro: (UNSAAC 2016)',
+                 'alternativas': ['Origen de la Civilización',
+                                  'Evolución de las culturas',
+                                  'Primeras poblaciones',
+                                  'Transformaciones humanas',
+                                  'Origen de las especies'],
+                 'correcta': 'E'},
+                {'pregunta': 'Un rasgo fundamental del proceso de '
+                             'hominización fue: (UNSAAC 2018)',
+                 'alternativas': ['El comienzo de la agrupación familiar del '
+                                  'hombre',
+                                  'El proceso de la civilización',
+                                  'La vida sedentaria de los primates',
+                                  'La bipedación y postura erguida del '
+                                  'hombre primitivo',
+                                  'El proceso de la migración peruana'],
+                 'correcta': 'D'},
+                {'pregunta': 'Después del periodo Mesolítico, surge el '
+                             'Neolítico caracterizado por: (UNSAAC 2018)',
+                 'alternativas': ['El desarrollo de la industria microlítica',
+                                  'La construcción de viviendas llamadas '
+                                  'Palafitos',
+                                  'La pintura rupestre en las cavernas',
+                                  'La caza y la recolección de frutos',
+                                  'El descubrimiento del fuego'],
+                 'correcta': 'E'},
+                {'pregunta': 'El descubrimiento de la agricultura determinó '
+                             'que el hombre primitivo pasara a ser: (UNSAAC '
+                             '2018)',
+                 'alternativas': ['Pescador',
+                                  'Cavernario',
+                                  'Troglodita',
+                                  'Nómada',
+                                  'Sedentario'],
+                 'correcta': 'E'},
+                {'pregunta': 'El científico más representativo que planteó '
+                             'la Teoría Evolucionista del origen humano es: '
+                             '(UNSAAC 2022)',
+                 'alternativas': ['Charles Darwin',
+                                  'Jacobo Boucher',
+                                  'Cristóbal Keller',
+                                  'Daniel Wilson',
+                                  'Cristhian Thomsen'],
+                 'correcta': 'A'},
+                {'pregunta': 'Una característica principal del Periodo '
+                             'Neolítico es: (UNSAAC 2023)',
+                 'alternativas': ['El nomadismo del hombre',
+                                  'El sedentarismo del hombre',
+                                  'La culminación de las glaciaciones',
+                                  'El descubrimiento del fuego',
+                                  'La invención del arco y la flecha'],
                  'correcta': 'B'}]},
  {'num': 3,
   'titulo': 'Grandes culturas de la antigüedad',
@@ -1719,7 +1967,137 @@ BALOTAS = [{'num': 1,
                                   'Jeroglífica',
                                   'Cuneiforme',
                                   'Ideográfica'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'En arquitectura, la cultura Mesopotámica '
+                             'aportó: (UNSAAC 2010)',
+                 'alternativas': ['La edificación de templos y tumbas',
+                                  'La bóveda, la columna y cúpula',
+                                  'La cúpula, el capitel y el arco',
+                                  'La pirámide y las moradas de dioses',
+                                  'El arco, la bóveda y la cúpula'],
+                 'correcta': 'E'},
+                {'pregunta': 'El teatro de planta circular y gradería '
+                             'semicircular corresponde a la cultura: (UNSAAC '
+                             '2010)',
+                 'alternativas': ['Caldeo Asiria',
+                                  'Romana',
+                                  'Griega',
+                                  'Mesopotámica',
+                                  'Persa'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la actualidad, Irak ocupa el territorio de '
+                             'la cultura: (UNSAAC 2011)',
+                 'alternativas': ['Egipcia',
+                                  'Mesopotámica',
+                                  'Persa',
+                                  'Sudáfrica',
+                                  'Árabe'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las primeras ciudades estados, en la cultura '
+                             'antigua mesopotámica, tenían forma de '
+                             'gobierno: (UNSAAC 2013)',
+                 'alternativas': ['Plutocrático',
+                                  'Centralista',
+                                  'Unitario',
+                                  'Democrático',
+                                  'Autónomo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la cultura antigua egipcia, la esfinge de '
+                             'Gizet representaba al faraón deificado: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Ramsés',
+                                  'Keops',
+                                  'Kefrén',
+                                  'Micerino',
+                                  'Amenofis'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los elementos arquitectónicos más importantes '
+                             'legados a la humanidad por los mesopotámicos '
+                             'fueron: (UNSAAC 2014)',
+                 'alternativas': ['Metopa, frontón y bóveda',
+                                  'Arco, bóveda y cúpula',
+                                  'Arco, columna y capitel',
+                                  'Cúpula, fuste y arco',
+                                  'Columna, dintel y cúpula'],
+                 'correcta': 'B'},
+                {'pregunta': 'La escritura egipcia hierática fue: (UNSAAC '
+                             '2014)',
+                 'alternativas': ['De uso común en toda la población',
+                                  'La más antigua y complicada',
+                                  'Utilizada por los escribas y sacerdotes',
+                                  'Exclusiva para textos religiosos',
+                                  'Descifrada por Champollion'],
+                 'correcta': 'C'},
+                {'pregunta': 'La organización política de Mesopotamia '
+                             'antigua se basó en el establecimiento de: '
+                             '(UNSAAC 2015)',
+                 'alternativas': ['Aldeas bajo el poder gerontocrático',
+                                  'Un estado centralista y unitario',
+                                  'Sedes regionales del poder central',
+                                  'Unidades denominadas ciudades-estado',
+                                  'Un gobierno democrático-popular'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los Colosos de Memnón, como expresiones '
+                             'artísticas de las culturas y civilizaciones '
+                             'antiguas, tienen relación con los: (UNSAAC '
+                             '2015)',
+                 'alternativas': ['Romanos',
+                                  'Mesopotámicos',
+                                  'Griegos',
+                                  'Persas',
+                                  'Egipcios'],
+                 'correcta': 'E'},
+                {'pregunta': 'La escritura cuneiforme de la Roca de Behistum '
+                             'de la cultura Mesopotámica fue descifrada por: '
+                             '(UNSAAC 2016)',
+                 'alternativas': ['Henry Rawlinson',
+                                  'Francois Champollion',
+                                  'Charles Darwin',
+                                  'Edward Lanning',
+                                  'Thomas Linch'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los templos egipcios de Karnak y Luxor fueron '
+                             'constituidos en la ciudad de: (UNSAAC 2016)',
+                 'alternativas': ['Menfis',
+                                  'Tebas',
+                                  'Halicarnaso',
+                                  'Éfeso',
+                                  'Mileto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una característica del proceso histórico de la '
+                             'Cultura Mesopotámica es: (UNSAAC 2018)',
+                 'alternativas': ['El inicio del proceso republicano en Roma',
+                                  'El Imperio Asirio surgió a consecuencia '
+                                  'de la decadencia del Primer Imperio '
+                                  'Babilónico',
+                                  'En el desarrollo del Imperio Egipcio se '
+                                  'construyeron las pirámides',
+                                  'Como consecuencia de las Guerras Médicas, '
+                                  'Atenas fue el foco de la Cultura Griega',
+                                  'El gran organizador de la Cultura Clásica '
+                                  'fue Pericles'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el proceso histórico de Egipto, el '
+                             'acontecimiento más importante que ocurrió en '
+                             'el Imperio Antiguo fue: (UNSAAC 2018)',
+                 'alternativas': ['La escultura no fue muy representativa',
+                                  'En el Imperio Medio se anexaron los '
+                                  'territorios de Tebas y Menfis',
+                                  'El poder del Estado se consolidó con el '
+                                  'faraón',
+                                  'En el Imperio Nuevo se desarrolló un '
+                                  'gobierno democrático',
+                                  'La arquitectura no tuvo un gran '
+                                  'desarrollo'],
+                 'correcta': 'C'},
+                {'pregunta': 'El templo Zigurat es una muestra de la '
+                             'arquitectura: (UNSAAC 2018)',
+                 'alternativas': ['Romana',
+                                  'Griega',
+                                  'Mesopotámica',
+                                  'Egipcia',
+                                  'Persa'],
+                 'correcta': 'C'}]},
  {'num': 4,
   'titulo': 'Mundo greco romano',
   'secciones': [{'titulo': '4.1 GRECIA — PROCESO HISTÓRICO',
@@ -2015,7 +2393,105 @@ BALOTAS = [{'num': 1,
                                   'Adriano',
                                   'Vespasiano',
                                   'Domiciano'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'En la arquitectura griega, la riqueza '
+                             'ornamental con flores de acanto pertenece al '
+                             'orden: (UNSAAC 2011)',
+                 'alternativas': ['Corintio',
+                                  'Dórico',
+                                  'Jónico',
+                                  'Mixto',
+                                  'Compuesto'],
+                 'correcta': 'A'},
+                {'pregunta': 'La obra escultórica el Discóbolo, de la '
+                             'antigua Grecia, fue obra del artista: (UNSAAC '
+                             '2013)',
+                 'alternativas': ['Mirón',
+                                  'Lisipo',
+                                  'Praxiteles',
+                                  'Policleto',
+                                  'Fidias'],
+                 'correcta': 'A'},
+                {'pregunta': 'En la cultura romana antigua, Cerdeña formaba '
+                             'parte de la zona: (UNSAAC 2013)',
+                 'alternativas': ['Meridional',
+                                  'Peninsular',
+                                  'Insular',
+                                  'Septentrional',
+                                  'Continental'],
+                 'correcta': 'C'},
+                {'pregunta': 'El último emperador romano, Rómulo Augústulo, '
+                             'fue destronado por Odoacro, rey de los '
+                             'bárbaros: (UNSAAC 2013)',
+                 'alternativas': ['Hérulos',
+                                  'Hunos',
+                                  'Vándalos',
+                                  'Visigodos',
+                                  'Ostrogodos'],
+                 'correcta': 'A'},
+                {'pregunta': 'El Derecho Romano, uno de los logros y aportes '
+                             'más importantes a la humanidad, se caracteriza '
+                             'por ser: (UNSAAC 2013)',
+                 'alternativas': ['Elitista y racista',
+                                  'Democrático y bondadoso',
+                                  'Coercitivo y liberal',
+                                  'Humanitario y generoso',
+                                  'Consuetudinario y elemental'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los gobernantes del Periodo Republicano de '
+                             'Roma Antigua se denominaron: (UNSAAC 2016)',
+                 'alternativas': ['Gobernadores',
+                                  'Presidentes',
+                                  'Reyes',
+                                  'Cónsules',
+                                  'Emperadores'],
+                 'correcta': 'D'},
+                {'pregunta': 'En el periodo histórico de Grecia Clásica, '
+                             'Atenas se caracterizó por ser: (UNSAAC 2016)',
+                 'alternativas': ['Gerontocrática',
+                                  'Militarizada',
+                                  'Democrática',
+                                  'Autoritaria',
+                                  'Plutocrática'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Ley de las doce tablas fue la base del '
+                             'Derecho Romano, según el historiador: (UNSAAC '
+                             '2016)',
+                 'alternativas': ['Tácito',
+                                  'Tito Livio',
+                                  'Jenofonte',
+                                  'Tucídides',
+                                  'Heródoto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los tres poderes: el Senado, las Asambleas y '
+                             'la Magistratura, en la Roma Antigua, '
+                             'correspondieron a la forma de gobierno: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Imperial',
+                                  'Autocrático',
+                                  'Monárquico',
+                                  'Republicano',
+                                  'Autónomo'],
+                 'correcta': 'D'},
+                {'pregunta': 'En la arquitectura griega, el teatro de planta '
+                             'circular, el estadio y el hipódromo '
+                             'correspondieron al tipo de construcción: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Civil',
+                                  'Familiar',
+                                  'Religioso',
+                                  'Individual',
+                                  'Militar'],
+                 'correcta': 'E'},
+                {'pregunta': 'Después de su máximo esplendor y poder, la '
+                             'Roma Republicana pasó al periodo imperial, '
+                             'cuyo primer emperador fue: (UNSAAC 2022)',
+                 'alternativas': ['César Augusto',
+                                  'Marco Antonio',
+                                  'Rómulo Augústulo',
+                                  'Teodosio',
+                                  'Julio César'],
+                 'correcta': 'A'}]},
  {'num': 5,
   'titulo': 'Primeras culturas andinas',
   'secciones': [{'titulo': '5.1 EL POBLAMIENTO DE AMÉRICA',
@@ -2281,7 +2757,123 @@ BALOTAS = [{'num': 1,
                                   'La Segunda Guerra Mundial',
                                   'La Revolución Industrial',
                                   'El descubrimiento del petróleo'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'Al poblar América, los melanesios llegaron a: '
+                             '(UNSAAC 2010)',
+                 'alternativas': ['Sudamérica',
+                                  'Norteamérica',
+                                  'Centroamérica',
+                                  'La isla de Pascua',
+                                  'Las islas Aleutianas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En su viaje hacia América, los australianos '
+                             'cruzaron: (UNSAAC 2010)',
+                 'alternativas': ['Alaska, Canadá y Centroamérica',
+                                  'La Antártida, Tierra del Fuego y '
+                                  'Patagonia',
+                                  'El estrecho de Bering',
+                                  'Centroamérica y la Antártica',
+                                  'Isla de Puna y América del Norte'],
+                 'correcta': 'B'},
+                {'pregunta': 'La teoría que sostiene que se utilizó la Isla '
+                             'de Pascua para llegar a Sudamérica corresponde '
+                             'a la teoría: (UNSAAC 2011)',
+                 'alternativas': ['Melanésica',
+                                  'Polinésica',
+                                  'Australiana',
+                                  'Autoctonista',
+                                  'Asiática'],
+                 'correcta': 'B'},
+                {'pregunta': 'El descubridor del Protohomo Pampeanus fue: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Thor Heyerdahl',
+                                  'Florentino Ameghino',
+                                  'Paul Rivet',
+                                  'Alex Hrdlicka',
+                                  'José Imbelloni'],
+                 'correcta': 'B'},
+                {'pregunta': 'La posible inmigración humana a Sudamérica, '
+                             'por la corriente Sur-Ecuatorial, es de '
+                             'procedencia: (UNSAAC 2013)',
+                 'alternativas': ['Asiática',
+                                  'Melanésica',
+                                  'Polinésica',
+                                  'Australiana',
+                                  'Oceánica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los restos fósiles hallados por Florentino '
+                             'Ameghino para sustentar la teoría autoctonista '
+                             'del poblamiento americano se encontraban en el '
+                             'estrato subterráneo del: (UNSAAC 2013)',
+                 'alternativas': ['Mioceno',
+                                  'Plioceno',
+                                  'Eoceno',
+                                  'Holoceno',
+                                  'Pleistoceno'],
+                 'correcta': 'E'},
+                {'pregunta': 'La hamaca, la cerbatana y la pachamanca son '
+                             'elementos culturales demostrativos de la '
+                             'presencia en América de los: (UNSAAC 2013)',
+                 'alternativas': ['Mongoles',
+                                  'Australianos',
+                                  'Asiáticos',
+                                  'Siberianos',
+                                  'Oceánicos'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según Florentino Ameghino, el origen del '
+                             'hombre americano se inició en: (UNSAAC 2016)',
+                 'alternativas': ['América y Asia',
+                                  'Europa y América',
+                                  'América del Norte',
+                                  'América del Sur',
+                                  'Asia y Europa'],
+                 'correcta': 'A'},
+                {'pregunta': 'La teoría del Origen Asiático planteada por '
+                             'Alex Hrdlicka está sustentada en pruebas: '
+                             '(UNSAAC 2016)',
+                 'alternativas': ['Climáticas y metalúrgicas',
+                                  'Metalúrgicas y antroposomáticas',
+                                  'Geográficas y metalúrgicas',
+                                  'Minerológicas y cerámicas',
+                                  'Antroposomáticas y Geográficas'],
+                 'correcta': 'E'},
+                {'pregunta': 'La constitución de las chozas en forma de '
+                             'colmena y el uso del boomerang se reconocen '
+                             'como elementos probatorios de la presencia en '
+                             'América de los: (UNSAAC 2016)',
+                 'alternativas': ['Africanos',
+                                  'Polinesios',
+                                  'Australianos',
+                                  'Melanesios',
+                                  'Asiáticos'],
+                 'correcta': 'D'},
+                {'pregunta': 'La Teoría Autoctonista del Poblamiento de '
+                             'América fue planteada por: (UNSAAC 2018)',
+                 'alternativas': ['Julio César Tello',
+                                  'Luis Guillermo Lumbreras',
+                                  'Paul Rivet',
+                                  'Antonio Méndez Correa',
+                                  'Florentino Ameghino'],
+                 'correcta': 'E'},
+                {'pregunta': 'Sobre el Poblamiento de América, los elementos '
+                             'culturales como la construcción de chozas en '
+                             'forma de colmena, el boomerang y el churinga '
+                             'corresponden a la Teoría sustentada por: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Julio César Tello',
+                                  'Antonio Méndez Correa',
+                                  'Florentino Ameghino',
+                                  'Paul Rivet',
+                                  'Alex Hrdlicka'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Teoría de Origen Asiático del Hombre '
+                             'Americano fue planteada por: (UNSAAC 2018)',
+                 'alternativas': ['Ruth Shady',
+                                  'Antonio Méndez Correa',
+                                  'Max Uhle',
+                                  'Paul Rivet',
+                                  'Alex Hrdlicka'],
+                 'correcta': 'E'}]},
  {'num': 6,
   'titulo': 'Culturas preincas',
   'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL',
@@ -2505,7 +3097,141 @@ BALOTAS = [{'num': 1,
                                   'Tiahuanaco',
                                   'Paracas',
                                   'Caral'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'En la formación de la cultura andina, el '
+                             'primer resto óseo hallado perteneció al hombre '
+                             'de: (UNSAAC 2013)',
+                 'alternativas': ['Toquepala',
+                                  'Chivateros',
+                                  'Lauricocha',
+                                  'Kotosh',
+                                  'Lurín'],
+                 'correcta': 'D'},
+                {'pregunta': 'La primera evidencia sobre la domesticación '
+                             'del perro fue hallada en: (UNSAAC 2013)',
+                 'alternativas': ['Kotosh',
+                                  'Santo Domingo',
+                                  'Lurín',
+                                  'Guitarreros',
+                                  'Chilca'],
+                 'correcta': 'E'},
+                {'pregunta': 'El yacimiento arqueológico de Haldas fue '
+                             'descubierto por: (UNSAAC 2013)',
+                 'alternativas': ['Junius Bird',
+                                  'Josefina Ramos de Cox',
+                                  'Federico Engel',
+                                  'Rosa Fung Pineda',
+                                  'Rafael Larco Hoyle'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los restos arqueológicos de Pumapunku, '
+                             'Willcaswain y Pacatnamú corresponden '
+                             'respectivamente a las culturas: (UNSAAC 2013)',
+                 'alternativas': ['Wari - Inca - Caral',
+                                  'Wari - Chimú - Paracas',
+                                  'Tiahuanaco - Wari - Chimú',
+                                  'Mochica - Wari - Chavín',
+                                  'Chimú - Chanca - Nazca'],
+                 'correcta': 'B'},
+                {'pregunta': 'La importancia y la particularidad del hombre '
+                             'de Paccaicasa se expresan en haber: (UNSAAC '
+                             '2013)',
+                 'alternativas': ['Practicado el arte rupestre más antiguo '
+                                  'del Perú',
+                                  'Originado a la gran cultura andina',
+                                  'Dejado los primeros restos físicos del '
+                                  'hombre',
+                                  'Domesticado por primera vez al perro',
+                                  'Iniciado la fabricación de objetos de '
+                                  'arcilla'],
+                 'correcta': 'C'},
+                {'pregunta': 'El hombre de Huaca Prieta se caracterizó por: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Domesticar a la alpaca, al cuy y al perro',
+                                  'Construir el primer monumento religioso '
+                                  'de América',
+                                  'Representar el inicio de la primera etapa '
+                                  'alfarera',
+                                  'Presentar el taller lítico más grande del '
+                                  'Perú antiguo',
+                                  'Ser él primer tejedor del Perú antiguo'],
+                 'correcta': 'E'},
+                {'pregunta': 'La cultura Chavín tiene relación en los '
+                             'centros arquitectónicos de: (UNSAAC 2013)',
+                 'alternativas': ['Garagay y Chongoyape',
+                                  'Topara y Tajahuana',
+                                  'Cahuachi y Ocucaje',
+                                  'Kalasasaya y Sillustani',
+                                  'Wariwillca y Pachacamac'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los chimús se desarrollaron en el periodo '
+                             'cultural: (UNSAAC 2013)',
+                 'alternativas': ['Horizonte Medio',
+                                  'Horizonte Temprano',
+                                  'Intermedio Tardío',
+                                  'Intermedio Temprano',
+                                  'Horizonte Medio tardío'],
+                 'correcta': 'C'},
+                {'pregunta': 'Augusto Cardich descubrió en la cueva de '
+                             'Lauricocha los primeros restos físicos del '
+                             'hombre peruano, los cuales corresponden a las '
+                             'fuentes: (UNSAAC 2015)',
+                 'alternativas': ['Antroposomáticas',
+                                  'Materiales',
+                                  'Etnográficas',
+                                  'Biológicas',
+                                  'Monumentales'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los primeros restos humanos en el Perú antiguo '
+                             'corresponden al hombre de: (UNSAAC 2016)',
+                 'alternativas': ['Paccaicasa',
+                                  'Chivateros',
+                                  'Paiján',
+                                  'Lauricocha',
+                                  'Toquepala'],
+                 'correcta': 'E'},
+                {'pregunta': 'La organización política de la cultura Caral '
+                             'fue de carácter: (UNSAAC 2016)',
+                 'alternativas': ['Militarizado y gerontocrático',
+                                  'Religioso y burocrático',
+                                  'Militarizado y religioso',
+                                  'Burocrático y militarizado',
+                                  'Teocrático no militarista'],
+                 'correcta': 'C'},
+                {'pregunta': 'Cronológicamente los Chancas se desarrollaron '
+                             'en el periodo del: (UNSAAC 2016)',
+                 'alternativas': ['Intermedio tardío',
+                                  'Horizonte temprano',
+                                  'Intermedio temprano',
+                                  'Horizonte medio',
+                                  'Horizonte tardío'],
+                 'correcta': 'A'},
+                {'pregunta': 'El segundo agricultor del Perú fue descubierto '
+                             'por Thomas Linch, en el departamento de: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Huánuco',
+                                  'Lima',
+                                  'Ancash',
+                                  'Tacna',
+                                  'Ilo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las primeras evidencias del hombre en el Perú '
+                             'fueron descubiertas en el actual departamento '
+                             'de La Libertad por el científico: (UNSAAC '
+                             '2018)',
+                 'alternativas': ['Junius Bird',
+                                  'Richard Mac Neish',
+                                  'Augusto Cardich',
+                                  'Miomir Bojovich',
+                                  'Edward Lanning'],
+                 'correcta': 'A'},
+                {'pregunta': 'El conjunto arquitectónico que identifica a la '
+                             'civilización de Caral es: (UNSAAC 2022)',
+                 'alternativas': ['El templo de Garagay',
+                                  'La Huaca del Sol',
+                                  'La huaca de la Luna',
+                                  'El templo de Kotosh',
+                                  'El templo del Anfiteatro'],
+                 'correcta': 'A'}]},
  {'num': 7,
   'titulo': 'Civilización inca',
   'secciones': [{'titulo': '7.1 EL AYLLU',
@@ -2801,6 +3527,236 @@ BALOTAS = [{'num': 1,
                                   'Solo el almacenamiento de agua',
                                   'Solo la vivienda',
                                   'Solo el culto religioso'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la evolución histórica de los incas, el '
+                             'periodo de la Confederación Cusqueña fue '
+                             'gobernado entre otros por: (UNSAAC 2010)',
+                 'alternativas': ['Huáscar y Manco Cápac',
+                                  'Huayna Cápac y Atahualpa',
+                                  'Pachacútec y Huayna Cápac',
+                                  'Huayna Cápac y Sinchi Roca',
+                                  'Yahuar Huacac y Huiracocha'],
+                 'correcta': 'D'},
+                {'pregunta': 'En la historia de la evolución incaica, en el '
+                             'Periodo Legendario gobernaron: (UNSAAC 2010)',
+                 'alternativas': ['Pachacútec y Huayna Cápac',
+                                  'Manco Cápac y Sinchi Roca',
+                                  'Lloque Yupanqui y Mayta Cápac',
+                                  'Inca Roca y Yahuar Huacac',
+                                  'Huiracocha y Cápac Yupanqui'],
+                 'correcta': 'C'},
+                {'pregunta': 'En la organización social inca, el Phiwichuri '
+                             'era el: (UNSAAC 2011)',
+                 'alternativas': ['Jefe militar',
+                                  'Príncipe heredero',
+                                  'Gobernador de provincias',
+                                  'Hijo primogénito',
+                                  'Jefe de ayllu'],
+                 'correcta': 'E'},
+                {'pregunta': 'En el Tahuantinsuyo, el organismo asesor del '
+                             'inca lo constituía el: (UNSAAC 2011)',
+                 'alternativas': ['Sinchi',
+                                  'Consejo de suyos',
+                                  'Auqui',
+                                  'Apunchic',
+                                  'Curaca'],
+                 'correcta': 'A'},
+                {'pregunta': 'En la organización económica inca, en las '
+                             'tierras comunales se trabajaba a través del '
+                             'sistema denominado: (UNSAAC 2011)',
+                 'alternativas': ['Huaki', 'Minka', 'Ayni', 'Mita', 'Chunca'],
+                 'correcta': 'D'},
+                {'pregunta': 'El inca Pachacútec derrotó a los Chancas en el '
+                             'periodo: (UNSAAC 2011)',
+                 'alternativas': ['Imperial o de la Expansión',
+                                  'Legendario, Curacal',
+                                  'Regional o de la Confederación Cusqueña',
+                                  'Localista',
+                                  'De la decadencia'],
+                 'correcta': 'A'},
+                {'pregunta': 'El Qhapaq que institucionalizó el '
+                             'Tahuantinsuyo fue: (UNSAAC 2013)',
+                 'alternativas': ['Manco Cápac',
+                                  'Inca Roca',
+                                  'Wiracocha',
+                                  'Wayna Cápac',
+                                  'Pachacútec'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los jefes de los pueblos incorporados al '
+                             'Tahuantinsuyo constituyeron la nobleza: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Regional',
+                                  'Por privilegio',
+                                  'De Sangre',
+                                  'De Parentesco',
+                                  'Provincial'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el gobierno de las provincias, el que '
+                             'representaba al Qhapaq como autoridad fue el: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Auqui',
+                                  'Tukuy Rikuc',
+                                  'Apunchic',
+                                  'Kuraka',
+                                  'Sinchi'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la evolución histórica de los incas, son '
+                             'considerados sinchis los gobernantes: (UNSAAC '
+                             '2013)',
+                 'alternativas': ['Sinchi Roca - Inca Roca',
+                                  'Pachacútec - Tupac Inca Yupanqui',
+                                  'Lloque Yupanqui - Mayta Cápac',
+                                  'Huáscar - Toparpa',
+                                  'Sayri Tupac - Titu Cusi Yupanqui'],
+                 'correcta': 'A'},
+                {'pregunta': 'En la Guerra Civil, Huáscar y Atahualpa se '
+                             'disputaron el trono de: (UNSAAC 2013)',
+                 'alternativas': ['Tupac Inca Yupanqui',
+                                  'Huayna Cápac',
+                                  'Cápac Yupanqui',
+                                  'Inca Yupanqui',
+                                  'Pachacútec'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el desarrollo del Tahuantinsuyo, los '
+                             'pueblos que se trasladaban a lugares '
+                             'despoblados eran mitimaes de: (UNSAAC 2013)',
+                 'alternativas': ['Invasión',
+                                  'Ocupación',
+                                  'Conquista',
+                                  'Colonización',
+                                  'Castigo'],
+                 'correcta': 'A'},
+                {'pregunta': 'En la administración de la población del '
+                             'Tahuantinsuyo, el Hunu Camayoc era el jefe de: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['10 000 familias',
+                                  '1 000 familias',
+                                  '100 familias',
+                                  '10 familias',
+                                  '1 familia'],
+                 'correcta': 'D'},
+                {'pregunta': 'El periodo regional de la historia de los '
+                             'incas está marcado por: (UNSAAC 2013)',
+                 'alternativas': ['La expansión territorial regional',
+                                  'La confederación de ayllus quechuas',
+                                  'El sometimiento de los Chancas',
+                                  'El gobierno de curacas',
+                                  'La conquista del oriente peruano'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el Periodo Regional de la historia de los '
+                             'Incas, gobernaron: (UNSAAC 2013)',
+                 'alternativas': ['Huayna Cápac y Pachacútec',
+                                  'Lloque Yupanqui y Mayta Cápac',
+                                  'Manco Cápac y Sinchi Roca',
+                                  'Huáscar y Atahualpa',
+                                  'Sayri Tupac y Tupac Inca Yupanqui'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la sociedad Inca, los Yanáconas: (UNSAAC '
+                             '2013)',
+                 'alternativas': ['No tenían el derecho de ascender '
+                                  'socialmente',
+                                  'Eran personas encargadas de colonizar '
+                                  'tierras',
+                                  'Poblaron las zonas fronterizas del '
+                                  'territorio',
+                                  'Se trasladaban de un lugar a otro',
+                                  'Representaban una forma de servidumbre'],
+                 'correcta': 'A'},
+                {'pregunta': 'La redistribución, como una forma económica de '
+                             'los incas, consistía en: (UNSAAC 2013)',
+                 'alternativas': ['La asignación de tareas por parte del '
+                                  'Inca y sus funcionarios',
+                                  'La ocupación constante de tierras '
+                                  'dispersas y crianzas',
+                                  'El disfrute de bienes según sus '
+                                  'necesidades',
+                                  'La repartición de alimentos excedentes en '
+                                  'tiempos de crisis',
+                                  'La circulación de bienes en el mercado '
+                                  'regional'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los gobernantes del Incario o Legendario '
+                             'corresponden al periodo: (UNSAAC 2016)',
+                 'alternativas': ['Manco Cápac y Huayna Cápac',
+                                  'Manco Cápac y Lloque Yupanqui',
+                                  'Manco Cápac y Mayta Cápac',
+                                  'Manco Cápac y Sinchi Roca',
+                                  'Manco Cápac y Yahuar Huacac'],
+                 'correcta': 'D'},
+                {'pregunta': 'Lloque Yupanqui y Mayta Cápac corresponden al '
+                             'periodo: (UNSAAC 2016)',
+                 'alternativas': ['De la resistencia de Vilcabamba',
+                                  'Regional o de la Confederación cusqueña',
+                                  'Legendario o de los comienzos del Incario',
+                                  'De la expansión y el apogeo',
+                                  'De la decadencia o crisis'],
+                 'correcta': 'C'},
+                {'pregunta': 'El Ayllu, que fue la unidad básica de la '
+                             'organización Inca, surgió: (UNSAAC 2016)',
+                 'alternativas': ['En el gobierno de Pachacútec',
+                                  'Después de los Incas',
+                                  'Antes de los Incas',
+                                  'Durante el gobierno de los Incas',
+                                  'En el periodo de los Chancas'],
+                 'correcta': 'C'},
+                {'pregunta': 'En la organización administrativa del Incario, '
+                             'el Pisqa Chunca Camayoc era el jefe de: '
+                             '(UNSAAC 2016)',
+                 'alternativas': ['5 familias',
+                                  '100 familias',
+                                  '50 familias',
+                                  '10 familias',
+                                  '500 familias'],
+                 'correcta': 'D'},
+                {'pregunta': 'En el periodo de la confederación cusqueña o '
+                             'quechua, los gobernantes se denominaron: '
+                             '(UNSAAC 2016)',
+                 'alternativas': ['Curacas',
+                                  'Sinchis',
+                                  'Phiwichuris',
+                                  'Apunchic',
+                                  'Auqui'],
+                 'correcta': 'A'},
+                {'pregunta': 'El príncipe heredero del trono en el incanato '
+                             'se llamaba: (UNSAAC 2016)',
+                 'alternativas': ['Tucuyricuy',
+                                  'Apunchic',
+                                  'Auqui',
+                                  'Sinchi',
+                                  'Qhapac'],
+                 'correcta': 'C'},
+                {'pregunta': 'Sacsayhuamán y Ollantaytambo corresponden '
+                             'respectivamente a tipo de arquitectura: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Religioso - Militar',
+                                  'Militar - Religioso',
+                                  'Militar - Civil',
+                                  'Civil - Militar',
+                                  'Civil - Religioso'],
+                 'correcta': 'E'},
+                {'pregunta': 'El Inca Pachacútec gobernó en el periodo '
+                             'histórico: (UNSAAC 2018)',
+                 'alternativas': ['Inicial',
+                                  'Imperial',
+                                  'Legendario',
+                                  'Regional',
+                                  'Curacal'],
+                 'correcta': 'B'},
+                {'pregunta': 'El gobernador de las provincias en la época '
+                             'inca se denominaba: (UNSAAC 2018)',
+                 'alternativas': ['Apunchic',
+                                  'Curaca',
+                                  'Auqui',
+                                  'Sinchi',
+                                  'Tucuyricuq'],
+                 'correcta': 'A'},
+                {'pregunta': 'El monumento arqueológico de Ollantaytambo fue '
+                             'una construcción de tipo: (UNSAAC 2018)',
+                 'alternativas': ['Recreacional',
+                                  'Militar',
+                                  'Civil',
+                                  'Económico',
+                                  'Religioso'],
                  'correcta': 'B'}]},
  {'num': 8,
   'titulo': 'Mundo medieval y el tránsito al mundo moderno',
@@ -3124,6 +4080,24 @@ BALOTAS = [{'num': 1,
                                   'La Gioconda',
                                   'La Primavera',
                                   'El Nacimiento de Venus'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema económico, social y político de la '
+                             'Edad Media, basado en la gran propiedad '
+                             'territorial, tuvo como elementos básicos al: '
+                             '(UNSAAC 2013)',
+                 'alternativas': ['Propietario, trabajador y parcela',
+                                  'Terrateniente, esclavo y beneficio',
+                                  'Hacendado, siervo y latifundio',
+                                  'Latifundista, colono y hacienda',
+                                  'Señor feudal, vasallo y feudo'],
+                 'correcta': 'E'},
+                {'pregunta': 'La burguesía, como una nueva clase social en '
+                             'el mundo, surgió en la Europa: (UNSAAC 2013)',
+                 'alternativas': ['Contemporánea industrial',
+                                  'Medieval Media',
+                                  'Medieval Tardía',
+                                  'Medieval Temprana',
+                                  'Moderna comercial'],
                  'correcta': 'B'}]},
  {'num': 9,
   'titulo': 'Expansión europea',
@@ -3321,7 +4295,36 @@ BALOTAS = [{'num': 1,
                                   'Fernando de Magallanes',
                                   'Américo Vespucio',
                                   'Enrique el Navegante'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'Cristóbal Colón, en su primer viaje a América, '
+                             'bautizó con el nombre de Juana a la isla de: '
+                             '(UNSAAC 2018)',
+                 'alternativas': ['Trinidad',
+                                  'Haití',
+                                  'Guanahaní',
+                                  'Cuba',
+                                  'Jamaica'],
+                 'correcta': 'C'},
+                {'pregunta': 'El acontecimiento que caracteriza al cuarto '
+                             'viaje de Cristóbal Colón es: (UNSAAC 2022)',
+                 'alternativas': ['El descubrimiento de las costas de '
+                                  'Honduras, Nicaragua y de Panamá',
+                                  'La llegada a la Isla Guanahaní llamándola '
+                                  'San Salvador',
+                                  'El arribo de 17 carabelas y 1500 hombres',
+                                  'La llegada a la isla Martinica y Dominica',
+                                  'La fundación de la primera ciudad '
+                                  'denominada Isabela'],
+                 'correcta': 'A'},
+                {'pregunta': 'En los enfrentamientos de la resistencia, en '
+                             'la batalla de Sacsayhuamán en 1536, destacó el '
+                             'valeroso capitán: (UNSAAC 2022)',
+                 'alternativas': ['Manco Inca',
+                                  'Huayna Cápac',
+                                  'Suruhuamán',
+                                  'Sayri Túpac',
+                                  'Titu Yupanqui'],
+                 'correcta': 'C'}]},
  {'num': 10,
   'titulo': 'Conquista del Perú',
   'secciones': [{'titulo': '10.1 y 10.2 LA EMPRESA DE CONQUISTA',
