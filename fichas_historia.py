@@ -44,6 +44,35 @@ LOGO_MARCA_AGUA = "logo_academia_marca_agua.png"
 _PATRON = re.compile(r"\{([^}]+)\}")
 
 
+def _proteger_pdf(pdf_bytes):
+    """Cifra el PDF para impedir su edición: se abre y se imprime sin
+    ninguna contraseña, pero programas como Adobe Acrobat o Word no
+    permiten modificar el contenido, agregar/quitar páginas ni rellenar
+    formularios sin la contraseña de propietario (que solo tiene la
+    academia). Protege el material contra copias editadas o revendidas.
+    Si algo falla al cifrar, se entrega el PDF sin proteger antes que
+    fallar la descarga completa.
+    """
+    try:
+        from pypdf import PdfReader, PdfWriter
+        from pypdf.constants import UserAccessPermissions as _UAP
+
+        reader = PdfReader(io.BytesIO(pdf_bytes))
+        writer = PdfWriter()
+        for pagina in reader.pages:
+            writer.add_page(pagina)
+
+        permisos = _UAP.PRINT | _UAP.PRINT_TO_REPRESENTATION
+        writer.encrypt(user_password="", owner_password="YachayCepru2026Seguro",
+                       permissions_flag=permisos)
+
+        salida = io.BytesIO()
+        writer.write(salida)
+        return salida.getvalue()
+    except Exception:
+        return pdf_bytes
+
+
 def _partes(texto):
     """Divide un texto en fragmentos fijos y respuestas."""
     salida, pos = [], 0
@@ -341,7 +370,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
 
     doc.build(st_)
     buf.seek(0)
-    return buf.getvalue()
+    return _proteger_pdf(buf.getvalue())
 
 
 # ================================================================
@@ -446,7 +475,7 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
     doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=MX, rightMargin=MX,
                           topMargin=MY, bottomMargin=1.4 * cm)
 
-    alto_enc = 4.4 * cm if not con_claves else 3.3 * cm
+    alto_enc = 4.4 * cm
     f_enc = Frame(MX, A4[1] - MY - alto_enc, ancho_util, alto_enc, id="e",
                   leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     alto1 = A4[1] - MY - alto_enc - 1.4 * cm
@@ -554,7 +583,7 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
 
     doc.build(story)
     buf.seek(0)
-    return buf.getvalue()
+    return _proteger_pdf(buf.getvalue())
 
 
 # ================================================================
