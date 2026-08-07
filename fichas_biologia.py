@@ -2782,7 +2782,62 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Las proteínas {integrales} o intrínsecas '
                            'atraviesan todo el espesor de la membrana y no '
                            'son solubles en {agua}.']},
-                {'titulo': '6.5 EL CITOPLASMA',
+                {'titulo': '6.5 FUNCIONES DE LA MEMBRANA CELULAR',
+                 'items': ['La {compartimentalización} separa los medios '
+                           'intracelular y {extracelular}.',
+                           'La {permeabilidad selectiva} determina la '
+                           'diferencia de concentración de electrolitos '
+                           'entre ambos medios.',
+                           'La membrana presenta {receptores} específicos '
+                           'para moléculas llamadas {ligandos}, ubicados en '
+                           'su superficie externa.',
+                           'La membrana media la {interacción intercelular} '
+                           'y permite a las células {reconocerse} entre sí.',
+                           'En la {transducción de energía}, los pigmentos '
+                           'de membrana absorben luz solar durante la '
+                           '{fotosíntesis} y la convierten en energía '
+                           'química.']},
+                {'titulo': '6.6 TRANSPORTE PASIVO',
+                 'items': ['El {transporte pasivo}, o difusión pasiva, '
+                           'ocurre en forma espontánea, {sin gasto} de '
+                           'energía, a favor del gradiente de concentración.',
+                           'La {difusión simple} a través de la bicapa '
+                           'permite el paso de moléculas lipídicas, como '
+                           'hormonas {esteroideas} y vitaminas A, D, E, K.',
+                           'La {ósmosis} es el paso de agua desde una región '
+                           'de baja concentración de soluto hacia otra de '
+                           '{alta} concentración.',
+                           'La {difusión simple} a través de canales permite '
+                           'el paso de iones como Na+, K+, Ca2+, mediante '
+                           '{proteínas} de canal.',
+                           'La {difusión facilitada} permite el transporte '
+                           'de moléculas polares, como aminoácidos, mediante '
+                           'proteínas transportadoras o {permeasas}.']},
+                {'titulo': '6.7 TRANSPORTE ACTIVO',
+                 'items': ['El {transporte activo} requiere gasto de energía '
+                           'en forma de {ATP}, mediante la enzima {ATPasa}.',
+                           'El {transporte por bombas} mueve electrolitos en '
+                           'contra de su gradiente; la más conocida es la '
+                           'bomba de {Na/K}.',
+                           'La bomba de Na+/K+ bombea {3} iones sodio hacia '
+                           'el exterior y {2} iones potasio hacia el '
+                           'interior, por cada ATP hidrolizado.',
+                           'Las células nerviosas gastan más del {70}% del '
+                           'ATP que producen para bombear estos iones.',
+                           'El {transporte en masa} se realiza mediante '
+                           'formación de {vesículas}, para sustancias de '
+                           'mayor tamaño.',
+                           'La {endocitosis} incorpora partículas del medio '
+                           'extracelular; puede ser {fagocitosis} '
+                           '(partículas sólidas) o pinocitosis (partículas '
+                           'líquidas).',
+                           'La {fagocitosis} es realizada por células '
+                           'especializadas: leucocitos, amebas y '
+                           '{macrófagos}.',
+                           'La {exocitosis} es la secreción celular de '
+                           'productos elaborados por la célula, mediante '
+                           'vesículas que se fusionan con la {membrana}.']},
+                {'titulo': '6.8 EL CITOPLASMA',
                  'items': ['El {citoplasma}, o hialoplasma, es el mayor '
                            'compartimento de la célula, entre la membrana '
                            'plasmática y la {nuclear}.',
@@ -2804,7 +2859,24 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los {centriolos} son un par de estructuras '
                            'cilíndricas formadas por 9 tripletes de '
                            'microtúbulos, cerca del núcleo.']},
-                {'titulo': '6.6 RIBOSOMAS Y RETÍCULO ENDOPLASMÁTICO',
+                {'titulo': '6.9 CILIOS Y FLAGELOS',
+                 'items': ['Los {cilios} y flagelos son proyecciones móviles '
+                           'formadas por microtúbulos y proteínas accesorias '
+                           'como la {dineína} y nexina.',
+                           'Los {cilios} son cortos y numerosos, con '
+                           'movimiento como un remo; los {flagelos} son '
+                           'pocos, largos, con movimiento ondulatorio.',
+                           'Ambos tienen una disposición «{9+2}»: nueve '
+                           'pares de microtúbulos rodeando a un par central.',
+                           'Están formados por tres partes: el {axonema} '
+                           '(eje), la zona de transición, y el {corpúsculo '
+                           'basal}.',
+                           'Los cilios producen el desplazamiento de '
+                           'organismos unicelulares y evitan el paso de '
+                           'partículas en la cavidad {nasal}.',
+                           'Los flagelos producen el desplazamiento de '
+                           'células como el {espermatozoide}.']},
+                {'titulo': '6.10 RIBOSOMAS Y RETÍCULO ENDOPLASMÁTICO',
                  'items': ['Los {ribosomas} tienen dos subunidades '
                            'compuestas por ARNr, y se elaboran en el '
                            '{nucléolo}.',
@@ -2817,7 +2889,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'de ribosomas y sintetiza {lípidos} y esteroides.',
                            'El RER sintetiza proteínas de la {matriz '
                            'extracelular} y enzimas lisosomales.']},
-                {'titulo': '6.7 COMPLEJO DE GOLGI Y LISOSOMAS',
+                {'titulo': '6.11 COMPLEJO DE GOLGI Y LISOSOMAS',
                  'items': ['El {complejo de Golgi} es un grupo de sacos '
                            'aplanados llamados {dictiosomas}.',
                            'El complejo de Golgi tiene tres regiones: {cis} '
@@ -2833,7 +2905,36 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'vesículas fagocíticas.',
                            'Los lisosomas participan en la {apoptosis} o '
                            'muerte celular programada.']},
-                {'titulo': '6.8 MITOCONDRIAS',
+                {'titulo': '6.12 PEROXISOMAS',
+                 'items': ['Los {peroxisomas} son similares a los lisosomas, '
+                           'pero contienen enzimas distintas: {peroxidasas} '
+                           'y catalasas.',
+                           'Las {peroxidasas} producen peróxido de '
+                           'hidrógeno; las {catalasas} lo desdoblan en agua '
+                           'y oxígeno.',
+                           'Los peroxisomas realizan reacciones oxidativas '
+                           'de ácidos grasos y aminoácidos, y reacciones de '
+                           '{detoxificación}.',
+                           'Su actividad es relevante en células del '
+                           '{hígado} y riñón; oxidan la mitad del alcohol '
+                           'etílico ingerido.']},
+                {'titulo': '6.13 GLIOXISOMAS',
+                 'items': ['Los {glioxisomas} son un tipo especial de '
+                           'peroxisomas exclusivos de {células vegetales}.',
+                           'Contienen enzimas del ciclo del {glioxilato}, '
+                           'que convierten lípidos en azúcares durante la '
+                           'germinación de semillas.',
+                           'Se encuentran en los {cotiledones} o endospermo '
+                           'de las semillas en germinación.']},
+                {'titulo': '6.14 VACUOLAS',
+                 'items': ['Las {vacuolas} son sacos membranosos que se '
+                           'forman del retículo endoplásmico, el Golgi, o '
+                           'invaginaciones de la {membrana}.',
+                           'En protistas como euglenas y paramecios, las '
+                           'vacuolas eliminan el exceso de {agua}.',
+                           'Las vacuolas actúan como almacén de agua, sales, '
+                           'azúcares, y {desechos} celulares.']},
+                {'titulo': '6.15 MITOCONDRIAS',
                  'items': ['Las {mitocondrias} se encuentran en todas las '
                            'células eucariotas, con doble {membrana} '
                            '(interna y externa).',
@@ -2844,7 +2945,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Las mitocondrias producen {ATP} a partir de la '
                            'oxidación de la glucosa, en el proceso llamado '
                            '{respiración celular}.']},
-                {'titulo': '6.9 PLASTOS Y CLOROPLASTOS',
+                {'titulo': '6.16 PLASTOS Y CLOROPLASTOS',
                  'items': ['Los {plastos} son orgánulos elípticos de las '
                            'células vegetales, similares a las mitocondrias.',
                            'Los {leucoplastos} tienen escasa pigmentación y '
@@ -2859,7 +2960,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'La membrana tilacoidal forma discos llamados '
                            '{tilacoides}, que en conjunto forman la '
                            '{grana}.']},
-                {'titulo': '6.10 EL NÚCLEO',
+                {'titulo': '6.17 EL NÚCLEO',
                  'items': ['El núcleo está ausente en los glóbulos rojos '
                            '{maduros} de los mamíferos.',
                            'El núcleo es considerado el «{cerebro}» de la '
@@ -2869,7 +2970,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'aberturas llamadas {poros} nucleares.',
                            'El {nucleoplasma} es la parte interna del '
                            'núcleo, donde se encuentra el {nucléolo}.']},
-                {'titulo': '6.11 CROMATINA Y NUCLÉOLO',
+                {'titulo': '6.18 CROMATINA Y NUCLÉOLO',
                  'items': ['La {cromatina} está constituida por ADN, '
                            'histonas y proteínas no histónicas.',
                            'La {eucromatina} es cromatina poco condensada; '
@@ -2880,7 +2981,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'condensada.',
                            'El {nucléolo} sintetiza casi todo el ARN de la '
                            'célula, incluido el {ARNr}.']},
-                {'titulo': '6.12 CROMOSOMAS',
+                {'titulo': '6.19 CROMOSOMAS',
                  'items': ['Los {cromosomas} resultan del empaquetamiento '
                            'máximo del ADN nuclear con proteínas.',
                            'Las células con dos juegos completos de '
@@ -3271,7 +3372,271 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Nucléolo',
                                   'Centrómero',
                                   'Telómero'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'La función de la membrana celular que separa '
+                             'los medios intracelular y extracelular se '
+                             'llama:',
+                 'alternativas': ['Permeabilidad selectiva',
+                                  'Compartimentalización',
+                                  'Transducción de energía',
+                                  'Interacción intercelular',
+                                  'Transporte activo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los receptores de membrana se unen a moléculas '
+                             'específicas llamadas:',
+                 'alternativas': ['Enzimas',
+                                  'Ligandos',
+                                  'Permeasas',
+                                  'Canales',
+                                  'Bombas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante la fotosíntesis, los pigmentos de '
+                             'membrana absorben luz solar y la convierten en '
+                             'energía química, ejemplificando la función de:',
+                 'alternativas': ['Compartimentalización',
+                                  'Transducción de energía',
+                                  'Permeabilidad selectiva',
+                                  'Interacción intercelular',
+                                  'Respuesta a señales exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El transporte pasivo, o difusión pasiva, '
+                             'ocurre en forma espontánea y:',
+                 'alternativas': ['Con gran gasto de energía',
+                                  'Sin gasto de energía',
+                                  'Solo en células vivas',
+                                  'Solo contra el gradiente',
+                                  'Mediante ATP exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las hormonas esteroideas y las vitaminas '
+                             'liposolubles atraviesan la membrana mediante:',
+                 'alternativas': ['Transporte activo',
+                                  'Difusión simple a través de la bicapa',
+                                  'Endocitosis',
+                                  'Bombas de sodio-potasio',
+                                  'Fagocitosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'El paso de agua desde una región de baja '
+                             'concentración de soluto hacia otra de alta '
+                             'concentración se llama:',
+                 'alternativas': ['Difusión facilitada',
+                                  'Ósmosis',
+                                  'Fagocitosis',
+                                  'Pinocitosis',
+                                  'Exocitosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los iones como sodio, potasio y calcio '
+                             'atraviesan la membrana mediante difusión '
+                             'simple a través de:',
+                 'alternativas': ['La bicapa lipídica directamente',
+                                  'Canales proteicos',
+                                  'Vesículas',
+                                  'Bombas de ATP',
+                                  'Fagocitosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las proteínas que permiten la difusión '
+                             'facilitada de moléculas polares como '
+                             'aminoácidos se llaman:',
+                 'alternativas': ['Canales iónicos',
+                                  'Permeasas o proteínas transportadoras',
+                                  'Receptores',
+                                  'Enzimas digestivas',
+                                  'Bombas de calcio'],
+                 'correcta': 'B'},
+                {'pregunta': 'El transporte activo requiere gasto de energía '
+                             'en forma de ATP, catalizado por la enzima:',
+                 'alternativas': ['Amilasa',
+                                  'ATPasa',
+                                  'Lipasa',
+                                  'Proteasa',
+                                  'Catalasa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La bomba más conocida del transporte activo '
+                             'por medio de bombas es la bomba de:',
+                 'alternativas': ['Calcio-magnesio',
+                                  'Sodio-potasio',
+                                  'Cloro-bicarbonato',
+                                  'Hidrógeno-fosfato',
+                                  'Hierro-cobre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por cada ATP hidrolizado, la bomba de Na+/K+ '
+                             'bombea hacia el exterior un número de iones '
+                             'sodio igual a:',
+                 'alternativas': ['2', '3', '1', '4', '5'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las células nerviosas gastan más de este '
+                             'porcentaje del ATP que producen para bombear '
+                             'iones sodio y potasio:',
+                 'alternativas': ['30%', '70%', '10%', '50%', '90%'],
+                 'correcta': 'B'},
+                {'pregunta': 'El transporte en masa, mediante formación de '
+                             'vesículas, se realiza para sustancias que por '
+                             'su tamaño no pueden atravesar:',
+                 'alternativas': ['El núcleo',
+                                  'La membrana directamente',
+                                  'El citosol',
+                                  'Los ribosomas',
+                                  'El citoesqueleto'],
+                 'correcta': 'B'},
+                {'pregunta': 'La incorporación de partículas del medio '
+                             'extracelular, rodeadas de membrana, se llama:',
+                 'alternativas': ['Exocitosis',
+                                  'Endocitosis',
+                                  'Difusión simple',
+                                  'Ósmosis',
+                                  'Transporte activo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La captación de partículas sólidas, como '
+                             'bacterias, mediante la formación de un '
+                             'fagosoma, se llama:',
+                 'alternativas': ['Pinocitosis',
+                                  'Fagocitosis',
+                                  'Exocitosis',
+                                  'Difusión facilitada',
+                                  'Ósmosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las células especializadas en realizar '
+                             'fagocitosis incluyen a los leucocitos, las '
+                             'amebas y:',
+                 'alternativas': ['Los eritrocitos',
+                                  'Los macrófagos',
+                                  'Las plaquetas',
+                                  'Los linfocitos exclusivos',
+                                  'Los adipocitos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La incorporación de partículas líquidas '
+                             'mediante una vesícula pinocítica se llama:',
+                 'alternativas': ['Fagocitosis',
+                                  'Pinocitosis',
+                                  'Exocitosis',
+                                  'Ósmosis',
+                                  'Difusión simple'],
+                 'correcta': 'B'},
+                {'pregunta': 'La secreción celular de productos elaborados '
+                             'por la célula, mediante vesículas que se '
+                             'fusionan con la membrana, se llama:',
+                 'alternativas': ['Endocitosis',
+                                  'Exocitosis',
+                                  'Fagocitosis',
+                                  'Pinocitosis',
+                                  'Difusión facilitada'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los cilios y flagelos están formados por '
+                             'microtúbulos y proteínas accesorias como la '
+                             'nexina y:',
+                 'alternativas': ['La actina',
+                                  'La dineína',
+                                  'La miosina',
+                                  'La tubulina exclusiva',
+                                  'La queratina'],
+                 'correcta': 'B'},
+                {'pregunta': 'A diferencia de los flagelos, los cilios son:',
+                 'alternativas': ['Largos y escasos',
+                                  'Cortos y numerosos',
+                                  'Inmóviles',
+                                  'Exclusivos de plantas',
+                                  'De movimiento ondulatorio'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disposición característica de microtúbulos '
+                             'en cilios y flagelos se describe como:',
+                 'alternativas': ['7+1', '9+2', '6+3', '11+0', '8+4'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las tres partes que forman un cilio o flagelo '
+                             'son el axonema, la zona de transición y:',
+                 'alternativas': ['El citosol',
+                                  'El corpúsculo basal',
+                                  'El nucléolo',
+                                  'La membrana externa exclusiva',
+                                  'El retículo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los flagelos producen el desplazamiento de '
+                             'células como:',
+                 'alternativas': ['Los glóbulos rojos',
+                                  'El espermatozoide',
+                                  'Las plaquetas',
+                                  'Los linfocitos',
+                                  'Los adipocitos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los peroxisomas se diferencian de los '
+                             'lisosomas principalmente por el tipo de:',
+                 'alternativas': ['Membrana que poseen',
+                                  'Enzimas que contienen',
+                                  'Tamaño exclusivo',
+                                  'Origen celular',
+                                  'Forma exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las enzimas de los peroxisomas que producen '
+                             'peróxido de hidrógeno se llaman:',
+                 'alternativas': ['Catalasas',
+                                  'Peroxidasas',
+                                  'Hidrolasas',
+                                  'Lipasas',
+                                  'Amilasas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las catalasas de los peroxisomas desdoblan el '
+                             'peróxido de hidrógeno en agua y:',
+                 'alternativas': ['Dióxido de carbono',
+                                  'Oxígeno',
+                                  'Nitrógeno',
+                                  'Hidrógeno',
+                                  'Ozono'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los peroxisomas son especialmente activos en '
+                             'las células del riñón y:',
+                 'alternativas': ['El corazón',
+                                  'El hígado',
+                                  'El cerebro',
+                                  'Los pulmones',
+                                  'La piel'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los glioxisomas son un tipo especial de '
+                             'peroxisomas exclusivos de:',
+                 'alternativas': ['Células animales',
+                                  'Células vegetales',
+                                  'Bacterias',
+                                  'Hongos exclusivos',
+                                  'Protozoarios'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los glioxisomas contienen enzimas del ciclo '
+                             'del glioxilato, que convierten lípidos en:',
+                 'alternativas': ['Proteínas',
+                                  'Azúcares',
+                                  'Ácidos nucleicos',
+                                  'Vitaminas',
+                                  'Minerales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los glioxisomas se encuentran en los '
+                             'cotiledones o endospermo de semillas durante:',
+                 'alternativas': ['La fecundación',
+                                  'La germinación',
+                                  'La polinización',
+                                  'La maduración del fruto',
+                                  'La floración'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las vacuolas se forman a partir del retículo '
+                             'endoplásmico, el complejo de Golgi o '
+                             'invaginaciones de:',
+                 'alternativas': ['El núcleo',
+                                  'La membrana plasmática',
+                                  'Las mitocondrias',
+                                  'Los ribosomas',
+                                  'Los peroxisomas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En protistas como euglenas y paramecios, las '
+                             'vacuolas eliminan el exceso de:',
+                 'alternativas': ['Proteínas',
+                                  'Agua',
+                                  'Lípidos',
+                                  'Glucosa',
+                                  'Sales exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las vacuolas actúan como almacén de agua, '
+                             'sales, azúcares y:',
+                 'alternativas': ['Solo proteínas',
+                                  'Desechos celulares',
+                                  'Solo ADN',
+                                  'Solo ARN',
+                                  'Solo lípidos'],
+                 'correcta': 'B'}]},
  {'num': 7,
   'titulo': 'Nutrición',
   'secciones': [{'titulo': '7.1 TIPOS DE NUTRICIÓN CELULAR',
@@ -3315,7 +3680,43 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'La fotosíntesis tiene dos fases: la fase {I} o '
                            'luminosa, y la fase {II} o independiente de la '
                            'luz.']},
-                {'titulo': '7.4 NUTRICIÓN HETERÓTROFA',
+                {'titulo': '7.4 FASE LUMINOSA: FOTOSISTEMAS',
+                 'items': ['La {fase luminosa} ocurre en las membranas de '
+                           'los {tilacoides}, donde la clorofila rompe la '
+                           'molécula de agua ({fotólisis}).',
+                           'Existen dos {fotosistemas}: el {1}, rico en '
+                           'clorofila a, y el {2}, rico en clorofila b.',
+                           'Cada fotosistema tiene un {complejo antena}, que '
+                           'capta la energía luminosa, y un {centro de '
+                           'reacción}.',
+                           'En el {fotosistema 2}, los electrones perdidos '
+                           'por la clorofila se reponen con los del '
+                           'rompimiento del {agua}; se produce {ATP}.',
+                           'En el {fotosistema 1}, los electrones llegan '
+                           'hasta el NADP+, formando {NADPH}.',
+                           'La molécula resultante del fotosistema 2 es '
+                           '{ATP}; la del fotosistema 1 es {NADPH}; ambas se '
+                           'usan en la fase {oscura}.']},
+                {'titulo': '7.5 FASE OSCURA: EL CICLO DE CALVIN',
+                 'items': ['La {fase oscura}, o reacciones independientes de '
+                           'la luz, ocurre en el {estroma} del cloroplasto.',
+                           'En esta fase, el CO2 y el agua se unen para '
+                           'producir {glucosa}, usando el ATP y NADPH de la '
+                           'fase {luminosa}.',
+                           'El ciclo donde el CO2 se fija se llama ciclo de '
+                           '{Calvin} o C3.',
+                           'En la etapa de {fijación de carbono}, seis '
+                           'moléculas de bifosfato de ribulosa (BPRU) se '
+                           'combinan con {CO2} para formar ácido '
+                           'fosfoglicérico (AFG).',
+                           'En la etapa de síntesis de '
+                           '{gliceraldehído-3-fosfato} (G3P), el ATP y NADPH '
+                           'transforman el AFG.',
+                           'En la etapa de {regeneración} del BPRU, se '
+                           'vuelve a formar bifosfato de ribulosa y se '
+                           'sintetiza {glucosa} u otras moléculas '
+                           'complejas.']},
+                {'titulo': '7.6 NUTRICIÓN HETERÓTROFA',
                  'items': ['Un {heterótrofo} es un organismo que no puede '
                            'fabricar sus propios alimentos y deriva '
                            'nutrientes de materia orgánica {ajena}.',
@@ -3328,14 +3729,57 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los organismos {saprobios} se alimentan por '
                            'absorción de materia orgánica en '
                            'descomposición.']},
-                {'titulo': '7.5 RESPIRACIÓN AERÓBICA',
+                {'titulo': '7.7 RESPIRACIÓN AERÓBICA: GLUCÓLISIS',
                  'items': ['La respiración {aeróbica} requiere presencia de '
                            'oxígeno, produciendo dióxido de carbono y '
                            '{agua}.',
                            'La {glucólisis} es el proceso en que una '
                            'molécula de glucosa se rompe en dos moléculas de '
                            '{ácido pirúvico}, en el citosol.']},
-                {'titulo': '7.6 RESPIRACIÓN ANAERÓBICA O FERMENTACIÓN',
+                {'titulo': '7.8 FORMACIÓN DE ACETIL CoA',
+                 'items': ['La respiración celular comprende cuatro etapas: '
+                           '{glucólisis}, formación de acetil CoA, ciclo de '
+                           '{Krebs}, y cadena de transporte de electrones.',
+                           'En la {formación de acetil CoA}, el ácido '
+                           'pirúvico llega a la matriz mitocondrial y se une '
+                           'a la {coenzima A}.',
+                           'Por cada ácido pirúvico se produce una molécula '
+                           'de {NADH} y una de {CO2}; en total, 2 NADH y 2 '
+                           'CO2.']},
+                {'titulo': '7.9 EL CICLO DE KREBS',
+                 'items': ['El {ciclo de Krebs}, o del ácido cítrico, debe '
+                           'su nombre a {Hans Adolf Krebs}, quien lo estudió '
+                           'hacia 1937.',
+                           'El ciclo de Krebs se realiza en la {matriz '
+                           'mitocondrial}; cada acetil CoA se oxida hasta '
+                           'CO2 y agua.',
+                           'Por cada acetil CoA se producen 3 {NADH}, 1 '
+                           'FADH2, 1 GTP (que se convierte en ATP) y 2 '
+                           'moléculas de {CO2}.',
+                           'Por las dos moléculas de acetil CoA del ciclo '
+                           'completo, se producen en total {18} moléculas de '
+                           'ATP.']},
+                {'titulo': '7.10 CADENA RESPIRATORIA (FOSFORILACIÓN '
+                           'OXIDATIVA)',
+                 'items': ['La {cadena respiratoria}, o fosforilación '
+                           'oxidativa, es la etapa final de la respiración '
+                           'celular, donde se produce la mayor cantidad de '
+                           '{ATP}.',
+                           'Ocurre en el espacio {intermembranoso}; los '
+                           'electrones fluyen desde el NADH y FADH2 hasta '
+                           'formar {agua}.',
+                           'El movimiento de iones H+ de regreso a la matriz '
+                           'permite la síntesis de ATP mediante la enzima '
+                           '{ATP-sintasa}.',
+                           'En la fosforilación oxidativa se producen en '
+                           'total de {26} a 28 moléculas de ATP.',
+                           'Los organismos que solo pueden vivir en '
+                           'presencia de oxígeno se llaman {aerobios '
+                           'obligados}.',
+                           'Organismos como levaduras, anélidos y moluscos, '
+                           'que pueden producir ATP sin oxígeno, se llaman '
+                           '{anaerobios facultativos}.']},
+                {'titulo': '7.11 RESPIRACIÓN ANAERÓBICA O FERMENTACIÓN',
                  'items': ['La respiración {anaeróbica}, o fermentación, se '
                            'lleva a cabo en {ausencia} de oxígeno.',
                            'En ambos tipos de fermentación ocurre primero la '
@@ -3343,7 +3787,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'En esfuerzos musculares prolongados, la '
                            '{fermentación} produce un aporte rápido de '
                            'ATP.']},
-                {'titulo': '7.7 TIPOS DE FERMENTACIÓN',
+                {'titulo': '7.12 TIPOS DE FERMENTACIÓN',
                  'items': ['En la fermentación {alcohólica}, los piruvatos '
                            'se reducen a {etanol}, con liberación de CO2.',
                            'La fermentación alcohólica es causada por '
@@ -3659,7 +4103,206 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'No afecta el pH',
                                   'Disminuye el pH, inhibiendo bacterias '
                                   'dañinas'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'La fase luminosa de la fotosíntesis ocurre en '
+                             'las membranas de:',
+                 'alternativas': ['El estroma',
+                                  'Los tilacoides',
+                                  'La mitocondria',
+                                  'El citosol',
+                                  'El núcleo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El rompimiento de la molécula de agua durante '
+                             'la fase luminosa se llama:',
+                 'alternativas': ['Hidrólisis',
+                                  'Fotólisis',
+                                  'Glucólisis',
+                                  'Fotosíntesis exclusiva',
+                                  'Quimiosíntesis'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fotosistema rico en clorofila a se llama '
+                             'fotosistema:',
+                 'alternativas': ['2', '1', '3', '0', '4'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fotosistema rico en clorofila b se llama '
+                             'fotosistema:',
+                 'alternativas': ['1', '2', '3', '0', '4'],
+                 'correcta': 'B'},
+                {'pregunta': 'El componente del fotosistema que capta la '
+                             'energía luminosa y la dirige al centro de '
+                             'reacción se llama:',
+                 'alternativas': ['Centro de reacción',
+                                  'Complejo antena',
+                                  'Aceptor primario',
+                                  'Fotón captador',
+                                  'Quinona'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el fotosistema 2, los electrones perdidos '
+                             'por la clorofila se reponen con electrones '
+                             'provenientes de:',
+                 'alternativas': ['El CO2',
+                                  'La ruptura del agua',
+                                  'El NADP+',
+                                  'La glucosa',
+                                  'El ATP'],
+                 'correcta': 'B'},
+                {'pregunta': 'La molécula primordial resultante del '
+                             'fotosistema 2 es:',
+                 'alternativas': ['NADPH',
+                                  'ATP',
+                                  'Glucosa',
+                                  'Oxígeno exclusivo',
+                                  'CO2'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el fotosistema 1, los electrones llegan '
+                             'hasta el NADP+ formando:',
+                 'alternativas': ['ATP', 'NADPH', 'Glucosa', 'Agua', 'CO2'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fase oscura de la fotosíntesis, o '
+                             'reacciones independientes de la luz, ocurre '
+                             'en:',
+                 'alternativas': ['Los tilacoides',
+                                  'El estroma del cloroplasto',
+                                  'La mitocondria',
+                                  'El citosol',
+                                  'El núcleo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ciclo mediante el cual se fija el CO2 '
+                             'durante la fase oscura se llama ciclo de:',
+                 'alternativas': ['Krebs',
+                                  'Calvin',
+                                  'Cori',
+                                  'Urea',
+                                  'Ácido cítrico'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la etapa de fijación de carbono, el '
+                             'bifosfato de ribulosa (BPRU) se combina con '
+                             'CO2 para formar:',
+                 'alternativas': ['Glucosa directamente',
+                                  'Ácido fosfoglicérico (AFG)',
+                                  'ATP',
+                                  'Gliceraldehído-3-fosfato directamente',
+                                  'Oxígeno'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la síntesis de gliceraldehído-3-fosfato '
+                             '(G3P), la energía necesaria proviene del ATP '
+                             'y:',
+                 'alternativas': ['El agua',
+                                  'El NADPH',
+                                  'El CO2',
+                                  'El oxígeno',
+                                  'La clorofila'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las cuatro etapas de la respiración celular '
+                             'son glucólisis, formación de acetil CoA, ciclo '
+                             'de Krebs y:',
+                 'alternativas': ['Fotólisis',
+                                  'Cadena de transporte de electrones',
+                                  'Ciclo de Calvin',
+                                  'Fermentación',
+                                  'Glucogenólisis'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la formación de acetil CoA, el ácido '
+                             'pirúvico llega a la matriz mitocondrial y se '
+                             'une a:',
+                 'alternativas': ['El NADH',
+                                  'La coenzima A',
+                                  'El FADH2',
+                                  'El oxígeno',
+                                  'El ATP'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por cada molécula de ácido pirúvico procesada '
+                             'en la formación de acetil CoA se produce una '
+                             'molécula de NADH y una de:',
+                 'alternativas': ['Agua', 'CO2', 'Oxígeno', 'Glucosa', 'ATP'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ciclo de Krebs, o del ácido cítrico, debe '
+                             'su nombre al científico:',
+                 'alternativas': ['Louis Pasteur',
+                                  'Hans Adolf Krebs',
+                                  'Otto Warburg',
+                                  'Peter Mitchell',
+                                  'Melvin Calvin'],
+                 'correcta': 'B'},
+                {'pregunta': 'El ciclo de Krebs se realiza en:',
+                 'alternativas': ['El citosol',
+                                  'La matriz mitocondrial',
+                                  'El núcleo',
+                                  'Los tilacoides',
+                                  'El retículo endoplasmático'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por cada molécula de acetil CoA que entra al '
+                             'ciclo de Krebs se producen 3 NADH, 1 FADH2, 1 '
+                             'GTP y:',
+                 'alternativas': ['1 molécula de CO2',
+                                  '2 moléculas de CO2',
+                                  '3 moléculas de CO2',
+                                  'Ninguna molécula de CO2',
+                                  '4 moléculas de CO2'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por las dos moléculas de acetil CoA que entran '
+                             'al ciclo de Krebs completo, se producen en '
+                             'total:',
+                 'alternativas': ['10 moléculas de ATP',
+                                  '18 moléculas de ATP',
+                                  '30 moléculas de ATP',
+                                  '5 moléculas de ATP',
+                                  '24 moléculas de ATP'],
+                 'correcta': 'B'},
+                {'pregunta': 'La etapa final de la respiración celular, '
+                             'donde se produce la mayor cantidad de ATP, se '
+                             'llama:',
+                 'alternativas': ['Glucólisis',
+                                  'Cadena respiratoria o fosforilación '
+                                  'oxidativa',
+                                  'Formación de acetil CoA',
+                                  'Ciclo de Krebs',
+                                  'Fermentación'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cadena respiratoria ocurre en el espacio '
+                             'intermembranoso, donde los electrones fluyen '
+                             'desde el NADH y FADH2 hasta formar:',
+                 'alternativas': ['CO2',
+                                  'Agua',
+                                  'Glucosa',
+                                  'ATP directamente',
+                                  'Ácido pirúvico'],
+                 'correcta': 'B'},
+                {'pregunta': 'El movimiento de iones H+ de regreso a la '
+                             'matriz mitocondrial permite la síntesis de ATP '
+                             'mediante la enzima:',
+                 'alternativas': ['ADN polimerasa',
+                                  'ATP-sintasa',
+                                  'Hexoquinasa',
+                                  'Piruvato deshidrogenasa',
+                                  'Citrato sintasa'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la fosforilación oxidativa se producen en '
+                             'total, a partir de las dos moléculas de acetil '
+                             'CoA, un número de moléculas de ATP igual a:',
+                 'alternativas': ['10 a 12',
+                                  '26 a 28',
+                                  '5 a 8',
+                                  '40 a 45',
+                                  '15 a 18'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los organismos que solo pueden vivir en '
+                             'presencia de oxígeno se llaman:',
+                 'alternativas': ['Anaerobios facultativos',
+                                  'Aerobios obligados',
+                                  'Anaerobios obligados',
+                                  'Aerobios facultativos',
+                                  'Quimioautótrofos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Organismos como las levaduras, anélidos y '
+                             'moluscos, que pueden producir ATP sin oxígeno, '
+                             'se llaman:',
+                 'alternativas': ['Aerobios obligados',
+                                  'Anaerobios facultativos',
+                                  'Fotoautótrofos',
+                                  'Quimioautótrofos exclusivos',
+                                  'Heterótrofos exclusivos'],
+                 'correcta': 'B'}]},
  {'num': 8,
   'titulo': 'Nivel Sistémico',
   'secciones': [{'titulo': '8.1 EL SISTEMA RESPIRATORIO HUMANO',
