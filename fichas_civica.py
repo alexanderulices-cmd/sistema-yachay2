@@ -4121,57 +4121,31 @@ BALOTAS_CIVICA = [{'num': 1,
                            'La {motivación} escrita de las resoluciones '
                            'judiciales es obligatoria en todas las '
                            'instancias.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El Poder Judicial es el organismo encargado de '
-                           '{Administrar justicia}.',
-                           'El Poder Judicial es autónomo en lo político, '
-                           'administrativo, económico y {Disciplinario}.',
-                           'En el ejercicio jurisdiccional, el Poder '
-                           'Judicial es {Independiente}.',
-                           'La potestad de administrar justicia emana de {El '
-                           'pueblo}.',
-                           'El máximo órgano jurisdiccional del Poder '
-                           'Judicial es {La Corte Suprema de Justicia}.',
-                           'Los Juzgados de Paz Letrados corresponden al '
-                           'nivel {Básico}.',
-                           'El órgano de gestión encargado de la '
-                           'administración del Poder Judicial es {El Consejo '
-                           'Ejecutivo del Poder Judicial}.',
-                           'No existe ni puede establecerse jurisdicción '
-                           'independiente, salvo {La militar y la arbitral}.',
-                           'El principio de unidad y exclusividad de la '
-                           'función jurisdiccional implica que {No hay '
-                           'proceso judicial por comisión o delegación}.',
-                           'El principio de independencia jurisdiccional '
-                           'impide que una autoridad {Se avoque a causas '
-                           'pendientes ante el órgano jurisdiccional}.',
-                           'El debido proceso impide que una persona sea '
-                           'juzgada por {Comisiones especiales creadas al '
-                           'efecto}.',
-                           'La regla general en los procesos judiciales es '
-                           'la {Publicidad, salvo disposición contraria de '
-                           'la ley}.',
-                           'Los procesos por responsabilidad de funcionarios '
-                           'públicos son {Siempre públicos}.',
-                           'La motivación escrita de las resoluciones '
-                           'judiciales es obligatoria en {Todas las '
-                           'instancias}.',
-                           'El artículo de la Constitución que precisa la '
-                           'extensión jurisdiccional en comunidades es el '
-                           '{Artículo 149}.',
-                           'Ninguna autoridad puede dejar sin efecto '
-                           'resoluciones que han pasado en autoridad de '
-                           '{Cosa juzgada}.',
-                           'El derecho de gracia y la facultad de '
-                           'investigación del Congreso no deben {Interferir '
-                           'en el procedimiento jurisdiccional}.',
-                           'La Sala Plena de la Corte Suprema es un órgano '
-                           'de {Gestión}.',
-                           'Los Juzgados de Paz, en la estructura del Poder '
-                           'Judicial, están en el nivel {Más básico}.',
-                           'La Ley Orgánica del Poder Judicial regula, junto '
-                           'con la Constitución, el ejercicio de {Las '
-                           'funciones jurisdiccionales y de gobierno}.']}],
+                {'titulo': '12.4 MÁS PRINCIPIOS DE LA ADMINISTRACIÓN DE '
+                           'JUSTICIA',
+                 'items': ['El principio de {pluralidad de instancia} '
+                           'permite que una resolución pueda ser revisada '
+                           'por un órgano {superior}.',
+                           'El Estado debe {indemnizar}, por los errores '
+                           'judiciales en procesos penales y por detenciones '
+                           'arbitrarias.',
+                           'El principio de no dejar de administrar justicia '
+                           'por vacío legal obliga a aplicar los {principios '
+                           'generales} del derecho y el derecho '
+                           'consuetudinario.',
+                           'El principio de {inaplicabilidad por analogía} '
+                           'impide aplicar por semejanza la ley penal o '
+                           'normas que restrinjan derechos.',
+                           'El principio de no ser {penado} sin proceso '
+                           'judicial previo.',
+                           'En caso de duda o conflicto entre leyes penales, '
+                           'se aplica la ley más {favorable} al procesado.',
+                           'El principio de no ser {condenado} en ausencia.',
+                           'Está prohibido revivir procesos fenecidos con '
+                           'resolución {ejecutoriada}; la amnistía y el '
+                           'indulto producen efectos de cosa {juzgada}.',
+                           'El derecho de {defensa} no puede ser negado en '
+                           'ningún estado del proceso.']}],
   'cuadros': [{'titulo': '12.2 ÓRGANOS JURISDICCIONALES',
                'encabezados': ['Nivel', 'Órgano'],
                'filas': [['Máximo', 'Corte {Suprema} de Justicia'],
@@ -4344,7 +4318,81 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Solo el presupuesto',
                                   'Las funciones jurisdiccionales y de '
                                   'gobierno'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'El principio que permite que una resolución '
+                             'sea revisada por un órgano superior se llama:',
+                 'alternativas': ['Unidad jurisdiccional',
+                                  'Pluralidad de instancia',
+                                  'Cosa juzgada',
+                                  'Debido proceso',
+                                  'Publicidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Estado debe indemnizar por los errores '
+                             'judiciales en procesos penales y por:',
+                 'alternativas': ['Multas excesivas',
+                                  'Detenciones arbitrarias',
+                                  'Demoras administrativas',
+                                  'Costas procesales',
+                                  'Apelaciones rechazadas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En caso de vacío o deficiencia de la ley, el '
+                             'juez debe aplicar los principios generales del '
+                             'derecho y:',
+                 'alternativas': ['Su criterio personal exclusivo',
+                                  'El derecho consuetudinario',
+                                  'Solo jurisprudencia extranjera',
+                                  'Ninguna norma adicional',
+                                  'Solo la doctrina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El principio que impide aplicar por semejanza '
+                             'la ley penal se llama principio de:',
+                 'alternativas': ['Retroactividad',
+                                  'Inaplicabilidad por analogía',
+                                  'Legalidad exclusiva',
+                                  'Tipicidad',
+                                  'Proporcionalidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un principio fundamental de la administración '
+                             'de justicia es que nadie puede ser penado sin:',
+                 'alternativas': ['Confesión previa',
+                                  'Proceso judicial previo',
+                                  'Denuncia pública',
+                                  'Testigos presenciales',
+                                  'Pago de fianza'],
+                 'correcta': 'B'},
+                {'pregunta': 'En caso de duda o conflicto entre leyes '
+                             'penales, se debe aplicar la ley:',
+                 'alternativas': ['Más antigua',
+                                  'Más favorable al procesado',
+                                  'Más reciente exclusivamente',
+                                  'Extranjera',
+                                  'Más severa'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un principio de la administración de justicia '
+                             'establece que nadie puede ser condenado:',
+                 'alternativas': ['Sin abogado',
+                                  'En ausencia',
+                                  'Sin fianza',
+                                  'Sin apelación',
+                                  'Sin testigos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Está prohibido revivir procesos fenecidos con '
+                             'resolución ejecutoriada; la amnistía y el '
+                             'indulto producen efectos de:',
+                 'alternativas': ['Nulidad absoluta',
+                                  'Cosa juzgada',
+                                  'Suspensión temporal',
+                                  'Revisión automática',
+                                  'Prescripción inmediata'],
+                 'correcta': 'B'},
+                {'pregunta': 'El derecho de defensa no puede ser negado en '
+                             'ningún:',
+                 'alternativas': ['Recurso de apelación exclusivo',
+                                  'Estado del proceso',
+                                  'Tribunal superior exclusivo',
+                                  'Proceso civil exclusivo',
+                                  'Juicio oral exclusivo'],
+                 'correcta': 'B'}]},
  {'num': 13,
   'titulo': 'Organismos Constitucionales Autónomos',
   'secciones': [{'titulo': '13.1 CONCEPTO Y RELACIÓN',
@@ -4384,54 +4432,85 @@ BALOTAS_CIVICA = [{'num': 1,
                            'La {Policía Nacional} está obligada a cumplir '
                            'los mandatos del Ministerio Público en el ámbito '
                            'de su función.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El Estado peruano se organiza a nivel nacional, '
-                           'regional y {Local}.',
-                           'El número de organismos constitucionales '
-                           'autónomos en el Perú es {Diez}.',
-                           'La autonomía de los OCA implica que sus '
-                           'directivos {Toman decisiones sin someterse a '
-                           'órdenes superiores}.',
-                           'El Tribunal Constitucional es el órgano de '
-                           'control de {La Constitución}.',
-                           'El Tribunal Constitucional está regulado en el '
-                           'artículo {201}.',
-                           'El Tribunal Constitucional se compone de {Siete '
-                           'miembros}.',
-                           'Los miembros del Tribunal Constitucional son '
-                           'elegidos por un periodo de {Cinco años}.',
-                           'Los miembros del Tribunal Constitucional son '
-                           'elegidos por el Congreso con {El voto de los dos '
-                           'tercios del número legal de miembros}.',
-                           'No pueden ser magistrados del Tribunal '
-                           'Constitucional los jueces o fiscales que no '
-                           'dejaron el cargo con anticipación de {Un año}.',
-                           'El Ministerio Público es el órgano encargado de '
-                           '{Perseguir el delito}.',
-                           'El Ministerio Público es presidido por {El '
-                           'Fiscal de la Nación}.',
-                           'El Fiscal de la Nación es elegido por {La Junta '
-                           'de Fiscales Supremos}.',
-                           'El cargo de Fiscal de la Nación dura {Tres '
-                           'años}.',
-                           'El cargo de Fiscal de la Nación puede '
-                           'prorrogarse por reelección hasta por {Dos años '
-                           'más}.',
-                           'Según el artículo 159, el Ministerio Público '
-                           'conduce desde su inicio {La investigación del '
-                           'delito}.',
-                           'La Policía Nacional está obligada a cumplir los '
-                           'mandatos de {El Ministerio Público}.',
-                           'Entre los organismos constitucionales autónomos '
-                           'figura el organismo encargado de emitir moneda, '
-                           'que es {El Banco Central de Reserva}.',
-                           'El organismo encargado de la defensa de los '
-                           'derechos constitucionales de la persona es {La '
-                           'Defensoría del Pueblo}.',
-                           'El organismo encargado de organizar los procesos '
-                           'electorales es {La ONPE}.',
-                           'El organismo encargado del registro de '
-                           'identificación y estado civil es {El RENIEC}.']}],
+                {'titulo': '13.4 LA JUNTA NACIONAL DE JUSTICIA',
+                 'items': ['La {Junta Nacional de Justicia} sustituyó al '
+                           'Consejo Nacional de la Magistratura, entrando en '
+                           'funciones a inicios de {2020}.',
+                           'Según el artículo {150} de la Constitución, la '
+                           'Junta selecciona y nombra a jueces y {fiscales}, '
+                           'salvo los de elección popular.',
+                           'Para ser miembro se requiere ser peruano de '
+                           'nacimiento, abogado, y tener entre {45} y 75 '
+                           'años de edad.',
+                           'La Junta está conformada por {siete} miembros '
+                           'titulares, seleccionados por concurso público, '
+                           'por un periodo de {cinco} años, sin reelección.',
+                           'Entre sus funciones está nombrar jueces y '
+                           'fiscales, y {ratificar} a jueces y fiscales cada '
+                           'siete años.']},
+                {'titulo': '13.5 LA DEFENSORÍA DEL PUEBLO',
+                 'items': ['La {Defensoría del Pueblo} tiene su origen en '
+                           '{Suecia}; en el Perú se incorporó con la '
+                           'Constitución de 1993.',
+                           'El {Defensor del Pueblo} es elegido y removido '
+                           'por el Congreso con el voto de los {dos tercios} '
+                           'de su número legal.',
+                           'Para ser Defensor del Pueblo se requiere tener '
+                           '{35} años de edad y ser {abogado}.',
+                           'El cargo de Defensor del Pueblo dura {cinco} '
+                           'años.',
+                           'Corresponde a la Defensoría defender los '
+                           'derechos {constitucionales} y supervisar el '
+                           'cumplimiento de deberes de la administración '
+                           'estatal.']},
+                {'titulo': '13.6 BCR, SBS Y CONTRALORÍA',
+                 'items': ['La finalidad del {Banco Central de Reserva} es '
+                           'preservar la {estabilidad} monetaria.',
+                           'El BCR regula la {moneda} y el crédito del '
+                           'sistema financiero, y administra las {reservas} '
+                           'internacionales.',
+                           'El BCR está prohibido de conceder '
+                           '{financiamiento} al erario, salvo compra en el '
+                           'mercado secundario de valores del Tesoro.',
+                           'La {Superintendencia de Banca, Seguros y AFP} '
+                           '(SBS) supervisa a las empresas del ámbito '
+                           'financiero y de {seguros}.',
+                           'El Superintendente de la SBS es designado por el '
+                           '{Poder Ejecutivo} y ratificado por el '
+                           '{Congreso}.',
+                           'La {Contraloría General} de la República es el '
+                           'órgano superior del Sistema Nacional de '
+                           '{Control}.',
+                           'La Contraloría supervisa la legalidad de la '
+                           'ejecución del {Presupuesto} del Estado y la '
+                           'deuda pública.',
+                           'El {Contralor General} es designado por el '
+                           'Congreso, a propuesta del Poder Ejecutivo, por '
+                           '{siete} años.']},
+                {'titulo': '13.7 EL SISTEMA ELECTORAL: JNE, ONPE, RENIEC',
+                 'items': ['El sistema electoral es {tricéfalo}: JNE, ONPE y '
+                           'RENIEC, que actúan con {autonomía} y '
+                           'coordinación entre sí.',
+                           'Los integrantes del Pleno del {Jurado Nacional '
+                           'de Elecciones} (JNE) tienen entre 45 y 70 años, '
+                           'elegidos por {cuatro} años.',
+                           'El JNE fiscaliza la legalidad del {sufragio} y '
+                           'de los procesos electorales, y proclama a los '
+                           'candidatos {elegidos}.',
+                           'El Pleno del JNE está compuesto por {cinco} '
+                           'miembros, elegidos por la Corte Suprema, la '
+                           'Junta de Fiscales, y los colegios de abogados.',
+                           'El Jefe de la {ONPE} (Oficina Nacional de '
+                           'Procesos Electorales) es nombrado por la Junta '
+                           'Nacional de Justicia por {cuatro} años.',
+                           'A la ONPE le corresponde {organizar} todos los '
+                           'procesos electorales y el diseño de la cédula de '
+                           '{sufragio}.',
+                           'El Jefe del {RENIEC} también es nombrado por la '
+                           'Junta Nacional de Justicia por {cuatro} años.',
+                           'El RENIEC tiene a su cargo la inscripción de '
+                           '{nacimientos}, matrimonios, divorcios y '
+                           'defunciones.']}],
   'cuadros': [{'titulo': '13.1 LOS DIEZ ORGANISMOS CONSTITUCIONALES '
                          'AUTÓNOMOS',
                'encabezados': ['N°', 'Organismo'],
@@ -4597,6 +4676,180 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'La SUNARP',
                                   'El INEI',
                                   'El JNE'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Junta Nacional de Justicia sustituyó al:',
+                 'alternativas': ['Tribunal Constitucional',
+                                  'Consejo Nacional de la Magistratura',
+                                  'Ministerio Público',
+                                  'Poder Judicial',
+                                  'Jurado Nacional de Elecciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el artículo 150 de la Constitución, la '
+                             'Junta Nacional de Justicia selecciona y nombra '
+                             'a:',
+                 'alternativas': ['Solo congresistas',
+                                  'Jueces y fiscales',
+                                  'Solo alcaldes',
+                                  'Solo ministros',
+                                  'Solo gobernadores regionales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para ser miembro de la Junta Nacional de '
+                             'Justicia se requiere tener una edad entre:',
+                 'alternativas': ['30 y 65 años',
+                                  '45 y 75 años',
+                                  '25 y 60 años',
+                                  '40 y 70 años',
+                                  '35 y 80 años'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Junta Nacional de Justicia está conformada '
+                             'por un número de miembros titulares igual a:',
+                 'alternativas': ['Cinco', 'Siete', 'Nueve', 'Tres', 'Once'],
+                 'correcta': 'B'},
+                {'pregunta': 'El periodo de los miembros de la Junta '
+                             'Nacional de Justicia es de:',
+                 'alternativas': ['Cuatro años',
+                                  'Cinco años',
+                                  'Seis años',
+                                  'Tres años',
+                                  'Siete años'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Defensoría del Pueblo tiene su origen '
+                             'histórico en:',
+                 'alternativas': ['Inglaterra',
+                                  'Suecia',
+                                  'Francia',
+                                  'España',
+                                  'Estados Unidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Defensor del Pueblo es elegido y removido '
+                             'por el Congreso con el voto de:',
+                 'alternativas': ['La mitad más uno',
+                                  'Los dos tercios de su número legal',
+                                  'Un tercio',
+                                  'Mayoría simple',
+                                  'Unanimidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para ser elegido Defensor del Pueblo se '
+                             'requiere tener una edad mínima de:',
+                 'alternativas': ['25 años',
+                                  '35 años',
+                                  '40 años',
+                                  '30 años',
+                                  '45 años'],
+                 'correcta': 'B'},
+                {'pregunta': 'El cargo de Defensor del Pueblo dura:',
+                 'alternativas': ['Cuatro años',
+                                  'Cinco años',
+                                  'Seis años',
+                                  'Tres años',
+                                  'Siete años'],
+                 'correcta': 'B'},
+                {'pregunta': 'La finalidad principal del Banco Central de '
+                             'Reserva es:',
+                 'alternativas': ['Recaudar impuestos',
+                                  'Preservar la estabilidad monetaria',
+                                  'Administrar el presupuesto público',
+                                  'Supervisar el Poder Judicial',
+                                  'Fiscalizar elecciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'El BCR está prohibido de conceder '
+                             'financiamiento al erario, salvo la compra en '
+                             'el mercado secundario de valores emitidos por:',
+                 'alternativas': ['Bancos privados',
+                                  'El Tesoro Público',
+                                  'Empresas mineras',
+                                  'Gobiernos regionales',
+                                  'Municipalidades'],
+                 'correcta': 'B'},
+                {'pregunta': 'La SBS (Superintendencia de Banca, Seguros y '
+                             'AFP) supervisa a las empresas vinculadas al '
+                             'ámbito:',
+                 'alternativas': ['Educativo',
+                                  'Financiero y de seguros',
+                                  'Agrícola',
+                                  'Minero',
+                                  'Turístico'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Superintendente de la SBS es designado por '
+                             'el Poder Ejecutivo y ratificado por:',
+                 'alternativas': ['El Poder Judicial',
+                                  'El Congreso',
+                                  'La Contraloría',
+                                  'El Tribunal Constitucional',
+                                  'El BCR'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Contraloría General de la República es el '
+                             'órgano superior del Sistema Nacional de:',
+                 'alternativas': ['Justicia',
+                                  'Control',
+                                  'Educación',
+                                  'Salud',
+                                  'Seguridad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Contralor General es designado por el '
+                             'Congreso, a propuesta del Poder Ejecutivo, por '
+                             'un periodo de:',
+                 'alternativas': ['Cinco años',
+                                  'Siete años',
+                                  'Cuatro años',
+                                  'Seis años',
+                                  'Tres años'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema electoral peruano es de naturaleza:',
+                 'alternativas': ['Unicéfalo',
+                                  'Tricéfalo',
+                                  'Bicéfalo',
+                                  'Tetracéfalo',
+                                  'Pentacéfalo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los integrantes del Pleno del Jurado Nacional '
+                             'de Elecciones son elegidos por un periodo de:',
+                 'alternativas': ['Tres años',
+                                  'Cuatro años',
+                                  'Cinco años',
+                                  'Seis años',
+                                  'Dos años'],
+                 'correcta': 'B'},
+                {'pregunta': 'El JNE fiscaliza la legalidad del ejercicio '
+                             'del sufragio y de la realización de:',
+                 'alternativas': ['Solo el presupuesto',
+                                  'Los procesos electorales',
+                                  'Solo la educación cívica',
+                                  'Solo el registro civil',
+                                  'Solo la seguridad ciudadana'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Pleno del Jurado Nacional de Elecciones '
+                             'está compuesto por un número de miembros igual '
+                             'a:',
+                 'alternativas': ['Tres',
+                                  'Cinco',
+                                  'Siete',
+                                  'Nueve',
+                                  'Cuatro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Jefe de la Oficina Nacional de Procesos '
+                             'Electorales (ONPE) es nombrado por:',
+                 'alternativas': ['El Congreso',
+                                  'La Junta Nacional de Justicia',
+                                  'El Presidente de la República',
+                                  'El JNE',
+                                  'La Contraloría'],
+                 'correcta': 'B'},
+                {'pregunta': 'A la ONPE le corresponde organizar los '
+                             'procesos electorales, incluyendo el diseño de:',
+                 'alternativas': ['Las leyes electorales',
+                                  'La cédula de sufragio',
+                                  'Los partidos políticos',
+                                  'El padrón judicial',
+                                  'Las cortes electorales'],
+                 'correcta': 'B'},
+                {'pregunta': 'El RENIEC tiene a su cargo la inscripción de '
+                             'nacimientos, matrimonios, divorcios y:',
+                 'alternativas': ['Contratos comerciales',
+                                  'Defunciones',
+                                  'Propiedades',
+                                  'Empresas',
+                                  'Vehículos'],
                  'correcta': 'B'}]},
  {'num': 14,
   'titulo': 'Régimen Económico',
@@ -4635,60 +4888,64 @@ BALOTAS_CIVICA = [{'num': 1,
                            'El principio de {subsidiaridad} establece que lo '
                            'que el individuo puede hacer por propia '
                            'iniciativa no debe hacerlo el {Estado}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según Sumar Albujar, el régimen económico define '
-                           'el rol de {El Estado en materia económica}.',
-                           'Según García Belaúnde, la Constitución Económica '
-                           'surgió en {El periodo de entreguerras del siglo '
-                           'XX}.',
-                           'La constitución considerada pionera del '
-                           'constitucionalismo económico es la de {Weimar}.',
-                           'La Constitución de Weimar garantiza el derecho '
-                           'de {Propiedad, con límites por el bien general}.',
-                           'El régimen económico peruano se basa, entre '
-                           'otros principios, en la economía social de '
-                           '{Mercado}.',
-                           'La economía social de mercado es representativa '
-                           'de los valores de {Libertad y justicia}.',
-                           'Según Herhärd y Müller Armack, la economía '
-                           'social de mercado transforma la productividad '
-                           'individual en {Progreso social}.',
-                           'La economía social de mercado combate la '
-                           'formación de {Carteles y concentración de poder '
-                           'económico}.',
-                           'Para que funcione de manera óptima el mercado, '
-                           'el Estado debe {Establecer normas claras sin '
-                           'intervenir de manera permanente}.',
-                           'La economía social de mercado requiere un Estado '
-                           '{Fuerte e independiente de los grupos de poder '
-                           'económico}.',
-                           'El principio de solidaridad en la economía '
-                           'social de mercado exige {Equilibrio social y '
-                           'promoción del bien común}.',
-                           'El principio de subsidiaridad establece que el '
-                           'Estado no debe hacer {Lo que el individuo puede '
-                           'hacer por propia iniciativa}.',
-                           'El mercado y la competencia, según el texto, '
-                           'deben garantizar la libertad de {Consumidores, '
-                           'empleadores y trabajadores}.',
-                           'Combatir los monopolios requiere, según el '
-                           'texto, una legislación {Antimonopolio}.',
-                           'El régimen económico también se define como el '
-                           'conjunto de reglas de juego con rango '
-                           '{Constitucional}.',
-                           'Entre los principios que rigen el régimen '
-                           'económico peruano figura la libre {Competencia}.',
-                           'El régimen económico busca contribuir '
-                           'positivamente al {Desempeño económico del país}.',
-                           'El aparato administrativo y judicial en la '
-                           'economía social de mercado debe ser '
-                           '{Independiente y libre de corrupción}.',
-                           'El Estado, en una economía social de mercado, '
-                           'actúa por medio de {El sistema monetario y el '
-                           'ordenamiento jurídico}.',
-                           'Entre los principios del régimen económico '
-                           'constitucional peruano figura la igualdad de '
-                           'tratamiento al {Capital}.']}],
+                {'titulo': '14.4 LIBERTADES ECONÓMICAS',
+                 'items': ['El artículo {58} de la Constitución establece '
+                           'que la iniciativa privada es {libre}, ejercida '
+                           'en una economía social de mercado.',
+                           'El reconocimiento constitucional de las '
+                           'libertades económicas en el Perú se inicia con '
+                           'el texto de {1823}.',
+                           'La {libertad de empresa} comprende la facultad '
+                           'de emprender, crear, organizar, gestionar, '
+                           'competir y {cerrar} una empresa.',
+                           'La {libertad de comercio} es la capacidad de '
+                           'mediar entre oferta y demanda para obtener un '
+                           'beneficio económico.',
+                           'Según el artículo {59}, el ejercicio de la '
+                           'libertad de comercio no debe ser lesivo a la '
+                           'moral, la salud o la seguridad {pública}.',
+                           'La {libertad de industria} es la facultad de '
+                           'realizar operaciones destinadas a la obtención o '
+                           '{transformación} de productos naturales.',
+                           'El artículo {65} de la Constitución establece un '
+                           'deber especial de protección a los '
+                           '{consumidores} y usuarios.']},
+                {'titulo': '14.5 EL TRIBUTO Y SUS CLASES',
+                 'items': ['El {tributo} es el concepto fundamental del '
+                           'Derecho Tributario; el {impuesto}, la tasa y la '
+                           'contribución son sus especies.',
+                           'El {impuesto} es la categoría jurídica más '
+                           'importante del tributo; su fundamento es la '
+                           'capacidad {contributiva}.',
+                           'La recaudación de impuestos es controlada por el '
+                           '{Tesoro Público} del Ministerio de Economía y '
+                           'Finanzas, mediante caja {única}.',
+                           'La {tasa} tiene como hecho gravado un servicio '
+                           'público {individualizado}; su cuantía no debe '
+                           'exceder el gasto del servicio.',
+                           'La {contribución} es el tributo cuya obligación '
+                           'tiene como hecho generador beneficios derivados '
+                           'de {obras} públicas o actividades estatales.']},
+                {'titulo': '14.6 PRINCIPIOS DE LA POTESTAD TRIBUTARIA',
+                 'items': ['El artículo {74} de la Constitución establece '
+                           'que los tributos se crean, modifican o derogan '
+                           'exclusivamente por {ley} o decreto legislativo.',
+                           'Los {gobiernos locales} pueden crear, modificar '
+                           'y suprimir contribuciones y tasas dentro de su '
+                           '{jurisdicción}.',
+                           'Ningún tributo puede tener efecto '
+                           '{confiscatorio}.',
+                           'Los {decretos de urgencia} no pueden contener '
+                           'materia tributaria.',
+                           'El principio de {reserva de la ley} establece '
+                           'que solo por ley se puede determinar al '
+                           'contribuyente y fijar el monto del {tributo}.',
+                           'El principio de {legalidad} complementa la '
+                           'reserva de ley: el uso del instrumento legal '
+                           'permitido por su respectivo {titular}.',
+                           'El principio de {igualdad tributaria} establece '
+                           'que situaciones iguales deben ser tratadas '
+                           '{igualmente} y las desiguales, desigualmente.']}],
   'cuadros': [{'titulo': '14.3 PRINCIPIOS DE LA ECONOMÍA SOCIAL DE MERCADO',
                'encabezados': ['Principio', 'Contenido'],
                'filas': [['{Solidaridad}',
@@ -4864,7 +5121,164 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Poder Judicial',
                                   'Congreso',
                                   'Estado'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El artículo 58 de la Constitución establece '
+                             'que la iniciativa privada es libre, ejercida '
+                             'en una economía:',
+                 'alternativas': ['Centralmente planificada',
+                                  'Social de mercado',
+                                  'De subsistencia',
+                                  'Cerrada exclusiva',
+                                  'Colectivizada'],
+                 'correcta': 'B'},
+                {'pregunta': 'El reconocimiento constitucional de las '
+                             'libertades económicas en el Perú se inicia con '
+                             'el texto de:',
+                 'alternativas': ['1856', '1823', '1920', '1979', '1993'],
+                 'correcta': 'B'},
+                {'pregunta': 'La libertad de empresa comprende, entre otras '
+                             'facultades, emprender, crear, organizar, '
+                             'gestionar y:',
+                 'alternativas': ['Evadir impuestos',
+                                  'Cerrar la empresa',
+                                  'Monopolizar el mercado',
+                                  'Evitar la competencia',
+                                  'Contaminar libremente'],
+                 'correcta': 'B'},
+                {'pregunta': 'La libertad de comercio se define como la '
+                             'capacidad de mediar entre la oferta y:',
+                 'alternativas': ['El Estado',
+                                  'La demanda',
+                                  'El sistema tributario',
+                                  'Los tratados internacionales',
+                                  'La banca central'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el artículo 59, el ejercicio de la '
+                             'libertad de comercio no debe ser lesivo a la '
+                             'moral, la salud o:',
+                 'alternativas': ['Las ganancias',
+                                  'La seguridad pública',
+                                  'Los impuestos',
+                                  'El comercio exterior',
+                                  'Las utilidades'],
+                 'correcta': 'B'},
+                {'pregunta': 'La libertad de industria consiste en la '
+                             'facultad de realizar operaciones para la '
+                             'obtención o transformación de:',
+                 'alternativas': ['Servicios exclusivamente',
+                                  'Productos naturales',
+                                  'Capital financiero exclusivo',
+                                  'Mano de obra exclusiva',
+                                  'Divisas exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El artículo 65 de la Constitución establece un '
+                             'deber especial de protección a:',
+                 'alternativas': ['Los empresarios',
+                                  'Los consumidores y usuarios',
+                                  'El Estado exclusivamente',
+                                  'Los bancos',
+                                  'Los inversionistas exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tributo es el género, y sus especies son el '
+                             'impuesto, la tasa y:',
+                 'alternativas': ['El arancel exclusivo',
+                                  'La contribución',
+                                  'La multa',
+                                  'El interés',
+                                  'La comisión'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fundamento del impuesto es la capacidad:',
+                 'alternativas': ['Legal',
+                                  'Contributiva',
+                                  'Patrimonial exclusiva',
+                                  'Comercial exclusiva',
+                                  'Administrativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La recaudación de impuestos es controlada '
+                             'mediante el principio de caja:',
+                 'alternativas': ['Múltiple',
+                                  'Única',
+                                  'Compartida',
+                                  'Regional',
+                                  'Descentralizada'],
+                 'correcta': 'B'},
+                {'pregunta': 'La tasa tiene como hecho gravado un servicio '
+                             'público:',
+                 'alternativas': ['Colectivo exclusivo',
+                                  'Individualizado',
+                                  'Gratuito exclusivo',
+                                  'Voluntario',
+                                  'Optativo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La contribución es el tributo cuya obligación '
+                             'tiene como hecho generador beneficios '
+                             'derivados de obras públicas o:',
+                 'alternativas': ['Ventas privadas',
+                                  'Actividades estatales',
+                                  'Herencias',
+                                  'Donaciones',
+                                  'Préstamos bancarios'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el artículo 74, los tributos se crean, '
+                             'modifican o derogan exclusivamente por ley o:',
+                 'alternativas': ['Decreto supremo exclusivo',
+                                  'Decreto legislativo en caso de delegación',
+                                  'Ordenanza municipal exclusiva',
+                                  'Resolución ministerial',
+                                  'Reglamento interno'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los gobiernos locales pueden crear, modificar '
+                             'y suprimir contribuciones y tasas dentro de '
+                             'su:',
+                 'alternativas': ['Presupuesto exclusivo',
+                                  'Jurisdicción',
+                                  'Consejo Regional',
+                                  'Cartera ministerial',
+                                  'Circunscripción electoral'],
+                 'correcta': 'B'},
+                {'pregunta': 'Ningún tributo puede tener efecto:',
+                 'alternativas': ['Retroactivo exclusivamente',
+                                  'Confiscatorio',
+                                  'Progresivo',
+                                  'Proporcional',
+                                  'Regresivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el artículo 74, los decretos de urgencia '
+                             'no pueden contener materia:',
+                 'alternativas': ['Presupuestaria exclusiva',
+                                  'Tributaria',
+                                  'Educativa',
+                                  'Ambiental',
+                                  'Laboral exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El principio de reserva de la ley establece '
+                             'que solo por ley se puede determinar al '
+                             'contribuyente y fijar:',
+                 'alternativas': ['El nombre del tributo',
+                                  'El monto del tributo',
+                                  'La fecha de pago exclusivamente',
+                                  'El lugar de pago',
+                                  'El banco receptor'],
+                 'correcta': 'B'},
+                {'pregunta': 'El principio que complementa la reserva de '
+                             'ley, referido al uso del instrumento legal '
+                             'permitido por su titular, se llama principio '
+                             'de:',
+                 'alternativas': ['Igualdad',
+                                  'Legalidad',
+                                  'Proporcionalidad',
+                                  'Capacidad contributiva',
+                                  'No confiscatoriedad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El principio de igualdad tributaria establece '
+                             'que situaciones iguales deben ser tratadas '
+                             'igualmente y las situaciones desiguales:',
+                 'alternativas': ['También igualmente',
+                                  'Desigualmente',
+                                  'De forma arbitraria',
+                                  'Sin ningún criterio',
+                                  'Con exención total'],
+                 'correcta': 'B'}]},
  {'num': 15,
   'titulo': 'Descentralización, Gobiernos Regionales y Gobiernos Locales',
   'secciones': [{'titulo': '15.1 CONCEPTO DE DESCENTRALIZACIÓN',
@@ -4903,59 +5317,49 @@ BALOTAS_CIVICA = [{'num': 1,
                            'que carecieron de respaldo social provinciano.',
                            'El periodo del {federalismo} fallido se ubica '
                            'entre 1821 y 1873.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La descentralización forma parte de la reforma '
-                           '{Del Estado peruano}.',
-                           'La descentralización busca alcanzar un gobierno '
-                           '{Efectivo, eficiente y al servicio de la '
-                           'ciudadanía}.',
-                           'Según Finot, la descentralización es un proceso '
-                           'de transferencia desde el gobierno nacional '
-                           'hacia {Una autoridad subnacional o local}.',
-                           'La descentralización, según el texto, busca '
-                           'reducir {La pobreza y la corrupción}.',
-                           'Un objetivo general de la descentralización es '
-                           'que cada gobierno regional y local {Decida sobre '
-                           'sus propios recursos}.',
-                           'Un objetivo político de la descentralización es '
-                           '{La unidad y eficiencia del Estado}.',
-                           'Un objetivo económico de la descentralización es '
-                           '{El desarrollo económico autosostenido de las '
-                           'regiones}.',
-                           'Otro objetivo económico de la descentralización '
-                           'es la redistribución {Equitativa de los recursos '
-                           'del Estado}.',
-                           'Históricamente, el Perú ha sido caracterizado '
-                           'por los analistas como un país {Centralista}.',
-                           'El «descentralismo centralista» se extiende '
-                           'desde el inicio de la República hasta {1920}.',
-                           'Los primeros proyectos de descentralización '
-                           'provinieron principalmente de {El pensamiento '
-                           'capitalino, de la élite de Lima}.',
-                           'Los primeros proyectos de descentralización '
-                           'carecieron de {Presupuesto estatal}.',
-                           'El periodo del federalismo fallido en el Perú se '
-                           'ubica entre {1821 y 1873}.',
-                           'La descentralización es descrita como un proceso '
-                           '{Multidimensional, con dinámicas políticas, '
-                           'fiscales y administrativas}.',
-                           'Entre los objetivos generales de la '
-                           'descentralización figura la participación de {La '
-                           'sociedad civil}.',
-                           'La descentralización busca la integración entre '
-                           'el Estado y {La sociedad civil}.',
-                           'Entre los objetivos políticos figura la '
-                           'institucionalización de {Sólidos gobiernos '
-                           'regionales y locales}.',
-                           'Un objetivo económico es la cobertura de '
-                           'servicios sociales básicos en {Todo el '
-                           'territorio nacional}.',
-                           'El descentralismo formó parte de casi todos los '
-                           'proyectos políticos, pero por razones '
-                           'estructurales {No llegaron a concretarse}.',
-                           'La descentralización tiene como finalidad el '
-                           'desarrollo integral, armónico y {Sostenible del '
-                           'país}.']}],
+                {'titulo': '15.4 ORGANIZACIÓN DE LOS GOBIERNOS REGIONALES',
+                 'items': ['El {Consejo Regional} es el órgano normativo y '
+                           '{fiscalizador} del Gobierno Regional, elegido '
+                           'por sufragio directo por {4} años.',
+                           'La {Presidencia Regional} es el órgano '
+                           'ejecutivo; desde 2015 se le llama {Gobernador} '
+                           'Regional.',
+                           'El {Consejo de Coordinación Regional} es un '
+                           'órgano consultivo integrado por alcaldes '
+                           'provinciales y representantes de la sociedad '
+                           '{civil}.',
+                           'Las {ordenanzas regionales} norman asuntos de '
+                           'carácter general; son dictadas por el Consejo '
+                           'Regional.',
+                           'Los {acuerdos regionales} expresan la decisión '
+                           'del Consejo Regional sobre asuntos internos o de '
+                           'interés {público}.',
+                           'Los {decretos regionales} establecen normas '
+                           'reglamentarias; son aprobados por la '
+                           '{presidencia} regional.',
+                           'Las {resoluciones regionales} norman asuntos de '
+                           'carácter {administrativo}.']},
+                {'titulo': '15.5 LOS GOBIERNOS LOCALES',
+                 'items': ['Los {Gobiernos Locales} conforman el {tercer} '
+                           'nivel de gobierno del Estado, elegidos por voto '
+                           'popular.',
+                           'Los Gobiernos Locales también se denominan '
+                           '{municipalidades}, y pueden ser provinciales o '
+                           '{distritales}.',
+                           'Los {alcaldes} son elegidos por sufragio directo '
+                           'por {4} años, en forma conjunta con los '
+                           'regidores.',
+                           'La estructura orgánica básica de las '
+                           'municipalidades está compuesta por el {Concejo '
+                           'Municipal} y la {Alcaldía}.',
+                           'El {Concejo Municipal} está conformado por el '
+                           'alcalde y los regidores, con funciones '
+                           '{normativas} y fiscalizadoras.',
+                           'La {Alcaldía} es el órgano ejecutivo; el alcalde '
+                           'es el representante {legal} de la municipalidad.',
+                           'El {Consejo de Coordinación Local} y las {Juntas '
+                           'de Delegados Vecinales} son mecanismos de '
+                           'participación ciudadana municipal.']}],
   'cuadros': [{'titulo': '15.2 TIPOS DE OBJETIVOS DE LA DESCENTRALIZACIÓN',
                'encabezados': ['Tipo', 'Ejemplo'],
                'filas': [['{Generales}',
@@ -5124,6 +5528,125 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Exclusivo de Lima',
                                   'Solo económico',
                                   'Limitado a la costa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El órgano normativo y fiscalizador del '
+                             'Gobierno Regional se llama:',
+                 'alternativas': ['Presidencia Regional',
+                                  'Consejo Regional',
+                                  'Consejo de Coordinación Regional',
+                                  'Gerencia Regional',
+                                  'Alcaldía Regional'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los consejeros regionales son elegidos por '
+                             'sufragio directo por un periodo de:',
+                 'alternativas': ['Cinco años',
+                                  'Cuatro años',
+                                  'Tres años',
+                                  'Seis años',
+                                  'Dos años'],
+                 'correcta': 'B'},
+                {'pregunta': 'El órgano ejecutivo del Gobierno Regional se '
+                             'llama Presidencia Regional; desde 2015 al '
+                             'presidente se le llama:',
+                 'alternativas': ['Alcalde Regional',
+                                  'Gobernador Regional',
+                                  'Prefecto',
+                                  'Ministro Regional',
+                                  'Delegado Regional'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Consejo de Coordinación Regional está '
+                             'integrado por alcaldes provinciales y '
+                             'representantes de:',
+                 'alternativas': ['El Congreso',
+                                  'La sociedad civil',
+                                  'El Poder Judicial',
+                                  'Otros gobiernos regionales exclusivamente',
+                                  'El Ejecutivo exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las normas que regulan asuntos de carácter '
+                             'general del gobierno regional se llaman:',
+                 'alternativas': ['Acuerdos regionales',
+                                  'Ordenanzas regionales',
+                                  'Decretos regionales',
+                                  'Resoluciones regionales',
+                                  'Directivas regionales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las normas que expresan la decisión del '
+                             'Consejo Regional sobre asuntos internos se '
+                             'llaman:',
+                 'alternativas': ['Ordenanzas regionales',
+                                  'Acuerdos regionales',
+                                  'Decretos regionales',
+                                  'Resoluciones regionales',
+                                  'Circulares regionales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las normas reglamentarias para ejecutar las '
+                             'ordenanzas regionales, aprobadas por la '
+                             'presidencia regional, se llaman:',
+                 'alternativas': ['Acuerdos regionales',
+                                  'Decretos regionales',
+                                  'Resoluciones regionales',
+                                  'Ordenanzas regionales',
+                                  'Directivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los Gobiernos Locales conforman el nivel de '
+                             'gobierno del Estado número:',
+                 'alternativas': ['Primero',
+                                  'Tercero',
+                                  'Segundo',
+                                  'Cuarto',
+                                  'Quinto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los Gobiernos Locales también se denominan '
+                             'municipalidades, y pueden ser provinciales o:',
+                 'alternativas': ['Regionales',
+                                  'Distritales',
+                                  'Nacionales',
+                                  'Departamentales',
+                                  'Metropolitanas exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los alcaldes son elegidos por sufragio directo '
+                             'por un periodo de:',
+                 'alternativas': ['Tres años',
+                                  'Cuatro años',
+                                  'Cinco años',
+                                  'Seis años',
+                                  'Dos años'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura orgánica básica de las '
+                             'municipalidades está compuesta por el Concejo '
+                             'Municipal y:',
+                 'alternativas': ['El Consejo Regional',
+                                  'La Alcaldía',
+                                  'La Gerencia General',
+                                  'El Consejo de Coordinación exclusivo',
+                                  'La Junta Vecinal exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Concejo Municipal está conformado por el '
+                             'alcalde y:',
+                 'alternativas': ['Los gerentes municipales',
+                                  'Los regidores',
+                                  'Los vecinos elegidos',
+                                  'El gobernador regional',
+                                  'Los jueces de paz'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Alcaldía es el órgano ejecutivo del '
+                             'gobierno local; el alcalde es el representante '
+                             'legal y su:',
+                 'alternativas': ['Consultor externo',
+                                  'Máxima autoridad administrativa',
+                                  'Asesor jurídico',
+                                  'Vocero exclusivo',
+                                  'Fiscalizador'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los mecanismos de participación ciudadana '
+                             'municipal incluyen el Consejo de Coordinación '
+                             'Local y:',
+                 'alternativas': ['El Congreso Local',
+                                  'Las Juntas de Delegados Vecinales',
+                                  'El Poder Judicial Local',
+                                  'La Fiscalía Municipal',
+                                  'El Tribunal Municipal'],
                  'correcta': 'B'}]},
  {'num': 16,
   'titulo': 'Derechos Humanos',
@@ -5155,7 +5678,22 @@ BALOTAS_CIVICA = [{'num': 1,
                            'Son {progresivos}: dado su carácter evolutivo, '
                            'en el futuro pueden reconocerse nuevos derechos '
                            'humanos.']},
-                {'titulo': '16.3 EVOLUCIÓN: EL PRIMER MOMENTO O '
+                {'titulo': '16.3 DIMENSIONES DE LOS DERECHOS HUMANOS',
+                 'items': ['Los derechos humanos pueden conceptualizarse '
+                           'desde {cuatro} dimensiones: histórica, ética, '
+                           'política y {jurídica}.',
+                           'La dimensión {histórica} reconoce que los '
+                           'derechos humanos tienen un pasado, presente y '
+                           '{futuro}.',
+                           'La dimensión {ética} se fundamenta en valores '
+                           'como la dignidad humana y la {libertad}.',
+                           'La dimensión {política} refiere a que los '
+                           'derechos fueron proclamados por la {ONU} para '
+                           'proteger a los seres humanos.',
+                           'La dimensión {jurídica} refiere a que los '
+                           'derechos aparecen en la Constitución como normas '
+                           'de obligatorio {cumplimiento}.']},
+                {'titulo': '16.4 EVOLUCIÓN: EL PRIMER MOMENTO O '
                            'JURIDIFICACIÓN',
                  'items': ['La evolución de los derechos humanos comprende '
                            'dos grandes momentos: la {juridificación} y la '
@@ -5167,60 +5705,39 @@ BALOTAS_CIVICA = [{'num': 1,
                            'El Acta de Independencia de Estados Unidos data '
                            'de {1776}, y la Declaración de los Derechos del '
                            'Hombre y del Ciudadano, de Francia, de {1789}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Los derechos humanos incluyen a toda persona por '
-                           'el simple hecho de {Su condición humana}.',
-                           'Según Hernández Gómez, los derechos humanos son '
-                           'condiciones que permiten a la persona {Su '
-                           'realización}.',
-                           'Que los derechos humanos se apliquen a todos sin '
-                           'distinción corresponde a la característica de '
-                           '{Universalidad}.',
-                           'Que los derechos humanos no se pierdan con el '
-                           'paso del tiempo corresponde a que son '
-                           '{Imprescriptibles}.',
-                           'Que no se pueda hablar de una división de los '
-                           'derechos humanos corresponde a que son '
-                           '{Indivisibles}.',
-                           'Que nadie pueda atentar contra los derechos '
-                           'humanos corresponde a que son {Inviolables}.',
-                           'Que un derecho reconocido quede integrado de '
-                           'forma irrevocable corresponde a que son '
-                           '{Irreversibles}.',
-                           'Que los derechos humanos formen un conjunto '
-                           'inseparable corresponde a que son '
-                           '{Indisolubles}.',
-                           'Que el Estado deba respetar los derechos humanos '
-                           'aunque no exista ley expresa corresponde a que '
-                           'son {Obligatorios}.',
-                           'Que puedan reconocerse nuevos derechos humanos '
-                           'en el futuro corresponde a que son '
-                           '{Progresivos}.',
-                           'La evolución de los derechos humanos comprende '
-                           'dos grandes momentos: la juridificación y {La '
-                           'internacionalización}.',
-                           'La Carta Magna, o Petición de los Derechos, se '
-                           'dio en Inglaterra en el año {1215}.',
-                           'El Acta de Independencia de Estados Unidos data '
-                           'de {1776}.',
-                           'La Declaración de los Derechos del Hombre y del '
-                           'Ciudadano corresponde a {Francia, 1789}.',
-                           'El periodo de juridificación se caracteriza '
-                           'porque los nuevos Estados modernos {Introdujeron '
-                           'el reconocimiento y protección de estos derechos '
-                           'en sus legislaciones}.',
-                           'El periodo de juridificación estuvo imbuido de '
-                           'la ideología {Liberal}.',
-                           'El ejercicio de rebeliones históricas para '
-                           'lograr el reconocimiento de derechos demuestra '
-                           'que estos son, en parte {Producto de un proceso '
-                           'histórico y social}.',
-                           'El derecho a la vida, como derecho inviolable, '
-                           'no puede ser violentado {En ninguna '
-                           'circunstancia}.',
-                           'Los derechos humanos, según su carácter '
-                           'obligatorio, deben respetarse {Aunque no exista '
-                           'una ley que lo diga expresamente}.']}],
+                {'titulo': '16.5 CLASIFICACIÓN POR GENERACIONES',
+                 'items': ['La división de los derechos humanos en tres '
+                           'generaciones fue propuesta en {1979} por el '
+                           'jurista checo Karel {Vasak}.',
+                           'Los {derechos de primera generación} se '
+                           'establecieron desde el siglo XVIII a inicios del '
+                           'XX; consideran a la persona como {individuo} con '
+                           'libertad y autonomía.',
+                           'Los derechos de primera generación también se '
+                           'llaman derechos {civiles} y políticos; el más '
+                           'importante es el derecho a la {vida}.',
+                           'El Perú ratificó el Pacto Internacional de '
+                           'Derechos Civiles y Políticos por Decreto Ley N° '
+                           '22128, el {23} de marzo de {1976}.',
+                           'Los {derechos de segunda generación} se '
+                           'establecieron desde fines del siglo XIX hasta '
+                           'mediados del XX; son derechos {económicos}, '
+                           'sociales y culturales.',
+                           'Los derechos de segunda generación situaron al '
+                           'Estado Liberal en un {Estado Social} de Derecho.',
+                           'Entre los derechos de segunda generación están '
+                           'el derecho al trabajo, la libre {sindicación}, y '
+                           'la protección de la {salud}.',
+                           'Los {derechos de tercera generación}, o de '
+                           '{solidaridad}, se reconocen a partir de la '
+                           'década de {1980}.',
+                           'Los titulares de los derechos de tercera '
+                           'generación son sujetos {colectivos}: un pueblo, '
+                           'una nación, una etnia.',
+                           'Entre los derechos de tercera generación están '
+                           'la autodeterminación de los pueblos, la '
+                           'protección del {medio ambiente}, y el derecho a '
+                           'la {paz}.']}],
   'cuadros': [{'titulo': '16.3 HITOS DEL PERIODO DE JURIDIFICACIÓN',
                'encabezados': ['Hito', 'País', 'Año'],
                'filas': [['{Carta Magna}', 'Inglaterra', '{1215}'],
@@ -5382,7 +5899,129 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Solo si están en la ley nacional',
                                   'Solo si lo exige un tratado',
                                   'Solo por decisión del gobierno de turno'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'La división de los derechos humanos en tres '
+                             'generaciones fue propuesta en 1979 por:',
+                 'alternativas': ['Norberto Bobbio',
+                                  'Karel Vasak',
+                                  'Hans Kelsen',
+                                  'John Rawls',
+                                  'Rousseau'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos de primera generación consideran '
+                             'a la persona como:',
+                 'alternativas': ['Un grupo social',
+                                  'Un individuo con libertad y autonomía',
+                                  'Un sujeto colectivo',
+                                  'Una nación',
+                                  'Un pueblo indígena'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos de primera generación también se '
+                             'conocen como derechos:',
+                 'alternativas': ['Económicos y sociales',
+                                  'Civiles y políticos',
+                                  'De solidaridad',
+                                  'Colectivos',
+                                  'Difusos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El derecho más importante entre los de primera '
+                             'generación es el derecho a:',
+                 'alternativas': ['La propiedad',
+                                  'La vida',
+                                  'El trabajo',
+                                  'La paz',
+                                  'La sindicación'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Perú ratificó el Pacto Internacional de '
+                             'Derechos Civiles y Políticos mediante Decreto '
+                             'Ley N°:',
+                 'alternativas': ['22128',
+                                  '26300',
+                                  '28237',
+                                  '27444',
+                                  '25278'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos de segunda generación son '
+                             'derechos económicos, sociales y:',
+                 'alternativas': ['Difusos',
+                                  'Culturales',
+                                  'Colectivos exclusivos',
+                                  'De solidaridad exclusiva',
+                                  'Ambientales exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La instauración de los derechos de segunda '
+                             'generación provocó la sustitución del Estado '
+                             'Liberal por el Estado:',
+                 'alternativas': ['Absolutista',
+                                  'Social de Derecho',
+                                  'Totalitario',
+                                  'Confesional',
+                                  'Militar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los derechos de segunda generación está '
+                             'el derecho al trabajo y a la libre:',
+                 'alternativas': ['Emigración',
+                                  'Sindicación',
+                                  'Herencia',
+                                  'Propiedad',
+                                  'Religión'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos de tercera generación también se '
+                             'llaman derechos de:',
+                 'alternativas': ['Libertad',
+                                  'Solidaridad',
+                                  'Propiedad',
+                                  'Autonomía individual',
+                                  'Igualdad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos de tercera generación se '
+                             'reconocen a partir de la década de:',
+                 'alternativas': ['1960', '1980', '1945', '1990', '1970'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los titulares de los derechos de tercera '
+                             'generación son sujetos:',
+                 'alternativas': ['Individuales exclusivamente',
+                                  'Colectivos',
+                                  'Estatales exclusivamente',
+                                  'Empresariales',
+                                  'Religiosos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los derechos de tercera generación está '
+                             'la autodeterminación de los pueblos y la '
+                             'protección de:',
+                 'alternativas': ['La propiedad privada',
+                                  'El medio ambiente',
+                                  'El comercio',
+                                  'La banca',
+                                  'Las telecomunicaciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los derechos humanos pueden conceptualizarse '
+                             'desde cuatro dimensiones: histórica, ética, '
+                             'política y:',
+                 'alternativas': ['Económica',
+                                  'Jurídica',
+                                  'Social exclusiva',
+                                  'Cultural exclusiva',
+                                  'Religiosa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La dimensión de los derechos humanos que se '
+                             'fundamenta en valores como la dignidad y la '
+                             'libertad se llama dimensión:',
+                 'alternativas': ['Histórica',
+                                  'Ética',
+                                  'Jurídica',
+                                  'Política',
+                                  'Social'],
+                 'correcta': 'B'},
+                {'pregunta': 'La dimensión de los derechos humanos que '
+                             'refiere a su proclamación por la ONU se llama '
+                             'dimensión:',
+                 'alternativas': ['Ética',
+                                  'Política',
+                                  'Jurídica',
+                                  'Histórica',
+                                  'Económica'],
+                 'correcta': 'B'}]},
  {'num': 17,
   'titulo': 'Garantías Constitucionales',
   'secciones': [{'titulo': '17.1 CONCEPTO Y ANTECEDENTES',
@@ -5431,52 +6070,69 @@ BALOTAS_CIVICA = [{'num': 1,
                            'La acción de habeas corpus está exenta de '
                            '{formalidades}: no requiere poder, tasas '
                            'judiciales ni firma de letrado.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El término «garantía» se define como la '
-                           'seguridad o protección frente a {Un peligro en '
-                           'el disfrute de los derechos}.',
-                           'En el Perú, la institucionalidad de las '
-                           'garantías se inicia con la Constitución de '
-                           '{1920}.',
-                           'La Constitución de 1920 distinguió tres tipos de '
-                           'garantías: nacionales, individuales y '
-                           '{Sociales}.',
-                           'Según García Toma, las Garantías '
-                           'Constitucionales aseguran el disfrute de los '
-                           'derechos {Públicos y privados}.',
-                           'El artículo de la Constitución de 1993 que '
-                           'establece las Garantías Constitucionales es el '
-                           '{Artículo 200}.',
-                           'El número de Garantías Constitucionales '
-                           'establecidas en el artículo 200 es {Seis}.',
-                           'La primera garantía constitucional reconocida en '
-                           'el Perú, en 1920, fue {El Habeas Corpus}.',
-                           'La Acción Popular fue incorporada en la '
-                           'Constitución de {1933}.',
-                           'La Acción de Amparo y la Acción de '
-                           'Inconstitucionalidad se incorporaron en la '
-                           'Constitución de {1979}.',
-                           'El Habeas Data y la Acción de Cumplimiento se '
-                           'incorporaron en la Constitución de {1993}.',
-                           'La expresión «habeas corpus» significa '
-                           'literalmente {Que traigas el cuerpo}.',
-                           'El antecedente histórico del habeas corpus es la '
-                           'ley inglesa de {1679}.',
-                           'El habeas corpus protege principalmente {La '
-                           'libertad individual y la seguridad personal}.',
-                           'El habeas corpus se presenta, en primera '
-                           'instancia, ante {El Juez especializado en lo '
-                           'Penal}.',
-                           'Si no hay Juez Penal disponible, el habeas '
-                           'corpus se presenta ante {El Juez de Paz '
-                           'Letrado}.',
-                           'La última y definitiva instancia para resolver '
-                           'denegatorias de habeas corpus es {El Tribunal '
+                {'titulo': '17.4 LA ACCIÓN DE AMPARO',
+                 'items': ['La {Acción de Amparo} fue introducida por '
+                           'primera vez en la Constitución de {1979}, como '
+                           'garantía distinta al hábeas corpus.',
+                           'El Amparo protege todos los derechos '
+                           'constitucionales, excepto los protegidos por '
+                           'hábeas corpus y hábeas {data}.',
+                           'El Amparo tiene por objeto reponer las cosas al '
+                           'estado {anterior} a la violación de un derecho.',
+                           'La demanda de Amparo se presenta ante el Juez '
+                           'especializado en lo {civil}.',
+                           'El plazo para presentar el Amparo es de {60} '
+                           'días desde la vulneración, y {30} días en '
+                           'sentencias judiciales.',
+                           'El Amparo requiere formalismo: se presenta por '
+                           'escrito con autorización de {abogado}.',
+                           'El Amparo no procede contra normas legales ni '
+                           'contra resoluciones judiciales de procedimiento '
+                           '{regular}.']},
+                {'titulo': '17.5 LA ACCIÓN DE HÁBEAS DATA',
+                 'items': ['El {Hábeas Data} fue introducido por la '
+                           'Constitución de {1993}, para proteger frente al '
+                           'abuso de la informática.',
+                           'El Hábeas Data protege el derecho a solicitar y '
+                           'recibir {información}, y la protección de la '
+                           'intimidad personal y {familiar}.',
+                           'El plazo para presentar el Hábeas Data es de '
+                           '{60} días hábiles después de la respuesta '
+                           '{denegatoria}.',
+                           'El Hábeas Data no procede sobre información de '
+                           '{Defensa Nacional}, secreto bancario, y '
+                           '{telecomunicaciones}.']},
+                {'titulo': '17.6 LA ACCIÓN DE INCONSTITUCIONALIDAD',
+                 'items': ['La {Acción de Inconstitucionalidad} se crea con '
+                           'la Constitución de {1979}; procede contra normas '
+                           'de rango de ley.',
+                           'Es la única garantía que se presenta en '
+                           '{instancia única} y definitiva ante el {Tribunal '
                            'Constitucional}.',
-                           'La acción de habeas corpus se caracteriza por '
-                           'estar exenta de {Formalidades}.',
-                           'El habeas corpus puede formularse {Por escrito o '
-                           'verbalmente, en forma directa o por correo}.']}],
+                           'Están facultados para interponerla, entre otros, '
+                           'el Presidente, el Fiscal de la Nación, y el '
+                           '{25}% de congresistas.',
+                           'También puede interponerla un grupo de {5000} '
+                           'ciudadanos con firmas comprobadas por el JNE.',
+                           'El plazo para interponerla es de {6} años desde '
+                           'su publicación, y 6 meses para tratados '
+                           'internacionales.',
+                           'Se requiere el voto a favor de {5} magistrados '
+                           'del Tribunal Constitucional.']},
+                {'titulo': '17.7 LA ACCIÓN POPULAR Y DE CUMPLIMIENTO',
+                 'items': ['La {Acción Popular} se originó en la justicia '
+                           'romana; se introdujo por primera vez en la '
+                           'Constitución de {1933}.',
+                           'La Acción Popular procede contra normas de rango '
+                           'de decretos y {resoluciones}, y es competencia '
+                           'exclusiva del Poder {Judicial}.',
+                           'El plazo para la Acción Popular es de {5} años '
+                           'desde su publicación.',
+                           'La {Acción de Cumplimiento} fue creada por la '
+                           'Constitución de {1993}, para hacer cumplir '
+                           'normas legales o actos administrativos.',
+                           'El plazo para la Acción de Cumplimiento es de '
+                           '{60} días después de no cumplirse el mandato.']}],
   'cuadros': [{'titulo': '17.2 EVOLUCIÓN DE LAS GARANTÍAS POR CONSTITUCIÓN',
                'encabezados': ['Constitución', 'Garantía incorporada'],
                'filas': [['{1920}', '{Habeas Corpus}'],
@@ -5623,7 +6279,128 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Exclusivamente por vía electrónica',
                                   'Por escrito o verbalmente, en forma '
                                   'directa o por correo'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'La Acción de Amparo fue introducida por '
+                             'primera vez, como garantía distinta al hábeas '
+                             'corpus, en la Constitución de:',
+                 'alternativas': ['1933', '1979', '1993', '1920', '1856'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción de Amparo protege todos los derechos '
+                             'constitucionales, excepto los protegidos por '
+                             'hábeas corpus y:',
+                 'alternativas': ['Acción popular',
+                                  'Hábeas data',
+                                  'Inconstitucionalidad',
+                                  'Cumplimiento',
+                                  'Proceso competencial'],
+                 'correcta': 'B'},
+                {'pregunta': 'El plazo para presentar la Acción de Amparo es '
+                             'de 60 días desde la vulneración del derecho, '
+                             'salvo en sentencias judiciales, donde el plazo '
+                             'es de:',
+                 'alternativas': ['15 días',
+                                  '30 días',
+                                  '45 días',
+                                  '90 días',
+                                  '10 días'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Hábeas Data fue introducido por la '
+                             'Constitución de:',
+                 'alternativas': ['1979', '1993', '1933', '1920', '1856'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Hábeas Data protege el derecho a solicitar '
+                             'y recibir información, y la protección de la '
+                             'intimidad:',
+                 'alternativas': ['Comercial',
+                                  'Personal y familiar',
+                                  'Empresarial',
+                                  'Política',
+                                  'Religiosa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El plazo para presentar el Hábeas Data es de '
+                             '60 días hábiles después de:',
+                 'alternativas': ['La sentencia judicial',
+                                  'La respuesta denegatoria',
+                                  'La publicación de la norma',
+                                  'El acto administrativo',
+                                  'La notificación fiscal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción de Inconstitucionalidad se crea con '
+                             'la Constitución de:',
+                 'alternativas': ['1933', '1979', '1993', '1856', '1920'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción de Inconstitucionalidad es la única '
+                             'garantía que se presenta en:',
+                 'alternativas': ['Primera instancia',
+                                  'Instancia única y definitiva',
+                                  'Tres instancias',
+                                  'Doble instancia',
+                                  'Instancia administrativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los facultados para interponer Acción de '
+                             'Inconstitucionalidad está un grupo de '
+                             'ciudadanos con firmas comprobadas por el JNE, '
+                             'en número no menor a:',
+                 'alternativas': ['1000', '5000', '500', '10000', '2000'],
+                 'correcta': 'B'},
+                {'pregunta': 'El plazo para interponer una Acción de '
+                             'Inconstitucionalidad es de 6 años desde su '
+                             'publicación, y en tratados internacionales el '
+                             'plazo es de:',
+                 'alternativas': ['3 meses',
+                                  '6 meses',
+                                  '1 año',
+                                  '2 años',
+                                  '6 años también'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para resolver la Acción de '
+                             'Inconstitucionalidad se requiere el voto a '
+                             'favor de un número de magistrados del Tribunal '
+                             'Constitucional igual a:',
+                 'alternativas': ['3', '5', '7', '4', '6'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción Popular se originó en la justicia '
+                             'romana y se introdujo por primera vez en la '
+                             'Constitución de:',
+                 'alternativas': ['1920', '1933', '1979', '1993', '1856'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción Popular procede contra normas de '
+                             'rango de decretos y resoluciones, y es '
+                             'competencia exclusiva de:',
+                 'alternativas': ['El Tribunal Constitucional',
+                                  'El Poder Judicial',
+                                  'El Congreso',
+                                  'La Contraloría',
+                                  'El Ejecutivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El plazo para interponer una Acción Popular es '
+                             'de:',
+                 'alternativas': ['3 años',
+                                  '5 años',
+                                  '6 años',
+                                  '10 años',
+                                  '1 año'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción de Cumplimiento fue creada por la '
+                             'Constitución de:',
+                 'alternativas': ['1979', '1993', '1933', '1920', '1856'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Acción de Cumplimiento sirve para hacer '
+                             'cumplir normas legales o:',
+                 'alternativas': ['Sentencias privadas',
+                                  'Actos administrativos',
+                                  'Contratos comerciales',
+                                  'Decisiones empresariales',
+                                  'Reglamentos internos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El plazo para presentar la Acción de '
+                             'Cumplimiento es de 60 días después de:',
+                 'alternativas': ['La publicación de la norma',
+                                  'No haberse cumplido el mandato',
+                                  'La demanda inicial',
+                                  'La sentencia',
+                                  'La notificación fiscal'],
+                 'correcta': 'B'}]},
  {'num': 18,
   'titulo': 'Sistemas de Protección de los Derechos Humanos',
   'secciones': [{'titulo': '18.1 ANTECEDENTES: LA SOCIEDAD DE NACIONES',
