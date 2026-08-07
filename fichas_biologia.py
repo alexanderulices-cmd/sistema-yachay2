@@ -698,23 +698,25 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Las sales minerales más abundantes en el cuerpo '
                            'humano contienen {fósforo} y calcio.']},
                 {'titulo': '3.2.1 FUNCIONES DE LOS ELECTROLITOS',
-                 'items': ['El {sodio} (Na<super>+</super>) participa en la '
-                           'regulación osmótica y la conducción {nerviosa}; '
-                           'su exceso produce {hipertensión}.',
-                           'El {potasio} (K<super>+</super>) participa en la '
-                           'conducción nerviosa y la {contracción} muscular.',
-                           'El {calcio} (Ca<super>2+</super>) participa en '
-                           'la estructura ósea, la coagulación de la sangre '
-                           'y la contracción {muscular}.',
-                           'El {magnesio} (Mg<super>2+</super>) actúa como '
-                           'cofactor enzimático y forma parte de la '
-                           'estructura de la {clorofila}.',
-                           'El {cloruro} (Cl<super>-</super>) mantiene la '
-                           'electroneutralidad y el equilibrio hídrico '
-                           'celular.',
-                           'El {fosfato} (PO<sub>4</sub><super>3-</super>) '
-                           'es tampón intracelular y forma parte de '
-                           'nucleótidos, ADN y {ARN}.']}],
+                 'items': ['La concentración elevada de {sodio} '
+                           '(Na<super>+</super>) en la sangre produce '
+                           '{hipertensión} arterial.',
+                           'La concentración elevada de {potasio} '
+                           '(K<super>+</super>) en la sangre conlleva a la '
+                           '{hipotensión}.',
+                           'El {calcio} (Ca<super>2+</super>) participa '
+                           'también en los procesos de {secreción} de las '
+                           'células nerviosas.',
+                           'El {magnesio} (Mg<super>2+</super>) estabiliza '
+                           'los {ribosomas}, manteniendo unidas sus '
+                           'subunidades durante la síntesis de proteínas.',
+                           'El {cloruro} (Cl<super>-</super>) abunda en la '
+                           'mucosa gástrica, la orina, el sudor y la '
+                           '{leche}.',
+                           'El {bicarbonato} '
+                           '(HCO<sub>3</sub><super>-</super>) actúa como '
+                           'tampón {extracelular}, a diferencia del fosfato, '
+                           'que es tampón intracelular.']}],
   'cuadros': [{'titulo': 'DISTRIBUCIÓN DEL AGUA EN LA CÉLULA',
                'encabezados': ['Forma', 'Porcentaje'],
                'filas': [['Agua {libre}', '{95}%'],
@@ -722,19 +724,28 @@ BIOLOGIA_TEMAS = [{'num': 1,
                'despues_de': '3.1.1 AGUA EN LA CÉLULA'},
               {'titulo': 'PRINCIPALES ELECTROLITOS Y SU FUNCIÓN',
                'despues_de': '3.2.1 FUNCIONES DE LOS ELECTROLITOS',
-               'encabezados': ['Ion', 'Función principal'],
+               'encabezados': ['Ion', 'Funciones'],
                'filas': [['{Sodio} (Na<super>+</super>)',
-                          'Regulación osmótica y conducción {nerviosa}'],
+                          'Regulación osmótica, potencial de membrana, '
+                          'transporte y {conducción nerviosa}'],
                          ['{Potasio} (K<super>+</super>)',
-                          'Conducción nerviosa y contracción {muscular}'],
+                          'Regulación osmótica, potencial de membrana, '
+                          'transmisión de la excitación y {contracción '
+                          'muscular}'],
                          ['{Calcio} (Ca<super>2+</super>)',
-                          'Estructura ósea y coagulación de la {sangre}'],
+                          'Estructura ósea, estabilización de membrana, '
+                          'coagulación y {contracción muscular}'],
                          ['{Magnesio} (Mg<super>2+</super>)',
-                          'Cofactor enzimático y parte de la {clorofila}'],
+                          'Cofactor enzimático, estructura de la {clorofila} '
+                          'y componente de los huesos'],
                          ['{Cloruro} (Cl<super>-</super>)',
-                          'Electroneutralidad y equilibrio {hídrico}'],
+                          'Electroneutralidad, transporte de membrana y '
+                          'equilibrio {hídrico}'],
                          ['{Fosfato} (PO<sub>4</sub><super>3-</super>)',
-                          'Tampón intracelular; parte de ADN y {ARN}']]}],
+                          'Tampón intracelular, estructura ósea y parte de '
+                          'nucleótidos, ADN y {ARN}'],
+                         ['{Bicarbonato} (HCO<sub>3</sub><super>-</super>)',
+                          'Tampón {extracelular}']]}],
   'preguntas': [{'pregunta': 'Las biomoléculas inorgánicas se caracterizan '
                              'por la ausencia de enlaces:',
                  'alternativas': ['Carbono-carbono',
@@ -1003,10 +1014,51 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'De transporte',
                                   'Química',
                                   'Termorreguladora'],
+                 'correcta': 'B'},
+                {'pregunta': 'La concentración elevada de potasio en la '
+                             'sangre conlleva a:',
+                 'alternativas': ['Hipertensión',
+                                  'Hipotensión',
+                                  'Diabetes',
+                                  'Anemia',
+                                  'Osteoporosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además de ser cofactor enzimático, el magnesio '
+                             'estabiliza:',
+                 'alternativas': ['Las mitocondrias',
+                                  'Los ribosomas',
+                                  'El núcleo',
+                                  'El aparato de Golgi',
+                                  'Los lisosomas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El cloruro abunda en la mucosa gástrica, la '
+                             'orina, el sudor y:',
+                 'alternativas': ['La saliva exclusivamente',
+                                  'La leche',
+                                  'La bilis exclusivamente',
+                                  'El plasma exclusivamente',
+                                  'Las lágrimas exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'A diferencia del fosfato, que es tampón '
+                             'intracelular, el bicarbonato actúa como '
+                             'tampón:',
+                 'alternativas': ['Nuclear',
+                                  'Extracelular',
+                                  'Mitocondrial',
+                                  'Ribosomal',
+                                  'Lisosomal'],
+                 'correcta': 'B'},
+                {'pregunta': 'El calcio, además de la estructura ósea y la '
+                             'coagulación, participa en los procesos de:',
+                 'alternativas': ['Fotosíntesis',
+                                  'Secreción de las células nerviosas',
+                                  'Respiración celular exclusiva',
+                                  'Replicación del ADN',
+                                  'Traducción del ARN'],
                  'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'Biomoléculas Orgánicas',
-  'secciones': [{'titulo': '4.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
+  'secciones': [{'titulo': '4.1.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
                  'items': ['Los carbohidratos, o {glúcidos}, son moléculas '
                            'orgánicas formadas por carbono, hidrógeno y '
                            '{oxígeno}.',
@@ -1017,7 +1069,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{autótrofos} mediante la {fotosíntesis}.',
                            'La fórmula empírica de los carbohidratos es '
                            '{(CH2O)n}.']},
-                {'titulo': '4.2 FUNCIONES DE LOS CARBOHIDRATOS',
+                {'titulo': '4.1.2 FUNCIONES DE LOS CARBOHIDRATOS',
                  'items': ['Los carbohidratos son fuente {inmediata} de '
                            'energía, proporcionando la energía de {arranque} '
                            'para las actividades vitales.',
@@ -1027,7 +1079,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los carbohidratos participan como materiales '
                            '{estructurales}, como la {celulosa} en las '
                            'fibras vegetales.']},
-                {'titulo': '4.3 CLASIFICACIÓN: MONOSACÁRIDOS',
+                {'titulo': '4.1.3.A CLASIFICACIÓN: MONOSACÁRIDOS',
                  'items': ['Los {monosacáridos} son los azúcares más '
                            'simples, dulces, sólidos, cristalizables e '
                            '{hidrolizables}.',
@@ -1047,14 +1099,14 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'de los seres vivos.',
                            'La {galactosa} no se encuentra libre, sino '
                            'combinada con la glucosa formando {lactosa}.']},
-                {'titulo': '4.4 OLIGOSACÁRIDOS Y DISACÁRIDOS',
+                {'titulo': '4.1.3.B OLIGOSACÁRIDOS Y DISACÁRIDOS',
                  'items': ['Los {oligosacáridos} son cadenas de 2 a 10 '
                            'monosacáridos unidos por un enlace '
                            '{O-glucosídico}.',
                            'Los {disacáridos} son los oligosacáridos más '
                            'abundantes, formados por la unión de dos '
                            '{monosacáridos}.']},
-                {'titulo': '4.5 LÍPIDOS: CARACTERÍSTICAS Y FUNCIONES',
+                {'titulo': '4.2.1 LÍPIDOS: CARACTERÍSTICAS Y FUNCIONES',
                  'items': ['Los lípidos son insolubles en {agua}, pero '
                            'solubles en solventes orgánicos como el '
                            'cloroformo o el éter.',
@@ -1065,7 +1117,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{almacenamiento} de energía, aislantes térmicos, '
                            'protección de órganos y componentes de '
                            '{membranas}.']},
-                {'titulo': '4.6 ÁCIDOS GRASOS',
+                {'titulo': '4.2.3 COMPOSICIÓN MOLECULAR: ÁCIDOS GRASOS',
                  'items': ['Los ácidos grasos son cadenas hidrocarbonadas '
                            'con un {grupo carboxilo} en un extremo.',
                            'Los ácidos grasos {saturados} tienen solo '
@@ -1081,7 +1133,62 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'leche.',
                            'El ácido {oleico} (18 carbonos) es un ácido '
                            'graso insaturado con un solo doble enlace.']},
-                {'titulo': '4.7 PROTEÍNAS: CARACTERÍSTICAS Y FUNCIONES',
+                {'titulo': '4.2.4.A LÍPIDOS SIMPLES',
+                 'items': ['Los {lípidos simples} son ésteres de alcohol y '
+                           'ácidos grasos, con solo carbono, {hidrógeno} y '
+                           'oxígeno.',
+                           'Los {triglicéridos} o triacilgliceroles están '
+                           'formados por glicerol y tres ácidos grasos, '
+                           'unidos por enlace {éster}.',
+                           'Los {homoglicéridos} tienen los tres ácidos '
+                           'grasos del mismo tipo; los {heteroglicéridos} de '
+                           'tipos diferentes.',
+                           'Una grasa en estado líquido se llama {aceite}; '
+                           'en estado sólido se llama {sebo}.',
+                           'Los {céridos}, o ceras, son lípidos formados por '
+                           'un alcohol superior esterificado con un ácido '
+                           'graso; cumplen función de {protección}.',
+                           'Ejemplos de céridos son la {lanolina} (lana), la '
+                           'miricina (cera de abeja) y el {espermaceti} '
+                           '(cabeza de ballenas).']},
+                {'titulo': '4.2.4.B LÍPIDOS COMPUESTOS',
+                 'items': ['Los {lípidos compuestos} son los principales '
+                           'componentes de la estructura de las {membranas} '
+                           'celulares.',
+                           'Además de C, H y O, los lípidos compuestos '
+                           'contienen {fósforo}, nitrógeno u otros '
+                           'compuestos orgánicos.',
+                           'Los {fosfolípidos} tienen dos colas de ácidos '
+                           'grasos hidrofóbicas y una cabeza {hidrofílica} '
+                           'de fosfato; son moléculas {anfipáticas}.',
+                           'Entre los fosfoglicéridos están las {lecitinas} '
+                           '(fosfatidil-colina) y las cefalinas, los lípidos '
+                           'más importantes de la {membrana} celular.',
+                           'Las {esfingomielinas} presentan el alcohol '
+                           'esfingosina y son abundantes en el {cerebro} y '
+                           'el tejido nervioso.',
+                           'Los {glicoesfingolípidos} contienen esfingosina, '
+                           'ácido graso y carbohidrato; incluyen a los '
+                           '{cerebrósidos} y gangliósidos.',
+                           'Los {gangliósidos} forman la sustancia gris del '
+                           'cerebro e intervienen en la transmisión de '
+                           'impulsos durante la {sinapsis}.']},
+                {'titulo': '4.2.4.C ESTEROIDES',
+                 'items': ['Los {esteroides} derivan de un hidrocarburo '
+                           'tetracíclico de 17 carbonos, llamado '
+                           'ciclopentano {perhidrofenantreno}.',
+                           'El {colesterol} es un esterol de origen animal, '
+                           'componente de la membrana de células {animales}, '
+                           'donde influye en su fluidez.',
+                           'Niveles elevados de colesterol están '
+                           'relacionados con la {arterioesclerosis}.',
+                           'Derivados del colesterol incluyen hormonas '
+                           'sexuales, la vitamina {D3} o colecalciferol, y '
+                           'los ácidos {biliares}.',
+                           'El {ergosterol} se encuentra en las levaduras; '
+                           'de él se sintetiza la vitamina {D2} o '
+                           'calciferol.']},
+                {'titulo': '4.3.1 PROTEÍNAS: CARACTERÍSTICAS Y FUNCIONES',
                  'items': ['Las proteínas son los compuestos orgánicos más '
                            '{abundantes} en las células, constituyendo hasta '
                            'el 50% del peso {seco}.',
@@ -1101,7 +1208,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'regulan procesos corporales.',
                            'Función {enzimática}: muchas proteínas catalizan '
                            'reacciones químicas metabólicas.']},
-                {'titulo': '4.8 AMINOÁCIDOS ESENCIALES Y NO ESENCIALES',
+                {'titulo': '4.3.3 COMPOSICIÓN: AMINOÁCIDOS',
                  'items': ['Todo aminoácido tiene un carbono central unido a '
                            'un grupo {amino}, un grupo carboxilo y un grupo '
                            '{R}.',
@@ -1111,7 +1218,98 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'deben obtenerse mediante la {dieta}.',
                            'El huevo, la leche, la carne y el pescado '
                            'contienen todos los aminoácidos {esenciales}.']},
-                {'titulo': '4.9 ÁCIDOS NUCLEICOS: COMPOSICIÓN',
+                {'titulo': '4.3.4 ESTRUCTURA DE LAS PROTEÍNAS',
+                 'items': ['La estructura {primaria} es la secuencia de '
+                           'aminoácidos, representada como cadena lineal con '
+                           'grupo amino {NH2} y carboxilo terminal.',
+                           'La estructura {secundaria} surge del plegamiento '
+                           'de la cadena; sus dos tipos son la {alfa hélice} '
+                           'y la beta plegada.',
+                           'La {alfa hélice} se produce cuando la cadena se '
+                           'enrolla sobre sí misma por puentes de '
+                           '{hidrógeno}; ejemplo: la queratina.',
+                           'La {beta plegada} da apariencia de lámina '
+                           'plegada; ejemplo: la {fibroína} de la seda.',
+                           'La estructura {terciaria} es la conformación '
+                           'tridimensional globular, formada por puentes '
+                           '{disulfuro}; ejemplo: la mioglobina.',
+                           'Las enzimas, hormonas y anticuerpos tienen '
+                           'estructura {terciaria}.',
+                           'La estructura {cuaternaria} implica la '
+                           'interacción de dos o más cadenas polipeptídicas; '
+                           'ejemplos: la insulina y la {hemoglobina}.',
+                           'Un aminoácido incorrecto en la hemoglobina '
+                           '(valina en vez de ácido glutámico) causa la '
+                           'enfermedad de células {falciformes}.',
+                           'La {desnaturalización} es la pérdida de la '
+                           'función de una proteína por alteraciones '
+                           'causadas por el calor o cambios de {pH}.']},
+                {'titulo': '4.3.5 LAS PROTEÍNAS COMO ENZIMAS',
+                 'items': ['Con excepción de un pequeño grupo de ARN '
+                           'catalítico, todas las {enzimas} son proteínas.',
+                           'Las enzimas son {catalizadores} de las '
+                           'reacciones químicas en los seres vivos.',
+                           'Los reactantes sobre los que actúa la enzima se '
+                           'llaman {sustratos}; cada enzima actúa sobre un '
+                           'sustrato {específico}.',
+                           'Los sustratos se enlazan temporalmente a las '
+                           'enzimas en lugares específicos llamados sitios '
+                           '{activos}.']},
+                {'titulo': '4.3.6.A PROTEÍNAS SIMPLES: GLOBULARES',
+                 'items': ['Las {proteínas simples} u holoproteínas están '
+                           'constituidas solo por {aminoácidos}.',
+                           'Las {albúminas} son solubles en agua; ejemplos: '
+                           'la lactoalbúmina de la leche y la ovoalbúmina '
+                           'del {huevo}.',
+                           'Las {globulinas} son solubles en soluciones '
+                           'salinas; incluyen las gammaglobulinas para la '
+                           'defensa {inmunitaria}.',
+                           'Las {glutelinas} son insolubles en agua pero '
+                           'solubles en soluciones ácidas o básicas; '
+                           'ejemplo: el gluten del {trigo}.',
+                           'Las {prolaminas} son ricas en el aminoácido '
+                           'prolina; ejemplo: la zeína en el {maíz}.',
+                           'Las {protaminas} son ricas en arginina y se '
+                           'asocian a ácidos nucleicos en espermatozoides, '
+                           'como la salmina del {salmón}.']},
+                {'titulo': '4.3.6.B PROTEÍNAS SIMPLES: FIBROSAS',
+                 'items': ['Las {proteínas fibrosas} o escleroproteínas son '
+                           'insolubles en agua, con funciones '
+                           '{estructurales} y de protección.',
+                           'La {queratina}, rica en cisteína, constituye la '
+                           'piel, cabellos, uñas y {plumas}.',
+                           'El {colágeno} es una proteína de sostén, '
+                           'componente del tejido {conjuntivo}, '
+                           'cartilaginoso y de los huesos.',
+                           'La {elastina} es responsable de la elasticidad '
+                           'de la piel, ligamentos y vasos {sanguíneos}.',
+                           'La {actina} forma los filamentos delgados y la '
+                           '{miosina} los filamentos gruesos de las '
+                           'miofibrillas musculares.',
+                           'El {fibrinógeno} es la proteína responsable de '
+                           'la coagulación {sanguínea}.']},
+                {'titulo': '4.3.6.C PROTEÍNAS CONJUGADAS (HETEROPROTEÍNAS)',
+                 'items': ['Las {proteínas conjugadas} están formadas por '
+                           'una proteína simple más un {grupo prostético} no '
+                           'proteico.',
+                           'En las {nucleoproteínas} el grupo prostético es '
+                           'el ácido nucleico; ejemplo: el ADN asociado a '
+                           'histonas forma la {cromatina}.',
+                           'En las {lipoproteínas} el grupo prostético es un '
+                           'lípido, transportado en el {plasma} sanguíneo.',
+                           'En las {glicoproteínas} el grupo prostético es '
+                           'un carbohidrato; ejemplo: las '
+                           '{inmunoglobulinas}.',
+                           'En las {cromoproteínas} el grupo prostético '
+                           'puede ser el grupo hemo, con {hierro}, como en '
+                           'la hemoglobina.',
+                           'La {clorofila} es una cromoproteína cuyo grupo '
+                           'prostético, la porfirina, contiene {magnesio}.',
+                           'En las {metaloproteínas} el grupo prostético es '
+                           'un electrolito metálico; ejemplo: la '
+                           'hemocianina, que transporta oxígeno con '
+                           '{cobre}.']},
+                {'titulo': '4.4.1 COMPOSICIÓN: NUCLEÓTIDOS',
                  'items': ['Los ácidos nucleicos son polímeros lineales de '
                            '{nucleótidos}: ADN y {ARN}.',
                            'Un nucleótido se compone de tres subunidades: '
@@ -1125,7 +1323,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{uracilo} solo forma parte del ARN.',
                            'El azúcar del ADN es la {desoxirribosa}; el '
                            'azúcar del ARN es la {ribosa}.']},
-                {'titulo': '4.10 EL ADN',
+                {'titulo': '4.4.2.1 GENERALIDADES DEL ADN',
                  'items': ['El ADN contiene toda la {información genética} y '
                            'tiene la capacidad de {replicarse}.',
                            'Un {gen} es un segmento de ADN con la '
@@ -1137,7 +1335,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'La adenina se une con la {timina} mediante dos '
                            'puentes de hidrógeno; la guanina con la '
                            '{citosina}, mediante tres.']},
-                {'titulo': '4.11 EL MODELO DE LA DOBLE HÉLICE',
+                {'titulo': '4.4.2.2 MODELO DE LA DOBLE HÉLICE',
                  'items': ['En {1953}, {Watson y Crick} propusieron el '
                            'modelo de la doble hélice del ADN, ganando el '
                            'Premio {Nobel}.',
@@ -1146,7 +1344,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'y {C-G}.',
                            'El par de bases más estable es {C-G}, unido por '
                            'tres puentes de hidrógeno.']},
-                {'titulo': '4.12 REPLICACIÓN DEL ADN',
+                {'titulo': '4.4.2.3 REPLICACIÓN DEL ADN',
                  'items': ['La replicación del ADN es {semiconservativa}: la '
                            'nueva doble hélice tiene una hebra original y '
                            'una recién {sintetizada}.',
@@ -1160,7 +1358,17 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'llamados {replicones}.',
                            'Los fragmentos discontinuos de la hebra hija se '
                            'llaman fragmentos de {Okazaki}.']},
-                {'titulo': '4.13 EL ARN Y LA TRANSCRIPCIÓN',
+                {'titulo': '4.4.2.4 FUNCIONES DEL ADN',
+                 'items': ['El ADN tiene la capacidad de {replicarse}, para '
+                           'que las células hijas tengan la misma dotación '
+                           '{genética} que la madre.',
+                           'Dentro de los cromosomas están los {genes}, que '
+                           'contienen la información para fabricar las '
+                           '{proteínas} que requiere el ser vivo.',
+                           'Esta fabricación de proteínas ocurre mediante la '
+                           'mediación del {ARN}, que transcribe y traduce la '
+                           'información genética.']},
+                {'titulo': '4.4.3.1 EL ARN Y LA TRANSCRIPCIÓN',
                  'items': ['El ARN se diferencia del ADN porque presenta el '
                            'azúcar {ribosa} y la base {uracilo} en lugar de '
                            'la timina.',
@@ -1175,7 +1383,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'la síntesis.',
                            'La ARN polimerasa se une al ADN en una secuencia '
                            'llamada {promotor}.']},
-                {'titulo': '4.14 TIPOS DE ARN',
+                {'titulo': '4.4.3.3 TIPOS DE ARN',
                  'items': ['El {ARN mensajero} (ARNm) lleva la información '
                            'genética copiada del ADN en tripletes llamados '
                            '{codones}.',
@@ -1184,57 +1392,37 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'forma de {trébol}.',
                            'El {ARN ribosómico} (ARNr) forma los '
                            '{ribosomas}, junto con proteínas.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Los carbohidratos también se llaman glúcidos o '
-                           '{Hidratos de carbono}.',
-                           'Los carbohidratos están formados por carbono, '
-                           'hidrógeno y {Oxígeno}.',
-                           'En los carbohidratos, la relación entre '
-                           'hidrógeno y oxígeno es de {2:1}.',
-                           'Los carbohidratos son sintetizados por los '
-                           'autótrofos mediante {La fotosíntesis}.',
-                           'La fórmula empírica general de los carbohidratos '
-                           'es {(CH2O)n}.',
-                           'La función de los carbohidratos que proporciona '
-                           'energía de arranque se llama {Fuente inmediata '
-                           'de energía}.',
-                           'El glucógeno almacenado en hígado y músculos '
-                           'cumple la función de {Reserva energética}.',
-                           'La celulosa, presente en fibras vegetales, '
-                           'cumple principalmente una función {Estructural}.',
-                           'Los azúcares más simples, dulces y '
-                           'cristalizables, se llaman {Monosacáridos}.',
-                           'Los monosacáridos que poseen grupo aldehído se '
-                           'llaman {Aldosas}.',
-                           'Los monosacáridos que poseen grupo cetona se '
-                           'llaman {Cetosas}.',
-                           'La estructura cíclica con anillo de 5 átomos de '
-                           'carbono, como en la glucosa, se llama '
-                           '{Piranosa}.',
-                           'La estructura cíclica con anillo de 4 átomos de '
-                           'carbono, como en la fructosa, se llama '
-                           '{Furanosa}.',
-                           'Las pentosas más importantes, que forman parte '
-                           'de los ácidos nucleicos, son la ribosa y la '
-                           '{Desoxirribosa}.',
-                           'El monosacárido más abundante en la naturaleza y '
-                           'principal fuente de energía es la {Glucosa}.',
-                           'La galactosa no se encuentra libre, sino '
-                           'combinada con la glucosa para formar {Lactosa}.',
-                           'La manosa es constituyente de glicoproteínas de '
-                           'origen {Animal}.',
-                           'Los oligosacáridos están formados por un número '
-                           'de monosacáridos entre {2 y 10}.',
-                           'El enlace que une a los monosacáridos en los '
-                           'oligosacáridos se llama enlace {O-glucosídico}.',
-                           'Los disacáridos, oligosacáridos más abundantes, '
-                           'están formados por la unión de {Dos '
-                           'monosacáridos}.']}],
-  'cuadros': [{'titulo': '4.3 CLASIFICACIÓN DE MONOSACÁRIDOS POR CARBONOS',
+                {'titulo': '4.4.3.4 LA TRADUCCIÓN',
+                 'items': ['En la traducción participa el {ARN ribosomal}, '
+                           'que forma los ribosomas, donde se sintetizan las '
+                           '{proteínas}.',
+                           'El {ARN de transferencia} lleva un anticodón de '
+                           'tres bases, y en otra parte un sitio de unión a '
+                           'un {aminoácido}.',
+                           'Paso 1: el {ARNm} se coloca sobre un ribosoma y '
+                           'se inicia la interpretación del mensaje.',
+                           'Paso 2: la información del ARNm se lee por '
+                           'tripletes; a cada paquete de tres letras se le '
+                           'llama {codón}.',
+                           'Paso 3: cada ARNt, con su {anticodón} '
+                           'correspondiente, coloca el aminoácido específico '
+                           'según el mensaje genético.',
+                           'Paso 4: los aminoácidos se unen por enlaces '
+                           '{peptídicos}, formando la cadena de proteína.',
+                           'Paso 5: cuando termina de interpretarse el '
+                           'mensaje, la {proteína} se libera del ribosoma.']},
+                {'titulo': '4.4.3.5 FUNCIONES DEL ARN',
+                 'items': ['El ARN copia al {ADN} para producir las '
+                           'proteínas que necesita la célula.',
+                           'El ARN une los {aminoácidos} de una proteína en '
+                           'el orden indicado por el código {genético}.',
+                           'El ARN forma los {ribosomas}.']}],
+  'cuadros': [{'titulo': 'CLASIFICACIÓN DE MONOSACÁRIDOS POR CARBONOS',
                'encabezados': ['Tipo', 'Número de carbonos', 'Ejemplo'],
                'filas': [['{Triosas}', '3', 'Gliceraldehído'],
                          ['{Pentosas}', '5', '{Ribosa}, desoxirribosa'],
-                         ['{Hexosas}', '6', '{Glucosa}, fructosa']]}],
+                         ['{Hexosas}', '6', '{Glucosa}, fructosa']],
+               'despues_de': '4.1.3.A CLASIFICACIÓN: MONOSACÁRIDOS'}],
   'preguntas': [{'pregunta': 'Los carbohidratos también se llaman glúcidos '
                              'o:',
                  'alternativas': ['Ácidos nucleicos',
@@ -1595,7 +1783,480 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La membrana celular',
                                   'Los ribosomas',
                                   'El núcleo exclusivamente'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'Los lípidos simples son ésteres de alcohol y '
+                             'ácidos grasos, con solo carbono, hidrógeno y:',
+                 'alternativas': ['Nitrógeno',
+                                  'Oxígeno',
+                                  'Fósforo',
+                                  'Azufre',
+                                  'Calcio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un triglicérido está formado por glicerol y '
+                             'tres ácidos grasos unidos mediante enlace:',
+                 'alternativas': ['Peptídico',
+                                  'Éster',
+                                  'Glucosídico',
+                                  'De hidrógeno',
+                                  'Amida'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando los tres ácidos grasos de un '
+                             'triglicérido son del mismo tipo, se llama:',
+                 'alternativas': ['Heteroglicérido',
+                                  'Homoglicérido',
+                                  'Fosfoglicérido',
+                                  'Cérido',
+                                  'Glicoesfingolípido'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una grasa en estado sólido, como la que forman '
+                             'los triglicéridos, se llama:',
+                 'alternativas': ['Aceite',
+                                  'Sebo',
+                                  'Cera',
+                                  'Colesterol',
+                                  'Fosfolípido'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los lípidos formados por un alcohol superior '
+                             'esterificado con un ácido graso, con función '
+                             'de protección, se llaman:',
+                 'alternativas': ['Triglicéridos',
+                                  'Céridos o ceras',
+                                  'Fosfolípidos',
+                                  'Esteroides',
+                                  'Glicolípidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cera presente en la cabeza de las ballenas '
+                             'se llama:',
+                 'alternativas': ['Lanolina',
+                                  'Espermaceti',
+                                  'Miricina',
+                                  'Cerumen',
+                                  'Colesterilo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los lípidos que son los principales '
+                             'componentes de las membranas celulares se '
+                             'llaman lípidos:',
+                 'alternativas': ['Simples',
+                                  'Compuestos',
+                                  'Esteroides',
+                                  'Céridos',
+                                  'Triglicéridos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fosfolípidos tienen dos colas hidrofóbicas '
+                             'y una cabeza hidrofílica, por lo que son '
+                             'moléculas:',
+                 'alternativas': ['Apolares',
+                                  'Anfipáticas',
+                                  'Neutras',
+                                  'Iónicas',
+                                  'Covalentes'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los fosfoglicéridos, los lípidos más '
+                             'importantes de la membrana celular son las '
+                             'lecitinas y:',
+                 'alternativas': ['Los cerebrósidos',
+                                  'Las cefalinas',
+                                  'Los gangliósidos',
+                                  'Los sulfátidos',
+                                  'El ergosterol'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las esfingomielinas, que presentan el alcohol '
+                             'esfingosina, son abundantes en:',
+                 'alternativas': ['El hígado',
+                                  'El cerebro y el tejido nervioso',
+                                  'Los riñones',
+                                  'El tejido adiposo',
+                                  'La piel'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los glicoesfingolípidos que forman la '
+                             'sustancia gris del cerebro y participan en la '
+                             'sinapsis se llaman:',
+                 'alternativas': ['Cerebrósidos',
+                                  'Gangliósidos',
+                                  'Sulfátidos',
+                                  'Fosfoglicéridos',
+                                  'Céridos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los esteroides derivan de un hidrocarburo '
+                             'tetracíclico de 17 carbonos llamado:',
+                 'alternativas': ['Glicerol',
+                                  'Ciclopentano perhidrofenantreno',
+                                  'Ácido graso',
+                                  'Fosfoglicérido',
+                                  'Esfingosina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El esterol de origen animal que influye en la '
+                             'fluidez de la membrana celular es:',
+                 'alternativas': ['El ergosterol',
+                                  'El colesterol',
+                                  'El coprosterol',
+                                  'El fosfolípido',
+                                  'La lecitina'],
+                 'correcta': 'B'},
+                {'pregunta': 'Niveles elevados de colesterol están '
+                             'relacionados con la enfermedad llamada:',
+                 'alternativas': ['Diabetes',
+                                  'Arterioesclerosis',
+                                  'Anemia',
+                                  'Osteoporosis',
+                                  'Hipertiroidismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El esterol que se encuentra en las levaduras, '
+                             'del cual se sintetiza la vitamina D2, se '
+                             'llama:',
+                 'alternativas': ['Colesterol',
+                                  'Ergosterol',
+                                  'Coprosterol',
+                                  'Fosfatidilinositol',
+                                  'Cerebrósido'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura primaria de una proteína es la '
+                             'secuencia de:',
+                 'alternativas': ['Nucleótidos',
+                                  'Aminoácidos',
+                                  'Ácidos grasos',
+                                  'Monosacáridos',
+                                  'Fosfolípidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los dos tipos de estructura secundaria de las '
+                             'proteínas son la alfa hélice y la:',
+                 'alternativas': ['Gamma plegada',
+                                  'Beta plegada',
+                                  'Delta hélice',
+                                  'Terciaria plegada',
+                                  'Omega hélice'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura secundaria alfa hélice, presente '
+                             'en la queratina, se forma por:',
+                 'alternativas': ['Enlaces peptídicos',
+                                  'Puentes de hidrógeno',
+                                  'Puentes disulfuro',
+                                  'Enlaces iónicos',
+                                  'Enlaces covalentes'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura secundaria en lámina plegada, '
+                             'presente en la fibroína de la seda, se llama:',
+                 'alternativas': ['Alfa hélice',
+                                  'Beta plegada',
+                                  'Terciaria',
+                                  'Cuaternaria',
+                                  'Primaria compleja'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura terciaria de una proteína es su '
+                             'conformación tridimensional globular, formada '
+                             'por puentes:',
+                 'alternativas': ['De hidrógeno exclusivamente',
+                                  'Disulfuro',
+                                  'Peptídicos',
+                                  'Glucosídicos',
+                                  'Iónicos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las enzimas, hormonas y anticuerpos tienen '
+                             'estructura:',
+                 'alternativas': ['Primaria',
+                                  'Terciaria',
+                                  'Solo secundaria',
+                                  'Ninguna estructura definida',
+                                  'Solo cuaternaria'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura cuaternaria implica la '
+                             'interacción de dos o más cadenas '
+                             'polipeptídicas, como en la insulina y la:',
+                 'alternativas': ['Queratina',
+                                  'Hemoglobina',
+                                  'Elastina',
+                                  'Fibroína',
+                                  'Actina'],
+                 'correcta': 'B'},
+                {'pregunta': 'La enfermedad de células falciformes es '
+                             'causada por un cambio en un aminoácido de:',
+                 'alternativas': ['La insulina',
+                                  'La hemoglobina',
+                                  'El colágeno',
+                                  'La queratina',
+                                  'La miosina'],
+                 'correcta': 'B'},
+                {'pregunta': 'La pérdida de función de una proteína por '
+                             'alteraciones causadas por el calor o cambios '
+                             'de pH se llama:',
+                 'alternativas': ['Hidrólisis',
+                                  'Desnaturalización',
+                                  'Fermentación',
+                                  'Oxidación',
+                                  'Polimerización'],
+                 'correcta': 'B'},
+                {'pregunta': 'Con excepción de un pequeño grupo de ARN '
+                             'catalítico, todas las enzimas son:',
+                 'alternativas': ['Carbohidratos',
+                                  'Proteínas',
+                                  'Lípidos',
+                                  'Ácidos nucleicos',
+                                  'Minerales'],
+                 'correcta': 'B'},
+                {'pregunta': 'El reactante sobre el que actúa '
+                             'específicamente una enzima se llama:',
+                 'alternativas': ['Producto',
+                                  'Sustrato',
+                                  'Catalizador',
+                                  'Cofactor',
+                                  'Coenzima'],
+                 'correcta': 'B'},
+                {'pregunta': 'El lugar específico donde se enlaza '
+                             'temporalmente el sustrato a la enzima se '
+                             'llama:',
+                 'alternativas': ['Grupo prostético',
+                                  'Sitio activo',
+                                  'Puente disulfuro',
+                                  'Cadena lateral',
+                                  'Grupo carboxilo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las proteínas simples, constituidas solo por '
+                             'aminoácidos, también se llaman:',
+                 'alternativas': ['Heteroproteínas',
+                                  'Holoproteínas',
+                                  'Cromoproteínas',
+                                  'Metaloproteínas',
+                                  'Glicoproteínas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las albúminas, como la ovoalbúmina del huevo, '
+                             'son proteínas globulares solubles en:',
+                 'alternativas': ['Alcohol',
+                                  'Agua',
+                                  'Ácidos exclusivamente',
+                                  'Grasas',
+                                  'Bases exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las globulinas, escasamente solubles en agua '
+                             'pero solubles en soluciones salinas, incluyen '
+                             'a las gammaglobulinas de la defensa:',
+                 'alternativas': ['Digestiva',
+                                  'Inmunitaria',
+                                  'Respiratoria',
+                                  'Circulatoria',
+                                  'Nerviosa'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las glutelinas, insolubles en agua pero '
+                             'solubles en ácidos o bases, incluyen al gluten '
+                             'del:',
+                 'alternativas': ['Maíz',
+                                  'Trigo',
+                                  'Arroz',
+                                  'Cebada exclusiva',
+                                  'Ajonjolí'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las prolaminas, ricas en el aminoácido '
+                             'prolina, incluyen a la zeína, presente en:',
+                 'alternativas': ['El trigo',
+                                  'El maíz',
+                                  'El arroz',
+                                  'La cebada',
+                                  'La soya'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las protaminas, ricas en arginina, se asocian '
+                             'a ácidos nucleicos en los espermatozoides, '
+                             'como la salmina del:',
+                 'alternativas': ['Arenque',
+                                  'Salmón',
+                                  'Esturión',
+                                  'Atún',
+                                  'Bacalao'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las proteínas fibrosas o escleroproteínas son, '
+                             'a diferencia de las globulares:',
+                 'alternativas': ['Solubles en agua',
+                                  'Insolubles en agua',
+                                  'Solubles solo en alcohol',
+                                  'Gaseosas',
+                                  'Líquidas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La queratina, rica en cisteína, constituye la '
+                             'piel, los cabellos, las uñas y:',
+                 'alternativas': ['Los músculos',
+                                  'Las plumas',
+                                  'La sangre',
+                                  'Los huesos exclusivamente',
+                                  'El cerebro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El colágeno es una proteína de sostén, '
+                             'componente del tejido conjuntivo, '
+                             'cartilaginoso y de:',
+                 'alternativas': ['La sangre',
+                                  'Los huesos',
+                                  'El cerebro',
+                                  'La piel exclusivamente',
+                                  'Los pulmones'],
+                 'correcta': 'B'},
+                {'pregunta': 'La proteína responsable de la elasticidad de '
+                             'la piel, ligamentos y vasos sanguíneos es:',
+                 'alternativas': ['El colágeno',
+                                  'La elastina',
+                                  'La queratina',
+                                  'La fibroína',
+                                  'La actina'],
+                 'correcta': 'B'},
+                {'pregunta': 'La actina forma los filamentos delgados y la '
+                             'miosina los filamentos gruesos, responsables '
+                             'de la contracción:',
+                 'alternativas': ['Cardíaca exclusiva',
+                                  'Muscular',
+                                  'Nerviosa',
+                                  'Vascular',
+                                  'Respiratoria'],
+                 'correcta': 'B'},
+                {'pregunta': 'La proteína responsable de la coagulación '
+                             'sanguínea se llama:',
+                 'alternativas': ['Colágeno',
+                                  'Fibrinógeno',
+                                  'Elastina',
+                                  'Queratina',
+                                  'Miosina'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las proteínas conjugadas, o heteroproteínas, '
+                             'están formadas por una proteína simple más:',
+                 'alternativas': ['Otra proteína simple',
+                                  'Un grupo prostético no proteico',
+                                  'Solo aminoácidos',
+                                  'Solo carbohidratos',
+                                  'Solo agua'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las nucleoproteínas, el grupo prostético es '
+                             'el ácido nucleico; el ADN asociado a histonas '
+                             'forma la:',
+                 'alternativas': ['Mitocondria',
+                                  'Cromatina',
+                                  'Membrana',
+                                  'Vacuola',
+                                  'Pared celular'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las lipoproteínas, el grupo prostético es '
+                             'un lípido transportado en:',
+                 'alternativas': ['La linfa exclusivamente',
+                                  'El plasma sanguíneo',
+                                  'El citoplasma exclusivo',
+                                  'El núcleo',
+                                  'La saliva'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las glicoproteínas, el grupo prostético es '
+                             'un carbohidrato; un ejemplo son las:',
+                 'alternativas': ['Histonas',
+                                  'Inmunoglobulinas',
+                                  'Miosinas',
+                                  'Elastinas',
+                                  'Queratinas'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las cromoproteínas, el grupo prostético '
+                             'hemo contiene el elemento hierro, como en la '
+                             'hemoglobina y:',
+                 'alternativas': ['El colágeno',
+                                  'La mioglobina',
+                                  'La queratina',
+                                  'La elastina',
+                                  'La actina'],
+                 'correcta': 'B'},
+                {'pregunta': 'La clorofila es una cromoproteína cuyo grupo '
+                             'prostético, la porfirina, contiene el '
+                             'elemento:',
+                 'alternativas': ['Hierro',
+                                  'Magnesio',
+                                  'Cobre',
+                                  'Zinc',
+                                  'Calcio'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las metaloproteínas, el grupo prostético es '
+                             'un electrolito metálico; la hemocianina '
+                             'transporta oxígeno usando:',
+                 'alternativas': ['Hierro',
+                                  'Cobre',
+                                  'Zinc',
+                                  'Magnesio',
+                                  'Calcio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una de las funciones primordiales del ADN es '
+                             'su capacidad de:',
+                 'alternativas': ['Transcribirse solamente',
+                                  'Replicarse',
+                                  'Degradarse',
+                                  'Traducirse directamente',
+                                  'Fosforilarse'],
+                 'correcta': 'B'},
+                {'pregunta': 'Dentro de los cromosomas se hallan los genes, '
+                             'formados por ADN, que contienen la información '
+                             'para fabricar:',
+                 'alternativas': ['Carbohidratos',
+                                  'Proteínas',
+                                  'Lípidos',
+                                  'Vitaminas',
+                                  'Minerales'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fabricación de proteínas a partir de la '
+                             'información del ADN ocurre mediante la '
+                             'mediación de:',
+                 'alternativas': ['Las enzimas exclusivamente',
+                                  'El ARN',
+                                  'Los ribosomas exclusivamente',
+                                  'El citoplasma',
+                                  'Las mitocondrias'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la traducción, el ARN que forma los '
+                             'ribosomas, donde se sintetizan las proteínas, '
+                             'se llama ARN:',
+                 'alternativas': ['Mensajero',
+                                  'Ribosomal',
+                                  'De transferencia',
+                                  'Polimerasa',
+                                  'Catalítico'],
+                 'correcta': 'B'},
+                {'pregunta': 'El grupo de tres bases que lleva el ARN de '
+                             'transferencia, complementario al codón, se '
+                             'llama:',
+                 'alternativas': ['Codón',
+                                  'Anticodón',
+                                  'Triplete génico',
+                                  'Marco de lectura',
+                                  'Promotor'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la traducción, la información del ARN '
+                             'mensajero se lee por paquetes de tres letras '
+                             'llamados:',
+                 'alternativas': ['Anticodones',
+                                  'Codones',
+                                  'Nucleótidos simples',
+                                  'Genes',
+                                  'Exones'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la traducción, los aminoácidos colocados en '
+                             'el ribosoma se unen mediante enlaces:',
+                 'alternativas': ['Glucosídicos',
+                                  'Peptídicos',
+                                  'De hidrógeno exclusivos',
+                                  'Fosfodiéster',
+                                  'Disulfuro exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Al terminar de interpretarse el mensaje '
+                             'genético en la traducción, la proteína se '
+                             'libera de:',
+                 'alternativas': ['El núcleo',
+                                  'El ribosoma',
+                                  'El ADN',
+                                  'La membrana',
+                                  'El citoplasma exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las funciones del ARN está copiar al ADN '
+                             'para producir las proteínas que necesita:',
+                 'alternativas': ['El núcleo',
+                                  'La célula',
+                                  'La mitocondria',
+                                  'El ribosoma exclusivo',
+                                  'El citoplasma exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Otra función del ARN es unir los aminoácidos '
+                             'de una proteína en el orden indicado por:',
+                 'alternativas': ['El azar',
+                                  'El código genético',
+                                  'La temperatura',
+                                  'El pH celular',
+                                  'La presión osmótica'],
+                 'correcta': 'B'}]},
  {'num': 5,
   'titulo': 'La Célula',
   'secciones': [{'titulo': '5.1 GENERALIDADES Y ORIGEN DEL TÉRMINO',
