@@ -260,7 +260,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
 
     st_ = []
     _banda_titulo(st_, tema,
-                  "HISTORIA · Temario CEPRU-UNSAAC · " +
+                  f"{area.upper()} · Temario CEPRU-UNSAAC · " +
                   ("CLAVES PARA EL DOCENTE" if con_claves
                    else "Ficha de estudio para completar"),
                   est, ancho_util, con_claves)
