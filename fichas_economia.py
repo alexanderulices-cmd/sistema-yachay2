@@ -54,7 +54,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '«el valor de la mejor {opción} no seleccionada».',
                            'Toda {elección} conlleva un costo de '
                            'oportunidad, porque los recursos disponibles son '
-                           'limitados.']}],
+                           'limitados.']},
+                {'titulo': '1.4 PRINCIPALES ESCUELAS DEL PENSAMIENTO '
+                           'ECONÓMICO',
+                 'items': ['{Carlos Marx} es representante de la escuela '
+                           '{marxista}, que sostiene que el valor de las '
+                           'mercancías proviene del trabajo.',
+                           '{León Walras} es representante de la escuela '
+                           '{marginalista} o neoclásica, con su teoría del '
+                           'equilibrio general.',
+                           '{John Maynard Keynes} es representante de la '
+                           'escuela {keynesiana}, que defiende la '
+                           'intervención del Estado para estimular la '
+                           'demanda.']}],
   'cuadros': [{'titulo': '1.3 ECONOMÍA POSITIVA Y NORMATIVA',
                'encabezados': ['Enfoque', 'Pregunta que responde'],
                'filas': [['Economía {positiva}', '«Lo que {es}»'],
@@ -222,7 +234,25 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Ahorrar en exceso',
                                   'Tener recursos ilimitados',
                                   'No participar en el mercado'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El economista representante de la escuela '
+                             'marxista, que sostiene que el valor de las '
+                             'mercancías proviene del trabajo, es:',
+                 'alternativas': ['León Walras',
+                                  'Carlos Marx',
+                                  'John Keynes',
+                                  'Adam Smith',
+                                  'David Ricardo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El economista representante de la escuela '
+                             'marginalista o neoclásica, con su teoría del '
+                             'equilibrio general, es:',
+                 'alternativas': ['Carlos Marx',
+                                  'León Walras',
+                                  'John Keynes',
+                                  'Karl Menger',
+                                  'Alfred Marshall'],
+                 'correcta': 'B'}]},
  {'num': 2,
   'titulo': 'Necesidades Humanas',
   'secciones': [{'titulo': '2.1 CONCEPTO Y ORIGEN',
