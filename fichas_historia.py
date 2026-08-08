@@ -348,7 +348,38 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
         ]))
         st_.append(t)
 
+    def _auto_ubicar_cuadro(cu, secciones):
+        """Si un cuadro no tiene 'despues_de' explícito, intenta ubicarlo
+        junto a la sección cuyo número coincide con el prefijo numérico
+        del título del cuadro (ej. tabla "4.2 CONSTITUYENTES..." se ubica
+        después de la sección "4.2 ..."). Si no hay número o no coincide
+        ninguna sección, devuelve None (se mostrará al final, como antes).
+        Esto evita cuadros huérfanos que dejan páginas casi vacías.
+        """
+        m = re.match(r"^(\d+(?:\.\d+)*)", cu.get("titulo", "").strip())
+        if not m:
+            return None
+        numero = m.group(1)
+        exactas = [s for s in secciones
+                   if re.match(r"^(\d+(?:\.\d+)*)\b", s["titulo"])
+                   and re.match(r"^(\d+(?:\.\d+)*)\b", s["titulo"]).group(1) == numero]
+        if exactas:
+            return exactas[-1]["titulo"]
+        prefijo = numero.split(".")[0]
+        candidatas = [s for s in secciones
+                      if re.match(rf"^{re.escape(prefijo)}\.", s["titulo"])
+                      or s["titulo"].startswith(prefijo + " ")]
+        if candidatas:
+            return candidatas[-1]["titulo"]
+        return None
+
     _cuadros_todos = tema.get("cuadros", [])
+    _secciones_tema = tema.get("secciones", [])
+    for cu in _cuadros_todos:
+        if not cu.get("despues_de"):
+            auto = _auto_ubicar_cuadro(cu, _secciones_tema)
+            if auto:
+                cu["despues_de"] = auto
     _cuadros_intercalados = {id(cu) for cu in _cuadros_todos if cu.get("despues_de")}
 
     for sec in tema.get("secciones", []):
