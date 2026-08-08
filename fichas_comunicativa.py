@@ -1892,52 +1892,77 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'Las palabras {sobresdrújulas} tienen la sílaba '
                            'tónica anterior a la antepenúltima; son '
                            'compuestas y todas llevan tilde.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El signo diacrítico que marca la acentuación de '
-                           'una palabra por escrito se llama {Tilde}.',
-                           'El acento que diferencia en la pronunciación una '
-                           'sílaba, contrastándola con el resto, es el '
-                           'acento {Prosódico}.',
-                           'La función del acento que diferencia unidades '
-                           'acentuadas de inacentuadas es la función '
-                           '{Contrastiva}.',
-                           'La función del acento que diferencia el '
-                           'significado de palabras como «médico» y «medicó» '
-                           'es la función {Distintiva}.',
-                           'La función que permite percibir los grupos '
-                           'acentuales del discurso es la función '
-                           '{Culminativa}.',
-                           'Las palabras monosilábicas, por regla general '
-                           '{Nunca se acentúan gráficamente, salvo tilde '
-                           'diacrítica}.',
-                           'Las palabras agudas tienen la sílaba tónica en '
-                           'la posición {Última}.',
-                           'Las palabras agudas llevan tilde cuando terminan '
-                           'en {N, s o vocal}.',
-                           'Las palabras llanas o graves tienen la sílaba '
-                           'tónica en la posición {Penúltima}.',
-                           'Las palabras llanas llevan tilde cuando terminan '
-                           'en {Consonante distinta de n, s o vocal}.',
-                           'Las palabras esdrújulas tienen la sílaba tónica '
-                           'en la posición {Antepenúltima}.',
-                           'Las palabras esdrújulas, en cuanto a la tilde '
-                           '{Todas llevan tilde}.',
-                           'Las palabras sobresdrújulas tienen la sílaba '
-                           'tónica {Anterior a la antepenúltima}.',
-                           'Las palabras sobresdrújulas se caracterizan por '
-                           'ser {Compuestas, y todas llevan tilde}.',
-                           'La palabra «cuéntaselo» es un ejemplo de palabra '
-                           '{Sobresdrújula}.',
-                           'La palabra «césped» es un ejemplo de palabra '
-                           '{Llana}.',
-                           'La palabra «comité» lleva tilde porque es aguda '
-                           'terminada en {Vocal}.',
-                           'La palabra «botón» lleva tilde porque es aguda '
-                           'terminada en {N}.',
-                           'La palabra «jueves» no lleva tilde porque, '
-                           'siendo llana, termina en {S}.',
-                           'La palabra «música» es un ejemplo de palabra '
-                           '{Esdrújula}.']}],
+                {'titulo': '5.3 ACENTUACIÓN DE SECUENCIAS VOCÁLICAS',
+                 'items': ['Las palabras con {diptongo} se acentúan '
+                           'gráficamente según las reglas {generales} de '
+                           'acentuación (agudas, llanas, esdrújulas).',
+                           'Cuando una palabra con diptongo debe tildarse, '
+                           'la tilde se coloca sobre la vocal {abierta} del '
+                           'diptongo (o la segunda, si ambas son cerradas): '
+                           '{rufián}, recién.',
+                           'Las palabras con {triptongo} también siguen las '
+                           'reglas generales; cuando deben tildarse, la '
+                           'tilde va siempre sobre la vocal {abierta}: '
+                           'apreciáis, cambiéis.',
+                           'Las palabras con {hiato} siempre llevan tilde en '
+                           'la vocal {cerrada}, sin importar las reglas '
+                           'generales; ejemplo: {sabías}, actúe, oído.',
+                           'Estas palabras con hiato de vocal cerrada tónica '
+                           'llevan tilde aunque sean llanas terminadas en n, '
+                           's o vocal, o agudas terminadas en consonante '
+                           'distinta de {n} o s: raíz, oír, baúl, maíz.',
+                           'Las palabras con hiato de dos vocales {abiertas} '
+                           '(fuertes) se someten a las reglas generales de '
+                           'acentuación: Jaén, traerás, peleó.']},
+                {'titulo': '5.4 TILDE DIACRÍTICA EN MONOSÍLABOS',
+                 'items': ['La {tilde diacrítica} es la excepción a la regla '
+                           'de los monosílabos; distingue palabras {tónicas} '
+                           'de sus homónimas átonas.',
+                           '{Tú} es pronombre personal (tú eres); {tu} sin '
+                           'tilde es adjetivo posesivo (tu casa).',
+                           '{Él} es pronombre personal (él es tímido); {el} '
+                           'sin tilde es artículo determinante.',
+                           '{Mí} es pronombre personal (para mí); {mi} sin '
+                           'tilde es adjetivo posesivo o nota musical.',
+                           '{Sí} es adverbio de afirmación o pronombre '
+                           '(volvió en sí); {si} sin tilde es conjunción '
+                           'condicional.',
+                           '{Té} es sustantivo, la infusión; {te} sin tilde '
+                           'es pronombre personal.',
+                           '{Dé} es forma del verbo dar; {de} sin tilde es '
+                           'preposición.',
+                           '{Sé} es forma del verbo ser o saber; {se} sin '
+                           'tilde es pronombre personal.',
+                           '{Más} es cuantificador; {mas} sin tilde es '
+                           'conjunción adversativa equivalente a «pero».']},
+                {'titulo': '5.5 TILDE DIACRÍTICA EN INTERROGATIVOS Y '
+                           'EXCLAMATIVOS',
+                 'items': ['Las palabras {qué}, cuál, quién, cómo, cuán, '
+                           'cuánto, cuándo, dónde y adónde llevan tilde '
+                           'cuando son {interrogativas} o exclamativas.',
+                           'Los interrogativos y exclamativos pueden ir '
+                           'precedidos de una {preposición} sin dejar de '
+                           'llevar tilde: ¿Por qué...?, ¿Hasta cuándo...?',
+                           'Existen interrogativas y exclamativas '
+                           '{indirectas} que también llevan tilde: «Preguntó '
+                           'qué tenía que hacer».',
+                           'Estas palabras se escriben {sin tilde} cuando '
+                           'funcionan como relativos, conjunciones o '
+                           'preposiciones: «las flores que trajiste».']},
+                {'titulo': '5.6 TILDE EN SOLO, DEMOSTRATIVOS Y AUN/AÚN',
+                 'items': ['La palabra {solo} no lleva tilde, ya sea como '
+                           'adverbio (equivalente a «solamente») o como '
+                           '{adjetivo}.',
+                           'Los demostrativos {este}, ese y aquel (con '
+                           'femeninos y plurales) no llevan tilde, sea como '
+                           '{pronombres} o como determinantes.',
+                           '{Aún}, con tilde, puede sustituirse por '
+                           '«{todavía}»: con valor temporal o '
+                           'ponderativo-intensivo.',
+                           '{Aun}, sin tilde, tiene valor '
+                           'inclusivo-ponderativo (equivale a «incluso», '
+                           '«hasta») o valor {concesivo} (equivale a '
+                           '«aunque»).']}],
   'cuadros': [{'titulo': '5.2 REGLAS DE ACENTUACIÓN SEGÚN LA POSICIÓN',
                'encabezados': ['Tipo', 'Sílaba tónica', 'Regla de tilde'],
                'filas': [['{Aguda}', '{Última}', 'Termina en n, s o vocal'],
@@ -1949,7 +1974,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                           'Siempre lleva tilde'],
                          ['{Sobresdrújula}',
                           'Anterior a la antepenúltima',
-                          'Siempre lleva {tilde}']]}],
+                          'Siempre lleva {tilde}']]},
+              {'titulo': 'PARES DE TILDE DIACRÍTICA EN MONOSÍLABOS',
+               'despues_de': '5.4 TILDE DIACRÍTICA EN MONOSÍLABOS',
+               'encabezados': ['Con tilde', 'Sin tilde'],
+               'filas': [['{Tú} (pronombre)', '{Tu} (posesivo)'],
+                         ['{Él} (pronombre)', '{El} (artículo)'],
+                         ['{Mí} (pronombre)', '{Mi} (posesivo/nota musical)'],
+                         ['{Sí} (afirmación/pronombre)',
+                          '{Si} (condicional)'],
+                         ['{Té} (sustantivo, infusión)', '{Te} (pronombre)'],
+                         ['{Dé} (verbo dar)', '{De} (preposición)'],
+                         ['{Sé} (verbo ser/saber)', '{Se} (pronombre)'],
+                         ['{Más} (cuantificador)',
+                          '{Mas} (conjunción, «pero»)']]}],
   'preguntas': [{'pregunta': 'El signo diacrítico que marca la acentuación '
                              'de una palabra por escrito se llama:',
                  'alternativas': ['Diéresis',
@@ -2108,7 +2146,168 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Llana',
                                   'Aguda',
                                   'Esdrújula'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'Las palabras con diptongo se acentúan '
+                             'gráficamente de acuerdo con:',
+                 'alternativas': ['Una regla especial exclusiva',
+                                  'Las reglas generales de acentuación',
+                                  'No se acentúan nunca',
+                                  'Solo la posición del hiato',
+                                  'Reglas del triptongo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando una palabra con diptongo debe llevar '
+                             'tilde, esta se coloca sobre:',
+                 'alternativas': ['La vocal cerrada siempre',
+                                  'La vocal abierta del diptongo',
+                                  'La primera vocal siempre',
+                                  'La última letra de la palabra',
+                                  'Ninguna vocal específica'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las palabras con triptongo que deben '
+                             'tildarse, como «apreciáis», la tilde se coloca '
+                             'sobre:',
+                 'alternativas': ['La primera vocal cerrada',
+                                  'La vocal abierta',
+                                  'La segunda vocal cerrada',
+                                  'La consonante final',
+                                  'Ninguna vocal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras con hiato siempre llevan tilde '
+                             'en:',
+                 'alternativas': ['La vocal abierta',
+                                  'La vocal cerrada',
+                                  'La consonante final',
+                                  'La primera sílaba',
+                                  'La última sílaba únicamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «sabías», con hiato, lleva tilde en '
+                             'la vocal cerrada a pesar de ser una palabra:',
+                 'alternativas': ['Aguda terminada en consonante',
+                                  'Llana terminada en vocal',
+                                  'Esdrújula',
+                                  'Sobresdrújula',
+                                  'Monosilábica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Palabras como «raíz» y «maíz» llevan tilde en '
+                             'el hiato a pesar de ser palabras agudas '
+                             'terminadas en:',
+                 'alternativas': ['N o s',
+                                  'Consonante distinta de n o s',
+                                  'Vocal',
+                                  'Y',
+                                  'Consonante doble'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando una palabra tiene hiato de dos vocales '
+                             'abiertas o fuertes juntas, como «Jaén» o '
+                             '«peleó», la acentuación sigue:',
+                 'alternativas': ['Una regla exclusiva del hiato',
+                                  'Las reglas generales de acentuación',
+                                  'No se acentúan nunca',
+                                  'Solo la regla del diptongo',
+                                  'Ninguna regla específica'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la oración «Tú eres Santiago», la palabra '
+                             '«tú» lleva tilde porque funciona como:',
+                 'alternativas': ['Adjetivo posesivo',
+                                  'Pronombre personal',
+                                  'Conjunción',
+                                  'Preposición',
+                                  'Adverbio'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la oración «Tu casa es muy hermosa», la '
+                             'palabra «tu» no lleva tilde porque funciona '
+                             'como:',
+                 'alternativas': ['Pronombre personal',
+                                  'Adjetivo posesivo',
+                                  'Conjunción',
+                                  'Adverbio',
+                                  'Preposición'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «sí», con tilde, funciona como '
+                             'adverbio de afirmación o como pronombre '
+                             'personal, mientras que «si», sin tilde, '
+                             'funciona como:',
+                 'alternativas': ['Sustantivo exclusivo',
+                                  'Conjunción condicional',
+                                  'Adjetivo',
+                                  'Adverbio de lugar',
+                                  'Pronombre personal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «dé», forma del verbo dar, lleva '
+                             'tilde para distinguirse de «de», que sin tilde '
+                             'funciona como:',
+                 'alternativas': ['Pronombre',
+                                  'Preposición',
+                                  'Adverbio',
+                                  'Conjunción',
+                                  'Adjetivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «más», cuantificador, lleva tilde '
+                             'para distinguirse de «mas», que sin tilde es '
+                             'una conjunción equivalente a:',
+                 'alternativas': ['Y', 'Pero', 'O', 'Porque', 'Aunque'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras qué, cuál, quién, cómo, dónde y '
+                             'cuándo se escriben con tilde diacrítica cuando '
+                             'son:',
+                 'alternativas': ['Relativos o conjunciones',
+                                  'Interrogativas o exclamativas',
+                                  'Preposiciones',
+                                  'Adverbios de modo exclusivos',
+                                  'Artículos'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la oración «¿Por qué ha dicho eso?», la '
+                             'palabra «qué» lleva tilde a pesar de estar '
+                             'precedida por una:',
+                 'alternativas': ['Conjunción',
+                                  'Preposición',
+                                  'Otro interrogativo',
+                                  'Un artículo',
+                                  'Un pronombre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las palabras qué, cuál, quién, cómo, dónde y '
+                             'cuándo se escriben sin tilde cuando funcionan '
+                             'como:',
+                 'alternativas': ['Interrogativas directas',
+                                  'Relativos, conjunciones o preposiciones',
+                                  'Exclamativas indirectas',
+                                  'Adjetivos calificativos',
+                                  'Sustantivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «solo» no lleva tilde, ya sea que '
+                             'funcione como adverbio (solamente) o como:',
+                 'alternativas': ['Sustantivo',
+                                  'Adjetivo',
+                                  'Pronombre',
+                                  'Conjunción',
+                                  'Preposición'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los demostrativos este, ese y aquel, con sus '
+                             'femeninos y plurales, no llevan tilde, sea que '
+                             'funcionen como pronombres o como:',
+                 'alternativas': ['Sustantivos',
+                                  'Determinantes',
+                                  'Adverbios',
+                                  'Conjunciones',
+                                  'Preposiciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «aún», con tilde, puede sustituirse '
+                             'por «todavía», con valor temporal o:',
+                 'alternativas': ['Concesivo',
+                                  'Ponderativo o intensivo',
+                                  'Inclusivo',
+                                  'Condicional',
+                                  'Adversativo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «aun», sin tilde, tiene valor '
+                             'inclusivo-ponderativo (equivalente a '
+                             '«incluso») o valor:',
+                 'alternativas': ['Temporal',
+                                  'Concesivo',
+                                  'Intensivo exclusivo',
+                                  'Afirmativo',
+                                  'Interrogativo'],
+                 'correcta': 'B'}]},
  {'num': 6,
   'titulo': 'Uso de las Letras Mayúsculas y Minúsculas',
   'secciones': [{'titulo': '6.1 CONSIDERACIONES BÁSICAS',
