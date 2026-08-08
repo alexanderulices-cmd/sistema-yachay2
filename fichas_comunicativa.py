@@ -182,337 +182,337 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                           '{valores}']]}],
   'preguntas': [{'pregunta': 'La comunicación se define como el proceso a '
                              'través del cual dos o más individuos:',
-                 'alternativas': ['Interactúan para intercambiar información',
+                 'alternativas': ['Se aíslan mutuamente',
+                                  'Interactúan para intercambiar información',
                                   'Compiten entre sí',
-                                  'Ejercen autoridad',
                                   'Compran bienes',
-                                  'Se aíslan mutuamente'],
-                 'correcta': 'A'},
+                                  'Ejercen autoridad'],
+                 'correcta': 'B'},
                 {'pregunta': 'La fase de la comunicación constituida por la '
                              'codificación y decodificación mental es la '
                              'fase:',
-                 'alternativas': ['Física',
-                                  'Cultural',
+                 'alternativas': ['Psíquica',
+                                  'Física',
                                   'Fisiológica',
                                   'Social',
-                                  'Psíquica'],
-                 'correcta': 'E'},
+                                  'Cultural'],
+                 'correcta': 'A'},
                 {'pregunta': 'La fase que se refiere al funcionamiento del '
                              'aparato fonador y la audición es la fase:',
-                 'alternativas': ['Semántica',
-                                  'Social',
+                 'alternativas': ['Social',
+                                  'Semántica',
+                                  'Física',
                                   'Fisiológica',
-                                  'Psíquica',
-                                  'Física'],
-                 'correcta': 'C'},
+                                  'Psíquica'],
+                 'correcta': 'D'},
                 {'pregunta': 'El elemento de la comunicación que codifica y '
                              'transmite el mensaje es:',
-                 'alternativas': ['El referente',
-                                  'El receptor',
+                 'alternativas': ['El receptor',
+                                  'El referente',
                                   'El código',
-                                  'El canal',
-                                  'El emisor'],
-                 'correcta': 'E'},
+                                  'El emisor',
+                                  'El canal'],
+                 'correcta': 'D'},
                 {'pregunta': 'El elemento que percibe y decodifica el '
                              'mensaje es:',
-                 'alternativas': ['El código',
+                 'alternativas': ['El emisor',
+                                  'El mensaje',
                                   'El canal',
-                                  'El emisor',
                                   'El receptor',
-                                  'El mensaje'],
+                                  'El código'],
                  'correcta': 'D'},
                 {'pregunta': 'El medio físico a través del cual se '
                              'transporta el mensaje se llama:',
                  'alternativas': ['Código',
-                                  'Emisor',
+                                  'Canal',
                                   'Referente',
                                   'Circunstancia',
-                                  'Canal'],
-                 'correcta': 'E'},
+                                  'Emisor'],
+                 'correcta': 'B'},
                 {'pregunta': 'El sistema de signos convencionales que usan '
                              'emisor y receptor se llama:',
-                 'alternativas': ['Referente',
-                                  'Código',
-                                  'Mensaje',
+                 'alternativas': ['Mensaje',
                                   'Circunstancia',
-                                  'Canal'],
-                 'correcta': 'B'},
+                                  'Canal',
+                                  'Código',
+                                  'Referente'],
+                 'correcta': 'D'},
                 {'pregunta': 'El conjunto de objetos o fenómenos a los que '
                              'se hace mención en el acto comunicativo es:',
                  'alternativas': ['El canal',
                                   'El referente',
-                                  'El emisor',
                                   'El receptor',
+                                  'El emisor',
                                   'El código'],
                  'correcta': 'B'},
                 {'pregunta': 'El lugar y momento en que se desarrolla el '
                              'acto comunicativo se denomina:',
-                 'alternativas': ['Mensaje',
-                                  'Referente',
+                 'alternativas': ['Referente',
+                                  'Código',
                                   'Circunstancia o contexto',
-                                  'Canal',
-                                  'Código'],
+                                  'Mensaje',
+                                  'Canal'],
                  'correcta': 'C'},
                 {'pregunta': 'La comunicación que utiliza el idioma para '
                              'codificar el mensaje es la comunicación:',
                  'alternativas': ['Lingüística',
                                   'Proxémica',
+                                  'No lingüística',
                                   'Kinésica',
-                                  'Cromática',
-                                  'No lingüística'],
+                                  'Cromática'],
                  'correcta': 'A'},
                 {'pregunta': 'La comunicación oral se caracteriza por ser:',
-                 'alternativas': ['Sin recursos no verbales',
+                 'alternativas': ['Siempre escrita',
+                                  'Sin recursos no verbales',
                                   'Duradera y planificada',
                                   'Asincrónica',
-                                  'Sincrónica y momentánea',
-                                  'Siempre escrita'],
-                 'correcta': 'D'},
+                                  'Sincrónica y momentánea'],
+                 'correcta': 'E'},
                 {'pregunta': 'La comunicación escrita se caracteriza por '
                              'ser:',
-                 'alternativas': ['Sin cohesión',
-                                  'Asincrónica y planificada',
-                                  'Sincrónica',
+                 'alternativas': ['Sin puntuación',
                                   'Efímera',
-                                  'Sin puntuación'],
-                 'correcta': 'B'},
+                                  'Sincrónica',
+                                  'Asincrónica y planificada',
+                                  'Sin cohesión'],
+                 'correcta': 'D'},
                 {'pregunta': 'La disciplina que estudia los movimientos '
                              'corporales y gestos es la:',
-                 'alternativas': ['Kinésica',
+                 'alternativas': ['Acústica',
                                   'Háptica',
+                                  'Cronémica',
                                   'Proxémica',
-                                  'Acústica',
-                                  'Cronémica'],
-                 'correcta': 'A'},
+                                  'Kinésica'],
+                 'correcta': 'E'},
                 {'pregunta': 'La disciplina que estudia las relaciones de '
                              'proximidad entre interlocutores es la:',
                  'alternativas': ['Cromática',
-                                  'Oculésica',
                                   'Facial',
+                                  'Proxémica',
                                   'Kinésica',
-                                  'Proxémica'],
-                 'correcta': 'E'},
+                                  'Oculésica'],
+                 'correcta': 'C'},
                 {'pregunta': 'La disciplina que estudia el contacto ocular '
                              'durante la comunicación es la:',
-                 'alternativas': ['Acústica',
-                                  'Cronémica',
-                                  'Oculésica',
+                 'alternativas': ['Oculésica',
+                                  'Acústica',
+                                  'Háptica',
                                   'Kinésica',
-                                  'Háptica'],
-                 'correcta': 'C'},
+                                  'Cronémica'],
+                 'correcta': 'A'},
                 {'pregunta': 'La disciplina que estudia el uso del tiempo en '
                              'la comunicación es la:',
-                 'alternativas': ['Cronémica',
+                 'alternativas': ['Cromática',
                                   'Proxémica',
+                                  'Cronémica',
                                   'Háptica',
-                                  'Facial',
-                                  'Cromática'],
-                 'correcta': 'A'},
+                                  'Facial'],
+                 'correcta': 'C'},
                 {'pregunta': 'El monólogo interior y el soliloquio son '
                              'ejemplos de comunicación:',
-                 'alternativas': ['Pública',
-                                  'Masiva',
-                                  'Interpersonal',
+                 'alternativas': ['Intrapersonal',
+                                  'Pública',
                                   'Grupal',
-                                  'Intrapersonal'],
-                 'correcta': 'E'},
+                                  'Interpersonal',
+                                  'Masiva'],
+                 'correcta': 'A'},
                 {'pregunta': 'La comunicación que se produce cuando '
                              'interactúan dos personas es la:',
-                 'alternativas': ['Pública',
-                                  'Social',
-                                  'Intrapersonal',
+                 'alternativas': ['Intrapersonal',
+                                  'Pública',
                                   'Grupal',
-                                  'Interpersonal'],
-                 'correcta': 'E'},
+                                  'Interpersonal',
+                                  'Social'],
+                 'correcta': 'D'},
                 {'pregunta': 'La interacción entre ciudadanos y medios de '
                              'comunicación masivos es la comunicación:',
-                 'alternativas': ['Interpersonal',
-                                  'Privada',
-                                  'Pública',
+                 'alternativas': ['Pública',
+                                  'Interpersonal',
+                                  'Grupal',
                                   'Intrapersonal',
-                                  'Grupal'],
-                 'correcta': 'C'},
+                                  'Privada'],
+                 'correcta': 'A'},
                 {'pregunta': 'La comunicación grupal se orienta al '
                              'cumplimiento de:',
-                 'alternativas': ['Objetivos individuales',
+                 'alternativas': ['Reglas externas impuestas',
                                   'Objetivos comunes del grupo',
+                                  'Objetivos individuales',
                                   'Metas ajenas al grupo',
-                                  'Ninguna finalidad',
-                                  'Reglas externas impuestas'],
+                                  'Ninguna finalidad'],
                  'correcta': 'B'},
                 {'pregunta': 'Cuando el objetivo de la comunicación es '
                              'mantener las relaciones interpersonales con '
                              'otros individuos, se aprecia la función:',
-                 'alternativas': ['Lingüística',
-                                  'Social',
+                 'alternativas': ['Social',
                                   'Organizativa',
                                   'Cultural',
+                                  'Lingüística',
                                   'Simbólica'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'La función de la comunicación que representa '
                              'hechos, objetos o sentimientos por medio de '
                              'símbolos, señales y signos se llama función:',
-                 'alternativas': ['Social',
-                                  'Simbólica',
+                 'alternativas': ['Simbólica',
                                   'Lingüística',
                                   'Organizativa',
+                                  'Social',
                                   'Cultural'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'La función de la comunicación ligada al estilo '
                              'del lenguaje usado en el mensaje (formal, '
                              'informal, culto, popular) se llama función:',
-                 'alternativas': ['Social',
+                 'alternativas': ['Organizativa',
                                   'Lingüística',
                                   'Simbólica',
-                                  'Cultural',
-                                  'Organizativa'],
+                                  'Social',
+                                  'Cultural'],
                  'correcta': 'B'},
                 {'pregunta': 'La función de la comunicación que ordena a las '
                              'personas por puestos, estratos y jerarquías se '
                              'llama función:',
-                 'alternativas': ['Cultural',
+                 'alternativas': ['Lingüística',
                                   'Organizativa',
-                                  'Social',
                                   'Simbólica',
-                                  'Lingüística'],
+                                  'Social',
+                                  'Cultural'],
                  'correcta': 'B'},
                 {'pregunta': 'La función de la comunicación que transmite '
                              'hábitos, costumbres, valores y creencias se '
                              'llama función:',
-                 'alternativas': ['Organizativa',
-                                  'Cultural',
-                                  'Social',
+                 'alternativas': ['Lingüística',
                                   'Simbólica',
-                                  'Lingüística'],
-                 'correcta': 'B'},
+                                  'Cultural',
+                                  'Organizativa',
+                                  'Social'],
+                 'correcta': 'C'},
                 {'pregunta': 'El carácter de la comunicación que implica que '
                              'esta se integra con personas que tienen '
                              'posibilidad de relacionarse se llama carácter:',
                  'alternativas': ['Dinámico',
-                                  'Integrador',
-                                  'Recíproco',
+                                  'Fijo',
                                   'Transaccional',
-                                  'Fijo'],
-                 'correcta': 'B'},
+                                  'Recíproco',
+                                  'Integrador'],
+                 'correcta': 'E'},
                 {'pregunta': 'El carácter de la comunicación dado por la '
                              'interacción de personas que logran entenderse '
                              'entre sí se llama carácter:',
-                 'alternativas': ['Integrador',
+                 'alternativas': ['Recíproco',
+                                  'Estático',
                                   'Transaccional',
-                                  'Dinámico',
-                                  'Recíproco',
-                                  'Estático'],
-                 'correcta': 'B'},
+                                  'Integrador',
+                                  'Dinámico'],
+                 'correcta': 'C'},
                 {'pregunta': 'El carácter de la comunicación que implica que '
                              'esta fluye de forma continua y en cambio '
                              'constante se llama carácter:',
-                 'alternativas': ['Recíproco',
-                                  'Dinámico',
+                 'alternativas': ['Fijo',
                                   'Integrador',
+                                  'Dinámico',
                                   'Transaccional',
-                                  'Fijo'],
-                 'correcta': 'B'},
+                                  'Recíproco'],
+                 'correcta': 'C'},
                 {'pregunta': 'El carácter de la comunicación por el cual los '
                              'hombres ejercen una influencia mutua se llama '
                              'carácter:',
                  'alternativas': ['Dinámico',
-                                  'Recíproco',
+                                  'Unilateral',
                                   'Integrador',
                                   'Transaccional',
-                                  'Unilateral'],
-                 'correcta': 'B'},
+                                  'Recíproco'],
+                 'correcta': 'E'},
                 {'pregunta': 'El factor que influye en la comunicación '
                              'referido a la cantidad y calidad de '
                              'información que se tiene sobre el referente se '
                              'llama:',
-                 'alternativas': ['Competencia lexicológica',
-                                  'Nivel de conocimiento',
+                 'alternativas': ['Redundancia',
+                                  'Competencia lexicológica',
                                   'Actitudes',
-                                  'Contexto sociocultural',
-                                  'Redundancia'],
-                 'correcta': 'B'},
+                                  'Nivel de conocimiento',
+                                  'Contexto sociocultural'],
+                 'correcta': 'D'},
                 {'pregunta': 'El factor que influye en la comunicación '
                              'referido al dominio del vocabulario del código '
                              'lingüístico se llama:',
-                 'alternativas': ['Nivel de conocimiento',
+                 'alternativas': ['Contexto sociocultural',
                                   'Competencia lexicológica',
+                                  'Nivel de conocimiento',
                                   'Actitudes',
-                                  'Contexto sociocultural',
                                   'Ruido'],
                  'correcta': 'B'},
                 {'pregunta': 'El factor que influye en la comunicación '
                              'referido a los comportamientos, motivaciones y '
                              'reacciones del interlocutor se llama:',
-                 'alternativas': ['Nivel de conocimiento',
+                 'alternativas': ['Redundancia',
                                   'Actitudes',
+                                  'Nivel de conocimiento',
                                   'Competencia lexicológica',
-                                  'Redundancia',
                                   'Contexto'],
                  'correcta': 'B'},
                 {'pregunta': 'El factor de degradación que distorsiona la '
                              'calidad del mensaje o interfiere en la '
                              'comunicación se llama:',
-                 'alternativas': ['Redundancia',
+                 'alternativas': ['Actitud',
+                                  'Redundancia',
                                   'Ruido',
-                                  'Competencia',
                                   'Contexto',
-                                  'Actitud'],
-                 'correcta': 'B'},
+                                  'Competencia'],
+                 'correcta': 'C'},
                 {'pregunta': 'El ruido que ocurre en el ambiente, como '
                              'interferencias en el canal (distorsiones '
                              'sonoras, baja señal), se llama ruido:',
                  'alternativas': ['Fisiológico',
                                   'Físico',
+                                  'Técnico',
                                   'Psicológico',
-                                  'Semántico',
-                                  'Técnico'],
+                                  'Semántico'],
                  'correcta': 'B'},
                 {'pregunta': 'El ruido que surge por defectos orgánicos de '
                              'los interlocutores, como alteraciones visuales '
                              'o auditivas, se llama ruido:',
-                 'alternativas': ['Físico',
-                                  'Fisiológico',
+                 'alternativas': ['Fisiológico',
+                                  'Físico',
+                                  'Técnico',
                                   'Psicológico',
-                                  'Semántico',
-                                  'Técnico'],
-                 'correcta': 'B'},
+                                  'Semántico'],
+                 'correcta': 'A'},
                 {'pregunta': 'El ruido que se produce en el interior del '
                              'individuo, como emociones, miedo o ansiedad, '
                              'se llama ruido:',
-                 'alternativas': ['Físico',
-                                  'Psicológico',
-                                  'Fisiológico',
+                 'alternativas': ['Psicológico',
+                                  'Físico',
+                                  'Técnico',
                                   'Semántico',
-                                  'Técnico'],
-                 'correcta': 'B'},
+                                  'Fisiológico'],
+                 'correcta': 'A'},
                 {'pregunta': 'El ruido que ocurre cuando el receptor '
                              'interpreta las palabras del emisor de manera '
                              'distinta a la intención original se llama '
                              'ruido:',
-                 'alternativas': ['Físico',
-                                  'Semántico',
-                                  'Fisiológico',
+                 'alternativas': ['Semántico',
                                   'Psicológico',
-                                  'Técnico'],
-                 'correcta': 'B'},
+                                  'Fisiológico',
+                                  'Técnico',
+                                  'Físico'],
+                 'correcta': 'A'},
                 {'pregunta': 'El ruido intencionado en el que '
                              'deliberadamente se omite parte o todo el '
                              'mensaje se llama ruido:',
-                 'alternativas': ['Semántico',
+                 'alternativas': ['Psicológico',
+                                  'Semántico',
                                   'Técnico o blanco',
                                   'Físico',
-                                  'Fisiológico',
-                                  'Psicológico'],
-                 'correcta': 'B'},
+                                  'Fisiológico'],
+                 'correcta': 'C'},
                 {'pregunta': 'El factor de perfeccionamiento que reduce los '
                              'efectos del ruido y refuerza la claridad del '
                              'mensaje se llama:',
-                 'alternativas': ['Competencia lexicológica',
+                 'alternativas': ['Nivel de conocimiento',
+                                  'Actitud',
+                                  'Competencia lexicológica',
                                   'Redundancia',
-                                  'Nivel de conocimiento',
-                                  'Contexto sociocultural',
-                                  'Actitud'],
-                 'correcta': 'B'}],
+                                  'Contexto sociocultural'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FASES',
                       'items': ['La comunicación es el acto, hecho o proceso '
                                 'a través del cual dos o más individuos '
@@ -767,368 +767,368 @@ COMUNICATIVA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Según la RAE, el lenguaje es la facultad de '
                              'expresarse mediante el sonido articulado u '
                              'otros:',
-                 'alternativas': ['Sistemas de signos',
+                 'alternativas': ['Reflejos biológicos',
                                   'Instintos',
-                                  'Reflejos biológicos',
-                                  'Ruidos naturales',
-                                  'Impulsos'],
-                 'correcta': 'A'},
+                                  'Sistemas de signos',
+                                  'Impulsos',
+                                  'Ruidos naturales'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según Sapir, el lenguaje es un método '
                              'exclusivamente humano y:',
-                 'alternativas': ['No instintivo',
-                                  'Instintivo',
-                                  'Genético únicamente',
+                 'alternativas': ['Universal en todas las especies',
                                   'Animal',
-                                  'Universal en todas las especies'],
-                 'correcta': 'A'},
+                                  'No instintivo',
+                                  'Genético únicamente',
+                                  'Instintivo'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según Pinker, el lenguaje es una capacidad:',
-                 'alternativas': ['Aprendida exclusivamente',
+                 'alternativas': ['Exclusiva de algunas culturas',
                                   'Innata del Homo sapiens',
-                                  'Artificial',
-                                  'Exclusiva de algunas culturas',
-                                  'Adquirida solo en la escuela'],
+                                  'Adquirida solo en la escuela',
+                                  'Aprendida exclusivamente',
+                                  'Artificial'],
                  'correcta': 'B'},
                 {'pregunta': 'Que el lenguaje sea usado por todos los seres '
                              'humanos corresponde a la característica de '
                              'ser:',
-                 'alternativas': ['Universal',
+                 'alternativas': ['Simbólico',
+                                  'Universal',
                                   'Innato',
                                   'Sistémico',
-                                  'Multiforme',
-                                  'Simbólico'],
-                 'correcta': 'A'},
+                                  'Multiforme'],
+                 'correcta': 'B'},
                 {'pregunta': 'Que el lenguaje se manifieste de forma oral, '
                              'escrita, gestual o musical corresponde a que '
                              'es:',
-                 'alternativas': ['Multiforme',
-                                  'Universal',
-                                  'Aprendido',
+                 'alternativas': ['Aprendido',
                                   'Convencional',
-                                  'Racional'],
-                 'correcta': 'A'},
+                                  'Racional',
+                                  'Multiforme',
+                                  'Universal'],
+                 'correcta': 'D'},
                 {'pregunta': 'Que el lenguaje sea resultado de un acuerdo '
                              'comunitario corresponde a que es:',
-                 'alternativas': ['Cultural exclusivo',
-                                  'Convencional',
+                 'alternativas': ['Sistémico',
+                                  'Simbólico',
+                                  'Innato',
+                                  'Cultural exclusivo',
+                                  'Convencional'],
+                 'correcta': 'E'},
+                {'pregunta': 'Que el lenguaje funcione de acuerdo a normas o '
+                             'reglas corresponde a que es:',
+                 'alternativas': ['Racional',
+                                  'Multiforme',
                                   'Innato',
                                   'Simbólico',
                                   'Sistémico'],
-                 'correcta': 'B'},
-                {'pregunta': 'Que el lenguaje funcione de acuerdo a normas o '
-                             'reglas corresponde a que es:',
-                 'alternativas': ['Multiforme',
-                                  'Sistémico',
-                                  'Innato',
-                                  'Simbólico',
-                                  'Racional'],
-                 'correcta': 'B'},
+                 'correcta': 'E'},
                 {'pregunta': 'Que una palabra represente algo concreto o '
                              'abstracto corresponde a que el lenguaje es:',
                  'alternativas': ['Universal',
                                   'Aprendido',
+                                  'Sistémico',
                                   'Convencional',
-                                  'Simbólico',
-                                  'Sistémico'],
-                 'correcta': 'D'},
+                                  'Simbólico'],
+                 'correcta': 'E'},
                 {'pregunta': 'La función del lenguaje centrada en el emisor, '
                              'que manifiesta emociones, es la función:',
-                 'alternativas': ['Poética',
-                                  'Fática',
+                 'alternativas': ['Fática',
+                                  'Expresiva',
+                                  'Poética',
                                   'Referencial',
-                                  'Apelativa',
-                                  'Expresiva'],
-                 'correcta': 'E'},
+                                  'Apelativa'],
+                 'correcta': 'B'},
                 {'pregunta': 'La función centrada en el receptor, que busca '
                              'que actúe mediante órdenes, es la función:',
                  'alternativas': ['Poética',
-                                  'Apelativa',
-                                  'Metalingüística',
+                                  'Fática',
                                   'Expresiva',
-                                  'Fática'],
-                 'correcta': 'B'},
+                                  'Apelativa',
+                                  'Metalingüística'],
+                 'correcta': 'D'},
                 {'pregunta': 'La función centrada en el contenido, propia de '
                              'textos informativos, es la función:',
-                 'alternativas': ['Apelativa',
+                 'alternativas': ['Poética',
                                   'Referencial o representativa',
                                   'Expresiva',
                                   'Fática',
-                                  'Poética'],
+                                  'Apelativa'],
                  'correcta': 'B'},
                 {'pregunta': 'La función que se usa cuando el código se '
                              'refiere al código mismo es la función:',
-                 'alternativas': ['Expresiva',
+                 'alternativas': ['Poética',
                                   'Fática',
-                                  'Poética',
+                                  'Metalingüística',
                                   'Referencial',
-                                  'Metalingüística'],
-                 'correcta': 'E'},
+                                  'Expresiva'],
+                 'correcta': 'C'},
                 {'pregunta': 'La función centrada en el canal, que mantiene '
                              'el contacto entre interlocutores, es la '
                              'función:',
                  'alternativas': ['Expresiva',
                                   'Referencial',
-                                  'Poética',
+                                  'Fática',
                                   'Apelativa',
-                                  'Fática'],
-                 'correcta': 'E'},
+                                  'Poética'],
+                 'correcta': 'C'},
                 {'pregunta': 'La función centrada en el mensaje, propia de '
                              'las obras literarias, es la función:',
                  'alternativas': ['Metalingüística',
-                                  'Referencial',
-                                  'Poética',
+                                  'Fática',
                                   'Apelativa',
-                                  'Fática'],
-                 'correcta': 'C'},
+                                  'Referencial',
+                                  'Poética'],
+                 'correcta': 'E'},
                 {'pregunta': '«¡Cállate!» es un ejemplo de la función del '
                              'lenguaje:',
                  'alternativas': ['Fática',
+                                  'Referencial',
                                   'Apelativa',
                                   'Expresiva',
-                                  'Referencial',
                                   'Poética'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': '«El precio del gas subió excesivamente» es un '
                              'ejemplo de la función:',
-                 'alternativas': ['Fática',
-                                  'Referencial',
-                                  'Expresiva',
+                 'alternativas': ['Referencial',
+                                  'Fática',
+                                  'Poética',
                                   'Apelativa',
-                                  'Poética'],
-                 'correcta': 'B'},
+                                  'Expresiva'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según Saussure, el lenguaje tiene dos planos '
                              'interdependientes: lengua y:',
-                 'alternativas': ['Texto',
+                 'alternativas': ['Gramática',
                                   'Discurso',
-                                  'Habla',
                                   'Sintaxis',
-                                  'Gramática'],
-                 'correcta': 'C'},
+                                  'Habla',
+                                  'Texto'],
+                 'correcta': 'D'},
                 {'pregunta': 'La lengua, según Saussure, es de carácter:',
-                 'alternativas': ['Instintivo',
+                 'alternativas': ['Biológico',
+                                  'Social',
                                   'Privado',
-                                  'Biológico',
-                                  'Individual',
-                                  'Social'],
-                 'correcta': 'E'},
+                                  'Instintivo',
+                                  'Individual'],
+                 'correcta': 'B'},
                 {'pregunta': 'El habla, según Saussure, es de carácter:',
                  'alternativas': ['Universal',
                                   'Convencional exclusivo',
                                   'Colectivo',
-                                  'Social',
-                                  'Individual'],
-                 'correcta': 'E'},
-                {'pregunta': 'El habla se realiza físicamente por medio de:',
-                 'alternativas': ['La memoria colectiva',
-                                  'Los diccionarios',
-                                  'Los signos escritos',
-                                  'Los órganos de fonación',
-                                  'Las normas gramaticales'],
+                                  'Individual',
+                                  'Social'],
                  'correcta': 'D'},
+                {'pregunta': 'El habla se realiza físicamente por medio de:',
+                 'alternativas': ['Los diccionarios',
+                                  'Las normas gramaticales',
+                                  'Los órganos de fonación',
+                                  'Los signos escritos',
+                                  'La memoria colectiva'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según Noam Chomsky, el lenguaje es una '
                              'facultad innata del ser humano regida por una:',
-                 'alternativas': ['Convención social',
-                                  'Gramática universal',
-                                  'Norma arbitraria',
+                 'alternativas': ['Norma arbitraria',
+                                  'Convención social',
+                                  'Selección natural',
                                   'Tradición cultural',
-                                  'Selección natural'],
-                 'correcta': 'B'},
+                                  'Gramática universal'],
+                 'correcta': 'E'},
                 {'pregunta': 'El dialecto es la variación de una lengua que '
                              'se manifiesta según factores:',
-                 'alternativas': ['Individuales',
+                 'alternativas': ['Generacionales exclusivamente',
                                   'Regionales, geográficos o territoriales',
+                                  'Educativos exclusivamente',
                                   'Sociales exclusivamente',
-                                  'Generacionales exclusivamente',
-                                  'Educativos exclusivamente'],
+                                  'Individuales'],
                  'correcta': 'B'},
                 {'pregunta': 'La variación dialectal en la que cambia el '
                              'vocabulario de una región a otra, como '
                              '«casaca» y «chamarra», se llama variación:',
-                 'alternativas': ['Semántica',
+                 'alternativas': ['Sintáctica',
+                                  'Fonética',
                                   'Lexicológica',
                                   'Morfológica',
-                                  'Sintáctica',
-                                  'Fonética'],
-                 'correcta': 'B'},
+                                  'Semántica'],
+                 'correcta': 'C'},
                 {'pregunta': 'La variación dialectal en la que una misma '
                              'palabra tiene significados distintos, como '
                              '«mona», se llama variación:',
                  'alternativas': ['Lexicológica',
                                   'Semántica',
-                                  'Morfológica',
+                                  'Fonética',
                                   'Sintáctica',
-                                  'Fonética'],
+                                  'Morfológica'],
                  'correcta': 'B'},
                 {'pregunta': 'La variación dialectal que se da en la forma y '
                              'estructura de las palabras, como «ratico» y '
                              '«ratito», se llama variación:',
-                 'alternativas': ['Semántica',
+                 'alternativas': ['Sintáctica',
                                   'Morfológica',
-                                  'Sintáctica',
                                   'Fonética',
-                                  'Lexicológica'],
+                                  'Lexicológica',
+                                  'Semántica'],
                  'correcta': 'B'},
                 {'pregunta': 'La variación dialectal que se percibe en la '
                              'entonación y pronunciación, como «yama» y '
                              '«llama», se llama variación:',
-                 'alternativas': ['Morfológica',
-                                  'Fonética',
+                 'alternativas': ['Semántica',
+                                  'Lexicológica',
+                                  'Morfológica',
                                   'Sintáctica',
-                                  'Semántica',
-                                  'Lexicológica'],
-                 'correcta': 'B'},
+                                  'Fonética'],
+                 'correcta': 'E'},
                 {'pregunta': 'El sociolecto es la variación de una lengua a '
                              'nivel:',
-                 'alternativas': ['Individual',
-                                  'Social',
-                                  'Regional',
-                                  'Temporal',
-                                  'Generacional exclusivo'],
-                 'correcta': 'B'},
-                {'pregunta': 'El sociolecto se subdivide en acrolecto, '
-                             'basilecto y:',
-                 'alternativas': ['Idiolecto',
-                                  'Mesolecto',
-                                  'Interlecto',
-                                  'Dialecto',
-                                  'Sociolema'],
-                 'correcta': 'B'},
-                {'pregunta': 'El nivel sociolectal de los sectores altos, '
-                             'educados o cultos se llama:',
-                 'alternativas': ['Basilecto',
-                                  'Acrolecto',
-                                  'Mesolecto',
-                                  'Interlecto',
-                                  'Idiolecto'],
-                 'correcta': 'B'},
-                {'pregunta': 'El nivel sociolectal de los sectores sin '
-                             'acceso a educación formal se llama:',
-                 'alternativas': ['Acrolecto',
-                                  'Basilecto',
-                                  'Mesolecto',
-                                  'Interlecto',
-                                  'Idiolecto'],
-                 'correcta': 'B'},
-                {'pregunta': 'El idiolecto es la variación que sufre una '
-                             'lengua a nivel:',
                  'alternativas': ['Social',
                                   'Individual',
+                                  'Generacional exclusivo',
                                   'Regional',
-                                  'Generacional',
                                   'Temporal'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
+                {'pregunta': 'El sociolecto se subdivide en acrolecto, '
+                             'basilecto y:',
+                 'alternativas': ['Sociolema',
+                                  'Idiolecto',
+                                  'Dialecto',
+                                  'Interlecto',
+                                  'Mesolecto'],
+                 'correcta': 'E'},
+                {'pregunta': 'El nivel sociolectal de los sectores altos, '
+                             'educados o cultos se llama:',
+                 'alternativas': ['Acrolecto',
+                                  'Interlecto',
+                                  'Basilecto',
+                                  'Idiolecto',
+                                  'Mesolecto'],
+                 'correcta': 'A'},
+                {'pregunta': 'El nivel sociolectal de los sectores sin '
+                             'acceso a educación formal se llama:',
+                 'alternativas': ['Interlecto',
+                                  'Idiolecto',
+                                  'Acrolecto',
+                                  'Basilecto',
+                                  'Mesolecto'],
+                 'correcta': 'D'},
+                {'pregunta': 'El idiolecto es la variación que sufre una '
+                             'lengua a nivel:',
+                 'alternativas': ['Regional',
+                                  'Social',
+                                  'Temporal',
+                                  'Generacional',
+                                  'Individual'],
+                 'correcta': 'E'},
                 {'pregunta': 'El interlecto es el sistema transitorio de '
                              'habla entre la lengua materna y:',
-                 'alternativas': ['El dialecto regional',
-                                  'La segunda lengua de un aprendiz',
+                 'alternativas': ['El idiolecto personal',
                                   'El sociolecto',
-                                  'El idiolecto personal',
-                                  'La lengua estándar'],
-                 'correcta': 'B'},
+                                  'La lengua estándar',
+                                  'La segunda lengua de un aprendiz',
+                                  'El dialecto regional'],
+                 'correcta': 'D'},
                 {'pregunta': 'Según Alberto Escobar, el interlecto es un '
                              'dialecto social ubicado especialmente en '
                              'áreas:',
-                 'alternativas': ['Urbanas exclusivamente',
-                                  'Rurales y urbano-marginales',
-                                  'Costeras exclusivamente',
+                 'alternativas': ['Rurales y urbano-marginales',
+                                  'Empresariales',
                                   'Universitarias',
-                                  'Empresariales'],
-                 'correcta': 'B'},
+                                  'Costeras exclusivamente',
+                                  'Urbanas exclusivamente'],
+                 'correcta': 'A'},
                 {'pregunta': 'Un signo que guarda relación física de '
                              'causa-efecto con el objeto que representa, '
                              'como el humo y el fuego, se llama:',
-                 'alternativas': ['Símbolo',
-                                  'Indicio',
+                 'alternativas': ['Indicio',
                                   'Ícono',
-                                  'Signo lingüístico',
-                                  'Significante'],
-                 'correcta': 'B'},
+                                  'Significante',
+                                  'Símbolo',
+                                  'Signo lingüístico'],
+                 'correcta': 'A'},
                 {'pregunta': 'Un signo que mantiene relación de semejanza '
                              'con el objeto representado, como una '
                              'fotografía, se llama:',
                  'alternativas': ['Indicio',
-                                  'Ícono',
-                                  'Símbolo',
                                   'Signo natural exclusivo',
-                                  'Significado'],
-                 'correcta': 'B'},
+                                  'Significado',
+                                  'Símbolo',
+                                  'Ícono'],
+                 'correcta': 'E'},
                 {'pregunta': 'Un signo de carácter convencional y '
                              'arbitrario, como la cruz que representa el '
                              'cristianismo, se llama:',
-                 'alternativas': ['Indicio',
-                                  'Símbolo',
-                                  'Ícono',
+                 'alternativas': ['Símbolo',
+                                  'Significante',
                                   'Signo natural',
-                                  'Significante'],
-                 'correcta': 'B'},
+                                  'Indicio',
+                                  'Ícono'],
+                 'correcta': 'A'},
                 {'pregunta': 'El signo lingüístico es una entidad psíquica '
                              'de dos caras: concepto e imagen:',
-                 'alternativas': ['Visual',
-                                  'Acústica',
-                                  'Táctil',
+                 'alternativas': ['Táctil',
                                   'Olfativa',
+                                  'Visual',
+                                  'Acústica',
                                   'Gustativa'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'El concepto o idea abstracta que el hablante '
                              'extrae de la realidad se llama:',
-                 'alternativas': ['Significante',
-                                  'Significado',
-                                  'Referente',
+                 'alternativas': ['Referente',
+                                  'Significante',
                                   'Símbolo',
+                                  'Significado',
                                   'Ícono'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'La imagen acústica o huella psíquica del '
                              'sonido se llama:',
                  'alternativas': ['Significado',
-                                  'Significante',
-                                  'Referente',
+                                  'Símbolo',
                                   'Concepto',
-                                  'Símbolo'],
-                 'correcta': 'B'},
+                                  'Referente',
+                                  'Significante'],
+                 'correcta': 'E'},
                 {'pregunta': 'La característica del signo lingüístico según '
                              'la cual la relación entre significado y '
                              'significante es convencional se llama:',
-                 'alternativas': ['Lineal',
+                 'alternativas': ['Articulada',
+                                  'Lineal',
                                   'Arbitraria',
                                   'Inmutable',
-                                  'Mutable',
-                                  'Articulada'],
-                 'correcta': 'B'},
+                                  'Mutable'],
+                 'correcta': 'C'},
                 {'pregunta': 'La característica del signo lingüístico según '
                              'la cual los fonemas se desenvuelven uno tras '
                              'otro en el tiempo se llama:',
-                 'alternativas': ['Arbitraria',
+                 'alternativas': ['Mutable',
+                                  'Arbitraria',
                                   'Lineal',
                                   'Inmutable',
-                                  'Mutable',
                                   'Articulada'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La característica del signo lingüístico según '
                              'la cual este no cambia por decisión de un '
                              'hablante en un momento dado se llama:',
-                 'alternativas': ['Mutable',
-                                  'Inmutable',
+                 'alternativas': ['Arbitraria',
+                                  'Mutable',
                                   'Lineal',
-                                  'Arbitraria',
-                                  'Articulada'],
-                 'correcta': 'B'},
+                                  'Articulada',
+                                  'Inmutable'],
+                 'correcta': 'E'},
                 {'pregunta': 'La característica del signo lingüístico según '
                              'la cual la relación significado-significante '
                              'cambia a través del tiempo se llama:',
-                 'alternativas': ['Inmutable',
-                                  'Mutable',
+                 'alternativas': ['Arbitraria',
+                                  'Inmutable',
+                                  'Articulada',
                                   'Lineal',
-                                  'Arbitraria',
-                                  'Articulada'],
-                 'correcta': 'B'},
+                                  'Mutable'],
+                 'correcta': 'E'},
                 {'pregunta': 'La característica del signo lingüístico según '
                              'la cual las unidades mayores son divisibles en '
                              'partes más pequeñas se llama:',
-                 'alternativas': ['Lineal',
-                                  'Articulada',
-                                  'Inmutable',
+                 'alternativas': ['Articulada',
+                                  'Arbitraria',
                                   'Mutable',
-                                  'Arbitraria'],
-                 'correcta': 'B'}],
+                                  'Lineal',
+                                  'Inmutable'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO / CARACTERÍSTICAS DEL LENGUAJE',
                       'items': ['Según la RAE, el lenguaje es la facultad '
                                 'del ser humano de expresarse y comunicarse '
@@ -1340,342 +1340,342 @@ COMUNICATIVA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'La disciplina que estudia los sonidos de la '
                              'lengua en su carácter distintivo de '
                              'significados es la:',
-                 'alternativas': ['Semántica',
+                 'alternativas': ['Sintaxis',
+                                  'Fonética',
+                                  'Semántica',
                                   'Fonología',
-                                  'Sintaxis',
-                                  'Morfología',
-                                  'Fonética'],
-                 'correcta': 'B'},
+                                  'Morfología'],
+                 'correcta': 'D'},
                 {'pregunta': 'La disciplina que estudia los mecanismos de '
                              'producción física de los sonidos del habla es '
                              'la:',
-                 'alternativas': ['Pragmática',
-                                  'Fonología',
+                 'alternativas': ['Fonética',
                                   'Semántica',
-                                  'Morfología',
-                                  'Fonética'],
-                 'correcta': 'E'},
-                {'pregunta': 'El número de fonemas del español es:',
-                 'alternativas': ['27', '20', '30', '24', '22'],
-                 'correcta': 'D'},
-                {'pregunta': 'Los fonemas se representan entre:',
-                 'alternativas': ['Corchetes [ ]',
-                                  'Barras / /',
-                                  'Llaves { }',
-                                  'Comillas « »',
-                                  'Paréntesis ( )'],
-                 'correcta': 'B'},
-                {'pregunta': 'Los fonos se representan entre:',
-                 'alternativas': ['Corchetes [ ]',
-                                  'Barras / /',
-                                  'Paréntesis ( )',
-                                  'Comillas « »',
-                                  'Llaves { }'],
-                 'correcta': 'A'},
-                {'pregunta': 'Los fonemas son unidades de estudio de la:',
-                 'alternativas': ['Semántica',
-                                  'Morfología',
-                                  'Sintaxis',
-                                  'Fonología',
-                                  'Fonética'],
-                 'correcta': 'D'},
-                {'pregunta': 'Los fonos son unidades de estudio de la:',
-                 'alternativas': ['Semántica',
-                                  'Fonética',
                                   'Fonología',
                                   'Pragmática',
                                   'Morfología'],
+                 'correcta': 'A'},
+                {'pregunta': 'El número de fonemas del español es:',
+                 'alternativas': ['24', '27', '22', '20', '30'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los fonemas se representan entre:',
+                 'alternativas': ['Llaves { }',
+                                  'Paréntesis ( )',
+                                  'Barras / /',
+                                  'Comillas « »',
+                                  'Corchetes [ ]'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los fonos se representan entre:',
+                 'alternativas': ['Comillas « »',
+                                  'Barras / /',
+                                  'Corchetes [ ]',
+                                  'Llaves { }',
+                                  'Paréntesis ( )'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los fonemas son unidades de estudio de la:',
+                 'alternativas': ['Fonética',
+                                  'Fonología',
+                                  'Sintaxis',
+                                  'Morfología',
+                                  'Semántica'],
                  'correcta': 'B'},
+                {'pregunta': 'Los fonos son unidades de estudio de la:',
+                 'alternativas': ['Pragmática',
+                                  'Semántica',
+                                  'Morfología',
+                                  'Fonética',
+                                  'Fonología'],
+                 'correcta': 'D'},
                 {'pregunta': 'Un fonema se define como un segmento '
                              'fonológico que:',
-                 'alternativas': ['Es siempre visible por escrito',
-                                  'Se puede descomponer en unidades menores',
-                                  'No existe en la lengua oral',
+                 'alternativas': ['Se puede descomponer en unidades menores',
                                   'Carece de valor distintivo',
                                   'No puede descomponerse en unidades '
-                                  'sucesivas menores'],
-                 'correcta': 'E'},
+                                  'sucesivas menores',
+                                  'Es siempre visible por escrito',
+                                  'No existe en la lengua oral'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los fonemas son sonidos:',
                  'alternativas': ['Sin valor distintivo',
+                                  'Infinitos',
                                   'Reales y materializados',
                                   'Ideales y mentales',
-                                  'Infinitos',
                                   'Exclusivamente escritos'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los fonos son la materialización de un fonema '
                              'a través:',
-                 'alternativas': ['De la gramática',
+                 'alternativas': ['De la escritura',
                                   'De la lectura silenciosa',
                                   'Del habla',
                                   'De la memoria',
-                                  'De la escritura'],
+                                  'De la gramática'],
                  'correcta': 'C'},
                 {'pregunta': 'Un par mínimo, como «beso» y «peso», sirve '
                              'para identificar:',
-                 'alternativas': ['Palabras sin relación',
-                                  'Homófonos idénticos',
+                 'alternativas': ['Antónimos',
+                                  'Palabras sin relación',
                                   'Sinónimos',
+                                  'Homófonos idénticos',
                                   'Fonemas distintos por el cambio de '
-                                  'significado',
-                                  'Antónimos'],
-                 'correcta': 'D'},
+                                  'significado'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los elementos constitutivos de un fonema, cuya '
                              'modificación causa contraste significativo, '
                              'son los:',
-                 'alternativas': ['Grafemas',
-                                  'Fonos',
+                 'alternativas': ['Morfemas',
                                   'Dígrafos',
+                                  'Fonos',
                                   'Rasgos distintivos',
-                                  'Morfemas'],
+                                  'Grafemas'],
                  'correcta': 'D'},
                 {'pregunta': 'El fonema /p/ tiene, entre sus rasgos '
                              'distintivos, ser bilabial, oclusivo y:',
                  'alternativas': ['Sordo',
                                   'Vibrante',
-                                  'Nasal',
+                                  'Sonoro',
                                   'Fricativo',
-                                  'Sonoro'],
+                                  'Nasal'],
                  'correcta': 'A'},
                 {'pregunta': 'El fonema /b/ tiene, entre sus rasgos '
                              'distintivos, ser bilabial, oclusivo y:',
                  'alternativas': ['Sonoro',
-                                  'Sordo',
                                   'Nasal',
-                                  'Lateral',
-                                  'Vibrante'],
+                                  'Sordo',
+                                  'Vibrante',
+                                  'Lateral'],
                  'correcta': 'A'},
                 {'pregunta': '«Peso» y «beso» se diferencian por el rasgo '
                              'distintivo de:',
-                 'alternativas': ['El punto de articulación',
-                                  'El modo nasal',
+                 'alternativas': ['El modo nasal',
+                                  'La vocal final',
+                                  'El punto de articulación',
                                   'La sonoridad',
-                                  'La sílaba tónica',
-                                  'La vocal final'],
-                 'correcta': 'C'},
+                                  'La sílaba tónica'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los elementos que constituyen la cadena '
                              'hablada y se estudian con criterios '
                              'articulatorios son los elementos:',
-                 'alternativas': ['Semánticos',
+                 'alternativas': ['Suprasegmentales',
                                   'Segmentales',
-                                  'Morfológicos',
                                   'Sintácticos',
-                                  'Suprasegmentales'],
+                                  'Semánticos',
+                                  'Morfológicos'],
                  'correcta': 'B'},
                 {'pregunta': 'La entonación y el acento son ejemplos de '
                              'elementos:',
-                 'alternativas': ['Léxicos',
+                 'alternativas': ['Suprasegmentales',
                                   'Segmentales',
-                                  'Suprasegmentales',
+                                  'Léxicos',
                                   'Sintácticos',
                                   'Morfológicos'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'El número de dígrafos en la escritura del '
                              'español es:',
-                 'alternativas': ['5', '2', '3', '7', '10'],
-                 'correcta': 'A'},
+                 'alternativas': ['10', '7', '2', '5', '3'],
+                 'correcta': 'D'},
                 {'pregunta': 'En español, /b/ y /l/ son fonemas distintos '
                              'porque existen pares de palabras como:',
-                 'alternativas': ['Ola y hola',
+                 'alternativas': ['Tubo y tuvo',
                                   'Vaca y baca',
-                                  'Casa y caza',
-                                  'Tubo y tuvo',
-                                  'Bata y lata'],
-                 'correcta': 'E'},
-                {'pregunta': 'Los fonemas carecen de significación:',
-                 'alternativas': ['Solo en la escritura',
-                                  'Siempre en combinación',
-                                  'Por sí solos',
-                                  'Solo en el habla informal',
-                                  'En cualquier contexto'],
+                                  'Bata y lata',
+                                  'Ola y hola',
+                                  'Casa y caza'],
                  'correcta': 'C'},
+                {'pregunta': 'Los fonemas carecen de significación:',
+                 'alternativas': ['Por sí solos',
+                                  'Solo en el habla informal',
+                                  'En cualquier contexto',
+                                  'Siempre en combinación',
+                                  'Solo en la escritura'],
+                 'correcta': 'A'},
                 {'pregunta': 'La rama de la fonética que estudia cómo se '
                              'producen los sonidos mediante los órganos del '
                              'habla es la fonética:',
                  'alternativas': ['Acústica',
-                                  'Articulatoria',
                                   'Descriptiva',
-                                  'Auditiva exclusiva',
-                                  'Fonológica'],
-                 'correcta': 'B'},
+                                  'Articulatoria',
+                                  'Fonológica',
+                                  'Auditiva exclusiva'],
+                 'correcta': 'C'},
                 {'pregunta': 'La rama de la fonética que estudia las '
                              'propiedades físicas de las ondas sonoras es la '
                              'fonética:',
-                 'alternativas': ['Articulatoria',
+                 'alternativas': ['Fonológica',
                                   'Acústica',
                                   'Descriptiva',
-                                  'Perceptiva exclusiva',
-                                  'Fonológica'],
+                                  'Articulatoria',
+                                  'Perceptiva exclusiva'],
                  'correcta': 'B'},
                 {'pregunta': 'El español tiene 24 fonemas segmentales, de '
                              'los cuales el número de fonemas vocálicos es:',
-                 'alternativas': ['3', '5', '7', '19', '10'],
-                 'correcta': 'B'},
+                 'alternativas': ['10', '7', '3', '19', '5'],
+                 'correcta': 'E'},
                 {'pregunta': 'En los fonemas vocálicos, durante su '
                              'producción, el flujo de aire:',
-                 'alternativas': ['Encuentra un obstáculo total',
-                                  'No encuentra ningún obstáculo',
+                 'alternativas': ['Vibra en las cuerdas vocales',
+                                  'Encuentra un obstáculo total',
                                   'Se interrumpe parcialmente',
-                                  'Vibra en las cuerdas vocales',
+                                  'No encuentra ningún obstáculo',
                                   'Se detiene completamente'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Por el grado de abertura de la boca, las '
                              'vocales /i/ y /u/ se clasifican como:',
-                 'alternativas': ['Abiertas',
-                                  'Cerradas',
+                 'alternativas': ['Centrales',
                                   'Semiabiertas',
-                                  'Centrales',
+                                  'Cerradas',
+                                  'Abiertas',
                                   'Posteriores'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Por la posición de la lengua, la vocal /a/ se '
                              'clasifica como vocal:',
-                 'alternativas': ['Anterior o palatal',
-                                  'Central',
-                                  'Posterior o velar',
+                 'alternativas': ['Central',
+                                  'Anterior o palatal',
                                   'Cerrada',
+                                  'Posterior o velar',
                                   'Aguda'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'Por el grado de sonoridad, las vocales /o/ y '
                              '/u/ se clasifican como vocales:',
                  'alternativas': ['Agudas',
                                   'Graves',
+                                  'Abiertas',
                                   'Medias',
-                                  'Cerradas',
-                                  'Abiertas'],
+                                  'Cerradas'],
                  'correcta': 'B'},
                 {'pregunta': 'Respecto a la vibración de las cuerdas '
                              'vocales, en español:',
                  'alternativas': ['Existen vocales sordas y sonoras por '
                                   'igual',
                                   'Todas las vocales son sonoras',
-                                  'Todas las vocales son sordas',
+                                  'Ninguna vocal es sonora',
                                   'Solo /a/ es sonora',
-                                  'Ninguna vocal es sonora'],
+                                  'Todas las vocales son sordas'],
                  'correcta': 'B'},
                 {'pregunta': 'El triángulo vocálico, herramienta para '
                              'clasificar las vocales, fue propuesto en 1781 '
                              'por:',
-                 'alternativas': ['Ferdinand de Saussure',
+                 'alternativas': ['Noam Chomsky',
+                                  'André Martinet',
                                   'F. Hellwag',
-                                  'Noam Chomsky',
-                                  'Roman Jakobson',
-                                  'André Martinet'],
-                 'correcta': 'B'},
+                                  'Ferdinand de Saussure',
+                                  'Roman Jakobson'],
+                 'correcta': 'C'},
                 {'pregunta': 'En los fonemas consonánticos, durante su '
                              'realización, se produce:',
-                 'alternativas': ['Ninguna interrupción del flujo de aire',
-                                  'Una interrupción total o parcial del '
+                 'alternativas': ['Una interrupción total o parcial del '
                                   'flujo de aire',
+                                  'Ninguna interrupción del flujo de aire',
+                                  'Solo fricción labial',
                                   'Solo vibración de cuerdas vocales',
-                                  'Solo resonancia nasal',
-                                  'Solo fricción labial'],
-                 'correcta': 'B'},
+                                  'Solo resonancia nasal'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los fonemas /p/, /b/ y /m/, donde intervienen '
                              'ambos labios, se clasifican por su punto de '
                              'articulación como:',
                  'alternativas': ['Labiodentales',
-                                  'Bilabiales',
-                                  'Dentales',
                                   'Alveolares',
-                                  'Palatales'],
-                 'correcta': 'B'},
+                                  'Dentales',
+                                  'Palatales',
+                                  'Bilabiales'],
+                 'correcta': 'E'},
                 {'pregunta': 'El fonema /f/, donde el labio inferior se '
                              'dirige hacia los dientes incisivos superiores, '
                              'se clasifica como:',
-                 'alternativas': ['Bilabial',
-                                  'Labiodental',
+                 'alternativas': ['Labiodental',
                                   'Dental',
-                                  'Interdental',
-                                  'Alveolar'],
-                 'correcta': 'B'},
+                                  'Bilabial',
+                                  'Alveolar',
+                                  'Interdental'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los fonemas /s/, /n/, /l/, /r/, /rr/, donde el '
                              'ápice de la lengua se dirige hacia los '
                              'alvéolos, se clasifican como:',
                  'alternativas': ['Dentales',
-                                  'Alveolares',
-                                  'Palatales',
+                                  'Interdentales',
                                   'Velares',
-                                  'Interdentales'],
-                 'correcta': 'B'},
+                                  'Alveolares',
+                                  'Palatales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los fonemas /ch/, /y/, /ll/, /ñ/, donde el '
                              'dorso de la lengua se dirige hacia el paladar '
                              'medio, se clasifican como:',
-                 'alternativas': ['Alveolares',
-                                  'Palatales',
-                                  'Velares',
+                 'alternativas': ['Velares',
                                   'Dentales',
-                                  'Bilabiales'],
-                 'correcta': 'B'},
+                                  'Bilabiales',
+                                  'Palatales',
+                                  'Alveolares'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los fonemas /k/, /g/, /j/, donde la raíz de la '
                              'lengua se dirige hacia el velo del paladar, se '
                              'clasifican como:',
-                 'alternativas': ['Palatales',
-                                  'Velares',
+                 'alternativas': ['Labiodentales',
+                                  'Palatales',
                                   'Alveolares',
-                                  'Dentales',
-                                  'Labiodentales'],
-                 'correcta': 'B'},
+                                  'Velares',
+                                  'Dentales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los fonemas /p/, /b/, /d/, /k/, /g/, /t/, '
                              'donde el aire encuentra un cierre momentáneo '
                              'con breve explosión, se clasifican por su modo '
                              'de articulación como:',
-                 'alternativas': ['Fricativos',
-                                  'Oclusivos',
+                 'alternativas': ['Nasales',
+                                  'Fricativos',
                                   'Africados',
-                                  'Laterales',
-                                  'Nasales'],
-                 'correcta': 'B'},
+                                  'Oclusivos',
+                                  'Laterales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los fonemas /f/, /z/, /s/, /y/, /j/, donde el '
                              'aire pasa friccionando las paredes del canal, '
                              'se clasifican como:',
                  'alternativas': ['Oclusivos',
-                                  'Fricativos',
-                                  'Africados',
                                   'Vibrantes',
-                                  'Nasales'],
-                 'correcta': 'B'},
+                                  'Fricativos',
+                                  'Nasales',
+                                  'Africados'],
+                 'correcta': 'C'},
                 {'pregunta': 'El fonema /ch/, que resulta de la combinación '
                              'de una oclusiva con una fricativa, se '
                              'clasifica como:',
-                 'alternativas': ['Oclusivo',
-                                  'Africado',
+                 'alternativas': ['Africado',
+                                  'Oclusivo',
                                   'Fricativo',
                                   'Lateral',
                                   'Nasal'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'Los fonemas /m/, /n/, /ñ/, donde el aire sale '
                              'por la cavidad nasal y la cavidad oral, se '
                              'clasifican como:',
-                 'alternativas': ['Laterales',
+                 'alternativas': ['Vibrantes',
+                                  'Fricativos',
                                   'Nasales',
-                                  'Vibrantes',
                                   'Oclusivos',
-                                  'Fricativos'],
-                 'correcta': 'B'},
+                                  'Laterales'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los fonemas /rr/ y /r/, donde el órgano activo '
                              'vibra obstruyendo y abriendo el paso del aire, '
                              'se clasifican como:',
-                 'alternativas': ['Nasales',
-                                  'Vibrantes',
+                 'alternativas': ['Oclusivos',
+                                  'Nasales',
                                   'Laterales',
-                                  'Fricativos',
-                                  'Oclusivos'],
-                 'correcta': 'B'},
+                                  'Vibrantes',
+                                  'Fricativos'],
+                 'correcta': 'D'},
                 {'pregunta': 'El fonema /g/, clasificado por punto de '
                              'articulación, modo de articulación y '
                              'sonoridad, corresponde a:',
-                 'alternativas': ['Velar - fricativo - sordo',
+                 'alternativas': ['Bilabial - oclusivo - sonoro',
+                                  'Palatal - africado - sordo',
+                                  'Velar - fricativo - sordo',
                                   'Velar - oclusivo - sonoro',
-                                  'Bilabial - oclusivo - sonoro',
-                                  'Alveolar - vibrante - sonoro',
-                                  'Palatal - africado - sordo'],
-                 'correcta': 'B'},
+                                  'Alveolar - vibrante - sonoro'],
+                 'correcta': 'D'},
                 {'pregunta': 'El fonema /j/, clasificado por punto de '
                              'articulación, modo de articulación y '
                              'sonoridad, corresponde a:',
-                 'alternativas': ['Velar - oclusivo - sonoro',
+                 'alternativas': ['Bilabial - nasal - sonoro',
                                   'Velar - fricativo - sordo',
-                                  'Bilabial - nasal - sonoro',
                                   'Alveolar - lateral - sonoro',
+                                  'Velar - oclusivo - sonoro',
                                   'Palatal - africado - sordo'],
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE FONOLOGÍA Y FONÉTICA',
@@ -1838,107 +1838,107 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Coda}', 'Margen posterior', 'Consonántica']]}],
   'preguntas': [{'pregunta': 'La sílaba se define como la unidad estructural '
                              'que actúa como principio:',
-                 'alternativas': ['Organizador de la lengua',
-                                  'Sintáctico',
-                                  'Morfológico exclusivo',
+                 'alternativas': ['Morfológico exclusivo',
+                                  'Organizador de la lengua',
                                   'Semántico',
-                                  'Pragmático'],
-                 'correcta': 'A'},
+                                  'Pragmático',
+                                  'Sintáctico'],
+                 'correcta': 'B'},
                 {'pregunta': 'La sílaba se agrupa en torno al segmento de '
                              'máxima:',
                  'alternativas': ['Consonancia',
+                                  'Frecuencia',
                                   'Intensidad tonal',
                                   'Sonoridad',
-                                  'Frecuencia',
                                   'Duración'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'En español, el núcleo silábico es siempre de '
                              'naturaleza:',
                  'alternativas': ['Fricativa',
+                                  'Vocálica',
                                   'Consonántica',
-                                  'Mixta obligatoria',
                                   'Nasal',
-                                  'Vocálica'],
-                 'correcta': 'E'},
+                                  'Mixta obligatoria'],
+                 'correcta': 'B'},
                 {'pregunta': 'El constituyente silábico que es la cumbre o '
                              'centro de la sílaba es:',
                  'alternativas': ['El núcleo',
-                                  'El inicio',
+                                  'La rima',
                                   'La coda',
-                                  'El ataque',
-                                  'La rima'],
+                                  'El inicio',
+                                  'El ataque'],
                  'correcta': 'A'},
                 {'pregunta': 'El margen silábico anterior, de naturaleza '
                              'consonántica, se llama:',
-                 'alternativas': ['Rima',
-                                  'Núcleo',
-                                  'Inicio o ataque',
+                 'alternativas': ['Núcleo',
+                                  'Rima',
                                   'Coda',
-                                  'Centro'],
-                 'correcta': 'C'},
+                                  'Centro',
+                                  'Inicio o ataque'],
+                 'correcta': 'E'},
                 {'pregunta': 'El margen silábico posterior, en posición '
                              'implosiva, se llama:',
-                 'alternativas': ['Ataque',
+                 'alternativas': ['Centro',
+                                  'Ataque',
                                   'Coda',
-                                  'Inicio',
                                   'Núcleo',
-                                  'Centro'],
-                 'correcta': 'B'},
+                                  'Inicio'],
+                 'correcta': 'C'},
                 {'pregunta': 'La rima silábica está constituida por:',
-                 'alternativas': ['Solo el inicio',
-                                  'Ningún elemento fijo',
+                 'alternativas': ['El inicio y la coda',
                                   'Solo la coda',
+                                  'Solo el inicio',
                                   'El núcleo y la coda',
-                                  'El inicio y la coda'],
+                                  'Ningún elemento fijo'],
                  'correcta': 'D'},
                 {'pregunta': 'El silabeo consiste en:',
                  'alternativas': ['Unir todas las sílabas',
+                                  'Eliminar las vocales',
                                   'Contar las consonantes',
                                   'Pronunciar o escribir separadas las '
                                   'sílabas de una palabra',
-                                  'Acentuar todas las palabras',
-                                  'Eliminar las vocales'],
-                 'correcta': 'C'},
+                                  'Acentuar todas las palabras'],
+                 'correcta': 'D'},
                 {'pregunta': 'Una consonante entre dos vocales siempre forma '
                              'sílaba con la vocal que:',
-                 'alternativas': ['La sigue',
-                                  'Es átona',
+                 'alternativas': ['Es tónica',
+                                  'Está más lejos',
+                                  'La sigue',
                                   'La precede',
-                                  'Es tónica',
-                                  'Está más lejos'],
-                 'correcta': 'A'},
+                                  'Es átona'],
+                 'correcta': 'C'},
                 {'pregunta': 'En la palabra «pato», la separación silábica '
                              'correcta es:',
-                 'alternativas': ['P-ato',
-                                  'Pa-to',
+                 'alternativas': ['Pa-t-o',
+                                  'P-ato',
                                   'Pato completo',
-                                  'Pa-t-o',
+                                  'Pa-to',
                                   'Pat-o'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los grupos tautosilábicos pr, br, tr, cr, pl, '
                              'bl, cl se caracterizan por ser:',
-                 'alternativas': ['Nulos en español',
-                                  'Solo finales de palabra',
+                 'alternativas': ['Separables siempre',
+                                  'Nulos en español',
                                   'Vocálicos',
                                   'Inseparables',
-                                  'Separables siempre'],
+                                  'Solo finales de palabra'],
                  'correcta': 'D'},
                 {'pregunta': 'En la palabra «apretar», el grupo «pr» se '
                              'mantiene:',
                  'alternativas': ['Eliminado',
-                                  'Acentuado siempre',
                                   'Junto, formando sílaba con la vocal '
                                   'siguiente',
+                                  'Acentuado siempre',
                                   'Separado en dos sílabas',
                                   'Sustituido por otra letra'],
-                 'correcta': 'C'},
+                 'correcta': 'B'},
                 {'pregunta': 'Cuando una sílaba termina en consonante y la '
                              'siguiente comienza en otra consonante, ambas '
                              'se:',
-                 'alternativas': ['Eliminan',
-                                  'Convierten en vocales',
-                                  'Ignoran en el silabeo',
+                 'alternativas': ['Convierten en vocales',
+                                  'Eliminan',
                                   'Unen en una sola sílaba',
+                                  'Ignoran en el silabeo',
                                   'Separan entre ambas consonantes'],
                  'correcta': 'E'},
                 {'pregunta': 'En la palabra «asma», la separación silábica '
@@ -1946,159 +1946,159 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                  'alternativas': ['As-ma',
                                   'A-s-ma',
                                   'A-sma',
-                                  'Asma sin dividir',
-                                  'Asm-a'],
+                                  'Asm-a',
+                                  'Asma sin dividir'],
                  'correcta': 'A'},
                 {'pregunta': 'En español NO existe frontera silábica en la '
                              'secuencia:',
-                 'alternativas': ['Consonante-vocal',
+                 'alternativas': ['Consonante-consonante',
+                                  'Vocal-vocal',
                                   'Diptongo-consonante',
-                                  'Consonante-consonante',
-                                  'Vocal-consonante',
-                                  'Vocal-vocal'],
-                 'correcta': 'A'},
+                                  'Consonante-vocal',
+                                  'Vocal-consonante'],
+                 'correcta': 'D'},
                 {'pregunta': 'En la palabra «Cuba», la separación silábica '
                              'correcta es:',
-                 'alternativas': ['Cub-a',
-                                  'Cu-ba',
-                                  'C-uba',
+                 'alternativas': ['Cuba sin dividir',
                                   'Cu-b-a',
-                                  'Cuba sin dividir'],
-                 'correcta': 'B'},
+                                  'Cub-a',
+                                  'C-uba',
+                                  'Cu-ba'],
+                 'correcta': 'E'},
                 {'pregunta': 'Un vocablo monosilábico, como «pan», tiene:',
-                 'alternativas': ['Dos sílabas',
-                                  'Una sola sílaba',
-                                  'Cuatro sílabas o más',
+                 'alternativas': ['Ninguna sílaba',
+                                  'Dos sílabas',
                                   'Tres sílabas',
-                                  'Ninguna sílaba'],
-                 'correcta': 'B'},
+                                  'Una sola sílaba',
+                                  'Cuatro sílabas o más'],
+                 'correcta': 'D'},
                 {'pregunta': 'La palabra «amor» se divide silábicamente '
                              'como:',
-                 'alternativas': ['Amo-r',
-                                  'Amor sin dividir',
+                 'alternativas': ['A-m-or',
+                                  'Amo-r',
+                                  'A-mor',
                                   'Am-or',
-                                  'A-m-or',
-                                  'A-mor'],
-                 'correcta': 'E'},
+                                  'Amor sin dividir'],
+                 'correcta': 'C'},
                 {'pregunta': 'El núcleo silábico, según el texto, resulta '
                              'determinante para asignar:',
-                 'alternativas': ['La categoría sintáctica',
-                                  'El género gramatical',
+                 'alternativas': ['El acento léxico',
                                   'El número gramatical',
-                                  'El acento léxico',
-                                  'El sujeto de la oración'],
-                 'correcta': 'D'},
+                                  'La categoría sintáctica',
+                                  'El sujeto de la oración',
+                                  'El género gramatical'],
+                 'correcta': 'A'},
                 {'pregunta': 'Un sonido o grupo de sonidos pronunciados en '
                              'un solo golpe de voz constituye:',
-                 'alternativas': ['Un fonema aislado',
-                                  'Una sílaba',
-                                  'Un morfema',
+                 'alternativas': ['Una sílaba',
                                   'Un sintagma',
-                                  'Una oración'],
-                 'correcta': 'B'},
+                                  'Un fonema aislado',
+                                  'Una oración',
+                                  'Un morfema'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las vocales solas, por sí mismas, pueden '
                              'constituir:',
-                 'alternativas': ['Ningún elemento fónico',
-                                  'Solo diptongos',
+                 'alternativas': ['Solo palabras compuestas',
                                   'Sílabas',
+                                  'Ningún elemento fónico',
                                   'Solo consonantes',
-                                  'Solo palabras compuestas'],
-                 'correcta': 'C'},
+                                  'Solo diptongos'],
+                 'correcta': 'B'},
                 {'pregunta': 'Cuando dos elementos contiguos, como una '
                              'consonante y una líquida (pl, tr, cl), '
                              'pertenecen a la misma sílaba, se llaman '
                              'grupos:',
-                 'alternativas': ['Heterosilábicos',
-                                  'Tautosilábicos',
+                 'alternativas': ['Tautosilábicos',
+                                  'Silábicos simples',
                                   'Vocálicos',
                                   'Consonánticos exclusivos',
-                                  'Silábicos simples'],
-                 'correcta': 'B'},
+                                  'Heterosilábicos'],
+                 'correcta': 'A'},
                 {'pregunta': 'La concurrencia de dos vocales que forman una '
                              'sola sílaba se llama:',
-                 'alternativas': ['Hiato',
-                                  'Diptongo',
+                 'alternativas': ['Diptongo',
                                   'Triptongo',
-                                  'Sinéresis exclusiva',
-                                  'Sinalefa exclusiva'],
-                 'correcta': 'B'},
+                                  'Hiato',
+                                  'Sinalefa exclusiva',
+                                  'Sinéresis exclusiva'],
+                 'correcta': 'A'},
                 {'pregunta': 'El diptongo que combina una vocal cerrada y '
                              'una abierta (en ese orden), como en «pues», se '
-                             'llama diptongo:',
-                 'alternativas': ['Decreciente',
-                                  'Creciente',
-                                  'Neutro',
-                                  'Homogéneo',
-                                  'Simple'],
-                 'correcta': 'B'},
-                {'pregunta': 'El diptongo que combina una vocal abierta y '
-                             'una cerrada (en ese orden), como en «aire», se '
                              'llama diptongo:',
                  'alternativas': ['Creciente',
                                   'Decreciente',
                                   'Neutro',
                                   'Homogéneo',
+                                  'Simple'],
+                 'correcta': 'A'},
+                {'pregunta': 'El diptongo que combina una vocal abierta y '
+                             'una cerrada (en ese orden), como en «aire», se '
+                             'llama diptongo:',
+                 'alternativas': ['Decreciente',
+                                  'Neutro',
+                                  'Creciente',
+                                  'Homogéneo',
                                   'Compuesto'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'El triptongo está constituido, según el '
                              'esquema VC+VA+VC, por dos vocales cerradas y '
                              'una vocal:',
-                 'alternativas': ['Cerrada adicional',
-                                  'Abierta',
-                                  'Neutra',
+                 'alternativas': ['Tónica exclusiva',
                                   'Nasal',
-                                  'Tónica exclusiva'],
-                 'correcta': 'B'},
+                                  'Neutra',
+                                  'Abierta',
+                                  'Cerrada adicional'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las vocales de un triptongo se pronuncian como '
                              'una sola sílaba y, bajo ninguna circunstancia, '
                              'pueden:',
-                 'alternativas': ['Llevar tilde',
-                                  'Separarse',
+                 'alternativas': ['Combinarse con consonantes',
                                   'Repetirse',
-                                  'Combinarse con consonantes',
+                                  'Separarse',
+                                  'Llevar tilde',
                                   'Iniciar palabra'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Dos segmentos consecutivos que se integran en '
                              'sílabas diferentes forman grupos:',
-                 'alternativas': ['Tautosilábicos',
+                 'alternativas': ['Diptongados',
+                                  'Fonéticos simples',
                                   'Heterosilábicos',
-                                  'Diptongados',
                                   'Triptongados',
-                                  'Fonéticos simples'],
-                 'correcta': 'B'},
+                                  'Tautosilábicos'],
+                 'correcta': 'C'},
                 {'pregunta': 'Dos vocales seguidas que se separan para '
                              'formar dos sílabas distintas constituyen:',
                  'alternativas': ['Un diptongo',
+                                  'Una sinalefa',
                                   'Un hiato',
                                   'Un triptongo',
-                                  'Una sinalefa',
                                   'Un grupo tautosilábico'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Cuando hay dos vocales fuertes o abiertas '
                              'juntas, como en «peón», siempre se produce:',
-                 'alternativas': ['Diptongo',
+                 'alternativas': ['Triptongo',
                                   'Hiato',
-                                  'Triptongo',
                                   'Sinéresis',
+                                  'Diptongo',
                                   'Elisión'],
                  'correcta': 'B'},
                 {'pregunta': 'Cuando una vocal débil o cerrada es tónica '
                              '(lleva tilde) junto a una vocal fuerte, como '
                              'en «día», el diptongo se deshace y se forma:',
-                 'alternativas': ['Un triptongo',
+                 'alternativas': ['Una sinalefa',
                                   'Un hiato',
-                                  'Una sinalefa',
                                   'Un grupo consonántico',
-                                  'Una elisión'],
+                                  'Una elisión',
+                                  'Un triptongo'],
                  'correcta': 'B'},
                 {'pregunta': 'Los sonidos dentro de la sílaba se organizan '
                              'de acuerdo con la:',
-                 'alternativas': ['Escala fonética simple',
-                                  'Escala universal de sonoridad',
+                 'alternativas': ['Ley de Grimm',
                                   'Norma académica',
+                                  'Escala fonética simple',
                                   'Regla de acentuación',
-                                  'Ley de Grimm'],
-                 'correcta': 'B'}],
+                                  'Escala universal de sonoridad'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La sílaba es la unidad estructural que '
                                 'actúa como principio organizador de la '
@@ -2293,324 +2293,324 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                           '{Mas} (conjunción, «pero»)']]}],
   'preguntas': [{'pregunta': 'El signo diacrítico que marca la acentuación '
                              'de una palabra por escrito se llama:',
-                 'alternativas': ['Diéresis',
-                                  'Apóstrofo',
+                 'alternativas': ['Apóstrofo',
+                                  'Diéresis',
                                   'Guion',
-                                  'Cedilla',
-                                  'Tilde'],
-                 'correcta': 'E'},
+                                  'Tilde',
+                                  'Cedilla'],
+                 'correcta': 'D'},
                 {'pregunta': 'El acento que diferencia en la pronunciación '
                              'una sílaba, contrastándola con el resto, es el '
                              'acento:',
                  'alternativas': ['Diacrítico',
-                                  'Ortográfico exclusivo',
-                                  'Fonológico puro',
+                                  'Prosódico',
                                   'Gráfico',
-                                  'Prosódico'],
-                 'correcta': 'E'},
+                                  'Fonológico puro',
+                                  'Ortográfico exclusivo'],
+                 'correcta': 'B'},
                 {'pregunta': 'La función del acento que diferencia unidades '
                              'acentuadas de inacentuadas es la función:',
-                 'alternativas': ['Culminativa',
-                                  'Contrastiva',
+                 'alternativas': ['Contrastiva',
                                   'Gráfica',
-                                  'Distintiva',
-                                  'Semántica'],
-                 'correcta': 'B'},
+                                  'Semántica',
+                                  'Culminativa',
+                                  'Distintiva'],
+                 'correcta': 'A'},
                 {'pregunta': 'La función del acento que diferencia el '
                              'significado de palabras como «médico» y '
                              '«medicó» es la función:',
-                 'alternativas': ['Distintiva',
-                                  'Ortográfica',
+                 'alternativas': ['Culminativa',
                                   'Contrastiva',
-                                  'Culminativa',
-                                  'Prosódica pura'],
-                 'correcta': 'A'},
+                                  'Ortográfica',
+                                  'Prosódica pura',
+                                  'Distintiva'],
+                 'correcta': 'E'},
                 {'pregunta': 'La función que permite percibir los grupos '
                              'acentuales del discurso es la función:',
                  'alternativas': ['Gráfica',
-                                  'Semántica',
-                                  'Contrastiva',
                                   'Distintiva',
-                                  'Culminativa'],
-                 'correcta': 'E'},
+                                  'Contrastiva',
+                                  'Culminativa',
+                                  'Semántica'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las palabras monosilábicas, por regla general:',
-                 'alternativas': ['Se acentúan según el contexto',
+                 'alternativas': ['Llevan doble tilde',
                                   'Siempre llevan tilde',
+                                  'Se acentúan según el contexto',
                                   'Llevan tilde si son agudas',
-                                  'Llevan doble tilde',
                                   'Nunca se acentúan gráficamente, salvo '
                                   'tilde diacrítica'],
                  'correcta': 'E'},
                 {'pregunta': 'Las palabras agudas tienen la sílaba tónica en '
                              'la posición:',
-                 'alternativas': ['Última',
-                                  'Antepenúltima',
+                 'alternativas': ['Primera',
                                   'Anterior a la antepenúltima',
-                                  'Penúltima',
-                                  'Primera'],
-                 'correcta': 'A'},
-                {'pregunta': 'Las palabras agudas llevan tilde cuando '
-                             'terminan en:',
-                 'alternativas': ['Cualquier consonante',
-                                  'La letra y siempre',
-                                  'Ninguna terminación específica',
-                                  'Solo consonantes dobles',
-                                  'N, s o vocal'],
-                 'correcta': 'E'},
-                {'pregunta': 'Las palabras llanas o graves tienen la sílaba '
-                             'tónica en la posición:',
-                 'alternativas': ['Anterior a la antepenúltima',
-                                  'Primera',
                                   'Última',
                                   'Antepenúltima',
                                   'Penúltima'],
-                 'correcta': 'E'},
+                 'correcta': 'C'},
+                {'pregunta': 'Las palabras agudas llevan tilde cuando '
+                             'terminan en:',
+                 'alternativas': ['Cualquier consonante',
+                                  'Ninguna terminación específica',
+                                  'Solo consonantes dobles',
+                                  'N, s o vocal',
+                                  'La letra y siempre'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las palabras llanas o graves tienen la sílaba '
+                             'tónica en la posición:',
+                 'alternativas': ['Primera',
+                                  'Antepenúltima',
+                                  'Última',
+                                  'Penúltima',
+                                  'Anterior a la antepenúltima'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las palabras llanas llevan tilde cuando '
                              'terminan en:',
-                 'alternativas': ['Solo vocal',
+                 'alternativas': ['Consonante distinta de n, s o vocal',
                                   'Ninguna terminación',
-                                  'N, s o vocal',
                                   'Solo la letra y',
-                                  'Consonante distinta de n, s o vocal'],
-                 'correcta': 'E'},
+                                  'N, s o vocal',
+                                  'Solo vocal'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las palabras esdrújulas tienen la sílaba '
                              'tónica en la posición:',
-                 'alternativas': ['Antepenúltima',
-                                  'Penúltima',
-                                  'Primera exclusivamente',
+                 'alternativas': ['Primera exclusivamente',
+                                  'Antepenúltima',
                                   'Última',
-                                  'Anterior a la antepenúltima'],
-                 'correcta': 'A'},
-                {'pregunta': 'Las palabras esdrújulas, en cuanto a la tilde:',
-                 'alternativas': ['Llevan tilde solo si terminan en vocal',
-                                  'Todas llevan tilde',
-                                  'Nunca llevan tilde',
-                                  'Solo algunas llevan tilde',
-                                  'Dependen del contexto'],
+                                  'Anterior a la antepenúltima',
+                                  'Penúltima'],
                  'correcta': 'B'},
+                {'pregunta': 'Las palabras esdrújulas, en cuanto a la tilde:',
+                 'alternativas': ['Todas llevan tilde',
+                                  'Solo algunas llevan tilde',
+                                  'Dependen del contexto',
+                                  'Nunca llevan tilde',
+                                  'Llevan tilde solo si terminan en vocal'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las palabras sobresdrújulas tienen la sílaba '
                              'tónica:',
                  'alternativas': ['En la última posición',
-                                  'En la antepenúltima',
                                   'Sin posición fija',
+                                  'En la antepenúltima',
                                   'Anterior a la antepenúltima',
                                   'En la penúltima'],
                  'correcta': 'D'},
                 {'pregunta': 'Las palabras sobresdrújulas se caracterizan '
                              'por ser:',
-                 'alternativas': ['Monosilábicas',
-                                  'Siempre simples',
-                                  'Compuestas, y todas llevan tilde',
+                 'alternativas': ['Compuestas, y todas llevan tilde',
+                                  'Sin tilde nunca',
                                   'Solo verbos',
-                                  'Sin tilde nunca'],
-                 'correcta': 'C'},
+                                  'Monosilábicas',
+                                  'Siempre simples'],
+                 'correcta': 'A'},
                 {'pregunta': 'La palabra «cuéntaselo» es un ejemplo de '
                              'palabra:',
                  'alternativas': ['Llana',
-                                  'Esdrújula',
+                                  'Aguda',
                                   'Sobresdrújula',
-                                  'Monosilábica',
-                                  'Aguda'],
+                                  'Esdrújula',
+                                  'Monosilábica'],
                  'correcta': 'C'},
                 {'pregunta': 'La palabra «césped» es un ejemplo de palabra:',
                  'alternativas': ['Llana',
-                                  'Monosilábica',
                                   'Sobresdrújula',
+                                  'Monosilábica',
                                   'Esdrújula',
                                   'Aguda'],
                  'correcta': 'A'},
                 {'pregunta': 'La palabra «comité» lleva tilde porque es '
                              'aguda terminada en:',
-                 'alternativas': ['Consonante doble',
-                                  'Vocal',
-                                  'S',
-                                  'Consonante distinta de n o s',
-                                  'N'],
-                 'correcta': 'B'},
-                {'pregunta': 'La palabra «botón» lleva tilde porque es aguda '
-                             'terminada en:',
-                 'alternativas': ['La letra y',
-                                  'S',
+                 'alternativas': ['Vocal',
                                   'Consonante doble',
                                   'N',
-                                  'Vocal'],
+                                  'Consonante distinta de n o s',
+                                  'S'],
+                 'correcta': 'A'},
+                {'pregunta': 'La palabra «botón» lleva tilde porque es aguda '
+                             'terminada en:',
+                 'alternativas': ['Vocal',
+                                  'Consonante doble',
+                                  'S',
+                                  'N',
+                                  'La letra y'],
                  'correcta': 'D'},
                 {'pregunta': 'La palabra «jueves» no lleva tilde porque, '
                              'siendo llana, termina en:',
-                 'alternativas': ['Consonante distinta de n o s',
+                 'alternativas': ['Consonante doble',
+                                  'La letra y',
                                   'Vocal abierta tónica',
                                   'S',
-                                  'La letra y',
-                                  'Consonante doble'],
-                 'correcta': 'C'},
+                                  'Consonante distinta de n o s'],
+                 'correcta': 'D'},
                 {'pregunta': 'La palabra «música» es un ejemplo de palabra:',
-                 'alternativas': ['Sobresdrújula',
+                 'alternativas': ['Aguda',
                                   'Monosilábica',
+                                  'Esdrújula',
                                   'Llana',
-                                  'Aguda',
-                                  'Esdrújula'],
-                 'correcta': 'E'},
+                                  'Sobresdrújula'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las palabras con diptongo se acentúan '
                              'gráficamente de acuerdo con:',
-                 'alternativas': ['Una regla especial exclusiva',
-                                  'Las reglas generales de acentuación',
-                                  'No se acentúan nunca',
+                 'alternativas': ['Las reglas generales de acentuación',
                                   'Solo la posición del hiato',
-                                  'Reglas del triptongo'],
-                 'correcta': 'B'},
+                                  'Una regla especial exclusiva',
+                                  'Reglas del triptongo',
+                                  'No se acentúan nunca'],
+                 'correcta': 'A'},
                 {'pregunta': 'Cuando una palabra con diptongo debe llevar '
                              'tilde, esta se coloca sobre:',
-                 'alternativas': ['La vocal cerrada siempre',
-                                  'La vocal abierta del diptongo',
-                                  'La primera vocal siempre',
+                 'alternativas': ['La vocal abierta del diptongo',
+                                  'Ninguna vocal específica',
                                   'La última letra de la palabra',
-                                  'Ninguna vocal específica'],
-                 'correcta': 'B'},
+                                  'La vocal cerrada siempre',
+                                  'La primera vocal siempre'],
+                 'correcta': 'A'},
                 {'pregunta': 'En las palabras con triptongo que deben '
                              'tildarse, como «apreciáis», la tilde se coloca '
                              'sobre:',
                  'alternativas': ['La primera vocal cerrada',
+                                  'Ninguna vocal',
                                   'La vocal abierta',
                                   'La segunda vocal cerrada',
-                                  'La consonante final',
-                                  'Ninguna vocal'],
-                 'correcta': 'B'},
+                                  'La consonante final'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las palabras con hiato siempre llevan tilde '
                              'en:',
                  'alternativas': ['La vocal abierta',
-                                  'La vocal cerrada',
+                                  'La última sílaba únicamente',
                                   'La consonante final',
-                                  'La primera sílaba',
-                                  'La última sílaba únicamente'],
-                 'correcta': 'B'},
+                                  'La vocal cerrada',
+                                  'La primera sílaba'],
+                 'correcta': 'D'},
                 {'pregunta': 'La palabra «sabías», con hiato, lleva tilde en '
                              'la vocal cerrada a pesar de ser una palabra:',
                  'alternativas': ['Aguda terminada en consonante',
+                                  'Monosilábica',
                                   'Llana terminada en vocal',
-                                  'Esdrújula',
                                   'Sobresdrújula',
-                                  'Monosilábica'],
-                 'correcta': 'B'},
+                                  'Esdrújula'],
+                 'correcta': 'C'},
                 {'pregunta': 'Palabras como «raíz» y «maíz» llevan tilde en '
                              'el hiato a pesar de ser palabras agudas '
                              'terminadas en:',
-                 'alternativas': ['N o s',
-                                  'Consonante distinta de n o s',
-                                  'Vocal',
+                 'alternativas': ['Vocal',
                                   'Y',
+                                  'N o s',
+                                  'Consonante distinta de n o s',
                                   'Consonante doble'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Cuando una palabra tiene hiato de dos vocales '
                              'abiertas o fuertes juntas, como «Jaén» o '
                              '«peleó», la acentuación sigue:',
-                 'alternativas': ['Una regla exclusiva del hiato',
-                                  'Las reglas generales de acentuación',
-                                  'No se acentúan nunca',
+                 'alternativas': ['Las reglas generales de acentuación',
                                   'Solo la regla del diptongo',
-                                  'Ninguna regla específica'],
-                 'correcta': 'B'},
+                                  'Una regla exclusiva del hiato',
+                                  'Ninguna regla específica',
+                                  'No se acentúan nunca'],
+                 'correcta': 'A'},
                 {'pregunta': 'En la oración «Tú eres Santiago», la palabra '
                              '«tú» lleva tilde porque funciona como:',
-                 'alternativas': ['Adjetivo posesivo',
-                                  'Pronombre personal',
-                                  'Conjunción',
+                 'alternativas': ['Adverbio',
                                   'Preposición',
-                                  'Adverbio'],
-                 'correcta': 'B'},
+                                  'Pronombre personal',
+                                  'Adjetivo posesivo',
+                                  'Conjunción'],
+                 'correcta': 'C'},
                 {'pregunta': 'En la oración «Tu casa es muy hermosa», la '
                              'palabra «tu» no lleva tilde porque funciona '
                              'como:',
-                 'alternativas': ['Pronombre personal',
-                                  'Adjetivo posesivo',
-                                  'Conjunción',
+                 'alternativas': ['Adjetivo posesivo',
+                                  'Preposición',
+                                  'Pronombre personal',
                                   'Adverbio',
-                                  'Preposición'],
-                 'correcta': 'B'},
+                                  'Conjunción'],
+                 'correcta': 'A'},
                 {'pregunta': 'La palabra «sí», con tilde, funciona como '
                              'adverbio de afirmación o como pronombre '
                              'personal, mientras que «si», sin tilde, '
                              'funciona como:',
-                 'alternativas': ['Sustantivo exclusivo',
-                                  'Conjunción condicional',
+                 'alternativas': ['Adverbio de lugar',
+                                  'Sustantivo exclusivo',
                                   'Adjetivo',
-                                  'Adverbio de lugar',
-                                  'Pronombre personal'],
-                 'correcta': 'B'},
+                                  'Pronombre personal',
+                                  'Conjunción condicional'],
+                 'correcta': 'E'},
                 {'pregunta': 'La palabra «dé», forma del verbo dar, lleva '
                              'tilde para distinguirse de «de», que sin tilde '
                              'funciona como:',
-                 'alternativas': ['Pronombre',
+                 'alternativas': ['Adverbio',
+                                  'Pronombre',
                                   'Preposición',
-                                  'Adverbio',
                                   'Conjunción',
                                   'Adjetivo'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La palabra «más», cuantificador, lleva tilde '
                              'para distinguirse de «mas», que sin tilde es '
                              'una conjunción equivalente a:',
-                 'alternativas': ['Y', 'Pero', 'O', 'Porque', 'Aunque'],
-                 'correcta': 'B'},
+                 'alternativas': ['Y', 'O', 'Aunque', 'Porque', 'Pero'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las palabras qué, cuál, quién, cómo, dónde y '
                              'cuándo se escriben con tilde diacrítica cuando '
                              'son:',
                  'alternativas': ['Relativos o conjunciones',
-                                  'Interrogativas o exclamativas',
-                                  'Preposiciones',
                                   'Adverbios de modo exclusivos',
-                                  'Artículos'],
-                 'correcta': 'B'},
+                                  'Artículos',
+                                  'Interrogativas o exclamativas',
+                                  'Preposiciones'],
+                 'correcta': 'D'},
                 {'pregunta': 'En la oración «¿Por qué ha dicho eso?», la '
                              'palabra «qué» lleva tilde a pesar de estar '
                              'precedida por una:',
-                 'alternativas': ['Conjunción',
-                                  'Preposición',
+                 'alternativas': ['Preposición',
+                                  'Un pronombre',
+                                  'Conjunción',
                                   'Otro interrogativo',
-                                  'Un artículo',
-                                  'Un pronombre'],
-                 'correcta': 'B'},
+                                  'Un artículo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las palabras qué, cuál, quién, cómo, dónde y '
                              'cuándo se escriben sin tilde cuando funcionan '
                              'como:',
                  'alternativas': ['Interrogativas directas',
+                                  'Sustantivos',
                                   'Relativos, conjunciones o preposiciones',
-                                  'Exclamativas indirectas',
                                   'Adjetivos calificativos',
-                                  'Sustantivos'],
-                 'correcta': 'B'},
+                                  'Exclamativas indirectas'],
+                 'correcta': 'C'},
                 {'pregunta': 'La palabra «solo» no lleva tilde, ya sea que '
                              'funcione como adverbio (solamente) o como:',
-                 'alternativas': ['Sustantivo',
-                                  'Adjetivo',
+                 'alternativas': ['Conjunción',
+                                  'Sustantivo',
                                   'Pronombre',
-                                  'Conjunción',
-                                  'Preposición'],
-                 'correcta': 'B'},
+                                  'Preposición',
+                                  'Adjetivo'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los demostrativos este, ese y aquel, con sus '
                              'femeninos y plurales, no llevan tilde, sea que '
                              'funcionen como pronombres o como:',
-                 'alternativas': ['Sustantivos',
-                                  'Determinantes',
+                 'alternativas': ['Preposiciones',
                                   'Adverbios',
+                                  'Sustantivos',
                                   'Conjunciones',
-                                  'Preposiciones'],
-                 'correcta': 'B'},
+                                  'Determinantes'],
+                 'correcta': 'E'},
                 {'pregunta': 'La palabra «aún», con tilde, puede sustituirse '
                              'por «todavía», con valor temporal o:',
                  'alternativas': ['Concesivo',
-                                  'Ponderativo o intensivo',
-                                  'Inclusivo',
                                   'Condicional',
-                                  'Adversativo'],
-                 'correcta': 'B'},
+                                  'Ponderativo o intensivo',
+                                  'Adversativo',
+                                  'Inclusivo'],
+                 'correcta': 'C'},
                 {'pregunta': 'La palabra «aun», sin tilde, tiene valor '
                              'inclusivo-ponderativo (equivalente a '
                              '«incluso») o valor:',
-                 'alternativas': ['Temporal',
-                                  'Concesivo',
-                                  'Intensivo exclusivo',
+                 'alternativas': ['Intensivo exclusivo',
                                   'Afirmativo',
-                                  'Interrogativo'],
-                 'correcta': 'B'}],
+                                  'Temporal',
+                                  'Interrogativo',
+                                  'Concesivo'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ACENTO PROSÓDICO',
                       'items': ['La tilde, o acento gráfico, es el signo '
                                 'diacrítico que marca la acentuación de una '
@@ -2780,55 +2780,55 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Abreviaturas}', '{Sí}', 'pág., Sr.']]}],
   'preguntas': [{'pregunta': 'La escritura enteramente en mayúsculas es '
                              'propia de las siglas, los números romanos y:',
-                 'alternativas': ['Las preposiciones',
-                                  'Los textos cortos informativos',
+                 'alternativas': ['Los adjetivos calificativos',
+                                  'Las preposiciones',
+                                  'Los verbos irregulares',
                                   'Los artículos',
-                                  'Los adjetivos calificativos',
-                                  'Los verbos irregulares'],
-                 'correcta': 'B'},
+                                  'Los textos cortos informativos'],
+                 'correcta': 'E'},
                 {'pregunta': 'El uso combinado de minúsculas y mayúsculas '
                              'dentro de una misma palabra debe:',
                  'alternativas': ['Prohibirse en las siglas',
-                                  'Fomentarse siempre',
-                                  'Aplicarse en cartas oficiales',
+                                  'Usarse en todo texto formal',
                                   'Evitarse en la escritura normal',
-                                  'Usarse en todo texto formal'],
-                 'correcta': 'D'},
-                {'pregunta': 'Las siglas se escriben con mayúscula:',
-                 'alternativas': ['Solo las consonantes',
-                                  'Solo la primera letra',
-                                  'Todas las letras que las componen',
-                                  'Ninguna letra en particular',
-                                  'Solo las vocales'],
+                                  'Fomentarse siempre',
+                                  'Aplicarse en cartas oficiales'],
                  'correcta': 'C'},
+                {'pregunta': 'Las siglas se escriben con mayúscula:',
+                 'alternativas': ['Todas las letras que las componen',
+                                  'Solo las consonantes',
+                                  'Solo la primera letra',
+                                  'Solo las vocales',
+                                  'Ninguna letra en particular'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las siglas, a diferencia de las abreviaturas, '
                              'se escriben:',
-                 'alternativas': ['Con guion final',
-                                  'Solo entre comillas',
+                 'alternativas': ['Solo entre comillas',
+                                  'Con guion final',
+                                  'Solo en cursiva',
                                   'Con puntos',
-                                  'Sin puntos',
-                                  'Solo en cursiva'],
-                 'correcta': 'D'},
+                                  'Sin puntos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las abreviaturas, a diferencia de las siglas, '
                              'se escriben:',
                  'alternativas': ['Solo en números',
-                                  'En cursiva obligatoria',
-                                  'Sin puntos',
                                   'Sin mayúsculas nunca',
-                                  'Con puntos'],
-                 'correcta': 'E'},
+                                  'Con puntos',
+                                  'Sin puntos',
+                                  'En cursiva obligatoria'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los nombres latinos de especies, como «Homo '
                              'sapiens», se escriben con mayúscula inicial y:',
                  'alternativas': ['Subrayados',
                                   'Entre comillas',
-                                  'En cursiva',
+                                  'En negrita',
                                   'Entre paréntesis',
-                                  'En negrita'],
-                 'correcta': 'C'},
+                                  'En cursiva'],
+                 'correcta': 'E'},
                 {'pregunta': 'La palabra «Dios» se escribe con mayúscula '
                              'cuando se usa:',
-                 'alternativas': ['Nunca en español',
-                                  'Solo en textos religiosos católicos',
+                 'alternativas': ['Solo en textos religiosos católicos',
+                                  'Nunca en español',
                                   'Solo en mayúscula total',
                                   'Sin artículo, como nombre propio del ser '
                                   'supremo monoteísta',
@@ -2837,233 +2837,232 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                 {'pregunta': 'Si un dígrafo como «ch» o «ll» aparece al '
                              'inicio de una palabra con mayúscula, se '
                              'escribe en mayúscula:',
-                 'alternativas': ['Ambas letras del dígrafo',
-                                  'Solo la primera letra',
+                 'alternativas': ['Solo la segunda letra',
                                   'Todo en minúscula',
                                   'Ninguna letra',
-                                  'Solo la segunda letra'],
-                 'correcta': 'B'},
+                                  'Ambas letras del dígrafo',
+                                  'Solo la primera letra'],
+                 'correcta': 'E'},
                 {'pregunta': 'La mayúscula de las letras i y j, a diferencia '
                              'de su forma minúscula:',
                  'alternativas': ['Lleva doble punto',
-                                  'No existe en mayúscula',
+                                  'Lleva tilde obligatoria',
                                   'Carece del punto sobrescrito',
-                                  'Se escribe en cursiva siempre',
-                                  'Lleva tilde obligatoria'],
+                                  'No existe en mayúscula',
+                                  'Se escribe en cursiva siempre'],
                  'correcta': 'C'},
                 {'pregunta': 'El fenómeno por el cual un nombre común '
                              'reemplaza completamente a un nombre propio se '
                              'llama:',
-                 'alternativas': ['Personificación',
-                                  'Metonimia',
+                 'alternativas': ['Metonimia',
                                   'Sinécdoque',
                                   'Antonomasia',
-                                  'Hipérbole'],
-                 'correcta': 'D'},
+                                  'Hipérbole',
+                                  'Personificación'],
+                 'correcta': 'C'},
                 {'pregunta': 'El fenómeno que atribuye rasgos humanos a '
                              'conceptos abstractos, como «la Muerte», se '
                              'llama:',
-                 'alternativas': ['Ironía',
-                                  'Personificación',
-                                  'Comparación',
+                 'alternativas': ['Antonomasia',
                                   'Metáfora exclusiva',
-                                  'Antonomasia'],
-                 'correcta': 'B'},
+                                  'Personificación',
+                                  'Ironía',
+                                  'Comparación'],
+                 'correcta': 'C'},
                 {'pregunta': 'Se escribe con mayúscula la primera palabra de '
                              'un escrito y la que va después de:',
-                 'alternativas': ['Un paréntesis',
+                 'alternativas': ['Un punto',
                                   'Un guion',
                                   'Una coma',
-                                  'Unas comillas',
-                                  'Un punto'],
-                 'correcta': 'E'},
+                                  'Un paréntesis',
+                                  'Unas comillas'],
+                 'correcta': 'A'},
                 {'pregunta': 'La palabra que sigue a los puntos suspensivos, '
                              'cuando estos cierran un enunciado, se escribe '
                              'con:',
-                 'alternativas': ['Comillas',
-                                  'Mayúscula',
-                                  'Cursiva obligatoria',
+                 'alternativas': ['Negrita',
                                   'Minúscula siempre',
-                                  'Negrita'],
-                 'correcta': 'B'},
+                                  'Comillas',
+                                  'Cursiva obligatoria',
+                                  'Mayúscula'],
+                 'correcta': 'E'},
                 {'pregunta': 'Si los puntos suspensivos NO cierran el '
                              'enunciado, la palabra siguiente se escribe '
                              'con:',
-                 'alternativas': ['Minúscula',
-                                  'Subrayado',
-                                  'Cursiva',
+                 'alternativas': ['Cursiva',
                                   'Negrita obligatoria',
+                                  'Minúscula',
+                                  'Subrayado',
                                   'Mayúscula'],
-                 'correcta': 'A'},
+                 'correcta': 'C'},
                 {'pregunta': 'Después de dos puntos se escribe mayúscula '
                              'cuando anuncian el inicio de una unidad '
                              'independiente, como en:',
-                 'alternativas': ['Una enumeración simple',
+                 'alternativas': ['Una lista de compras',
                                   'Un ejemplo cualquiera',
-                                  'Una lista de compras',
+                                  'El saludo de una carta',
                                   'Una cita textual breve',
-                                  'El saludo de una carta'],
-                 'correcta': 'E'},
+                                  'Una enumeración simple'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los documentos jurídicos que usan mayúscula '
                              'total suelen presentar palabras como:',
-                 'alternativas': ['Estimado',
+                 'alternativas': ['Saludos',
                                   'Atentamente',
-                                  'Saludos',
-                                  'CERTIFICA',
-                                  'Considerando'],
-                 'correcta': 'D'},
+                                  'Estimado',
+                                  'Considerando',
+                                  'CERTIFICA'],
+                 'correcta': 'E'},
                 {'pregunta': 'La mayúscula inicial marca y delimita, entre '
                              'otras cosas:',
-                 'alternativas': ['Los nombres propios',
-                                  'Las conjunciones',
-                                  'Las preposiciones',
+                 'alternativas': ['Las conjunciones',
+                                  'Los nombres propios',
                                   'Los artículos indeterminados',
-                                  'Los verbos conjugados'],
-                 'correcta': 'A'},
+                                  'Los verbos conjugados',
+                                  'Las preposiciones'],
+                 'correcta': 'B'},
                 {'pregunta': '«El Salvador» usado para referirse a '
                              'Jesucristo es un ejemplo de:',
-                 'alternativas': ['Ironía',
+                 'alternativas': ['Personificación',
+                                  'Sinécdoque',
                                   'Metáfora pura',
                                   'Antonomasia',
-                                  'Personificación',
-                                  'Sinécdoque'],
-                 'correcta': 'C'},
+                                  'Ironía'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las siglas «RAE» y «AVE» ejemplifican el uso '
                              'de mayúsculas para:',
-                 'alternativas': ['Nombres propios de personas',
-                                  'Formar e identificar siglas',
-                                  'Documentos jurídicos',
+                 'alternativas': ['Documentos jurídicos',
+                                  'Cartas formales',
                                   'Números romanos',
-                                  'Cartas formales'],
-                 'correcta': 'B'},
+                                  'Formar e identificar siglas',
+                                  'Nombres propios de personas'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los números romanos, como «XXI», se escriben:',
-                 'alternativas': ['En minúscula',
-                                  'Enteramente en mayúsculas',
-                                  'Con tilde',
+                 'alternativas': ['Enteramente en mayúsculas',
+                                  'En cursiva obligatoria',
                                   'Entre comillas',
-                                  'En cursiva obligatoria'],
-                 'correcta': 'B'},
+                                  'En minúscula',
+                                  'Con tilde'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los nombres de los días de la semana, las '
                              'estaciones del año y los meses se escriben '
                              'con:',
-                 'alternativas': ['Mayúscula inicial siempre',
-                                  'Minúscula',
-                                  'Mayúscula solo en los meses',
+                 'alternativas': ['Mayúscula solo en los meses',
                                   'Mayúscula solo en las estaciones',
+                                  'Mayúscula inicial siempre',
+                                  'Minúscula',
                                   'Versalitas'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Las notas musicales (do, re, mi, fa, sol, la, '
                              'si) se escriben con:',
-                 'alternativas': ['Mayúscula inicial',
-                                  'Minúscula',
-                                  'Versalitas obligatorias',
+                 'alternativas': ['Minúscula',
                                   'Cursiva obligatoria',
+                                  'Versalitas obligatorias',
+                                  'Mayúscula inicial',
                                   'Mayúscula solo «sol», por ser también '
                                   'astro'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'La palabra «dios», precedida de determinante y '
                              'usada de modo genérico o referida a '
                              'divinidades politeístas, se escribe con:',
-                 'alternativas': ['Mayúscula inicial siempre',
-                                  'Minúscula',
+                 'alternativas': ['Cursiva',
+                                  'Mayúscula solo en textos religiosos',
+                                  'Mayúscula inicial siempre',
                                   'Versalitas',
-                                  'Cursiva',
-                                  'Mayúscula solo en textos religiosos'],
-                 'correcta': 'B'},
+                                  'Minúscula'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los tratamientos como «usted», «don» o «fray» '
                              'se escriben con minúscula, salvo cuando:',
-                 'alternativas': ['Van al inicio de un párrafo',
+                 'alternativas': ['Se refieren a un rey',
+                                  'Van al inicio de un párrafo',
                                   'Se abrevian (Ud., Sr., D.)',
-                                  'Se refieren a un rey',
                                   'Aparecen en un título',
                                   'Van seguidos de nombre propio'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Los títulos, cargos y nombres de dignidad, '
                              'como «rey», «papa» o «presidente», se escriben '
                              'con:',
-                 'alternativas': ['Mayúscula inicial siempre',
-                                  'Minúscula',
+                 'alternativas': ['Minúscula',
                                   'Mayúscula solo «papa»',
                                   'Versalitas',
-                                  'Cursiva'],
-                 'correcta': 'B'},
+                                  'Cursiva',
+                                  'Mayúscula inicial siempre'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los nombres de elementos químicos y unidades '
                              'de medida, como «oxígeno» o «metro», se '
                              'escriben con:',
                  'alternativas': ['Mayúscula inicial',
+                                  'Versalitas',
                                   'Minúscula',
                                   'Mayúscula en unidades exclusivamente',
-                                  'Versalitas',
                                   'Cursiva obligatoria'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Los principios activos de medicamentos, como '
                              '«ibuprofeno», se escriben con minúscula, a '
                              'diferencia de:',
-                 'alternativas': ['Las dosis, que llevan mayúscula',
+                 'alternativas': ['Las contraindicaciones',
                                   'Los nombres comerciales registrados, que '
                                   'llevan mayúscula inicial',
+                                  'Las dosis, que llevan mayúscula',
                                   'Las vías de administración',
-                                  'Los efectos secundarios',
-                                  'Las contraindicaciones'],
+                                  'Los efectos secundarios'],
                  'correcta': 'B'},
                 {'pregunta': 'Una sigla cuya grafía permite leerla '
                              'secuencialmente, como OTAN o UNESCO, se llama:',
-                 'alternativas': ['Abreviatura',
-                                  'Acrónimo',
-                                  'Símbolo',
+                 'alternativas': ['Acrónimo',
+                                  'Epónimo',
+                                  'Abreviatura',
                                   'Sigla deletreada',
-                                  'Epónimo'],
-                 'correcta': 'B'},
+                                  'Símbolo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Cuando un acrónimo se convierte en nombre '
                              'común de uso corriente, se escribe:',
-                 'alternativas': ['Con mayúscula inicial',
-                                  'Enteramente en minúsculas',
-                                  'Enteramente en mayúsculas',
+                 'alternativas': ['Enteramente en minúsculas',
                                   'Con versalitas',
-                                  'Con guion intermedio'],
-                 'correcta': 'B'},
+                                  'Con guion intermedio',
+                                  'Con mayúscula inicial',
+                                  'Enteramente en mayúsculas'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las siglas que deben deletrearse al leerse, '
                              'como FBI o DDT, mantienen siempre su '
                              'escritura:',
                  'alternativas': ['En minúsculas',
-                                  'En mayúsculas',
                                   'Con la inicial en mayúscula',
+                                  'En mayúsculas',
                                   'En cursiva',
                                   'Con puntos entre letras'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La expresión desarrollada «documento nacional '
                              'de identidad» (DNI) se escribe con minúsculas '
                              'por ser una expresión:',
-                 'alternativas': ['El nombre de una institución',
+                 'alternativas': ['Un título oficial',
                                   'Común',
-                                  'Un acrónimo ya lexicalizado',
+                                  'El nombre de una institución',
                                   'Un tratamiento',
-                                  'Un título oficial'],
+                                  'Un acrónimo ya lexicalizado'],
                  'correcta': 'B'},
                 {'pregunta': 'El enunciado con uso correcto de las letras '
                              'mayúsculas es:',
-                 'alternativas': ['Juan Carlos conduce su vida con Filosofía',
-                                  'Mi hermana Marianela se fue a tomar el '
-                                  'Sol',
-                                  'Daniel, mi primo, radica en el Salvador',
+                 'alternativas': ['La ropa de Inés me recuerda la Edad Media',
                                   'Carlos Miguel trabaja en el ministerio de '
                                   'Salud',
-                                  'La ropa de Inés me recuerda la Edad '
-                                  'Media'],
-                 'correcta': 'E'},
+                                  'Juan Carlos conduce su vida con Filosofía',
+                                  'Mi hermana Marianela se fue a tomar el '
+                                  'Sol',
+                                  'Daniel, mi primo, radica en el Salvador'],
+                 'correcta': 'A'},
                 {'pregunta': 'La frase que denota uso adecuado de las '
                              'mayúsculas es:',
-                 'alternativas': ['El Lago de Puno',
+                 'alternativas': ['El Mar Negro',
+                                  'El Lago de Puno',
                                   'La Bahía de Acapulco',
                                   'La ciudad de La Habana',
-                                  'El Mar Negro',
                                   'El Nevado Pastoruri'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'En la oración «La amazonía es la región más '
                              'grande del perú», la cantidad de palabras que '
                              'se debe escribir con mayúscula es:',
-                 'alternativas': ['Cero', 'Uno', 'Dos', 'Tres', 'Cuatro'],
-                 'correcta': 'C'}],
+                 'alternativas': ['Uno', 'Cero', 'Tres', 'Cuatro', 'Dos'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONSIDERACIONES BÁSICAS',
                       'items': ['La escritura enteramente en mayúsculas es '
                                 'propia de las siglas, los números romanos y '
@@ -3285,167 +3284,167 @@ COMUNICATIVA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Los signos de puntuación son signos '
                              'ortográficos que organizan el discurso para '
                              'facilitar su:',
-                 'alternativas': ['Memorización',
-                                  'Eliminación',
+                 'alternativas': ['Comprensión',
                                   'Pronunciación exclusiva',
+                                  'Eliminación',
                                   'Traducción',
-                                  'Comprensión'],
-                 'correcta': 'E'},
+                                  'Memorización'],
+                 'correcta': 'A'},
                 {'pregunta': 'Una función de los signos de puntuación es '
                              'indicar los límites de:',
-                 'alternativas': ['Las sílabas',
-                                  'Las unidades discursivas',
+                 'alternativas': ['Los morfemas',
+                                  'Las sílabas',
                                   'Las palabras sueltas',
-                                  'Los fonemas',
-                                  'Los morfemas'],
-                 'correcta': 'B'},
+                                  'Las unidades discursivas',
+                                  'Los fonemas'],
+                 'correcta': 'D'},
                 {'pregunta': 'La función que indica si un enunciado es '
                              'interrogativo o exclamativo es la función de:',
                  'alternativas': ['Modalidad del enunciado',
-                                  'Límites discursivos',
                                   'Cohesión',
+                                  'Omisión',
                                   'Referencia',
-                                  'Omisión'],
+                                  'Límites discursivos'],
                  'correcta': 'A'},
                 {'pregunta': 'El punto se usa correctamente en:',
                  'alternativas': ['Las abreviaturas',
                                   'Los eslóganes',
-                                  'Las direcciones electrónicas',
+                                  'Los títulos de libros',
                                   'Las dedicatorias',
-                                  'Los títulos de libros'],
+                                  'Las direcciones electrónicas'],
                  'correcta': 'A'},
                 {'pregunta': 'El punto se usa también en:',
-                 'alternativas': ['Las direcciones web',
-                                  'Los títulos de obras de arte',
+                 'alternativas': ['Los nombres de autor en portadas',
+                                  'Fechas y horas',
                                   'Los eslóganes publicitarios',
-                                  'Los nombres de autor en portadas',
-                                  'Fechas y horas'],
-                 'correcta': 'E'},
+                                  'Las direcciones web',
+                                  'Los títulos de obras de arte'],
+                 'correcta': 'B'},
                 {'pregunta': 'NO se escribe punto al final de:',
-                 'alternativas': ['Los títulos y subtítulos de libros',
-                                  'Una fecha completa',
-                                  'Una abreviatura',
+                 'alternativas': ['Una abreviatura',
+                                  'Una hora exacta',
+                                  'Los títulos y subtítulos de libros',
                                   'Un párrafo normal',
-                                  'Una hora exacta'],
-                 'correcta': 'A'},
+                                  'Una fecha completa'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los nombres de autor en portadas, prólogos o '
                              'firmas de documentos se escriben:',
-                 'alternativas': ['Entre comillas obligatorias',
+                 'alternativas': ['En mayúscula total',
                                   'Con punto final',
+                                  'Sin punto final',
                                   'Subrayados siempre',
-                                  'En mayúscula total',
-                                  'Sin punto final'],
-                 'correcta': 'E'},
+                                  'Entre comillas obligatorias'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las dedicatorias, como «Para William», se '
                              'escriben:',
                  'alternativas': ['Entre paréntesis',
-                                  'Sin punto final',
-                                  'Con punto final',
                                   'Con doble punto',
+                                  'Con punto final',
+                                  'Sin punto final',
                                   'En cursiva obligatoria'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los eslóganes publicitarios, por regla '
                              'general, se escriben:',
                  'alternativas': ['Entre comillas siempre',
+                                  'Solo en mayúsculas',
+                                  'Con coma final',
                                   'Con punto final',
-                                  'Solo en mayúsculas',
-                                  'Sin punto final',
-                                  'Con coma final'],
-                 'correcta': 'D'},
-                {'pregunta': 'Las direcciones electrónicas, como '
-                             'www.unsaac.edu.pe, se escriben:',
-                 'alternativas': ['Entre corchetes',
-                                  'Con guion final',
-                                  'Solo en mayúsculas',
-                                  'Con punto final obligatorio',
                                   'Sin punto final'],
                  'correcta': 'E'},
+                {'pregunta': 'Las direcciones electrónicas, como '
+                             'www.unsaac.edu.pe, se escriben:',
+                 'alternativas': ['Con punto final obligatorio',
+                                  'Entre corchetes',
+                                  'Con guion final',
+                                  'Sin punto final',
+                                  'Solo en mayúsculas'],
+                 'correcta': 'D'},
                 {'pregunta': 'La coma que intercala información aclaratoria '
                              'dentro del enunciado es la coma:',
-                 'alternativas': ['Enumerativa',
-                                  'Elíptica',
+                 'alternativas': ['Hiperbática',
                                   'Vocativa',
                                   'Incidental',
-                                  'Hiperbática'],
-                 'correcta': 'D'},
+                                  'Enumerativa',
+                                  'Elíptica'],
+                 'correcta': 'C'},
                 {'pregunta': 'La coma que separa el nombre de la persona a '
                              'quien nos dirigimos es la coma:',
-                 'alternativas': ['Enumerativa',
+                 'alternativas': ['Incidental',
                                   'Vocativa',
+                                  'Enumerativa',
                                   'Distributiva',
-                                  'Incidental',
                                   'Explicativa'],
                  'correcta': 'B'},
                 {'pregunta': 'En «Eduardo, no quiero que salgas tan tarde», '
                              'la coma usada es la coma:',
-                 'alternativas': ['Vocativa',
-                                  'Incidental',
+                 'alternativas': ['Enumerativa',
                                   'Elíptica',
-                                  'Enumerativa',
-                                  'Hiperbática'],
-                 'correcta': 'A'},
+                                  'Hiperbática',
+                                  'Incidental',
+                                  'Vocativa'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «La mansión, abandonada, se convirtió en '
                              'refugio», la coma usada es la coma:',
-                 'alternativas': ['Incidental',
+                 'alternativas': ['Distributiva',
+                                  'Incidental',
                                   'Vocativa',
                                   'Final',
-                                  'Enumerativa',
-                                  'Distributiva'],
-                 'correcta': 'A'},
+                                  'Enumerativa'],
+                 'correcta': 'B'},
                 {'pregunta': 'El punto se usa en abreviaturas como:',
-                 'alternativas': ['Sra.', 'AFP', 'ONU', 'RAE', 'DNI'],
-                 'correcta': 'A'},
+                 'alternativas': ['ONU', 'AFP', 'DNI', 'Sra.', 'RAE'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las enumeraciones en forma de lista, como en '
                              'un examen de opción múltiple, se escriben:',
-                 'alternativas': ['En un solo párrafo continuo',
-                                  'Con punto final en cada ítem '
+                 'alternativas': ['Con punto final en cada ítem '
                                   'obligatoriamente',
-                                  'Solo con punto y coma',
+                                  'Sin punto final en cada ítem',
+                                  'En un solo párrafo continuo',
                                   'Solo con coma',
-                                  'Sin punto final en cada ítem'],
-                 'correcta': 'E'},
+                                  'Solo con punto y coma'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los pies de imagen y cabeceras de cuadros, '
                              'cuando son breves, se escriben:',
-                 'alternativas': ['Con dos puntos finales',
-                                  'Siempre con punto',
-                                  'En mayúscula total',
+                 'alternativas': ['Siempre con punto',
                                   'Entre comillas obligatorias',
-                                  'Generalmente sin punto'],
-                 'correcta': 'E'},
+                                  'En mayúscula total',
+                                  'Generalmente sin punto',
+                                  'Con dos puntos finales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los signos de puntuación señalan el carácter '
                              'especial de fragmentos como:',
-                 'alternativas': ['Solo los títulos',
+                 'alternativas': ['Solo los números',
+                                  'Solo los títulos',
                                   'Solo los nombres propios',
-                                  'Solo las siglas',
-                                  'Solo los números',
-                                  'Citas e incisos'],
-                 'correcta': 'E'},
+                                  'Citas e incisos',
+                                  'Solo las siglas'],
+                 'correcta': 'D'},
                 {'pregunta': '«A quien madruga…» ejemplifica la función de '
                              'los signos de puntuación de indicar:',
-                 'alternativas': ['Límites discursivos',
-                                  'Una fecha',
-                                  'Una cita textual',
+                 'alternativas': ['Una cita textual',
+                                  'Límites discursivos',
+                                  'La omisión de una parte del enunciado',
                                   'Modalidad interrogativa',
-                                  'La omisión de una parte del enunciado'],
-                 'correcta': 'E'},
+                                  'Una fecha'],
+                 'correcta': 'C'},
                 {'pregunta': 'El punto se usa correctamente después de una '
                              'hora como:',
-                 'alternativas': ['17:30 con coma',
+                 'alternativas': ['17-30',
+                                  '1730 sin separador',
                                   'Diecisiete treinta escrito',
                                   '17.30',
-                                  '1730 sin separador',
-                                  '17-30'],
-                 'correcta': 'C'},
+                                  '17:30 con coma'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los dos puntos que anteceden a una '
                              'enumeración, como en «Las regiones del Imperio '
                              'incaico fueron cuatro: Antisuyo, '
                              'Collasuyo...», cumplen la función de:',
-                 'alternativas': ['Cerrar el enunciado',
-                                  'Introducir una enumeración',
-                                  'Separar oraciones independientes',
+                 'alternativas': ['Separar oraciones independientes',
                                   'Indicar duda',
-                                  'Marcar una pausa breve'],
-                 'correcta': 'B'},
+                                  'Cerrar el enunciado',
+                                  'Marcar una pausa breve',
+                                  'Introducir una enumeración'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los dos puntos que preceden a una cita en '
                              'discurso directo, como en «Francisco Bolognesi '
                              "expresó: '...'», cumplen la función de:",
@@ -3458,207 +3457,207 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                 {'pregunta': 'En «Se ha quedado sin trabajo: no podrá ir de '
                              'vacaciones», los dos puntos indican una '
                              'relación de:',
-                 'alternativas': ['Enumeración',
-                                  'Causa-efecto',
+                 'alternativas': ['Conector discursivo',
                                   'Discurso directo',
                                   'Vocativo formal',
-                                  'Conector discursivo'],
-                 'correcta': 'B'},
+                                  'Enumeración',
+                                  'Causa-efecto'],
+                 'correcta': 'E'},
                 {'pregunta': 'Tras un vocativo formal en una carta, como '
                              '«Estimado amigo:», se usa el signo de:',
-                 'alternativas': ['Punto y coma',
+                 'alternativas': ['Puntos suspensivos',
+                                  'Punto y coma',
                                   'Dos puntos',
-                                  'Puntos suspensivos',
-                                  'Coma',
-                                  'Punto final'],
-                 'correcta': 'B'},
+                                  'Punto final',
+                                  'Coma'],
+                 'correcta': 'C'},
                 {'pregunta': 'En textos jurídicos y administrativos, como '
                              'decretos o certificados, tras los dos puntos '
                              '(CERTIFICA:) la palabra siguiente se escribe:',
-                 'alternativas': ['Con minúscula',
-                                  'Enteramente en mayúsculas',
+                 'alternativas': ['Enteramente en mayúsculas',
                                   'En cursiva',
+                                  'Con minúscula',
                                   'Entre comillas',
                                   'Subrayada'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'Los puntos suspensivos que indican duda o '
                              'temor en el discurso, como en «El niño dice '
                              'que él no ha roto el jarrón…», tienen un fin:',
-                 'alternativas': ['Enumerativo',
+                 'alternativas': ['Jurídico',
+                                  'Enumerativo',
+                                  'Aclaratorio',
                                   'Expresivo',
-                                  'Jurídico',
-                                  'Enciclopédico',
-                                  'Aclaratorio'],
-                 'correcta': 'B'},
+                                  'Enciclopédico'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los puntos suspensivos usados al final de una '
                              'enumeración pueden sustituir a la palabra:',
-                 'alternativas': ['Además',
-                                  'Etcétera',
+                 'alternativas': ['Asimismo',
                                   'También',
-                                  'Asimismo',
-                                  'Incluso'],
-                 'correcta': 'B'},
+                                  'Incluso',
+                                  'Además',
+                                  'Etcétera'],
+                 'correcta': 'E'},
                 {'pregunta': 'Entre paréntesis o corchetes, los puntos '
                              'suspensivos (…) indican, dentro de una cita '
                              'textual, la:',
                  'alternativas': ['Continuación del texto',
-                                  'Supresión de una parte del texto',
                                   'Duda del autor',
+                                  'Corrección de un error',
                                   'Repetición de una idea',
-                                  'Corrección de un error'],
-                 'correcta': 'B'},
+                                  'Supresión de una parte del texto'],
+                 'correcta': 'E'},
                 {'pregunta': 'El paréntesis usado para aislar un dato '
                              'intercalado, como una fecha, cumple la función '
                              'de:',
-                 'alternativas': ['Cerrar una enumeración',
-                                  'Aislar elementos intercalados',
+                 'alternativas': ['Marcar una pregunta',
                                   'Introducir un discurso directo',
-                                  'Marcar una pregunta',
-                                  'Indicar causa-efecto'],
-                 'correcta': 'B'},
+                                  'Cerrar una enumeración',
+                                  'Indicar causa-efecto',
+                                  'Aislar elementos intercalados'],
+                 'correcta': 'E'},
                 {'pregunta': 'En una obra teatral, el paréntesis que indica '
                              'los gestos o acciones de un personaje, como '
                              '«(Golpeando con el bastón)», se llama:',
-                 'alternativas': ['Diálogo',
-                                  'Acotación',
-                                  'Réplica',
+                 'alternativas': ['Réplica',
+                                  'Discurso',
+                                  'Diálogo',
                                   'Monólogo',
-                                  'Discurso'],
-                 'correcta': 'B'},
+                                  'Acotación'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las comillas usadas para reproducir '
                              'textualmente el pensamiento de un autor, como '
                              'una cita de Charles Darwin, cumplen la función '
                              'de encerrar:',
                  'alternativas': ['Apodos',
-                                  'Citas textuales',
-                                  'Vocativos',
                                   'Enumeraciones',
-                                  'Fechas'],
-                 'correcta': 'B'},
+                                  'Fechas',
+                                  'Citas textuales',
+                                  'Vocativos'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las comillas usadas para marcar el carácter '
                              'especial o irónico de una palabra, como en '
                              "«sus 'negocios'», cumplen un uso:",
-                 'alternativas': ['Metalingüístico',
+                 'alternativas': ['De cita textual',
+                                  'De apodo',
                                   'De sentido especial o irónico',
                                   'Denominativo',
-                                  'De cita textual',
-                                  'De apodo'],
-                 'correcta': 'B'},
+                                  'Metalingüístico'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las comillas que encierran una palabra '
                              'mencionada como tal, como en «La palabra '
                              "'cándida' lleva tilde por ser esdrújula», "
                              'cumplen un uso:',
-                 'alternativas': ['Irónico',
+                 'alternativas': ['Denominativo',
+                                  'Irónico',
+                                  'De apodo',
                                   'Metalingüístico',
-                                  'Denominativo',
-                                  'De cita',
-                                  'De apodo'],
-                 'correcta': 'B'},
+                                  'De cita'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los apodos o alias intercalados entre el '
                              'nombre y el apellido de una persona, como en '
                              "«Ernesto 'Che' Guevara», se escriben entre:",
-                 'alternativas': ['Paréntesis',
-                                  'Comillas',
+                 'alternativas': ['Guiones',
                                   'Rayas',
-                                  'Corchetes',
-                                  'Guiones'],
-                 'correcta': 'B'},
+                                  'Comillas',
+                                  'Paréntesis',
+                                  'Corchetes'],
+                 'correcta': 'C'},
                 {'pregunta': 'La raya usada para separar un inciso dentro de '
                              'una oración, como en «la fidelidad —cualidad '
                              'que valoraba— era sagrada», cumple la función '
                              'de:',
-                 'alternativas': ['Introducir un diálogo',
-                                  'Separar incisos',
+                 'alternativas': ['Separar incisos',
+                                  'Marcar una pregunta',
+                                  'Introducir un diálogo',
                                   'Enumerar elementos',
-                                  'Cerrar una cita',
-                                  'Marcar una pregunta'],
-                 'correcta': 'B'},
+                                  'Cerrar una cita'],
+                 'correcta': 'A'},
                 {'pregunta': 'La raya que enmarca las palabras de un '
                              'narrador o transcriptor dentro de una cita, '
                              "como en «'Es imprescindible —señaló el "
                              "ministro— que...'», tiene función:",
                  'alternativas': ['Enumerativa',
                                   'De narrador o transcriptor',
-                                  'De cierre de cita',
+                                  'De apodo',
                                   'De vocativo',
-                                  'De apodo'],
+                                  'De cierre de cita'],
                  'correcta': 'B'},
                 {'pregunta': 'En los diálogos escritos, cada intervención de '
                              'un personaje se marca con el signo de:',
-                 'alternativas': ['Los dos puntos',
-                                  'La raya',
+                 'alternativas': ['Los puntos suspensivos',
+                                  'Los dos puntos',
                                   'El paréntesis',
                                   'Las comillas',
-                                  'Los puntos suspensivos'],
-                 'correcta': 'B'},
+                                  'La raya'],
+                 'correcta': 'E'},
                 {'pregunta': 'En una enumeración presentada en forma de '
                              'lista o viñetas, se puede usar el signo de:',
                  'alternativas': ['Los dos puntos exclusivamente',
+                                  'Los puntos suspensivos',
                                   'La raya',
-                                  'El paréntesis',
                                   'Las comillas',
-                                  'Los puntos suspensivos'],
-                 'correcta': 'B'},
+                                  'El paréntesis'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los signos de interrogación y exclamación se '
                              'pueden omitir en:',
                  'alternativas': ['Cualquier oración exclamativa',
+                                  'Diálogos',
                                   'Títulos de obras, capítulos o secciones '
                                   'de un texto',
-                                  'Diálogos',
-                                  'Citas textuales',
-                                  'Enumeraciones'],
-                 'correcta': 'B'},
+                                  'Enumeraciones',
+                                  'Citas textuales'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las oraciones exclamativas pueden estar '
                              'constituidas, entre otros elementos, por '
                              'interjecciones y:',
-                 'alternativas': ['Adverbios exclusivamente',
-                                  'Onomatopeyas',
-                                  'Preposiciones exclusivamente',
+                 'alternativas': ['Onomatopeyas',
                                   'Artículos exclusivamente',
-                                  'Conjunciones exclusivamente'],
-                 'correcta': 'B'},
+                                  'Conjunciones exclusivamente',
+                                  'Adverbios exclusivamente',
+                                  'Preposiciones exclusivamente'],
+                 'correcta': 'A'},
                 {'pregunta': 'En la oración «Martha, ¿sabes ya cuándo '
                              'vendrás?», el signo de apertura de '
                              'interrogación se coloca:',
-                 'alternativas': ['Al inicio absoluto de la oración',
+                 'alternativas': ['Antes del vocativo siempre',
                                   'Donde comienza la pregunta, no '
                                   'necesariamente al inicio',
                                   'Después del vocativo siempre',
-                                  'Antes del vocativo siempre',
-                                  'Al final de la oración'],
+                                  'Al final de la oración',
+                                  'Al inicio absoluto de la oración'],
                  'correcta': 'B'},
                 {'pregunta': 'En un enunciado aseverativo seguido de un '
                              'apéndice confirmativo, como «El martes es su '
                              'onomástico, ¿no?», el apéndice se escribe '
                              'entre signos de:',
-                 'alternativas': ['Exclamación',
+                 'alternativas': ['Rayas',
+                                  'Comillas',
                                   'Interrogación',
                                   'Puntos suspensivos',
-                                  'Comillas',
-                                  'Rayas'],
-                 'correcta': 'B'},
+                                  'Exclamación'],
+                 'correcta': 'C'},
                 {'pregunta': 'El enunciado que presenta puntuación correcta, '
                              'es:',
-                 'alternativas': ['Entre 1939 y 1945, se desarrolló la '
+                 'alternativas': ['Entre 1939 y 1945 se desarrolló la '
+                                  'Segunda Guerra Mundial',
+                                  'Entre 1939 y 1945, se desarrolló la '
                                   'Segunda Guerra Mundial',
                                   'Entre 1939 y 1945, se desarrolló, la '
                                   'Segunda Guerra Mundial',
-                                  'Entre 1939 y 1945 se desarrolló, la '
-                                  'Segunda Guerra Mundial',
                                   'Entre, 1939 y 1945 se desarrolló la '
                                   'Segunda Guerra Mundial',
-                                  'Entre 1939 y 1945 se desarrolló la '
+                                  'Entre 1939 y 1945 se desarrolló, la '
                                   'Segunda Guerra Mundial'],
-                 'correcta': 'E'},
+                 'correcta': 'A'},
                 {'pregunta': 'Después de la expresión «Estimado cliente», en '
                              'el encabezado de una carta formal, el signo '
                              'que le corresponde es:',
-                 'alternativas': ['Puntos suspensivos',
-                                  'Dos puntos',
+                 'alternativas': ['Punto y coma',
+                                  'Punto',
                                   'Punto y aparte',
-                                  'Punto y coma',
-                                  'Punto'],
-                 'correcta': 'B'}],
+                                  'Dos puntos',
+                                  'Puntos suspensivos'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FUNCIONES / EL PUNTO',
                       'items': ['Los signos de puntuación son signos '
                                 'ortográficos que organizan el discurso para '
@@ -3882,282 +3881,282 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['Por su número', '{Individuales} y colectivos']]}],
   'preguntas': [{'pregunta': 'Según el criterio semántico, el sustantivo '
                              'designa:',
-                 'alternativas': ['Solo relaciones lógicas',
+                 'alternativas': ['Solo acciones',
+                                  'Seres y objetos de la realidad',
                                   'Solo cantidades',
-                                  'Solo acciones',
                                   'Solo cualidades',
-                                  'Seres y objetos de la realidad'],
-                 'correcta': 'E'},
+                                  'Solo relaciones lógicas'],
+                 'correcta': 'B'},
                 {'pregunta': 'Según el criterio morfológico, el sustantivo '
                              'es una palabra:',
-                 'alternativas': ['Sin composición posible',
+                 'alternativas': ['Invariable',
                                   'Sin flexión',
-                                  'Invariable',
                                   'Variable, con morfemas de género y número',
-                                  'Exclusivamente derivada'],
-                 'correcta': 'D'},
+                                  'Exclusivamente derivada',
+                                  'Sin composición posible'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según el criterio sintáctico, el sustantivo '
                              'forma grupos nominales que pueden cumplir '
                              'función de:',
-                 'alternativas': ['Solo conjunción',
-                                  'Solo verbo',
+                 'alternativas': ['Solo verbo',
                                   'Solo adjetivo',
-                                  'Solo preposición',
+                                  'Solo conjunción',
                                   'Sujeto, complemento directo, indirecto, '
-                                  'entre otros'],
-                 'correcta': 'E'},
+                                  'entre otros',
+                                  'Solo preposición'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «El profesor viajará muy pronto», el '
                              'sustantivo «profesor» funciona como núcleo de:',
-                 'alternativas': ['El vocativo',
-                                  'El complemento directo',
+                 'alternativas': ['El complemento agente',
                                   'La aposición',
-                                  'El complemento agente',
+                                  'El vocativo',
+                                  'El complemento directo',
                                   'El sujeto'],
                  'correcta': 'E'},
                 {'pregunta': 'En «Señorita, aquí tiene su cuaderno», '
                              '«Señorita» funciona como núcleo del:',
-                 'alternativas': ['Sujeto',
-                                  'Complemento indirecto',
-                                  'Vocativo',
+                 'alternativas': ['Vocativo',
+                                  'Sujeto',
+                                  'Complemento directo',
                                   'Atributo',
-                                  'Complemento directo'],
-                 'correcta': 'C'},
+                                  'Complemento indirecto'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «Ricardo Palma, el bibliotecario mendigo, '
                              'escribió Tradiciones peruanas», «el '
                              'bibliotecario mendigo» es núcleo de:',
-                 'alternativas': ['El complemento circunstancial',
-                                  'El atributo',
+                 'alternativas': ['El atributo',
+                                  'El complemento circunstancial',
+                                  'El sujeto',
                                   'La aposición',
-                                  'El vocativo',
-                                  'El sujeto'],
-                 'correcta': 'C'},
+                                  'El vocativo'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «El cuento fue leído por el niño», «el '
                              'niño» funciona como núcleo del complemento:',
-                 'alternativas': ['Indirecto',
-                                  'Circunstancial',
+                 'alternativas': ['Agente',
                                   'De régimen',
+                                  'Indirecto',
                                   'Directo',
-                                  'Agente'],
-                 'correcta': 'E'},
+                                  'Circunstancial'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los sustantivos que nombran a los seres '
                              'diferenciándolos de los demás de su especie '
                              'son los sustantivos:',
-                 'alternativas': ['Propios',
-                                  'Colectivos',
-                                  'Comunes',
+                 'alternativas': ['Comunes',
+                                  'Abstractos',
                                   'Contables',
-                                  'Abstractos'],
-                 'correcta': 'A'},
+                                  'Propios',
+                                  'Colectivos'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los sustantivos propios, ortográficamente, se '
                              'escriben con:',
-                 'alternativas': ['Cursiva obligatoria',
-                                  'Comillas siempre',
-                                  'Guion inicial',
+                 'alternativas': ['Guion inicial',
                                   'Minúscula inicial',
+                                  'Comillas siempre',
+                                  'Cursiva obligatoria',
                                   'Mayúscula inicial'],
                  'correcta': 'E'},
                 {'pregunta': 'Los sustantivos que nombran a todos los seres '
                              'de una clase son los sustantivos:',
-                 'alternativas': ['Propios',
+                 'alternativas': ['Comunes',
                                   'Contables',
-                                  'Colectivos exclusivos',
                                   'Individuales exclusivos',
-                                  'Comunes'],
-                 'correcta': 'E'},
+                                  'Propios',
+                                  'Colectivos exclusivos'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los sustantivos que designan entidades que se '
                              'pueden contar son los sustantivos:',
-                 'alternativas': ['Abstractos',
+                 'alternativas': ['Colectivos',
                                   'Contables',
+                                  'Abstractos',
                                   'No contables',
-                                  'Propios',
-                                  'Colectivos'],
+                                  'Propios'],
                  'correcta': 'B'},
                 {'pregunta': 'Los sustantivos que denotan magnitudes o '
                              'sustancias, como «un poco de café», son los '
                              'sustantivos:',
-                 'alternativas': ['Contables',
-                                  'Propios',
-                                  'Individuales',
+                 'alternativas': ['Propios',
                                   'Colectivos',
-                                  'No contables'],
-                 'correcta': 'E'},
+                                  'No contables',
+                                  'Individuales',
+                                  'Contables'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los sustantivos que nombran seres percibidos '
                              'por los sentidos son los sustantivos:',
                  'alternativas': ['Colectivos',
-                                  'Abstractos',
                                   'No contables',
                                   'Comunes exclusivos',
+                                  'Abstractos',
                                   'Concretos'],
                  'correcta': 'E'},
                 {'pregunta': 'Los sustantivos que se conocen mediante un '
                              'proceso mental de abstracción son los '
                              'sustantivos:',
-                 'alternativas': ['Contables',
-                                  'Propios exclusivos',
+                 'alternativas': ['Propios exclusivos',
                                   'Individuales',
+                                  'Concretos',
                                   'Abstractos',
-                                  'Concretos'],
+                                  'Contables'],
                  'correcta': 'D'},
                 {'pregunta': '«Hermosura», «paz» y «ambición» son ejemplos '
                              'de sustantivos:',
-                 'alternativas': ['Colectivos',
-                                  'Contables',
-                                  'Propios',
+                 'alternativas': ['Propios',
                                   'Abstractos',
+                                  'Colectivos',
+                                  'Contables',
                                   'Concretos'],
-                 'correcta': 'D'},
+                 'correcta': 'B'},
                 {'pregunta': '«Cóndor», «árbol» y «lapicero» son ejemplos de '
                              'sustantivos:',
-                 'alternativas': ['Concretos',
-                                  'Abstractos',
+                 'alternativas': ['Propios',
+                                  'No contables',
+                                  'Concretos',
                                   'Colectivos exclusivos',
-                                  'Propios',
-                                  'No contables'],
-                 'correcta': 'A'},
+                                  'Abstractos'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los sustantivos que nombran a un solo ser son '
                              'los sustantivos:',
-                 'alternativas': ['No contables',
+                 'alternativas': ['Colectivos',
+                                  'No contables',
+                                  'Abstractos',
                                   'Propios exclusivos',
-                                  'Colectivos',
-                                  'Individuales',
-                                  'Abstractos'],
-                 'correcta': 'D'},
+                                  'Individuales'],
+                 'correcta': 'E'},
                 {'pregunta': '«Arboleda», «enjambre» y «cardumen» son '
                              'ejemplos de sustantivos:',
-                 'alternativas': ['No contables exclusivos',
-                                  'Propios',
+                 'alternativas': ['Abstractos',
                                   'Colectivos',
-                                  'Abstractos',
-                                  'Individuales'],
-                 'correcta': 'C'},
+                                  'Individuales',
+                                  'No contables exclusivos',
+                                  'Propios'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los sustantivos colectivos, en número '
                              'singular, designan:',
-                 'alternativas': ['Un conjunto de seres',
+                 'alternativas': ['Una cualidad abstracta',
                                   'Un solo ser',
-                                  'Una cualidad abstracta',
                                   'Una relación lógica',
+                                  'Un conjunto de seres',
                                   'Una acción'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'En «Aquellos jóvenes parecen buenos '
                              'profesionales», «profesionales» funciona como '
                              'núcleo de:',
-                 'alternativas': ['La aposición',
-                                  'El sujeto',
-                                  'El complemento agente',
+                 'alternativas': ['El complemento agente',
                                   'El vocativo',
-                                  'El atributo'],
-                 'correcta': 'E'},
+                                  'La aposición',
+                                  'El atributo',
+                                  'El sujeto'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los sustantivos que expresan la diferencia '
                              'masculino/femenino mediante términos de raíz '
                              'diferente, como padre/madre, se llaman:',
                  'alternativas': ['De terminación variable',
-                                  'Heterónimos',
-                                  'Comunes en cuanto al género',
                                   'Ambiguos',
-                                  'Epicenos'],
-                 'correcta': 'B'},
+                                  'Comunes en cuanto al género',
+                                  'Epicenos',
+                                  'Heterónimos'],
+                 'correcta': 'E'},
                 {'pregunta': 'En los sustantivos de terminación variable, la '
                              'desinencia más común para marcar el femenino '
                              'es:',
-                 'alternativas': ['-e', '-a', '-o', '-triz', '-esa'],
+                 'alternativas': ['-e', '-a', '-esa', '-triz', '-o'],
                  'correcta': 'B'},
                 {'pregunta': 'El morfema -triz para marcar el femenino '
                              'aparece en pares como actor/actriz y:',
-                 'alternativas': ['Papa/papisa',
-                                  'Emperador/emperatriz',
-                                  'Alcalde/alcaldesa',
+                 'alternativas': ['Duque/duquesa',
+                                  'Papa/papisa',
                                   'Héroe/heroína',
-                                  'Duque/duquesa'],
-                 'correcta': 'B'},
+                                  'Emperador/emperatriz',
+                                  'Alcalde/alcaldesa'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los sustantivos que pueden ser masculinos o '
                              'femeninos sin que su forma cambie, como el/la '
                              'artista, se llaman:',
-                 'alternativas': ['Heterónimos',
-                                  'Comunes en cuanto al género',
-                                  'Epicenos',
+                 'alternativas': ['Comunes en cuanto al género',
                                   'Ambiguos',
+                                  'Epicenos',
+                                  'Heterónimos',
                                   'De terminación variable'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'Muchos sustantivos de persona con masculino en '
                              '-o, que designan profesiones, presentan el '
                              'femenino terminado en:',
-                 'alternativas': ['-e', '-a', '-triz', '-isa', '-ina'],
-                 'correcta': 'B'},
+                 'alternativas': ['-a', '-e', '-isa', '-triz', '-ina'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los sustantivos que designan grados de la '
                              'escala militar, como soldado o sargento, son '
                              'considerados:',
-                 'alternativas': ['Heterónimos',
-                                  'Comunes en cuanto al género',
+                 'alternativas': ['Comunes en cuanto al género',
                                   'Epicenos',
                                   'Ambiguos exclusivamente en plural',
-                                  'De terminación variable exclusiva'],
-                 'correcta': 'B'},
+                                  'De terminación variable exclusiva',
+                                  'Heterónimos'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los sustantivos de terminación invariable que '
                              'pueden usarse como masculino o femenino sin '
                              'cambiar de significado, como el/la mar, se '
                              'llaman sustantivos:',
-                 'alternativas': ['Heterónimos',
+                 'alternativas': ['Comunes obligatorios',
+                                  'Heterónimos',
                                   'Ambiguos en cuanto al género',
                                   'Epicenos',
-                                  'Comunes obligatorios',
                                   'De terminación variable'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Los términos polisémicos que se diferencian en '
                              'significado y en género, como «el capital» y '
                              '«la capital», son sustantivos:',
-                 'alternativas': ['Heterónimos',
+                 'alternativas': ['Ambiguos',
+                                  'Comunes',
                                   'Polisémicos con diferencia de género',
                                   'Epicenos',
-                                  'Ambiguos',
-                                  'Comunes'],
-                 'correcta': 'B'},
+                                  'Heterónimos'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los sustantivos con un único género gramatical '
                              'para nombrar ambos sexos, distinguidos '
                              'agregando macho o hembra, se llaman '
                              'sustantivos:',
-                 'alternativas': ['Heterónimos',
-                                  'Epicenos',
+                 'alternativas': ['Comunes en cuanto al género',
                                   'Ambiguos',
-                                  'Comunes en cuanto al género',
+                                  'Heterónimos',
+                                  'Epicenos',
                                   'De terminación variable'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Es incorrecto concordar el adjetivo con el '
                              'sexo real de un sustantivo epiceno; por ello, '
                              'se dice correctamente «el tiburón hembra es '
                              'muy»:',
-                 'alternativas': ['Peligrosa',
-                                  'Peligroso',
+                 'alternativas': ['Peligroso',
+                                  'Ninguna es correcta',
                                   'Peligrosos',
                                   'Peligrosas',
-                                  'Ninguna es correcta'],
-                 'correcta': 'B'},
+                                  'Peligrosa'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los nombres terminados en vocal átona o '
                              'tónica, como casa o café, forman el plural '
                              'agregando:',
-                 'alternativas': ['-es', '-s', 'Sin cambio', '-ces', '-res'],
-                 'correcta': 'B'},
+                 'alternativas': ['-es', 'Sin cambio', '-ces', '-res', '-s'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los nombres acabados en las consonantes L, N, '
                              'R, D, Z, J, como cónsul o pared, forman el '
                              'plural agregando:',
-                 'alternativas': ['-s', '-es', 'Sin cambio', '-ces', '-ses'],
-                 'correcta': 'B'},
+                 'alternativas': ['-s', 'Sin cambio', '-es', '-ces', '-ses'],
+                 'correcta': 'C'},
                 {'pregunta': 'Palabras llanas o esdrújulas terminadas en -S '
                              'o -X, como «tesis» o «tórax», en plural:',
                  'alternativas': ['Agregan -es',
-                                  'Permanecen invariables',
                                   'Agregan -s',
-                                  'Cambian la raíz',
-                                  'Se vuelven agudas'],
-                 'correcta': 'B'},
+                                  'Se vuelven agudas',
+                                  'Permanecen invariables',
+                                  'Cambian la raíz'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los nombres terminados en -Y, como rey o ley, '
                              'forman el plural agregando:',
-                 'alternativas': ['-s', '-es', 'Sin cambio', '-ies', '-ces'],
-                 'correcta': 'B'},
+                 'alternativas': ['-es', '-s', '-ces', '-ies', 'Sin cambio'],
+                 'correcta': 'A'},
                 {'pregunta': 'En los compuestos que forman una sola palabra, '
                              'como «bocacalle», el plural se marca en:',
-                 'alternativas': ['El primer elemento',
+                 'alternativas': ['Ambos elementos',
                                   'El segundo elemento',
-                                  'Ambos elementos',
+                                  'El primer elemento',
                                   'Ningún elemento',
                                   'Un elemento intermedio'],
                  'correcta': 'B'},
@@ -4168,17 +4167,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                  'alternativas': ['El segundo elemento',
                                   'El primer elemento',
                                   'Ambos elementos',
-                                  'Ningún elemento',
-                                  'Se pluraliza como una sola palabra'],
+                                  'Se pluraliza como una sola palabra',
+                                  'Ningún elemento'],
                  'correcta': 'B'},
                 {'pregunta': 'Los sustantivos macho y hembra no se '
                              'pluralizan cuando:',
-                 'alternativas': ['Van al inicio de la oración',
-                                  'Modifican a otro sustantivo',
+                 'alternativas': ['Modifican a otro sustantivo',
                                   'Son sujeto de la oración',
                                   'Llevan artículo determinado',
-                                  'Van en plural genérico'],
-                 'correcta': 'B'}],
+                                  'Van en plural genérico',
+                                  'Van al inicio de la oración'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL SUSTANTIVO / '
                                 'FUNCIONES DEL SUSTANTIVO',
                       'items': ['Según el criterio semántico, el sustantivo '
@@ -4317,53 +4316,67 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'El caso {preposicional} corresponde a pronombres '
                            'como «mí», «ti», «él», usados después de una '
                            'preposición.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según el criterio semántico, el pronombre indica '
-                           'la existencia de seres {Sin nombrarlos '
-                           'directamente}.',
-                           'El pronombre es descrito como una palabra '
-                           '{No-connotativa}.',
-                           'El pronombre es una palabra no descriptiva '
-                           'porque {Señala al ser sin conceptuarlo}.',
-                           'Que el pronombre tenga significación ocasional '
-                           'significa que {Fuera de contexto carece de '
-                           'significado definido}.',
-                           'Según el criterio morfológico, el pronombre es '
-                           'una palabra {Variable, con accidentes de género, '
-                           'número y persona}.',
-                           'Según el criterio sintáctico, el pronombre puede '
-                           'funcionar como sustantivo, adjetivo o '
-                           '{Adverbio}.',
-                           'El caso del pronombre que funciona como sujeto '
-                           'se llama caso {Nominativo o recto}.',
-                           'El caso del pronombre que funciona como '
-                           'complemento directo se llama caso {Acusativo}.',
-                           'El caso del pronombre que funciona como '
-                           'complemento indirecto se llama caso {Dativo}.',
-                           'El caso del pronombre usado después de una '
-                           'preposición se llama caso {Preposicional}.',
-                           'En «Yo no lo sabía», el pronombre «yo» está en '
-                           'caso {Nominativo}.',
-                           'En «No me entienden», el pronombre «me» funciona '
-                           'en caso {Acusativo}.',
-                           'En «Me duelen las muelas», el pronombre «me» '
-                           'funciona en caso {Dativo}.',
-                           'En «Confiaba en él», el pronombre «él» está en '
-                           'caso {Preposicional}.',
-                           'En «Ese se cayó anoche», el pronombre «ese» '
-                           'ejemplifica que el pronombre es una palabra {No '
-                           'descriptiva}.',
-                           'En «Esas niñas son más honestas que aquellas», '
-                           'el primer pronombre «esas» funciona como '
-                           '{Adjetivo}.',
-                           'En «Todos estudiaban aquí», el pronombre «todos» '
-                           'funciona como {Sustantivo (núcleo del sujeto)}.',
-                           'Los pronombres «ella», «tú», «ellos» aislados, '
-                           'sin contexto, tienen significado {Vacío o '
-                           'indefinido}.',
-                           'El pronombre, a diferencia del sustantivo, se '
-                           'caracteriza principalmente por {Señalar al ser '
-                           'sin nombrarlo con precisión}.']}],
+                {'titulo': '9.3 PRONOMBRES ÁTONOS O CLÍTICOS',
+                 'items': ['Los pronombres {átonos} son: me, se, te, le, '
+                           'les, la, las, lo, los, nos, os.',
+                           'Al carecer de {acento} propio, los pronombres '
+                           'átonos se apoyan fonéticamente en el verbo '
+                           'contiguo, por lo que también se llaman '
+                           'pronombres {clíticos}.',
+                           'Ejemplos de pronombres átonos: «Te admitieron '
+                           'para el ciclo», «La abrazó amablemente», '
+                           '«{Cómpratelo}».']},
+                {'titulo': '9.4 PRONOMBRES DEMOSTRATIVOS',
+                 'items': ['Los pronombres demostrativos identifican algo o '
+                           'alguien estableciendo la {distancia} con '
+                           'relación al hablante.',
+                           'Cerca del hablante (1ª persona): {este}, esta, '
+                           'estos, estas, esto.',
+                           'Cerca del oyente (2ª persona): {ese}, esa, esos, '
+                           'esas, eso.',
+                           'Lejos de ambos (3ª persona): {aquel}, aquella, '
+                           'aquellos, aquellas, aquello.']},
+                {'titulo': '9.5 PRONOMBRES POSESIVOS',
+                 'items': ['Los pronombres posesivos indican {posesión} o '
+                           'pertenencia, nombrando al objeto a través del '
+                           '{poseedor}.',
+                           'De 1ª persona: mío, mía, míos, mías, {nuestro}, '
+                           'nuestra.',
+                           'De 2ª persona: tuyo, tuya, tuyos, tuyas, '
+                           '{vuestro}, vuestra.',
+                           'De 3ª persona: {suyo}, suya, suyos, suyas.']},
+                {'titulo': '9.6 PRONOMBRES INDEFINIDOS Y NUMERALES',
+                 'items': ['Los pronombres {indefinidos} son cuantificadores '
+                           'que dan una referencia vaga o imprecisa de los '
+                           'seres: alguien, {nadie}, varios, muchos, '
+                           'cualquiera.',
+                           'Los pronombres {numerales} indican cantidad, '
+                           'orden, repetición, división o distribución de '
+                           'los seres.',
+                           'Los numerales {cardinales} indican cantidad '
+                           'exacta: «Entregó doce para la familia».',
+                           'Los numerales {ordinales} expresan el lugar que '
+                           'ocupa una unidad en una serie: «Los últimos '
+                           'siempre ganan».',
+                           'Los numerales {múltiplos} indican multiplicación '
+                           'o repetición: «Ganarás el {doble}; mañana, el '
+                           'triple».',
+                           'Los numerales {partitivos} indican la parte o '
+                           'fracción de un ser: «Comí solo la {mitad}».']},
+                {'titulo': '9.7 PRONOMBRES RELATIVOS, INTERROGATIVOS Y '
+                           'EXCLAMATIVOS',
+                 'items': ['Los pronombres {relativos} encabezan una '
+                           'proposición subordinada y hacen referencia a un '
+                           'sustantivo {antecedente}: que, cual, quien, '
+                           'cuyo.',
+                           'Los pronombres {interrogativos} son los mismos '
+                           'relativos, pero expresan {pregunta}; llevan '
+                           'tilde y se usan entre signos de interrogación: '
+                           '¿qué?, ¿cuál?, ¿quién?',
+                           'Los pronombres {exclamativos} son los relativos '
+                           'que expresan asombro, admiración o exclamación: '
+                           '«¡Cuánto te quiere!», «¡{Quién} lo hubiera '
+                           'creído!».']}],
   'cuadros': [{'titulo': '9.2 CASOS DEL PRONOMBRE PERSONAL (1ª PERSONA)',
                'encabezados': ['Caso', 'Pronombre', 'Función'],
                'filas': [['{Nominativo}', 'Yo, nosotros', '{Sujeto}'],
@@ -4375,166 +4388,285 @@ COMUNICATIVA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Según el criterio semántico, el pronombre '
                              'indica la existencia de seres:',
                  'alternativas': ['Con cualidades específicas',
-                                  'Solo en plural',
-                                  'Solo en femenino',
+                                  'Sin nombrarlos directamente',
                                   'Nombrándolos con precisión',
-                                  'Sin nombrarlos directamente'],
-                 'correcta': 'E'},
+                                  'Solo en femenino',
+                                  'Solo en plural'],
+                 'correcta': 'B'},
                 {'pregunta': 'El pronombre es descrito como una palabra:',
-                 'alternativas': ['Connotativa',
+                 'alternativas': ['Invariable',
                                   'Siempre concreta',
-                                  'Invariable',
                                   'Exclusivamente descriptiva',
-                                  'No-connotativa'],
-                 'correcta': 'E'},
+                                  'No-connotativa',
+                                  'Connotativa'],
+                 'correcta': 'D'},
                 {'pregunta': 'El pronombre es una palabra no descriptiva '
                              'porque:',
-                 'alternativas': ['Solo se usa en plural',
-                                  'Señala cualidades del sustantivo',
-                                  'Tiene significado fijo siempre',
+                 'alternativas': ['Señala al ser sin conceptuarlo',
                                   'Nombra directamente al ser',
-                                  'Señala al ser sin conceptuarlo'],
-                 'correcta': 'E'},
+                                  'Tiene significado fijo siempre',
+                                  'Solo se usa en plural',
+                                  'Señala cualidades del sustantivo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Que el pronombre tenga significación ocasional '
                              'significa que:',
-                 'alternativas': ['Es sinónimo de un sustantivo fijo',
+                 'alternativas': ['Solo funciona en singular',
                                   'Fuera de contexto carece de significado '
                                   'definido',
-                                  'Solo funciona en singular',
+                                  'Es sinónimo de un sustantivo fijo',
                                   'Siempre tiene el mismo significado',
                                   'Nunca tiene significado'],
                  'correcta': 'B'},
                 {'pregunta': 'Cuando el pronombre se carga de significado '
                              'dentro de un contexto, adquiere un valor:',
                  'alternativas': ['Ortográfico',
-                                  'Fonológico',
-                                  'Morfológico exclusivo',
+                                  'Descriptivo',
                                   'Referencial',
-                                  'Descriptivo'],
-                 'correcta': 'D'},
+                                  'Morfológico exclusivo',
+                                  'Fonológico'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según el criterio morfológico, el pronombre es '
                              'una palabra:',
                  'alternativas': ['Variable, con accidentes de género, '
                                   'número y persona',
-                                  'Invariable',
                                   'Exclusivamente masculina',
                                   'Sin flexión alguna',
-                                  'Solo singular'],
+                                  'Solo singular',
+                                  'Invariable'],
                  'correcta': 'A'},
                 {'pregunta': 'Según el criterio sintáctico, el pronombre '
                              'puede funcionar como sustantivo, adjetivo o:',
                  'alternativas': ['Artículo',
+                                  'Adverbio',
                                   'Interjección',
                                   'Preposición',
-                                  'Conjunción',
-                                  'Adverbio'],
-                 'correcta': 'E'},
+                                  'Conjunción'],
+                 'correcta': 'B'},
                 {'pregunta': 'El caso del pronombre que funciona como sujeto '
                              'se llama caso:',
-                 'alternativas': ['Acusativo',
-                                  'Nominativo o recto',
+                 'alternativas': ['Nominativo o recto',
                                   'Vocativo',
-                                  'Preposicional',
-                                  'Dativo'],
-                 'correcta': 'B'},
-                {'pregunta': 'El caso del pronombre que funciona como '
-                             'complemento directo se llama caso:',
-                 'alternativas': ['Nominativo',
-                                  'Recto',
                                   'Dativo',
                                   'Acusativo',
                                   'Preposicional'],
-                 'correcta': 'D'},
+                 'correcta': 'A'},
                 {'pregunta': 'El caso del pronombre que funciona como '
-                             'complemento indirecto se llama caso:',
-                 'alternativas': ['Vocativo',
-                                  'Dativo',
-                                  'Acusativo',
-                                  'Preposicional',
-                                  'Nominativo'],
-                 'correcta': 'B'},
-                {'pregunta': 'El caso del pronombre usado después de una '
-                             'preposición se llama caso:',
+                             'complemento directo se llama caso:',
                  'alternativas': ['Acusativo',
                                   'Dativo',
                                   'Nominativo',
                                   'Preposicional',
                                   'Recto'],
-                 'correcta': 'D'},
-                {'pregunta': 'En «Yo no lo sabía», el pronombre «yo» está en '
-                             'caso:',
-                 'alternativas': ['Vocativo',
+                 'correcta': 'A'},
+                {'pregunta': 'El caso del pronombre que funciona como '
+                             'complemento indirecto se llama caso:',
+                 'alternativas': ['Acusativo',
+                                  'Vocativo',
                                   'Nominativo',
                                   'Dativo',
-                                  'Preposicional',
-                                  'Acusativo'],
-                 'correcta': 'B'},
-                {'pregunta': 'En «No me entienden», el pronombre «me» '
-                             'funciona en caso:',
+                                  'Preposicional'],
+                 'correcta': 'D'},
+                {'pregunta': 'El caso del pronombre usado después de una '
+                             'preposición se llama caso:',
                  'alternativas': ['Preposicional',
+                                  'Dativo',
+                                  'Recto',
                                   'Nominativo',
-                                  'Acusativo',
-                                  'Recto',
-                                  'Vocativo'],
-                 'correcta': 'C'},
-                {'pregunta': 'En «Me duelen las muelas», el pronombre «me» '
-                             'funciona en caso:',
-                 'alternativas': ['Dativo',
-                                  'Recto',
-                                  'Acusativo',
-                                  'Preposicional',
-                                  'Nominativo'],
+                                  'Acusativo'],
                  'correcta': 'A'},
-                {'pregunta': 'En «Confiaba en él», el pronombre «él» está en '
+                {'pregunta': 'En «Yo no lo sabía», el pronombre «yo» está en '
                              'caso:',
                  'alternativas': ['Acusativo',
                                   'Preposicional',
+                                  'Dativo',
+                                  'Vocativo',
+                                  'Nominativo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En «No me entienden», el pronombre «me» '
+                             'funciona en caso:',
+                 'alternativas': ['Nominativo',
+                                  'Vocativo',
+                                  'Recto',
+                                  'Preposicional',
+                                  'Acusativo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En «Me duelen las muelas», el pronombre «me» '
+                             'funciona en caso:',
+                 'alternativas': ['Recto',
+                                  'Dativo',
+                                  'Acusativo',
+                                  'Nominativo',
+                                  'Preposicional'],
+                 'correcta': 'B'},
+                {'pregunta': 'En «Confiaba en él», el pronombre «él» está en '
+                             'caso:',
+                 'alternativas': ['Acusativo',
+                                  'Dativo',
                                   'Recto',
                                   'Nominativo',
-                                  'Dativo'],
-                 'correcta': 'B'},
+                                  'Preposicional'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «Ese se cayó anoche», el pronombre «ese» '
                              'ejemplifica que el pronombre es una palabra:',
-                 'alternativas': ['No descriptiva',
-                                  'Exclusivamente adjetiva',
+                 'alternativas': ['Exclusivamente adjetiva',
                                   'Connotativa',
                                   'Fija en significado',
-                                  'Descriptiva'],
-                 'correcta': 'A'},
+                                  'Descriptiva',
+                                  'No descriptiva'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «Esas niñas son más honestas que aquellas», '
                              'el primer pronombre «esas» funciona como:',
-                 'alternativas': ['Conjunción',
-                                  'Preposición',
+                 'alternativas': ['Adjetivo',
+                                  'Conjunción',
                                   'Adverbio',
                                   'Sustantivo',
-                                  'Adjetivo'],
-                 'correcta': 'E'},
+                                  'Preposición'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «Todos estudiaban aquí», el pronombre '
                              '«todos» funciona como:',
-                 'alternativas': ['Vocativo',
-                                  'Preposición',
+                 'alternativas': ['Adjetivo',
+                                  'Adverbio',
                                   'Sustantivo (núcleo del sujeto)',
-                                  'Adjetivo',
-                                  'Adverbio'],
+                                  'Vocativo',
+                                  'Preposición'],
                  'correcta': 'C'},
                 {'pregunta': 'Los pronombres «ella», «tú», «ellos» aislados, '
                              'sin contexto, tienen significado:',
                  'alternativas': ['Siempre concreto',
-                                  'Exclusivamente plural',
-                                  'Fijo y estable',
                                   'Vacío o indefinido',
-                                  'Descriptivo detallado'],
-                 'correcta': 'D'},
+                                  'Descriptivo detallado',
+                                  'Fijo y estable',
+                                  'Exclusivamente plural'],
+                 'correcta': 'B'},
                 {'pregunta': 'El pronombre, a diferencia del sustantivo, se '
                              'caracteriza principalmente por:',
-                 'alternativas': ['Tener siempre género femenino',
-                                  'No poder funcionar como sujeto',
-                                  'Ser siempre invariable',
-                                  'Señalar al ser sin nombrarlo con '
+                 'alternativas': ['Señalar al ser sin nombrarlo con '
                                   'precisión',
                                   'Nombrar directamente al ser con sus '
-                                  'cualidades'],
-                 'correcta': 'D'}],
+                                  'cualidades',
+                                  'Tener siempre género femenino',
+                                  'No poder funcionar como sujeto',
+                                  'Ser siempre invariable'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los pronombres átonos como me, se, te, le, lo, '
+                             'la también se llaman pronombres:',
+                 'alternativas': ['Interrogativos',
+                                  'Numerales',
+                                  'Tónicos',
+                                  'Clíticos',
+                                  'Relativos'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los pronombres átonos, al carecer de acento '
+                             'propio, se apoyan fonéticamente en:',
+                 'alternativas': ['El verbo contiguo',
+                                  'El adverbio',
+                                  'El sujeto',
+                                  'El adjetivo',
+                                  'El artículo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los pronombres demostrativos identifican algo '
+                             'o alguien estableciendo la:',
+                 'alternativas': ['Posesión',
+                                  'Distancia con relación al hablante',
+                                  'Repetición',
+                                  'Cantidad',
+                                  'Interrogación'],
+                 'correcta': 'B'},
+                {'pregunta': 'El pronombre demostrativo que indica cercanía '
+                             'a la 2ª persona gramatical (el oyente) es:',
+                 'alternativas': ['Este', 'Ese', 'Esto', 'Aquello', 'Aquel'],
+                 'correcta': 'B'},
+                {'pregunta': 'El pronombre demostrativo que indica lejanía '
+                             'de ambos interlocutores (3ª persona) es:',
+                 'alternativas': ['Eso', 'Aquel', 'Ese', 'Esto', 'Este'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los pronombres posesivos indican posesión o '
+                             'pertenencia, nombrando al objeto a través de:',
+                 'alternativas': ['La distancia',
+                                  'El lugar',
+                                  'El tiempo',
+                                  'El poseedor',
+                                  'La cantidad'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los cuantificadores que dan una referencia '
+                             'vaga o imprecisa de los seres, como «alguien» '
+                             'o «varios», se llaman pronombres:',
+                 'alternativas': ['Indefinidos',
+                                  'Relativos',
+                                  'Demostrativos',
+                                  'Numerales',
+                                  'Posesivos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las palabras que indican cantidad, orden, '
+                             'repetición o distribución de los seres se '
+                             'llaman pronombres:',
+                 'alternativas': ['Indefinidos',
+                                  'Posesivos',
+                                  'Relativos',
+                                  'Interrogativos',
+                                  'Numerales'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los numerales que indican cantidad exacta, '
+                             'como «doce», se llaman numerales:',
+                 'alternativas': ['Partitivos',
+                                  'Indefinidos',
+                                  'Ordinales',
+                                  'Cardinales',
+                                  'Múltiplos'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los numerales que expresan el lugar que ocupa '
+                             'una unidad en una serie se llaman numerales:',
+                 'alternativas': ['Partitivos',
+                                  'Relativos',
+                                  'Ordinales',
+                                  'Cardinales',
+                                  'Múltiplos'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los numerales que indican multiplicación o '
+                             'repetición, como «el doble», se llaman '
+                             'numerales:',
+                 'alternativas': ['Múltiplos',
+                                  'Indefinidos',
+                                  'Cardinales',
+                                  'Ordinales',
+                                  'Partitivos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los numerales que indican la parte o fracción '
+                             'de un ser, como «la mitad», se llaman '
+                             'numerales:',
+                 'alternativas': ['Cardinales',
+                                  'Múltiplos',
+                                  'Relativos',
+                                  'Ordinales',
+                                  'Partitivos'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los pronombres que encabezan una proposición '
+                             'subordinada y hacen referencia a un sustantivo '
+                             'antecedente se llaman pronombres:',
+                 'alternativas': ['Numerales',
+                                  'Exclamativos',
+                                  'Relativos',
+                                  'Indefinidos',
+                                  'Interrogativos'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los mismos pronombres relativos, cuando '
+                             'expresan pregunta y llevan tilde, se llaman '
+                             'pronombres:',
+                 'alternativas': ['Interrogativos',
+                                  'Posesivos',
+                                  'Demostrativos',
+                                  'Indefinidos',
+                                  'Exclamativos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los pronombres relativos que expresan asombro '
+                             'o admiración, como en «¡Cuánto te quiere!», se '
+                             'llaman pronombres:',
+                 'alternativas': ['Indefinidos',
+                                  'Relativos simples',
+                                  'Interrogativos',
+                                  'Numerales',
+                                  'Exclamativos'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL PRONOMBRE',
                       'items': ['Según el criterio semántico, el pronombre '
                                 'indica la existencia de seres sin '
@@ -4543,16 +4675,7 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'porque no señala cualidades o '
                                 'características del sustantivo.',
                                 'El pronombre es una palabra no descriptiva, '
-                                'porque señala al ser sin conceptuarlo.',
-                                'El pronombre tiene significación ocasional: '
-                                'fuera de contexto, palabras como «ella» o '
-                                '«tú» carecen de significado fijo.',
-                                'Cuando el pronombre se carga de significado '
-                                'dentro de un contexto, adquiere un valor '
-                                'referencial.',
-                                'Según el criterio morfológico, el pronombre '
-                                'es una palabra variable que expresa género, '
-                                'número y persona.']},
+                                'porque señala al ser sin conceptuarlo.']},
                      {'titulo': 'CASOS DEL PRONOMBRE PERSONAL',
                       'items': ['El caso nominativo o recto corresponde a '
                                 'pronombres como «yo», «tú», «él», que '
@@ -4562,27 +4685,57 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '«lo», «la».',
                                 'El caso dativo, de complemento indirecto, '
                                 'corresponde a pronombres como «me», «te», '
-                                '«le», «les».',
-                                'El caso preposicional corresponde a '
-                                'pronombres como «mí», «ti», «él», usados '
-                                'después de una preposición.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Según el criterio semántico, el pronombre '
-                                'indica la existencia de seres Sin '
-                                'nombrarlos directamente.',
-                                'El pronombre es descrito como una palabra '
-                                'No-connotativa.',
-                                'El pronombre es una palabra no descriptiva '
-                                'porque Señala al ser sin conceptuarlo.',
-                                'Que el pronombre tenga significación '
-                                'ocasional significa que Fuera de contexto '
-                                'carece de significado definido.',
-                                'Según el criterio morfológico, el pronombre '
-                                'es una palabra Variable, con accidentes de '
-                                'género, número y persona.',
-                                'Según el criterio sintáctico, el pronombre '
-                                'puede funcionar como sustantivo, adjetivo o '
-                                'Adverbio.']}]},
+                                '«le», «les».']},
+                     {'titulo': 'PRONOMBRES ÁTONOS O CLÍTICOS',
+                      'items': ['Los pronombres átonos son: me, se, te, le, '
+                                'les, la, las, lo, los, nos, os.',
+                                'Al carecer de acento propio, los pronombres '
+                                'átonos se apoyan fonéticamente en el verbo '
+                                'contiguo, por lo que también se llaman '
+                                'pronombres clíticos.',
+                                'Ejemplos de pronombres átonos: «Te '
+                                'admitieron para el ciclo», «La abrazó '
+                                'amablemente», «Cómpratelo».']},
+                     {'titulo': 'PRONOMBRES DEMOSTRATIVOS',
+                      'items': ['Los pronombres demostrativos identifican '
+                                'algo o alguien estableciendo la distancia '
+                                'con relación al hablante.',
+                                'Cerca del hablante (1ª persona): este, '
+                                'esta, estos, estas, esto.',
+                                'Cerca del oyente (2ª persona): ese, esa, '
+                                'esos, esas, eso.']},
+                     {'titulo': 'PRONOMBRES POSESIVOS',
+                      'items': ['Los pronombres posesivos indican posesión o '
+                                'pertenencia, nombrando al objeto a través '
+                                'del poseedor.',
+                                'De 1ª persona: mío, mía, míos, mías, '
+                                'nuestro, nuestra.',
+                                'De 2ª persona: tuyo, tuya, tuyos, tuyas, '
+                                'vuestro, vuestra.']},
+                     {'titulo': 'PRONOMBRES INDEFINIDOS Y NUMERALES',
+                      'items': ['Los pronombres indefinidos son '
+                                'cuantificadores que dan una referencia vaga '
+                                'o imprecisa de los seres: alguien, nadie, '
+                                'varios, muchos, cualquiera.',
+                                'Los pronombres numerales indican cantidad, '
+                                'orden, repetición, división o distribución '
+                                'de los seres.',
+                                'Los numerales cardinales indican cantidad '
+                                'exacta: «Entregó doce para la familia».']},
+                     {'titulo': 'PRONOMBRES RELATIVOS, INTERROGATIVOS Y '
+                                'EXCLAMATIVOS',
+                      'items': ['Los pronombres relativos encabezan una '
+                                'proposición subordinada y hacen referencia '
+                                'a un sustantivo antecedente: que, cual, '
+                                'quien, cuyo.',
+                                'Los pronombres interrogativos son los '
+                                'mismos relativos, pero expresan pregunta; '
+                                'llevan tilde y se usan entre signos de '
+                                'interrogación: ¿qué?, ¿cuál?, ¿quién?',
+                                'Los pronombres exclamativos son los '
+                                'relativos que expresan asombro, admiración '
+                                'o exclamación: «¡Cuánto te quiere!», '
+                                '«¡Quién lo hubiera creído!».']}]},
  {'num': 10,
   'titulo': 'El Adjetivo',
   'secciones': [{'titulo': '10.1 CRITERIOS PARA DEFINIR EL ADJETIVO',
@@ -4621,57 +4774,82 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'El sufijo {-és/-esa} forma gentilicios como '
                            '«cordobés»; el sufijo {-ano/-ana} forma '
                            'gentilicios como «italiana».']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según el criterio semántico, el adjetivo agrega '
-                           'información o {Califica al sustantivo}.',
-                           'Según el criterio morfológico, el adjetivo es '
-                           'una palabra {Variable, con género y número}.',
-                           'La función principal del adjetivo, según el '
-                           'criterio sintáctico, es modificar directamente '
-                           '{Al sustantivo}.',
-                           'Además de modificar al sustantivo, el adjetivo '
-                           'puede funcionar como núcleo del {Predicativo o '
-                           'atributo}.',
-                           'Los adjetivos que expresan cualidades o estados '
-                           'del sustantivo son los adjetivos '
-                           '{Calificativos}.',
-                           'El adjetivo que precisa de qué sustantivo se '
-                           'trata y puede restringir su extensión es el '
-                           'adjetivo {Especificativo o restrictivo}.',
-                           'El adjetivo que aparece entre pausas y no tiene '
-                           'carga excluyente es el adjetivo {Explicativo o '
-                           'no restrictivo}.',
-                           'El adjetivo que señala una cualidad propia del '
-                           'sustantivo, con valor poético cuando va '
-                           'antepuesto, es el {Explicativo}.',
-                           'En «blanca nieve», el adjetivo «blanca» es un '
-                           'ejemplo de adjetivo {Epíteto}.',
-                           'En «Los jugadores, contentos con el resultado, '
-                           'lo celebraron», el adjetivo «contentos» es '
-                           '{Explicativo}.',
-                           'En «gatos negros», el adjetivo «negros» es un '
-                           'ejemplo de adjetivo {Especificativo}.',
-                           'Los adjetivos gentilicios califican al '
-                           'sustantivo por su {Lugar de origen o '
-                           'procedencia}.',
-                           'El sufijo «-eño/-eña» forma gentilicios como '
-                           '{Limeña}.',
-                           'El sufijo «-ense» forma gentilicios como '
-                           '{Bonaerense}.',
-                           'El sufijo «-és/-esa» forma gentilicios como '
-                           '{Cordobés}.',
-                           'En «El joven austriaco ganó un premio», el '
-                           'adjetivo «austriaco» es un adjetivo '
-                           '{Gentilicio}.',
-                           'En «María llegó muy cansada», el adjetivo '
-                           '«cansada» funciona como núcleo del '
-                           '{Predicativo}.',
-                           'En «La población está asustada», el adjetivo '
-                           '«asustada» funciona como {Atributo}.',
-                           'El adjetivo epíteto, en posición pospuesta, '
-                           'suele tener una intención {Coloquial}.',
-                           'En «lámpara portátil», el adjetivo «portátil» '
-                           'cumple una función {Especificativa}.']}],
+                {'titulo': '10.4 TIPOS DE ADJETIVO CALIFICATIVO',
+                 'items': ['El adjetivo calificativo {especificativo} o '
+                           'restrictivo precisa de qué sustantivo se trata, '
+                           'restringiendo su extensión: «gatos {negros}», '
+                           '«alumno aplicado».',
+                           'El adjetivo calificativo {explicativo} o no '
+                           'restrictivo aparece entre pausas, va antepuesto '
+                           'y no tiene carga excluyente: «El {misterioso} '
+                           'gato sufrió una quemadura».',
+                           'El adjetivo calificativo {epíteto} señala una '
+                           'cualidad propia e inherente del sustantivo: '
+                           '«{blanca} nieve», «roja sangre», «verde '
+                           'hierba».']},
+                {'titulo': '10.5 GRADO POSITIVO Y COMPARATIVO',
+                 'items': ['El grado {positivo} expresa una cualidad '
+                           'atribuida al sustantivo tal cual es, sin '
+                           'comparación: «joven estudioso».',
+                           'El grado {comparativo} nombra la cualidad '
+                           'estableciendo una comparación; puede ser de '
+                           '{superioridad} (más... que), igualdad (tan... '
+                           'como) o inferioridad (menos... que).']},
+                {'titulo': '10.6 SUPERLATIVO ABSOLUTO PERIFRÁSTICO Y '
+                           'SINTÉTICO',
+                 'items': ['El {superlativo absoluto} expresa la cualidad en '
+                           'sumo grado, sin comparación.',
+                           'El superlativo absoluto {perifrástico} modifica '
+                           'el adjetivo con adverbios como muy, sumamente, '
+                           'extremadamente: «Mi hermana es {muy} hermosa».',
+                           'El superlativo absoluto {sintético} tiene dos '
+                           'formas según la terminación del adjetivo.',
+                           '1ª forma: si el adjetivo termina en -re o -ro, '
+                           'se añade el sufijo {-érrimo(a)}: pobre → '
+                           'paupérrimo, libre → libérrimo.',
+                           '2ª forma: si el adjetivo tiene otra terminación, '
+                           'se añade el sufijo {-ísimo(a)}: bueno → '
+                           'bonísimo, fuerte → fortísimo, sabio → '
+                           'sapientísimo.']},
+                {'titulo': '10.7 SUPERLATIVO RELATIVO Y FORMAS IRREGULARES',
+                 'items': ['El superlativo {relativo} maximiza o minimiza la '
+                           'cualidad en relación a todos los de su misma '
+                           'clase: «Aquella alumna es la {más} estudiosa del '
+                           'salón».',
+                           'Las formas {irregulares} o sincréticas del '
+                           'adjetivo no siguen las reglas generales: '
+                           'bueno→mejor→{óptimo}; malo→peor→pésimo; '
+                           'grande→mayor→{máximo}; pequeño→menor→mínimo.']},
+                {'titulo': '10.8 ADJETIVOS DETERMINATIVOS: DEMOSTRATIVOS Y '
+                           'POSESIVOS',
+                 'items': ['Los adjetivos {demostrativos} modifican al '
+                           'sustantivo indicando la distancia de los seres '
+                           'respecto al hablante: este/esta, {ese}/esa, '
+                           'aquel/aquella.',
+                           'Los adjetivos {posesivos} modifican al '
+                           'sustantivo indicando posesión: mi(s), tu(s), '
+                           'su(s), {nuestro}(s), vuestro(s).']},
+                {'titulo': '10.9 ADJETIVOS NUMERALES',
+                 'items': ['Los adjetivos {numerales} modifican al '
+                           'sustantivo indicando cantidad y número exactos.',
+                           'Los {cardinales} expresan cantidad exacta: cinco '
+                           'delincuentes, tres soles.',
+                           'Los {ordinales} expresan orden o sucesión: '
+                           'segundo nivel, sexto grado.',
+                           'Los {múltiplos} indican multiplicación o '
+                           'repetición: doble baile, triple vacuna.',
+                           'Los {partitivos} indican fracción de la unidad, '
+                           'acompañados del sustantivo «parte» salvo medio, '
+                           'mitad y tercio.']},
+                {'titulo': '10.10 APÓCOPE DEL ADJETIVO',
+                 'items': ['El {apócope} es la supresión de sonidos al final '
+                           'de ciertas palabras.',
+                           'Los adjetivos apócope pierden la {-o} final '
+                           'cuando van delante de un sustantivo masculino '
+                           'singular; en femenino quedan {intactos}.',
+                           'Ejemplos de apócope: grande→{gran} chico; '
+                           'bueno→un buen amigo; primero→el {primer} hijo; '
+                           'alguno→algún consejo; ninguno→ningún alumno.']}],
   'cuadros': [{'titulo': '10.2 CLASES DE ADJETIVO CALIFICATIVO',
                'encabezados': ['Clase', 'Característica'],
                'filas': [['{Especificativo}', '{Precisa} y puede restringir'],
@@ -4680,220 +4858,386 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Epíteto}', 'Cualidad {propia}, valor poético']]}],
   'preguntas': [{'pregunta': 'Según el criterio semántico, el adjetivo '
                              'agrega información o:',
-                 'alternativas': ['Reemplaza al verbo',
-                                  'Califica al sustantivo',
-                                  'Elimina el sustantivo',
+                 'alternativas': ['Califica al sustantivo',
+                                  'Actúa como preposición',
                                   'Sustituye al sustantivo',
-                                  'Actúa como preposición'],
-                 'correcta': 'B'},
+                                  'Reemplaza al verbo',
+                                  'Elimina el sustantivo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el criterio morfológico, el adjetivo es '
                              'una palabra:',
-                 'alternativas': ['Sin flexión alguna',
+                 'alternativas': ['Variable, con género y número',
                                   'Solo singular',
-                                  'Solo masculina',
                                   'Invariable',
-                                  'Variable, con género y número'],
-                 'correcta': 'E'},
+                                  'Sin flexión alguna',
+                                  'Solo masculina'],
+                 'correcta': 'A'},
                 {'pregunta': 'La función principal del adjetivo, según el '
                              'criterio sintáctico, es modificar '
                              'directamente:',
-                 'alternativas': ['Al verbo',
+                 'alternativas': ['Al sustantivo',
                                   'A la conjunción',
-                                  'Al sustantivo',
                                   'Al adverbio',
-                                  'A la preposición'],
-                 'correcta': 'C'},
+                                  'A la preposición',
+                                  'Al verbo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Además de modificar al sustantivo, el adjetivo '
                              'puede funcionar como núcleo del:',
-                 'alternativas': ['Complemento directo únicamente',
-                                  'Complemento agente',
+                 'alternativas': ['Vocativo',
                                   'Predicativo o atributo',
-                                  'Sujeto exclusivamente',
-                                  'Vocativo'],
-                 'correcta': 'C'},
+                                  'Complemento directo únicamente',
+                                  'Complemento agente',
+                                  'Sujeto exclusivamente'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los adjetivos que expresan cualidades o '
                              'estados del sustantivo son los adjetivos:',
                  'alternativas': ['Numerales',
-                                  'Gentilicios',
-                                  'Determinativos exclusivos',
                                   'Posesivos',
+                                  'Determinativos exclusivos',
+                                  'Gentilicios',
                                   'Calificativos'],
                  'correcta': 'E'},
                 {'pregunta': 'El adjetivo que precisa de qué sustantivo se '
                              'trata y puede restringir su extensión es el '
                              'adjetivo:',
                  'alternativas': ['Especificativo o restrictivo',
+                                  'Gentilicio',
                                   'Posesivo',
                                   'Epíteto',
-                                  'Explicativo',
-                                  'Gentilicio'],
+                                  'Explicativo'],
                  'correcta': 'A'},
                 {'pregunta': 'El adjetivo que aparece entre pausas y no '
                              'tiene carga excluyente es el adjetivo:',
                  'alternativas': ['Especificativo',
-                                  'Explicativo o no restrictivo',
-                                  'Gentilicio',
+                                  'Epíteto',
                                   'Numeral',
-                                  'Epíteto'],
-                 'correcta': 'B'},
+                                  'Explicativo o no restrictivo',
+                                  'Gentilicio'],
+                 'correcta': 'D'},
                 {'pregunta': 'El adjetivo que señala una cualidad propia del '
                              'sustantivo, con valor poético cuando va '
                              'antepuesto, es el:',
                  'alternativas': ['Explicativo',
-                                  'Determinativo',
+                                  'Gentilicio',
                                   'Especificativo',
-                                  'Epíteto',
-                                  'Gentilicio'],
+                                  'Determinativo',
+                                  'Epíteto'],
                  'correcta': 'A'},
                 {'pregunta': 'En «blanca nieve», el adjetivo «blanca» es un '
                              'ejemplo de adjetivo:',
-                 'alternativas': ['Numeral',
-                                  'Gentilicio',
-                                  'Explicativo',
+                 'alternativas': ['Gentilicio',
+                                  'Numeral',
                                   'Especificativo',
-                                  'Epíteto'],
-                 'correcta': 'E'},
+                                  'Epíteto',
+                                  'Explicativo'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «Los jugadores, contentos con el resultado, '
                              'lo celebraron», el adjetivo «contentos» es:',
-                 'alternativas': ['Especificativo',
-                                  'Posesivo',
-                                  'Explicativo',
+                 'alternativas': ['Posesivo',
+                                  'Especificativo',
                                   'Gentilicio',
+                                  'Explicativo',
                                   'Epíteto'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'En «gatos negros», el adjetivo «negros» es un '
                              'ejemplo de adjetivo:',
-                 'alternativas': ['Explicativo',
-                                  'Numeral',
-                                  'Epíteto exclusivo',
+                 'alternativas': ['Numeral',
+                                  'Gentilicio',
                                   'Especificativo',
-                                  'Gentilicio'],
-                 'correcta': 'D'},
+                                  'Explicativo',
+                                  'Epíteto exclusivo'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los adjetivos gentilicios califican al '
                              'sustantivo por su:',
                  'alternativas': ['Cantidad',
-                                  'Forma',
                                   'Color',
-                                  'Tamaño',
-                                  'Lugar de origen o procedencia'],
-                 'correcta': 'E'},
-                {'pregunta': 'El sufijo «-eño/-eña» forma gentilicios como:',
-                 'alternativas': ['Cordobés',
-                                  'Chileno',
-                                  'Bonaerense',
-                                  'Limeña',
-                                  'Italiana'],
+                                  'Forma',
+                                  'Lugar de origen o procedencia',
+                                  'Tamaño'],
                  'correcta': 'D'},
-                {'pregunta': 'El sufijo «-ense» forma gentilicios como:',
-                 'alternativas': ['Limeña',
-                                  'Habanera',
+                {'pregunta': 'El sufijo «-eño/-eña» forma gentilicios como:',
+                 'alternativas': ['Italiana',
+                                  'Limeña',
                                   'Cordobés',
+                                  'Chileno',
+                                  'Bonaerense'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sufijo «-ense» forma gentilicios como:',
+                 'alternativas': ['Habanera',
+                                  'Cordobés',
+                                  'Limeña',
                                   'Italiana',
                                   'Bonaerense'],
                  'correcta': 'E'},
                 {'pregunta': 'El sufijo «-és/-esa» forma gentilicios como:',
-                 'alternativas': ['Chileno',
-                                  'Limeña',
-                                  'Europeo',
+                 'alternativas': ['Europeo',
+                                  'Chileno',
+                                  'Bonaerense',
                                   'Cordobés',
-                                  'Bonaerense'],
+                                  'Limeña'],
                  'correcta': 'D'},
                 {'pregunta': 'En «El joven austriaco ganó un premio», el '
                              'adjetivo «austriaco» es un adjetivo:',
-                 'alternativas': ['Calificativo especificativo',
+                 'alternativas': ['Explicativo',
+                                  'Calificativo especificativo',
                                   'Epíteto',
-                                  'Explicativo',
-                                  'Posesivo',
-                                  'Gentilicio'],
-                 'correcta': 'E'},
+                                  'Gentilicio',
+                                  'Posesivo'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «María llegó muy cansada», el adjetivo '
                              '«cansada» funciona como núcleo del:',
-                 'alternativas': ['Complemento indirecto',
-                                  'Vocativo',
-                                  'Predicativo',
+                 'alternativas': ['Sujeto',
                                   'Complemento directo',
-                                  'Sujeto'],
-                 'correcta': 'C'},
+                                  'Complemento indirecto',
+                                  'Predicativo',
+                                  'Vocativo'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «La población está asustada», el adjetivo '
                              '«asustada» funciona como:',
-                 'alternativas': ['Complemento directo',
-                                  'Aposición',
+                 'alternativas': ['Aposición',
                                   'Vocativo',
+                                  'Complemento directo',
                                   'Sujeto',
                                   'Atributo'],
                  'correcta': 'E'},
                 {'pregunta': 'El adjetivo epíteto, en posición pospuesta, '
                              'suele tener una intención:',
-                 'alternativas': ['Poética exclusiva',
-                                  'Legal',
+                 'alternativas': ['Coloquial',
+                                  'Poética exclusiva',
+                                  'Matemática',
                                   'Científica',
-                                  'Coloquial',
-                                  'Matemática'],
-                 'correcta': 'D'},
+                                  'Legal'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «lámpara portátil», el adjetivo «portátil» '
                              'cumple una función:',
                  'alternativas': ['Especificativa',
-                                  'Gentilicia',
                                   'Numeral',
+                                  'Explicativa',
                                   'Epíteto',
-                                  'Explicativa'],
+                                  'Gentilicia'],
+                 'correcta': 'A'},
+                {'pregunta': 'El adjetivo calificativo que precisa de qué '
+                             'sustantivo se trata, restringiendo su '
+                             'extensión, como en «gatos negros», se llama:',
+                 'alternativas': ['Especificativo o restrictivo',
+                                  'Numeral',
+                                  'Determinativo',
+                                  'Epíteto',
+                                  'Explicativo'],
+                 'correcta': 'A'},
+                {'pregunta': 'El adjetivo calificativo que aparece entre '
+                             'pausas, va antepuesto y no tiene carga '
+                             'excluyente se llama:',
+                 'alternativas': ['Epíteto',
+                                  'Especificativo',
+                                  'Explicativo o no restrictivo',
+                                  'Numeral',
+                                  'Posesivo'],
+                 'correcta': 'C'},
+                {'pregunta': 'El adjetivo calificativo que señala una '
+                             'cualidad propia e inherente del sustantivo, '
+                             'como en «blanca nieve», se llama:',
+                 'alternativas': ['Epíteto',
+                                  'Demostrativo',
+                                  'Numeral',
+                                  'Explicativo',
+                                  'Especificativo'],
+                 'correcta': 'A'},
+                {'pregunta': 'El grado del adjetivo que expresa una cualidad '
+                             'tal cual es, sin comparación, se llama grado:',
+                 'alternativas': ['Comparativo',
+                                  'Positivo',
+                                  'Superlativo relativo',
+                                  'Superlativo absoluto',
+                                  'Epíteto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El grado del adjetivo que establece una '
+                             'comparación de superioridad, igualdad o '
+                             'inferioridad se llama grado:',
+                 'alternativas': ['Positivo',
+                                  'Superlativo absoluto',
+                                  'Comparativo',
+                                  'Superlativo relativo',
+                                  'Perifrástico exclusivo'],
+                 'correcta': 'C'},
+                {'pregunta': 'El grado superlativo absoluto que modifica el '
+                             'adjetivo con adverbios como «muy» o '
+                             '«sumamente» se llama superlativo absoluto:',
+                 'alternativas': ['Sintético',
+                                  'Comparativo',
+                                  'Positivo',
+                                  'Relativo',
+                                  'Perifrástico'],
+                 'correcta': 'E'},
+                {'pregunta': 'El grado superlativo absoluto sintético de un '
+                             'adjetivo terminado en -re o -ro se forma '
+                             'añadiendo el sufijo:',
+                 'alternativas': ['-mente',
+                                  '-ísimo',
+                                  '-perífrasis',
+                                  '-érrimo',
+                                  '-ando'],
+                 'correcta': 'D'},
+                {'pregunta': 'El superlativo absoluto sintético del adjetivo '
+                             '«bueno» es:',
+                 'alternativas': ['Bonísimo',
+                                  'Buenísimo',
+                                  'Optísimo',
+                                  'Buenérrimo',
+                                  'Mejorísimo'],
+                 'correcta': 'A'},
+                {'pregunta': 'El superlativo absoluto sintético del adjetivo '
+                             '«libre» es:',
+                 'alternativas': ['Libremente',
+                                  'Librísimo',
+                                  'Liberísimo',
+                                  'Libertísimo',
+                                  'Libérrimo'],
+                 'correcta': 'E'},
+                {'pregunta': 'El grado del adjetivo que maximiza o minimiza '
+                             'la cualidad respecto a todos los de su misma '
+                             'clase, como en «la más estudiosa del salón», '
+                             'se llama superlativo:',
+                 'alternativas': ['Absoluto sintético',
+                                  'Absoluto perifrástico',
+                                  'Positivo',
+                                  'Relativo',
+                                  'Comparativo'],
+                 'correcta': 'D'},
+                {'pregunta': 'La forma irregular o sincrética del '
+                             'comparativo del adjetivo «bueno» es:',
+                 'alternativas': ['Buenísimo',
+                                  'Mejor',
+                                  'Bonísimo',
+                                  'Más bueno',
+                                  'Óptimo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La forma irregular o sincrética del '
+                             'superlativo del adjetivo «grande» es:',
+                 'alternativas': ['Mayor',
+                                  'Magnísimo',
+                                  'Máximo',
+                                  'Más grande',
+                                  'Grandísimo'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los adjetivos que modifican al sustantivo '
+                             'indicando la distancia de los seres respecto '
+                             'al hablante (este, ese, aquel) se llaman '
+                             'adjetivos:',
+                 'alternativas': ['Calificativos',
+                                  'Demostrativos',
+                                  'Posesivos',
+                                  'Numerales',
+                                  'Gentilicios'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los adjetivos numerales que expresan cantidad '
+                             'exacta, como «cinco delincuentes», se llaman:',
+                 'alternativas': ['Múltiplos',
+                                  'Cardinales',
+                                  'Indefinidos',
+                                  'Ordinales',
+                                  'Partitivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los adjetivos numerales que indican fracción '
+                             'de la unidad, como «media manzana», se llaman:',
+                 'alternativas': ['Indefinidos',
+                                  'Partitivos',
+                                  'Ordinales',
+                                  'Cardinales',
+                                  'Múltiplos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La supresión de sonidos al final de ciertas '
+                             'palabras, como en «gran chico» en vez de '
+                             '«grande chico», se llama:',
+                 'alternativas': ['Sinalefa',
+                                  'Apócope',
+                                  'Sinéresis',
+                                  'Elisión',
+                                  'Diéresis'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los adjetivos apócope pierden su vocal final '
+                             'cuando van delante de un sustantivo masculino '
+                             'singular; en su forma femenina:',
+                 'alternativas': ['Quedan intactos',
+                                  'Se duplican',
+                                  'Cambian de raíz',
+                                  'Se convierten en pronombres',
+                                  'También se apocopan'],
                  'correcta': 'A'}],
-  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL ADJETIVO',
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL ADJETIVO / '
+                                'ADJETIVOS CALIFICATIVOS',
                       'items': ['Según el criterio semántico, el adjetivo '
                                 'agrega información o califica al '
                                 'sustantivo, y también lo determina.',
                                 'Según el criterio morfológico, el adjetivo '
                                 'es una palabra variable con morfemas de '
                                 'género y número.',
-                                'Según el criterio sintáctico, la función '
-                                'principal del adjetivo es modificar '
-                                'directamente al sustantivo, como M.D.',
-                                'El adjetivo también puede funcionar como '
-                                'núcleo del predicativo o del atributo del '
-                                'verbo copulativo.']},
-                     {'titulo': 'ADJETIVOS CALIFICATIVOS',
-                      'items': ['Los adjetivos calificativos expresan '
+                                'Los adjetivos calificativos expresan '
                                 'cualidades o estados del sustantivo al cual '
                                 'modifican.',
                                 'El adjetivo especificativo o restrictivo '
                                 'precisa de qué sustantivo se trata y puede '
-                                'restringir su extensión.',
-                                'El adjetivo explicativo o no restrictivo '
-                                'aparece entre pausas, va antepuesto y no '
-                                'tiene carga excluyente.',
-                                'El adjetivo epíteto señala una cualidad '
-                                'propia del sustantivo; antepuesto tiene '
-                                'propósito poético.']},
-                     {'titulo': 'ADJETIVOS GENTILICIOS',
+                                'restringir su extensión.']},
+                     {'titulo': 'ADJETIVOS GENTILICIOS / TIPOS DE ADJETIVO '
+                                'CALIFICATIVO',
                       'items': ['Los adjetivos gentilicios califican al '
                                 'sustantivo por su lugar de origen o '
                                 'procedencia.',
                                 'El sufijo -eño/-eña forma gentilicios como '
                                 '«limeña»; el sufijo -ense forma gentilicios '
                                 'como «bonaerense».',
-                                'El sufijo -és/-esa forma gentilicios como '
-                                '«cordobés»; el sufijo -ano/-ana forma '
-                                'gentilicios como «italiana».']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Según el criterio semántico, el adjetivo '
-                                'agrega información o Califica al '
-                                'sustantivo.',
-                                'Según el criterio morfológico, el adjetivo '
-                                'es una palabra Variable, con género y '
-                                'número.',
-                                'La función principal del adjetivo, según el '
-                                'criterio sintáctico, es modificar '
-                                'directamente Al sustantivo.',
-                                'Además de modificar al sustantivo, el '
-                                'adjetivo puede funcionar como núcleo del '
-                                'Predicativo o atributo.',
-                                'Los adjetivos que expresan cualidades o '
-                                'estados del sustantivo son los adjetivos '
-                                'Calificativos.',
-                                'El adjetivo que precisa de qué sustantivo '
-                                'se trata y puede restringir su extensión es '
-                                'el adjetivo Especificativo o '
-                                'restrictivo.']}]},
+                                'El adjetivo calificativo especificativo o '
+                                'restrictivo precisa de qué sustantivo se '
+                                'trata, restringiendo su extensión: «gatos '
+                                'negros», «alumno aplicado».',
+                                'El adjetivo calificativo explicativo o no '
+                                'restrictivo aparece entre pausas, va '
+                                'antepuesto y no tiene carga excluyente: «El '
+                                'misterioso gato sufrió una quemadura».']},
+                     {'titulo': 'GRADO POSITIVO Y COMPARATIVO / SUPERLATIVO '
+                                'ABSOLUTO PERIFRÁSTICO Y SINTÉTIC',
+                      'items': ['El grado positivo expresa una cualidad '
+                                'atribuida al sustantivo tal cual es, sin '
+                                'comparación: «joven estudioso».',
+                                'El grado comparativo nombra la cualidad '
+                                'estableciendo una comparación; puede ser de '
+                                'superioridad (más... que), igualdad (tan... '
+                                'como) o inferioridad (menos... que).',
+                                'El superlativo absoluto expresa la cualidad '
+                                'en sumo grado, sin comparación.',
+                                'El superlativo absoluto perifrástico '
+                                'modifica el adjetivo con adverbios como '
+                                'muy, sumamente, extremadamente: «Mi hermana '
+                                'es muy hermosa».']},
+                     {'titulo': 'SUPERLATIVO RELATIVO Y FORMAS IRREGULARES / '
+                                'ADJETIVOS DETERMINATIVOS: DEMOS',
+                      'items': ['El superlativo relativo maximiza o minimiza '
+                                'la cualidad en relación a todos los de su '
+                                'misma clase: «Aquella alumna es la más '
+                                'estudiosa del salón».',
+                                'Las formas irregulares o sincréticas del '
+                                'adjetivo no siguen las reglas generales: '
+                                'bueno→mejor→óptimo; malo→peor→pésimo; '
+                                'grande→mayor→máximo; pequeño→menor→mínimo.',
+                                'Los adjetivos demostrativos modifican al '
+                                'sustantivo indicando la distancia de los '
+                                'seres respecto al hablante: este/esta, '
+                                'ese/esa, aquel/aquella.',
+                                'Los adjetivos posesivos modifican al '
+                                'sustantivo indicando posesión: mi(s), '
+                                'tu(s), su(s), nuestro(s), vuestro(s).']},
+                     {'titulo': 'ADJETIVOS NUMERALES / APÓCOPE DEL ADJETIVO',
+                      'items': ['Los adjetivos numerales modifican al '
+                                'sustantivo indicando cantidad y número '
+                                'exactos.',
+                                'Los cardinales expresan cantidad exacta: '
+                                'cinco delincuentes, tres soles.',
+                                'El apócope es la supresión de sonidos al '
+                                'final de ciertas palabras.',
+                                'Los adjetivos apócope pierden la -o final '
+                                'cuando van delante de un sustantivo '
+                                'masculino singular; en femenino quedan '
+                                'intactos.']}]},
  {'num': 11,
   'titulo': 'El Artículo y el Adverbio',
   'secciones': [{'titulo': '11.1 CRITERIOS DEL ARTÍCULO',
@@ -4927,57 +5271,75 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            '{comunes}.',
                            'Si el artículo forma parte de un {topónimo}, '
                            'como «El Salvador», no procede la contracción.']},
-                {'titulo': '11.4 EL ADVERBIO',
+                {'titulo': '11.4 FUNCIONES Y VALORES DEL ARTÍCULO',
+                 'items': ['El artículo {determinado} actúa como presentador '
+                           'del sustantivo, dando mayor viveza a la '
+                           'expresión: «La Historia del hombre...».',
+                           'El artículo {indeterminado} «un» y sus variantes '
+                           'dan mayor énfasis a la expresión: «Eres un '
+                           'candidato del pueblo».',
+                           'El artículo funciona como {desambiguador} de '
+                           'género y número: el oyente/la oyente; la '
+                           'caries/las caries.',
+                           'Cuando dos adjetivos modifican a un sustantivo, '
+                           'el artículo debe preceder solo al {primer} '
+                           'adjetivo: «El débil y triste mendigo...».',
+                           'El uso del artículo es {opcional} en algunos '
+                           'países: Perú/El Perú; no acepta artículo '
+                           'Bolivia, Chile, Colombia.',
+                           'Por razones de {eufonía}, los sustantivos '
+                           'femeninos que empiezan con «a» o «ha» tónicas se '
+                           'anteponen del artículo «{el}» en singular: el '
+                           'águila, el agua, el arma.',
+                           'En plural, estos sustantivos vuelven a usar el '
+                           'artículo femenino que corresponde: las águilas, '
+                           'las {aguas}.',
+                           'El artículo es {sustantivador} universal: al '
+                           'anteponerse a una palabra de otra categoría, la '
+                           'convierte en sustantivo: «El {inteligente} '
+                           'superó a todos».']},
+                {'titulo': '11.5 EL ADVERBIO',
                  'items': ['El adverbio es una palabra {invariable} que '
                            'modifica al verbo, al adjetivo o a otro '
                            'adverbio.',
                            'Los adverbios se clasifican según su significado '
                            'en adverbios de {lugar}, tiempo, modo, cantidad, '
                            'afirmación, negación y duda.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según el criterio semántico, el artículo carece '
-                           'de significado lexical pero posee significado '
-                           '{Gramatical}.',
-                           'El artículo, en su posición dentro de la '
-                           'oración, siempre {Precede al sustantivo}.',
-                           'Según el criterio morfológico, el artículo '
-                           'concuerda con el sustantivo en {Género y '
-                           'número}.',
-                           'El artículo que hace referencia a un sustantivo '
-                           'conocido por el hablante se llama artículo '
-                           '{Determinado}.',
-                           'El artículo que hace referencia a seres no '
-                           'conocidos se llama artículo {Indeterminado}.',
-                           'El artículo neutro del español es {Lo}.',
-                           'El artículo neutro «lo» sirve para sustantivar '
-                           '{Adjetivos}.',
-                           'En «Lo bueno supervive a través del tiempo», «lo '
-                           'bueno» funciona como un sustantivo {Abstracto}.',
-                           'El único artículo que se puede contraer es {El}.',
-                           'El artículo «el» se contrae con las '
-                           'preposiciones «a» y {De}.',
-                           'La contracción de «a» más «el» da como resultado '
-                           '{Al}.',
-                           'La contracción de «de» más «el» da como '
-                           'resultado {Del}.',
-                           'Las contracciones del artículo se usan solamente '
-                           'ante sustantivos {Comunes}.',
-                           'Si el artículo forma parte de un topónimo, como '
-                           '«El Salvador», la contracción {No procede}.',
-                           'En «Viajaremos a El Cairo», la ausencia de '
-                           'contracción se debe a que {El artículo forma '
-                           'parte del topónimo}.',
-                           'El adverbio, en cuanto a su morfología, es una '
-                           'palabra {Invariable}.',
-                           'El adverbio puede modificar al verbo, al '
-                           'adjetivo o {A otro adverbio}.',
-                           'Los adverbios se clasifican, entre otras '
-                           'categorías, en adverbios de lugar, tiempo y '
-                           '{Modo}.',
-                           'En «El ayer quedó en olvido», el artículo «el» '
-                           'sustantiva a {Un adverbio temporal}.',
-                           'En «Un día te entregaré unos regalos», los '
-                           'artículos usados son de tipo {Indeterminado}.']}],
+                {'titulo': '11.6 CLASES DE ADVERBIOS (I)',
+                 'items': ['Los adverbios de {lugar} indican situación o '
+                           'ubicación: aquí, allá, cerca, lejos, {delante}, '
+                           'detrás.',
+                           'Los adverbios de {tiempo} indican período o '
+                           'suceso: hoy, ayer, siempre, {pronto}, todavía, '
+                           'ahora.',
+                           'Los adverbios de {modo} indican manera o '
+                           'procedimiento: bien, mal, {despacio}, aprisa, '
+                           'así.',
+                           'Los adverbios de {cantidad} indican grado o '
+                           'porción: poco, mucho, tanto, {demasiado}, casi, '
+                           'bastante.',
+                           'Los adverbios terminados en {-mente} son en su '
+                           'mayoría adverbios de modo, formados por un '
+                           'adjetivo más el sufijo -mente: rápidamente, '
+                           '{felizmente}.']},
+                {'titulo': '11.7 CLASES DE ADVERBIOS (II)',
+                 'items': ['Los adverbios de {orden} indican sucesión: '
+                           'primeramente, {seguidamente}, finalmente.',
+                           'Los adverbios de {afirmación} indican certeza: '
+                           'sí, ciertamente, {seguramente}, efectivamente.',
+                           'Los adverbios de {negación} indican objeción o '
+                           'contradicción: no, {nunca}, jamás, tampoco.',
+                           'Los adverbios de {duda} indican incertidumbre: '
+                           'quizás, {tal vez}, acaso, a lo mejor.']},
+                {'titulo': '11.8 USOS CORRECTOS DEL ADVERBIO',
+                 'items': ['Es {incorrecto} decir «Lo encontré abajo de la '
+                           'mesa»; lo correcto es «Lo encontré {debajo} de '
+                           'la mesa».',
+                           'Es incorrecto decir «Íbamos adelante del '
+                           'profesor»; lo correcto es «Íbamos {delante} del '
+                           'profesor».',
+                           'Es incorrecto decir «Se puso atrás de ti»; lo '
+                           'correcto es «Se puso {detrás} de ti».']}],
   'cuadros': [{'titulo': '11.2 CLASES DE ARTÍCULO',
                'encabezados': ['Clase', 'Masculino singular', 'Referencia'],
                'filas': [['{Determinado}', 'El', 'Sustantivo {conocido}'],
@@ -4986,147 +5348,275 @@ COMUNICATIVA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Según el criterio semántico, el artículo '
                              'carece de significado lexical pero posee '
                              'significado:',
-                 'alternativas': ['Pragmático',
-                                  'Ninguno',
+                 'alternativas': ['Ninguno',
+                                  'Gramatical',
                                   'Fonológico',
                                   'Morfológico exclusivo',
-                                  'Gramatical'],
-                 'correcta': 'E'},
+                                  'Pragmático'],
+                 'correcta': 'B'},
                 {'pregunta': 'El artículo, en su posición dentro de la '
                              'oración, siempre:',
                  'alternativas': ['Aparece solo en plural',
                                   'Sigue al sustantivo',
-                                  'Se ubica al final de la oración',
                                   'Reemplaza al verbo',
+                                  'Se ubica al final de la oración',
                                   'Precede al sustantivo'],
                  'correcta': 'E'},
                 {'pregunta': 'Según el criterio morfológico, el artículo '
                              'concuerda con el sustantivo en:',
-                 'alternativas': ['Solo persona gramatical',
-                                  'Modo verbal',
+                 'alternativas': ['Aspecto verbal',
+                                  'Solo persona gramatical',
                                   'Género y número',
                                   'Solo tiempo verbal',
-                                  'Aspecto verbal'],
+                                  'Modo verbal'],
                  'correcta': 'C'},
                 {'pregunta': 'El artículo que hace referencia a un '
                              'sustantivo conocido por el hablante se llama '
                              'artículo:',
                  'alternativas': ['Indeterminado',
+                                  'Demostrativo',
                                   'Neutro',
-                                  'Determinado',
                                   'Posesivo',
-                                  'Demostrativo'],
-                 'correcta': 'C'},
+                                  'Determinado'],
+                 'correcta': 'E'},
                 {'pregunta': 'El artículo que hace referencia a seres no '
                              'conocidos se llama artículo:',
-                 'alternativas': ['Determinado',
-                                  'Recto',
+                 'alternativas': ['Definido',
                                   'Indeterminado',
-                                  'Definido',
-                                  'Neutro'],
-                 'correcta': 'C'},
-                {'pregunta': 'El artículo neutro del español es:',
-                 'alternativas': ['Un', 'Lo', 'El', 'Una', 'La'],
+                                  'Neutro',
+                                  'Determinado',
+                                  'Recto'],
                  'correcta': 'B'},
+                {'pregunta': 'El artículo neutro del español es:',
+                 'alternativas': ['La', 'El', 'Lo', 'Un', 'Una'],
+                 'correcta': 'C'},
                 {'pregunta': 'El artículo neutro «lo» sirve para '
                              'sustantivar:',
-                 'alternativas': ['Conjunciones',
+                 'alternativas': ['Preposiciones',
                                   'Artículos',
-                                  'Preposiciones',
-                                  'Adjetivos',
-                                  'Verbos'],
-                 'correcta': 'D'},
+                                  'Verbos',
+                                  'Conjunciones',
+                                  'Adjetivos'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «Lo bueno supervive a través del tiempo», '
                              '«lo bueno» funciona como un sustantivo:',
-                 'alternativas': ['Colectivo',
-                                  'Contable',
+                 'alternativas': ['Propio',
                                   'Abstracto',
-                                  'Propio',
-                                  'Concreto'],
-                 'correcta': 'C'},
+                                  'Concreto',
+                                  'Contable',
+                                  'Colectivo'],
+                 'correcta': 'B'},
                 {'pregunta': 'El único artículo que se puede contraer es:',
-                 'alternativas': ['Las', 'La', 'El', 'Los', 'Un'],
-                 'correcta': 'C'},
+                 'alternativas': ['El', 'Los', 'Un', 'Las', 'La'],
+                 'correcta': 'A'},
                 {'pregunta': 'El artículo «el» se contrae con las '
                              'preposiciones «a» y:',
-                 'alternativas': ['Por', 'De', 'Sin', 'Con', 'Para'],
-                 'correcta': 'B'},
+                 'alternativas': ['Sin', 'Para', 'De', 'Por', 'Con'],
+                 'correcta': 'C'},
                 {'pregunta': 'La contracción de «a» más «el» da como '
                              'resultado:',
-                 'alternativas': ['Del', 'Al', 'Aal', 'A el siempre', 'Ael'],
-                 'correcta': 'B'},
+                 'alternativas': ['A el siempre', 'Aal', 'Ael', 'Del', 'Al'],
+                 'correcta': 'E'},
                 {'pregunta': 'La contracción de «de» más «el» da como '
                              'resultado:',
-                 'alternativas': ['Dle',
-                                  'De el siempre',
-                                  'Dell',
+                 'alternativas': ['Dell',
+                                  'Del',
                                   'Al',
-                                  'Del'],
-                 'correcta': 'E'},
+                                  'Dle',
+                                  'De el siempre'],
+                 'correcta': 'B'},
                 {'pregunta': 'Las contracciones del artículo se usan '
                              'solamente ante sustantivos:',
                  'alternativas': ['Colectivos exclusivos',
-                                  'Propios siempre',
-                                  'Comunes',
+                                  'Contables únicamente',
                                   'Abstractos',
-                                  'Contables únicamente'],
-                 'correcta': 'C'},
+                                  'Comunes',
+                                  'Propios siempre'],
+                 'correcta': 'D'},
                 {'pregunta': 'Si el artículo forma parte de un topónimo, '
                              'como «El Salvador», la contracción:',
-                 'alternativas': ['Es obligatoria',
+                 'alternativas': ['No procede',
+                                  'Es obligatoria',
                                   'Depende del contexto oral',
-                                  'No procede',
-                                  'Es opcional siempre',
-                                  'Se aplica solo por escrito'],
-                 'correcta': 'C'},
+                                  'Se aplica solo por escrito',
+                                  'Es opcional siempre'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «Viajaremos a El Cairo», la ausencia de '
                              'contracción se debe a que:',
-                 'alternativas': ['El artículo forma parte del topónimo',
-                                  'Es un error ortográfico',
-                                  'Es una excepción sin explicación',
+                 'alternativas': ['Es una excepción sin explicación',
                                   'El Cairo no es un lugar real',
-                                  'La preposición no lo permite nunca'],
-                 'correcta': 'A'},
+                                  'Es un error ortográfico',
+                                  'La preposición no lo permite nunca',
+                                  'El artículo forma parte del topónimo'],
+                 'correcta': 'E'},
                 {'pregunta': 'El adverbio, en cuanto a su morfología, es una '
                              'palabra:',
-                 'alternativas': ['Solo masculina',
+                 'alternativas': ['Con flexión verbal',
+                                  'Solo masculina',
                                   'Variable en género y número',
-                                  'Con flexión verbal',
                                   'Solo plural',
                                   'Invariable'],
                  'correcta': 'E'},
                 {'pregunta': 'El adverbio puede modificar al verbo, al '
                              'adjetivo o:',
-                 'alternativas': ['Al sustantivo directamente',
-                                  'Al pronombre exclusivamente',
-                                  'A otro adverbio',
+                 'alternativas': ['A otro adverbio',
                                   'A la conjunción',
-                                  'Al artículo'],
-                 'correcta': 'C'},
+                                  'Al pronombre exclusivamente',
+                                  'Al artículo',
+                                  'Al sustantivo directamente'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los adverbios se clasifican, entre otras '
                              'categorías, en adverbios de lugar, tiempo y:',
-                 'alternativas': ['Persona',
-                                  'Caso',
-                                  'Número',
+                 'alternativas': ['Caso',
+                                  'Persona',
                                   'Género',
+                                  'Número',
                                   'Modo'],
                  'correcta': 'E'},
                 {'pregunta': 'En «El ayer quedó en olvido», el artículo «el» '
                              'sustantiva a:',
-                 'alternativas': ['Un adjetivo',
-                                  'Una conjunción',
+                 'alternativas': ['Un verbo',
+                                  'Un adjetivo',
                                   'Un adverbio temporal',
-                                  'Un verbo',
-                                  'Una preposición'],
+                                  'Una preposición',
+                                  'Una conjunción'],
                  'correcta': 'C'},
                 {'pregunta': 'En «Un día te entregaré unos regalos», los '
                              'artículos usados son de tipo:',
-                 'alternativas': ['Contraído',
-                                  'Determinado',
-                                  'Neutro',
+                 'alternativas': ['Neutro',
                                   'Indeterminado',
-                                  'Demostrativo'],
-                 'correcta': 'D'}],
+                                  'Contraído',
+                                  'Demostrativo',
+                                  'Determinado'],
+                 'correcta': 'B'},
+                {'pregunta': 'El artículo indeterminado «un» y sus variantes '
+                             'sirven, entre otras cosas, para:',
+                 'alternativas': ['Eliminar el sustantivo',
+                                  'Convertir el sustantivo en verbo',
+                                  'Pluralizar el sustantivo',
+                                  'Restar énfasis a la expresión',
+                                  'Dar mayor énfasis a la expresión'],
+                 'correcta': 'E'},
+                {'pregunta': 'El artículo funciona como desambiguador de '
+                             'género y número en casos como «el oyente» / '
+                             '«la oyente», es decir, como:',
+                 'alternativas': ['Sustantivador',
+                                  'Diminutivo',
+                                  'Intensificador',
+                                  'Desambiguador',
+                                  'Pluralizador'],
+                 'correcta': 'D'},
+                {'pregunta': 'Cuando dos adjetivos calificativos modifican a '
+                             'un mismo sustantivo, el artículo debe '
+                             'preceder:',
+                 'alternativas': ['Al sustantivo dos veces',
+                                  'A ambos adjetivos',
+                                  'Solo al segundo adjetivo',
+                                  'Solo al primer adjetivo',
+                                  'A ninguno de los adjetivos'],
+                 'correcta': 'D'},
+                {'pregunta': 'Por razones de eufonía, los sustantivos '
+                             'femeninos que empiezan con «a» o «ha» tónicas, '
+                             'en singular, se anteponen del artículo:',
+                 'alternativas': ['La', 'Los', 'Un', 'El', 'Las'],
+                 'correcta': 'D'},
+                {'pregunta': 'En «Las águilas», al pasar al plural, el '
+                             'sustantivo femenino que empieza con «a» tónica '
+                             'recupera el artículo:',
+                 'alternativas': ['Un',
+                                  'Uno',
+                                  'Lo',
+                                  'El',
+                                  'La forma femenina «las»'],
+                 'correcta': 'E'},
+                {'pregunta': 'El artículo es considerado sustantivador '
+                             'universal porque, al anteponerse a una palabra '
+                             'de otra categoría gramatical, la convierte en:',
+                 'alternativas': ['Pronombre',
+                                  'Sustantivo',
+                                  'Adjetivo',
+                                  'Adverbio',
+                                  'Verbo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los adverbios que indican situación o '
+                             'ubicación, como «aquí» o «lejos», se llaman '
+                             'adverbios de:',
+                 'alternativas': ['Lugar',
+                                  'Tiempo',
+                                  'Orden',
+                                  'Cantidad',
+                                  'Modo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los adverbios que indican período o suceso, '
+                             'como «ayer» o «pronto», se llaman adverbios '
+                             'de:',
+                 'alternativas': ['Lugar',
+                                  'Tiempo',
+                                  'Duda',
+                                  'Modo',
+                                  'Cantidad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los adverbios que indican manera o '
+                             'procedimiento, como «despacio» o «bien», se '
+                             'llaman adverbios de:',
+                 'alternativas': ['Modo',
+                                  'Afirmación',
+                                  'Orden',
+                                  'Lugar',
+                                  'Cantidad'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los adverbios que indican grado o porción, '
+                             'como «demasiado» o «casi», se llaman adverbios '
+                             'de:',
+                 'alternativas': ['Modo',
+                                  'Tiempo',
+                                  'Cantidad',
+                                  'Duda',
+                                  'Orden'],
+                 'correcta': 'C'},
+                {'pregunta': 'La mayoría de los adverbios terminados en '
+                             '«-mente», como «rápidamente», son adverbios '
+                             'de:',
+                 'alternativas': ['Lugar',
+                                  'Cantidad',
+                                  'Modo',
+                                  'Tiempo',
+                                  'Orden'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los adverbios que indican sucesión, como '
+                             '«primeramente» o «finalmente», se llaman '
+                             'adverbios de:',
+                 'alternativas': ['Modo',
+                                  'Cantidad',
+                                  'Lugar',
+                                  'Duda',
+                                  'Orden'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los adverbios que indican incertidumbre o '
+                             'vacilación, como «quizás» o «tal vez», se '
+                             'llaman adverbios de:',
+                 'alternativas': ['Duda',
+                                  'Modo',
+                                  'Afirmación',
+                                  'Orden',
+                                  'Negación'],
+                 'correcta': 'A'},
+                {'pregunta': 'Es incorrecto decir «Lo encontré abajo de la '
+                             'mesa»; la forma correcta es:',
+                 'alternativas': ['Lo encontré por abajo la mesa',
+                                  'Lo encontré bajo de la mesa',
+                                  'Lo encontré debajo de la mesa',
+                                  'Todas son correctas',
+                                  'Lo encontré abajo la mesa'],
+                 'correcta': 'C'},
+                {'pregunta': 'Es incorrecto decir «Íbamos adelante del '
+                             'profesor»; la forma correcta es:',
+                 'alternativas': ['Todas son correctas',
+                                  'Íbamos por adelante el profesor',
+                                  'Íbamos delante del profesor',
+                                  'Íbamos en adelante el profesor',
+                                  'Íbamos adelante al profesor'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CRITERIOS DEL ARTÍCULO',
                       'items': ['Según el criterio semántico, el artículo '
                                 'carece de significado lexical propio, pero '
@@ -5134,10 +5624,7 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El artículo siempre precede al sustantivo.',
                                 'Según el criterio morfológico, el artículo '
                                 'es una palabra variable que concuerda en '
-                                'género y número con el sustantivo.',
-                                'Según el criterio sintáctico, el artículo '
-                                'funciona como modificador directo y como '
-                                'sustantivador universal.']},
+                                'género y número con el sustantivo.']},
                      {'titulo': 'CLASIFICACIÓN DEL ARTÍCULO',
                       'items': ['El artículo determinado, o definido, hace '
                                 'referencia a un sustantivo conocido: el, '
@@ -5157,10 +5644,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'contracción al; la preposición «de» más '
                                 '«el» forma la contracción del.',
                                 'Las contracciones se usan solo ante '
-                                'sustantivos comunes.',
-                                'Si el artículo forma parte de un topónimo, '
-                                'como «El Salvador», no procede la '
-                                'contracción.']},
+                                'sustantivos comunes.']},
+                     {'titulo': 'FUNCIONES Y VALORES DEL ARTÍCULO',
+                      'items': ['El artículo determinado actúa como '
+                                'presentador del sustantivo, dando mayor '
+                                'viveza a la expresión: «La Historia del '
+                                'hombre...».',
+                                'El artículo indeterminado «un» y sus '
+                                'variantes dan mayor énfasis a la expresión: '
+                                '«Eres un candidato del pueblo».',
+                                'El artículo funciona como desambiguador de '
+                                'género y número: el oyente/la oyente; la '
+                                'caries/las caries.']},
                      {'titulo': 'EL ADVERBIO',
                       'items': ['El adverbio es una palabra invariable que '
                                 'modifica al verbo, al adjetivo o a otro '
@@ -5169,21 +5664,34 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'significado en adverbios de lugar, tiempo, '
                                 'modo, cantidad, afirmación, negación y '
                                 'duda.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Según el criterio semántico, el artículo '
-                                'carece de significado lexical pero posee '
-                                'significado Gramatical.',
-                                'El artículo, en su posición dentro de la '
-                                'oración, siempre Precede al sustantivo.',
-                                'Según el criterio morfológico, el artículo '
-                                'concuerda con el sustantivo en Género y '
-                                'número.',
-                                'El artículo que hace referencia a un '
-                                'sustantivo conocido por el hablante se '
-                                'llama artículo Determinado.',
-                                'El artículo que hace referencia a seres no '
-                                'conocidos se llama artículo Indeterminado.',
-                                'El artículo neutro del español es Lo.']}]},
+                     {'titulo': 'CLASES DE ADVERBIOS (I)',
+                      'items': ['Los adverbios de lugar indican situación o '
+                                'ubicación: aquí, allá, cerca, lejos, '
+                                'delante, detrás.',
+                                'Los adverbios de tiempo indican período o '
+                                'suceso: hoy, ayer, siempre, pronto, '
+                                'todavía, ahora.',
+                                'Los adverbios de modo indican manera o '
+                                'procedimiento: bien, mal, despacio, aprisa, '
+                                'así.']},
+                     {'titulo': 'CLASES DE ADVERBIOS (II)',
+                      'items': ['Los adverbios de orden indican sucesión: '
+                                'primeramente, seguidamente, finalmente.',
+                                'Los adverbios de afirmación indican '
+                                'certeza: sí, ciertamente, seguramente, '
+                                'efectivamente.',
+                                'Los adverbios de negación indican objeción '
+                                'o contradicción: no, nunca, jamás, '
+                                'tampoco.']},
+                     {'titulo': 'USOS CORRECTOS DEL ADVERBIO',
+                      'items': ['Es incorrecto decir «Lo encontré abajo de '
+                                'la mesa»; lo correcto es «Lo encontré '
+                                'debajo de la mesa».',
+                                'Es incorrecto decir «Íbamos adelante del '
+                                'profesor»; lo correcto es «Íbamos delante '
+                                'del profesor».',
+                                'Es incorrecto decir «Se puso atrás de ti»; '
+                                'lo correcto es «Se puso detrás de ti».']}]},
  {'num': 12,
   'titulo': 'El Verbo',
   'secciones': [{'titulo': '12.1 CRITERIOS PARA DEFINIR EL VERBO',
@@ -5227,45 +5735,82 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'Los verbos con el signo de impersonalidad '
                            'pronominal «{se}», como «se traspasa local», '
                            'también son impersonales.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según el criterio semántico, el verbo expresa '
-                           'acción, inacción, pasión, estado y {Existencia}.',
-                           'Según el criterio morfológico, el verbo presenta '
-                           'accidentes de número, persona, tiempo, modo y '
-                           '{Aspecto}.',
-                           'Según el criterio sintáctico, el verbo funciona '
-                           'como núcleo {Del predicado verbal}.',
-                           'Los verbos que sirven de nexo entre el sujeto y '
-                           'su atributo se llaman verbos {Copulativos}.',
-                           'Un ejemplo de verbo copulativo es {Ser}.',
-                           'Los verbos que expresan por sí solos una idea '
-                           'con sentido pleno se llaman verbos {No '
-                           'copulativos o predicativos}.',
-                           'Los verbos que tienen complemento directo se '
-                           'llaman verbos {Transitivos}.',
-                           'Los verbos que no tienen complemento directo se '
-                           'llaman verbos {Intransitivos}.',
-                           'Los verbos cuya acción recae sobre el mismo '
-                           'sujeto que la realiza se llaman verbos '
-                           '{Reflexivos}.',
-                           'El carácter reflexivo de un verbo se comprueba '
-                           'añadiendo el refuerzo {«Mismo(a)»}.',
-                           'Los verbos que usan pronombres como énfasis sin '
-                           'representar transitividad se llaman verbos '
-                           '{Cuasireflexivos}.',
-                           'Los verbos con sujeto plural que ejercen una '
-                           'acción mutua entre ellos se llaman verbos '
-                           '{Recíprocos}.',
-                           'El carácter recíproco de un verbo se comprueba '
-                           'con el refuerzo {«Mutuamente» o '
-                           '«recíprocamente»}.',
-                           'Los verbos cuyo sujeto se desconoce o no se '
-                           'precisa se llaman verbos {Impersonales}.',
-                           'En «Yo me caigo», a diferencia de «yo caigo», el '
-                           'pronombre «me» {Da solo énfasis, sin representar '
-                           'transitividad}.',
-                           'Los verbos «ser», «estar» y «parecer» pertenecen '
-                           'a la clase de verbos {Copulativos}.']}],
+                {'titulo': '12.5 ACCIDENTES GRAMATICALES: PERSONA, NÚMERO Y '
+                           'TIEMPO',
+                 'items': ['El accidente {número} expresa la cantidad de '
+                           'personas que realizan la acción: singular o '
+                           '{plural}.',
+                           'El accidente {persona} hace referencia a quién '
+                           'realiza la acción: primera (yo), {segunda} (tú), '
+                           'tercera (él).',
+                           'El accidente {tiempo} indica la época en que se '
+                           'realiza la acción: pasado, {presente} o futuro.',
+                           'El {tiempo simple} expresa la acción con una '
+                           'sola palabra; el tiempo {compuesto} usa el '
+                           'auxiliar haber más el participio: «ha '
+                           'viajado».']},
+                {'titulo': '12.6 ACCIDENTES GRAMATICALES: ASPECTO Y MODO',
+                 'items': ['El {aspecto} señala si la acción está concluida '
+                           'o en proceso: {imperfectivo} (cantaba, no '
+                           'concluida), perfectivo (he cantado, concluida) y '
+                           'neutro (cantaré).',
+                           'El {modo indicativo} afirma o niega la acción de '
+                           'manera real y objetiva, con seguridad: «Manuel '
+                           '{escribe} poemas».',
+                           'El {modo subjuntivo} expresa la acción de manera '
+                           'subjetiva, como deseo o duda: «Queremos que '
+                           'Manuel {escriba} poemas».',
+                           'El {modo imperativo} expresa la acción como '
+                           'orden o ruego, dirigida a la segunda persona: '
+                           '«{Estudien} con esmero, jóvenes».',
+                           'La {voz} indica si el sujeto es activo (realiza '
+                           'la acción) o {pasivo} (la recibe): «El profesor '
+                           'asesora» (activa) / «Los alumnos son asesorados» '
+                           '(pasiva).']},
+                {'titulo': '12.7 VERBOS AUXILIARES',
+                 'items': ['Los verbos {auxiliares} auxilian a los verboides '
+                           'en su conjugación: ser, {haber} y estar.',
+                           'El auxiliar {ser} sirve para formar la voz '
+                           '{pasiva}: «Un tema nuevo fue interpretado por '
+                           'Leo Dan».',
+                           'El auxiliar {haber} sirve para formar los '
+                           'tiempos {compuestos}: «Lilia ha bailado con '
+                           'Fredy».',
+                           'El auxiliar {estar} actúa como auxiliar de un '
+                           '{gerundio}: «Estoy amando apasionadamente».']},
+                {'titulo': '12.8 LOS VERBOIDES: INFINITIVO Y GERUNDIO',
+                 'items': ['Los {verboides} son formas no personales del '
+                           'verbo, porque no están conjugados en ninguna '
+                           '{persona}.',
+                           'El {infinitivo} es la forma sustantiva del '
+                           'verbo, cumple función de núcleo del sujeto y '
+                           'termina en -ar, -er, -ir.',
+                           'El infinitivo {simple} carece de verbo auxiliar: '
+                           '«El {amar} es maravilloso».',
+                           'El infinitivo {compuesto} se forma con haber más '
+                           'el participio: «El {haber} vivido contigo fue '
+                           'fascinante».',
+                           'El {gerundio} es la forma adverbial del verbo, '
+                           'funciona como circunstancial.',
+                           'El gerundio {simple} termina en -ando o -iendo: '
+                           '«Ella vive {amando}».',
+                           'El gerundio {compuesto} se forma con habiendo '
+                           'más participio: «{Habiendo} sufrido, ahora vive '
+                           'tranquilo».']},
+                {'titulo': '12.9 LOS VERBOIDES: EL PARTICIPIO',
+                 'items': ['El {participio} es la forma adjetiva y '
+                           'sustantiva del verbo, expresa acción terminada '
+                           '(valor {perfectivo}) y presenta flexiones de '
+                           'género y número.',
+                           'El participio pasivo {regular} termina en -ado, '
+                           '-ido: niño {amado}, momento vivido.',
+                           'El participio pasivo {irregular} termina en '
+                           '-cho, -to, -so, -jo, -vo: cliente {satisfecho}, '
+                           'documento escrito, libro impreso.',
+                           'El participio {activo} termina en -ante, -iente, '
+                           '-ente, -ador, -edor, -idor, y funciona como '
+                           'sustantivo o adjetivo: el {oyente}, el '
+                           'gobernador.']}],
   'cuadros': [{'titulo': '12.3 CLASES DE VERBOS SEGÚN LA TRANSITIVIDAD',
                'encabezados': ['Clase', 'Característica'],
                'filas': [['{Transitivo}', 'Tiene complemento {directo}'],
@@ -5276,168 +5821,301 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                           'Acción {mutua} entre sujetos plurales']]}],
   'preguntas': [{'pregunta': 'Según el criterio semántico, el verbo expresa '
                              'acción, inacción, pasión, estado y:',
-                 'alternativas': ['Solo lugar',
-                                  'Solo posesión',
+                 'alternativas': ['Existencia',
+                                  'Solo lugar',
                                   'Solo cantidad',
-                                  'Solo cualidad',
-                                  'Existencia'],
-                 'correcta': 'E'},
+                                  'Solo posesión',
+                                  'Solo cualidad'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el criterio morfológico, el verbo '
                              'presenta accidentes de número, persona, '
                              'tiempo, modo y:',
-                 'alternativas': ['Especie',
-                                  'Grado',
+                 'alternativas': ['Género',
                                   'Aspecto',
+                                  'Grado',
                                   'Caso',
-                                  'Género'],
-                 'correcta': 'C'},
+                                  'Especie'],
+                 'correcta': 'B'},
                 {'pregunta': 'Según el criterio sintáctico, el verbo '
                              'funciona como núcleo:',
-                 'alternativas': ['Del sujeto',
+                 'alternativas': ['Del vocativo',
                                   'Del complemento agente exclusivo',
-                                  'Del predicado verbal',
-                                  'Del vocativo',
-                                  'De la aposición'],
-                 'correcta': 'C'},
+                                  'Del sujeto',
+                                  'De la aposición',
+                                  'Del predicado verbal'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los verbos que sirven de nexo entre el sujeto '
                              'y su atributo se llaman verbos:',
                  'alternativas': ['Reflexivos',
-                                  'Transitivos',
                                   'Recíprocos',
                                   'Copulativos',
+                                  'Transitivos',
                                   'Impersonales'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'Un ejemplo de verbo copulativo es:',
-                 'alternativas': ['Comer',
+                 'alternativas': ['Correr',
                                   'Ser',
                                   'Escribir',
-                                  'Saltar',
-                                  'Correr'],
+                                  'Comer',
+                                  'Saltar'],
                  'correcta': 'B'},
                 {'pregunta': 'Los verbos que expresan por sí solos una idea '
                              'con sentido pleno se llaman verbos:',
-                 'alternativas': ['Semicopulativos únicamente',
-                                  'Auxiliares',
-                                  'Copulativos',
+                 'alternativas': ['Auxiliares',
+                                  'No copulativos o predicativos',
+                                  'Semicopulativos únicamente',
                                   'Impersonales exclusivos',
-                                  'No copulativos o predicativos'],
-                 'correcta': 'E'},
+                                  'Copulativos'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los verbos que tienen complemento directo se '
                              'llaman verbos:',
-                 'alternativas': ['Copulativos',
-                                  'Intransitivos',
+                 'alternativas': ['Recíprocos exclusivos',
                                   'Impersonales',
-                                  'Transitivos',
-                                  'Recíprocos exclusivos'],
-                 'correcta': 'D'},
+                                  'Intransitivos',
+                                  'Copulativos',
+                                  'Transitivos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los verbos que no tienen complemento directo '
                              'se llaman verbos:',
-                 'alternativas': ['Recíprocos',
-                                  'Reflexivos exclusivos',
-                                  'Intransitivos',
+                 'alternativas': ['Reflexivos exclusivos',
                                   'Transitivos',
-                                  'Copulativos'],
+                                  'Intransitivos',
+                                  'Copulativos',
+                                  'Recíprocos'],
                  'correcta': 'C'},
                 {'pregunta': 'Los verbos cuya acción recae sobre el mismo '
                              'sujeto que la realiza se llaman verbos:',
                  'alternativas': ['Recíprocos',
+                                  'Copulativos',
                                   'Reflexivos',
-                                  'Impersonales',
                                   'Transitivos exclusivos',
-                                  'Copulativos'],
-                 'correcta': 'B'},
+                                  'Impersonales'],
+                 'correcta': 'C'},
                 {'pregunta': 'El carácter reflexivo de un verbo se comprueba '
                              'añadiendo el refuerzo:',
-                 'alternativas': ['«Mutuamente»',
+                 'alternativas': ['«Mismo(a)»',
                                   '«Uno a otro»',
+                                  '«Mutuamente»',
                                   '«Entre sí»',
-                                  '«Recíprocamente»',
-                                  '«Mismo(a)»'],
-                 'correcta': 'E'},
+                                  '«Recíprocamente»'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los verbos que usan pronombres como énfasis '
                              'sin representar transitividad se llaman '
                              'verbos:',
                  'alternativas': ['Transitivos',
                                   'Recíprocos',
-                                  'Reflexivos',
                                   'Copulativos',
+                                  'Reflexivos',
                                   'Cuasireflexivos'],
                  'correcta': 'E'},
                 {'pregunta': 'Los verbos cuasireflexivos, a diferencia de '
                              'los reflexivos, NO aceptan el refuerzo:',
-                 'alternativas': ['«Mutuamente»',
-                                  '«Entre todos»',
+                 'alternativas': ['Ninguno de los anteriores',
+                                  '«Mutuamente»',
                                   '«Recíprocamente»',
                                   '«Mismo(a)»',
-                                  'Ninguno de los anteriores'],
+                                  '«Entre todos»'],
                  'correcta': 'D'},
                 {'pregunta': 'Los verbos con sujeto plural que ejercen una '
                              'acción mutua entre ellos se llaman verbos:',
-                 'alternativas': ['Cuasireflexivos',
+                 'alternativas': ['Transitivos',
+                                  'Cuasireflexivos',
                                   'Impersonales',
-                                  'Recíprocos',
                                   'Reflexivos',
-                                  'Transitivos'],
-                 'correcta': 'C'},
+                                  'Recíprocos'],
+                 'correcta': 'E'},
                 {'pregunta': 'El carácter recíproco de un verbo se comprueba '
                              'con el refuerzo:',
                  'alternativas': ['«Exclusivamente»',
                                   '«A sí mismo»',
-                                  '«Mismo(a)»',
                                   '«Solamente»',
-                                  '«Mutuamente» o «recíprocamente»'],
-                 'correcta': 'E'},
+                                  '«Mutuamente» o «recíprocamente»',
+                                  '«Mismo(a)»'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los verbos cuyo sujeto se desconoce o no se '
                              'precisa se llaman verbos:',
-                 'alternativas': ['Impersonales',
+                 'alternativas': ['Reflexivos',
                                   'Transitivos',
-                                  'Copulativos',
+                                  'Impersonales',
                                   'Recíprocos',
-                                  'Reflexivos'],
-                 'correcta': 'A'},
+                                  'Copulativos'],
+                 'correcta': 'C'},
                 {'pregunta': '«Llovió en Cusco» es un ejemplo de verbo '
                              'impersonal referido a:',
-                 'alternativas': ['Un fenómeno de la naturaleza',
-                                  'Un verbo copulativo',
-                                  'Una acción transitiva',
+                 'alternativas': ['Una acción transitiva',
                                   'Una acción recíproca',
-                                  'Un fenómeno social'],
-                 'correcta': 'A'},
+                                  'Un fenómeno de la naturaleza',
+                                  'Un fenómeno social',
+                                  'Un verbo copulativo'],
+                 'correcta': 'C'},
                 {'pregunta': '«Se traspasa local comercial» ejemplifica un '
                              'verbo impersonal con el signo:',
-                 'alternativas': ['De impersonalidad pronominal «se»',
+                 'alternativas': ['De pasiva refleja exclusiva',
                                   'De reflexividad',
-                                  'De reciprocidad',
-                                  'De pasiva refleja exclusiva',
-                                  'De copulación'],
-                 'correcta': 'A'},
+                                  'De copulación',
+                                  'De impersonalidad pronominal «se»',
+                                  'De reciprocidad'],
+                 'correcta': 'D'},
                 {'pregunta': '«Dicen que te vas a casar» ejemplifica un '
                              'verbo impersonal porque:',
-                 'alternativas': ['El sujeto es plural y conocido',
+                 'alternativas': ['Tiene complemento directo explícito',
+                                  'Expresa un fenómeno natural',
                                   'No se conoce o no se quiere dar a conocer '
                                   'el sujeto',
-                                  'Expresa un fenómeno natural',
-                                  'Tiene complemento directo explícito',
-                                  'Es un verbo copulativo'],
-                 'correcta': 'B'},
+                                  'Es un verbo copulativo',
+                                  'El sujeto es plural y conocido'],
+                 'correcta': 'C'},
                 {'pregunta': 'En «Yo me caigo», a diferencia de «yo caigo», '
                              'el pronombre «me»:',
-                 'alternativas': ['Sustituye al sujeto',
-                                  'Da solo énfasis, sin representar '
+                 'alternativas': ['Da solo énfasis, sin representar '
                                   'transitividad',
+                                  'Sustituye al sujeto',
+                                  'Indica reciprocidad',
                                   'Es un artículo neutro',
-                                  'Funciona como complemento directo',
-                                  'Indica reciprocidad'],
-                 'correcta': 'B'},
+                                  'Funciona como complemento directo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los verbos «ser», «estar» y «parecer» '
                              'pertenecen a la clase de verbos:',
                  'alternativas': ['Cuasireflexivos',
+                                  'Copulativos',
                                   'Impersonales',
                                   'Recíprocos',
-                                  'Transitivos',
-                                  'Copulativos'],
+                                  'Transitivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El accidente gramatical del verbo que expresa '
+                             'la cantidad de personas que realizan la acción '
+                             'se llama:',
+                 'alternativas': ['Persona',
+                                  'Modo',
+                                  'Tiempo',
+                                  'Aspecto',
+                                  'Número'],
+                 'correcta': 'E'},
+                {'pregunta': 'El accidente gramatical del verbo que hace '
+                             'referencia al ser que realiza la acción (yo, '
+                             'tú, él) se llama:',
+                 'alternativas': ['Voz',
+                                  'Número',
+                                  'Aspecto',
+                                  'Tiempo',
+                                  'Persona'],
+                 'correcta': 'E'},
+                {'pregunta': 'El tiempo verbal formado por el auxiliar haber '
+                             'más el participio, como «ha viajado», se llama '
+                             'tiempo:',
+                 'alternativas': ['Neutro',
+                                  'Perfectivo exclusivo',
+                                  'Imperfectivo exclusivo',
+                                  'Compuesto',
+                                  'Simple'],
+                 'correcta': 'D'},
+                {'pregunta': 'El aspecto verbal que señala que la acción '
+                             'está concluida, sin posibilidad de repetirse, '
+                             'como «he cantado», se llama aspecto:',
+                 'alternativas': ['Compuesto exclusivo',
+                                  'Neutro',
+                                  'Simple',
+                                  'Perfectivo',
+                                  'Imperfectivo'],
+                 'correcta': 'D'},
+                {'pregunta': 'El modo verbal que afirma o niega la acción de '
+                             'manera real y objetiva, con seguridad, se '
+                             'llama modo:',
+                 'alternativas': ['Imperativo',
+                                  'Potencial',
+                                  'Condicional',
+                                  'Subjuntivo',
+                                  'Indicativo'],
+                 'correcta': 'E'},
+                {'pregunta': 'El modo verbal que expresa la acción de manera '
+                             'subjetiva, como deseo o duda, se llama modo:',
+                 'alternativas': ['Imperativo',
+                                  'Neutro',
+                                  'Indicativo',
+                                  'Subjuntivo',
+                                  'Potencial'],
+                 'correcta': 'D'},
+                {'pregunta': 'El modo verbal que expresa la acción como '
+                             'orden, mandato o ruego dirigido a la segunda '
+                             'persona se llama modo:',
+                 'alternativas': ['Indicativo',
+                                  'Condicional',
+                                  'Potencial',
+                                  'Subjuntivo',
+                                  'Imperativo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la construcción sintáctica «Los alumnos son '
+                             'asesorados por el profesor», la voz empleada '
+                             'es la voz:',
+                 'alternativas': ['Pasiva',
+                                  'Impersonal',
+                                  'Media',
+                                  'Refleja',
+                                  'Activa'],
+                 'correcta': 'A'},
+                {'pregunta': 'El verbo auxiliar que sirve para formar la voz '
+                             'pasiva es:',
+                 'alternativas': ['Ir', 'Haber', 'Ser', 'Tener', 'Estar'],
+                 'correcta': 'C'},
+                {'pregunta': 'El verbo auxiliar que sirve para formar los '
+                             'tiempos compuestos es:',
+                 'alternativas': ['Estar', 'Haber', 'Ser', 'Tener', 'Ir'],
+                 'correcta': 'B'},
+                {'pregunta': 'El verbo auxiliar que actúa como auxiliar de '
+                             'un gerundio, como en «Estoy amando», es:',
+                 'alternativas': ['Ser', 'Haber', 'Andar', 'Estar', 'Ir'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las formas no personales del verbo, porque no '
+                             'están conjugadas en ninguna persona, se '
+                             'llaman:',
+                 'alternativas': ['Voces',
+                                  'Aspectos',
+                                  'Verboides',
+                                  'Accidentes',
+                                  'Modos'],
+                 'correcta': 'C'},
+                {'pregunta': 'La forma sustantiva del verbo, que cumple '
+                             'función de núcleo del sujeto y termina en -ar, '
+                             '-er, -ir, se llama:',
+                 'alternativas': ['Infinitivo',
+                                  'Gerundio',
+                                  'Voz activa',
+                                  'Participio',
+                                  'Modo indicativo'],
+                 'correcta': 'A'},
+                {'pregunta': 'La forma adverbial del verbo, que '
+                             'sintácticamente funciona como circunstancial y '
+                             'termina en -ando o -iendo, se llama:',
+                 'alternativas': ['Infinitivo',
+                                  'Voz pasiva',
+                                  'Modo subjuntivo',
+                                  'Gerundio',
+                                  'Participio'],
+                 'correcta': 'D'},
+                {'pregunta': 'La forma adjetiva y sustantiva del verbo, que '
+                             'expresa acción terminada con valor perfectivo, '
+                             'se llama:',
+                 'alternativas': ['Aspecto neutro',
+                                  'Gerundio',
+                                  'Infinitivo',
+                                  'Participio',
+                                  'Modo imperativo'],
+                 'correcta': 'D'},
+                {'pregunta': 'El participio pasivo regular termina en -ado '
+                             'o:',
+                 'alternativas': ['-cho', '-jo', '-ido', '-so', '-to'],
+                 'correcta': 'C'},
+                {'pregunta': 'El participio pasivo irregular puede terminar '
+                             'en -cho, -to, -so, -jo o:',
+                 'alternativas': ['-ante', '-vo', '-iendo', '-ado', '-ido'],
+                 'correcta': 'B'},
+                {'pregunta': 'El participio activo, que funciona como '
+                             'sustantivo o adjetivo, termina en -ante, '
+                             '-iente, -ente, -ador, -edor o:',
+                 'alternativas': ['-iendo', '-ando', '-ado', '-ido', '-idor'],
                  'correcta': 'E'}],
-  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL VERBO',
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL VERBO / VERBOS '
+                                'COPULATIVOS Y NO COPULATIVOS',
                       'items': ['Según el criterio semántico, el verbo '
                                 'expresa acción, inacción, pasión, estado, '
                                 'existencia y transformación.',
@@ -5445,16 +6123,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'una palabra variable con accidentes de '
                                 'número, persona, tiempo, modo y aspecto.',
                                 'Según el criterio sintáctico, el verbo '
-                                'funciona como núcleo del predicado '
-                                'verbal.']},
-                     {'titulo': 'VERBOS COPULATIVOS Y NO COPULATIVOS',
-                      'items': ['Los verbos copulativos no manifiestan idea '
+                                'funciona como núcleo del predicado verbal.',
+                                'Los verbos copulativos no manifiestan idea '
                                 'con sentido pleno y sirven de nexo entre el '
                                 'sujeto y su atributo: ser, estar, parecer.',
                                 'Los verbos no copulativos, o predicativos, '
                                 'expresan por sí solos idea con sentido '
                                 'pleno.']},
-                     {'titulo': 'CLASES DE VERBOS NO COPULATIVOS',
+                     {'titulo': 'CLASES DE VERBOS NO COPULATIVOS / VERBOS '
+                                'IMPERSONALES',
                       'items': ['Los verbos transitivos expresan una acción '
                                 'que transita del sujeto a un objeto, y '
                                 'tienen complemento directo.',
@@ -5464,15 +6141,7 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los verbos reflexivos tienen una acción que '
                                 'se refleja sobre el mismo sujeto; se '
                                 'comprueban con el refuerzo «mismo».',
-                                'Los verbos cuasireflexivos usan los '
-                                'pronombres me, te, se como énfasis, sin '
-                                'representar transitividad, y no aceptan el '
-                                'refuerzo «mismo».',
-                                'Los verbos recíprocos tienen sujeto plural '
-                                'con acción mutua entre ellos, y aceptan el '
-                                'refuerzo «mutuamente».']},
-                     {'titulo': 'VERBOS IMPERSONALES',
-                      'items': ['Los verbos impersonales son aquellos cuyo '
+                                'Los verbos impersonales son aquellos cuyo '
                                 'sujeto se desconoce o no se precisa con '
                                 'exactitud.',
                                 'Los verbos que se refieren a fenómenos de '
@@ -5481,22 +6150,57 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los verbos con el signo de impersonalidad '
                                 'pronominal «se», como «se traspasa local», '
                                 'también son impersonales.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Según el criterio semántico, el verbo '
-                                'expresa acción, inacción, pasión, estado y '
-                                'Existencia.',
-                                'Según el criterio morfológico, el verbo '
-                                'presenta accidentes de número, persona, '
-                                'tiempo, modo y Aspecto.',
-                                'Según el criterio sintáctico, el verbo '
-                                'funciona como núcleo Del predicado verbal.',
-                                'Los verbos que sirven de nexo entre el '
-                                'sujeto y su atributo se llaman verbos '
-                                'Copulativos.',
-                                'Un ejemplo de verbo copulativo es Ser.',
-                                'Los verbos que expresan por sí solos una '
-                                'idea con sentido pleno se llaman verbos No '
-                                'copulativos o predicativos.']}]},
+                     {'titulo': 'ACCIDENTES GRAMATICALES: PERSONA, NÚMERO Y '
+                                'TIEMPO / ACCIDENTES GRAMATICALES',
+                      'items': ['El accidente número expresa la cantidad de '
+                                'personas que realizan la acción: singular o '
+                                'plural.',
+                                'El accidente persona hace referencia a '
+                                'quién realiza la acción: primera (yo), '
+                                'segunda (tú), tercera (él).',
+                                'El accidente tiempo indica la época en que '
+                                'se realiza la acción: pasado, presente o '
+                                'futuro.',
+                                'El aspecto señala si la acción está '
+                                'concluida o en proceso: imperfectivo '
+                                '(cantaba, no concluida), perfectivo (he '
+                                'cantado, concluida) y neutro (cantaré).',
+                                'El modo indicativo afirma o niega la acción '
+                                'de manera real y objetiva, con seguridad: '
+                                '«Manuel escribe poemas».',
+                                'El modo subjuntivo expresa la acción de '
+                                'manera subjetiva, como deseo o duda: '
+                                '«Queremos que Manuel escriba poemas».']},
+                     {'titulo': 'VERBOS AUXILIARES / LOS VERBOIDES: '
+                                'INFINITIVO Y GERUNDIO',
+                      'items': ['Los verbos auxiliares auxilian a los '
+                                'verboides en su conjugación: ser, haber y '
+                                'estar.',
+                                'El auxiliar ser sirve para formar la voz '
+                                'pasiva: «Un tema nuevo fue interpretado por '
+                                'Leo Dan».',
+                                'El auxiliar haber sirve para formar los '
+                                'tiempos compuestos: «Lilia ha bailado con '
+                                'Fredy».',
+                                'Los verboides son formas no personales del '
+                                'verbo, porque no están conjugados en '
+                                'ninguna persona.',
+                                'El infinitivo es la forma sustantiva del '
+                                'verbo, cumple función de núcleo del sujeto '
+                                'y termina en -ar, -er, -ir.',
+                                'El infinitivo simple carece de verbo '
+                                'auxiliar: «El amar es maravilloso».']},
+                     {'titulo': 'LOS VERBOIDES: EL PARTICIPIO',
+                      'items': ['El participio es la forma adjetiva y '
+                                'sustantiva del verbo, expresa acción '
+                                'terminada (valor perfectivo) y presenta '
+                                'flexiones de género y número.',
+                                'El participio pasivo regular termina en '
+                                '-ado, -ido: niño amado, momento vivido.',
+                                'El participio pasivo irregular termina en '
+                                '-cho, -to, -so, -jo, -vo: cliente '
+                                'satisfecho, documento escrito, libro '
+                                'impreso.']}]},
  {'num': 13,
   'titulo': 'Conectores Lógico-Semánticos: La Preposición',
   'secciones': [{'titulo': '13.1 CRITERIOS DE LA PREPOSICIÓN',
@@ -5531,48 +6235,61 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'lugar, acción o {tiempo}.',
                            'La preposición «{para}» indica finalidad, tiempo '
                            'o {dirección}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Según el criterio semántico, la preposición '
-                           'tiene un significado de carácter {Contextual}.',
-                           'Según el criterio morfológico, la preposición se '
-                           'caracteriza por {No sufrir variaciones '
-                           'formales}.',
-                           'Según el criterio sintáctico, la preposición '
-                           'funciona como {Conectivo o nexo subordinante}.',
-                           'En «La casa de Patricia fue construida por los '
-                           'albañiles», la preposición que encabeza al '
-                           'agente es {Por}.',
-                           'Las preposiciones que encabezan al agente en voz '
-                           'pasiva son {Por y de}.',
-                           'La preposición «ante» significa {Delante de o en '
-                           'presencia de}.',
-                           'La preposición «bajo» puede indicar situación '
-                           'inferior o {Subordinación}.',
-                           'En «Con mucho estudio puedes conseguir la beca», '
-                           'la preposición «con» indica {Medio para '
-                           'conseguir algo}.',
-                           'La preposición «contra» indica principalmente '
-                           '{Oposición o ubicación}.',
-                           'En «El departamento de mi amiga», la preposición '
-                           '«de» indica {Posesión o pertenencia}.',
-                           'En «Yo soy de Apurímac», la preposición «de» '
-                           'indica {Origen o procedencia}.',
-                           'La preposición «desde» indica principio de '
-                           'tiempo o de {Lugar}.',
-                           'La preposición «hacia» indica dirección o {Una '
-                           'tendencia}.',
-                           'La preposición «hasta» puede indicar término de '
-                           'lugar, acción o {Tiempo}.',
-                           'La preposición «para» puede indicar finalidad, '
-                           'tiempo o {Dirección}.',
-                           'En el sujeto, la preposición encabeza al '
-                           '{Modificador indirecto}.',
-                           'En «Estamos pasando bajo el puente», la '
-                           'preposición «bajo» indica {Situación inferior}.',
-                           'En «Dame un té con leche», la preposición «con» '
-                           'indica {Contenido o unión de cosas}.',
-                           'En «Este informe es para mi jefe», la '
-                           'preposición «para» indica {Finalidad}.']}],
+                {'titulo': '13.3 LOCUCIONES PREPOSITIVAS',
+                 'items': ['Las {locuciones prepositivas} son agrupaciones '
+                           'de palabras que adquieren en conjunto el sentido '
+                           'y función de una {preposición}.',
+                           'El modelo más común es preposición + sustantivo '
+                           '+ preposición: a {pesar} de, en torno a, a '
+                           'través de, con motivo de.']},
+                {'titulo': '13.4 LA CONJUNCIÓN: CRITERIOS',
+                 'items': ['Según el criterio {semántico}, la conjunción '
+                           'carece de significado lexical; expresa unión, '
+                           'oposición o {consecuencia}.',
+                           'Según el criterio {morfológico}, la conjunción '
+                           'carece de accidentes gramaticales, por lo que es '
+                           '{invariable}.',
+                           'Según el criterio {sintáctico}, la conjunción '
+                           'funciona como nexo {coordinante} y subordinante, '
+                           'enlazando elementos.']},
+                {'titulo': '13.5 CONJUNCIONES COORDINANTES',
+                 'items': ['Las conjunciones {coordinantes} unen elementos '
+                           'del mismo nivel jerárquico: copulativas, '
+                           '{disyuntivas} y adversativas.',
+                           'Las conjunciones {copulativas} (y, e, ni) unen '
+                           'dos o más elementos: «Juan y Pedro vinieron»; se '
+                           'usa {e} antes de palabra que empieza con i.',
+                           'Las conjunciones {disyuntivas} (o, u, o bien) '
+                           'tienen valor de alternativa; se usa {u} antes de '
+                           'palabra que empieza con o.',
+                           'Las conjunciones {adversativas} (pero, sino, '
+                           'aunque) señalan enunciados contrapuestos; {pero} '
+                           'indica restricción y {sino} expresa '
+                           'incompatibilidad.']},
+                {'titulo': '13.6 CONJUNCIONES SUBORDINANTES (I)',
+                 'items': ['Las conjunciones {subordinantes} enlazan dos '
+                           'elementos de distinta jerarquía.',
+                           'Las {causales} (porque, como, pues) establecen '
+                           'relación causa-efecto: «Estudio {porque} quiero '
+                           'aprobar».',
+                           'Las {condicionales} (si, siempre que) establecen '
+                           'que una proposición es condición de otra: «{Si} '
+                           'no estudias, no aprobarás».',
+                           'Las {concesivas} (aunque, si bien, a pesar de) '
+                           'introducen un inconveniente que no impide la '
+                           'acción: «{Aunque} estudie, no aprobaré».']},
+                {'titulo': '13.7 CONJUNCIONES SUBORDINANTES (II)',
+                 'items': ['Las {comparativas} (como, que) denotan '
+                           'comparación: «No es tan listo {como} dicen».',
+                           'Las {consecutivas} (tal... que, tan... que) '
+                           'muestran la consecuencia de algo cuantificado: '
+                           '«Hacía tanto frío {que} no se podía salir».',
+                           'Las {finales} (para que, a fin de que) indican '
+                           'finalidad o propósito: «Toca el piano {para que} '
+                           'vean lo bien que lo haces».',
+                           'Las {ilativas} (luego, conque, en consecuencia) '
+                           'introducen una oración como consecuencia de la '
+                           'anterior: «Pienso, {luego} existo».']}],
   'cuadros': [{'titulo': '13.2 LAS PREPOSICIONES DEL ESPAÑOL',
                'encabezados': ['Grupo', 'Preposiciones'],
                'filas': [['Básicas', 'a, ante, bajo, {con}, contra, de'],
@@ -5581,155 +6298,286 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Arcaicas}', 'so, cabe']]}],
   'preguntas': [{'pregunta': 'Según el criterio semántico, la preposición '
                              'tiene un significado de carácter:',
-                 'alternativas': ['Morfológico puro',
-                                  'Inexistente',
+                 'alternativas': ['Contextual',
+                                  'Morfológico puro',
                                   'Fonológico exclusivo',
-                                  'Fijo y absoluto',
-                                  'Contextual'],
-                 'correcta': 'E'},
+                                  'Inexistente',
+                                  'Fijo y absoluto'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el criterio morfológico, la preposición '
                              'se caracteriza por:',
-                 'alternativas': ['Cambiar según el sujeto',
+                 'alternativas': ['No sufrir variaciones formales',
                                   'Concordar en persona',
-                                  'No sufrir variaciones formales',
+                                  'Presentar variaciones de género y número',
                                   'Tener flexión verbal',
-                                  'Presentar variaciones de género y número'],
-                 'correcta': 'C'},
+                                  'Cambiar según el sujeto'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el criterio sintáctico, la preposición '
                              'funciona como:',
-                 'alternativas': ['Núcleo del sujeto',
-                                  'Conectivo o nexo subordinante',
-                                  'Sujeto de la oración',
+                 'alternativas': ['Núcleo del predicado',
                                   'Modificador indirecto exclusivo',
-                                  'Núcleo del predicado'],
-                 'correcta': 'B'},
+                                  'Sujeto de la oración',
+                                  'Núcleo del sujeto',
+                                  'Conectivo o nexo subordinante'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «La casa de Patricia fue construida por los '
                              'albañiles», la preposición que encabeza al '
                              'agente es:',
-                 'alternativas': ['Por', 'Con', 'Para', 'De', 'En'],
-                 'correcta': 'A'},
+                 'alternativas': ['Con', 'De', 'En', 'Para', 'Por'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las preposiciones que encabezan al agente en '
                              'voz pasiva son:',
                  'alternativas': ['Con y sin',
-                                  'Por y de',
-                                  'A y ante',
                                   'Para y desde',
-                                  'Entre y hacia'],
-                 'correcta': 'B'},
+                                  'Entre y hacia',
+                                  'A y ante',
+                                  'Por y de'],
+                 'correcta': 'E'},
                 {'pregunta': 'La preposición «ante» significa:',
-                 'alternativas': ['Lejos de',
+                 'alternativas': ['Delante de o en presencia de',
                                   'Junto a',
                                   'Después de',
-                                  'Delante de o en presencia de',
+                                  'Lejos de',
                                   'Debajo de'],
-                 'correcta': 'D'},
+                 'correcta': 'A'},
                 {'pregunta': 'La preposición «bajo» puede indicar situación '
                              'inferior o:',
-                 'alternativas': ['Finalidad',
+                 'alternativas': ['Subordinación',
                                   'Compañía',
-                                  'Origen',
-                                  'Subordinación',
-                                  'Tiempo exclusivo'],
-                 'correcta': 'D'},
+                                  'Finalidad',
+                                  'Tiempo exclusivo',
+                                  'Origen'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «Con mucho estudio puedes conseguir la '
                              'beca», la preposición «con» indica:',
                  'alternativas': ['Tiempo',
-                                  'Oposición',
-                                  'Contenido',
                                   'Compañía',
-                                  'Medio para conseguir algo'],
-                 'correcta': 'E'},
+                                  'Medio para conseguir algo',
+                                  'Contenido',
+                                  'Oposición'],
+                 'correcta': 'C'},
                 {'pregunta': 'La preposición «contra» indica principalmente:',
-                 'alternativas': ['Procedencia',
+                 'alternativas': ['Posesión',
                                   'Compañía',
                                   'Finalidad',
                                   'Oposición o ubicación',
-                                  'Posesión'],
+                                  'Procedencia'],
                  'correcta': 'D'},
                 {'pregunta': 'En «El departamento de mi amiga», la '
                              'preposición «de» indica:',
-                 'alternativas': ['Posesión o pertenencia',
-                                  'Tiempo',
+                 'alternativas': ['Tiempo',
+                                  'Material',
                                   'Tema',
-                                  'Origen',
-                                  'Material'],
-                 'correcta': 'A'},
+                                  'Posesión o pertenencia',
+                                  'Origen'],
+                 'correcta': 'D'},
                 {'pregunta': 'En «Yo soy de Apurímac», la preposición «de» '
                              'indica:',
-                 'alternativas': ['Tiempo',
-                                  'Origen o procedencia',
-                                  'Tema o asunto',
-                                  'Posesión',
-                                  'Material'],
-                 'correcta': 'B'},
-                {'pregunta': 'La preposición «desde» indica principio de '
-                             'tiempo o de:',
-                 'alternativas': ['Compañía',
-                                  'Oposición',
-                                  'Finalidad',
-                                  'Lugar',
-                                  'Modo'],
-                 'correcta': 'D'},
-                {'pregunta': 'La preposición «hacia» indica dirección o:',
-                 'alternativas': ['Material',
-                                  'Compañía',
-                                  'Oposición',
-                                  'Una tendencia',
-                                  'Posesión'],
-                 'correcta': 'D'},
-                {'pregunta': 'La preposición «hasta» puede indicar término '
-                             'de lugar, acción o:',
-                 'alternativas': ['Material',
-                                  'Compañía',
+                 'alternativas': ['Tema o asunto',
                                   'Tiempo',
                                   'Posesión',
-                                  'Oposición'],
+                                  'Material',
+                                  'Origen o procedencia'],
+                 'correcta': 'E'},
+                {'pregunta': 'La preposición «desde» indica principio de '
+                             'tiempo o de:',
+                 'alternativas': ['Modo',
+                                  'Compañía',
+                                  'Oposición',
+                                  'Finalidad',
+                                  'Lugar'],
+                 'correcta': 'E'},
+                {'pregunta': 'La preposición «hacia» indica dirección o:',
+                 'alternativas': ['Compañía',
+                                  'Una tendencia',
+                                  'Material',
+                                  'Oposición',
+                                  'Posesión'],
+                 'correcta': 'B'},
+                {'pregunta': 'La preposición «hasta» puede indicar término '
+                             'de lugar, acción o:',
+                 'alternativas': ['Oposición',
+                                  'Material',
+                                  'Tiempo',
+                                  'Compañía',
+                                  'Posesión'],
                  'correcta': 'C'},
                 {'pregunta': 'La preposición «para» puede indicar finalidad, '
                              'tiempo o:',
                  'alternativas': ['Oposición',
-                                  'Material',
+                                  'Dirección',
                                   'Posesión exclusiva',
                                   'Compañía',
-                                  'Dirección'],
-                 'correcta': 'E'},
+                                  'Material'],
+                 'correcta': 'B'},
                 {'pregunta': 'En el sujeto, la preposición encabeza al:',
-                 'alternativas': ['Modificador indirecto',
+                 'alternativas': ['Vocativo',
+                                  'Núcleo del sujeto',
+                                  'Modificador indirecto',
                                   'Predicado nominal',
-                                  'Vocativo',
-                                  'Complemento directo',
-                                  'Núcleo del sujeto'],
-                 'correcta': 'A'},
+                                  'Complemento directo'],
+                 'correcta': 'C'},
                 {'pregunta': '«So» y «cabe» son ejemplos de preposiciones:',
-                 'alternativas': ['Arcaicas',
-                                  'Modernas de uso frecuente',
-                                  'Neológicas',
+                 'alternativas': ['Modernas de uso frecuente',
                                   'Extranjeras',
+                                  'Arcaicas',
+                                  'Neológicas',
                                   'Compuestas'],
-                 'correcta': 'A'},
+                 'correcta': 'C'},
                 {'pregunta': 'En «Estamos pasando bajo el puente», la '
                              'preposición «bajo» indica:',
-                 'alternativas': ['Situación inferior',
-                                  'Finalidad',
-                                  'Tiempo',
+                 'alternativas': ['Subordinación',
                                   'Compañía',
-                                  'Subordinación'],
-                 'correcta': 'A'},
+                                  'Situación inferior',
+                                  'Finalidad',
+                                  'Tiempo'],
+                 'correcta': 'C'},
                 {'pregunta': 'En «Dame un té con leche», la preposición '
                              '«con» indica:',
                  'alternativas': ['Contenido o unión de cosas',
-                                  'Tiempo',
                                   'Medio',
-                                  'Compañía de personas',
-                                  'Oposición'],
+                                  'Tiempo',
+                                  'Oposición',
+                                  'Compañía de personas'],
                  'correcta': 'A'},
                 {'pregunta': 'En «Este informe es para mi jefe», la '
                              'preposición «para» indica:',
-                 'alternativas': ['Tiempo',
+                 'alternativas': ['Origen',
                                   'Finalidad',
-                                  'Origen',
                                   'Compañía',
-                                  'Dirección'],
+                                  'Dirección',
+                                  'Tiempo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las agrupaciones de palabras que adquieren en '
+                             'conjunto el sentido y función de una '
+                             'preposición se llaman:',
+                 'alternativas': ['Conectores lógicos',
+                                  'Frases nominales',
+                                  'Locuciones conjuntivas',
+                                  'Locuciones adverbiales',
+                                  'Locuciones prepositivas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según el criterio semántico, la conjunción se '
+                             'caracteriza por:',
+                 'alternativas': ['Indicar posesión',
+                                  'Carecer de significado lexical',
+                                  'Ser siempre variable',
+                                  'Tener significado lexical propio',
+                                  'Funcionar como sustantivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el criterio morfológico, la conjunción '
+                             'es una palabra:',
+                 'alternativas': ['Con género gramatical',
+                                  'Invariable',
+                                  'Con flexión verbal',
+                                  'Variable en género y número',
+                                  'Con grados de comparación'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las conjunciones que unen elementos del mismo '
+                             'nivel jerárquico se llaman conjunciones:',
+                 'alternativas': ['Coordinantes',
+                                  'Subordinantes',
+                                  'Enfáticas',
+                                  'Interrogativas',
+                                  'Correlativas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las conjunciones y, e, ni, que unen dos o más '
+                             'elementos, se llaman conjunciones:',
+                 'alternativas': ['Disyuntivas',
+                                  'Adversativas',
+                                  'Consecutivas',
+                                  'Causales',
+                                  'Copulativas'],
+                 'correcta': 'E'},
+                {'pregunta': 'La conjunción copulativa «y» se escribe «e» '
+                             'cuando la siguiente palabra empieza con:',
+                 'alternativas': ['La vocal i',
+                                  'La letra u',
+                                  'La letra o',
+                                  'La letra a',
+                                  'Cualquier consonante'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las conjunciones o, u, o bien, que tienen '
+                             'valor de alternativa, se llaman conjunciones:',
+                 'alternativas': ['Finales',
+                                  'Disyuntivas',
+                                  'Concesivas',
+                                  'Adversativas',
+                                  'Copulativas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las conjunciones pero, sino, aunque, que '
+                             'señalan enunciados contrapuestos, se llaman '
+                             'conjunciones:',
+                 'alternativas': ['Causales',
+                                  'Comparativas',
+                                  'Disyuntivas',
+                                  'Copulativas',
+                                  'Adversativas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las conjunciones porque, como, pues, que '
+                             'establecen una relación de causa-efecto, se '
+                             'llaman conjunciones:',
+                 'alternativas': ['Condicionales',
+                                  'Consecutivas',
+                                  'Finales',
+                                  'Concesivas',
+                                  'Causales'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las conjunciones si, siempre que, siempre y '
+                             'cuando, que establecen que una proposición es '
+                             'condición de otra, se llaman conjunciones:',
+                 'alternativas': ['Condicionales',
+                                  'Causales',
+                                  'Concesivas',
+                                  'Comparativas',
+                                  'Ilativas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las conjunciones aunque, si bien, a pesar de, '
+                             'que introducen un inconveniente que no impide '
+                             'la acción, se llaman conjunciones:',
+                 'alternativas': ['Causales',
+                                  'Concesivas',
+                                  'Condicionales',
+                                  'Consecutivas',
+                                  'Finales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las conjunciones que denotan comparación entre '
+                             'dos o más frases, como «como» o «que», se '
+                             'llaman conjunciones:',
+                 'alternativas': ['Comparativas',
+                                  'Consecutivas',
+                                  'Finales',
+                                  'Ilativas',
+                                  'Concesivas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las conjunciones que introducen una '
+                             'proposición mostrando la consecuencia de algo '
+                             'cuantificado, como «tan... que», se llaman '
+                             'conjunciones:',
+                 'alternativas': ['Ilativas',
+                                  'Finales',
+                                  'Causales',
+                                  'Comparativas',
+                                  'Consecutivas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las conjunciones para que, a fin de que, que '
+                             'indican finalidad o propósito, se llaman '
+                             'conjunciones:',
+                 'alternativas': ['Comparativas',
+                                  'Consecutivas',
+                                  'Causales',
+                                  'Finales',
+                                  'Concesivas'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las conjunciones luego, conque, en '
+                             'consecuencia, que introducen una oración como '
+                             'consecuencia de la anterior, se llaman '
+                             'conjunciones:',
+                 'alternativas': ['Comparativas',
+                                  'Ilativas',
+                                  'Causales',
+                                  'Concesivas',
+                                  'Finales'],
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CRITERIOS DE LA PREPOSICIÓN',
                       'items': ['Según el criterio semántico, la preposición '
@@ -5740,39 +6588,63 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'carece de morfemas.',
                                 'Según el criterio sintáctico, la '
                                 'preposición funciona como conectivo o nexo '
-                                'subordinante.',
-                                'En el predicado, las preposiciones por y de '
-                                'encabezan al agente, solo en voz pasiva.']},
+                                'subordinante.']},
                      {'titulo': 'USOS DE ALGUNAS PREPOSICIONES',
                       'items': ['La preposición «a» puede indicar dirección, '
                                 'lugar, tiempo o modo.',
                                 'La preposición «ante» significa «delante» o '
                                 '«en presencia de».',
                                 'La preposición «bajo» puede indicar '
-                                'situación inferior o subordinación.',
-                                'La preposición «con» puede indicar '
-                                'compañía, unión, medio o contenido.',
-                                'La preposición «contra» indica oposición o '
-                                'ubicación.',
-                                'La preposición «de» puede indicar posesión, '
-                                'origen, material o tema.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Según el criterio semántico, la preposición '
-                                'tiene un significado de carácter '
-                                'Contextual.',
+                                'situación inferior o subordinación.']},
+                     {'titulo': 'LOCUCIONES PREPOSITIVAS',
+                      'items': ['Las locuciones prepositivas son '
+                                'agrupaciones de palabras que adquieren en '
+                                'conjunto el sentido y función de una '
+                                'preposición.',
+                                'El modelo más común es preposición + '
+                                'sustantivo + preposición: a pesar de, en '
+                                'torno a, a través de, con motivo de.']},
+                     {'titulo': 'LA CONJUNCIÓN: CRITERIOS',
+                      'items': ['Según el criterio semántico, la conjunción '
+                                'carece de significado lexical; expresa '
+                                'unión, oposición o consecuencia.',
                                 'Según el criterio morfológico, la '
-                                'preposición se caracteriza por No sufrir '
-                                'variaciones formales.',
-                                'Según el criterio sintáctico, la '
-                                'preposición funciona como Conectivo o nexo '
-                                'subordinante.',
-                                'En «La casa de Patricia fue construida por '
-                                'los albañiles», la preposición que encabeza '
-                                'al agente es Por.',
-                                'Las preposiciones que encabezan al agente '
-                                'en voz pasiva son Por y de.',
-                                'La preposición «ante» significa Delante de '
-                                'o en presencia de.']}]},
+                                'conjunción carece de accidentes '
+                                'gramaticales, por lo que es invariable.',
+                                'Según el criterio sintáctico, la conjunción '
+                                'funciona como nexo coordinante y '
+                                'subordinante, enlazando elementos.']},
+                     {'titulo': 'CONJUNCIONES COORDINANTES',
+                      'items': ['Las conjunciones coordinantes unen '
+                                'elementos del mismo nivel jerárquico: '
+                                'copulativas, disyuntivas y adversativas.',
+                                'Las conjunciones copulativas (y, e, ni) '
+                                'unen dos o más elementos: «Juan y Pedro '
+                                'vinieron»; se usa e antes de palabra que '
+                                'empieza con i.',
+                                'Las conjunciones disyuntivas (o, u, o bien) '
+                                'tienen valor de alternativa; se usa u antes '
+                                'de palabra que empieza con o.']},
+                     {'titulo': 'CONJUNCIONES SUBORDINANTES (I)',
+                      'items': ['Las conjunciones subordinantes enlazan dos '
+                                'elementos de distinta jerarquía.',
+                                'Las causales (porque, como, pues) '
+                                'establecen relación causa-efecto: «Estudio '
+                                'porque quiero aprobar».',
+                                'Las condicionales (si, siempre que) '
+                                'establecen que una proposición es condición '
+                                'de otra: «Si no estudias, no aprobarás».']},
+                     {'titulo': 'CONJUNCIONES SUBORDINANTES (II)',
+                      'items': ['Las comparativas (como, que) denotan '
+                                'comparación: «No es tan listo como dicen».',
+                                'Las consecutivas (tal... que, tan... que) '
+                                'muestran la consecuencia de algo '
+                                'cuantificado: «Hacía tanto frío que no se '
+                                'podía salir».',
+                                'Las finales (para que, a fin de que) '
+                                'indican finalidad o propósito: «Toca el '
+                                'piano para que vean lo bien que lo '
+                                'haces».']}]},
  {'num': 14,
   'titulo': 'La Sintaxis y la Oración Gramatical',
   'secciones': [{'titulo': '14.1 CONCEPTO DE SINTAXIS Y SINTAGMA',
@@ -5807,57 +6679,88 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'el constructor de Machu Picchu».',
                            'La aposición {especificativa} singulariza al '
                            'nombre y no va entre {comas}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El término «sintaxis» es de origen griego y '
-                           'significa {Orden o disposición}.',
-                           'La sintaxis, como disciplina lingüística, '
-                           'estudia las relaciones entre los elementos de '
-                           'una frase y {Las funciones que desempeña cada '
-                           'palabra}.',
-                           'La unidad básica de la sintaxis es {El '
-                           'sintagma}.',
-                           'El sintagma se define como una unidad formada '
-                           'por palabras dotadas de sentido y valor '
-                           '{Funcional}.',
-                           'El sintagma nominal también se conoce como '
-                           '{Frase nominal o grupo nominal}.',
-                           'El núcleo del sintagma nominal siempre es {Un '
-                           'sustantivo o palabra sustantivada}.',
-                           'Los modificadores del sintagma nominal dependen '
-                           'de {El núcleo}.',
-                           'El modificador que se une al núcleo del SN sin '
-                           'ningún enlace se llama {Modificador directo}.',
-                           'Las palabras que funcionan típicamente como '
-                           'modificador directo son {Los artículos y '
-                           'adjetivos}.',
-                           'El modificador que se une al núcleo mediante '
-                           'preposiciones se llama {Modificador indirecto}.',
-                           'El modificador del SN que tiene el mismo valor '
-                           'que el núcleo y puede conmutarse con él es {La '
-                           'aposición}.',
-                           'La aposición que se separa por comas y es '
-                           'sinónima del núcleo se llama aposición '
-                           '{Explicativa}.',
-                           'En «Pachacútec, el constructor de Machu Picchu, '
-                           'fue el noveno Inca», el segmento entre comas es '
-                           'una aposición {Explicativa}.',
-                           'La aposición que singulariza al nombre y no va '
-                           'entre comas se llama aposición {Especificativa}.',
-                           'En «El río Vilcanota recorre el Valle Sagrado», '
-                           '«Vilcanota» funciona como una aposición '
-                           '{Especificativa}.',
-                           'En «El estudiante proactivo logró su propósito», '
-                           '«proactivo» funciona como {Modificador directo}.',
-                           'En «Los estudiantes con empeño logran todo», '
-                           '«con empeño» funciona como {Modificador '
-                           'indirecto}.',
-                           'En «Cusco, capital histórica del Perú, es una '
-                           'ciudad milenaria», «capital histórica del Perú» '
-                           'es una aposición {Explicativa}.',
-                           'Ortográficamente, la aposición explicativa '
-                           'siempre aparece {Separada entre comas}.',
-                           'Semánticamente, los elementos de una aposición '
-                           'explicativa son {Sinónimos}.']}],
+                {'titulo': '14.4 EL SINTAGMA VERBAL Y SU NÚCLEO',
+                 'items': ['El {sintagma verbal} (SV), o predicado, tiene '
+                           'como núcleo a un {verbo} que concuerda con el '
+                           'núcleo del sujeto.',
+                           'El {núcleo} del SV es el verbo que subordina a '
+                           'las demás palabras del predicado.']},
+                {'titulo': '14.5 COMPLEMENTOS MONOVALENTES DEL VERBO',
+                 'items': ['El {complemento directo} (CD) es el ser sobre el '
+                           'que recae la acción verbal; puede sustituirse '
+                           'por lo, la, los, {las}: «El joven compró libros» '
+                           '→ «El joven los compró».',
+                           'El {complemento indirecto} (CI) es el ser que se '
+                           'beneficia o perjudica con la acción; se encabeza '
+                           'con «{a}» o «para»: «El docente le compró '
+                           'libros».',
+                           'El {complemento circunstancial} (CC) complementa '
+                           'el verbo con matices de lugar, {tiempo}, modo, '
+                           'causa, compañía o finalidad.',
+                           'El {complemento agente} (CAg) se encabeza con la '
+                           'preposición «{por}»; aparece en oraciones en voz '
+                           'pasiva: «Los muros fueron intervenidos por un '
+                           'equipo».',
+                           'El {complemento de régimen} (C.REG) viene '
+                           'introducido por una preposición exigida por el '
+                           'propio {verbo}: «Se apoderó de la ciudad».']},
+                {'titulo': '14.6 COMPLEMENTOS BIVALENTES: PREDICATIVO Y '
+                           'ATRIBUTO',
+                 'items': ['El {predicativo} (PVO) complementa a un verbo '
+                           '{no copulativo}, expresando cualidad o estado '
+                           'del sujeto o del CD: «El niño se despertó '
+                           '{atemorizado}».',
+                           'El {atributo} complementa a un verbo '
+                           '{copulativo} o semicopulativo: «El mes de '
+                           'febrero es {lluvioso}».',
+                           'El atributo es sustituible por el pronombre '
+                           'invariable «{lo}»; el predicativo no lo es.',
+                           'El {predicado nominal} tiene como núcleo un '
+                           'sustantivo, adjetivo o adverbio; el predicado '
+                           '{verbal} tiene como núcleo un verbo conjugado.']},
+                {'titulo': '14.7 CONCEPTO Y CARACTERÍSTICAS DE LA ORACIÓN',
+                 'items': ['La {oración} es la unidad de predicación que '
+                           'pone en relación un sujeto con un predicado '
+                           'verbal; expresa un {juicio} completo.',
+                           'La oración posee sentido {completo}, autonomía '
+                           'sintáctica, entonación propia, y generalmente '
+                           'está dotada de verbo {conjugado}.']},
+                {'titulo': '14.8 ORACIONES UNIMEMBRES Y BIMEMBRES',
+                 'items': ['Las oraciones {unimembres} no poseen sujeto ni '
+                           'predicado, pero tienen sentido {completo}.',
+                           'Las unimembres {sin verbo} o contextuales '
+                           'adquieren valor oracional en un contexto: '
+                           '«¡{Hola}!», «Buenos días».',
+                           'Las unimembres con verbos {impersonales} carecen '
+                           'de sujeto: «{Amaneció} nublado», «Hay muchos '
+                           'alumnos».',
+                           'Las oraciones {bimembres} poseen sujeto y '
+                           'predicado, expreso o {tácito}.']},
+                {'titulo': '14.9 ORACIONES SIMPLES Y COMPUESTAS',
+                 'items': ['Las oraciones {simples} presentan un solo verbo '
+                           '{principal} o conjugado, sin proposiciones.',
+                           'Las oraciones {compuestas} constan de dos o más '
+                           '{verbos} o proposiciones.']},
+                {'titulo': '14.10 ORACIONES SEGÚN LA ACTITUD DEL HABLANTE '
+                           '(I)',
+                 'items': ['Las oraciones {enunciativas} o declarativas '
+                           'afirman o niegan hechos de forma {objetiva}: '
+                           '«Hoy hace frío».',
+                           'Las oraciones {desiderativas} manifiestan un '
+                           'deseo: «{Ojalá} lleguen pronto».',
+                           'Las oraciones {dubitativas} expresan duda o '
+                           'probabilidad: «{Tal vez} tengas razón».']},
+                {'titulo': '14.11 ORACIONES SEGÚN LA ACTITUD DEL HABLANTE '
+                           '(II)',
+                 'items': ['Las oraciones {interrogativas} expresan una '
+                           'pregunta, directa o {indirecta}: «¿Cuál es tu '
+                           'nombre?»',
+                           'Las oraciones {imperativas} o exhortativas '
+                           'presentan un mandato u orden, con modo '
+                           '{imperativo}: «Abre la ventana».',
+                           'Las oraciones {exclamativas} expresan emociones, '
+                           'con signos de {exclamación}: «¡Qué susto '
+                           'pasamos!»']}],
   'cuadros': [{'titulo': '14.3 MODIFICADORES DEL SINTAGMA NOMINAL',
                'encabezados': ['Modificador', 'Se une al núcleo'],
                'filas': [['{Directo}', '{Sin} enlace'],
@@ -5868,79 +6771,79 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                  'alternativas': ['Comunicación',
                                   'Orden o disposición',
                                   'Significado',
-                                  'Sonido',
-                                  'Escritura'],
+                                  'Escritura',
+                                  'Sonido'],
                  'correcta': 'B'},
                 {'pregunta': 'La sintaxis, como disciplina lingüística, '
                              'estudia las relaciones entre los elementos de '
                              'una frase y:',
                  'alternativas': ['Solo su ortografía',
                                   'Solo su significado aislado',
-                                  'Solo su origen etimológico',
                                   'Solo su pronunciación',
-                                  'Las funciones que desempeña cada palabra'],
-                 'correcta': 'E'},
+                                  'Las funciones que desempeña cada palabra',
+                                  'Solo su origen etimológico'],
+                 'correcta': 'D'},
                 {'pregunta': 'La unidad básica de la sintaxis es:',
-                 'alternativas': ['El morfema',
+                 'alternativas': ['La sílaba',
+                                  'El morfema',
                                   'El grafema',
-                                  'La sílaba',
                                   'El fonema',
                                   'El sintagma'],
                  'correcta': 'E'},
                 {'pregunta': 'El sintagma se define como una unidad formada '
                              'por palabras dotadas de sentido y valor:',
-                 'alternativas': ['Ortográfico',
-                                  'Funcional',
-                                  'Semántico aislado',
+                 'alternativas': ['Semántico aislado',
+                                  'Morfológico exclusivo',
                                   'Fonológico',
-                                  'Morfológico exclusivo'],
-                 'correcta': 'B'},
+                                  'Funcional',
+                                  'Ortográfico'],
+                 'correcta': 'D'},
                 {'pregunta': 'El sintagma nominal también se conoce como:',
-                 'alternativas': ['Predicado nominal exclusivo',
-                                  'Frase nominal o grupo nominal',
+                 'alternativas': ['Vocativo',
                                   'Complemento circunstancial',
-                                  'Sintagma verbal',
-                                  'Vocativo'],
-                 'correcta': 'B'},
+                                  'Frase nominal o grupo nominal',
+                                  'Predicado nominal exclusivo',
+                                  'Sintagma verbal'],
+                 'correcta': 'C'},
                 {'pregunta': 'El núcleo del sintagma nominal siempre es:',
                  'alternativas': ['Un adverbio',
+                                  'Una conjunción',
                                   'Una preposición',
                                   'Un sustantivo o palabra sustantivada',
-                                  'Una conjunción',
                                   'Un verbo'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los modificadores del sintagma nominal '
                              'dependen de:',
-                 'alternativas': ['El predicado verbal',
-                                  'El verbo principal',
-                                  'El núcleo',
+                 'alternativas': ['El núcleo',
                                   'El complemento circunstancial',
-                                  'El sujeto de otra oración'],
-                 'correcta': 'C'},
+                                  'El verbo principal',
+                                  'El sujeto de otra oración',
+                                  'El predicado verbal'],
+                 'correcta': 'A'},
                 {'pregunta': 'El modificador que se une al núcleo del SN sin '
                              'ningún enlace se llama:',
-                 'alternativas': ['Aposición explicativa',
+                 'alternativas': ['Modificador indirecto',
+                                  'Aposición especificativa',
+                                  'Aposición explicativa',
                                   'Modificador directo',
-                                  'Modificador indirecto',
-                                  'Complemento agente',
-                                  'Aposición especificativa'],
-                 'correcta': 'B'},
+                                  'Complemento agente'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las palabras que funcionan típicamente como '
                              'modificador directo son:',
-                 'alternativas': ['Los verbos',
-                                  'Las preposiciones',
+                 'alternativas': ['Los adverbios',
                                   'Las conjunciones',
-                                  'Los adverbios',
-                                  'Los artículos y adjetivos'],
-                 'correcta': 'E'},
+                                  'Los artículos y adjetivos',
+                                  'Las preposiciones',
+                                  'Los verbos'],
+                 'correcta': 'C'},
                 {'pregunta': 'El modificador que se une al núcleo mediante '
                              'preposiciones se llama:',
-                 'alternativas': ['Núcleo secundario',
+                 'alternativas': ['Modificador indirecto',
                                   'Vocativo',
-                                  'Modificador indirecto',
-                                  'Modificador directo',
-                                  'Aposición'],
-                 'correcta': 'C'},
+                                  'Aposición',
+                                  'Núcleo secundario',
+                                  'Modificador directo'],
+                 'correcta': 'A'},
                 {'pregunta': 'El modificador del SN que tiene el mismo valor '
                              'que el núcleo y puede conmutarse con él es:',
                  'alternativas': ['El modificador directo',
@@ -5951,131 +6854,315 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                  'correcta': 'B'},
                 {'pregunta': 'La aposición que se separa por comas y es '
                              'sinónima del núcleo se llama aposición:',
-                 'alternativas': ['Neutra',
+                 'alternativas': ['Especificativa',
                                   'Indirecta',
-                                  'Directa',
                                   'Explicativa',
-                                  'Especificativa'],
-                 'correcta': 'D'},
+                                  'Directa',
+                                  'Neutra'],
+                 'correcta': 'C'},
                 {'pregunta': 'En «Pachacútec, el constructor de Machu '
                              'Picchu, fue el noveno Inca», el segmento entre '
                              'comas es una aposición:',
-                 'alternativas': ['Neutra',
-                                  'Explicativa',
+                 'alternativas': ['Explicativa',
+                                  'Neutra',
                                   'Indirecta',
                                   'Especificativa',
                                   'Directa'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'La aposición que singulariza al nombre y no va '
                              'entre comas se llama aposición:',
-                 'alternativas': ['Explicativa',
-                                  'Indirecta',
+                 'alternativas': ['Indirecta',
                                   'Neutra',
-                                  'Especificativa',
-                                  'Directa'],
-                 'correcta': 'D'},
+                                  'Explicativa',
+                                  'Directa',
+                                  'Especificativa'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «El río Vilcanota recorre el Valle '
                              'Sagrado», «Vilcanota» funciona como una '
                              'aposición:',
-                 'alternativas': ['Especificativa',
-                                  'Directa',
+                 'alternativas': ['Neutra',
                                   'Explicativa',
+                                  'Directa',
                                   'Indirecta',
-                                  'Neutra'],
-                 'correcta': 'A'},
+                                  'Especificativa'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «El estudiante proactivo logró su '
                              'propósito», «proactivo» funciona como:',
-                 'alternativas': ['Núcleo del SN',
-                                  'Modificador directo',
+                 'alternativas': ['Vocativo',
                                   'Modificador indirecto',
-                                  'Vocativo',
+                                  'Núcleo del SN',
+                                  'Modificador directo',
                                   'Aposición'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'En «Los estudiantes con empeño logran todo», '
                              '«con empeño» funciona como:',
-                 'alternativas': ['Núcleo',
+                 'alternativas': ['Modificador indirecto',
                                   'Aposición explicativa',
+                                  'Núcleo',
                                   'Modificador directo',
-                                  'Vocativo',
-                                  'Modificador indirecto'],
-                 'correcta': 'E'},
+                                  'Vocativo'],
+                 'correcta': 'A'},
                 {'pregunta': 'En «Cusco, capital histórica del Perú, es una '
                              'ciudad milenaria», «capital histórica del '
                              'Perú» es una aposición:',
-                 'alternativas': ['Directa',
-                                  'Neutra',
+                 'alternativas': ['Explicativa',
+                                  'Indirecta',
                                   'Especificativa',
-                                  'Explicativa',
-                                  'Indirecta'],
-                 'correcta': 'D'},
+                                  'Neutra',
+                                  'Directa'],
+                 'correcta': 'A'},
                 {'pregunta': 'Ortográficamente, la aposición explicativa '
                              'siempre aparece:',
                  'alternativas': ['Subrayada',
-                                  'Separada entre comas',
+                                  'En mayúscula total',
                                   'Entre paréntesis obligatorios',
                                   'Sin ninguna puntuación',
-                                  'En mayúscula total'],
-                 'correcta': 'B'},
+                                  'Separada entre comas'],
+                 'correcta': 'E'},
                 {'pregunta': 'Semánticamente, los elementos de una aposición '
                              'explicativa son:',
-                 'alternativas': ['Parónimos',
-                                  'Antónimos',
+                 'alternativas': ['Sinónimos',
                                   'Sin relación semántica',
-                                  'Sinónimos',
-                                  'Homófonos'],
+                                  'Parónimos',
+                                  'Homófonos',
+                                  'Antónimos'],
+                 'correcta': 'A'},
+                {'pregunta': 'El núcleo del sintagma verbal es el verbo, que '
+                             'subordina a las demás palabras del:',
+                 'alternativas': ['Sujeto',
+                                  'Vocativo',
+                                  'Sintagma nominal',
+                                  'Complemento agente',
+                                  'Predicado'],
+                 'correcta': 'E'},
+                {'pregunta': 'El complemento sobre el que recae directamente '
+                             'la acción verbal, sustituible por '
+                             'lo/la/los/las, se llama:',
+                 'alternativas': ['Complemento directo',
+                                  'Complemento circunstancial',
+                                  'Complemento de régimen',
+                                  'Complemento indirecto',
+                                  'Complemento agente'],
+                 'correcta': 'A'},
+                {'pregunta': 'El complemento que indica el ser que se '
+                             'beneficia o perjudica con la acción verbal, '
+                             'encabezado por «a» o «para», se llama:',
+                 'alternativas': ['Complemento directo',
+                                  'Predicativo',
+                                  'Complemento indirecto',
+                                  'Complemento circunstancial',
+                                  'Atributo'],
+                 'correcta': 'C'},
+                {'pregunta': 'El complemento que se encabeza con la '
+                             'preposición «por» y aparece en oraciones en '
+                             'voz pasiva se llama complemento:',
+                 'alternativas': ['Directo',
+                                  'Indirecto',
+                                  'Circunstancial',
+                                  'Agente',
+                                  'De régimen'],
+                 'correcta': 'D'},
+                {'pregunta': 'El complemento que complementa a un verbo no '
+                             'copulativo, expresando cualidad o estado del '
+                             'sujeto o del CD, se llama:',
+                 'alternativas': ['Atributo',
+                                  'Complemento directo',
+                                  'Predicativo',
+                                  'Complemento de régimen',
+                                  'Complemento agente'],
+                 'correcta': 'C'},
+                {'pregunta': 'El complemento que acompaña a un verbo '
+                             'copulativo o semicopulativo, sustituible por '
+                             'el pronombre «lo», se llama:',
+                 'alternativas': ['Predicativo',
+                                  'Atributo',
+                                  'Complemento de régimen',
+                                  'Complemento circunstancial',
+                                  'Complemento agente'],
+                 'correcta': 'B'},
+                {'pregunta': 'El predicado cuyo núcleo es un sustantivo, '
+                             'adjetivo o adverbio, sin verbo conjugado, se '
+                             'llama predicado:',
+                 'alternativas': ['Nominal',
+                                  'Verbal',
+                                  'Simple',
+                                  'Bimembre',
+                                  'Compuesto'],
+                 'correcta': 'A'},
+                {'pregunta': 'La oración, definida como la unidad de '
+                             'predicación, pone en relación un sujeto con '
+                             'un:',
+                 'alternativas': ['Complemento',
+                                  'Adjunto',
+                                  'Predicado verbal',
+                                  'Vocativo',
+                                  'Núcleo nominal'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las oraciones que no poseen sujeto ni '
+                             'predicado, pero sí tienen sentido completo, se '
+                             'llaman oraciones:',
+                 'alternativas': ['Subordinadas',
+                                  'Unimembres',
+                                  'Compuestas',
+                                  'Coordinadas',
+                                  'Bimembres'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las oraciones unimembres que carecen de sujeto '
+                             'por tener verbos impersonales, como «Amaneció '
+                             'nublado», corresponden al tipo:',
+                 'alternativas': ['Con verbos impersonales',
+                                  'Coordinadas',
+                                  'Sin verbo o contextuales',
+                                  'Compuestas',
+                                  'Bimembres con sujeto tácito'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las oraciones que poseen sujeto y predicado, '
+                             'expreso o tácito, se llaman oraciones:',
+                 'alternativas': ['Unimembres',
+                                  'Nominales exclusivas',
+                                  'Contextuales',
+                                  'Impersonales',
+                                  'Bimembres'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las oraciones que presentan un solo verbo '
+                             'principal o conjugado, sin proposiciones, se '
+                             'llaman oraciones:',
+                 'alternativas': ['Unimembres',
+                                  'Simples',
+                                  'Compuestas',
+                                  'Bimembres exclusivas',
+                                  'Contextuales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las oraciones que constan de dos o más verbos '
+                             'o proposiciones se llaman oraciones:',
+                 'alternativas': ['Contextuales',
+                                  'Simples',
+                                  'Impersonales',
+                                  'Compuestas',
+                                  'Unimembres'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las oraciones que afirman o niegan hechos de '
+                             'manera objetiva, para transmitir información, '
+                             'se llaman oraciones:',
+                 'alternativas': ['Exclamativas',
+                                  'Dubitativas',
+                                  'Enunciativas o declarativas',
+                                  'Desiderativas',
+                                  'Interrogativas'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las oraciones en las que el hablante '
+                             'manifiesta un deseo, como «Ojalá lleguen '
+                             'pronto», se llaman oraciones:',
+                 'alternativas': ['Dubitativas',
+                                  'Imperativas',
+                                  'Desiderativas',
+                                  'Interrogativas',
+                                  'Enunciativas'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las oraciones en las que el hablante expresa '
+                             'duda o probabilidad, como «Tal vez tengas '
+                             'razón», se llaman oraciones:',
+                 'alternativas': ['Exhortativas',
+                                  'Desiderativas',
+                                  'Enunciativas',
+                                  'Dubitativas',
+                                  'Exclamativas'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las oraciones que presentan lo que se dice '
+                             'como un mandato, orden o ruego, generalmente '
+                             'en modo imperativo, se llaman oraciones:',
+                 'alternativas': ['Desiderativas',
+                                  'Imperativas o exhortativas',
+                                  'Dubitativas',
+                                  'Interrogativas',
+                                  'Enunciativas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las oraciones en las que el hablante expresa '
+                             'emociones, con signos de exclamación, se '
+                             'llaman oraciones:',
+                 'alternativas': ['Desiderativas',
+                                  'Imperativas',
+                                  'Enunciativas',
+                                  'Exclamativas',
+                                  'Dubitativas'],
                  'correcta': 'D'}],
-  'resumen_visual': [{'titulo': 'CONCEPTO DE SINTAXIS Y SINTAGMA',
+  'resumen_visual': [{'titulo': 'CONCEPTO DE SINTAXIS Y SINTAGMA / EL '
+                                'SINTAGMA NOMINAL',
                       'items': ['«Sintaxis» es un término de origen griego '
                                 'que significa «orden o disposición».',
                                 'La sintaxis estudia las relaciones entre '
                                 'los elementos de una frase y las funciones '
                                 'que desempeña cada palabra.',
-                                'La unidad básica de la sintaxis es el '
-                                'sintagma.',
-                                'El sintagma es una unidad sintáctica '
-                                'formada por una o más palabras dotadas de '
-                                'sentido y valor funcional.']},
-                     {'titulo': 'EL SINTAGMA NOMINAL',
-                      'items': ['El sintagma nominal (SN), o frase nominal, '
+                                'El sintagma nominal (SN), o frase nominal, '
                                 'está formado por un sustantivo u otra '
                                 'categoría sustantivada que constituye su '
                                 'núcleo.',
                                 'El núcleo del sintagma nominal siempre es '
-                                'un sustantivo o palabra sustantivada.',
-                                'Los modificadores del sintagma nominal '
-                                'dependen del núcleo y giran alrededor de '
-                                'él.']},
-                     {'titulo': 'MODIFICADORES DEL SINTAGMA NOMINAL',
+                                'un sustantivo o palabra sustantivada.']},
+                     {'titulo': 'MODIFICADORES DEL SINTAGMA NOMINAL / EL '
+                                'SINTAGMA VERBAL Y SU NÚCLEO',
                       'items': ['El modificador directo (MD) se une al '
                                 'núcleo sin enlace; son artículos y '
                                 'adjetivos.',
                                 'El modificador indirecto (MI) se une al '
                                 'núcleo mediante preposiciones o '
                                 'conjunciones comparativas.',
-                                'La aposición (AP) tiene el mismo valor que '
-                                'el núcleo y puede conmutarse con él.',
-                                'La aposición explicativa se separa por '
-                                'comas y es sinónima del núcleo, como en '
-                                '«Pachacútec, el constructor de Machu '
-                                'Picchu».',
-                                'La aposición especificativa singulariza al '
-                                'nombre y no va entre comas.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El término «sintaxis» es de origen griego y '
-                                'significa Orden o disposición.',
-                                'La sintaxis, como disciplina lingüística, '
-                                'estudia las relaciones entre los elementos '
-                                'de una frase y Las funciones que desempeña '
-                                'cada palabra.',
-                                'La unidad básica de la sintaxis es El '
-                                'sintagma.',
-                                'El sintagma se define como una unidad '
-                                'formada por palabras dotadas de sentido y '
-                                'valor Funcional.',
-                                'El sintagma nominal también se conoce como '
-                                'Frase nominal o grupo nominal.',
-                                'El núcleo del sintagma nominal siempre es '
-                                'Un sustantivo o palabra sustantivada.']}]},
+                                'El sintagma verbal (SV), o predicado, tiene '
+                                'como núcleo a un verbo que concuerda con el '
+                                'núcleo del sujeto.',
+                                'El núcleo del SV es el verbo que subordina '
+                                'a las demás palabras del predicado.']},
+                     {'titulo': 'COMPLEMENTOS MONOVALENTES DEL VERBO / '
+                                'COMPLEMENTOS BIVALENTES: PREDICATIVO ',
+                      'items': ['El complemento directo (CD) es el ser sobre '
+                                'el que recae la acción verbal; puede '
+                                'sustituirse por lo, la, los, las: «El joven '
+                                'compró libros» → «El joven los compró».',
+                                'El complemento indirecto (CI) es el ser que '
+                                'se beneficia o perjudica con la acción; se '
+                                'encabeza con «a» o «para»: «El docente le '
+                                'compró libros».',
+                                'El predicativo (PVO) complementa a un verbo '
+                                'no copulativo, expresando cualidad o estado '
+                                'del sujeto o del CD: «El niño se despertó '
+                                'atemorizado».',
+                                'El atributo complementa a un verbo '
+                                'copulativo o semicopulativo: «El mes de '
+                                'febrero es lluvioso».']},
+                     {'titulo': 'CONCEPTO Y CARACTERÍSTICAS DE LA ORACIÓN / '
+                                'ORACIONES UNIMEMBRES Y BIMEMBRES',
+                      'items': ['La oración es la unidad de predicación que '
+                                'pone en relación un sujeto con un predicado '
+                                'verbal; expresa un juicio completo.',
+                                'La oración posee sentido completo, '
+                                'autonomía sintáctica, entonación propia, y '
+                                'generalmente está dotada de verbo '
+                                'conjugado.',
+                                'Las oraciones unimembres no poseen sujeto '
+                                'ni predicado, pero tienen sentido completo.',
+                                'Las unimembres sin verbo o contextuales '
+                                'adquieren valor oracional en un contexto: '
+                                '«¡Hola!», «Buenos días».']},
+                     {'titulo': 'ORACIONES SIMPLES Y COMPUESTAS / ORACIONES '
+                                'SEGÚN LA ACTITUD DEL HABLANTE (I',
+                      'items': ['Las oraciones simples presentan un solo '
+                                'verbo principal o conjugado, sin '
+                                'proposiciones.',
+                                'Las oraciones compuestas constan de dos o '
+                                'más verbos o proposiciones.',
+                                'Las oraciones enunciativas o declarativas '
+                                'afirman o niegan hechos de forma objetiva: '
+                                '«Hoy hace frío».',
+                                'Las oraciones desiderativas manifiestan un '
+                                'deseo: «Ojalá lleguen pronto».']},
+                     {'titulo': 'ORACIONES SEGÚN LA ACTITUD DEL HABLANTE '
+                                '(II)',
+                      'items': ['Las oraciones interrogativas expresan una '
+                                'pregunta, directa o indirecta: «¿Cuál es tu '
+                                'nombre?»',
+                                'Las oraciones imperativas o exhortativas '
+                                'presentan un mandato u orden, con modo '
+                                'imperativo: «Abre la ventana».']}]},
  {'num': 15,
   'titulo': 'El Texto y la Lectura',
   'secciones': [{'titulo': '15.1 CONCEPTO DEL TEXTO',
@@ -6109,56 +7196,59 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'El texto {argumentativo} presenta una tesis y '
                            'argumentos con el objetivo de {persuadir} al '
                            'lector.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El término «texto» proviene del latín «textus», '
-                           'que significa {Tejido}.',
-                           'El texto se define como una unidad de contenido '
-                           'y forma que tiene como base {El párrafo}.',
-                           'El texto tiene un carácter comunicativo, un '
-                           'carácter pragmático y un carácter '
-                           '{Estructurado}.',
-                           'El texto se define como la secuencia lingüística '
-                           'con sentido {Pleno}.',
-                           'La tesis o planteamiento central que el autor '
-                           'desarrolla en un texto se llama {Idea '
-                           'principal}.',
-                           'Las ideas que sirven de argumento a la idea '
-                           'principal se llaman {Ideas secundarias}.',
-                           'Todo aquello de lo que se habla en un texto, el '
-                           'asunto general, se llama {Tema}.',
-                           'La frase breve que sintetiza la idea central de '
-                           'un texto se llama {Título}.',
-                           'El texto que presenta una sucesión de acciones '
-                           'en el tiempo se llama texto {Narrativo}.',
-                           'La finalidad del texto narrativo es {Contar '
-                           'acontecimientos reales o ficticios}.',
-                           'El texto que representa con palabras un objeto, '
-                           'paisaje o persona se llama texto {Descriptivo}.',
-                           'El texto descriptivo es comparado en el texto '
-                           'con {Una pintura hecha con palabras}.',
-                           'El texto que presenta una tesis con argumentos '
-                           'para persuadir al lector se llama texto '
-                           '{Argumentativo}.',
-                           'La finalidad principal del texto argumentativo '
-                           'es {Persuadir al lector sobre un punto de '
-                           'vista}.',
-                           'El carácter comunicativo del texto se relaciona '
-                           'con {Su extensión física}.',
-                           'El carácter pragmático del texto implica que se '
-                           'produce con {Una intención y en una situación '
-                           'concreta}.',
-                           'Descubrir la idea de mayor jerarquía en un texto '
-                           'es fundamental para lograr {Una comprensión '
-                           'cabal del texto}.',
-                           'Las ideas secundarias cumplen el papel de '
-                           'fundamentar, explicar y {Presentar con diversos '
-                           'recursos la idea principal}.',
-                           'El tema de un texto puede ser un aspecto general '
-                           'como {El cáncer, la violencia o la política}.',
-                           'El texto, según el concepto general, es un acto '
-                           'de habla o una serie de actos lingüísticos '
-                           'realizados en {Una situación comunicativa '
-                           'determinada}.']}],
+                {'titulo': '15.4 CLASES DE TEXTO POR SU CONTENIDO',
+                 'items': ['El texto {informativo} contiene noticias de '
+                           'carácter real; su uso es propio del contexto '
+                           '{periodístico}.',
+                           'El texto {científico} contiene resultados de una '
+                           'investigación, expuestos en monografías, tesis o '
+                           '{artículos} científicos.',
+                           'El texto {filosófico} contiene reflexiones sobre '
+                           'las causas y fines primeros de la {existencia} '
+                           'humana.',
+                           'El texto {humanístico} contiene ideas sobre la '
+                           'actividad humana, sin el rigor de la ciencia ni '
+                           'la profundidad {filosófica}.',
+                           'El texto {literario} constituye obras donde '
+                           'prima la {belleza} del lenguaje: novelas, '
+                           'cuentos, poemas.']},
+                {'titulo': '15.5 CLASES DE TEXTO POR SU ESTRUCTURA',
+                 'items': ['El texto {analizante} presenta la idea principal '
+                           'al {inicio} del párrafo, explicada luego por las '
+                           'ideas secundarias.',
+                           'El texto {sintetizante} presenta la idea '
+                           'principal al {final} del párrafo, como síntesis '
+                           'de lo anterior.',
+                           'El texto {centrado} presenta la idea principal '
+                           'al {medio} del párrafo.',
+                           'El texto {encuadrado} presenta la idea principal '
+                           'al inicio y al {final} del párrafo.',
+                           'El texto {paralelo} no presenta idea principal '
+                           'ni secundarias; todas las ideas tienen {igual} '
+                           'importancia.']},
+                {'titulo': '15.6 CONCEPTO DE LECTURA Y NIVEL LITERAL',
+                 'items': ['La {lectura} es la actividad mental de '
+                           'percepción, comprensión y reacción que permite '
+                           'informarse del contenido de un {texto}.',
+                           'El nivel {literal}, textual o lineal, se somete '
+                           'estrictamente a los contenidos {explícitos} del '
+                           'texto, sin entrar en interpretación.']},
+                {'titulo': '15.7 NIVEL INFERENCIAL',
+                 'items': ['El nivel {inferencial}, deductivo o extralineal, '
+                           'busca relaciones que van más allá de lo '
+                           '{establecido} en el texto.',
+                           'El nivel inferencial incluye: inferir {ideas} '
+                           'principales no explícitas, inferir relaciones de '
+                           '{causa} y efecto, y predecir acontecimientos.',
+                           'La meta del nivel inferencial es la elaboración '
+                           'de {conclusiones}.']},
+                {'titulo': '15.8 NIVEL CRÍTICO',
+                 'items': ['El nivel {crítico} emite juicios sobre el texto '
+                           'leído, aceptándolo o rechazándolo con '
+                           '{fundamentos}.',
+                           'Los juicios del nivel crítico pueden ser de '
+                           '{realidad} o fantasía, de adecuación y validez, '
+                           'de apropiación, o de rechazo o {aceptación}.']}],
   'cuadros': [{'titulo': '15.3 CLASES DE TEXTO POR SU FORMA',
                'encabezados': ['Clase', 'Finalidad'],
                'filas': [['{Narrativo}', '{Contar} acontecimientos'],
@@ -6166,165 +7256,280 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Argumentativo}', '{Persuadir} al lector']]}],
   'preguntas': [{'pregunta': 'El término «texto» proviene del latín '
                              '«textus», que significa:',
-                 'alternativas': ['Escrito',
-                                  'Tejido',
-                                  'Idea',
+                 'alternativas': ['Idea',
                                   'Discurso',
-                                  'Palabra'],
-                 'correcta': 'B'},
+                                  'Palabra',
+                                  'Tejido',
+                                  'Escrito'],
+                 'correcta': 'D'},
                 {'pregunta': 'El texto se define como una unidad de '
                              'contenido y forma que tiene como base:',
                  'alternativas': ['El morfema',
-                                  'El párrafo',
                                   'La oración simple',
-                                  'El fonema',
-                                  'La sílaba'],
-                 'correcta': 'B'},
+                                  'El párrafo',
+                                  'La sílaba',
+                                  'El fonema'],
+                 'correcta': 'C'},
                 {'pregunta': 'El texto tiene un carácter comunicativo, un '
                              'carácter pragmático y un carácter:',
                  'alternativas': ['Improvisado',
+                                  'Estructurado',
                                   'Fonológico exclusivo',
                                   'Aleatorio',
-                                  'Estructurado',
                                   'Musical'],
-                 'correcta': 'D'},
+                 'correcta': 'B'},
                 {'pregunta': 'El texto se define como la secuencia '
                              'lingüística con sentido:',
                  'alternativas': ['Nulo',
-                                  'Fragmentado',
+                                  'Pleno',
                                   'Exclusivamente literal',
                                   'Ambiguo',
-                                  'Pleno'],
-                 'correcta': 'E'},
+                                  'Fragmentado'],
+                 'correcta': 'B'},
                 {'pregunta': 'La tesis o planteamiento central que el autor '
                              'desarrolla en un texto se llama:',
-                 'alternativas': ['Tema general',
+                 'alternativas': ['Título',
                                   'Subtítulo',
-                                  'Título',
-                                  'Idea principal',
-                                  'Idea secundaria'],
-                 'correcta': 'D'},
+                                  'Idea secundaria',
+                                  'Tema general',
+                                  'Idea principal'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las ideas que sirven de argumento a la idea '
                              'principal se llaman:',
-                 'alternativas': ['Conclusiones exclusivas',
+                 'alternativas': ['Temas',
                                   'Ideas secundarias',
-                                  'Títulos',
-                                  'Temas',
-                                  'Ideas principales'],
+                                  'Conclusiones exclusivas',
+                                  'Ideas principales',
+                                  'Títulos'],
                  'correcta': 'B'},
                 {'pregunta': 'Todo aquello de lo que se habla en un texto, '
                              'el asunto general, se llama:',
-                 'alternativas': ['Idea secundaria',
-                                  'Idea principal',
-                                  'Título',
+                 'alternativas': ['Tema',
                                   'Argumento',
-                                  'Tema'],
-                 'correcta': 'E'},
+                                  'Idea principal',
+                                  'Idea secundaria',
+                                  'Título'],
+                 'correcta': 'A'},
                 {'pregunta': 'La frase breve que sintetiza la idea central '
                              'de un texto se llama:',
                  'alternativas': ['Tema',
-                                  'Idea secundaria',
-                                  'Argumento',
+                                  'Párrafo',
                                   'Título',
-                                  'Párrafo'],
-                 'correcta': 'D'},
+                                  'Argumento',
+                                  'Idea secundaria'],
+                 'correcta': 'C'},
                 {'pregunta': 'El texto que presenta una sucesión de acciones '
                              'en el tiempo se llama texto:',
-                 'alternativas': ['Argumentativo',
-                                  'Descriptivo',
-                                  'Expositivo puro',
+                 'alternativas': ['Descriptivo',
                                   'Instructivo',
-                                  'Narrativo'],
-                 'correcta': 'E'},
+                                  'Expositivo puro',
+                                  'Narrativo',
+                                  'Argumentativo'],
+                 'correcta': 'D'},
                 {'pregunta': 'La finalidad del texto narrativo es:',
-                 'alternativas': ['Definir conceptos',
+                 'alternativas': ['Describir un objeto',
                                   'Dar instrucciones',
+                                  'Definir conceptos',
                                   'Contar acontecimientos reales o ficticios',
-                                  'Persuadir al lector',
-                                  'Describir un objeto'],
-                 'correcta': 'C'},
+                                  'Persuadir al lector'],
+                 'correcta': 'D'},
                 {'pregunta': 'El texto que representa con palabras un '
                              'objeto, paisaje o persona se llama texto:',
                  'alternativas': ['Argumentativo',
-                                  'Narrativo',
                                   'Descriptivo',
-                                  'Expositivo',
-                                  'Dialógico'],
-                 'correcta': 'C'},
-                {'pregunta': 'El texto descriptivo es comparado en el texto '
-                             'con:',
-                 'alternativas': ['Una noticia breve',
-                                  'Una fórmula matemática',
-                                  'Una pintura hecha con palabras',
-                                  'Un poema exclusivamente',
-                                  'Un discurso político'],
-                 'correcta': 'C'},
-                {'pregunta': 'El texto que presenta una tesis con argumentos '
-                             'para persuadir al lector se llama texto:',
-                 'alternativas': ['Descriptivo',
                                   'Narrativo',
                                   'Dialógico',
+                                  'Expositivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto descriptivo es comparado en el texto '
+                             'con:',
+                 'alternativas': ['Una fórmula matemática',
+                                  'Una pintura hecha con palabras',
+                                  'Un poema exclusivamente',
+                                  'Una noticia breve',
+                                  'Un discurso político'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto que presenta una tesis con argumentos '
+                             'para persuadir al lector se llama texto:',
+                 'alternativas': ['Dialógico',
+                                  'Narrativo',
                                   'Argumentativo',
+                                  'Descriptivo',
                                   'Instructivo'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'La finalidad principal del texto argumentativo '
                              'es:',
-                 'alternativas': ['Describir un paisaje',
-                                  'Persuadir al lector sobre un punto de '
-                                  'vista',
-                                  'Dar una receta',
+                 'alternativas': ['Narrar hechos',
+                                  'Describir un paisaje',
                                   'Enumerar datos',
-                                  'Narrar hechos'],
-                 'correcta': 'B'},
+                                  'Dar una receta',
+                                  'Persuadir al lector sobre un punto de '
+                                  'vista'],
+                 'correcta': 'E'},
                 {'pregunta': 'El carácter comunicativo del texto se '
                              'relaciona con:',
-                 'alternativas': ['Su función social',
-                                  'Su color',
-                                  'Su formato de impresión',
+                 'alternativas': ['Su color',
+                                  'Su función social',
                                   'Su extensión física',
+                                  'Su formato de impresión',
                                   'Su tipografía'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'El carácter pragmático del texto implica que '
                              'se produce con:',
-                 'alternativas': ['Solo fines comerciales',
+                 'alternativas': ['Total aleatoriedad',
+                                  'Solo fines comerciales',
                                   'Ninguna intención',
-                                  'Una intención y en una situación concreta',
                                   'Solo fines estéticos',
-                                  'Total aleatoriedad'],
-                 'correcta': 'C'},
+                                  'Una intención y en una situación '
+                                  'concreta'],
+                 'correcta': 'E'},
                 {'pregunta': 'Descubrir la idea de mayor jerarquía en un '
                              'texto es fundamental para lograr:',
                  'alternativas': ['Solo memorizar el texto',
-                                  'Una comprensión cabal del texto',
+                                  'Ignorar las ideas secundarias',
                                   'Evitar el análisis',
-                                  'Reducir el vocabulario',
-                                  'Ignorar las ideas secundarias'],
-                 'correcta': 'B'},
+                                  'Una comprensión cabal del texto',
+                                  'Reducir el vocabulario'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las ideas secundarias cumplen el papel de '
                              'fundamentar, explicar y:',
-                 'alternativas': ['Contradecir la idea principal',
-                                  'Presentar con diversos recursos la idea '
-                                  'principal',
+                 'alternativas': ['Reemplazar el tema',
+                                  'Contradecir la idea principal',
                                   'Eliminar la idea principal',
-                                  'Reemplazar el tema',
-                                  'Sustituir el título'],
-                 'correcta': 'B'},
+                                  'Sustituir el título',
+                                  'Presentar con diversos recursos la idea '
+                                  'principal'],
+                 'correcta': 'E'},
                 {'pregunta': 'El tema de un texto puede ser un aspecto '
                              'general como:',
-                 'alternativas': ['Solo una fecha',
-                                  'Solo un número',
+                 'alternativas': ['Solo un lugar geográfico',
+                                  'Solo un nombre propio',
                                   'El cáncer, la violencia o la política',
-                                  'Solo un lugar geográfico',
-                                  'Solo un nombre propio'],
+                                  'Solo una fecha',
+                                  'Solo un número'],
                  'correcta': 'C'},
                 {'pregunta': 'El texto, según el concepto general, es un '
                              'acto de habla o una serie de actos '
                              'lingüísticos realizados en:',
-                 'alternativas': ['Ausencia total de intención',
-                                  'Cualquier situación sin contexto',
-                                  'Un contexto irrelevante',
+                 'alternativas': ['Cualquier situación sin contexto',
+                                  'Un vacío comunicativo',
                                   'Una situación comunicativa determinada',
-                                  'Un vacío comunicativo'],
+                                  'Ausencia total de intención',
+                                  'Un contexto irrelevante'],
+                 'correcta': 'C'},
+                {'pregunta': 'El texto que contiene noticias de carácter '
+                             'real, propio del contexto periodístico, se '
+                             'llama texto:',
+                 'alternativas': ['Informativo',
+                                  'Filosófico',
+                                  'Científico',
+                                  'Humanístico',
+                                  'Literario'],
+                 'correcta': 'A'},
+                {'pregunta': 'El texto que contiene resultados de una '
+                             'investigación, expuestos en monografías o '
+                             'tesis, se llama texto:',
+                 'alternativas': ['Filosófico',
+                                  'Científico',
+                                  'Humanístico',
+                                  'Informativo',
+                                  'Literario'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto que contiene reflexiones sobre las '
+                             'causas y fines primeros de la existencia '
+                             'humana se llama texto:',
+                 'alternativas': ['Humanístico',
+                                  'Informativo',
+                                  'Filosófico',
+                                  'Literario',
+                                  'Científico'],
+                 'correcta': 'C'},
+                {'pregunta': 'El texto que constituye obras donde prima la '
+                             'belleza del lenguaje, como novelas o poemas, '
+                             'se llama texto:',
+                 'alternativas': ['Científico',
+                                  'Literario',
+                                  'Humanístico',
+                                  'Informativo',
+                                  'Filosófico'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto que presenta la idea principal al '
+                             'inicio del párrafo, explicada por las ideas '
+                             'secundarias, se llama texto:',
+                 'alternativas': ['Paralelo',
+                                  'Analizante',
+                                  'Encuadrado',
+                                  'Centrado',
+                                  'Sintetizante'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto que presenta la idea principal al '
+                             'final del párrafo, como síntesis de lo '
+                             'anterior, se llama texto:',
+                 'alternativas': ['Paralelo',
+                                  'Sintetizante',
+                                  'Centrado',
+                                  'Encuadrado',
+                                  'Analizante'],
+                 'correcta': 'B'},
+                {'pregunta': 'El texto que presenta la idea principal al '
+                             'medio del párrafo se llama texto:',
+                 'alternativas': ['Paralelo',
+                                  'Encuadrado',
+                                  'Sintetizante',
+                                  'Centrado',
+                                  'Analizante'],
+                 'correcta': 'D'},
+                {'pregunta': 'El texto que presenta la idea principal al '
+                             'inicio y al final del párrafo se llama texto:',
+                 'alternativas': ['Sintetizante',
+                                  'Analizante',
+                                  'Paralelo',
+                                  'Centrado',
+                                  'Encuadrado'],
+                 'correcta': 'E'},
+                {'pregunta': 'El texto que no presenta idea principal ni '
+                             'ideas secundarias, donde todas las ideas '
+                             'tienen igual importancia, se llama texto:',
+                 'alternativas': ['Centrado',
+                                  'Encuadrado',
+                                  'Analizante',
+                                  'Sintetizante',
+                                  'Paralelo'],
+                 'correcta': 'E'},
+                {'pregunta': 'El nivel de comprensión lectora que se somete '
+                             'estrictamente a los contenidos explícitos del '
+                             'texto, sin interpretación, se llama nivel:',
+                 'alternativas': ['Inferencial',
+                                  'Deductivo',
+                                  'Literal',
+                                  'Valorativo',
+                                  'Crítico'],
+                 'correcta': 'C'},
+                {'pregunta': 'El nivel de comprensión lectora que busca '
+                             'relaciones más allá de lo establecido en el '
+                             'texto, formulando hipótesis, se llama nivel:',
+                 'alternativas': ['Textual',
+                                  'Literal',
+                                  'Crítico',
+                                  'Lineal',
+                                  'Inferencial'],
+                 'correcta': 'E'},
+                {'pregunta': 'La meta del nivel inferencial de comprensión '
+                             'lectora es la elaboración de:',
+                 'alternativas': ['Resúmenes',
+                                  'Definiciones',
+                                  'Glosarios',
+                                  'Conclusiones',
+                                  'Transcripciones'],
+                 'correcta': 'D'},
+                {'pregunta': 'El nivel de comprensión lectora que emite '
+                             'juicios sobre el texto, aceptándolo o '
+                             'rechazándolo con fundamentos, se llama nivel:',
+                 'alternativas': ['Deductivo',
+                                  'Literal',
+                                  'Inferencial',
+                                  'Crítico',
+                                  'Textual'],
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DEL TEXTO',
                       'items': ['«Texto» proviene del latín «textus», que '
@@ -6334,10 +7539,7 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'forma, que tiene como base al párrafo.',
                                 'El texto tiene un carácter comunicativo, un '
                                 'carácter pragmático y un carácter '
-                                'estructurado.',
-                                'El texto es la secuencia lingüística con '
-                                'sentido pleno que un hablante quiere '
-                                'comunicar.']},
+                                'estructurado.']},
                      {'titulo': 'ESTRUCTURA INTERNA DEL TEXTO',
                       'items': ['La idea principal es la tesis o '
                                 'planteamiento central que el autor '
@@ -6347,9 +7549,7 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'explicándola.',
                                 'El tema es todo aquello de lo que se habla '
                                 'en el texto, el asunto descrito y '
-                                'desarrollado.',
-                                'El título es una frase breve que sintetiza '
-                                'la idea central del texto.']},
+                                'desarrollado.']},
                      {'titulo': 'CLASES DE TEXTO POR SU FORMA',
                       'items': ['El texto narrativo presenta una sucesión de '
                                 'acciones en el tiempo, para contar hechos '
@@ -6360,22 +7560,52 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El texto argumentativo presenta una tesis y '
                                 'argumentos con el objetivo de persuadir al '
                                 'lector.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El término «texto» proviene del latín '
-                                '«textus», que significa Tejido.',
-                                'El texto se define como una unidad de '
-                                'contenido y forma que tiene como base El '
-                                'párrafo.',
-                                'El texto tiene un carácter comunicativo, un '
-                                'carácter pragmático y un carácter '
-                                'Estructurado.',
-                                'El texto se define como la secuencia '
-                                'lingüística con sentido Pleno.',
-                                'La tesis o planteamiento central que el '
-                                'autor desarrolla en un texto se llama Idea '
-                                'principal.',
-                                'Las ideas que sirven de argumento a la idea '
-                                'principal se llaman Ideas secundarias.']}]},
+                     {'titulo': 'CLASES DE TEXTO POR SU CONTENIDO',
+                      'items': ['El texto informativo contiene noticias de '
+                                'carácter real; su uso es propio del '
+                                'contexto periodístico.',
+                                'El texto científico contiene resultados de '
+                                'una investigación, expuestos en '
+                                'monografías, tesis o artículos científicos.',
+                                'El texto filosófico contiene reflexiones '
+                                'sobre las causas y fines primeros de la '
+                                'existencia humana.']},
+                     {'titulo': 'CLASES DE TEXTO POR SU ESTRUCTURA',
+                      'items': ['El texto analizante presenta la idea '
+                                'principal al inicio del párrafo, explicada '
+                                'luego por las ideas secundarias.',
+                                'El texto sintetizante presenta la idea '
+                                'principal al final del párrafo, como '
+                                'síntesis de lo anterior.',
+                                'El texto centrado presenta la idea '
+                                'principal al medio del párrafo.']},
+                     {'titulo': 'CONCEPTO DE LECTURA Y NIVEL LITERAL',
+                      'items': ['La lectura es la actividad mental de '
+                                'percepción, comprensión y reacción que '
+                                'permite informarse del contenido de un '
+                                'texto.',
+                                'El nivel literal, textual o lineal, se '
+                                'somete estrictamente a los contenidos '
+                                'explícitos del texto, sin entrar en '
+                                'interpretación.']},
+                     {'titulo': 'NIVEL INFERENCIAL',
+                      'items': ['El nivel inferencial, deductivo o '
+                                'extralineal, busca relaciones que van más '
+                                'allá de lo establecido en el texto.',
+                                'El nivel inferencial incluye: inferir ideas '
+                                'principales no explícitas, inferir '
+                                'relaciones de causa y efecto, y predecir '
+                                'acontecimientos.',
+                                'La meta del nivel inferencial es la '
+                                'elaboración de conclusiones.']},
+                     {'titulo': 'NIVEL CRÍTICO',
+                      'items': ['El nivel crítico emite juicios sobre el '
+                                'texto leído, aceptándolo o rechazándolo con '
+                                'fundamentos.',
+                                'Los juicios del nivel crítico pueden ser de '
+                                'realidad o fantasía, de adecuación y '
+                                'validez, de apropiación, o de rechazo o '
+                                'aceptación.']}]},
  {'num': 16,
   'titulo': 'Relaciones Semánticas',
   'secciones': [{'titulo': '16.1 LA SINONIMIA',
@@ -6411,40 +7641,65 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'Los parónimos por la {escritura} tienen '
                            'significados distintos, como «actitud» (postura) '
                            'y «{aptitud}» (idoneidad).']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Etimológicamente, «sinónimo» significa '
-                           '{Equivalencia o afinidad de significados}.',
-                           'Los sinónimos, además de significados parecidos, '
-                           'pertenecen a la misma {Clase gramatical}.',
-                           'Los sinónimos que mantienen el mismo significado '
-                           'sin importar el contexto se llaman sinónimos '
-                           '{Absolutos}.',
-                           'Los sinónimos que cambian de sentido según el '
-                           'contexto se llaman sinónimos {Relativos o '
-                           'indirectos}.',
-                           'Los antónimos se definen como palabras de la '
-                           'misma categoría gramatical que expresan '
-                           'significados {Contrarios}.',
-                           'Los antónimos que expresan ideas total y '
-                           'exactamente contrarias se llaman antónimos '
-                           '{Absolutos}.',
-                           'Los antónimos que muestran ideas parcialmente '
-                           'opuestas se llaman antónimos {Relativos}.',
-                           'La paronimia ocurre cuando dos palabras se '
-                           'asemejan en {Su sonido, pero se escriben '
-                           'diferente}.',
-                           'Los parónimos, a diferencia de los sinónimos, '
-                           'tienen significados {Distintos}.',
-                           'Los parónimos diferenciados por el acento, como '
-                           '«ánimo», «animo» y «animó», son parónimos por '
-                           '{El acento}.',
-                           'En «El sacerdote habló de la oración» y «El '
-                           'alumno escribió una oración», la palabra '
-                           '«oración» ejemplifica {Un sinónimo relativo}.',
-                           'Alcalde y alcaide son un ejemplo de {Parónimos '
-                           'por la escritura}.',
-                           'Las tres relaciones semánticas estudiadas son '
-                           'sinonimia, antonimia y {Paronimia}.']}],
+                {'titulo': '16.4 LA HOMONIMIA',
+                 'items': ['La {homofonía} se produce cuando las palabras '
+                           'tienen igual sonido pero escritura y '
+                           '{significado} distintos: rebelar/{revelar}, '
+                           'bello/vello, ojear/hojear.',
+                           'La {homografía} se produce cuando las palabras '
+                           'tienen igual escritura y pronunciación, pero '
+                           '{significados} distintos: lima '
+                           '(fruta/herramienta), cura '
+                           '(sacerdote/curación).']},
+                {'titulo': '16.5 HIPERONIMIA, HIPONIMIA, HOLONIMIA Y '
+                           'MERONIMIA',
+                 'items': ['La {hiperonimia} establece la relación '
+                           'genérico-específica: {flor} es hiperónimo de '
+                           'rosa.',
+                           'La {hiponimia} establece la relación '
+                           'específico-genérico: {mesa} es hipónimo de '
+                           'mueble.',
+                           'La {cohiponimia} relaciona hipónimos de un mismo '
+                           'hiperónimo: lechuga y zanahoria son cohipónimos '
+                           'de {hortaliza}.',
+                           'La {holonimia} establece la relación todo-parte: '
+                           '{árbol} es holónimo de rama.',
+                           'La {meronimia} establece la relación parte-todo: '
+                           '{pedal} es merónimo de bicicleta.',
+                           'La {comeronimia} relaciona merónimos de un mismo '
+                           'holónimo: raíz, tallo y hojas son comerónimos de '
+                           '{árbol}.']},
+                {'titulo': '16.6 ANALOGÍAS: CONCEPTO Y SIMÉTRICAS',
+                 'items': ['La {analogía} es la semejanza de relación que '
+                           'existe entre dos pares de palabras: una '
+                           '{premisa} o base, y cinco alternativas.',
+                           'Las analogías {simétricas} permiten intercambiar '
+                           'libremente el orden de los componentes, porque '
+                           'son equivalentes entre sí.',
+                           'Las analogías de {sinonimia} relacionan términos '
+                           'de significado semejante: sereno : ecuánime.',
+                           'Las analogías de {complementariedad} vinculan '
+                           'objetos que se requieren mutuamente: violín : '
+                           'arco.',
+                           'Las analogías {cogenéricas} tienen como atributo '
+                           'esencial la pertenencia a la misma clase o '
+                           'categoría: oro : plata (metales).']},
+                {'titulo': '16.7 ANALOGÍAS ASIMÉTRICAS Y '
+                           'DENOTACIÓN/CONNOTACIÓN',
+                 'items': ['Las analogías {asimétricas} exigen respetar el '
+                           'mismo orden de la base en la respuesta, sin '
+                           'poder intercambiarse.',
+                           'Las analogías de {antonimia} relacionan términos '
+                           'de significado opuesto, respetando el mismo '
+                           'orden: empezar : concluir.',
+                           'La {denotación} es la relación objetiva entre '
+                           'significante y referente; es el significado '
+                           '{universal} de una palabra, usado en textos '
+                           'técnicos y científicos.',
+                           'La {connotación} es el doble sentido o sentido '
+                           'figurado atribuido a las palabras; es '
+                           '{subjetiva} y propia del lenguaje literario: '
+                           '«Esa señorita es un bombón».']}],
   'cuadros': [{'titulo': '16.1-16.3 LAS TRES RELACIONES SEMÁNTICAS',
                'encabezados': ['Relación', 'Característica'],
                'filas': [['{Sinonimia}', 'Significados {semejantes}'],
@@ -6452,166 +7707,281 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                          ['{Paronimia}',
                           'Sonido {semejante}, significado distinto']]}],
   'preguntas': [{'pregunta': 'Etimológicamente, «sinónimo» significa:',
-                 'alternativas': ['Equivalencia o afinidad de significados',
+                 'alternativas': ['Ausencia de significado',
                                   'Oposición de ideas',
-                                  'Ausencia de significado',
-                                  'Escritura similar',
-                                  'Sonido contrario'],
-                 'correcta': 'A'},
+                                  'Equivalencia o afinidad de significados',
+                                  'Sonido contrario',
+                                  'Escritura similar'],
+                 'correcta': 'C'},
                 {'pregunta': 'La sinonimia es la semejanza de significados '
                              'entre términos comprendidos en un mismo:',
-                 'alternativas': ['Campo gráfico',
-                                  'Campo morfológico exclusivo',
+                 'alternativas': ['Campo sintáctico exclusivo',
                                   'Campo fonológico',
-                                  'Campo sintáctico exclusivo',
+                                  'Campo gráfico',
+                                  'Campo morfológico exclusivo',
                                   'Campo semántico'],
                  'correcta': 'E'},
                 {'pregunta': 'Los sinónimos, además de significados '
                              'parecidos, pertenecen a la misma:',
                  'alternativas': ['Categoría fonológica',
-                                  'Categoría ortográfica',
+                                  'Familia léxica exclusiva',
                                   'Raíz etimológica exclusiva',
-                                  'Clase gramatical',
-                                  'Familia léxica exclusiva'],
-                 'correcta': 'D'},
+                                  'Categoría ortográfica',
+                                  'Clase gramatical'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los sinónimos que mantienen el mismo '
                              'significado sin importar el contexto se llaman '
                              'sinónimos:',
                  'alternativas': ['Absolutos',
-                                  'Relativos',
                                   'Contextuales',
                                   'Parciales',
-                                  'Indirectos'],
+                                  'Indirectos',
+                                  'Relativos'],
                  'correcta': 'A'},
                 {'pregunta': '«Casa» y «vivienda» son un ejemplo de '
                              'sinónimos:',
-                 'alternativas': ['Parónimos',
-                                  'Absolutos',
+                 'alternativas': ['Parciales',
                                   'Antónimos',
+                                  'Absolutos',
                                   'Relativos',
-                                  'Parciales'],
-                 'correcta': 'B'},
+                                  'Parónimos'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los sinónimos que cambian de sentido según el '
                              'contexto se llaman sinónimos:',
-                 'alternativas': ['Parciales fijos',
+                 'alternativas': ['Directos',
+                                  'Relativos o indirectos',
                                   'Universales',
-                                  'Directos',
                                   'Absolutos',
-                                  'Relativos o indirectos'],
-                 'correcta': 'E'},
+                                  'Parciales fijos'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los antónimos se definen como palabras de la '
                              'misma categoría gramatical que expresan '
                              'significados:',
-                 'alternativas': ['Idénticos',
-                                  'Ambiguos',
-                                  'Neutros',
+                 'alternativas': ['Contrarios',
                                   'Semejantes',
-                                  'Contrarios'],
-                 'correcta': 'E'},
+                                  'Neutros',
+                                  'Idénticos',
+                                  'Ambiguos'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los antónimos que expresan ideas total y '
                              'exactamente contrarias se llaman antónimos:',
                  'alternativas': ['Semánticos exclusivos',
-                                  'Parciales',
                                   'Indirectos',
-                                  'Absolutos',
-                                  'Relativos'],
-                 'correcta': 'D'},
+                                  'Relativos',
+                                  'Parciales',
+                                  'Absolutos'],
+                 'correcta': 'E'},
                 {'pregunta': '«Introvertido» y «extrovertido» son un ejemplo '
                              'de antónimos:',
                  'alternativas': ['Relativos',
-                                  'Absolutos',
                                   'Parciales',
+                                  'Sinónimos',
                                   'Parónimos',
-                                  'Sinónimos'],
-                 'correcta': 'B'},
+                                  'Absolutos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los antónimos que muestran ideas parcialmente '
                              'opuestas se llaman antónimos:',
-                 'alternativas': ['Absolutos',
-                                  'Relativos',
+                 'alternativas': ['Totales',
                                   'Puros',
-                                  'Totales',
-                                  'Directos'],
-                 'correcta': 'B'},
+                                  'Absolutos',
+                                  'Directos',
+                                  'Relativos'],
+                 'correcta': 'E'},
                 {'pregunta': '«Cima» y «planicie» son un ejemplo de '
                              'antónimos:',
-                 'alternativas': ['Homófonos',
-                                  'Absolutos',
-                                  'Relativos',
+                 'alternativas': ['Relativos',
                                   'Sinónimos',
+                                  'Absolutos',
+                                  'Homófonos',
                                   'Parónimos'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'La paronimia ocurre cuando dos palabras se '
                              'asemejan en:',
-                 'alternativas': ['Su sonido, pero se escriben diferente',
-                                  'Su significado',
+                 'alternativas': ['Su significado',
+                                  'Su origen etimológico exclusivamente',
                                   'Su extensión',
                                   'Su categoría gramatical exclusivamente',
-                                  'Su origen etimológico exclusivamente'],
-                 'correcta': 'A'},
+                                  'Su sonido, pero se escriben diferente'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los parónimos, a diferencia de los sinónimos, '
                              'tienen significados:',
-                 'alternativas': ['Iguales',
+                 'alternativas': ['Opuestos exactamente',
+                                  'Ambiguos',
                                   'Idénticos siempre',
                                   'Distintos',
-                                  'Opuestos exactamente',
-                                  'Ambiguos'],
-                 'correcta': 'C'},
+                                  'Iguales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los parónimos diferenciados por el acento, '
                              'como «ánimo», «animo» y «animó», son parónimos '
                              'por:',
-                 'alternativas': ['El acento',
-                                  'El significado',
+                 'alternativas': ['El significado',
                                   'La escritura',
-                                  'La categoría gramatical',
-                                  'El origen'],
-                 'correcta': 'A'},
+                                  'El acento',
+                                  'El origen',
+                                  'La categoría gramatical'],
+                 'correcta': 'C'},
                 {'pregunta': '«Actitud» (postura) y «aptitud» (idoneidad) '
                              'son un ejemplo de parónimos por:',
-                 'alternativas': ['La escritura',
-                                  'El sonido idéntico',
-                                  'El significado igual',
-                                  'La sinonimia',
-                                  'El acento'],
-                 'correcta': 'A'},
-                {'pregunta': '«Absolver» (perdonar) y «absorber» (beber) son '
-                             'un ejemplo de parónimos por:',
-                 'alternativas': ['El acento',
+                 'alternativas': ['El sonido idéntico',
                                   'La escritura',
-                                  'La antonimia',
-                                  'El campo semántico',
+                                  'El acento',
+                                  'El significado igual',
                                   'La sinonimia'],
                  'correcta': 'B'},
+                {'pregunta': '«Absolver» (perdonar) y «absorber» (beber) son '
+                             'un ejemplo de parónimos por:',
+                 'alternativas': ['La antonimia',
+                                  'La sinonimia',
+                                  'El acento',
+                                  'El campo semántico',
+                                  'La escritura'],
+                 'correcta': 'E'},
                 {'pregunta': 'En «El sacerdote habló de la oración» y «El '
                              'alumno escribió una oración», la palabra '
                              '«oración» ejemplifica:',
-                 'alternativas': ['Un parónimo por el acento',
-                                  'Un sinónimo absoluto',
+                 'alternativas': ['Un antónimo absoluto',
                                   'Un antónimo relativo',
-                                  'Un antónimo absoluto',
-                                  'Un sinónimo relativo'],
-                 'correcta': 'E'},
+                                  'Un sinónimo absoluto',
+                                  'Un sinónimo relativo',
+                                  'Un parónimo por el acento'],
+                 'correcta': 'D'},
                 {'pregunta': '«Rapidez» y «lentitud» son un ejemplo de:',
-                 'alternativas': ['Homófonos',
-                                  'Sinónimos absolutos',
-                                  'Parónimos por el acento',
+                 'alternativas': ['Antónimos',
+                                  'Homófonos',
                                   'Sinónimos relativos',
-                                  'Antónimos'],
-                 'correcta': 'E'},
+                                  'Parónimos por el acento',
+                                  'Sinónimos absolutos'],
+                 'correcta': 'A'},
                 {'pregunta': 'Alcalde y alcaide son un ejemplo de:',
-                 'alternativas': ['Antónimos absolutos',
-                                  'Sinónimos absolutos',
+                 'alternativas': ['Sinónimos absolutos',
+                                  'Parónimos por la escritura',
                                   'Antónimos relativos',
                                   'Sinónimos relativos',
-                                  'Parónimos por la escritura'],
-                 'correcta': 'E'},
+                                  'Antónimos absolutos'],
+                 'correcta': 'B'},
                 {'pregunta': 'Las tres relaciones semánticas estudiadas son '
                              'sinonimia, antonimia y:',
-                 'alternativas': ['Fonética',
+                 'alternativas': ['Ortografía',
                                   'Sintaxis',
-                                  'Ortografía',
+                                  'Fonética',
                                   'Paronimia',
                                   'Morfología'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'Las palabras que tienen igual sonido pero '
+                             'escritura y significado distintos, como '
+                             '«bello» y «vello», presentan:',
+                 'alternativas': ['Homografía',
+                                  'Paronimia',
+                                  'Sinonimia',
+                                  'Homofonía',
+                                  'Hiperonimia'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las palabras que tienen igual escritura y '
+                             'pronunciación, pero significados distintos, '
+                             'como «lima» (fruta/herramienta), presentan:',
+                 'alternativas': ['Hiponimia',
+                                  'Paronimia',
+                                  'Homografía',
+                                  'Homofonía',
+                                  'Antonimia'],
+                 'correcta': 'C'},
+                {'pregunta': 'La relación semántica genérico-específica, '
+                             'como en «flor es hiperónimo de rosa», se '
+                             'llama:',
+                 'alternativas': ['Meronimia',
+                                  'Hiponimia',
+                                  'Hiperonimia',
+                                  'Holonimia',
+                                  'Homonimia'],
+                 'correcta': 'C'},
+                {'pregunta': 'La relación semántica específico-genérico, '
+                             'como en «mesa es hipónimo de mueble», se '
+                             'llama:',
+                 'alternativas': ['Hiperonimia',
+                                  'Meronimia',
+                                  'Hiponimia',
+                                  'Holonimia',
+                                  'Cohiponimia'],
+                 'correcta': 'C'},
+                {'pregunta': 'La relación semántica todo-parte, como en '
+                             '«árbol es holónimo de rama», se llama:',
+                 'alternativas': ['Holonimia',
+                                  'Comeronimia',
+                                  'Hiperonimia',
+                                  'Hiponimia',
+                                  'Meronimia'],
+                 'correcta': 'A'},
+                {'pregunta': 'La relación semántica parte-todo, como en '
+                             '«pedal es merónimo de bicicleta», se llama:',
+                 'alternativas': ['Holonimia',
+                                  'Meronimia',
+                                  'Hiperonimia',
+                                  'Hiponimia',
+                                  'Cohiponimia'],
+                 'correcta': 'B'},
+                {'pregunta': 'La semejanza de relación que existe entre dos '
+                             'pares de palabras, estructurada en una premisa '
+                             'y cinco alternativas, se llama:',
+                 'alternativas': ['Sinonimia',
+                                  'Antonimia',
+                                  'Homonimia',
+                                  'Analogía',
+                                  'Paronimia'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las analogías en las que el orden de los '
+                             'componentes puede intercambiarse libremente, '
+                             'por ser equivalentes, se llaman analogías:',
+                 'alternativas': ['Cogenéricas exclusivas',
+                                  'Simétricas',
+                                  'De complementariedad exclusiva',
+                                  'Asimétricas',
+                                  'De antonimia'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las analogías que relacionan términos de '
+                             'significado semejante, como «sereno : '
+                             'ecuánime», se llaman analogías de:',
+                 'alternativas': ['Cogenericidad',
+                                  'Sinonimia',
+                                  'Homonimia',
+                                  'Antonimia',
+                                  'Complementariedad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las analogías que vinculan objetos que se '
+                             'requieren mutuamente para cumplir su función, '
+                             'como «violín : arco», se llaman analogías de:',
+                 'alternativas': ['Antonimia',
+                                  'Sinonimia',
+                                  'Complementariedad',
+                                  'Meronimia',
+                                  'Cogenericidad'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las analogías en las que debe respetarse el '
+                             'mismo orden de la base en la respuesta, sin '
+                             'poder intercambiarse, se llaman analogías:',
+                 'alternativas': ['Asimétricas',
+                                  'Cogenéricas exclusivas',
+                                  'De complementariedad exclusiva',
+                                  'Simétricas',
+                                  'De sinonimia exclusiva'],
+                 'correcta': 'A'},
+                {'pregunta': 'La relación objetiva entre el significante y '
+                             'el referente, con significado universal, '
+                             'propia de textos técnicos, se llama:',
+                 'alternativas': ['Connotación',
+                                  'Sinonimia',
+                                  'Denotación',
+                                  'Polisemia',
+                                  'Homonimia'],
+                 'correcta': 'C'},
+                {'pregunta': 'El doble sentido o sentido figurado que se '
+                             'atribuye a las palabras, de carácter subjetivo '
+                             'y propio del lenguaje literario, se llama:',
+                 'alternativas': ['Sinonimia',
+                                  'Antonimia',
+                                  'Connotación',
+                                  'Homonimia',
+                                  'Denotación'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LA SINONIMIA',
                       'items': ['Etimológicamente, «sinónimo» proviene del '
                                 'griego «sin» (con) y «onomas» (nombre), es '
@@ -6620,13 +7990,8 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'significados entre términos comprendidos en '
                                 'un mismo campo semántico.',
                                 'Los sinónimos pertenecen a la misma clase '
-                                'gramatical y poseen significados parecidos.',
-                                'Los sinónimos absolutos o directos tienen '
-                                'el mismo significado sin importar el '
-                                'contexto, como «casa» y «vivienda».',
-                                'Los sinónimos relativos o indirectos '
-                                'cambian de sentido según el contexto de la '
-                                'oración.']},
+                                'gramatical y poseen significados '
+                                'parecidos.']},
                      {'titulo': 'LA ANTONIMIA',
                       'items': ['Los antónimos son palabras de la misma '
                                 'categoría gramatical que expresan '
@@ -6647,21 +8012,47 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los parónimos por la escritura tienen '
                                 'significados distintos, como «actitud» '
                                 '(postura) y «aptitud» (idoneidad).']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Etimológicamente, «sinónimo» significa '
-                                'Equivalencia o afinidad de significados.',
-                                'Los sinónimos, además de significados '
-                                'parecidos, pertenecen a la misma Clase '
-                                'gramatical.',
-                                'Los sinónimos que mantienen el mismo '
-                                'significado sin importar el contexto se '
-                                'llaman sinónimos Absolutos.',
-                                'Los sinónimos que cambian de sentido según '
-                                'el contexto se llaman sinónimos Relativos o '
-                                'indirectos.',
-                                'Los antónimos se definen como palabras de '
-                                'la misma categoría gramatical que expresan '
-                                'significados Contrarios.',
-                                'Los antónimos que expresan ideas total y '
-                                'exactamente contrarias se llaman antónimos '
-                                'Absolutos.']}]}]
+                     {'titulo': 'LA HOMONIMIA',
+                      'items': ['La homofonía se produce cuando las palabras '
+                                'tienen igual sonido pero escritura y '
+                                'significado distintos: rebelar/revelar, '
+                                'bello/vello, ojear/hojear.',
+                                'La homografía se produce cuando las '
+                                'palabras tienen igual escritura y '
+                                'pronunciación, pero significados distintos: '
+                                'lima (fruta/herramienta), cura '
+                                '(sacerdote/curación).']},
+                     {'titulo': 'HIPERONIMIA, HIPONIMIA, HOLONIMIA Y '
+                                'MERONIMIA',
+                      'items': ['La hiperonimia establece la relación '
+                                'genérico-específica: flor es hiperónimo de '
+                                'rosa.',
+                                'La hiponimia establece la relación '
+                                'específico-genérico: mesa es hipónimo de '
+                                'mueble.',
+                                'La cohiponimia relaciona hipónimos de un '
+                                'mismo hiperónimo: lechuga y zanahoria son '
+                                'cohipónimos de hortaliza.']},
+                     {'titulo': 'ANALOGÍAS: CONCEPTO Y SIMÉTRICAS',
+                      'items': ['La analogía es la semejanza de relación que '
+                                'existe entre dos pares de palabras: una '
+                                'premisa o base, y cinco alternativas.',
+                                'Las analogías simétricas permiten '
+                                'intercambiar libremente el orden de los '
+                                'componentes, porque son equivalentes entre '
+                                'sí.',
+                                'Las analogías de sinonimia relacionan '
+                                'términos de significado semejante: sereno : '
+                                'ecuánime.']},
+                     {'titulo': 'ANALOGÍAS ASIMÉTRICAS Y '
+                                'DENOTACIÓN/CONNOTACIÓN',
+                      'items': ['Las analogías asimétricas exigen respetar '
+                                'el mismo orden de la base en la respuesta, '
+                                'sin poder intercambiarse.',
+                                'Las analogías de antonimia relacionan '
+                                'términos de significado opuesto, respetando '
+                                'el mismo orden: empezar : concluir.',
+                                'La denotación es la relación objetiva entre '
+                                'significante y referente; es el significado '
+                                'universal de una palabra, usado en textos '
+                                'técnicos y científicos.']}]}]
