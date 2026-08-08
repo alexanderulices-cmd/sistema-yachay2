@@ -6710,7 +6710,65 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{heterocigoto} porta dos alelos distintos.',
                            'El {genoma} es el conjunto de genes de una '
                            'especie.']},
-                {'titulo': '11.3 IMPORTANCIA Y APLICACIONES',
+                {'titulo': '11.3 INTRODUCCIÓN A LAS LEYES DE MENDEL',
+                 'items': ['Los organismos {diploides} tienen los cromosomas '
+                           'en pares; un cromosoma de cada par viene del '
+                           'óvulo y el otro del {espermatozoide}.',
+                           'Las dos copias de un gen para una característica '
+                           'se llaman {alelos}; se escriben en forma '
+                           'dominante o {recesiva}.',
+                           'Mendel utilizó como organismo de estudio el '
+                           '{chícharo}, guisante o arveja (Pisum sativum), '
+                           'estudiando {siete} características genéticas.']},
+                {'titulo': '11.4 PRIMERA LEY DE MENDEL: DOMINANCIA',
+                 'items': ['La {Primera Ley de Mendel}, o Ley de la '
+                           'Uniformidad o de la Dominancia, se obtiene al '
+                           'cruzar dos líneas {puras} de una característica.',
+                           'Al cruzar semilla lisa dominante (AA) con rugosa '
+                           'recesiva (aa), la descendencia F1 será '
+                           'fenotípicamente {dominante} (lisa) y '
+                           'genotípicamente {heterocigota} (Aa).',
+                           'En la {F1}, todos los descendientes presentan el '
+                           'fenotipo {dominante}.']},
+                {'titulo': '11.5 SEGUNDA LEY DE MENDEL: SEGREGACIÓN',
+                 'items': ['La {Segunda Ley de Mendel}, o Ley de la '
+                           'Segregación de los Alelos, se obtiene al cruzar '
+                           'dos individuos {heterocigotos} de la F1.',
+                           'En la {F2}, se obtiene 25% homocigoto {recesivo} '
+                           '(aa), 50% heterocigoto (Aa), y 25% homocigoto '
+                           '{dominante} (AA).',
+                           'Fenotípicamente en la F2, el {75}% presenta el '
+                           'carácter dominante y el 25% el carácter '
+                           '{recesivo} (proporción 3:1).',
+                           'Esta segregación ocurre porque existe una '
+                           'separación de {alelos} en los gametos de los '
+                           'individuos.']},
+                {'titulo': '11.6 TERCERA LEY DE MENDEL: DISTRIBUCIÓN '
+                           'INDEPENDIENTE',
+                 'items': ['La {Tercera Ley de Mendel}, o Ley de la '
+                           'Distribución Independiente, estudia la herencia '
+                           'de {dos} características al mismo tiempo.',
+                           'Mendel cruzó semillas lisas y amarillas '
+                           '(dominantes) con rugosas y verdes (recesivas); '
+                           'en la F1 todas resultaron lisas y amarillas, '
+                           '{heterocigotas}.',
+                           'En la {F2}, aparecieron todas las combinaciones '
+                           'posibles, mostrando que las características se '
+                           'heredan de forma {independiente}.',
+                           'La distribución independiente resulta de la '
+                           'conducta de los {cromosomas} durante la meiosis, '
+                           'que se separan al {azar}.']},
+                {'titulo': '11.7 EL CUADRO DE PUNNETT',
+                 'items': ['Para realizar los cruzamientos genéticos y '
+                           'predecir la descendencia, se utiliza el {cuadro '
+                           'de Punnett}.',
+                           'En la tabla, los gametos de un padre se escriben '
+                           'en las {columnas} y los del otro padre en las '
+                           '{filas}.',
+                           'Cada cuadrado interior muestra un {genotipo} '
+                           'posible de la descendencia, combinando los '
+                           'alelos de fila y columna.']},
+                {'titulo': '11.8 IMPORTANCIA Y APLICACIONES',
                  'items': ['En la agricultura y ganadería se aplica la '
                            '{selección artificial} para mejorar especies.',
                            'En {biotecnología}, bacterias y hongos '
@@ -6883,7 +6941,132 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Manipulados genéticamente',
                                   'Domesticados sin cambios',
                                   'Eliminados del ecosistema'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'En los organismos diploides, un cromosoma de '
+                             'cada par viene del óvulo y el otro del:',
+                 'alternativas': ['Cigoto',
+                                  'Espermatozoide',
+                                  'Endospermo',
+                                  'Polen exclusivo',
+                                  'Embrión'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las dos copias de un gen para una '
+                             'característica dada se llaman:',
+                 'alternativas': ['Cromátidas',
+                                  'Alelos',
+                                  'Cinetocoros',
+                                  'Centrómeros',
+                                  'Loci exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo que Mendel utilizó para sus '
+                             'experimentos, en el que estudió siete '
+                             'características genéticas, fue el:',
+                 'alternativas': ['Maíz',
+                                  'Chícharo o guisante',
+                                  'Trigo',
+                                  'Ratón',
+                                  'Moscardón'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Primera Ley de Mendel también se conoce '
+                             'como Ley de la Uniformidad o de la:',
+                 'alternativas': ['Segregación',
+                                  'Dominancia',
+                                  'Distribución independiente',
+                                  'Recombinación',
+                                  'Codominancia'],
+                 'correcta': 'B'},
+                {'pregunta': 'Al cruzar dos líneas puras (AA x aa), la '
+                             'descendencia F1 será fenotípicamente dominante '
+                             'y genotípicamente:',
+                 'alternativas': ['Homocigota dominante',
+                                  'Heterocigota',
+                                  'Homocigota recesiva',
+                                  'Mixta',
+                                  'Nula'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la Primera Ley de Mendel, en la F1 todos '
+                             'los descendientes presentan el fenotipo:',
+                 'alternativas': ['Recesivo',
+                                  'Dominante',
+                                  'Intermedio',
+                                  'Mixto',
+                                  'Variable'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Segunda Ley de Mendel también se conoce '
+                             'como Ley de la Segregación de:',
+                 'alternativas': ['Los cromosomas',
+                                  'Los alelos',
+                                  'Las especies',
+                                  'Los cigotos',
+                                  'Las mutaciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Segunda Ley de Mendel se obtiene al cruzar '
+                             'dos individuos de la F1 que son:',
+                 'alternativas': ['Homocigotos dominantes',
+                                  'Heterocigotos',
+                                  'Homocigotos recesivos',
+                                  'Híbridos triples',
+                                  'Puros'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la F2, según la Segunda Ley de Mendel, el '
+                             'porcentaje de homocigotos recesivos (aa) es:',
+                 'alternativas': ['50%', '25%', '75%', '100%', '0%'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la F2, según la Segunda Ley de Mendel, el '
+                             'porcentaje de heterocigotos (Aa) es:',
+                 'alternativas': ['25%', '50%', '75%', '100%', '0%'],
+                 'correcta': 'B'},
+                {'pregunta': 'Fenotípicamente, en la F2 de la Segunda Ley de '
+                             'Mendel, la proporción entre carácter dominante '
+                             'y recesivo es:',
+                 'alternativas': ['1:1', '3:1', '1:3', '2:1', '4:1'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Tercera Ley de Mendel, o Ley de la '
+                             'Distribución Independiente, estudia la '
+                             'herencia de:',
+                 'alternativas': ['Una sola característica',
+                                  'Dos características al mismo tiempo',
+                                  'Tres características simultáneas',
+                                  'Ninguna característica específica',
+                                  'Solo características ligadas al sexo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la Tercera Ley de Mendel, en la F2 '
+                             'aparecen todas las combinaciones posibles, '
+                             'demostrando que las características se heredan '
+                             'de forma:',
+                 'alternativas': ['Ligada',
+                                  'Independiente',
+                                  'Dominante exclusiva',
+                                  'Recesiva exclusiva',
+                                  'Codominante'],
+                 'correcta': 'B'},
+                {'pregunta': 'La distribución independiente de las '
+                             'características resulta de la conducta de los '
+                             'cromosomas durante la:',
+                 'alternativas': ['Mitosis',
+                                  'Meiosis',
+                                  'Fecundación',
+                                  'Citocinesis',
+                                  'Interfase'],
+                 'correcta': 'B'},
+                {'pregunta': 'El instrumento utilizado para realizar '
+                             'cruzamientos genéticos y predecir la '
+                             'descendencia se llama:',
+                 'alternativas': ['Cariotipo',
+                                  'Cuadro de Punnett',
+                                  'Árbol genealógico',
+                                  'Mapa cromosómico',
+                                  'Cuadro de Rowe'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el Cuadro de Punnett, los gametos de un '
+                             'padre se escriben en las columnas y los del '
+                             'otro padre se escriben en:',
+                 'alternativas': ['Diagonal',
+                                  'Las filas',
+                                  'El centro',
+                                  'Los bordes exclusivos',
+                                  'Fuera de la tabla'],
+                 'correcta': 'B'}]},
  {'num': 12,
   'titulo': 'Evolución y Origen de la Vida',
   'secciones': [{'titulo': '12.1 CONCEPTO Y ANTECEDENTES',
