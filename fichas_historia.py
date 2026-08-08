@@ -958,6 +958,32 @@ BALOTAS = [{'num': 1,
                                   'Monumental',
                                   'Documental',
                                   'Audiovisual'],
+                 'correcta': 'D'},
+                {'pregunta': 'La ciencia que estudia el pasado, a partir del '
+                             'presente con proyección al futuro, es la: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Arqueología',
+                                  'Etnología',
+                                  'Astrología',
+                                  'Cronología',
+                                  'Historia'],
+                 'correcta': 'E'},
+                {'pregunta': 'El folclore es una fuente histórica: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Tradicional',
+                                  'Audiovisual',
+                                  'Tecnológica',
+                                  'Monumental',
+                                  'Cronística'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los restos humanos como esqueletos y huesos '
+                             'fosilizados corresponden a las fuentes '
+                             'históricas: (UNSAAC Ordinario)',
+                 'alternativas': ['Orales',
+                                  'Materiales',
+                                  'Audiovisuales',
+                                  'Antroposomáticas',
+                                  'Monumentales'],
                  'correcta': 'D'}]},
  {'num': 2,
   'titulo': 'Hombre de la prehistoria',
@@ -1463,7 +1489,95 @@ BALOTAS = [{'num': 1,
                                   'Troglodita',
                                   'Recolector',
                                   'Cazador'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'La división de la prehistoria la propuso: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Charles Darwin',
+                                  'Ferdinand Leakey',
+                                  'Antoni Greman',
+                                  'Christian Thomsen',
+                                  'Donald Latrap'],
+                 'correcta': 'D'},
+                {'pregunta': 'Una característica propia del Neolítico '
+                             'prehistórico es el: (UNSAAC Ordinario)',
+                 'alternativas': ['Surgimiento del Lenguaje y el Tótem',
+                                  'Descubrimiento del fuego, la flecha y el '
+                                  'arco',
+                                  'Desarrollo de la industria microlítica y '
+                                  'la osteodontoquerática',
+                                  'Desconocimiento de la agricultura y el '
+                                  'pastoreo',
+                                  'Surgimiento de la propiedad privada y de '
+                                  'las clases sociales'],
+                 'correcta': 'E'},
+                {'pregunta': 'El alejamiento de las glaciaciones se dio en '
+                             'el periodo geológico denominado: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Mesolítico',
+                                  'Paleolítico',
+                                  'Neolítico',
+                                  'Calcolítico',
+                                  'Pleistocénico'],
+                 'correcta': 'A'},
+                {'pregunta': 'En el proceso de hominización fue fundamental: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La selección natural de las especies no '
+                                  'humanas',
+                                  'El desarrollo de la civilización humana',
+                                  'La capacidad de fabricar objetos',
+                                  'La práctica inicial del culto a los '
+                                  'muertos',
+                                  'El inicio de la organización familiar'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el periodo cultural del Mesolítico, la '
+                             'humanidad primitiva: (UNSAAC Ordinario)',
+                 'alternativas': ['Descubrió simultáneamente la cerámica y '
+                                  'la textilería',
+                                  'Fue exclusivamente cazadora, pescadora y '
+                                  'recolectora',
+                                  'Inició la práctica del culto a sus '
+                                  'muertos',
+                                  'Conoció la propiedad privada y '
+                                  'consiguientemente la diferenciación '
+                                  'social',
+                                  'Empezó a diferenciarse racialmente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Lograda la revolución Neolítica, el hombre '
+                             'paulatinamente cambió a otro proceso en el que '
+                             'fabricaron sus herramientas y utensilios con '
+                             'materiales más resistentes; a este cambio se '
+                             'conoce como: (UNSAAC Ordinario)',
+                 'alternativas': ['La edad de piedra',
+                                  'Al periodo del Mesolítico',
+                                  'Periodo del Neolítico',
+                                  'Periodo del Paleolítico superior',
+                                  'La edad de los metales'],
+                 'correcta': 'E'},
+                {'pregunta': 'El investigador que utilizó el término Pre '
+                             'Historia fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Fernando Brundel',
+                                  'Christian Thomsen',
+                                  'Pablo Macera',
+                                  'Charles Darwin',
+                                  'Daniel Wilson'],
+                 'correcta': 'E'},
+                {'pregunta': 'El investigador que planteó el proceso de la '
+                             'hominización, como proceso evolutivo, fue: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Fernand Braudel',
+                                  'Charles Darwin',
+                                  'Pablo Macera',
+                                  'Daniel Wilson',
+                                  'Christian Thomsen'],
+                 'correcta': 'B'},
+                {'pregunta': 'En qué periodo apareció la domesticación de '
+                             'plantas y animales: (UNSAAC Ordinario)',
+                 'alternativas': ['Mesolítico',
+                                  'Paleolítico',
+                                  'Neolítico',
+                                  'Edad de los metales (Cobre)',
+                                  'Edad de los metales (bronce)'],
+                 'correcta': 'C'}]},
  {'num': 3,
   'titulo': 'Grandes culturas de la antigüedad',
   'secciones': [{'titulo': '3.1 MESOPOTAMIA — UBICACIÓN',
@@ -2035,7 +2149,99 @@ BALOTAS = [{'num': 1,
                                   'Griega',
                                   'Mesopotámica',
                                   'Persa'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'El Toro Alado con cabeza humana es una '
+                             'expresión artística de la cultura: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Egipcia',
+                                  'Mesopotámica',
+                                  'Griega',
+                                  'Romana',
+                                  'China'],
+                 'correcta': 'B'},
+                {'pregunta': 'El arco, la bóveda y la cúpula son los aportes '
+                             'arquitectónicos más importantes de la cultura: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Hindú',
+                                  'Griega',
+                                  'Egipcia',
+                                  'Mesopotámica',
+                                  'Hebrea'],
+                 'correcta': 'D'},
+                {'pregunta': 'El desciframiento de la escritura cuneiforme '
+                             'mesopotámica de la Roca de Behistum '
+                             'corresponde a: (UNSAAC Ordinario)',
+                 'alternativas': ['Boucher de Perthes',
+                                  'Henry Rawlinson',
+                                  'Christian Thomsen',
+                                  'Francois Champollion',
+                                  'Jean Poirier'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una de las características de la arquitectura '
+                             'egipcia es que: (UNSAAC Ordinario)',
+                 'alternativas': ['Representan solidez y rigidez',
+                                  'Expresan tristeza',
+                                  'Exteriorizan afectos',
+                                  'Expresan fielmente los sentimientos',
+                                  'Poseen demasiado decorado'],
+                 'correcta': 'A'},
+                {'pregunta': 'El testimonio arquitectónico que identifica a '
+                             'la Cultura Egipcia, se evidencia por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La escultura de los reyes Sargón y '
+                                  'Hammurabi',
+                                  'Los Monumentos arquitectónicos como el '
+                                  'Zigurat',
+                                  'La construcción de Hemiciclos, teatros e '
+                                  'hipódromos',
+                                  'Las estatuas, el discóbolo, Atenea y '
+                                  'Marxias',
+                                  'Las edificaciones de monumentos '
+                                  'funerarios como hipogeos y mastabas'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la cultura egipcia, el culto al Dios Atón '
+                             'se implantó en el periodo: (UNSAAC Ordinario)',
+                 'alternativas': ['Imperio Antiguo',
+                                  'Imperio Nuevo',
+                                  'Imperio Medio',
+                                  'Bajo Imperio',
+                                  'Predinástico'],
+                 'correcta': 'B'},
+                {'pregunta': 'La arquitectura funeraria egipcia que sirvió '
+                             'para el entierro de nobles y sacerdotes se '
+                             'denomina: (UNSAAC Ordinario)',
+                 'alternativas': ['Hipogeo',
+                                  'Mastaba',
+                                  'Pirámide',
+                                  'Zigurat',
+                                  'Templo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las ciudades de Kish, Ur y Uruk pertenecen a: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Acadio - Nínive',
+                                  'Sumeria',
+                                  'Nínive - Babilonio',
+                                  'Babilonio - Caldeo',
+                                  'Sumerio - Babilonio'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Código de Hammurabi se desarrolló en el '
+                             'proceso histórico de la Civilización '
+                             'Mesopotámica, denominado: (UNSAAC Ordinario)',
+                 'alternativas': ['Imperio Caldeo - Asirio',
+                                  'Primer Imperio Babilónico',
+                                  'Imperio Antiguo',
+                                  'Imperio Medo - Persa',
+                                  'Segundo Imperio Babilónico'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la cultura mesopotámica, durante el Primer '
+                             'Imperio Babilónico, el rey que unificó las '
+                             'ciudades sumerias fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Amenofis IV',
+                                  'Asurbanipal',
+                                  'Nabucodonosor II',
+                                  'Nabopolasar',
+                                  'Hammurabi'],
+                 'correcta': 'E'}]},
  {'num': 4,
   'titulo': 'Mundo greco romano',
   'secciones': [{'titulo': '4.1 GRECIA — PROCESO HISTÓRICO',
@@ -2429,7 +2635,49 @@ BALOTAS = [{'num': 1,
                                   'Rómulo Augústulo',
                                   'Teodosio',
                                   'Julio César'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'Las ciudades de Mileto, Éfeso y otras, fueron '
+                             'constituidas en la región de la Grecia: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Balcánica',
+                                  'Continental',
+                                  'Jónica',
+                                  'Insular',
+                                  'Peninsular'],
+                 'correcta': 'C'},
+                {'pregunta': 'Uno de los aportes de Roma Antigua a la '
+                             'humanidad, es: (UNSAAC Ordinario)',
+                 'alternativas': ['La democracia',
+                                  'La astronomía',
+                                  'La cerámica',
+                                  'El derecho',
+                                  'La biología'],
+                 'correcta': 'D'},
+                {'pregunta': 'En el periodo republicano de Roma antigua, los '
+                             'gobernantes se denominaron: (UNSAAC Ordinario)',
+                 'alternativas': ['Presidentes',
+                                  'Cónsules',
+                                  'Reyes',
+                                  'Monarcas',
+                                  'Emperadores'],
+                 'correcta': 'B'},
+                {'pregunta': 'El origen del pueblo griego se encuentra en '
+                             'los: (UNSAAC Ordinario)',
+                 'alternativas': ['Corintios',
+                                  'Cretenses',
+                                  'Jónicos',
+                                  'Atenienses',
+                                  'Pelasgos'],
+                 'correcta': 'E'},
+                {'pregunta': 'El Rey Minos representó al proceso histórico '
+                             'de la civilización correspondiente a: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Grecia Clásica o de Apogeo',
+                                  'La Cretense o Minoica',
+                                  'La época oscura de la Cultura Griega',
+                                  'Grecia Arcaica o Heroica',
+                                  'Grecia Helenística o decadente'],
+                 'correcta': 'B'}]},
  {'num': 5,
   'titulo': 'Primeras culturas andinas',
   'secciones': [{'titulo': '5.1 EL POBLAMIENTO DE AMÉRICA',
@@ -2829,7 +3077,108 @@ BALOTAS = [{'num': 1,
                                   'Alex Hrdlicka',
                                   'Paul Rivet',
                                   'Méndez Correa'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'El autor de la Teoría del Origen Polinésico '
+                             'del hombre americano es: (UNSAAC Ordinario)',
+                 'alternativas': ['Joseph de Acosta',
+                                  'Alex Hrdlicka',
+                                  'Antonio Méndez',
+                                  'Paul Rivet',
+                                  'Florentino Ameghino'],
+                 'correcta': 'D'},
+                {'pregunta': 'La Teoría de la Inmigración de grupos '
+                             'paleomongoloides a través del estrecho de '
+                             'Bering corresponde a: (UNSAAC Ordinario)',
+                 'alternativas': ['Paul Rivet',
+                                  'Antonio Méndez Correa',
+                                  'Alex Hrdlicka',
+                                  'Julio C. Tello',
+                                  'Max Uhle'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el proceso del poblamiento de América, los '
+                             'polinesios llegaron por la: (UNSAAC Ordinario)',
+                 'alternativas': ['Ruta de Bering',
+                                  'Corriente sur ecuatorial',
+                                  'Corriente de Kuro Shiwo',
+                                  'Antártida',
+                                  'Corriente nor ecuatorial'],
+                 'correcta': 'C'},
+                {'pregunta': 'La teoría de origen asiático sustentada por '
+                             'Alex Hrdlicka está basada en pruebas de '
+                             'carácter: (UNSAAC Ordinario)',
+                 'alternativas': ['Paleontológico y arqueológico',
+                                  'Lingüístico y Cultural',
+                                  'Antroposomático y geográfico',
+                                  'Físico y cultural',
+                                  'Antroposomático y cultural'],
+                 'correcta': 'C'},
+                {'pregunta': 'El testimonio sobre el origen evolutivo del '
+                             'hombre americano según Florentino Ameghino es: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La migración de pueblos asiáticos por el '
+                                  'estrecho de Bering hacia las costas '
+                                  'occidentales de Canadá',
+                                  'La semejanza física entre asiáticos y '
+                                  'americanos',
+                                  'La migración de melanesios de Nueva '
+                                  'Guinea a Lagoa Santa en Brasil',
+                                  'La presencia del grupo sanguíneo RHO+ '
+                                  'australiano en las poblaciones de '
+                                  'Patagonia',
+                                  'La existencia de elementos óseos del '
+                                  'Protohomo Pampeanus'],
+                 'correcta': 'E'},
+                {'pregunta': 'La Teoría Inmigracionista de Origen '
+                             'Australiano sostiene: (UNSAAC Ordinario)',
+                 'alternativas': ['La traslación de expertos navegantes de '
+                                  'Polinesia a través de Isla de Pascua '
+                                  'llegó a Sudamérica',
+                                  'El paso de hombres primitivos por '
+                                  'Tasmania que llegaron a la Patagonia',
+                                  'La traslación de hombres primitivos de '
+                                  'Melanesia hacia América Central',
+                                  'El paso de hombres primitivos del Asia '
+                                  'por el estrecho de Bering',
+                                  'La formación del Homo Pampeanus en la '
+                                  'comarca de Chapalmalal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La oleada expansiva asiática a América se '
+                             'produjo en la glaciación de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Nebraska',
+                                  'Kansas',
+                                  'Wisconsin',
+                                  'Illinois',
+                                  'Mindel'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el poblamiento americano, llegaron a la '
+                             'Tierra del Fuego y la Patagonia Argentina, '
+                             'los: (UNSAAC Ordinario)',
+                 'alternativas': ['Australianos',
+                                  'Melanesios',
+                                  'Asiáticos',
+                                  'Oceánicos',
+                                  'Polinesios'],
+                 'correcta': 'A'},
+                {'pregunta': 'De acuerdo a la Teoría del Poblamiento '
+                             'Americano, los navegantes que llegaron al '
+                             'extremo sur de Sudamérica, pasando por la isla '
+                             'de Pascua, fueron los: (UNSAAC Ordinario)',
+                 'alternativas': ['Polinesios',
+                                  'Melanesios',
+                                  'Asiáticos',
+                                  'La Antártida',
+                                  'Australianos'],
+                 'correcta': 'A'},
+                {'pregunta': 'En el Poblamiento de América, la Teoría '
+                             'Poligenista fue sustentada por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Pablo Macera',
+                                  'Alex Hrdlicka',
+                                  'Florentino Ameghino',
+                                  'Paul Rivet',
+                                  'Antonio Méndez Correa'],
+                 'correcta': 'D'}]},
  {'num': 6,
   'titulo': 'Culturas preincas',
   'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL',
@@ -3253,7 +3602,108 @@ BALOTAS = [{'num': 1,
                                   'Mochica',
                                   'Nazca',
                                   'Wari'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'El Altar del Fuego Sagrado, en el Perú '
+                             'prehispánico, fue una manifestación '
+                             'arquitectónica de la sociedad: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Caral',
+                                  'Wari',
+                                  'Chimú',
+                                  'Paracas',
+                                  'Tiahuanaco'],
+                 'correcta': 'A'},
+                {'pregunta': 'El hombre de Toquepala es importante en la '
+                             'evolución de la cultura andina, por ser el: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Impulsor de la domesticación de camélidos',
+                                  'Primer pintor rupestre peruano',
+                                  'Tallador fino más antiguo y fino',
+                                  'Primer horticultor alto andino',
+                                  'Iniciador de la domesticación del perro'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el proceso evolutivo de la Cultura Andina, '
+                             'son consideradas culturas sedentarias: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Kotosh - Santo Domingo - Lauricocha',
+                                  'Guitarrero - Chilca - Kotosh',
+                                  'Lurín - Huaca Prieta - Kotosh',
+                                  'Lurín - Pikimachay - Guitarrero',
+                                  'Huaca Prieta - Lurín - Chivateros'],
+                 'correcta': 'C'},
+                {'pregunta': 'La primera manifestación arquitectónica '
+                             'monumental de tipo religioso en el Perú '
+                             'antiguo corresponde al hombre de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Kotosh',
+                                  'Huaca Prieta',
+                                  'Paccaicasa',
+                                  'Las Aldas',
+                                  'Guitarrero'],
+                 'correcta': 'A'},
+                {'pregunta': 'La manifestación arquitectónica que representa '
+                             'a la cultura Chanca es: (UNSAAC Ordinario)',
+                 'alternativas': ['El conjunto arquitectónico de la Huaca '
+                                  'Rajada',
+                                  'El conjunto arqueológico de Tarahuasi',
+                                  'La fortaleza de Paramonga',
+                                  'La fortificación de Pachacamac',
+                                  'El conjunto arqueológico de Sóndor'],
+                 'correcta': 'E'},
+                {'pregunta': 'La característica que corresponde a los '
+                             'primeros hombres de la Cultura Andina, en su '
+                             'condición de seminómadas: (UNSAAC Ordinario)',
+                 'alternativas': ['La domesticación de los primeros cultivos '
+                                  'y animales',
+                                  'Que no producen sus alimentos, los '
+                                  'consiguen a través de la caza, la pesca y '
+                                  'la recolección',
+                                  'Que conviven con la megafauna de '
+                                  'mastodontes y megaterios',
+                                  'El desarrollo de las actividades '
+                                  'artesanales como la textilería y cerámica',
+                                  'El predominio de la vida aldeana y '
+                                  'construcción de las primeras ciudades '
+                                  'urbanas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La civilización que es considerada como la más '
+                             'antigua del Perú y América es: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Paracas',
+                                  'Valdivia',
+                                  'Caral',
+                                  'Maya',
+                                  'Chavín'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el origen de la Cultura Andina, los '
+                             'pobladores del asentamiento de Huaca Prieta se '
+                             'caracterizaron por ser: (UNSAAC Ordinario)',
+                 'alternativas': ['Los primeros horticultores del Perú',
+                                  'Constructores del primer monumento '
+                                  'religioso',
+                                  'Maestros del arte textil',
+                                  'Los domesticadores de la llama, alpaca y '
+                                  'el cuy',
+                                  'Los primeros domesticadores del perro'],
+                 'correcta': 'C'},
+                {'pregunta': 'De acuerdo a la periodización de Horizontes, '
+                             'propuesta por John Rowe, el desarrollo de la '
+                             'cultura de Wari y Tiahuanaco, corresponde al: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Horizonte formativo',
+                                  'Horizonte temprano',
+                                  'Horizonte del intermedio tardío',
+                                  'Horizonte medio',
+                                  'Intermedio temprano'],
+                 'correcta': 'D'},
+                {'pregunta': 'El taller lítico más grande del Perú hace '
+                             'referencia al hombre de: (UNSAAC Ordinario)',
+                 'alternativas': ['Complejo de Paccaicasa',
+                                  'Toquepala',
+                                  'Lauricocha',
+                                  'Paiján',
+                                  'Chivateros'],
+                 'correcta': 'E'}]},
  {'num': 7,
   'titulo': 'Civilización inca',
   'secciones': [{'titulo': '7.1 EL AYLLU',
@@ -3781,7 +4231,175 @@ BALOTAS = [{'num': 1,
                                   'Inca Roca y Wiracocha',
                                   'Pachacútec y Túpac Inca Yupanqui',
                                   'Cápac Yupanqui y Huayna Cápac'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'El capital en la época incaica lo constituía: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['El almacenamiento de productos',
+                                  'La producción de la tierra',
+                                  'La técnica para deshidratar la papa',
+                                  'La redistribución de los depósitos',
+                                  'La fuerza humana de sus habitantes'],
+                 'correcta': 'A'},
+                {'pregunta': 'El inca que perteneció al periodo de la '
+                             'Expansión y apogeo del Tahuantinsuyo es: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Sinchi Roca',
+                                  'Mayta Cápac',
+                                  'Tupac Inca Yupanqui',
+                                  'Wiracocha',
+                                  'Inca Roca'],
+                 'correcta': 'C'},
+                {'pregunta': 'El proceso histórico Inca, en el periodo de la '
+                             'decadencia, se caracterizó por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La guerra civil entre los hermanos '
+                                  'Huáscar y Atahualpa',
+                                  'La resistencia de los incas desde '
+                                  'Vilcabamba',
+                                  'El ataque de los Chancas al Cusco',
+                                  'La muerte de Huayna Cápac y Ninan Cuyuchi '
+                                  'en el Ecuador',
+                                  'La fundación de Qosqo con Manco Cápac y '
+                                  'Mama Ocllo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Wiracocha gobernó en el periodo: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['De resistencia y supervivencia',
+                                  'Legendario o de los inicios',
+                                  'Imperial o de la expansión política',
+                                  'Regional o de la confederación quechua',
+                                  'Decadente o de la descomposición'],
+                 'correcta': 'D'},
+                {'pregunta': 'El reconocimiento de un antepasado común por '
+                             'los miembros del ayllu inca se refiere al '
+                             'vínculo por: (UNSAAC Ordinario)',
+                 'alternativas': ['Parentesco',
+                                  'Tótem',
+                                  'Territorio',
+                                  'Origen',
+                                  'Religión'],
+                 'correcta': 'A'},
+                {'pregunta': 'Uno de los incas de la resistencia, refugiado '
+                             'en Vilcabamba, que finalmente reconoció al Rey '
+                             'de España fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Huáscar',
+                                  'Tupac Amaru I',
+                                  'Manco Inca',
+                                  'Sayri Tupac',
+                                  'Huayna Cápac'],
+                 'correcta': 'D'},
+                {'pregunta': 'El periodo de la resistencia andina de '
+                             'Vilcabamba culminó con la muerte de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['José Gabriel Tupac Amaru',
+                                  'Fernando Tupac Amaru',
+                                  'Felipe Tupac Amaru',
+                                  'Sayri Tupac',
+                                  'Titu Cusi Yupanqui'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el proceso histórico de los incas, Titu '
+                             'Cusi Yupanqui gobernó el periodo: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Imperial o de la expansión',
+                                  'De resistencia de Vilcabamba',
+                                  'Legendario o de los orígenes',
+                                  'Decadente o crítico',
+                                  'Regional o de la Confederación Cusqueña'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el incanato, el gobernante de las '
+                             'provincias encargado de mantener el orden en '
+                             'el interior del territorio fue el: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Inca',
+                                  'Curaca',
+                                  'Apunchik',
+                                  'Consejo de Suyos',
+                                  'Cacique'],
+                 'correcta': 'C'},
+                {'pregunta': 'El futuro gobernante del Tahuantinsuyo fue '
+                             'conocido como: (UNSAAC Ordinario)',
+                 'alternativas': ['Auqui',
+                                  'Phiwichuri',
+                                  'Apuskipa',
+                                  'Tucuy Ricuj',
+                                  'Kipukamayoc'],
+                 'correcta': 'A'},
+                {'pregunta': 'El Ayni, como sistema de trabajo en el '
+                             'Tahuantinsuyo, consistía en: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['El trabajo obligatorio para la '
+                                  'construcción de obras públicas',
+                                  'La prestación de servicios en forma '
+                                  'recíproca entre las personas de un Ayllu',
+                                  'La forma de trabajo de una comunidad en '
+                                  'las tierras del Inca',
+                                  'El trabajo obligatorio para la '
+                                  'explotación de recursos',
+                                  'El trabajo gratuito en las tierras del '
+                                  'curaca'],
+                 'correcta': 'B'},
+                {'pregunta': 'La derrota de los Chancas, en la batalla de '
+                             'Yawarpampa, corresponde al periodo: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Legendario',
+                                  'De la confederación quechua',
+                                  'De la resistencia',
+                                  'De la Decadencia',
+                                  'De la expansión y Apogeo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la resistencia de Manco Inca, el capitán '
+                             'que se inmoló antes de caer en manos españolas '
+                             'fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Titu Yupanki',
+                                  'Tupac Huallpa',
+                                  'Suruhuamán',
+                                  'Calcuchimac',
+                                  'Quisquis'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el Tahuantinsuyo, la unidad de medida de '
+                             'las tierras comunales del ayllu se denominaba: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Mita',
+                                  'Chala',
+                                  'Trueque',
+                                  'Marca',
+                                  'Topo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En el Ayllu, reconocían una Pacarina común, '
+                             'como vínculo: (UNSAAC Ordinario)',
+                 'alternativas': ['Territorio',
+                                  'Origen',
+                                  'Parentesco',
+                                  'Tótem',
+                                  'Idioma'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el Tahuantinsuyo, los ciudadanos obligados '
+                             'a tributar fueron los: (UNSAAC Ordinario)',
+                 'alternativas': ['Hatun Runas',
+                                  'Chasquis',
+                                  'Mitmacunas',
+                                  'Orejones',
+                                  'Curacas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Para tener un mejor control de la población en '
+                             'términos de cumplimiento de la Mita en el '
+                             'Tahuantinsuyo, la división de 5000 familias '
+                             'estaba controlado por: (UNSAAC Ordinario)',
+                 'alternativas': ['Pisca Pachac Camayoc',
+                                  'Pisca Camayoc',
+                                  'Pisca Chunca Camayoc',
+                                  'Pisca Huaranca Camayoc',
+                                  'Pisca Pachac Camayoc'],
+                 'correcta': 'D'},
+                {'pregunta': 'El Ayllu fue la unidad esencial y básica de la '
+                             'organización social inca, teniendo como '
+                             'responsable al: (UNSAAC Ordinario)',
+                 'alternativas': ['Curaca',
+                                  'Sinchi',
+                                  'Apunchic',
+                                  'Tucuy Ricuc',
+                                  'Auqui'],
+                 'correcta': 'A'}]},
  {'num': 8,
   'titulo': 'Mundo medieval y el tránsito al mundo moderno',
   'secciones': [{'titulo': '8.1 EL FEUDALISMO: CONCEPTO',
@@ -4130,6 +4748,56 @@ BALOTAS = [{'num': 1,
                                   'Señor Feudal - Siervos - Repartimientos',
                                   'Burgos - Villanos - Hacendados',
                                   'Encomienda - Siervos - Latifundios'],
+                 'correcta': 'A'},
+                {'pregunta': 'La nueva clase social que surgió en Europa en '
+                             'el Siglo XII fue de los: (UNSAAC Ordinario)',
+                 'alternativas': ['Esclavos',
+                                  'Siervos',
+                                  'Nobles',
+                                  'Señores',
+                                  'Burgueses'],
+                 'correcta': 'E'},
+                {'pregunta': 'Uno de los elementos característicos del '
+                             'feudalismo fue: (UNSAAC Ordinario)',
+                 'alternativas': ['El ateísmo',
+                                  'La industria',
+                                  'La democracia',
+                                  'La tierra',
+                                  'La medicina'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los miembros de la burguesía medieval tenían '
+                             'como principal actividad: (UNSAAC Ordinario)',
+                 'alternativas': ['La ganadería',
+                                  'La agricultura',
+                                  'La minería',
+                                  'El comercio',
+                                  'La política'],
+                 'correcta': 'D'},
+                {'pregunta': 'El acto por el cual un vasallo adquiría '
+                             'derechos sobre el feudo se llamaba: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Inquisición',
+                                  'Vestidura',
+                                  'Vasallaje - Investidura',
+                                  'Franquicia',
+                                  'Sumisión'],
+                 'correcta': 'C'},
+                {'pregunta': 'En el medioevo medio, el sistema que tuvo '
+                             'origen en el declive romano se denomina: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Burguesía',
+                                  'Capitalismo',
+                                  'Primitivismo',
+                                  'Feudalismo',
+                                  'Socialismo'],
+                 'correcta': 'D'},
+                {'pregunta': 'La base principal del sistema feudal fue: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La tierra',
+                                  'El dinero',
+                                  'El siervo',
+                                  'El esclavo',
+                                  'El comercio'],
                  'correcta': 'A'}]},
  {'num': 9,
   'titulo': 'Expansión europea',
@@ -4380,7 +5048,119 @@ BALOTAS = [{'num': 1,
                                   'Quinto viaje',
                                   'Cuarto viaje',
                                   'Tercer viaje'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'En el convento franciscano de la Rábida '
+                             '(España), la empresa de Cristóbal Colón '
+                             'encontró el apoyo del religioso: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Vicente de Valverde',
+                                  'Hernando de Luque',
+                                  'Bartolomé de las Casas',
+                                  'Joseph de Acosta',
+                                  'Juan Pérez'],
+                 'correcta': 'E'},
+                {'pregunta': 'Por la Capitulación de Santa Fe, Cristóbal '
+                             'Colón tendría derecho a: (UNSAAC Ordinario)',
+                 'alternativas': ['Ser gobernador de España',
+                                  'El título de adelantado',
+                                  'Fundar la ciudad de Panamá',
+                                  'La décima parte de las riquezas',
+                                  'La mitad de oro de las indias'],
+                 'correcta': 'D'},
+                {'pregunta': 'En su tercer viaje, Francisco Pizarro: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Descubrió el gran Mar del Sur',
+                                  'Llegó hasta la desembocadura del río '
+                                  'Santa',
+                                  'Fundó la primera ciudad española en el '
+                                  'Perú',
+                                  'Se limitó a explorar las costas del norte '
+                                  'peruano',
+                                  'Protagonizó el incidente de los trece del '
+                                  'gallo'],
+                 'correcta': 'C'},
+                {'pregunta': 'Por sus efectos, la tercera expedición de '
+                             'Francisco Pizarro al Perú se conoce como '
+                             'viaje: (UNSAAC Ordinario)',
+                 'alternativas': ['Experimental',
+                                  'Invasor',
+                                  'Descubridor',
+                                  'Exploración',
+                                  'Pionero'],
+                 'correcta': 'B'},
+                {'pregunta': 'La primera ciudad fundada en América por '
+                             'Cristóbal Colón fue: (UNSAAC Ordinario)',
+                 'alternativas': ['La Habana',
+                                  'Panamá',
+                                  'Juana',
+                                  'La Isabela',
+                                  'La Dominica'],
+                 'correcta': 'D'},
+                {'pregunta': 'En su segundo viaje, Cristóbal Colón, en 1493, '
+                             'llegó a las islas de: (UNSAAC Ordinario)',
+                 'alternativas': ['Haití - Trinidad - Tobago',
+                                  'Guanahaní - Cuba y Martinica',
+                                  'Las Antillas - Puerto Rico y Jamaica',
+                                  'Canarias y Trinidad',
+                                  'Canarias y las Antillas'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Reina Isabel de Castilla accedió a la '
+                             'aprobación del Proyecto Colombino, debido a: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La influencia de los frailes Juan Pérez y '
+                                  'Antonio Marchena',
+                                  'Los aportes geográficos y mapas de '
+                                  'Ptolomeo',
+                                  'La recomendación del rey Juan II de '
+                                  'Portugal',
+                                  'Los consejos de Pablo Toscanelli',
+                                  'Los datos alcanzados por su suegro '
+                                  'Nicolás de Perestrello'],
+                 'correcta': 'A'},
+                {'pregunta': 'El contrato mediante el cual se autorizó el '
+                             'viaje de Cristóbal Colón, por la Corona '
+                             'Española, se conoce como: (UNSAAC Ordinario)',
+                 'alternativas': ['El reparto de América por el Papa '
+                                  'Alejandro VI',
+                                  'La Capitulación de Toledo',
+                                  'El Tratado de Tordesillas',
+                                  'La Capitulación de Santa Fe',
+                                  'La Bula de Partición del Mundo'],
+                 'correcta': 'D'},
+                {'pregunta': 'Después del tercer viaje de Colón, el cuarto '
+                             'viaje no llegó hasta: (UNSAAC Ordinario)',
+                 'alternativas': ['Honduras',
+                                  'Panamá',
+                                  'México',
+                                  'Nicaragua',
+                                  'Costa Rica'],
+                 'correcta': 'C'},
+                {'pregunta': 'Cristóbal Colón realizó varios viajes de '
+                             'descubrimiento; el cuarto y último viaje de '
+                             'exploración, se caracterizó por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La llegada a las islas de Guanahaní y '
+                                  'Cuba',
+                                  'Haber recorrido por las costas de la '
+                                  'actual Honduras, Nicaragua y Panamá',
+                                  'Arribar a las islas de Trinidad y la '
+                                  'desembocadura del río Orinoco de '
+                                  'Venezuela',
+                                  'La llegada a las pequeñas islas de '
+                                  'Antillas y Puerto Rico',
+                                  'La fundación de la primera ciudad llamada '
+                                  'Isabela en la española (Haití)'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la capitulación de Santa Fe, la reina '
+                             'Isabel de Castilla y Cristóbal Colón acordaron '
+                             'realizar los preparativos para la expedición '
+                             'en el puerto de: (UNSAAC Ordinario)',
+                 'alternativas': ['Miraflores',
+                                  'Cádiz',
+                                  'Palos',
+                                  'Barrameda',
+                                  'Atacama'],
+                 'correcta': 'C'}]},
  {'num': 10,
   'titulo': 'Conquista del Perú',
   'secciones': [{'titulo': '10.1 y 10.2 LA EMPRESA DE CONQUISTA',
@@ -4582,7 +5362,37 @@ BALOTAS = [{'num': 1,
                                   'La Bula',
                                   'El Testamento',
                                   'El Requerimiento'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'La capitulación de Toledo fue firmada por '
+                             'Isabel de Portugal; dicho acto dio inicio a '
+                             'la: (UNSAAC Ordinario)',
+                 'alternativas': ['Creación del Virreinato en el Perú',
+                                  'Institucionalización colonial en el Perú',
+                                  'Pacificación del Perú',
+                                  'Dominación y dependencia del Perú',
+                                  'Invasión española al Perú'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la Batalla de Salinas, las tropas '
+                             'almagristas estuvieron al mando de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Almagro el Mozo',
+                                  'Fray Tomas de Berlanga',
+                                  'Rodrigo de Ordoñez',
+                                  'Diego de Centeno',
+                                  'Cristóbal Baca de Castro'],
+                 'correcta': 'C'},
+                {'pregunta': 'En la Guerra de los Encomenderos, en la '
+                             'batalla de Jaquijahuana, se enfrentaron los '
+                             'bandos de: (UNSAAC Ordinario)',
+                 'alternativas': ['Gonzalo Pizarro y Diego Centeno',
+                                  'Gonzalo Pizarro y Cristóbal Baca de '
+                                  'Castro',
+                                  'Almagro el Mozo y Blasco Núñez de Vela',
+                                  'Gonzalo Pizarro y el Pacificador Pedro de '
+                                  'la Gasca',
+                                  'Francisco Pizarro y Fray Tomas de '
+                                  'Berlanga'],
+                 'correcta': 'D'}]},
  {'num': 11,
   'titulo': 'El periodo colonial peruano',
   'secciones': [{'titulo': '11.1 y 11.2 REPARTIMIENTO Y ENCOMIENDA',
@@ -4860,7 +5670,100 @@ BALOTAS = [{'num': 1,
                                   'La encomienda',
                                   'El corregimiento',
                                   'La Real Audiencia'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'La primera institución de explotación en el '
+                             'Perú fue: (UNSAAC Ordinario)',
+                 'alternativas': ['La mita',
+                                  'El corregimiento',
+                                  'El repartimiento',
+                                  'La Audiencia',
+                                  'La intendencia'],
+                 'correcta': 'C'},
+                {'pregunta': 'Dentro de las instituciones coloniales, la '
+                             'institución más antigua fue: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Repartimientos',
+                                  'Encomiendas',
+                                  'Intendencias',
+                                  'Corregimientos',
+                                  'Mita minera'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Colonia, la institución que cumplió la '
+                             'función de vasallaje ideológico, político, '
+                             'económico y social fue: (UNSAAC Ordinario)',
+                 'alternativas': ['La Corona',
+                                  'El Consejo de Indias',
+                                  'Los Repartimientos',
+                                  'La Encomienda',
+                                  'La Real Audiencia'],
+                 'correcta': 'D'},
+                {'pregunta': 'El gestor de la creación de la Universidad '
+                             'Nacional de San Antonio Abad del Cusco en 1692 '
+                             'fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Manuel Mollinedo y Angulo',
+                                  'Jerónimo de Aliaga',
+                                  'Juan Cárdenas y Céspedes',
+                                  'Juan Bautista de la Roca',
+                                  'Tomas de San Martín'],
+                 'correcta': 'A'},
+                {'pregunta': 'El impuesto que la Corona Española exigía a '
+                             'sus colonias, conocido como la Media Anata, '
+                             'consistía en el: (UNSAAC Ordinario)',
+                 'alternativas': ['Pago proporcional de los comerciantes por '
+                                  'la custodia de sus cargamentos',
+                                  'Cobro por los diezmos y primicias a las '
+                                  'autoridades eclesiásticas',
+                                  'Impuestos que afectaban a las '
+                                  'transacciones comerciales internas',
+                                  'Pago de impuesto por el salario que '
+                                  'percibían las autoridades',
+                                  'Recojo de los impuestos aduaneros en los '
+                                  'puertos americanos'],
+                 'correcta': 'D'},
+                {'pregunta': 'La organización social del Perú Colonial que '
+                             'correspondió al sector de la clase del bajo '
+                             'pueblo estuvo conformada por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Españoles y criollos dedicados a pequeñas '
+                                  'actividades comerciales y artesanos',
+                                  'Españoles y criollos carentes de título '
+                                  'nobiliario poseedores de fortuna y '
+                                  'profesionales',
+                                  'Indios descendientes de los incas, que se '
+                                  'desarrollaron en un ambiente comunitario',
+                                  'Españoles y criollos con títulos '
+                                  'nobiliarios, funcionarios públicos y '
+                                  'eclesiásticos',
+                                  'Esclavos negros que servían en las casas '
+                                  'señoriales y haciendas'],
+                 'correcta': 'A'},
+                {'pregunta': 'El Rey que dispuso la supresión de las '
+                             'encomiendas, fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Felipe III',
+                                  'Felipe II',
+                                  'Carlos V',
+                                  'Carlos II',
+                                  'Carlos III'],
+                 'correcta': 'C'},
+                {'pregunta': 'La institución que se creó por los excesivos '
+                             'abusos que cometían los encomenderos fue: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['El Virreinato',
+                                  'El Corregimiento',
+                                  'La Intendencia',
+                                  'El Cacicazgo',
+                                  'El Cabildo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Institución Educativa de origen colonial, '
+                             'que fue fundada para los hijos de los caciques '
+                             'en el Cusco, fue el colegio de San: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Ignacio de Loyola',
+                                  'Francisco de Borja',
+                                  'Antonio Abad',
+                                  'Bernardo',
+                                  'Felipe'],
+                 'correcta': 'B'}]},
  {'num': 12,
   'titulo': 'El mundo durante el siglo XVIII',
   'secciones': [{'titulo': '12.1 LA ILUSTRACIÓN',
@@ -5048,7 +5951,17 @@ BALOTAS = [{'num': 1,
                                   'Carlos V',
                                   'Carlos VII',
                                   'Carlos I'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'Una de las reformas político-administrativas '
+                             'más importantes de Carlos III en '
+                             'hispanoamérica fue: (UNSAAC Ordinario)',
+                 'alternativas': ['El censo de la población de Mitaya',
+                                  'La implementación de la aduana',
+                                  'La creación del Virreinato de Río de la '
+                                  'Plata',
+                                  'El incremento de la alcabala',
+                                  'La extensión del tributo a los caciques'],
+                 'correcta': 'C'}]},
  {'num': 13,
   'titulo': 'Movimientos sociales en el mundo colonial americano',
   'secciones': [{'titulo': '13.1 LAS REFORMAS BORBÓNICAS',
@@ -5316,6 +6229,32 @@ BALOTAS = [{'num': 1,
                 {'pregunta': 'El movimiento liderado por Túpac Amaru II se '
                              'produjo en el siglo: (UNSAAC Ordinario)',
                  'alternativas': ['XVI', 'XVIII', 'XVII', 'XV', 'XIX'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una consecuencia de la Revolución de Tupac '
+                             'Amaru II fue la creación de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Las Juntas de Gobierno',
+                                  'Los corregimientos',
+                                  'Los nuevos virreinatos',
+                                  'Los departamentos',
+                                  'Las intendencias'],
+                 'correcta': 'E'},
+                {'pregunta': 'La revolución de José Gabriel Túpac Amaru '
+                             'inició como: (UNSAAC Ordinario)',
+                 'alternativas': ['Independentista - Separatista',
+                                  'Emancipacionista - Reformista',
+                                  'Separatista - Emancipacionista',
+                                  'Reformista - Independentista',
+                                  'Reformista - Separatista'],
+                 'correcta': 'D'},
+                {'pregunta': 'Durante la fase cusqueña, Túpac Amaru II '
+                             'venció a los españoles en la batalla de: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Quiquijana',
+                                  'Sangarará',
+                                  'Checacupe',
+                                  'Combapata',
+                                  'Tinta'],
                  'correcta': 'B'}]},
  {'num': 14,
   'titulo': 'Tiempo de las revoluciones',
@@ -5509,7 +6448,26 @@ BALOTAS = [{'num': 1,
                                   'Cinco estamentos',
                                   'Dos clases',
                                   'Cuatro castas'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'El reconocimiento de la independencia de las '
+                             'Trece Colonias de Norte América, por el Rey '
+                             'Jorge III, se estableció en el Tratado de: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Lexington',
+                                  'Filadelfia',
+                                  'Yorktown',
+                                  'Saratoga',
+                                  'Versalles'],
+                 'correcta': 'E'},
+                {'pregunta': 'La búsqueda de igualdad de poderes: Ejecutivo, '
+                             'Legislativo y Judicial surge a consecuencia '
+                             'de: (UNSAAC Ordinario)',
+                 'alternativas': ['Independencia de las Trece Colonias',
+                                  'Tratado de Versalles',
+                                  'Revolución Francesa',
+                                  'Primera guerra mundial',
+                                  'Segunda guerra mundial'],
+                 'correcta': 'C'}]},
  {'num': 15,
   'titulo': 'Crisis del orden colonial e independencia',
   'secciones': [{'titulo': '15.1 al 15.4 LA CRISIS DE ESPAÑA',
@@ -5697,6 +6655,64 @@ BALOTAS = [{'num': 1,
                                   'Francisco Javier de Luna Pizarro',
                                   'Faustino Sánchez Carrión',
                                   'Francisco Javier Mariátegui'],
+                 'correcta': 'A'},
+                {'pregunta': 'Simón Bolívar, antes de llegar al Perú, '
+                             'independizó Venezuela con la Batalla de: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Pichincha',
+                                  'Cancha Rayada',
+                                  'Boyacá',
+                                  'Carabobo',
+                                  'Chacabuco'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las juntas de Gobierno en América Hispana se '
+                             'formaron a consecuencia de: (UNSAAC Ordinario)',
+                 'alternativas': ['La vuelta del rey derrotado al trono de '
+                                  'España',
+                                  'El cautiverio del Rey de España',
+                                  'La promulgación de la constitución de '
+                                  'Cádiz en 1812',
+                                  'Las guerras de independencia del Perú',
+                                  'El pronunciamiento del virrey Francisco '
+                                  'de Abascal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La independencia de Venezuela se logró en la '
+                             'batalla de: (UNSAAC Ordinario)',
+                 'alternativas': ['Maipú',
+                                  'Boyacá',
+                                  'Cancha Rayada',
+                                  'Pichincha',
+                                  'Carabobo'],
+                 'correcta': 'E'},
+                {'pregunta': 'El establecimiento de la Junta de Gobierno en '
+                             'Lima no fue posible, debido a la acción del '
+                             'Virrey: (UNSAAC Ordinario)',
+                 'alternativas': ['José de la Serna',
+                                  'Francisco de Toledo',
+                                  'Joaquín de La Pezuela',
+                                  'Agustín de Jáuregui',
+                                  'Fernando de Abascal y Sousa'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la coyuntura internacional que España '
+                             'afrontó para la formación de las Juntas de '
+                             'Gobierno en Hispanoamérica, fue debido a: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La declaración de guerra de Napoleón '
+                                  'Bonaparte',
+                                  'La revolución burguesa en España',
+                                  'La invasión de Napoleón a España',
+                                  'Inicios de la Primera Revolución '
+                                  'Industrial',
+                                  'La invasión de Napoleón a Portugal'],
+                 'correcta': 'C'},
+                {'pregunta': 'Simón Bolívar llegó al Perú el año 1823 y '
+                             'estableció su cuartel general en: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Pativilca',
+                                  'Huaura',
+                                  'Cajamarca',
+                                  'Chota',
+                                  'Cutervo'],
                  'correcta': 'A'}]},
  {'num': 16,
   'titulo': 'Construcción de la república peruana',
@@ -5925,7 +6941,100 @@ BALOTAS = [{'num': 1,
                                   'Agustín Gamarra',
                                   'José de la Riva Agüero',
                                   'Felipe Santiago Salaverry'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'},
+                {'pregunta': 'En la Guerra del Pacífico, el presidente del '
+                             'Perú fue: (UNSAAC Ordinario)',
+                 'alternativas': ['Mariano Ignacio Prado',
+                                  'Andrés Avelino Cáceres',
+                                  'Aníbal Pinto',
+                                  'Augusto B. Leguía',
+                                  'Hilarión Daza'],
+                 'correcta': 'A'},
+                {'pregunta': 'El incendio y saqueo de la Biblioteca Nacional '
+                             'y del Congreso Peruano fue durante: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La dictadura de Simón Bolívar',
+                                  'La expedición restauradora de Manuel '
+                                  'Bulnes',
+                                  'El Motín de Aznapuquio',
+                                  'La invasión chilena durante la guerra del '
+                                  'Pacífico',
+                                  'El primer caudillismo militar'],
+                 'correcta': 'D'},
+                {'pregunta': 'Una de las consecuencias de la Guerra del '
+                             'Pacífico fue la pérdida de las provincias de: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Tarapacá y Tacna',
+                                  'Moquegua y Tarapacá',
+                                  'Chorrillos y Miraflores',
+                                  'Arica y Arequipa',
+                                  'Tarapacá y Arica'],
+                 'correcta': 'E'},
+                {'pregunta': 'Al iniciarse la República, la creación de la '
+                             'Biblioteca Nacional ocurrió durante: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La Confederación Peruano-boliviana',
+                                  'El gobierno de Torre Tagle',
+                                  'El Primer Congreso Constituyente',
+                                  'El Protectorado',
+                                  'El Gobierno de Ramón Castilla'],
+                 'correcta': 'D'},
+                {'pregunta': 'La apropiación de los recursos naturales que '
+                             'desencadenó la Guerra del Pacífico fueron el: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Salitre y Guano',
+                                  'Cobre y petróleo',
+                                  'Salitre y gas',
+                                  'Oro y plata',
+                                  'Gas y petróleo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Una forma de la comercialización del guano por '
+                             'medio del sistema de consignaciones fue '
+                             'implantado por el gobierno de: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['Andrés Avelino Cáceres',
+                                  'José Balta',
+                                  'José Rufino Echenique',
+                                  'Ramón Castilla',
+                                  'Mariano Ignacio Prado'],
+                 'correcta': 'C'},
+                {'pregunta': 'Como consecuencia de la infausta Guerra del '
+                             'Pacífico, después del Tratado de Ancón, el '
+                             'gobierno de Andrés Avelino Cáceres decidió '
+                             'encausar: (UNSAAC Ordinario)',
+                 'alternativas': ['La resistencia del ejército en la sierra '
+                                  'peruana',
+                                  'La recuperación económica y la '
+                                  'reconstrucción nacional',
+                                  'El Contrato Dreyfus para la reventa del '
+                                  'Guano',
+                                  'La declaración de Guerra a Chile para '
+                                  'recuperar Tacna y Arica',
+                                  'La organización de la defensa de Lima '
+                                  'contra Patricio Linch'],
+                 'correcta': 'B'},
+                {'pregunta': 'El pretexto que involucró al Perú en la '
+                             'infausta guerra con Chile fue por: (UNSAAC '
+                             'Ordinario)',
+                 'alternativas': ['La negativa de pagar el impuesto de diez '
+                                  'centavos por quintal de Salitre',
+                                  'La entrega a perpetuidad de los '
+                                  'territorios de Tarapacá',
+                                  'Problemas de límites de bolivianos y '
+                                  'chilenos',
+                                  'La Alianza secreta de Defensa entre Perú '
+                                  'y Bolivia',
+                                  'La ambición de Chile de los recursos de '
+                                  'guano y salitre en Tarapacá'],
+                 'correcta': 'A'},
+                {'pregunta': 'Es considerada como causa principal de la '
+                             'Guerra del Pacífico: (UNSAAC Ordinario)',
+                 'alternativas': ['El algodón de Perú',
+                                  'El cobre de Chile',
+                                  'El salitre del Perú y Bolivia',
+                                  'El mar del pacífico',
+                                  'La sal de Bolivia'],
+                 'correcta': 'C'}]},
  {'num': 17,
   'titulo': 'Estado peruano en transformación',
   'secciones': [{'titulo': '17.1 LA RECONSTRUCCIÓN NACIONAL',
@@ -6138,7 +7247,74 @@ BALOTAS = [{'num': 1,
                                   'Juan Velasco Alvarado',
                                   'Augusto B. Leguía',
                                   'Manuel A. Odría'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'},
+                {'pregunta': 'El gobierno del Oncenio de Augusto B. Leguía '
+                             'terminó con el golpe de estado del general: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Nicolás de Piérola',
+                                  'Eduardo López de Romaña',
+                                  'José Pardo y Barreda',
+                                  'Guillermo Billinghurst',
+                                  'Luis M. Sánchez Cerro'],
+                 'correcta': 'E'},
+                {'pregunta': 'La reconstrucción de la ciudad del Cusco, '
+                             'después del terremoto de 1950, fue durante el '
+                             'gobierno de: (UNSAAC Ordinario)',
+                 'alternativas': ['José Luis Bustamante y Rivero',
+                                  'Manuel Prado',
+                                  'Fernando Belaunde',
+                                  'Manuel A. Odría',
+                                  'Ricardo Pérez Godoy'],
+                 'correcta': 'D'},
+                {'pregunta': 'En el gobierno del Oncenio de Leguía, se: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['Cedió a Chile, definitivamente, Tarapacá',
+                                  'Entregó a Ecuador 1km2 del territorio '
+                                  'nacional',
+                                  'Ejecutó la expropiación de las salitreras '
+                                  'de Tarapacá',
+                                  'Perdió la página once del Acta de Talara',
+                                  'Recuperó Tacna de la posesión chilena'],
+                 'correcta': 'E'},
+                {'pregunta': 'El peruano a quien designaban Amauta y que '
+                             'tuvo como lema «Peruanicemos al Perú», fue: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['José Carlos Mariátegui La Chira',
+                                  'José de la Riva Agüero o Osma',
+                                  'Víctor Raúl Haya de la Torre',
+                                  'Víctor Andrés Belaúnde',
+                                  'Manuel Gonzáles Prada'],
+                 'correcta': 'D'},
+                {'pregunta': 'El periodo gubernamental de Manuel A. Odría, '
+                             'en relación al Cusco, se caracteriza por: '
+                             '(UNSAAC Ordinario)',
+                 'alternativas': ['La reconstrucción del Cusco debido al '
+                                  'terremoto de 1950',
+                                  'Dictar las bases de la primera reforma '
+                                  'agraria',
+                                  'Decretar el día del campesino, el 24 de '
+                                  'junio de 1969',
+                                  'Reprimir el levantamiento campesino en el '
+                                  'Valle de la Convención',
+                                  'Asumir el poder con el nombre de Gobierno '
+                                  'Revolucionario de las Fuerzas Armadas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Característica del Segundo Gobierno de '
+                             'Belaunde Terry: (UNSAAC Ordinario)',
+                 'alternativas': ['Comienzo de la hiperinflación',
+                                  'Finalización del terrorismo',
+                                  'Masacre de Uchuraccay',
+                                  'Pérdida de la democracia',
+                                  'Aumento de la población en la capital'],
+                 'correcta': 'A'},
+                {'pregunta': 'El periodo denominado República Aristocrática '
+                             'fue sustentado por: (UNSAAC Ordinario)',
+                 'alternativas': ['Humberto Vidal',
+                                  'Pablo Macera',
+                                  'Alberto Flores',
+                                  'José Tamayo',
+                                  'Jorge Basadre'],
+                 'correcta': 'E'}]},
  {'num': 18,
   'titulo': 'El mundo entre guerras',
   'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL (1914–1918)',
@@ -6327,6 +7503,15 @@ BALOTAS = [{'num': 1,
                                   '1945-1991',
                                   '1936-1939',
                                   '1914-1918'],
+                 'correcta': 'A'},
+                {'pregunta': 'El surgimiento de la Organización de las '
+                             'Naciones Unidas para velar la paz mundial, fue '
+                             'a consecuencia de la: (UNSAAC Ordinario)',
+                 'alternativas': ['Segunda Guerra Mundial de 1939',
+                                  'Gran Depresión Económica de 1929',
+                                  'Primera Guerra Mundial de 1914',
+                                  'Revolución Rusa de 1917',
+                                  'Rivalidad entre Estados Unidos y Rusia'],
                  'correcta': 'A'}]},
  {'num': 19,
   'titulo': 'Entre dictaduras y democracias: gobernantes del Perú siglos '
@@ -6538,4 +7723,37 @@ BALOTAS = [{'num': 1,
                                   'La dolarización',
                                   'La estatización de la banca',
                                   'La apertura comercial total'],
-                 'correcta': 'D'}]}]
+                 'correcta': 'D'},
+                {'pregunta': 'La sesión del llamado Trapecio Amazónico, '
+                             'corresponde al gobierno de: (UNSAAC Ordinario)',
+                 'alternativas': ['Luis M. Sánchez Cerro',
+                                  'Manuel A. Odría',
+                                  'Manuel Prado Ugarteche',
+                                  'Oscar R. Benavides',
+                                  'Augusto B. Leguía'],
+                 'correcta': 'D'},
+                {'pregunta': 'Julio Cotler considera al gobierno de Alberto '
+                             'Fujimori como: (UNSAAC Ordinario)',
+                 'alternativas': ['Golpista',
+                                  'Democradura',
+                                  'De facto',
+                                  'Neoliberal',
+                                  'Populista'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sociólogo Julio Cotler considera al '
+                             'gobierno de Fujimori como: (UNSAAC Ordinario)',
+                 'alternativas': ['Populista',
+                                  'Democradura',
+                                  'Dictadura',
+                                  'Democrático',
+                                  'De facto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El gobierno de transición de Valentín Paniagua '
+                             'Corazao, se dio luego de la renuncia por '
+                             'corrupción de: (UNSAAC Ordinario)',
+                 'alternativas': ['Manuel Odría',
+                                  'Alan García',
+                                  'Alberto Fujimori',
+                                  'Ollanta Humala',
+                                  'Fernando Belaunde'],
+                 'correcta': 'C'}]}]
