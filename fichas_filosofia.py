@@ -73,7 +73,11 @@ BALOTAS_FILO = [{'num': 1,
                            'Concepción de {Rosental}: ciencia sobre las '
                            'leyes {universales} del ser y del pensamiento; '
                            'su cuestión fundamental es la relación entre el '
-                           '{pensar} y el ser.']},
+                           '{pensar} y el ser.',
+                           'Según {Wittgenstein}, la filosofía es una '
+                           'actividad orientada hacia el esclarecimiento del '
+                           '{lenguaje}, indagando si los enunciados tienen '
+                           'sentido.']},
                 {'titulo': '1.4 PROBLEMA FUNDAMENTAL DE LA FILOSOFÍA',
                  'items': ['El problema fundamental de la filosofía es el '
                            'carácter de la relación entre el {ser} y el '
@@ -96,7 +100,30 @@ BALOTAS_FILO = [{'num': 1,
                            'Características: {problemática}, {crítica}, '
                            '{incondicional}, {universal}, {trascendental}, '
                            'racional y {reflexiva}, y un saber '
-                           '{totalitario}.']}],
+                           '{totalitario}.']},
+                {'titulo': '1.6 DISCIPLINAS FILOSÓFICAS',
+                 'items': ['La {gnoseología} o Teoría del Conocimiento '
+                           'analiza la naturaleza, posibilidad y {límites} '
+                           'del conocimiento en general.',
+                           'La {epistemología} es el estudio crítico del '
+                           'conocimiento {científico}, su fundamento y '
+                           'metodología.',
+                           'La {axiología} estudia el problema de los '
+                           '{valores}: su existencia, origen, naturaleza y '
+                           'características.',
+                           'La {ética} estudia la conducta o comportamiento '
+                           '{moral} del hombre en sociedad.',
+                           'La {lógica} estudia los principios, métodos y '
+                           'reglas para distinguir el {razonamiento} '
+                           'correcto del incorrecto.',
+                           'La {ontología} es el estudio del {ser} de las '
+                           'cosas, del ser en tanto ser.',
+                           'La {estética} trata de lo {bello} y los '
+                           'diferentes modos de aprehensión de realidades '
+                           'bellas.',
+                           'La {antropología filosófica} estudia la esencia '
+                           'del {hombre}, su significado y la finalidad de '
+                           'su existencia.']}],
   'cuadros': [{'titulo': '1. COSMOGONÍA FRENTE A COSMOLOGÍA',
                'encabezados': ['Aspecto', 'Cosmogonía', 'Cosmología'],
                'filas': [['Explica por',
@@ -107,7 +134,17 @@ BALOTAS_FILO = [{'num': 1,
                           '{Contrastación} y verificación'],
                          ['Ejemplo',
                           'Teogonía de {Hesíodo}',
-                          'Teoría del {Big Bang}']]}],
+                          'Teoría del {Big Bang}']]},
+              {'titulo': 'DISCIPLINAS FILOSÓFICAS Y SU OBJETO DE ESTUDIO',
+               'despues_de': '1.6 DISCIPLINAS FILOSÓFICAS',
+               'encabezados': ['Disciplina', 'Objeto de estudio'],
+               'filas': [['{Gnoseología}', 'El conocimiento en {general}'],
+                         ['{Epistemología}', 'El conocimiento {científico}'],
+                         ['{Axiología}', 'Los {valores}'],
+                         ['{Ética}', 'La conducta {moral}'],
+                         ['{Lógica}', 'El {razonamiento} correcto'],
+                         ['{Ontología}', 'El {ser} de las cosas'],
+                         ['{Estética}', 'Lo {bello}']]}],
   'preguntas': [{'pregunta': 'El conjunto de mitos con que las primeras '
                              'civilizaciones explicaron el origen del '
                              'universo se denomina:',
@@ -306,7 +343,88 @@ BALOTAS_FILO = [{'num': 1,
                                   'Materialismo',
                                   'Empirismo',
                                   'Idealismo'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'Según Wittgenstein, la concepción de la '
+                             'filosofía es la actividad orientada hacia el '
+                             'esclarecimiento del:',
+                 'alternativas': ['Ser y la existencia',
+                                  'Lenguaje',
+                                  'Poder político',
+                                  'Alma humana',
+                                  'Cosmos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que analiza la '
+                             'naturaleza, posibilidad y límites del '
+                             'conocimiento en general se llama:',
+                 'alternativas': ['Epistemología',
+                                  'Gnoseología',
+                                  'Axiología',
+                                  'Ontología',
+                                  'Estética'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que es el estudio '
+                             'crítico del conocimiento científico, su '
+                             'fundamento y metodología, se llama:',
+                 'alternativas': ['Gnoseología',
+                                  'Epistemología',
+                                  'Ética',
+                                  'Lógica',
+                                  'Antropología filosófica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que estudia el '
+                             'problema de los valores, su existencia y '
+                             'naturaleza, se llama:',
+                 'alternativas': ['Ética',
+                                  'Axiología',
+                                  'Ontología',
+                                  'Estética',
+                                  'Gnoseología'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que estudia la '
+                             'conducta o comportamiento moral del hombre en '
+                             'sociedad se llama:',
+                 'alternativas': ['Axiología',
+                                  'Ética',
+                                  'Ontología',
+                                  'Lógica',
+                                  'Estética'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que estudia los '
+                             'principios y reglas para distinguir el '
+                             'razonamiento correcto del incorrecto se llama:',
+                 'alternativas': ['Ética',
+                                  'Lógica',
+                                  'Ontología',
+                                  'Gnoseología',
+                                  'Axiología'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que es el estudio del '
+                             'ser de las cosas, del ser en tanto ser, se '
+                             'llama:',
+                 'alternativas': ['Gnoseología',
+                                  'Ontología',
+                                  'Ética',
+                                  'Axiología',
+                                  'Estética'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que trata de lo bello '
+                             'y los diferentes modos de aprehensión de '
+                             'realidades bellas se llama:',
+                 'alternativas': ['Ética',
+                                  'Estética',
+                                  'Axiología',
+                                  'Ontología',
+                                  'Lógica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disciplina filosófica que estudia la '
+                             'esencia del hombre, su significado y la '
+                             'finalidad de su existencia, se llama:',
+                 'alternativas': ['Gnoseología',
+                                  'Antropología filosófica',
+                                  'Ontología',
+                                  'Axiología',
+                                  'Lógica'],
+                 'correcta': 'B'}]},
  {'num': 2,
   'titulo': 'Historia de la filosofía: edad antigua',
   'secciones': [{'titulo': '2.1 LOS PRESOCRÁTICOS',
@@ -2989,8 +3107,10 @@ BALOTAS_FILO = [{'num': 1,
                            'Universalis}).',
                            '{George Boole} es considerado el fundador de la '
                            '{lógica simbólica}; publicó en 1854 '
-                           '«Investigación sobre las leyes del '
-                           'pensamiento».']},
+                           '«Investigación sobre las leyes del pensamiento».',
+                           '{Łukasiewicz}, filósofo y lógico polaco, propuso '
+                           'la lógica {trivalente}, con un tercer valor de '
+                           'verdad además de verdadero y falso.']},
                 {'titulo': '10.3 RAMAS DE LA LÓGICA',
                  'items': ['La {lógica formal} estudia los actos del pensar '
                            '(concepto, juicio, razonamiento y demostración) '
@@ -3279,7 +3399,15 @@ BALOTAS_FILO = [{'num': 1,
                                   'George Boole',
                                   'Bertrand Russell',
                                   'Aristóteles'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'El pensador que propuso la lógica trivalente '
+                             'fue:',
+                 'alternativas': ['Aristóteles',
+                                  'Łukasiewicz',
+                                  'Wittgenstein',
+                                  'Leibniz',
+                                  'Frege'],
+                 'correcta': 'B'}]},
  {'num': 11,
   'titulo': 'Falacias',
   'secciones': [{'titulo': '11.1 FALACIAS FORMALES',
