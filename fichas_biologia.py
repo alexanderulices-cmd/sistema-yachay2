@@ -4384,7 +4384,20 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los {moluscos} tienen un órgano bucal llamado '
                            '{rádula}, con dientes quitinosos para raer '
                            'alimento.']},
-                {'titulo': '8.6 SISTEMA DIGESTIVO HUMANO: ÓRGANOS',
+                {'titulo': '8.6 SISTEMA DIGESTIVO EN VERTEBRADOS: AVES',
+                 'items': ['En las {aves}, el esófago presenta una amplia '
+                           'dilatación llamada {buche}, donde se almacena y '
+                           'humedece el alimento.',
+                           'El esófago desemboca en un ventrículo o estómago '
+                           '{glandular}, cuyas paredes segregan jugos '
+                           'digestivos.',
+                           'Sigue la {molleja}, muy musculosa, que se '
+                           'contrae rítmicamente y machaca el alimento con '
+                           'ayuda de piedras.',
+                           'En aves jóvenes, la cloaca presenta una '
+                           'evaginación llamada bolsa de {Fabricio}, que '
+                           'desaparece en los adultos.']},
+                {'titulo': '8.7 SISTEMA DIGESTIVO HUMANO: ÓRGANOS',
                  'items': ['El tubo digestivo, o tracto {gastrointestinal}, '
                            'incluye boca, faringe, esófago, estómago, '
                            'intestino delgado y {grueso}.',
@@ -4394,7 +4407,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'El {intestino delgado} se encarga de la '
                            'absorción de nutrientes; el {intestino grueso}, '
                            'de agua y ciertas vitaminas.']},
-                {'titulo': '8.7 HISTOLOGÍA DEL TUBO DIGESTIVO',
+                {'titulo': '8.8 HISTOLOGÍA DEL TUBO DIGESTIVO',
                  'items': ['Las cuatro capas del tubo digestivo, de adentro '
                            'hacia afuera, son: {mucosa}, submucosa, '
                            '{muscular} y serosa.',
@@ -4403,7 +4416,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'En la boca, faringe y esófago, la capa muscular '
                            'es de tipo {esquelético}; en el resto, de '
                            'músculo {liso}.']},
-                {'titulo': '8.8 LA BOCA',
+                {'titulo': '8.9 LA BOCA',
                  'items': ['La cavidad bucal se divide en {vestíbulo} bucal '
                            'y cavidad oral propiamente dicha.',
                            'Las paredes de la boca son: labios (pared '
@@ -4413,7 +4426,54 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Los dientes se disponen en dos {arcos} dentales, '
                            'superior e inferior; solo el arco {inferior} es '
                            'móvil.']},
-                {'titulo': '8.9 SISTEMA CIRCULATORIO: TIPOS',
+                {'titulo': '8.10 GLÁNDULAS SALIVALES',
+                 'items': ['Las {glándulas salivales menores} están '
+                           'diseminadas por toda la mucosa bucal: palatinas, '
+                           'labiales, bucales y {linguales}.',
+                           'Las {glándulas salivales mayores} son tres '
+                           'pares: parótida, submandibular y {sublingual}.',
+                           'La {parótida} es la más voluminosa de las '
+                           'glándulas salivales, situada posterior a la rama '
+                           'de la mandíbula.',
+                           'La {saliva} secretada diariamente oscila entre '
+                           '1000 y {1500} ml; está compuesta por 99,5% de '
+                           'agua.',
+                           'La saliva contiene la enzima {amilasa}, además '
+                           'de mucina, lisozima, urea y ácido úrico.']},
+                {'titulo': '8.11 EL HÍGADO',
+                 'items': ['El {hígado}, o hepar, es la glándula más '
+                           'voluminosa anexa al aparato digestivo; pesa '
+                           'alrededor de {1,4} kilos en un adulto.',
+                           'El hígado se divide en dos lóbulos, derecho e '
+                           'izquierdo, separados por el ligamento '
+                           '{falciforme}.',
+                           'Entre las funciones del hígado están producir '
+                           '{bilis} para la digestión de grasas, y el '
+                           'anticoagulante {heparina}.',
+                           'El hígado transforma el exceso de monosacáridos '
+                           'en {glucógeno} o grasa, y los almacena.',
+                           'El hígado almacena glucógeno, cobre, hierro y '
+                           'las vitaminas {A}, D, E y K.',
+                           'La {vesícula biliar} almacena la bilis; las vías '
+                           'biliares se dividen en {intrahepáticas} y '
+                           'extrahepáticas.',
+                           'El conducto {colédoco}, o conducto biliar '
+                           'principal, conduce la bilis hasta el duodeno.']},
+                {'titulo': '8.12 EL PÁNCREAS',
+                 'items': ['El {páncreas} es una glándula de secreción '
+                           'externa e interna, unida al duodeno por sus '
+                           'conductos {excretores}.',
+                           'Las partes del páncreas son: cabeza, cuerpo, '
+                           'cuello y {cola}.',
+                           'Como glándula {endocrina}, el páncreas regula el '
+                           'metabolismo de glúcidos mediante la insulina y '
+                           'el {glucagón}.',
+                           'Como glándula {exocrina}, el páncreas libera '
+                           'jugo pancreático alcalino con enzimas como '
+                           'tripsinógeno, amilasa y {lipasa}.',
+                           'La secreción pancreática es regulada por la '
+                           'hormona {secretina}.']},
+                {'titulo': '8.13 SISTEMA CIRCULATORIO: TIPOS',
                  'items': ['Las partes principales del sistema circulatorio '
                            'son el {corazón}, los vasos sanguíneos y la '
                            '{sangre}.',
@@ -4434,13 +4494,30 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{ventrículo}; en anfibios y reptiles.',
                            'La circulación doble {completa} no mezcla la '
                            'sangre; propia de aves y {mamíferos}.']},
-                {'titulo': '8.10 CIRCULACIÓN EN INVERTEBRADOS',
+                {'titulo': '8.14 CIRCULACIÓN EN INVERTEBRADOS',
                  'items': ['Los {poríferos} y {cnidarios} no tienen sistema '
                            'circulatorio; el transporte es por difusión '
                            '{simple}.',
                            'En los cnidarios, la {cavidad gastrovascular} '
                            'hace las veces de órgano circulatorio.']},
-                {'titulo': '8.11 LA SANGRE',
+                {'titulo': '8.15 CIRCULACIÓN EN VERTEBRADOS',
+                 'items': ['El sistema circulatorio de los vertebrados es '
+                           '{cerrado} y no presenta senos o lagunas.',
+                           'Los {peces} tienen corazón con una aurícula y un '
+                           'ventrículo, con circulación {simple} y completa.',
+                           'Los {anfibios} tienen corazón con dos aurículas '
+                           'y un ventrículo, donde se mezcla la sangre '
+                           'arterial y {venosa}.',
+                           'Los {reptiles} tienen dos aurículas y dos '
+                           'ventrículos con tabique {incompleto} (excepto '
+                           'cocodrilos).',
+                           'Las {aves} tienen corazón cónico con circulación '
+                           'doble y completa; su corazón late más {rápido} '
+                           'que el de los mamíferos.',
+                           'Los {mamíferos} tienen dos aurículas y dos '
+                           'ventrículos completamente separados, con '
+                           'glóbulos rojos {anucleados}.']},
+                {'titulo': '8.16 LA SANGRE',
                  'items': ['El sistema circulatorio también se llama '
                            '{cardiovascular}: «cardio» (corazón) y '
                            '«vascular» (vasos sanguíneos).',
@@ -4457,7 +4534,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'Las {plaquetas} se forman a partir de los '
                            '{megacariocitos} y participan en la '
                            'coagulación.']},
-                {'titulo': '8.12 EL CORAZÓN',
+                {'titulo': '8.17 EL CORAZÓN',
                  'items': ['El corazón bombea sangre entre {60} y 100 veces '
                            'por minuto, ubicado en el {mediastino}.',
                            'El corazón posee cuatro cavidades: dos '
@@ -4471,7 +4548,54 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'derecho con la aurícula derecha.',
                            'El movimiento del corazón se da por {sístole} '
                            '(contracción) y {diástole} (relajación).']},
-                {'titulo': '8.13 EXCRECIÓN: CONCEPTO Y EN INVERTEBRADOS',
+                {'titulo': '8.18 LOS VASOS SANGUÍNEOS',
+                 'items': ['Las {venas} son vasos de paredes delgadas y poco '
+                           'elásticas; llevan la sangre del cuerpo hacia el '
+                           '{corazón}.',
+                           'Las venas presentan {válvulas} que impiden que '
+                           'la sangre descienda por su propio peso.',
+                           'Las {arterias} son vasos de paredes gruesas, '
+                           'resistentes y elásticas, formadas por tres '
+                           'capas.',
+                           'Las arterias llevan la sangre con {oxígeno} a '
+                           'presión desde el corazón hacia el resto del '
+                           'cuerpo.',
+                           'Los {capilares} sanguíneos son vasos '
+                           'microscópicos que unen las venas con las '
+                           'arterias, formados por una sola capa '
+                           '{endotelial}.',
+                           'La función de los capilares es favorecer el '
+                           '{intercambio} gaseoso entre la sangre y los '
+                           'tejidos.']},
+                {'titulo': '8.19 CIRCULACIÓN MAYOR Y MENOR',
+                 'items': ['La {circulación mayor}, o general, es la '
+                           'circulación de la sangre oxigenada por todo el '
+                           'cuerpo y el retorno de la sangre venosa hacia el '
+                           '{corazón}.',
+                           'La {circulación menor}, o pulmonar, envía la '
+                           'sangre venosa a los pulmones y recoge el oxígeno '
+                           'para introducir la sangre oxigenada al '
+                           '{corazón}.',
+                           'Las cavidades {derechas} del corazón impulsan la '
+                           'sangre con desechos hacia los pulmones para su '
+                           'eliminación.']},
+                {'titulo': '8.20 SISTEMA LINFÁTICO',
+                 'items': ['El {sistema linfático}, o linfoide, es de suma '
+                           'importancia en la defensa del organismo; está '
+                           'integrado por una red de capilares por donde '
+                           'circula la {linfa}.',
+                           'La {linfa} transporta glóbulos blancos desde los '
+                           'órganos linfoides primarios hasta los '
+                           'secundarios: adenoides, amígdalas, bazo, '
+                           'ganglios y placas de {Peyer}.',
+                           'Los {ganglios linfáticos} actúan como filtro, '
+                           'eliminando partículas extrañas y '
+                           'microorganismos.',
+                           'El sistema linfático tiene dos partes: una red '
+                           'de {vasos linfáticos} que devuelve fluidos al '
+                           'sistema vascular, y tejidos y órganos que '
+                           'albergan linfocitos y {fagocitos}.']},
+                {'titulo': '8.21 EXCRECIÓN: CONCEPTO Y EN INVERTEBRADOS',
                  'items': ['La {excreción} es el proceso por el cual los '
                            'seres vivos liberan productos de desecho del '
                            '{metabolismo}.',
@@ -4486,14 +4610,14 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'eliminan principalmente {urea}.',
                            'Los insectos, arácnidos y miriápodos excretan '
                            'mediante los {tubos de Malpighi}.']},
-                {'titulo': '8.14 EXCRECIÓN EN VERTEBRADOS',
+                {'titulo': '8.22 EXCRECIÓN EN VERTEBRADOS',
                  'items': ['Los {peces} excretan por los riñones y por '
                            'células {branquiales} especializadas.',
                            'Los {anfibios} excretan por los riñones '
                            '(mesonefros) y la {piel}.',
                            'Los {reptiles} excretan por riñones de tipo '
                            '{metanefros}, planos y lobulados.']},
-                {'titulo': '8.15 EL RIÑÓN',
+                {'titulo': '8.23 EL RIÑÓN',
                  'items': ['El aparato excretor humano se compone de dos '
                            '{riñones} y un conjunto de vías {urinarias}.',
                            'El riñón se encarga de producir la orina y de la '
@@ -4504,7 +4628,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'médula y {pelvis} renal.',
                            'La zona medular está formada por estructuras '
                            'triangulares llamadas pirámides de {Malpighi}.']},
-                {'titulo': '8.16 LA NEFRONA Y FORMACIÓN DE LA ORINA',
+                {'titulo': '8.24 LA NEFRONA Y FORMACIÓN DE LA ORINA',
                  'items': ['La {nefrona} es la unidad estructural y '
                            'funcional del riñón; cada riñón tiene cerca de '
                            'un {millón}.',
@@ -4523,7 +4647,20 @@ BIOLOGIA_TEMAS = [{'num': 1,
   'cuadros': [{'titulo': '8.2 DIVISIÓN FISIOLÓGICA DEL APARATO RESPIRATORIO',
                'encabezados': ['Porción', 'Función'],
                'filas': [['{Conductora}', '{Conducir} el aire'],
-                         ['{Respiratoria}', '{Oxigenar} la sangre']]}],
+                         ['{Respiratoria}', '{Oxigenar} la sangre']]},
+              {'titulo': 'COMPARACIÓN DE LA CIRCULACIÓN EN VERTEBRADOS',
+               'despues_de': '8.15 CIRCULACIÓN EN VERTEBRADOS',
+               'encabezados': ['Clase', 'Térmico y glóbulos rojos'],
+               'filas': [['Peces', '{Ectotermos}, glóbulos rojos nucleados'],
+                         ['Anfibios',
+                          'Ectotermos, glóbulos rojos {elípticos} y '
+                          'nucleados'],
+                         ['Reptiles',
+                          'Ectotermos, glóbulos rojos nucleados y '
+                          '{elípticos}'],
+                         ['Aves', '{Endotermos}, glóbulos rojos nucleados'],
+                         ['Mamíferos',
+                          'Endotermos, glóbulos rojos {anucleados}']]}],
   'preguntas': [{'pregunta': 'El hombre es un ser de respiración:',
                  'alternativas': ['Mixta obligatoria',
                                   'Fermentativa exclusiva',
@@ -5251,7 +5388,233 @@ BIOLOGIA_TEMAS = [{'num': 1,
                              'del filtrado que regresa a la sangre es '
                              'aproximadamente:',
                  'alternativas': ['10%', '25%', '100%', '50%', 'Más del 90%'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'La glándula salival más voluminosa, situada '
+                             'posterior a la rama de la mandíbula, es la:',
+                 'alternativas': ['Sublingual',
+                                  'Parótida',
+                                  'Submandibular',
+                                  'Lingual',
+                                  'Labial'],
+                 'correcta': 'B',
+                 'fuente': None},
+                {'pregunta': 'La cantidad de saliva secretada diariamente '
+                             'oscila entre 1000 y:',
+                 'alternativas': ['500 ml',
+                                  '1500 ml',
+                                  '3000 ml',
+                                  '800 ml',
+                                  '2500 ml'],
+                 'correcta': 'B'},
+                {'pregunta': 'La enzima presente en la saliva que inicia la '
+                             'digestión de carbohidratos es la:',
+                 'alternativas': ['Lipasa',
+                                  'Amilasa',
+                                  'Pepsina',
+                                  'Tripsina',
+                                  'Maltasa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El hígado se divide en dos lóbulos, derecho e '
+                             'izquierdo, separados por el ligamento:',
+                 'alternativas': ['Redondo',
+                                  'Falciforme',
+                                  'Coronario',
+                                  'Triangular',
+                                  'Hepatoduodenal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Además de producir bilis, el hígado produce el '
+                             'anticoagulante:',
+                 'alternativas': ['Fibrinógeno',
+                                  'Heparina',
+                                  'Trombina',
+                                  'Protrombina',
+                                  'Plasmina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El hígado transforma el exceso de '
+                             'monosacáridos y los almacena en forma de:',
+                 'alternativas': ['Aminoácidos',
+                                  'Glucógeno',
+                                  'Colesterol',
+                                  'Ácidos grasos libres',
+                                  'Urea'],
+                 'correcta': 'B'},
+                {'pregunta': 'El órgano que almacena la bilis elaborada en '
+                             'el hígado se llama:',
+                 'alternativas': ['Duodeno',
+                                  'Vesícula biliar',
+                                  'Páncreas',
+                                  'Conducto cístico',
+                                  'Colédoco'],
+                 'correcta': 'B'},
+                {'pregunta': 'El conducto biliar principal, que conduce la '
+                             'bilis hasta el duodeno, se llama conducto:',
+                 'alternativas': ['Hepático',
+                                  'Colédoco',
+                                  'Cístico',
+                                  'Pancreático',
+                                  'Wirsung'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las partes del páncreas son cabeza, cuerpo, '
+                             'cuello y:',
+                 'alternativas': ['Base',
+                                  'Cola',
+                                  'Vértice',
+                                  'Istmo',
+                                  'Ápice'],
+                 'correcta': 'B'},
+                {'pregunta': 'Como glándula endocrina, el páncreas regula el '
+                             'metabolismo de glúcidos mediante insulina y:',
+                 'alternativas': ['Secretina',
+                                  'Glucagón',
+                                  'Gastrina',
+                                  'Colecistoquinina',
+                                  'Somatostatina'],
+                 'correcta': 'B'},
+                {'pregunta': 'La secreción exocrina del páncreas, el jugo '
+                             'pancreático, es regulada por la hormona:',
+                 'alternativas': ['Insulina',
+                                  'Secretina',
+                                  'Glucagón',
+                                  'Gastrina',
+                                  'Adrenalina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema circulatorio de los vertebrados se '
+                             'caracteriza por ser:',
+                 'alternativas': ['Abierto',
+                                  'Cerrado',
+                                  'Mixto',
+                                  'Ausente en peces',
+                                  'Discontinuo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los peces tienen un corazón compuesto por una '
+                             'aurícula y un ventrículo, con circulación:',
+                 'alternativas': ['Doble e incompleta',
+                                  'Simple y completa',
+                                  'Doble y completa',
+                                  'Simple e incompleta',
+                                  'Triple'],
+                 'correcta': 'B'},
+                {'pregunta': 'En los anfibios, el corazón tiene dos '
+                             'aurículas y un ventrículo, donde se mezcla la '
+                             'sangre arterial con la:',
+                 'alternativas': ['Linfa',
+                                  'Venosa',
+                                  'Oxigenada exclusiva',
+                                  'Bilis',
+                                  'Orina'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los reptiles presentan dos aurículas y dos '
+                             'ventrículos con un tabique interventricular:',
+                 'alternativas': ['Completo en todos los casos',
+                                  'Incompleto, excepto en cocodrilos',
+                                  'Ausente',
+                                  'Triple',
+                                  'Doble'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las aves tienen circulación doble y completa, '
+                             'y son animales:',
+                 'alternativas': ['Ectotermos',
+                                  'Endotermos',
+                                  'Poiquilotermos',
+                                  'Anaerobios',
+                                  'Heterotermos exclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'En los mamíferos, las dos aurículas y dos '
+                             'ventrículos del corazón están:',
+                 'alternativas': ['Parcialmente unidos',
+                                  'Completamente separados',
+                                  'Fusionados',
+                                  'Conectados por un seno venoso',
+                                  'Ausentes en el lado derecho'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los vasos sanguíneos que llevan la sangre del '
+                             'cuerpo hacia el corazón se llaman:',
+                 'alternativas': ['Arterias',
+                                  'Venas',
+                                  'Capilares',
+                                  'Arteriolas',
+                                  'Vénulas exclusivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las estructuras que impiden que la sangre '
+                             'descienda por su propio peso en las venas se '
+                             'llaman:',
+                 'alternativas': ['Tabiques',
+                                  'Válvulas',
+                                  'Esfínteres',
+                                  'Cuerdas tendinosas',
+                                  'Membranas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los vasos que llevan la sangre con oxígeno a '
+                             'presión desde el corazón hacia el cuerpo se '
+                             'llaman:',
+                 'alternativas': ['Venas',
+                                  'Arterias',
+                                  'Capilares',
+                                  'Vénulas',
+                                  'Sinusoides'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los vasos microscópicos que unen las venas con '
+                             'las arterias, formados por una sola capa '
+                             'endotelial, se llaman:',
+                 'alternativas': ['Arteriolas',
+                                  'Capilares',
+                                  'Vénulas',
+                                  'Sinusoides',
+                                  'Anastomosis'],
+                 'correcta': 'B'},
+                {'pregunta': 'La circulación que envía sangre oxigenada por '
+                             'todo el cuerpo y retorna la sangre venosa al '
+                             'corazón se llama circulación:',
+                 'alternativas': ['Menor o pulmonar',
+                                  'Mayor o general',
+                                  'Coronaria exclusiva',
+                                  'Portal',
+                                  'Fetal'],
+                 'correcta': 'B'},
+                {'pregunta': 'La circulación que envía la sangre venosa a '
+                             'los pulmones y recoge el oxígeno se llama '
+                             'circulación:',
+                 'alternativas': ['Mayor o general',
+                                  'Menor o pulmonar',
+                                  'Sistémica',
+                                  'Coronaria',
+                                  'Portal'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema encargado de la defensa del '
+                             'organismo, integrado por una red de capilares '
+                             'por donde circula la linfa, se llama sistema:',
+                 'alternativas': ['Circulatorio',
+                                  'Linfático',
+                                  'Digestivo',
+                                  'Excretor',
+                                  'Endocrino'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los órganos que actúan como filtro del sistema '
+                             'linfático, eliminando partículas extrañas, se '
+                             'llaman:',
+                 'alternativas': ['Riñones',
+                                  'Ganglios linfáticos',
+                                  'Alveolos',
+                                  'Nefronas',
+                                  'Hepatocitos'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las aves, la dilatación del esófago donde '
+                             'se almacena y humedece el alimento se llama:',
+                 'alternativas': ['Molleja',
+                                  'Buche',
+                                  'Ventrículo',
+                                  'Cloaca',
+                                  'Duodeno'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las aves, el órgano muy musculoso que '
+                             'machaca el alimento con ayuda de piedras se '
+                             'llama:',
+                 'alternativas': ['Buche',
+                                  'Molleja',
+                                  'Estómago glandular',
+                                  'Esófago',
+                                  'Cloaca'],
+                 'correcta': 'B'}]},
  {'num': 9,
   'titulo': 'Coordinación',
   'secciones': [{'titulo': '9.1 EL SISTEMA NERVIOSO EN ANIMALES',
@@ -5616,7 +5979,102 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'división: la {mitosis}, que produce células '
                            'genéticamente idénticas, y la {meiosis}, con la '
                            'mitad del contenido genético.']},
-                {'titulo': '10.5 LA MEIOSIS',
+                {'titulo': '10.4 EL CICLO CELULAR',
+                 'items': ['El {ciclo celular} es la sucesión de etapas en '
+                           'que una célula alterna entre crecimiento y '
+                           '{división} a lo largo de su vida.',
+                           'En células somáticas, el ciclo celular comprende '
+                           'la {interfase} y la división por {mitosis}, '
+                           'dando dos células hijas diploides idénticas.',
+                           'Una célula humana típica puede dividirse en {24} '
+                           'horas; de este tiempo, la fase M ocupa menos de '
+                           'una {hora}.',
+                           'La fase {S} ocupa alrededor de 10 a 12 horas, '
+                           'aproximadamente la mitad del ciclo celular.',
+                           'La mitosis y citocinesis transcurren en menos de '
+                           'una hora, aproximadamente el {5}% del ciclo; el '
+                           'resto la célula permanece en {interfase}.',
+                           'El ciclo celular se divide en dos etapas '
+                           'principales: la {interfase} (fases G1, S y G2), '
+                           'y la división celular o fase {M}.',
+                           'Existen puntos de control del ciclo celular en '
+                           'las fases {G1}, S, G2 y M.']},
+                {'titulo': '10.5 LA INTERFASE Y SUS ETAPAS',
+                 'items': ['La {interfase} es el período entre dos '
+                           'divisiones celulares consecutivas, en el que la '
+                           'célula permanece hasta el {95}% del tiempo.',
+                           'Durante la interfase ocurre la duplicación del '
+                           '{ADN}, síntesis de histonas, y producción de '
+                           'organelos para las células hijas.',
+                           'En interfase, los cromosomas permanecen '
+                           'descondensados en el núcleo, constituyendo la '
+                           '{cromatina}.',
+                           'La fase {G1} es un período de crecimiento '
+                           'general y duplicación de organelos '
+                           'citoplasmáticos.',
+                           'En el punto de control {G1}, la célula decide si '
+                           'se divide o no, según encuentre los factores '
+                           'necesarios para pasar a la fase {S}.',
+                           'Si no recibe la señal de continuación en G1, la '
+                           'célula puede entrar en una fase de no división '
+                           'llamada {G0}.',
+                           'La fase {S}, o de síntesis, es cuando se realiza '
+                           'la duplicación o síntesis del {ADN}.',
+                           'La fase {G2}, segunda fase de intervalo, prepara '
+                           'a la célula para la división {nuclear}.']},
+                {'titulo': '10.6 LA MITOSIS: CONCEPTO Y FASES',
+                 'items': ['La {mitosis} es un proceso de división nuclear, '
+                           'o {cariocinesis}, que reparte el ADN replicado.',
+                           'La mitosis asegura que cada célula posea el '
+                           '{mismo} número y tipo de cromosomas que las '
+                           'demás.',
+                           'La mitosis es la base del {crecimiento} corporal '
+                           'y la reparación de {tejidos} en eucariontes '
+                           'pluricelulares.',
+                           'La mitosis dura entre {30} y 60 minutos, y tiene '
+                           '4 fases: profase, metafase, anafase y '
+                           '{telofase}.',
+                           'En la {profase}, se condensan los cromosomas '
+                           'duplicados y se forma el {huso} mitótico a '
+                           'partir del centrosoma.',
+                           'En la profase, una estructura proteica llamada '
+                           '{cinetocoro} se ensambla en el centrómero de '
+                           'cada cromátide.',
+                           'Al final de la profase, la {envoltura nuclear} '
+                           'se desintegra y los nucléolos desaparecen.',
+                           'En la {metafase}, los cromosomas se alinean en '
+                           'el ecuador de la célula, formando la placa '
+                           '{metafásica}.',
+                           'En la metafase, el ADN alcanza su {máximo} grado '
+                           'de condensación.',
+                           'En la {anafase}, los centrómeros se separan y '
+                           'las cromátidas hermanas son atraídas hacia polos '
+                           '{opuestos}.',
+                           'En la mayoría de células animales, el primer '
+                           'indicio de {citocinesis} aparece durante la '
+                           'anafase.',
+                           'En la {telofase}, los microtúbulos del huso se '
+                           'desintegran y se forma una nueva envoltura '
+                           '{nuclear} en cada grupo de cromosomas.']},
+                {'titulo': '10.7 LA CITOCINESIS',
+                 'items': ['La {citocinesis} es el proceso de división del '
+                           'citoplasma, que reparte el contenido '
+                           'citoplasmático y los {organelos}.',
+                           'La citocinesis ocurre principalmente durante la '
+                           '{telofase}, dividiendo la célula en dos partes '
+                           'casi {iguales}.',
+                           'En células {animales}, la membrana se constriñe '
+                           'por un surco de segmentación, formado por un '
+                           'anillo contráctil de {actina} y miosina.',
+                           'En células {vegetales}, no existe surco de '
+                           'segmentación; en su lugar se forma una {placa '
+                           'celular} a partir de vesículas del aparato de '
+                           'Golgi.',
+                           'En células vegetales, la placa celular se '
+                           'impregna de {pectinas} y forma la lámina '
+                           '{media}, dando origen a la nueva pared '
+                           'celular.']},
+                {'titulo': '10.8 LA MEIOSIS',
                  'items': ['La {meiosis} consiste en dos divisiones '
                            'celulares sucesivas, que reducen el número de '
                            'cromosomas a la {mitad}.',
@@ -5639,7 +6097,7 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            '{cromátidas}.',
                            'Las conexiones donde ocurrió el intercambio '
                            'genético se llaman {quiasmas}.']},
-                {'titulo': '10.6 REPRODUCCIÓN SEXUAL: CONCEPTO Y FECUNDACIÓN',
+                {'titulo': '10.9 REPRODUCCIÓN SEXUAL: CONCEPTO Y FECUNDACIÓN',
                  'items': ['La reproducción {sexual} implica la fusión de '
                            'dos {gametos} y la mezcla de sus materiales '
                            'genéticos.',
@@ -5652,7 +6110,8 @@ BIOLOGIA_TEMAS = [{'num': 1,
                            'La fecundación {interna} ocurre dentro del '
                            'cuerpo de la hembra, en la mayoría de animales '
                            'terrestres.']},
-                {'titulo': '10.7 GAMETOS Y TIPOS DE ORGANISMOS SEGÚN SU SEXO',
+                {'titulo': '10.10 GAMETOS Y TIPOS DE ORGANISMOS SEGÚN SU '
+                           'SEXO',
                  'items': ['Los gametos masculinos, pequeños, se llaman '
                            '{espermatozoides}; los femeninos, más grandes, '
                            'se llaman {óvulos}.',
@@ -5675,8 +6134,20 @@ BIOLOGIA_TEMAS = [{'num': 1,
                'filas': [['{Escisión binaria}', '{Paramecium}, Euglena'],
                          ['{Gemación}', '{Hidra}, esponjas'],
                          ['{Esporulación}', '{Plasmodium}'],
-                         ['{Fragmentación}',
-                          '{Planaria}, estrella de mar']]}],
+                         ['{Fragmentación}', '{Planaria}, estrella de mar']]},
+              {'titulo': 'CITOCINESIS: CÉLULA ANIMAL FRENTE A VEGETAL',
+               'despues_de': '10.7 LA CITOCINESIS',
+               'encabezados': ['Célula animal', 'Célula vegetal'],
+               'filas': [['Se forma un surco de {segmentación}',
+                          'Se forma una {placa} celular'],
+                         ['Interviene un anillo de {actina} y miosina',
+                          'Intervienen vesículas del {Golgi}'],
+                         ['La célula se {estrangula} hasta separarse',
+                          'La placa crece hasta fusionarse con la '
+                          '{membrana}'],
+                         ['No forma pared celular nueva',
+                          'Se forma una nueva {pared} celular de '
+                          'celulosa']]}],
   'preguntas': [{'pregunta': 'En la reproducción asexual interviene:',
                  'alternativas': ['Solo gametos masculinos',
                                   'Dos organismos',
@@ -5991,7 +6462,217 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Hermafroditas',
                                   'Monoicos',
                                   'Dioicos o unisexuales'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'},
+                {'pregunta': 'El ciclo celular en células somáticas '
+                             'comprende la interfase y la división por:',
+                 'alternativas': ['Meiosis',
+                                  'Mitosis',
+                                  'Gemación',
+                                  'Esporulación',
+                                  'Fisión binaria'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una célula humana típica puede completar su '
+                             'ciclo celular en aproximadamente:',
+                 'alternativas': ['12 horas',
+                                  '24 horas',
+                                  '48 horas',
+                                  '6 horas',
+                                  '72 horas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fase del ciclo celular que ocupa '
+                             'aproximadamente la mitad del tiempo total, '
+                             'dedicada a la síntesis de ADN, es la fase:',
+                 'alternativas': ['G1', 'S', 'G2', 'M', 'G0'],
+                 'correcta': 'B'},
+                {'pregunta': 'La mitosis y la citocinesis transcurren en '
+                             'menos de una hora, representando '
+                             'aproximadamente qué porcentaje del ciclo '
+                             'celular:',
+                 'alternativas': ['50%', '5%', '25%', '75%', '95%'],
+                 'correcta': 'B'},
+                {'pregunta': 'La célula permanece en interfase '
+                             'aproximadamente qué porcentaje del tiempo del '
+                             'ciclo celular:',
+                 'alternativas': ['50%', '95%', '25%', '75%', '5%'],
+                 'correcta': 'B'},
+                {'pregunta': 'La interfase se divide en tres fases, '
+                             'denominadas:',
+                 'alternativas': ['Profase, metafase y anafase',
+                                  'G1, S y G2',
+                                  'Mitosis, meiosis y citocinesis',
+                                  'Inicial, media y final',
+                                  'Alfa, beta y gamma'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante la interfase, los cromosomas '
+                             'permanecen descondensados en el núcleo, '
+                             'constituyendo la:',
+                 'alternativas': ['Cariocinesis',
+                                  'Cromatina',
+                                  'Placa metafásica',
+                                  'Cinetocoro',
+                                  'Lámina media'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fase de crecimiento general y duplicación '
+                             'de organelos citoplasmáticos, previa a la '
+                             'síntesis de ADN, se llama fase:',
+                 'alternativas': ['S', 'G1', 'G2', 'M', 'G0'],
+                 'correcta': 'B'},
+                {'pregunta': 'Si en el punto de control G1 la célula no '
+                             'recibe la señal de continuación, puede entrar '
+                             'en una fase de no división llamada:',
+                 'alternativas': ['G2', 'G0', 'S', 'M', 'Telofase'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fase en la que se realiza la duplicación o '
+                             'síntesis del ADN se llama fase:',
+                 'alternativas': ['G1', 'S', 'G2', 'M', 'G0'],
+                 'correcta': 'B'},
+                {'pregunta': 'La mitosis es básicamente un proceso de '
+                             'división nuclear, también llamado:',
+                 'alternativas': ['Citocinesis',
+                                  'Cariocinesis',
+                                  'Meiosis I',
+                                  'Sinapsis',
+                                  'Interfase'],
+                 'correcta': 'B'},
+                {'pregunta': 'La mitosis es la base del crecimiento corporal '
+                             'y de la:',
+                 'alternativas': ['Fecundación',
+                                  'Reparación de tejidos',
+                                  'Variabilidad genética',
+                                  'Recombinación',
+                                  'Formación de gametos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La mitosis, como proceso continuo, dura '
+                             'aproximadamente entre 30 y:',
+                 'alternativas': ['45 minutos',
+                                  '60 minutos',
+                                  '90 minutos',
+                                  '20 minutos',
+                                  '120 minutos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las cuatro fases de la mitosis, en orden, son '
+                             'profase, metafase, anafase y:',
+                 'alternativas': ['Interfase',
+                                  'Telofase',
+                                  'Citocinesis',
+                                  'Sinapsis',
+                                  'G2'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la profase, la estructura proteica que se '
+                             'ensambla en el centrómero de cada cromátide se '
+                             'llama:',
+                 'alternativas': ['Centrosoma',
+                                  'Cinetocoro',
+                                  'Huso mitótico',
+                                  'Placa metafásica',
+                                  'Nucléolo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El huso mitótico se forma en la profase a '
+                             'partir de una estructura llamada:',
+                 'alternativas': ['Cinetocoro',
+                                  'Centrosoma',
+                                  'Nucléolo',
+                                  'Cromátide',
+                                  'Cromatina'],
+                 'correcta': 'B'},
+                {'pregunta': 'Al final de la profase, la estructura que se '
+                             'desintegra liberando los cromosomas duplicados '
+                             'es la:',
+                 'alternativas': ['Membrana plasmática',
+                                  'Envoltura nuclear',
+                                  'Pared celular',
+                                  'Placa metafásica',
+                                  'Placa celular'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la metafase, los cromosomas se alinean en '
+                             'el ecuador de la célula formando la:',
+                 'alternativas': ['Cromatina',
+                                  'Placa metafásica',
+                                  'Envoltura nuclear',
+                                  'Placa celular',
+                                  'Lámina media'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante la metafase, el ADN alcanza su:',
+                 'alternativas': ['Mínimo grado de condensación',
+                                  'Máximo grado de condensación',
+                                  'Total descondensación',
+                                  'Duplicación completa',
+                                  'Fragmentación total'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la anafase, las estructuras que se separan '
+                             'primero, permitiendo la separación de las '
+                             'cromátidas hermanas, son los:',
+                 'alternativas': ['Cinetocoros exclusivamente',
+                                  'Centrómeros',
+                                  'Nucléolos',
+                                  'Husos mitóticos',
+                                  'Microtúbulos exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la mayoría de células animales, el primer '
+                             'indicio de citocinesis suele aparecer durante '
+                             'la:',
+                 'alternativas': ['Profase',
+                                  'Anafase',
+                                  'Metafase',
+                                  'Interfase',
+                                  'Fase G1'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la telofase, alrededor de cada grupo de '
+                             'cromosomas se forma una nueva:',
+                 'alternativas': ['Placa metafásica',
+                                  'Envoltura nuclear',
+                                  'Placa celular',
+                                  'Membrana citoplasmática exclusiva',
+                                  'Pared celular'],
+                 'correcta': 'B'},
+                {'pregunta': 'La citocinesis es el proceso de división del:',
+                 'alternativas': ['Núcleo',
+                                  'Citoplasma',
+                                  'ADN exclusivamente',
+                                  'Nucléolo',
+                                  'Centrómero'],
+                 'correcta': 'B'},
+                {'pregunta': 'La citocinesis ocurre principalmente durante '
+                             'la:',
+                 'alternativas': ['Profase',
+                                  'Telofase',
+                                  'Metafase',
+                                  'Anafase temprana exclusiva',
+                                  'Interfase'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las células animales, la constricción de la '
+                             'membrana durante la citocinesis se debe a un '
+                             'anillo contráctil de microfilamentos de:',
+                 'alternativas': ['Tubulina',
+                                  'Actina',
+                                  'Queratina',
+                                  'Colágeno',
+                                  'Miosina exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'En las células vegetales, en lugar de un surco '
+                             'de segmentación, la citocinesis forma una:',
+                 'alternativas': ['Membrana nueva exclusiva',
+                                  'Placa celular',
+                                  'Vacuola central',
+                                  'Pared primaria exclusiva',
+                                  'Lámina nuclear'],
+                 'correcta': 'B'},
+                {'pregunta': 'La placa celular de las células vegetales se '
+                             'forma a partir de vesículas derivadas del:',
+                 'alternativas': ['Retículo endoplasmático',
+                                  'Aparato de Golgi',
+                                  'Núcleo',
+                                  'Lisosoma',
+                                  'Peroxisoma'],
+                 'correcta': 'B'},
+                {'pregunta': 'La placa celular vegetal se impregna de '
+                             'pectinas y forma finalmente la:',
+                 'alternativas': ['Pared primaria exclusiva',
+                                  'Lámina media',
+                                  'Membrana plasmática nueva',
+                                  'Cutícula',
+                                  'Placa metafásica'],
+                 'correcta': 'B'}]},
  {'num': 11,
   'titulo': 'Genética',
   'secciones': [{'titulo': '11.1 CONCEPTO Y RAMAS DE LA GENÉTICA',
