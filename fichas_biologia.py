@@ -331,7 +331,25 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Ecología',
                                   'Patología',
                                   'Fisiología'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'DEFINICIÓN DE BIOLOGÍA',
+                      'items': ['Etimológicamente, «biología» deriva de las '
+                                'raíces griegas «bios» (vida) y «logos» '
+                                '(tratado o estudio).']},
+                     {'titulo': 'RAMAS DE LA BIOLOGÍA',
+                      'items': ['La anatomía estudia los órganos, aparatos y '
+                                'sistemas de los seres vivos.']},
+                     {'titulo': 'RELACIÓN CON OTRAS CIENCIAS',
+                      'items': ['La unión de la física y la biología da '
+                                'origen a la biofísica, que estudia la '
+                                'estructura de los seres vivos.']},
+                     {'titulo': 'NIVEL QUÍMICO DE ORGANIZACIÓN',
+                      'items': ['El nivel subatómico está formado por '
+                                'protón, neutrón y electrón.']},
+                     {'titulo': 'NIVEL BIOLÓGICO DE ORGANIZACIÓN',
+                      'items': ['El nivel celular es la unidad mínima de la '
+                                'materia viva; los organismos formados por '
+                                'muchas células son pluricelulares.']}]},
  {'num': 2,
   'titulo': 'Composición Química de la Materia Viviente',
   'secciones': [{'titulo': '2.1 BIOELEMENTOS',
@@ -633,7 +651,26 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Zinc',
                                   'Selenio',
                                   'Silicio'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'BIOELEMENTOS',
+                      'items': ['La materia está formada por 118 elementos '
+                                'químicos, de los cuales 92 son naturales.']},
+                     {'titulo': '.A BIOELEMENTOS PRIMARIOS',
+                      'items': ['Los macroelementos representan el 99,6% de '
+                                'la materia viva, y están conformados por 11 '
+                                'bioelementos.']},
+                     {'titulo': '.B BIOELEMENTOS SECUNDARIOS',
+                      'items': ['Los bioelementos secundarios son cinco: '
+                                'sodio, potasio, calcio, magnesio y cloro.']},
+                     {'titulo': '.A MICROELEMENTOS NO VARIABLES',
+                      'items': ['Los microelementos, u oligoelementos, se '
+                                'encuentran en los seres vivos en cantidades '
+                                'muy pequeñas: apenas 0,4% de la materia '
+                                'viva.']},
+                     {'titulo': '.B MICROELEMENTOS VARIABLES',
+                      'items': ['Los microelementos variables son: selenio, '
+                                'silicio, cromo, aluminio, litio, níquel y '
+                                'bromo.']}]},
  {'num': 3,
   'titulo': 'Biomoléculas Inorgánicas',
   'secciones': [{'titulo': 'CARACTERÍSTICAS GENERALES DE LAS BIOMOLÉCULAS '
@@ -1067,7 +1104,36 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Secreción de las células nerviosas',
                                   'Fotosíntesis',
                                   'Respiración celular exclusiva'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'CARACTERÍSTICAS GENERALES DE LAS '
+                                'BIOMOLÉCULAS INORGÁNICAS',
+                      'items': ['Las biomoléculas inorgánicas se '
+                                'caracterizan por la ausencia de enlaces '
+                                'carbono-carbono en su estructura química.']},
+                     {'titulo': 'EL AGUA',
+                      'items': ['La molécula de agua está formada por dos '
+                                'átomos de hidrógeno y uno de oxígeno, '
+                                'unidos por enlaces covalentes.']},
+                     {'titulo': 'AGUA EN LA CÉLULA',
+                      'items': ['El agua libre representa el 95% del agua '
+                                'celular, y actúa como solvente estable e '
+                                'ionizante.']},
+                     {'titulo': 'PROPIEDADES DEL AGUA',
+                      'items': ['El poder solvente del agua es su capacidad '
+                                'de disolver gran cantidad de moléculas '
+                                'inorgánicas y orgánicas.']},
+                     {'titulo': 'FUNCIONES DEL AGUA',
+                      'items': ['La función de transporte: el agua '
+                                'transporta sustancias del interior al '
+                                'exterior de la célula y viceversa.']},
+                     {'titulo': 'SALES MINERALES Y ELECTROLITOS',
+                      'items': ['Las sales minerales son compuestos neutros '
+                                'producidos por la reacción de un ácido y '
+                                'una base.']},
+                     {'titulo': 'FUNCIONES DE LOS ELECTROLITOS',
+                      'items': ['La concentración elevada de sodio '
+                                '(Na<super>+</super>) en la sangre produce '
+                                'hipertensión arterial.']}]},
  {'num': 4,
   'titulo': 'Biomoléculas Orgánicas',
   'secciones': [{'titulo': '4.1.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
@@ -2268,7 +2334,93 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La presión osmótica',
                                   'La temperatura',
                                   'El azar'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CARACTERÍSTICAS DE LOS CARBOHIDRATOS / '
+                                'FUNCIONES DE LOS CARBOHIDRATOS (+2)',
+                      'items': ['Los carbohidratos, o glúcidos, son '
+                                'moléculas orgánicas formadas por carbono, '
+                                'hidrógeno y oxígeno.',
+                                'Los carbohidratos son fuente inmediata de '
+                                'energía, proporcionando la energía de '
+                                'arranque para las actividades vitales.',
+                                'Los monosacáridos son los azúcares más '
+                                'simples, dulces, sólidos, cristalizables e '
+                                'hidrolizables.',
+                                'Los oligosacáridos son cadenas de 2 a 10 '
+                                'monosacáridos unidos por un enlace '
+                                'O-glucosídico.']},
+                     {'titulo': 'LÍPIDOS: CARACTERÍSTICAS Y FUNCIONES / '
+                                'COMPOSICIÓN MOLECULAR: ÁCIDOS GRASOS',
+                      'items': ['Los lípidos son insolubles en agua, pero '
+                                'solubles en solventes orgánicos como el '
+                                'cloroformo o el éter.',
+                                'Los ácidos grasos son cadenas '
+                                'hidrocarbonadas con un grupo carboxilo en '
+                                'un extremo.',
+                                'Los lípidos simples son ésteres de alcohol '
+                                'y ácidos grasos, con solo carbono, '
+                                'hidrógeno y oxígeno.',
+                                'Los lípidos compuestos son los principales '
+                                'componentes de la estructura de las '
+                                'membranas celulares.']},
+                     {'titulo': '.C ESTEROIDES / PROTEÍNAS: CARACTERÍSTICAS '
+                                'Y FUNCIONES (+2)',
+                      'items': ['Los esteroides derivan de un hidrocarburo '
+                                'tetracíclico de 17 carbonos, llamado '
+                                'ciclopentano perhidrofenantreno.',
+                                'Las proteínas son los compuestos orgánicos '
+                                'más abundantes en las células, '
+                                'constituyendo hasta el 50% del peso seco.',
+                                'Todo aminoácido tiene un carbono central '
+                                'unido a un grupo amino, un grupo carboxilo '
+                                'y un grupo R.',
+                                'La estructura primaria es la secuencia de '
+                                'aminoácidos, representada como cadena '
+                                'lineal con grupo amino NH2 y carboxilo '
+                                'terminal.']},
+                     {'titulo': 'LAS PROTEÍNAS COMO ENZIMAS / .A PROTEÍNAS '
+                                'SIMPLES: GLOBULARES (+2)',
+                      'items': ['Con excepción de un pequeño grupo de ARN '
+                                'catalítico, todas las enzimas son '
+                                'proteínas.',
+                                'Las proteínas simples u holoproteínas están '
+                                'constituidas solo por aminoácidos.',
+                                'Las proteínas fibrosas o escleroproteínas '
+                                'son insolubles en agua, con funciones '
+                                'estructurales y de protección.',
+                                'Las proteínas conjugadas están formadas por '
+                                'una proteína simple más un grupo prostético '
+                                'no proteico.']},
+                     {'titulo': 'COMPOSICIÓN: NUCLEÓTIDOS / GENERALIDADES '
+                                'DEL ADN (+2)',
+                      'items': ['Los ácidos nucleicos son polímeros lineales '
+                                'de nucleótidos: ADN y ARN.',
+                                'El ADN contiene toda la información '
+                                'genética y tiene la capacidad de '
+                                'replicarse.',
+                                'En 1953, Watson y Crick propusieron el '
+                                'modelo de la doble hélice del ADN, ganando '
+                                'el Premio Nobel.',
+                                'La replicación del ADN es semiconservativa: '
+                                'la nueva doble hélice tiene una hebra '
+                                'original y una recién sintetizada.']},
+                     {'titulo': 'FUNCIONES DEL ADN / EL ARN Y LA '
+                                'TRANSCRIPCIÓN (+2)',
+                      'items': ['El ADN tiene la capacidad de replicarse, '
+                                'para que las células hijas tengan la misma '
+                                'dotación genética que la madre.',
+                                'El ARN se diferencia del ADN porque '
+                                'presenta el azúcar ribosa y la base uracilo '
+                                'en lugar de la timina.',
+                                'El ARN mensajero (ARNm) lleva la '
+                                'información genética copiada del ADN en '
+                                'tripletes llamados codones.',
+                                'En la traducción participa el ARN '
+                                'ribosomal, que forma los ribosomas, donde '
+                                'se sintetizan las proteínas.']},
+                     {'titulo': 'FUNCIONES DEL ARN',
+                      'items': ['El ARN copia al ADN para producir las '
+                                'proteínas que necesita la célula.']}]},
  {'num': 5,
   'titulo': 'La Célula',
   'secciones': [{'titulo': '5.1 GENERALIDADES Y ORIGEN DEL TÉRMINO',
@@ -2748,7 +2900,32 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Oscillatoria',
                                   'Spirulina',
                                   'Chlorella'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'GENERALIDADES Y ORIGEN DEL TÉRMINO',
+                      'items': ['La palabra «célula» proviene del latín '
+                                '«cella», que significa «pequeña habitación '
+                                'o celda».']},
+                     {'titulo': 'LA TEORÍA CELULAR',
+                      'items': ['Los fundadores de la teoría celular fueron '
+                                'Mathias Schleiden (1838) y Theodor Schwann '
+                                '(1839).']},
+                     {'titulo': 'CÉLULA PROCARIOTA Y EUCARIOTA',
+                      'items': ['«Procariota» proviene del griego «protos» '
+                                '(primitivo) y «karyon» (núcleo).']},
+                     {'titulo': 'ESTRUCTURA BACTERIANA',
+                      'items': ['La cápsula es una estructura de '
+                                'polisacáridos que forma un glucocálix '
+                                'grueso y rígido, con función de '
+                                'adherencia.']},
+                     {'titulo': 'MICOPLASMAS',
+                      'items': ['Los micoplasmas, también llamados '
+                                'Mollicutes o PPLO, son las bacterias más '
+                                'pequeñas conocidas, con diámetro de 0,125 a '
+                                '0,150 µm.']},
+                     {'titulo': 'CIANOBACTERIAS',
+                      'items': ['Las cianobacterias, o algas verde-azules, '
+                                'son las bacterias fotosintéticas más '
+                                'evolucionadas.']}]},
  {'num': 6,
   'titulo': 'Célula Eucariota',
   'secciones': [{'titulo': '6.1 ESTRUCTURA GENERAL',
@@ -3661,7 +3838,71 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'El ribosoma',
                                   'La mitocondria',
                                   'El peroxisoma'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'ESTRUCTURA GENERAL / PARED CELULAR Y '
+                                'GLICOCÁLIX (+1)',
+                      'items': ['Las células eucariotas tienen su ADN '
+                                'encerrado dentro de una doble membrana o '
+                                'envoltura nuclear.',
+                                'La pared celular está presente solo en '
+                                'células vegetales y hongos, y está formada '
+                                'por celulosa.',
+                                'La membrana plasmática es de naturaleza '
+                                'lipoproteica y tiene permeabilidad '
+                                'selectiva.']},
+                     {'titulo': 'PROTEÍNAS DE MEMBRANA / FUNCIONES DE LA '
+                                'MEMBRANA CELULAR (+1)',
+                      'items': ['Las proteínas periféricas o extrínsecas se '
+                                'localizan en las superficies de la membrana '
+                                'y son solubles en agua.',
+                                'La compartimentalización separa los medios '
+                                'intracelular y extracelular.',
+                                'El transporte pasivo, o difusión pasiva, '
+                                'ocurre en forma espontánea, sin gasto de '
+                                'energía, a favor del gradiente de '
+                                'concentración.']},
+                     {'titulo': 'TRANSPORTE ACTIVO / EL CITOPLASMA (+1)',
+                      'items': ['El transporte activo requiere gasto de '
+                                'energía en forma de ATP, mediante la enzima '
+                                'ATPasa.',
+                                'El citoplasma, o hialoplasma, es el mayor '
+                                'compartimento de la célula, entre la '
+                                'membrana plasmática y la nuclear.',
+                                'Los cilios y flagelos son proyecciones '
+                                'móviles formadas por microtúbulos y '
+                                'proteínas accesorias como la dineína y '
+                                'nexina.']},
+                     {'titulo': 'RIBOSOMAS Y RETÍCULO ENDOPLASMÁTICO / '
+                                'COMPLEJO DE GOLGI Y LISOSOMAS (+1)',
+                      'items': ['Los ribosomas tienen dos subunidades '
+                                'compuestas por ARNr, y se elaboran en el '
+                                'nucléolo.',
+                                'El complejo de Golgi es un grupo de sacos '
+                                'aplanados llamados dictiosomas.',
+                                'Los peroxisomas son similares a los '
+                                'lisosomas, pero contienen enzimas '
+                                'distintas: peroxidasas y catalasas.']},
+                     {'titulo': 'GLIOXISOMAS / VACUOLAS (+1)',
+                      'items': ['Los glioxisomas son un tipo especial de '
+                                'peroxisomas exclusivos de células '
+                                'vegetales.',
+                                'Las vacuolas son sacos membranosos que se '
+                                'forman del retículo endoplásmico, el Golgi, '
+                                'o invaginaciones de la membrana.',
+                                'Las mitocondrias se encuentran en todas las '
+                                'células eucariotas, con doble membrana '
+                                '(interna y externa).']},
+                     {'titulo': 'PLASTOS Y CLOROPLASTOS / EL NÚCLEO (+1)',
+                      'items': ['Los plastos son orgánulos elípticos de las '
+                                'células vegetales, similares a las '
+                                'mitocondrias.',
+                                'El núcleo está ausente en los glóbulos '
+                                'rojos maduros de los mamíferos.',
+                                'La cromatina está constituida por ADN, '
+                                'histonas y proteínas no histónicas.']},
+                     {'titulo': 'CROMOSOMAS',
+                      'items': ['Los cromosomas resultan del empaquetamiento '
+                                'máximo del ADN nuclear con proteínas.']}]},
  {'num': 7,
   'titulo': 'Nutrición',
   'secciones': [{'titulo': '7.1 TIPOS DE NUTRICIÓN CELULAR',
@@ -4327,7 +4568,54 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Aerobios obligados',
                                   'Anaerobios facultativos',
                                   'Heterótrofos exclusivos'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'TIPOS DE NUTRICIÓN CELULAR / NUTRICIÓN '
+                                'QUIMIOAUTÓTROFA',
+                      'items': ['La nutrición celular puede ser de dos '
+                                'tipos: autótrofa y heterótrofa.',
+                                'La nutrición quimioautótrofa, o '
+                                'quimiosíntesis, es característica de los '
+                                'organismos procariontes.']},
+                     {'titulo': 'NUTRICIÓN FOTOAUTÓTROFA: LA FOTOSÍNTESIS / '
+                                'FASE LUMINOSA: FOTOSISTEMAS',
+                      'items': ['El organelo típicamente vegetal necesario '
+                                'para la fotosíntesis es el cloroplasto.',
+                                'La fase luminosa ocurre en las membranas de '
+                                'los tilacoides, donde la clorofila rompe la '
+                                'molécula de agua (fotólisis).']},
+                     {'titulo': 'FASE OSCURA: EL CICLO DE CALVIN / NUTRICIÓN '
+                                'HETERÓTROFA',
+                      'items': ['La fase oscura, o reacciones independientes '
+                                'de la luz, ocurre en el estroma del '
+                                'cloroplasto.',
+                                'Un heterótrofo es un organismo que no puede '
+                                'fabricar sus propios alimentos y deriva '
+                                'nutrientes de materia orgánica ajena.']},
+                     {'titulo': 'RESPIRACIÓN AERÓBICA: GLUCÓLISIS / '
+                                'FORMACIÓN DE ACETIL COA',
+                      'items': ['La respiración aeróbica requiere presencia '
+                                'de oxígeno, produciendo dióxido de carbono '
+                                'y agua.',
+                                'La respiración celular comprende cuatro '
+                                'etapas: glucólisis, formación de acetil '
+                                'CoA, ciclo de Krebs, y cadena de transporte '
+                                'de electrones.']},
+                     {'titulo': 'EL CICLO DE KREBS / CADENA RESPIRATORIA '
+                                '(FOSFORILACIÓN OXIDATIVA)',
+                      'items': ['El ciclo de Krebs, o del ácido cítrico, '
+                                'debe su nombre a Hans Adolf Krebs, quien lo '
+                                'estudió hacia 1937.',
+                                'La cadena respiratoria, o fosforilación '
+                                'oxidativa, es la etapa final de la '
+                                'respiración celular, donde se produce la '
+                                'mayor cantidad de ATP.']},
+                     {'titulo': 'RESPIRACIÓN ANAERÓBICA O FERMENTACIÓN / '
+                                'TIPOS DE FERMENTACIÓN',
+                      'items': ['La respiración anaeróbica, o fermentación, '
+                                'se lleva a cabo en ausencia de oxígeno.',
+                                'En la fermentación alcohólica, los '
+                                'piruvatos se reducen a etanol, con '
+                                'liberación de CO2.']}]},
  {'num': 8,
   'titulo': 'Nivel Sistémico',
   'secciones': [{'titulo': '8.1 EL SISTEMA RESPIRATORIO HUMANO',
@@ -5639,7 +5927,91 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Esófago',
                                   'Cloaca',
                                   'Estómago glandular'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'EL SISTEMA RESPIRATORIO HUMANO / DIVISIÓN '
+                                'FISIOLÓGICA DEL APARATO RESPIRATO',
+                      'items': ['El hombre es un ser de respiración aerobia: '
+                                'requiere aporte continuo de oxígeno para '
+                                'sus células.',
+                                'La porción conductora conduce el aire '
+                                'inspirado y espirado; comprende nariz, '
+                                'faringe, laringe, tráquea y bronquios.',
+                                'El interior de la nariz se divide en dos '
+                                'cavidades nasales separadas por el tabique '
+                                'nasal.']},
+                     {'titulo': 'LA DIGESTIÓN: CONCEPTO Y TIPOS / SISTEMA '
+                                'DIGESTIVO EN INVERTEBRADOS (+1)',
+                      'items': ['El alimento sirve como combustible para '
+                                'energía y como fuente de sustancias para '
+                                'crecimiento y regeneración.',
+                                'Los poríferos, como las esponjas, no tienen '
+                                'boca; filtran agua a través de poros para '
+                                'obtener alimento y oxígeno.',
+                                'En las aves, el esófago presenta una amplia '
+                                'dilatación llamada buche, donde se almacena '
+                                'y humedece el alimento.']},
+                     {'titulo': 'SISTEMA DIGESTIVO HUMANO: ÓRGANOS / '
+                                'HISTOLOGÍA DEL TUBO DIGESTIVO (+1)',
+                      'items': ['El tubo digestivo, o tracto '
+                                'gastrointestinal, incluye boca, faringe, '
+                                'esófago, estómago, intestino delgado y '
+                                'grueso.',
+                                'Las cuatro capas del tubo digestivo, de '
+                                'adentro hacia afuera, son: mucosa, '
+                                'submucosa, muscular y serosa.',
+                                'La cavidad bucal se divide en vestíbulo '
+                                'bucal y cavidad oral propiamente dicha.']},
+                     {'titulo': 'GLÁNDULAS SALIVALES / EL HÍGADO (+1)',
+                      'items': ['Las glándulas salivales menores están '
+                                'diseminadas por toda la mucosa bucal: '
+                                'palatinas, labiales, bucales y linguales.',
+                                'El hígado, o hepar, es la glándula más '
+                                'voluminosa anexa al aparato digestivo; pesa '
+                                'alrededor de 1,4 kilos en un adulto.',
+                                'El páncreas es una glándula de secreción '
+                                'externa e interna, unida al duodeno por sus '
+                                'conductos excretores.']},
+                     {'titulo': 'SISTEMA CIRCULATORIO: TIPOS / CIRCULACIÓN '
+                                'EN INVERTEBRADOS (+1)',
+                      'items': ['Las partes principales del sistema '
+                                'circulatorio son el corazón, los vasos '
+                                'sanguíneos y la sangre.',
+                                'Los poríferos y cnidarios no tienen sistema '
+                                'circulatorio; el transporte es por difusión '
+                                'simple.',
+                                'El sistema circulatorio de los vertebrados '
+                                'es cerrado y no presenta senos o lagunas.']},
+                     {'titulo': 'LA SANGRE / EL CORAZÓN (+1)',
+                      'items': ['El sistema circulatorio también se llama '
+                                'cardiovascular: «cardio» (corazón) y '
+                                '«vascular» (vasos sanguíneos).',
+                                'El corazón bombea sangre entre 60 y 100 '
+                                'veces por minuto, ubicado en el mediastino.',
+                                'Las venas son vasos de paredes delgadas y '
+                                'poco elásticas; llevan la sangre del cuerpo '
+                                'hacia el corazón.']},
+                     {'titulo': 'CIRCULACIÓN MAYOR Y MENOR / SISTEMA '
+                                'LINFÁTICO (+1)',
+                      'items': ['La circulación mayor, o general, es la '
+                                'circulación de la sangre oxigenada por todo '
+                                'el cuerpo y el retorno de la sangre venosa '
+                                'hacia el corazón.',
+                                'El sistema linfático, o linfoide, es de '
+                                'suma importancia en la defensa del '
+                                'organismo; está integrado por una red de '
+                                'capilares por donde circula la linfa.',
+                                'La excreción es el proceso por el cual los '
+                                'seres vivos liberan productos de desecho '
+                                'del metabolismo.']},
+                     {'titulo': 'EXCRECIÓN EN VERTEBRADOS / EL RIÑÓN (+1)',
+                      'items': ['Los peces excretan por los riñones y por '
+                                'células branquiales especializadas.',
+                                'El aparato excretor humano se compone de '
+                                'dos riñones y un conjunto de vías '
+                                'urinarias.',
+                                'La nefrona es la unidad estructural y '
+                                'funcional del riñón; cada riñón tiene cerca '
+                                'de un millón.']}]},
  {'num': 9,
   'titulo': 'Coordinación',
   'secciones': [{'titulo': '9.1 EL SISTEMA NERVIOSO EN ANIMALES',
@@ -5963,7 +6335,28 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Organiza, controla y coordina las '
                                   'funciones corporales',
                                   'Solo filtra la sangre'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'EL SISTEMA NERVIOSO EN ANIMALES',
+                      'items': ['El sistema nervioso lleva información desde '
+                                'los órganos sensoriales hasta los centros '
+                                'de control, generando una respuesta.']},
+                     {'titulo': 'SISTEMA NERVIOSO EN INVERTEBRADOS',
+                      'items': ['Los cnidarios son los organismos más '
+                                'sencillos con células nerviosas: una red '
+                                'difusa de protoneuronas.']},
+                     {'titulo': 'SISTEMA NERVIOSO EN VERTEBRADOS',
+                      'items': ['El sistema nervioso de los vertebrados se '
+                                'forma por invaginación dorsal del '
+                                'ectodermo, dando lugar al tubo neural.']},
+                     {'titulo': 'TIPOS DE SISTEMA NERVIOSO',
+                      'items': ['El sistema nervioso central consiste en el '
+                                'encéfalo y la médula espinal; el '
+                                'periférico, en los nervios que recorren el '
+                                'cuerpo.']},
+                     {'titulo': 'SISTEMA NERVIOSO HUMANO',
+                      'items': ['El sistema nervioso humano se divide en '
+                                'sistema nervioso central (SNC) y sistema '
+                                'nervioso periférico (SNP).']}]},
  {'num': 10,
   'titulo': 'Reproducción',
   'secciones': [{'titulo': '10.1 REPRODUCCIÓN ASEXUAL O AGÁMICA',
@@ -6697,7 +7090,45 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Membrana plasmática nueva',
                                   'Pared primaria exclusiva',
                                   'Cutícula'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'REPRODUCCIÓN ASEXUAL O AGÁMICA / TIPOS DE '
+                                'REPRODUCCIÓN ASEXUAL',
+                      'items': ['En la reproducción asexual interviene un '
+                                'solo organismo, sin fusión de gametos.',
+                                'La escisión binaria, o bipartición, se da '
+                                'por estrangulación en el plano medio, '
+                                'obteniendo dos nuevos individuos.']},
+                     {'titulo': 'REPRODUCCIÓN CELULAR / EL CICLO CELULAR',
+                      'items': ['La capacidad de perpetuar la especie es la '
+                                'característica que mejor distingue a los '
+                                'seres vivos.',
+                                'El ciclo celular es la sucesión de etapas '
+                                'en que una célula alterna entre crecimiento '
+                                'y división a lo largo de su vida.']},
+                     {'titulo': 'LA INTERFASE Y SUS ETAPAS / LA MITOSIS: '
+                                'CONCEPTO Y FASES',
+                      'items': ['La interfase es el período entre dos '
+                                'divisiones celulares consecutivas, en el '
+                                'que la célula permanece hasta el 95% del '
+                                'tiempo.',
+                                'La mitosis es un proceso de división '
+                                'nuclear, o cariocinesis, que reparte el ADN '
+                                'replicado.']},
+                     {'titulo': 'LA CITOCINESIS / LA MEIOSIS',
+                      'items': ['La citocinesis es el proceso de división '
+                                'del citoplasma, que reparte el contenido '
+                                'citoplasmático y los organelos.',
+                                'La meiosis consiste en dos divisiones '
+                                'celulares sucesivas, que reducen el número '
+                                'de cromosomas a la mitad.']},
+                     {'titulo': 'REPRODUCCIÓN SEXUAL: CONCEPTO Y FECUNDACIÓN '
+                                '/ GAMETOS Y TIPOS DE ORGANISMOS',
+                      'items': ['La reproducción sexual implica la fusión de '
+                                'dos gametos y la mezcla de sus materiales '
+                                'genéticos.',
+                                'Los gametos masculinos, pequeños, se llaman '
+                                'espermatozoides; los femeninos, más '
+                                'grandes, se llaman óvulos.']}]},
  {'num': 11,
   'titulo': 'Genética',
   'secciones': [{'titulo': '11.1 CONCEPTO Y RAMAS DE LA GENÉTICA',
@@ -7091,7 +7522,43 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Fuera de la tabla',
                                   'Diagonal',
                                   'El centro'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y RAMAS DE LA GENÉTICA',
+                      'items': ['«Genética» deriva de la raíz griega «gen», '
+                                'que significa «llegar a ser».']},
+                     {'titulo': 'TERMINOLOGÍA GENÉTICA',
+                      'items': ['El gen es la unidad de la herencia que '
+                                'produce la expresión característica '
+                                'observable.']},
+                     {'titulo': 'INTRODUCCIÓN A LAS LEYES DE MENDEL',
+                      'items': ['Los organismos diploides tienen los '
+                                'cromosomas en pares; un cromosoma de cada '
+                                'par viene del óvulo y el otro del '
+                                'espermatozoide.']},
+                     {'titulo': 'PRIMERA LEY DE MENDEL: DOMINANCIA',
+                      'items': ['La Primera Ley de Mendel, o Ley de la '
+                                'Uniformidad o de la Dominancia, se obtiene '
+                                'al cruzar dos líneas puras de una '
+                                'característica.']},
+                     {'titulo': 'SEGUNDA LEY DE MENDEL: SEGREGACIÓN',
+                      'items': ['La Segunda Ley de Mendel, o Ley de la '
+                                'Segregación de los Alelos, se obtiene al '
+                                'cruzar dos individuos heterocigotos de la '
+                                'F1.']},
+                     {'titulo': 'TERCERA LEY DE MENDEL: DISTRIBUCIÓN '
+                                'INDEPENDIENTE',
+                      'items': ['La Tercera Ley de Mendel, o Ley de la '
+                                'Distribución Independiente, estudia la '
+                                'herencia de dos características al mismo '
+                                'tiempo.']},
+                     {'titulo': 'EL CUADRO DE PUNNETT',
+                      'items': ['Para realizar los cruzamientos genéticos y '
+                                'predecir la descendencia, se utiliza el '
+                                'cuadro de Punnett.']},
+                     {'titulo': 'IMPORTANCIA Y APLICACIONES',
+                      'items': ['En la agricultura y ganadería se aplica la '
+                                'selección artificial para mejorar '
+                                'especies.']}]},
  {'num': 12,
   'titulo': 'Evolución y Origen de la Vida',
   'secciones': [{'titulo': '12.1 CONCEPTO Y ANTECEDENTES',
@@ -7524,7 +7991,44 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Fotosíntesis',
                                   'Fermentación',
                                   'Reducción exclusiva'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y ANTECEDENTES / TEORÍA DEL '
+                                'TRANSFORMISMO',
+                      'items': ['La evolución es todo cambio en una '
+                                'población mediante el cual se forman nuevas '
+                                'especies a lo largo del tiempo.',
+                                'La primera hipótesis completa de la '
+                                'evolución fue de Jean Baptiste Lamarck, '
+                                'publicada en 1809 en «Filosofía '
+                                'Zoológica».']},
+                     {'titulo': 'TEORÍA DE LA SELECCIÓN NATURAL / '
+                                'MUTACIONISMO Y TEORÍA SINTÉTICA',
+                      'items': ['Charles Darwin es el fundador de la teoría '
+                                'de la evolución, y publicó en 1859 «El '
+                                'origen de las especies».',
+                                'Hugo De Vries publicó en 1889 «Pangénesis '
+                                'intracelular», reemplazando la variación '
+                                'continua por la mutación.']},
+                     {'titulo': 'TEORÍAS DEL ORIGEN DE LA VIDA / '
+                                'EXPERIMENTOS CLAVE: REDI, SPALLANZANI Y PAS',
+                      'items': ['Entre las principales teorías del origen de '
+                                'la vida están el creacionismo, la '
+                                'generación espontánea, la biogénesis, la '
+                                'panspermia y la teoría quimiosintética.',
+                                'En el siglo XVII, el italiano Francisco '
+                                'Redi demostró con frascos de carne que la '
+                                'vida no surgía de materia inerte.']},
+                     {'titulo': 'TEORÍA COSMOZOICA O PANSPERMIA / TEORÍA DE '
+                                'LA QUIMIOSÍNTESIS',
+                      'items': ['La teoría de la panspermia fue propuesta en '
+                                '1879 por Herman Von Helmholtz.',
+                                'La teoría quimiosintética fue planteada en '
+                                '1921 por el bioquímico ruso Alexander '
+                                'Oparin.']},
+                     {'titulo': 'EL EXPERIMENTO DE MILLER Y UREY',
+                      'items': ['En 1953, Stanley Miller y Harold Urey '
+                                'simularon en laboratorio las condiciones de '
+                                'la atmósfera primitiva.']}]},
  {'num': 13,
   'titulo': 'Ecología, Factores Ecológicos y Ecosistemas',
   'secciones': [{'titulo': '13.1 CONCEPTO DE ECOLOGÍA',
@@ -8192,7 +8696,56 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Fascioliasis',
                                   'Paludismo',
                                   'Giardiasis'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DE ECOLOGÍA / EL ECOLOGISMO Y SUS '
+                                'TIPOS',
+                      'items': ['«Ecología» proviene de los vocablos griegos '
+                                '«oikos» (casa) y «logos» (ciencia).',
+                                'El ecologismo es el activismo de la '
+                                'ecología, un movimiento cívico para el '
+                                'cuidado del ambiente.']},
+                     {'titulo': 'FACTORES AMBIENTALES / EL ECOSISTEMA: '
+                                'CONCEPTO Y TÉRMINOS RELACIONADOS',
+                      'items': ['Los factores ambientales se clasifican en '
+                                'bióticos y abióticos.',
+                                'El término «ecosistema» fue acuñado por '
+                                'Arthur Tansley en 1935, como el complejo de '
+                                'organismos y factores físicos del '
+                                'ambiente.']},
+                     {'titulo': 'COMPONENTES ABIÓTICOS DEL ECOSISTEMA / '
+                                'RELACIONES INTRAESPECÍFICAS',
+                      'items': ['La luz solar es la fuente de energía de la '
+                                'mayoría de los ecosistemas.',
+                                'Las relaciones intraespecíficas u '
+                                'homotípicas se dan entre individuos de la '
+                                'misma especie.']},
+                     {'titulo': 'RELACIONES INTERESPECÍFICAS / MUTUA '
+                                'TOLERANCIA Y CONVIVENCIA',
+                      'items': ['Las relaciones interespecíficas u '
+                                'heterotípicas se dan entre individuos de '
+                                'especies diferentes.',
+                                'La foresia ocurre cuando un individuo se '
+                                'deja transportar temporalmente por otra '
+                                'especie, como los ácaros que se prenden de '
+                                'insectos.']},
+                     {'titulo': 'MUTUALISMO Y SIMBIOSIS / DEPREDACIÓN',
+                      'items': ['El mutualismo beneficia a ambas especies; '
+                                'puede ser facultativo (no imprescindible) u '
+                                'obligado.',
+                                'La depredación es el consumo de un '
+                                'organismo viviente por otro, en la relación '
+                                'presa-depredador.']},
+                     {'titulo': 'PARASITISMO / FUNCIONES DE LOS ECOSISTEMAS: '
+                                'SUCESIÓN ECOLÓGICA',
+                      'items': ['El parasitismo es la relación donde un '
+                                'organismo (parásito) usa a otro (hospedero) '
+                                'como fuente de alimento, debilitándolo.',
+                                'La sucesión ecológica es la secuencia de '
+                                'cambios que experimenta un ecosistema a '
+                                'través del tiempo.']},
+                     {'titulo': 'ECOSISTEMAS DEL PERÚ',
+                      'items': ['Los biomas son áreas climáticas definidas '
+                                'con condiciones ecológicas similares.']}]},
  {'num': 14,
   'titulo': 'Flujo de Energía y Ciclos Biogeoquímicos',
   'secciones': [{'titulo': '14.1 ENERGÍA CINÉTICA Y POTENCIAL',
@@ -8758,7 +9311,45 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Respiración exclusiva',
                                   'Absorción',
                                   'Fotosíntesis'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'ENERGÍA CINÉTICA Y POTENCIAL / LEYES DE LA '
+                                'TERMODINÁMICA',
+                      'items': ['La energía solar llega a la Tierra en '
+                                'partículas energéticas llamadas fotones.',
+                                'Los ecosistemas son sistemas '
+                                'termodinámicamente abiertos: la energía y '
+                                'materia entran y salen de ellos.']},
+                     {'titulo': 'LA LEY DEL DIEZMO ECOLÓGICO / EL FLUJO DE '
+                                'ENERGÍA',
+                      'items': ['Según la Ley del Diezmo Ecológico, al pasar '
+                                'de un nivel trófico a otro, solo se '
+                                'transfiere el 10% de la energía.',
+                                'Aproximadamente el 99,98% de la energía '
+                                'disponible en la Tierra proviene del sol.']},
+                     {'titulo': 'NIVELES TRÓFICOS / CADENAS, REDES Y '
+                                'PIRÁMIDES TRÓFICAS',
+                      'items': ['El primer nivel trófico lo forman los '
+                                'productores, organismos autótrofos que '
+                                'fabrican su propio alimento.',
+                                'Una cadena alimenticia muestra cómo la '
+                                'energía fluye de un organismo a otro a '
+                                'través de cada nivel trófico.']},
+                     {'titulo': 'CICLOS BIOGEOQUÍMICOS: CONCEPTO Y '
+                                'CLASIFICACIÓN / EL CICLO DEL CARBONO',
+                      'items': ['Los ciclos biogeoquímicos son el movimiento '
+                                'circular de elementos y compuestos entre el '
+                                'ambiente y los organismos.',
+                                'Los dos procesos básicos que participan en '
+                                'el ciclo del carbono son la fotosíntesis y '
+                                'la respiración celular.']},
+                     {'titulo': 'EL CICLO DEL NITRÓGENO / EL CICLO '
+                                'HIDROLÓGICO',
+                      'items': ['La atmósfera está formada por '
+                                'aproximadamente 78% de gas nitrógeno libre '
+                                '(N2).',
+                                'El ciclo hidrológico, o ciclo del agua, es '
+                                'el movimiento repetido de agua entre la '
+                                'superficie de la Tierra y la atmósfera.']}]},
  {'num': 15,
   'titulo': 'Diversidad Biológica y Deterioro de la Flora y la Fauna',
   'secciones': [{'titulo': '15.1 EL CONVENIO SOBRE LA DIVERSIDAD BIOLÓGICA',
@@ -9345,7 +9936,47 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'La taruca',
                                   'El venado',
                                   'La alpaca silvestre'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'EL CONVENIO SOBRE LA DIVERSIDAD BIOLÓGICA / '
+                                'COMPONENTES DE LA BIODIVERSIDAD',
+                      'items': ['El Convenio sobre la Diversidad Biológica '
+                                '(CDB) se celebró en la «Cumbre de la '
+                                'Tierra», en Río de Janeiro, en 1992.',
+                                'La biodiversidad comprende tres '
+                                'componentes: diversidad genética, '
+                                'diversidad de especies y diversidad de '
+                                'ecosistemas.']},
+                     {'titulo': 'BENEFICIOS DE LA DIVERSIDAD BIOLÓGICA / '
+                                'PELIGROS PARA LA DIVERSIDAD BIOLÓGI',
+                      'items': ['Los servicios de aprovisionamiento '
+                                'suministran bienes con valor monetario '
+                                'directo: alimentos, agua, madera.',
+                                'La causa principal de extinción de especies '
+                                'es la destrucción del hábitat por expansión '
+                                'de poblaciones humanas.']},
+                     {'titulo': 'EL PERÚ COMO PAÍS MEGADIVERSO / RECURSOS '
+                                'GENÉTICOS DEL PERÚ',
+                      'items': ['El Perú es uno de los cinco países con '
+                                'mayor diversidad biológica del mundo, y uno '
+                                'de los doce países megadiversos.',
+                                'El Perú posee al menos 182 especies de '
+                                'plantas domesticadas, como la papa, el '
+                                'tomate, el camote y el maíz.']},
+                     {'titulo': 'DIVERSIDAD DE FLORA EN EL PERÚ / DIVERSIDAD '
+                                'DE FAUNA EN EL PERÚ',
+                      'items': ['El Perú posee al menos 20 533 especies de '
+                                'plantas, de las cuales un 30% son '
+                                'endémicas.',
+                                'El Perú es primero en el mundo en número de '
+                                'especies de peces (1200) y de mariposas.']},
+                     {'titulo': 'DETERIORO DE LA FLORA Y FAUNA / TIPOS DE '
+                                'DETERIORO',
+                      'items': ['La flora y fauna son recursos naturales '
+                                'renovables, que se regeneran por '
+                                'reproducción o propagación.',
+                                'El uso excesivo de biomasa es la '
+                                'utilización insostenible de materia '
+                                'orgánica de plantas y animales.']}]},
  {'num': 16,
   'titulo': 'Contaminación, Problemas Ambientales y Conservación',
   'secciones': [{'titulo': '16.1 CONCEPTO DE CONTAMINACIÓN',
@@ -9951,4 +10582,49 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                   'Pinturas exclusivas',
                                   'Combustibles exclusivos',
                                   'Plásticos exclusivos'],
-                 'correcta': 'A'}]}]
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DE CONTAMINACIÓN / FUENTES DE '
+                                'CONTAMINACIÓN',
+                      'items': ['La contaminación surge cuando, por '
+                                'presencia cuantitativa o cualitativa de '
+                                'materia o energía, se produce un '
+                                'desequilibrio ambiental.',
+                                'La contaminación natural es causada por '
+                                'fuentes como volcanes o efectos '
+                                'geoclimáticos.']},
+                     {'titulo': 'TIPOS DE CONTAMINANTES / CONTAMINACIÓN DEL '
+                                'AGUA',
+                      'items': ['Los contaminantes biológicos son '
+                                'microorganismos como bacterias, hongos y '
+                                'virus; ejemplo, el vibrión colérico.',
+                                'El agua cubre alrededor del 71% de la '
+                                'superficie del planeta, pero está '
+                                'disponible en cantidades limitadas.']},
+                     {'titulo': 'INCREMENTO DEL EFECTO INVERNADERO / '
+                                'CALENTAMIENTO GLOBAL Y CAMBIO CLIMÁTICO',
+                      'items': ['El efecto invernadero es un fenómeno '
+                                'natural que permite la vida en la Tierra, '
+                                'por la absorción de radiación solar por los '
+                                'gases de efecto invernadero.',
+                                'El calentamiento global es el aumento de la '
+                                'temperatura media global de la atmósfera y '
+                                'los océanos; su principal causa es el '
+                                'efecto invernadero.']},
+                     {'titulo': 'DISMINUCIÓN DE LA CAPA DE OZONO / '
+                                'CONSERVACIÓN DEL MEDIO AMBIENTE',
+                      'items': ['El ozono se encuentra en una franja entre '
+                                'los 20 y 40 km de altura, en la '
+                                'estratosfera.',
+                                'Según la UICN (1980), la conservación es la '
+                                'gestión de la biosfera para el mayor '
+                                'beneficio sostenido de las generaciones '
+                                'presentes y futuras.']},
+                     {'titulo': 'FORESTACIÓN Y REFORESTACIÓN / ÁREAS '
+                                'NATURALES PROTEGIDAS DEL PERÚ (ANP)',
+                      'items': ['La forestación es poblar con árboles áreas '
+                                'que nunca o hace mucho tiempo tuvieron '
+                                'bosque.',
+                                'Las ANP están reguladas por la Ley N° '
+                                '29834, para conservar la diversidad '
+                                'biológica y valores culturales '
+                                'asociados.']}]}]
