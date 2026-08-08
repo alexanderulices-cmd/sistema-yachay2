@@ -279,12 +279,15 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                  leftPadding=0, rightPadding=6, topPadding=0, bottomPadding=0)
     g_c2 = Frame(MX + col_w + 0.6 * cm, 1.4 * cm, col_w, alto_full, id="g2",
                  leftPadding=6, rightPadding=0, topPadding=0, bottomPadding=0)
+    f_ancho = Frame(MX, 1.4 * cm, ancho_util, alto_full, id="fw",
+                    leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
 
     doc.area_actual = area
     doc.profesor_actual = profesor
     doc.addPageTemplates([
         PageTemplate(id="primera", frames=[f_enc, f_c1, f_c2], onPage=_pie),
         PageTemplate(id="resto", frames=[g_c1, g_c2], onPage=_pie),
+        PageTemplate(id="ancho", frames=[f_ancho], onPage=_pie),
     ])
 
     st_ = []
@@ -398,6 +401,85 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
     for cu in _cuadros_todos:
         if id(cu) not in _cuadros_intercalados:
             _render_cuadro(cu)
+
+    # ------------------------------------------------------------------
+    # Página final: resumen visual (cuadro sinóptico), si el tema lo trae.
+    # Va SIEMPRE con la información completa (sin espacios en blanco),
+    # como página de repaso rápido antes del examen — en ambas versiones
+    # (alumno y docente), porque no es una pregunta, es un resumen.
+    # ------------------------------------------------------------------
+    from reportlab.platypus import PageBreak
+
+    resumen = tema.get("resumen_visual")
+    if resumen:
+        st_.append(NextPageTemplate("ancho"))
+        st_.append(PageBreak())
+        st_.append(Spacer(1, 4))
+        titulo_resumen = Table(
+            [[Paragraph(f"<b>RESUMEN VISUAL · {tema['titulo'].upper()}</b>", est["h"])]],
+            colWidths=[ancho_util])
+        titulo_resumen.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#B01C22")),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 6),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ]))
+        st_.append(titulo_resumen)
+        st_.append(Spacer(1, 8))
+
+        n_bloques = len(resumen)
+        ancho_bloque = (ancho_util - 0.6 * cm * (min(n_bloques, 2) - 1)) / min(n_bloques, 2) \
+            if n_bloques > 1 else ancho_util
+        fila_actual = []
+        for bloque in resumen:
+            cab = Table([[Paragraph(f"<b>{bloque['titulo']}</b>", est["cel"])]],
+                       colWidths=[ancho_bloque - 8])
+            cab.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#12307F")),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
+            ]))
+            # Construir filas: cada item puede ser "texto" simple o (etiqueta, contenido)
+            data_rows = []
+            for item in bloque["items"]:
+                if isinstance(item, (list, tuple)):
+                    data_rows.append([Paragraph(f"<b>{item[0]}</b>", est["cel"]),
+                                      Paragraph(item[1], est["cel"])])
+                else:
+                    data_rows.append([Paragraph("• " + item, est["cel"])])
+            if data_rows and len(data_rows[0]) == 2:
+                cw = [ancho_bloque * 0.4, ancho_bloque * 0.6 - 8]
+            else:
+                cw = [ancho_bloque - 8]
+            tbl = Table(data_rows, colWidths=cw)
+            tbl.setStyle(TableStyle([
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#8894A8")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("ROWBACKGROUNDS", (0, 0), (-1, -1),
+                 [colors.white, colors.HexColor("#F5F7FB")]),
+            ]))
+            celda = [cab, Spacer(1, 0), tbl]
+            fila_actual.append(celda)
+            if len(fila_actual) == 2 or bloque is resumen[-1]:
+                if len(fila_actual) == 1:
+                    grid = Table([[fila_actual[0], ""]],
+                                 colWidths=[ancho_bloque, ancho_bloque])
+                else:
+                    grid = Table([fila_actual], colWidths=[ancho_bloque, ancho_bloque])
+                grid.setStyle(TableStyle([
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                    ("RIGHTPADDING", (0, 0), (0, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+                ]))
+                st_.append(grid)
+                fila_actual = []
 
     doc.build(st_)
     buf.seek(0)
@@ -1076,7 +1158,28 @@ BALOTAS = [{'num': 1,
                                   'Teología',
                                   'Paleografía',
                                   'Historia'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO',
+                      'items': ['La historia como ciencia estudia en forma '
+                                'sistemática, verídica y metódica los hechos '
+                                'y procesos sociales del pasado, a través '
+                                'del análisis e interpretación de diversos '
+                                'tipos de fuentes.']},
+                     {'titulo': 'COMPONENTES DE LA HISTORIA',
+                      'items': ['Heródoto, padre de la historia, decía que '
+                                'los dos ojos de la historia son el tiempo y '
+                                'el espacio.']},
+                     {'titulo': 'LA HISTORIA COMO PATRIMONIO',
+                      'items': ['Patrimonio histórico es todo el legado '
+                                'social y cultural dejado por nuestros '
+                                'ancestros a lo largo del proceso histórico '
+                                'peruano.']},
+                     {'titulo': 'FUENTES DE LA HISTORIA: CONCEPTO Y '
+                                'CLASIFICACIÓN',
+                      'items': ['Las fuentes de la historia son restos, '
+                                'huellas, evidencias y testimonios que dan '
+                                'cuenta del pasado y sirven para reconstruir '
+                                'la historia.']}]},
  {'num': 2,
   'titulo': 'Hombre de la prehistoria',
   'secciones': [{'titulo': '2.1 PROCESO DE HOMINIZACIÓN',
@@ -1769,7 +1872,31 @@ BALOTAS = [{'num': 1,
                                   'Francis Champollion',
                                   'Charles Darwin',
                                   'Henry Raulinson'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'PROCESO DE HOMINIZACIÓN',
+                      'items': ['Es el conjunto de modificaciones biológicas '
+                                'y anatómicas, así como de logros '
+                                'culturales, desarrollados durante millones '
+                                'de años.']},
+                     {'titulo': 'LA PREHISTORIA: CONCEPTO',
+                      'items': ['El concepto fue propuesto por Jacobo '
+                                'Boucher de Perthes y utilizado por el '
+                                'inglés Daniel Wilson en 1851.']},
+                     {'titulo': 'PALEOLÍTICO (HASTA 10 000 A.C.)',
+                      'items': ['Del griego palaios = antiguo y lithos = '
+                                'piedra. Es el periodo de la piedra tallada '
+                                'y de mayor duración.']},
+                     {'titulo': 'MESOLÍTICO (10 000 – 7000 A.C.)',
+                      'items': ['Periodo de transición del Pleistoceno al '
+                                'Holoceno.']},
+                     {'titulo': 'NEOLÍTICO (7000 – 3000 A.C.)',
+                      'items': ['Del griego neo = nuevo: periodo de la '
+                                'piedra pulimentada.']},
+                     {'titulo': 'LA EDAD DE LOS METALES',
+                      'items': ['La Edad de los Metales se caracteriza por '
+                                'el abandono gradual de instrumentos de '
+                                'piedra, reemplazados por metales '
+                                'fundidos.']}]},
  {'num': 3,
   'titulo': 'Grandes culturas de la antigüedad',
   'secciones': [{'titulo': '3.1 MESOPOTAMIA — UBICACIÓN',
@@ -2516,7 +2643,46 @@ BALOTAS = [{'num': 1,
                                   'Babilónico',
                                   'Medio',
                                   'Antiguo'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'MESOPOTAMIA — UBICACIÓN / MESOPOTAMIA: '
+                                'PROCESO HISTÓRICO',
+                      'items': ['Se desarrolló entre los ríos Tigris y '
+                                'Éufrates, al suroeste de Asia. Hoy '
+                                'corresponde principalmente a Irak.',
+                                'Los sumerios (3000 a.C.) crearon las '
+                                'primeras Ciudades-Estado: Kish, Uruk, Ur y '
+                                'Lagash. Inventaron la escritura cuneiforme '
+                                'y conocieron la rueda.']},
+                     {'titulo': 'MESOPOTAMIA: ORGANIZACIÓN POLÍTICA Y SOCIAL '
+                                '/ MESOPOTAMIA: EXPRESIONES CULT',
+                      'items': ['A diferencia de Egipto, Mesopotamia no '
+                                'tenía fronteras naturales, lo que generó '
+                                'constantes invasiones semitas, indoeuropeas '
+                                'y asiáticas.',
+                                'Arquitectura: destacó el zigurat. Fueron '
+                                'los primeros en construir el arco, la '
+                                'bóveda y la cúpula, desconocidos por los '
+                                'egipcios.']},
+                     {'titulo': 'EGIPTO — UBICACIÓN / EGIPTO: LOS TRES '
+                                'IMPERIOS',
+                      'items': ['Situado al noreste del continente africano, '
+                                'en torno al río Nilo, llamado por Heródoto '
+                                '«don del Nilo».',
+                                'El Imperio Antiguo (2600-2150 a.C.) '
+                                'consolidó el poder del Estado en la figura '
+                                'del Faraón.']},
+                     {'titulo': 'EGIPTO: ORGANIZACIÓN POLÍTICO-SOCIAL / '
+                                'EGIPTO: ARQUITECTURA Y ESCULTURA',
+                      'items': ['Egipto fue una monarquía teocrática: el '
+                                'Faraón era considerado de origen divino.',
+                                'Las tumbas fueron de tres tipos: pirámides '
+                                '(faraones), mastabas (nobles, pirámides '
+                                'truncas) e hipogeos (pueblo, excavadas en '
+                                'roca).']},
+                     {'titulo': 'EGIPTO: LA ESCRITURA',
+                      'items': ['La escritura jeroglífica, la más antigua, '
+                                'formada por imágenes de objetos, se usaba '
+                                'en tumbas y templos.']}]},
  {'num': 4,
   'titulo': 'Mundo greco romano',
   'secciones': [{'titulo': '4.1 GRECIA — PROCESO HISTÓRICO',
@@ -3020,7 +3186,24 @@ BALOTAS = [{'num': 1,
                                   'Mesopotámica',
                                   'Romana',
                                   'Hebrea'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'GRECIA — PROCESO HISTÓRICO',
+                      'items': ['Se desarrolló en el sur de la península de '
+                                'los Balcanes, en torno al mar Egeo.']},
+                     {'titulo': 'ORGANIZACIÓN POLÍTICA',
+                      'items': ['Quien sistematizó la organización política '
+                                'de Esparta fue Licurgo.']},
+                     {'titulo': 'EXPRESIONES CULTURALES',
+                      'items': ['Arquitectura: destaca el Partenón, erigido '
+                                'en la Acrópolis de Atenas.']},
+                     {'titulo': 'ROMA — PROCESO HISTÓRICO',
+                      'items': ['Se desarrolló en la península Itálica. La '
+                                'historia de Roma se inicia el año 753 a.C. '
+                                'con su fundación por Rómulo.']},
+                     {'titulo': 'ROMA: EXPRESIONES CULTURALES',
+                      'items': ['El derecho romano es la compilación de '
+                                'leyes, tratados y normativas establecidas '
+                                'en distintas épocas de Roma.']}]},
  {'num': 5,
   'titulo': 'Primeras culturas andinas',
   'secciones': [{'titulo': '5.1 EL POBLAMIENTO DE AMÉRICA',
@@ -3599,7 +3782,31 @@ BALOTAS = [{'num': 1,
                                   'Asia',
                                   'Melanesia',
                                   'Polinesia'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'EL POBLAMIENTO DE AMÉRICA',
+                      'items': ['El poblamiento de América ocurrió por el '
+                                'antiguo proceso de migración humana, debido '
+                                'a cambios climáticos del periodo '
+                                'pleistoceno.']},
+                     {'titulo': 'TEORÍAS SOBRE EL POBLAMIENTO DE AMÉRICA',
+                      'items': ['Teoría autoctonista: sostenida por el '
+                                'paleontólogo argentino Florentino Ameghino '
+                                'en 1879; afirmaba que el hombre americano '
+                                'era originario del continente.']},
+                     {'titulo': 'NÓMADAS: RECOLECTORES, CAZADORES Y '
+                                'PESCADORES',
+                      'items': ['Paccaicasa (Ayacucho): los restos líticos '
+                                'más antiguos del Perú, hallados por Richard '
+                                'MacNeish.']},
+                     {'titulo': 'SEMINÓMADAS: HORTICULTORES',
+                      'items': ['Guitarrero (Áncash): primeros indicios de '
+                                'agricultura en el Perú, estudiados por '
+                                'Thomas Lynch.']},
+                     {'titulo': 'SEDENTARIOS: AGRICULTORES',
+                      'items': ['Kotosh (Huánuco): hacia 2200 a.C., '
+                                'estudiado por Julio C. Tello. Destaca el '
+                                'Templo de las Manos Cruzadas, considerado '
+                                'el primer monumento religioso.']}]},
  {'num': 6,
   'titulo': 'Culturas preincas',
   'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL',
@@ -4225,7 +4432,27 @@ BALOTAS = [{'num': 1,
                                   'El gigantesco calendario astronómico',
                                   'La organización del primer estado '
                                   'teocrático en el Perú'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CIVILIZACIÓN CARAL',
+                      'items': ['Considerada la civilización más antigua de '
+                                'América, ubicada en el valle de Supe '
+                                '(Barranca, Lima).']},
+                     {'titulo': 'CHAVÍN (HORIZONTE TEMPRANO)',
+                      'items': ['Su capital, Chavín de Huántar, se ubica en '
+                                'Áncash, a orillas del río Mosna, en el '
+                                'flanco oriental de la Cordillera Blanca.']},
+                     {'titulo': 'PARACAS',
+                      'items': ['Se ubicó en el departamento de Ica, '
+                                'provincia de Pisco, en la bahía de Paracas. '
+                                'Fue descubierta por Julio C. Tello.']},
+                     {'titulo': 'INTERMEDIO TEMPRANO',
+                      'items': ['Nasca (300 a.C. – 600 d.C.): departamento '
+                                'de Ica. Destacan las líneas de Nasca, '
+                                'estudiadas por María Reiche, y los '
+                                'acueductos de Cantalloc.']},
+                     {'titulo': 'Y 6.5 HORIZONTE MEDIO E INTERMEDIO TARDÍO',
+                      'items': ['Tiahuanaco: altiplano del lago Titicaca. '
+                                'Destaca la Portada del Sol.']}]},
  {'num': 7,
   'titulo': 'Civilización inca',
   'secciones': [{'titulo': '7.1 EL AYLLU',
@@ -5011,7 +5238,29 @@ BALOTAS = [{'num': 1,
                                   'Escrita',
                                   'Material',
                                   'Antroposomática'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'EL AYLLU',
+                      'items': ['Fue la célula básica de la sociedad andina: '
+                                'un conjunto de familias unidas por vínculos '
+                                'de parentesco, territorio y culto a un '
+                                'ancestro común.']},
+                     {'titulo': 'Y 7.3 LO SOCIAL Y LO POLÍTICO',
+                      'items': ['La sociedad inca fue clasista. La nobleza '
+                                'se dividía en nobleza de sangre y nobleza '
+                                'de privilegio.']},
+                     {'titulo': 'ADMINISTRACIÓN Y CONTROL DE PISOS '
+                                'ECOLÓGICOS',
+                      'items': ['El curaca era el jefe del ayllu, encargado '
+                                'de la administración directa del territorio '
+                                'comunal.']},
+                     {'titulo': 'LO ECONÓMICO',
+                      'items': ['La base económica fue la agricultura, '
+                                'apoyada en los andenes y en obras de '
+                                'irrigación.']},
+                     {'titulo': 'EXPRESIONES ARTÍSTICAS',
+                      'items': ['Arquitectura: sólida, sencilla y simétrica. '
+                                'Destacan Machupicchu, Sacsayhuamán y el '
+                                'Coricancha.']}]},
  {'num': 8,
   'titulo': 'Mundo medieval y el tránsito al mundo moderno',
   'secciones': [{'titulo': '8.1 EL FEUDALISMO: CONCEPTO',
@@ -5437,7 +5686,31 @@ BALOTAS = [{'num': 1,
                                   'Media',
                                   'Moderna',
                                   'Primitiva'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'EL FEUDALISMO: CONCEPTO',
+                      'items': ['Sistema político, económico y social que '
+                                'predominó en Europa entre los siglos IX y '
+                                'XV.']},
+                     {'titulo': 'Y 8.3 ANTECEDENTES Y CARACTERÍSTICAS',
+                      'items': ['Surgió tras la caída del Imperio Romano de '
+                                'Occidente y las invasiones bárbaras, que '
+                                'obligaron a buscar protección.']},
+                     {'titulo': 'ELEMENTOS DEL FEUDALISMO',
+                      'items': ['El señor feudal: propietario del feudo, '
+                                'otorgaba protección y tierras.']},
+                     {'titulo': 'EL SURGIMIENTO DE LA BURGUESÍA',
+                      'items': ['El origen de la burguesía se remonta al '
+                                'siglo XII, con villanos o campesinos libres '
+                                'que residían en los burgos o ciudades.']},
+                     {'titulo': 'EL CAPITALISMO MERCANTIL',
+                      'items': ['El capitalismo mercantil se basaba en la '
+                                'premisa de que la riqueza de una nación '
+                                'aumentaba exportando más y recibiendo '
+                                'metales preciosos.']},
+                     {'titulo': 'EL RENACIMIENTO: REPRESENTANTES',
+                      'items': ['El Renacimiento sustituyó la concepción '
+                                'teocentrista medieval por el '
+                                'antropocentrismo.']}]},
  {'num': 9,
   'titulo': 'Expansión europea',
   'secciones': [{'titulo': '9.1 DESCUBRIMIENTOS GEOGRÁFICOS',
@@ -5833,7 +6106,20 @@ BALOTAS = [{'num': 1,
                                   'Inca Roca',
                                   'Sinchi Roca',
                                   'Wiracocha'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'DESCUBRIMIENTOS GEOGRÁFICOS',
+                      'items': ['Causas: la búsqueda de una nueva ruta hacia '
+                                'las Indias tras la caída de Constantinopla '
+                                'en 1453 a manos de los turcos.']},
+                     {'titulo': 'Y 9.3 COLÓN Y LA CAPITULACIÓN',
+                      'items': ['Cristóbal Colón propuso llegar a las Indias '
+                                'navegando hacia el occidente, sosteniendo '
+                                'la esfericidad de la Tierra.']},
+                     {'titulo': 'LOS VIAJES DE COLÓN',
+                      'items': ['Primer viaje (1492): zarpó del puerto de '
+                                'Palos con las naves Pinta, Niña y Santa '
+                                'María. Llegó a la isla Guanahaní, a la que '
+                                'llamó San Salvador.']}]},
  {'num': 10,
   'titulo': 'Conquista del Perú',
   'secciones': [{'titulo': '10.1 y 10.2 LA EMPRESA DE CONQUISTA',
@@ -6065,7 +6351,21 @@ BALOTAS = [{'num': 1,
                                   'la Gasca',
                                   'Francisco Pizarro y Fray Tomas de '
                                   'Berlanga'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'Y 10.2 LA EMPRESA DE CONQUISTA',
+                      'items': ['La empresa la formaron Francisco Pizarro, '
+                                'Diego de Almagro y el sacerdote Hernando de '
+                                'Luque.']},
+                     {'titulo': 'LA CAPTURA DEL INCA',
+                      'items': ['El 16 de noviembre de 1532 se produjo la '
+                                'captura de Atahualpa en la plaza de '
+                                'Cajamarca.']},
+                     {'titulo': 'Y 10.4 FUNDACIONES Y RESISTENCIA',
+                      'items': ['Pizarro fundó Lima el 18 de enero de 1535, '
+                                'llamada Ciudad de los Reyes.']},
+                     {'titulo': 'GUERRA CIVIL ENTRE LOS INVASORES',
+                      'items': ['Batalla de las Salinas (1538): Pizarro '
+                                'venció a Almagro.']}]},
  {'num': 11,
   'titulo': 'El periodo colonial peruano',
   'secciones': [{'titulo': '11.1 y 11.2 REPARTIMIENTO Y ENCOMIENDA',
@@ -6463,7 +6763,23 @@ BALOTAS = [{'num': 1,
                                   'a las universidades',
                                   'La primera universidad del Perú fue la de '
                                   'San Antonio Abad del Cusco'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'Y 11.2 REPARTIMIENTO Y ENCOMIENDA',
+                      'items': ['El repartimiento fue el reparto de '
+                                'indígenas entre los conquistadores para '
+                                'trabajos y servicios.']},
+                     {'titulo': 'ORDENAMIENTO POLÍTICO',
+                      'items': ['En España: el Rey, el Consejo de Indias y '
+                                'la Casa de Contratación de Sevilla, que '
+                                'controlaba el comercio.']},
+                     {'titulo': 'ORDENAMIENTO ECONÓMICO',
+                      'items': ['La actividad principal fue la minería, '
+                                'destacando Potosí (plata) y Huancavelica '
+                                '(mercurio o azogue).']},
+                     {'titulo': 'Y 11.3.4 LO SOCIAL Y LO EDUCATIVO',
+                      'items': ['Sociedad estamental basada en el origen '
+                                'étnico: españoles, criollos, mestizos, '
+                                'indígenas y negros.']}]},
  {'num': 12,
   'titulo': 'El mundo durante el siglo XVIII',
   'secciones': [{'titulo': '12.1 LA ILUSTRACIÓN',
@@ -6661,7 +6977,14 @@ BALOTAS = [{'num': 1,
                                   'Plata',
                                   'El incremento de la alcabala',
                                   'La extensión del tributo a los caciques'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LA ILUSTRACIÓN',
+                      'items': ['Movimiento intelectual del siglo XVIII, '
+                                'llamado también «Siglo de las Luces».']},
+                     {'titulo': 'EL DESPOTISMO ILUSTRADO',
+                      'items': ['Forma de gobierno absolutista que adoptó '
+                                'algunas ideas ilustradas sin ceder el '
+                                'poder.']}]},
  {'num': 13,
   'titulo': 'Movimientos sociales en el mundo colonial americano',
   'secciones': [{'titulo': '13.1 LAS REFORMAS BORBÓNICAS',
@@ -6955,7 +7278,25 @@ BALOTAS = [{'num': 1,
                                   'Checacupe',
                                   'Combapata',
                                   'Tinta'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'LAS REFORMAS BORBÓNICAS',
+                      'items': ['Conjunto de medidas aplicadas por la '
+                                'dinastía de los Borbones en el siglo XVIII '
+                                'para recuperar el control económico y '
+                                'político de las colonias.']},
+                     {'titulo': 'REBELIÓN DE JUAN SANTOS ATAHUALPA',
+                      'items': ['Se desarrolló desde 1742 en la selva '
+                                'central (Gran Pajonal, Chanchamayo).']},
+                     {'titulo': 'LA REVOLUCIÓN DE TÚPAC AMARU II',
+                      'items': ['José Gabriel Condorcanqui, cacique de '
+                                'Tungasuca, inició la rebelión el 4 de '
+                                'noviembre de 1780 con la captura del '
+                                'corregidor Antonio de Arriaga.']},
+                     {'titulo': 'LA REVOLUCIÓN DE TÚPAC AMARU II: OTROS '
+                                'DATOS',
+                      'items': ['Micaela Bastidas fue esposa y colíder de '
+                                'Túpac Amaru II; fue traicionada por Ventura '
+                                'Landaeta.']}]},
  {'num': 14,
   'titulo': 'Tiempo de las revoluciones',
   'secciones': [{'titulo': '14.1 INDEPENDENCIA DE ESTADOS UNIDOS',
@@ -7179,7 +7520,13 @@ BALOTAS = [{'num': 1,
                                   'El triunfo en la Batalla de Saratoga',
                                   'La creación del sistema de gobierno '
                                   'dictatorial'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'INDEPENDENCIA DE ESTADOS UNIDOS',
+                      'items': ['Las trece colonias inglesas de Norteamérica '
+                                'se rebelaron contra la metrópoli.']},
+                     {'titulo': 'LA REVOLUCIÓN FRANCESA',
+                      'items': ['Se inició en 1789 con la toma de la '
+                                'Bastilla el 14 de julio.']}]},
  {'num': 15,
   'titulo': 'Crisis del orden colonial e independencia',
   'secciones': [{'titulo': '15.1 al 15.4 LA CRISIS DE ESPAÑA',
@@ -7425,7 +7772,17 @@ BALOTAS = [{'num': 1,
                                   'Cajamarca',
                                   'Chota',
                                   'Cutervo'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'AL 15.4 LA CRISIS DE ESPAÑA',
+                      'items': ['En 1808 Napoleón invadió España y colocó en '
+                                'el trono a su hermano José Bonaparte.']},
+                     {'titulo': 'LA CORRIENTE LIBERTADORA DEL SUR',
+                      'items': ['José de San Martín desembarcó en la bahía '
+                                'de Paracas el 8 de septiembre de 1820.']},
+                     {'titulo': 'LA CONSOLIDACIÓN CON BOLÍVAR',
+                      'items': ['Tras la Conferencia de Guayaquil (1822) '
+                                'entre San Martín y Bolívar, el primero se '
+                                'retiró.']}]},
  {'num': 16,
   'titulo': 'Construcción de la república peruana',
   'secciones': [{'titulo': '16.1 al 16.3 LOS PRIMEROS AÑOS',
@@ -7798,7 +8155,23 @@ BALOTAS = [{'num': 1,
                                   'Económico',
                                   'Literario',
                                   'Académico'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'AL 16.3 LOS PRIMEROS AÑOS',
+                      'items': ['El Protectorado de San Martín (1821–1822) '
+                                'fue el primer gobierno del Perú '
+                                'independiente.']},
+                     {'titulo': 'Y 16.5 CAUDILLISMO Y CONFEDERACIÓN',
+                      'items': ['El caudillismo militar dominó las primeras '
+                                'décadas: los jefes militares de las guerras '
+                                'de independencia se disputaron el poder.']},
+                     {'titulo': 'LA ERA DEL GUANO',
+                      'items': ['El guano de las islas se convirtió en la '
+                                'principal fuente de ingresos del Estado '
+                                'desde 1840.']},
+                     {'titulo': 'LA GUERRA DEL PACÍFICO',
+                      'items': ['Causa inmediata: el impuesto de los 10 '
+                                'centavos al salitre aplicado por Bolivia a '
+                                'una empresa chilena.']}]},
  {'num': 17,
   'titulo': 'Estado peruano en transformación',
   'secciones': [{'titulo': '17.1 LA RECONSTRUCCIÓN NACIONAL',
@@ -8086,7 +8459,19 @@ BALOTAS = [{'num': 1,
                                   'José Carlos Mariátegui',
                                   'Augusto B. Leguía',
                                   'Nicolás de Piérola'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LA RECONSTRUCCIÓN NACIONAL',
+                      'items': ['Tras la Guerra del Pacífico, el Perú vivió '
+                                'el llamado Segundo Militarismo, dirigido '
+                                'por Miguel Iglesias y luego Andrés A. '
+                                'Cáceres.']},
+                     {'titulo': 'LA REPÚBLICA ARISTOCRÁTICA (1895–1919)',
+                      'items': ['Se inició con el gobierno de Nicolás de '
+                                'Piérola. El poder lo ejerció una oligarquía '
+                                'civilista.']},
+                     {'titulo': 'EL ONCENIO DE LEGUÍA (1919–1930)',
+                      'items': ['Augusto B. Leguía llamó a su gobierno la '
+                                '«Patria Nueva».']}]},
  {'num': 18,
   'titulo': 'El mundo entre guerras',
   'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL (1914–1918)',
@@ -8293,7 +8678,18 @@ BALOTAS = [{'num': 1,
                                   'Francia - Ucrania',
                                   'Holanda - Bélgica',
                                   'Inglaterra - Irán'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'PRIMERA GUERRA MUNDIAL (1914–1918)',
+                      'items': ['Causas: el imperialismo, el nacionalismo, '
+                                'la carrera armamentista y los sistemas de '
+                                'alianzas.']},
+                     {'titulo': 'LA DEPRESIÓN MUNDIAL DE 1929',
+                      'items': ['Se inició con el crac de la bolsa de Nueva '
+                                'York el «jueves negro».']},
+                     {'titulo': 'Y 18.4 SEGUNDA GUERRA MUNDIAL Y GUERRA FRÍA',
+                      'items': ['La Segunda Guerra Mundial (1939–1945) se '
+                                'inició con la invasión alemana a '
+                                'Polonia.']}]},
  {'num': 19,
   'titulo': 'Entre dictaduras y democracias: gobernantes del Perú siglos '
             'XX-XXI',
@@ -8537,4 +8933,18 @@ BALOTAS = [{'num': 1,
                                   'Alberto Fujimori',
                                   'Ollanta Humala',
                                   'Fernando Belaunde'],
-                 'correcta': 'C'}]}]
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'AL 19.4 DE ODRÍA A VELASCO',
+                      'items': ['El Ochenio de Manuel A. Odría (1948–1956) '
+                                'fue una dictadura militar que impulsó '
+                                'grandes obras públicas y otorgó el voto a '
+                                'la mujer (1955).']},
+                     {'titulo': 'AL 19.7 RETORNO A LA DEMOCRACIA',
+                      'items': ['Segundo gobierno de Belaunde (1980–1985): '
+                                'se promulgó la Constitución de 1979 y se '
+                                'inició la violencia de Sendero Luminoso en '
+                                'Chuschi, Ayacucho (1980).']},
+                     {'titulo': 'AL 19.11 SIGLO XXI',
+                      'items': ['Gobierno transitorio de Valentín Paniagua '
+                                '(2000–2001): creó la Comisión de la Verdad '
+                                'y Reconciliación.']}]}]
