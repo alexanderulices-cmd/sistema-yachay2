@@ -512,7 +512,44 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Nivel de conocimiento',
                                   'Contexto sociocultural',
                                   'Actitud'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y FASES',
+                      'items': ['La comunicación es el acto, hecho o proceso '
+                                'a través del cual dos o más individuos '
+                                'interactúan para intercambiar información, '
+                                'ideas o sentimientos.']},
+                     {'titulo': 'ELEMENTOS DE LA COMUNICACIÓN',
+                      'items': ['El emisor o hablante es quien codifica el '
+                                'mensaje mentalmente y lo transmite a su '
+                                'interlocutor.']},
+                     {'titulo': 'CLASES DE COMUNICACIÓN POR EL CÓDIGO',
+                      'items': ['La comunicación lingüística utiliza el '
+                                'idioma para codificar el mensaje, de forma '
+                                'oral o escrita.']},
+                     {'titulo': 'CLASES DE COMUNICACIÓN POR LA RELACIÓN '
+                                'EMISOR-RECEPTOR',
+                      'items': ['La comunicación intrapersonal se produce en '
+                                'una misma persona, como en el monólogo '
+                                'interior.']},
+                     {'titulo': 'FUNCIONES DE LA COMUNICACIÓN',
+                      'items': ['La función social permite al comunicador '
+                                'interactuar apropiadamente según las '
+                                'situaciones sociales de los diferentes '
+                                'estratos.']},
+                     {'titulo': 'NATURALEZA DE LA COMUNICACIÓN',
+                      'items': ['El carácter integrador implica que la '
+                                'comunicación se integra con personas que '
+                                'tienen la posibilidad de relacionarse y '
+                                'conocerse.']},
+                     {'titulo': 'FACTORES QUE INFLUYEN EN LA COMUNICACIÓN',
+                      'items': ['El nivel de conocimiento es la cantidad y '
+                                'calidad de información que se tiene acerca '
+                                'del referente.']},
+                     {'titulo': 'EL RUIDO Y LA REDUNDANCIA',
+                      'items': ['El ruido es el factor de degradación que '
+                                'distorsiona la calidad del mensaje o '
+                                'cualquier interferencia ajena a los '
+                                'elementos de la comunicación.']}]},
  {'num': 2,
   'titulo': 'El Lenguaje',
   'secciones': [{'titulo': '2.1 CONCEPTO',
@@ -1042,7 +1079,52 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Inmutable',
                                   'Mutable',
                                   'Arbitraria'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO / CARACTERÍSTICAS DEL LENGUAJE',
+                      'items': ['Según la RAE, el lenguaje es la facultad '
+                                'del ser humano de expresarse y comunicarse '
+                                'mediante el sonido articulado u otros '
+                                'sistemas de signos.',
+                                'El lenguaje es universal, porque todos los '
+                                'seres humanos lo utilizan en su '
+                                'interrelación.']},
+                     {'titulo': 'FUNCIONES DEL LENGUAJE / PLANOS DEL '
+                                'LENGUAJE: LENGUA Y HABLA',
+                      'items': ['La función expresiva o emotiva está '
+                                'centrada en el emisor y manifiesta '
+                                'emociones o sentimientos.',
+                                'Según Ferdinand de Saussure, el lenguaje '
+                                'tiene dos planos interdependientes: lengua '
+                                'y habla.']},
+                     {'titulo': 'EL DIALECTO (VARIACIÓN DIATÓPICA) / EL '
+                                'SOCIOLECTO (VARIACIÓN DIASTRÁTICA)',
+                      'items': ['El dialecto es la variación de una lengua '
+                                'que se manifiesta según factores '
+                                'regionales, geográficos o territoriales.',
+                                'El sociolecto es la variación de una lengua '
+                                'a nivel social, ubicada en el eje '
+                                'vertical.']},
+                     {'titulo': 'EL IDIOLECTO (VARIACIÓN DIAFÁSICA) / EL '
+                                'INTERLECTO',
+                      'items': ['El idiolecto es la variación que sufre una '
+                                'lengua a nivel individual: cada persona '
+                                'tiene su forma peculiar de hablar.',
+                                'El interlecto es el sistema transitorio de '
+                                'habla entre la lengua materna y la segunda '
+                                'lengua de un aprendiz.']},
+                     {'titulo': 'EL SIGNO: TIPOS / EL SIGNO LINGÜÍSTICO Y '
+                                'SUS PLANOS',
+                      'items': ['El signo es la representación de algo que, '
+                                'por naturaleza o convención, es '
+                                'representado; facilita la comunicación.',
+                                'El signo lingüístico es una entidad '
+                                'psíquica de dos caras: concepto e imagen '
+                                'acústica, asociadas de forma indisoluble.']},
+                     {'titulo': 'CARACTERÍSTICAS DEL SIGNO LINGÜÍSTICO',
+                      'items': ['El signo lingüístico es arbitrario: la '
+                                'relación entre significado y significante '
+                                'es convencional, no responde a ningún '
+                                'motivo.']}]},
  {'num': 3,
   'titulo': 'Fonología y Fonética',
   'secciones': [{'titulo': '3.1 CONCEPTO DE FONOLOGÍA Y FONÉTICA',
@@ -1515,7 +1597,42 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Bilabial - nasal - sonoro',
                                   'Alveolar - lateral - sonoro',
                                   'Palatal - africado - sordo'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DE FONOLOGÍA Y FONÉTICA',
+                      'items': ['La fonología estudia cómo se estructuran '
+                                'los segmentos de la lengua para transmitir '
+                                'significados, es decir, los sonidos en su '
+                                'carácter distintivo.']},
+                     {'titulo': 'FONEMAS Y FONOS',
+                      'items': ['Los fonemas son sonidos ideales, mentales, '
+                                'limitados o finitos, y se representan entre '
+                                'barras / /.']},
+                     {'titulo': 'EL FONEMA Y LOS RASGOS DISTINTIVOS',
+                      'items': ['El fonema es el segmento fonológico que no '
+                                'puede descomponerse en unidades menores y '
+                                'que distingue significados.']},
+                     {'titulo': 'FONEMAS VOCÁLICOS Y SU CLASIFICACIÓN',
+                      'items': ['El español tiene 24 fonemas segmentales: 5 '
+                                'son vocálicos y 19 consonánticos.']},
+                     {'titulo': 'FONEMAS CONSONÁNTICOS: PUNTO DE '
+                                'ARTICULACIÓN',
+                      'items': ['En los fonemas consonánticos se produce una '
+                                'interrupción total o parcial del flujo de '
+                                'aire, combinando movimientos de lengua, '
+                                'labios y dientes.']},
+                     {'titulo': 'FONEMAS CONSONÁNTICOS: MODO DE ARTICULACIÓN',
+                      'items': ['Por el modo de articulación: son oclusivos '
+                                'los fonemas /p/, /b/, /d/, /k/, /g/, /t/, '
+                                'donde el aire encuentra un cierre '
+                                'momentáneo con breve explosión.']},
+                     {'titulo': 'ELEMENTOS SEGMENTALES Y SUPRASEGMENTALES',
+                      'items': ['Los elementos segmentales constituyen la '
+                                'cadena hablada, definidos según criterios '
+                                'articulatorios, acústicos y perceptivos.']},
+                     {'titulo': 'RAMAS DE LA FONÉTICA',
+                      'items': ['La fonética articulatoria estudia cómo se '
+                                'producen los sonidos mediante los órganos '
+                                'del habla.']}]},
  {'num': 4,
   'titulo': 'La Sílaba',
   'secciones': [{'titulo': '4.1 CONCEPTO',
@@ -1854,7 +1971,37 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Norma académica',
                                   'Regla de acentuación',
                                   'Ley de Grimm'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO',
+                      'items': ['La sílaba es la unidad estructural que '
+                                'actúa como principio organizador de la '
+                                'lengua.']},
+                     {'titulo': 'CONSTITUYENTES SILÁBICOS',
+                      'items': ['El núcleo es la cumbre o centro de la '
+                                'sílaba, constituido por una sola vocal.']},
+                     {'titulo': 'EL SILABEO O DIVISIÓN SILÁBICA',
+                      'items': ['El silabeo consiste en pronunciar o '
+                                'escribir en forma separada las sílabas de '
+                                'una palabra.']},
+                     {'titulo': 'GRUPOS TAUTOSILÁBICOS Y DIPTONGOS',
+                      'items': ['Los grupos tautosilábicos ocurren cuando '
+                                'dos elementos contiguos pertenecen a la '
+                                'misma sílaba: combinaciones pl, pr, cl, cr, '
+                                'fl, fr, bl, br, gl, gr, tl, tr.']},
+                     {'titulo': 'EL TRIPTONGO',
+                      'items': ['El triptongo está constituido por dos '
+                                'vocales cerradas (débiles) y una abierta '
+                                '(fuerte) en medio, según el esquema VC + VA '
+                                '+ VC.']},
+                     {'titulo': 'EL HIATO (GRUPOS HETEROSILÁBICOS)',
+                      'items': ['En los grupos heterosilábicos, dos '
+                                'segmentos consecutivos se integran en '
+                                'sílabas diferentes: es el caso del hiato.']},
+                     {'titulo': 'PRINCIPIOS DE ORDENACIÓN DE LOS SEGMENTOS',
+                      'items': ['Los sonidos dentro de la sílaba se '
+                                'organizan según la escala universal de '
+                                'sonoridad, donde las vocales son las '
+                                'unidades más perceptibles.']}]},
  {'num': 5,
   'titulo': 'Acentuación Gráfica o Tildación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ACENTO PROSÓDICO',
@@ -2307,7 +2454,32 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Intensivo exclusivo',
                                   'Afirmativo',
                                   'Interrogativo'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y ACENTO PROSÓDICO',
+                      'items': ['La tilde, o acento gráfico, es el signo '
+                                'diacrítico que marca la acentuación de una '
+                                'palabra por escrito.']},
+                     {'titulo': 'REGLAS SEGÚN LA POSICIÓN DEL ACENTO',
+                      'items': ['Las palabras monosilábicas nunca se '
+                                'acentúan gráficamente, salvo en los casos '
+                                'de tilde diacrítica.']},
+                     {'titulo': 'ACENTUACIÓN DE SECUENCIAS VOCÁLICAS',
+                      'items': ['Las palabras con diptongo se acentúan '
+                                'gráficamente según las reglas generales de '
+                                'acentuación (agudas, llanas, esdrújulas).']},
+                     {'titulo': 'TILDE DIACRÍTICA EN MONOSÍLABOS',
+                      'items': ['La tilde diacrítica es la excepción a la '
+                                'regla de los monosílabos; distingue '
+                                'palabras tónicas de sus homónimas átonas.']},
+                     {'titulo': 'TILDE DIACRÍTICA EN INTERROGATIVOS Y '
+                                'EXCLAMATIVOS',
+                      'items': ['Las palabras qué, cuál, quién, cómo, cuán, '
+                                'cuánto, cuándo, dónde y adónde llevan tilde '
+                                'cuando son interrogativas o exclamativas.']},
+                     {'titulo': 'TILDE EN SOLO, DEMOSTRATIVOS Y AUN/AÚN',
+                      'items': ['La palabra solo no lleva tilde, ya sea como '
+                                'adverbio (equivalente a «solamente») o como '
+                                'adjetivo.']}]},
  {'num': 6,
   'titulo': 'Uso de las Letras Mayúsculas y Minúsculas',
   'secciones': [{'titulo': '6.1 CONSIDERACIONES BÁSICAS',
@@ -2359,54 +2531,59 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'cuando estos anuncian el inicio de una unidad '
                            'independiente, como en el saludo de una '
                            '{carta}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La escritura enteramente en mayúsculas es propia '
-                           'de las siglas, los números romanos y {Los textos '
-                           'cortos informativos}.',
-                           'El uso combinado de minúsculas y mayúsculas '
-                           'dentro de una misma palabra debe {Evitarse en la '
-                           'escritura normal}.',
-                           'Las siglas se escriben con mayúscula {Todas las '
-                           'letras que las componen}.',
-                           'Las siglas, a diferencia de las abreviaturas, se '
-                           'escriben {Sin puntos}.',
-                           'Las abreviaturas, a diferencia de las siglas, se '
-                           'escriben {Con puntos}.',
-                           'Los nombres latinos de especies, como «Homo '
-                           'sapiens», se escriben con mayúscula inicial y '
-                           '{En cursiva}.',
-                           'La palabra «Dios» se escribe con mayúscula '
-                           'cuando se usa {Sin artículo, como nombre propio '
-                           'del ser supremo monoteísta}.',
-                           'Si un dígrafo como «ch» o «ll» aparece al inicio '
-                           'de una palabra con mayúscula, se escribe en '
-                           'mayúscula {Solo la primera letra}.',
-                           'La mayúscula de las letras i y j, a diferencia '
-                           'de su forma minúscula {Carece del punto '
-                           'sobrescrito}.',
-                           'El fenómeno por el cual un nombre común '
-                           'reemplaza completamente a un nombre propio se '
-                           'llama {Antonomasia}.',
-                           'El fenómeno que atribuye rasgos humanos a '
-                           'conceptos abstractos, como «la Muerte», se llama '
-                           '{Personificación}.',
-                           'Se escribe con mayúscula la primera palabra de '
-                           'un escrito y la que va después de {Un punto}.',
-                           'La palabra que sigue a los puntos suspensivos, '
-                           'cuando estos cierran un enunciado, se escribe '
-                           'con {Mayúscula}.',
-                           'Después de dos puntos se escribe mayúscula '
-                           'cuando anuncian el inicio de una unidad '
-                           'independiente, como en {El saludo de una carta}.',
-                           'Los documentos jurídicos que usan mayúscula '
-                           'total suelen presentar palabras como '
-                           '{CERTIFICA}.',
-                           'La mayúscula inicial marca y delimita, entre '
-                           'otras cosas {Los nombres propios}.',
-                           'Las siglas «RAE» y «AVE» ejemplifican el uso de '
-                           'mayúsculas para {Formar e identificar siglas}.',
-                           'Los números romanos, como «XXI», se escriben '
-                           '{Enteramente en mayúsculas}.']}],
+                {'titulo': '6.5 USO DE LAS MINÚSCULAS',
+                 'items': ['Se escriben con {minúscula} los nombres de los '
+                           'días de la semana, las estaciones del año y los '
+                           'meses del año.',
+                           'Se escriben con minúscula las {notas musicales}: '
+                           'do, re, mi, fa, sol, la, si.',
+                           'Se escriben con minúscula los nombres de '
+                           '{vientos}, salvo que estén personificados en '
+                           'poemas o relatos mitológicos.',
+                           'Se escribe con minúscula {dios}, precedido de '
+                           'determinante, cuando se refiere de modo genérico '
+                           'al ser supremo o a divinidades politeístas.',
+                           'Se escriben con minúscula los nombres de '
+                           '{religiones} (budismo, cristianismo) y los '
+                           '{gentilicios} (peruano, cusqueño).',
+                           'Se escriben con minúscula los {tratamientos} '
+                           '(usted, don, fray, san), salvo que se abrevien: '
+                           'Ud., Sr., D.',
+                           'Se escriben con minúscula los {títulos}, cargos '
+                           'y nombres de dignidad: rey, papa, presidente, '
+                           'alcalde.',
+                           'Se escriben con minúscula los sustantivos que '
+                           'designan {profesiones}, y los nombres de las '
+                           '{lenguas}.',
+                           'Se escriben con minúscula los nombres de '
+                           '{hemisferios}, líneas imaginarias y polos '
+                           'geográficos: el hemisferio sur, el ecuador.',
+                           'Se escriben con minúscula los nombres de '
+                           '{elementos químicos} y unidades de medida: '
+                           'oxígeno, mercurio, metro.',
+                           'Se escriben con minúscula los nombres de los '
+                           '{principios activos} de medicamentos: '
+                           'amoxicilina, ibuprofeno; los nombres comerciales '
+                           'sí llevan mayúscula.',
+                           'Se escriben con minúscula los nombres de las '
+                           '{monedas}: soles, dólares, euros.']},
+                {'titulo': '6.6 ACRÓNIMOS: SIGLAS QUE SE VUELVEN PALABRAS',
+                 'items': ['El {acrónimo} es una sigla cuya grafía permite '
+                           'leerla {secuencialmente} (no deletreada), como '
+                           'OTAN o UNESCO.',
+                           'Cuando el acrónimo se convierte en nombre '
+                           'propio, mantiene la mayúscula {inicial}: '
+                           'Mercosur, Unicef.',
+                           'Cuando el acrónimo se convierte en nombre común, '
+                           'se escribe enteramente en {minúsculas}: ovni, '
+                           'láser, radar, uci.',
+                           'Las siglas que deben {deletrearse} al leerse '
+                           'mantienen siempre su escritura en mayúsculas: '
+                           'FBI, DDT.',
+                           'Las expresiones desarrolladas de siglas llevan '
+                           'mayúscula si nombran una {institución} (Banco '
+                           'Central Europeo), y minúscula si son expresiones '
+                           'comunes (documento nacional de identidad).']}],
   'cuadros': [{'titulo': '6.2 SIGLAS FRENTE A ABREVIATURAS',
                'encabezados': ['Tipo', 'Lleva puntos', 'Ejemplo'],
                'filas': [['{Siglas}', '{No}', 'PNP, DNI'],
@@ -2575,7 +2752,153 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Con tilde',
                                   'Entre comillas',
                                   'En cursiva obligatoria'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'},
+                {'pregunta': 'Los nombres de los días de la semana, las '
+                             'estaciones del año y los meses se escriben '
+                             'con:',
+                 'alternativas': ['Mayúscula inicial siempre',
+                                  'Minúscula',
+                                  'Mayúscula solo en los meses',
+                                  'Mayúscula solo en las estaciones',
+                                  'Versalitas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las notas musicales (do, re, mi, fa, sol, la, '
+                             'si) se escriben con:',
+                 'alternativas': ['Mayúscula inicial',
+                                  'Minúscula',
+                                  'Versalitas obligatorias',
+                                  'Cursiva obligatoria',
+                                  'Mayúscula solo «sol», por ser también '
+                                  'astro'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «dios», precedida de determinante y '
+                             'usada de modo genérico o referida a '
+                             'divinidades politeístas, se escribe con:',
+                 'alternativas': ['Mayúscula inicial siempre',
+                                  'Minúscula',
+                                  'Versalitas',
+                                  'Cursiva',
+                                  'Mayúscula solo en textos religiosos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los tratamientos como «usted», «don» o «fray» '
+                             'se escriben con minúscula, salvo cuando:',
+                 'alternativas': ['Van al inicio de un párrafo',
+                                  'Se abrevian (Ud., Sr., D.)',
+                                  'Se refieren a un rey',
+                                  'Aparecen en un título',
+                                  'Van seguidos de nombre propio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los títulos, cargos y nombres de dignidad, '
+                             'como «rey», «papa» o «presidente», se escriben '
+                             'con:',
+                 'alternativas': ['Mayúscula inicial siempre',
+                                  'Minúscula',
+                                  'Mayúscula solo «papa»',
+                                  'Versalitas',
+                                  'Cursiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los nombres de elementos químicos y unidades '
+                             'de medida, como «oxígeno» o «metro», se '
+                             'escriben con:',
+                 'alternativas': ['Mayúscula inicial',
+                                  'Minúscula',
+                                  'Mayúscula en unidades exclusivamente',
+                                  'Versalitas',
+                                  'Cursiva obligatoria'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los principios activos de medicamentos, como '
+                             '«ibuprofeno», se escriben con minúscula, a '
+                             'diferencia de:',
+                 'alternativas': ['Las dosis, que llevan mayúscula',
+                                  'Los nombres comerciales registrados, que '
+                                  'llevan mayúscula inicial',
+                                  'Las vías de administración',
+                                  'Los efectos secundarios',
+                                  'Las contraindicaciones'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una sigla cuya grafía permite leerla '
+                             'secuencialmente, como OTAN o UNESCO, se llama:',
+                 'alternativas': ['Abreviatura',
+                                  'Acrónimo',
+                                  'Símbolo',
+                                  'Sigla deletreada',
+                                  'Epónimo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando un acrónimo se convierte en nombre '
+                             'común de uso corriente, se escribe:',
+                 'alternativas': ['Con mayúscula inicial',
+                                  'Enteramente en minúsculas',
+                                  'Enteramente en mayúsculas',
+                                  'Con versalitas',
+                                  'Con guion intermedio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las siglas que deben deletrearse al leerse, '
+                             'como FBI o DDT, mantienen siempre su '
+                             'escritura:',
+                 'alternativas': ['En minúsculas',
+                                  'En mayúsculas',
+                                  'Con la inicial en mayúscula',
+                                  'En cursiva',
+                                  'Con puntos entre letras'],
+                 'correcta': 'B'},
+                {'pregunta': 'La expresión desarrollada «documento nacional '
+                             'de identidad» (DNI) se escribe con minúsculas '
+                             'por ser una expresión:',
+                 'alternativas': ['El nombre de una institución',
+                                  'Común',
+                                  'Un acrónimo ya lexicalizado',
+                                  'Un tratamiento',
+                                  'Un título oficial'],
+                 'correcta': 'B'},
+                {'pregunta': 'El enunciado con uso correcto de las letras '
+                             'mayúsculas es:',
+                 'alternativas': ['Juan Carlos conduce su vida con Filosofía',
+                                  'Mi hermana Marianela se fue a tomar el '
+                                  'Sol',
+                                  'Daniel, mi primo, radica en el Salvador',
+                                  'Carlos Miguel trabaja en el ministerio de '
+                                  'Salud',
+                                  'La ropa de Inés me recuerda la Edad '
+                                  'Media'],
+                 'correcta': 'E'},
+                {'pregunta': 'La frase que denota uso adecuado de las '
+                             'mayúsculas es:',
+                 'alternativas': ['El Lago de Puno',
+                                  'La Bahía de Acapulco',
+                                  'La ciudad de La Habana',
+                                  'El Mar Negro',
+                                  'El Nevado Pastoruri'],
+                 'correcta': 'C'},
+                {'pregunta': 'En la oración «La amazonía es la región más '
+                             'grande del perú», la cantidad de palabras que '
+                             'se debe escribir con mayúscula es:',
+                 'alternativas': ['Cero', 'Uno', 'Dos', 'Tres', 'Cuatro'],
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'CONSIDERACIONES BÁSICAS',
+                      'items': ['La escritura enteramente en mayúsculas es '
+                                'propia de las siglas, los números romanos y '
+                                'textos cortos informativos.']},
+                     {'titulo': 'SIGLAS Y NOMBRES CIENTÍFICOS',
+                      'items': ['Las siglas se escriben con mayúscula todas '
+                                'las letras que las componen, como PNP o '
+                                'DNI.']},
+                     {'titulo': 'CASOS ESPECIALES DE MAYÚSCULA INICIAL',
+                      'items': ['Si los dígrafos ch, ll, gu o qu aparecen al '
+                                'inicio de una palabra con mayúscula, solo '
+                                'la primera letra se escribe en mayúscula, '
+                                'como en «Chávez» o «Quito».']},
+                     {'titulo': 'LA MAYÚSCULA CONDICIONADA POR LA PUNTUACIÓN',
+                      'items': ['Se escribe con mayúscula la primera palabra '
+                                'de un escrito y la que va después de un '
+                                'punto.']},
+                     {'titulo': 'USO DE LAS MINÚSCULAS',
+                      'items': ['Se escriben con minúscula los nombres de '
+                                'los días de la semana, las estaciones del '
+                                'año y los meses del año.']},
+                     {'titulo': 'ACRÓNIMOS: SIGLAS QUE SE VUELVEN PALABRAS',
+                      'items': ['El acrónimo es una sigla cuya grafía '
+                                'permite leerla secuencialmente (no '
+                                'deletreada), como OTAN o UNESCO.']}]},
  {'num': 7,
   'titulo': 'Signos de Puntuación',
   'secciones': [{'titulo': '7.1 CONCEPTO Y FUNCIONES',
@@ -2816,7 +3139,22 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   '17.30',
                                   '1730 sin separador',
                                   '17-30'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y FUNCIONES',
+                      'items': ['Los signos de puntuación son signos '
+                                'ortográficos que organizan el discurso para '
+                                'facilitar su comprensión.']},
+                     {'titulo': 'EL PUNTO',
+                      'items': ['El punto se usa en las abreviaturas, como '
+                                '«Sra.» o «pág.».']},
+                     {'titulo': 'LA COMA',
+                      'items': ['La coma incidental se usa para intercalar '
+                                'información aclaratoria dentro del '
+                                'enunciado.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Los signos de puntuación son signos '
+                                'ortográficos que organizan el discurso para '
+                                'facilitar su Comprensión.']}]},
  {'num': 8,
   'titulo': 'El Sustantivo',
   'secciones': [{'titulo': '8.1 CRITERIOS PARA DEFINIR EL SUSTANTIVO',
@@ -3081,7 +3419,28 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'El complemento agente',
                                   'El vocativo',
                                   'El atributo'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL SUSTANTIVO',
+                      'items': ['Según el criterio semántico, el sustantivo '
+                                'designa a los seres y objetos de la '
+                                'realidad, de existencia concreta o '
+                                'abstracta.']},
+                     {'titulo': 'FUNCIONES DEL SUSTANTIVO',
+                      'items': ['El sustantivo puede funcionar como núcleo '
+                                'del sujeto, del complemento directo, '
+                                'indirecto o circunstancial.']},
+                     {'titulo': 'SUSTANTIVOS PROPIOS Y COMUNES',
+                      'items': ['Los sustantivos propios nombran a los seres '
+                                'diferenciándolos de los demás de su misma '
+                                'especie, y se escriben con mayúscula '
+                                'inicial.']},
+                     {'titulo': 'OTRAS CLASIFICACIONES DEL SUSTANTIVO',
+                      'items': ['Los sustantivos contables designan '
+                                'entidades que se pueden contar, como «tres '
+                                'planetas».']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, el sustantivo '
+                                'designa Seres y objetos de la realidad.']}]},
  {'num': 9,
   'titulo': 'El Pronombre',
   'secciones': [{'titulo': '9.1 CRITERIOS PARA DEFINIR EL PRONOMBRE',
@@ -3335,7 +3694,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'precisión',
                                   'Nombrar directamente al ser con sus '
                                   'cualidades'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL PRONOMBRE',
+                      'items': ['Según el criterio semántico, el pronombre '
+                                'indica la existencia de seres sin '
+                                'nombrarlos directamente.']},
+                     {'titulo': 'CASOS DEL PRONOMBRE PERSONAL',
+                      'items': ['El caso nominativo o recto corresponde a '
+                                'pronombres como «yo», «tú», «él», que '
+                                'funcionan como sujeto.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, el pronombre '
+                                'indica la existencia de seres Sin '
+                                'nombrarlos directamente.']}]},
  {'num': 10,
   'titulo': 'El Adjetivo',
   'secciones': [{'titulo': '10.1 CRITERIOS PARA DEFINIR EL ADJETIVO',
@@ -3590,7 +3961,23 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Numeral',
                                   'Epíteto',
                                   'Explicativa'],
-                 'correcta': 'A'}]},
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL ADJETIVO',
+                      'items': ['Según el criterio semántico, el adjetivo '
+                                'agrega información o califica al '
+                                'sustantivo, y también lo determina.']},
+                     {'titulo': 'ADJETIVOS CALIFICATIVOS',
+                      'items': ['Los adjetivos calificativos expresan '
+                                'cualidades o estados del sustantivo al cual '
+                                'modifican.']},
+                     {'titulo': 'ADJETIVOS GENTILICIOS',
+                      'items': ['Los adjetivos gentilicios califican al '
+                                'sustantivo por su lugar de origen o '
+                                'procedencia.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, el adjetivo '
+                                'agrega información o Califica al '
+                                'sustantivo.']}]},
  {'num': 11,
   'titulo': 'El Artículo y el Adverbio',
   'secciones': [{'titulo': '11.1 CRITERIOS DEL ARTÍCULO',
@@ -3823,7 +4210,27 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Neutro',
                                   'Indeterminado',
                                   'Demostrativo'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS DEL ARTÍCULO',
+                      'items': ['Según el criterio semántico, el artículo '
+                                'carece de significado lexical propio, pero '
+                                'posee significado gramatical.']},
+                     {'titulo': 'CLASIFICACIÓN DEL ARTÍCULO',
+                      'items': ['El artículo determinado, o definido, hace '
+                                'referencia a un sustantivo conocido: el, '
+                                'la, los, las.']},
+                     {'titulo': 'LA CONTRACCIÓN DEL ARTÍCULO',
+                      'items': ['El único artículo que puede contraerse es '
+                                'el, cuando se une a las preposiciones a o '
+                                'de.']},
+                     {'titulo': 'EL ADVERBIO',
+                      'items': ['El adverbio es una palabra invariable que '
+                                'modifica al verbo, al adjetivo o a otro '
+                                'adverbio.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, el artículo '
+                                'carece de significado lexical pero posee '
+                                'significado Gramatical.']}]},
  {'num': 12,
   'titulo': 'El Verbo',
   'secciones': [{'titulo': '12.1 CRITERIOS PARA DEFINIR EL VERBO',
@@ -4076,7 +4483,28 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Recíprocos',
                                   'Transitivos',
                                   'Copulativos'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL VERBO',
+                      'items': ['Según el criterio semántico, el verbo '
+                                'expresa acción, inacción, pasión, estado, '
+                                'existencia y transformación.']},
+                     {'titulo': 'VERBOS COPULATIVOS Y NO COPULATIVOS',
+                      'items': ['Los verbos copulativos no manifiestan idea '
+                                'con sentido pleno y sirven de nexo entre el '
+                                'sujeto y su atributo: ser, estar, '
+                                'parecer.']},
+                     {'titulo': 'CLASES DE VERBOS NO COPULATIVOS',
+                      'items': ['Los verbos transitivos expresan una acción '
+                                'que transita del sujeto a un objeto, y '
+                                'tienen complemento directo.']},
+                     {'titulo': 'VERBOS IMPERSONALES',
+                      'items': ['Los verbos impersonales son aquellos cuyo '
+                                'sujeto se desconoce o no se precisa con '
+                                'exactitud.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, el verbo '
+                                'expresa acción, inacción, pasión, estado y '
+                                'Existencia.']}]},
  {'num': 13,
   'titulo': 'Conectores Lógico-Semánticos: La Preposición',
   'secciones': [{'titulo': '13.1 CRITERIOS DE LA PREPOSICIÓN',
@@ -4310,7 +4738,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Origen',
                                   'Compañía',
                                   'Dirección'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CRITERIOS DE LA PREPOSICIÓN',
+                      'items': ['Según el criterio semántico, la preposición '
+                                'no tiene significación por sí sola: su '
+                                'sentido es de carácter contextual.']},
+                     {'titulo': 'USOS DE ALGUNAS PREPOSICIONES',
+                      'items': ['La preposición «a» puede indicar dirección, '
+                                'lugar, tiempo o modo.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Según el criterio semántico, la preposición '
+                                'tiene un significado de carácter '
+                                'Contextual.']}]},
  {'num': 14,
   'titulo': 'La Sintaxis y la Oración Gramatical',
   'secciones': [{'titulo': '14.1 CONCEPTO DE SINTAXIS Y SINTAGMA',
@@ -4561,7 +5000,22 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Sin relación semántica',
                                   'Sinónimos',
                                   'Homófonos'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DE SINTAXIS Y SINTAGMA',
+                      'items': ['«Sintaxis» es un término de origen griego '
+                                'que significa «orden o disposición».']},
+                     {'titulo': 'EL SINTAGMA NOMINAL',
+                      'items': ['El sintagma nominal (SN), o frase nominal, '
+                                'está formado por un sustantivo u otra '
+                                'categoría sustantivada que constituye su '
+                                'núcleo.']},
+                     {'titulo': 'MODIFICADORES DEL SINTAGMA NOMINAL',
+                      'items': ['El modificador directo (MD) se une al '
+                                'núcleo sin enlace; son artículos y '
+                                'adjetivos.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El término «sintaxis» es de origen griego y '
+                                'significa Orden o disposición.']}]},
  {'num': 15,
   'titulo': 'El Texto y la Lectura',
   'secciones': [{'titulo': '15.1 CONCEPTO DEL TEXTO',
@@ -4811,7 +5265,21 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Un contexto irrelevante',
                                   'Una situación comunicativa determinada',
                                   'Un vacío comunicativo'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DEL TEXTO',
+                      'items': ['«Texto» proviene del latín «textus», que '
+                                'significa «tejido».']},
+                     {'titulo': 'ESTRUCTURA INTERNA DEL TEXTO',
+                      'items': ['La idea principal es la tesis o '
+                                'planteamiento central que el autor '
+                                'desarrolla, el núcleo del discurso.']},
+                     {'titulo': 'CLASES DE TEXTO POR SU FORMA',
+                      'items': ['El texto narrativo presenta una sucesión de '
+                                'acciones en el tiempo, para contar hechos '
+                                'reales o ficticios.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El término «texto» proviene del latín '
+                                '«textus», que significa Tejido.']}]},
  {'num': 16,
   'titulo': 'Relaciones Semánticas',
   'secciones': [{'titulo': '16.1 LA SINONIMIA',
@@ -5047,4 +5515,21 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Ortografía',
                                   'Paronimia',
                                   'Morfología'],
-                 'correcta': 'D'}]}]
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'LA SINONIMIA',
+                      'items': ['Etimológicamente, «sinónimo» proviene del '
+                                'griego «sin» (con) y «onomas» (nombre), es '
+                                'decir, equivalencia de significados.']},
+                     {'titulo': 'LA ANTONIMIA',
+                      'items': ['Los antónimos son palabras de la misma '
+                                'categoría gramatical que expresan '
+                                'significados contrarios.']},
+                     {'titulo': 'LA PARONIMIA',
+                      'items': ['La paronimia ocurre cuando dos palabras se '
+                                'asemejan en su sonido pero se escriben '
+                                'distinto y tienen significados '
+                                'diferentes.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Etimológicamente, «sinónimo» significa '
+                                'Equivalencia o afinidad de '
+                                'significados.']}]}]
