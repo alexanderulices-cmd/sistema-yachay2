@@ -338,7 +338,35 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Fred Schaefer',
                                   'William Bunge',
                                   'Eratóstenes'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'LA GEOGRAFÍA: ETIMOLOGÍA Y EVOLUCIÓN',
+                      'items': ['El término Geografía proviene de dos voces '
+                                'griegas: Geo = Tierra y Graphía = '
+                                'Descripción.']},
+                     {'titulo': 'ETAPAS DEL PENSAMIENTO GEOGRÁFICO',
+                      'items': ['La Geografía Antigua comprende desde los '
+                                'tiempos primitivos hasta mediados del siglo '
+                                'XIX; era empírica y rutinaria, y formaba '
+                                'parte de la filosofía.']},
+                     {'titulo': 'EL ESPACIO GEOGRÁFICO: OBJETO DE ESTUDIO',
+                      'items': ['Para Milton Santos da Almeida, el Espacio '
+                                'Geográfico es el objeto de estudio de la '
+                                'ciencia geográfica.']},
+                     {'titulo': 'DIVISIÓN DE LA GEOGRAFÍA',
+                      'items': ['La Geografía Física estudia los objetos '
+                                'naturales, abióticos y bióticos: '
+                                'Geomorfología, Climatología, Edafología, '
+                                'Hidrogeografía y Biogeografía.']},
+                     {'titulo': 'PRINCIPIOS METODOLÓGICOS DE LA '
+                                'INVESTIGACIÓN GEOGRÁFICA',
+                      'items': ['Principio de Localización, Distribución o '
+                                'Extensión (Federico Ratzel): todo elemento '
+                                'debe ser ubicado en mapas y cartas '
+                                'geográficas.']},
+                     {'titulo': 'GEOGRAFÍA APLICADA E IMPORTANCIA',
+                      'items': ['La Geografía Aplicada orienta los estudios '
+                                'e investigaciones hacia soluciones '
+                                'prácticas de problemas territoriales.']}]},
  {'num': 2,
   'titulo': 'Geosistema y Espacio Exterior',
   'secciones': [{'titulo': '2.1 EL GEOSISTEMA',
@@ -582,7 +610,28 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Magnetosfera exclusiva',
                                   'Exosfera',
                                   'Termosfera'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'EL GEOSISTEMA',
+                      'items': ['El geosistema, o planeta Tierra considerado '
+                                'como unidad, es el conjunto de entidades '
+                                'bióticas, abióticas y antrópicas que se '
+                                'interrelacionan permanentemente.']},
+                     {'titulo': 'EL UNIVERSO Y SU ORIGEN',
+                      'items': ['El universo es la totalidad de la materia, '
+                                'la radiación y el espacio-tiempo, que se '
+                                'encuentra en proceso de expansión.']},
+                     {'titulo': 'ESTRUCTURA DEL UNIVERSO',
+                      'items': ['Las galaxias, llamadas también universos '
+                                'isla, son aglomeraciones de millones de '
+                                'estrellas.']},
+                     {'titulo': 'EL SISTEMA PLANETARIO SOLAR',
+                      'items': ['El Sol contiene el 98,85% de la masa total '
+                                'del Sistema Solar y domina su campo '
+                                'gravitacional.']},
+                     {'titulo': 'DIMENSIONES Y MOVIMIENTOS DE LA TIERRA',
+                      'items': ['La circunferencia ecuatorial de la Tierra '
+                                'mide 40 076 km, y la circunferencia polar '
+                                '40 009 km.']}]},
  {'num': 3,
   'titulo': 'Cartografía y Sistemas de Información Geográfica',
   'secciones': [{'titulo': '3.1 LA CARTOGRAFÍA',
@@ -812,7 +861,26 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Esféricas puras',
                                   'Desarrollables, como conos y cilindros',
                                   'Curvas irregulares'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'LA CARTOGRAFÍA',
+                      'items': ['La cartografía es la ciencia y arte de '
+                                'expresar gráficamente, por medio de mapas, '
+                                'las características del geosistema.']},
+                     {'titulo': 'TIPOS DE PROYECCIONES',
+                      'items': ['La proyección cilíndrica usa un cilindro '
+                                'tangente al Ecuador; su mayor inconveniente '
+                                'es que deforma las áreas cercanas a los '
+                                'polos.']},
+                     {'titulo': 'LÍNEAS IMAGINARIAS TERRESTRES',
+                      'items': ['Los círculos máximos dividen a la Tierra en '
+                                'dos partes iguales, como el Ecuador; los '
+                                'círculos menores son paralelos al '
+                                'Ecuador.']},
+                     {'titulo': 'TELEDETECCIÓN, GPS Y HUSOS HORARIOS',
+                      'items': ['La teledetección es la técnica que permite '
+                                'obtener información de un objeto o área '
+                                'mediante el análisis de imágenes, sin '
+                                'contacto físico.']}]},
  {'num': 4,
   'titulo': 'Mapas: Lectura e Interpretación',
   'secciones': [{'titulo': '4.1 CONCEPTO Y CLASIFICACIÓN',
@@ -1054,7 +1122,23 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Mayor exactitud absoluta',
                                   'Representar en tres dimensiones',
                                   'No requerir escala'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
+                      'items': ['Un mapa es una representación, total o '
+                                'parcial, de la superficie curva de la '
+                                'Tierra sobre una superficie plana.']},
+                     {'titulo': 'ELEMENTOS DEL MAPA',
+                      'items': ['El título del mapa se ubica en la parte '
+                                'superior y representa el contenido del '
+                                'mapa.']},
+                     {'titulo': 'CLASES DE ESCALA Y CÁLCULO DE DISTANCIAS',
+                      'items': ['Existen dos clases de escala: la escala '
+                                'numérica, expresada como una fracción, y la '
+                                'escala gráfica, un segmento graduado.']},
+                     {'titulo': 'EJEMPLO: HALLANDO LA ESCALA DE UN MAPA',
+                      'items': ['Para hallar la escala de un mapa, el número '
+                                '1 siempre se coloca al inicio de la '
+                                'proporción (1: ?).']}]},
  {'num': 5,
   'titulo': 'Relieve Terrestre: Origen y Procesos Dinámicos',
   'secciones': [{'titulo': '5.1 ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO Y '
@@ -1299,7 +1383,27 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                 {'pregunta': 'El manto representa aproximadamente qué '
                              'porcentaje del volumen terrestre:',
                  'alternativas': ['16%', '83%', '1%', '25%', '50%'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO '
+                                'Y EL MANTO',
+                      'items': ['El núcleo alcanza temperaturas entre 4000° '
+                                'y 5000° C, y está formado por níquel y '
+                                'hierro.']},
+                     {'titulo': 'LA CORTEZA TERRESTRE',
+                      'items': ['La corteza externa, llamada granítica o Si '
+                                'Al, es la corteza continental, formada por '
+                                'silicio y aluminio.']},
+                     {'titulo': 'EL RELIEVE TERRESTRE Y LA GEODINÁMICA '
+                                'INTERNA',
+                      'items': ['El relieve terrestre es el conjunto de '
+                                'irregularidades o geoformas que presenta la '
+                                'superficie de la Tierra.']},
+                     {'titulo': 'LA ISOSTASIA, EL VULCANISMO Y LA TECTÓNICA '
+                                'DE PLACAS',
+                      'items': ['La isostasia es el principio geofísico que '
+                                'explica el equilibrio entre los continentes '
+                                'elevados y las cuencas oceánicas '
+                                'deprimidas.']}]},
  {'num': 6,
   'titulo': 'Espacio Geográfico Peruano: Región Andina',
   'secciones': [{'titulo': '6.1 LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
@@ -1530,7 +1634,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '800 km',
                                   '1 640 km',
                                   '2 135 km'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
+                      'items': ['El territorio peruano se ubica en la parte '
+                                'occidental y central de Sudamérica, en la '
+                                'zona tórrida, Hemisferio Austral.']},
+                     {'titulo': 'DATOS EXTREMOS DEL PERÚ',
+                      'items': ['El lugar más lluvioso del Perú es Quince '
+                                'Mil, en la provincia de Quispicanchi, '
+                                'Cusco, con 8000 mm.']},
+                     {'titulo': 'FRONTERAS Y LÍMITES',
+                      'items': ['La frontera más extensa del Perú es con '
+                                'Brasil, con 2822,5 km.']},
+                     {'titulo': 'REGIONES NATURALES DEL ÁREA CONTINENTAL',
+                      'items': ['La región Costa representa el 12,5% del '
+                                'área continental del Perú.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El territorio peruano se ubica en la zona '
+                                'Tórrida.']}]},
  {'num': 7,
   'titulo': 'Espacio Geográfico Peruano: Región Amazónica y Costa',
   'secciones': [{'titulo': '7.1 LA REGIÓN AMAZÓNICA',
@@ -1780,7 +1901,29 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Huallaga',
                                   'Urubamba',
                                   'Tambo'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'LA REGIÓN AMAZÓNICA',
+                      'items': ['La región amazónica o selva es la región '
+                                'geográfica más extensa del Perú, '
+                                'representando el 57,3% del territorio '
+                                'nacional.']},
+                     {'titulo': 'LA SELVA ALTA O RUPA RUPA',
+                      'items': ['La selva alta, llamada también Rupa Rupa o '
+                                'Ceja de Selva, es una faja angosta entre la '
+                                'región andina y la llanura amazónica.']},
+                     {'titulo': 'LA SELVA BAJA U OMAGUA',
+                      'items': ['La selva baja, llamada también Omagua o '
+                                'Llanura Amazónica, ocupa parte del antiguo '
+                                'Cratón Brasileño y no es afectada por la '
+                                'tectónica andina.']},
+                     {'titulo': 'LA REGIÓN COSTA',
+                      'items': ['La región Costa es un espacio desértico y '
+                                'estrecho, ubicado desde el nivel del mar '
+                                'hasta 1000 m de altitud, y representa el '
+                                '12,5% del territorio nacional.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['La región geográfica más extensa del Perú '
+                                'es La Amazónica o Selva.']}]},
  {'num': 8,
   'titulo': 'Hidrografía del Perú: Ríos y Lagos',
   'secciones': [{'titulo': '8.1 CARACTERÍSTICAS DE LOS RÍOS',
@@ -2019,7 +2162,25 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Coropuna',
                                   'Salkantay',
                                   'Ausangate'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CARACTERÍSTICAS DE LOS RÍOS',
+                      'items': ['El curso de un río es la distancia entre su '
+                                'origen y desembocadura, y comprende tres '
+                                'tramos: alto, medio y bajo.']},
+                     {'titulo': 'LAS TRES VERTIENTES DEL PERÚ',
+                      'items': ['La Autoridad Nacional del Agua (ANA) '
+                                'identificó 159 unidades hidrográficas en el '
+                                'Perú.']},
+                     {'titulo': 'EL LAGO TITICACA',
+                      'items': ['El lago Titicaca es el lago navegable más '
+                                'alto del mundo, ubicado a 3810 m de '
+                                'altitud.']},
+                     {'titulo': 'RÍOS MÁS EXTENSOS DEL PERÚ',
+                      'items': ['El río más extenso del Perú es el Ucayali, '
+                                'con 1771 km.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El volumen de agua que transporta un río se '
+                                'denomina Caudal.']}]},
  {'num': 9,
   'titulo': 'Hidrografía del Perú: Mar Peruano',
   'secciones': [{'titulo': '9.1 EL MAR PERUANO',
@@ -2262,7 +2423,28 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '40 gr/l',
                                   '45 gr/l',
                                   '30 gr/l'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'EL MAR PERUANO',
+                      'items': ['El mar peruano se extiende desde la línea '
+                                'de Concordia hasta la Boca de Capones, y '
+                                'hasta 200 millas mar adentro.']},
+                     {'titulo': 'SOBERANÍA MARÍTIMA: LA TESIS DE LAS 200 '
+                                'MILLAS',
+                      'items': ['La doctrina de las 200 millas fue '
+                                'proclamada por Perú, junto con Chile y '
+                                'Ecuador.']},
+                     {'titulo': 'CARACTERÍSTICAS POR REGIONES',
+                      'items': ['La región norte del mar peruano se extiende '
+                                'desde la península de Illescas hasta Boca '
+                                'de Capones, con temperatura elevada y color '
+                                'azul plomizo.']},
+                     {'titulo': 'RELIEVE SUBMARINO',
+                      'items': ['La plataforma o zócalo continental es el '
+                                'relieve submarino que continúa a la costa '
+                                'hasta la isóbata de 200 m.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El mar peruano se extiende, en distancia, '
+                                'hasta 200 millas.']}]},
  {'num': 10,
   'titulo': 'Atmósfera y Cambio Climático',
   'secciones': [{'titulo': '10.1 LA ATMÓSFERA Y SU COMPOSICIÓN',
@@ -2489,7 +2671,26 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Tropopausa',
                                   'Termopausa',
                                   'Estratopausa'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LA ATMÓSFERA Y SU COMPOSICIÓN',
+                      'items': ['La atmósfera regula las temperaturas '
+                                'extremas y nos protege de los rayos '
+                                'ultravioleta y de cuerpos como los '
+                                'meteoritos.']},
+                     {'titulo': 'LA TROPÓSFERA',
+                      'items': ['La tropósfera es la capa inferior de la '
+                                'atmósfera, con un promedio de 12,5 km de '
+                                'altitud.']},
+                     {'titulo': 'LA ESTRATÓSFERA Y LA CAPA DE OZONO',
+                      'items': ['La estratósfera cubre la tropósfera hasta '
+                                'los 50 km de altitud, y es la zona de '
+                                'calma.']},
+                     {'titulo': 'MESÓSFERA Y TERMÓSFERA',
+                      'items': ['La mesósfera se extiende de 50 a 90 km, con '
+                                'temperaturas que llegan hasta -110°C.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['La atmósfera nos protege principalmente de '
+                                'Los rayos ultravioleta y meteoritos.']}]},
  {'num': 11,
   'titulo': 'Recursos Naturales, Conservación e Impacto Ambiental',
   'secciones': [{'titulo': '11.1 CONCEPTO Y CLASIFICACIÓN',
@@ -2724,7 +2925,25 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Cajamarca',
                                   'Áncash',
                                   'Lima'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
+                      'items': ['Los recursos naturales son elementos que la '
+                                'naturaleza ofrece espontáneamente para '
+                                'satisfacer las necesidades del hombre.']},
+                     {'titulo': 'RECURSOS POR REGIÓN',
+                      'items': ['Del mar peruano se obtienen '
+                                'microorganismos, peces como la anchoveta, '
+                                'cetáceos, moluscos y aves guaneras como el '
+                                'guanay, piquero y alcatraz.']},
+                     {'titulo': 'ÁREAS NATURALES PROTEGIDAS',
+                      'items': ['El SERNANP es el organismo adscrito al '
+                                'Ministerio del Ambiente encargado de la '
+                                'conservación de las Áreas Naturales '
+                                'Protegidas, creado por el Decreto '
+                                'Legislativo 1013 del 2008.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['Los recursos naturales son elementos que '
+                                'Ofrece la naturaleza espontáneamente.']}]},
  {'num': 12,
   'titulo': 'Riesgo de Desastres en el Perú',
   'secciones': [{'titulo': '12.1 EL SINAGERD',
@@ -2979,7 +3198,25 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Solo el turismo',
                                   'La población, la economía y el ambiente',
                                   'Solo el ambiente'],
-                 'correcta': 'D'}]},
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'EL SINAGERD',
+                      'items': ['El Sistema Nacional de Gestión del Riesgo '
+                                'de Desastres, SINAGERD, fue creado por la '
+                                'Ley N° 29664.']},
+                     {'titulo': 'CONCEPTOS BÁSICOS: FENÓMENO, DESASTRE Y '
+                                'RIESGO',
+                      'items': ['Un fenómeno natural es una manifestación '
+                                'espontánea de la naturaleza que no '
+                                'necesariamente representa una amenaza para '
+                                'el hombre.']},
+                     {'titulo': 'AMENAZA Y VULNERABILIDAD',
+                      'items': ['La amenaza es la probabilidad de que ocurra '
+                                'un fenómeno natural o causado por el hombre '
+                                'que puede poner en peligro a un grupo de '
+                                'personas.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El SINAGERD fue creado mediante la Ley N° '
+                                '29664.']}]},
  {'num': 13,
   'titulo': 'Dinámica Poblacional en el Perú',
   'secciones': [{'titulo': '13.1 DEMOGRAFÍA Y DEMOGEOGRAFÍA',
@@ -3219,7 +3456,27 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '65 años',
                                   '35,6 años',
                                   '71,2 años'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'DEMOGRAFÍA Y DEMOGEOGRAFÍA',
+                      'items': ['La demogeografía pertenece a la geografía '
+                                'humana y estudia la distribución de la '
+                                'población en un área geográfica.']},
+                     {'titulo': 'ÍNDICES DEMOGRÁFICOS',
+                      'items': ['La tasa de natalidad es el número de '
+                                'nacimientos por cada mil habitantes en un '
+                                'año; en el Perú es de 23,3‰ anual.']},
+                     {'titulo': 'EL INEI Y LA POBLACIÓN PERUANA',
+                      'items': ['El INEI es el organismo central y rector '
+                                'del Sistema Estadístico Nacional, '
+                                'dependiente del Presidente del Consejo de '
+                                'Ministros.']},
+                     {'titulo': 'CLASES DE POBLACIÓN',
+                      'items': ['La población nominal es el número total de '
+                                'habitantes que han sido censados.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['La disciplina que estudia la distribución '
+                                'de la población en un área geográfica es La '
+                                'demogeografía.']}]},
  {'num': 14,
   'titulo': 'Actividades Económicas Extractivas en el Perú',
   'secciones': [{'titulo': '14.1 LA PESCA EN EL MAR PERUANO',
@@ -3466,7 +3723,27 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Anzuelos, redes y balsas',
                                   'Redes industriales',
                                   'Explosivos'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LA PESCA EN EL MAR PERUANO',
+                      'items': ['La pesca es una actividad económica '
+                                'extractiva que consiste en el '
+                                'aprovechamiento de los recursos '
+                                'hidrobiológicos.']},
+                     {'titulo': 'PESCA EN LA SELVA Y EN LA COSTA',
+                      'items': ['En la selva se pesca con técnicas '
+                                'tradicionales como redes de cortina, flecha '
+                                'y arpón.']},
+                     {'titulo': 'PESCA EN LA REGIÓN ANDINA',
+                      'items': ['En la región andina se pesca principalmente '
+                                'en el lago Titicaca, con fines deportivos y '
+                                'alimenticios.']},
+                     {'titulo': 'IMPACTO AMBIENTAL DE LA PESCA',
+                      'items': ['Los impactos en la biodiversidad pesquera '
+                                'provienen de la sobrepesca, la captura '
+                                'incidental y la degradación del hábitat.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['La pesca es una actividad económica de tipo '
+                                'Extractiva.']}]},
  {'num': 15,
   'titulo': 'Actividades Económicas Reproductivas en el Perú',
   'secciones': [{'titulo': '15.1 LA AGRICULTURA EN EL PERÚ',
@@ -3719,7 +3996,27 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'El exceso de maquinaria',
                                   'La limitación en transporte y '
                                   'comercialización'],
-                 'correcta': 'E'}]},
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'LA AGRICULTURA EN EL PERÚ',
+                      'items': ['La agricultura es la actividad económica '
+                                'reproductiva que consiste en el cultivo del '
+                                'suelo para obtener plantas alimenticias e '
+                                'industriales.']},
+                     {'titulo': 'LA AGRICULTURA EN LA COSTA',
+                      'items': ['La agricultura de la costa es intensiva, ya '
+                                'que el suelo no descansa, obteniéndose '
+                                'hasta dos cosechas anuales.']},
+                     {'titulo': 'LA AGRICULTURA EN LA REGIÓN ANDINA',
+                      'items': ['La agricultura andina es extensiva, porque '
+                                'el suelo descansa y solo se cultiva en '
+                                'época de lluvias.']},
+                     {'titulo': 'LA AGRICULTURA EN LA SELVA',
+                      'items': ['La agricultura en la selva es migratoria: '
+                                'los suelos se degradan rápidamente y se '
+                                'practica el roce, tumba y quema.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['La agricultura es una actividad económica '
+                                'de tipo Reproductiva.']}]},
  {'num': 17,
   'titulo': 'Geografía Política del Perú y Gestión Territorial',
   'secciones': [{'titulo': '17.1 GEOGRAFÍA POLÍTICA',
@@ -3942,7 +4239,26 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Tacna',
                                   'Puno',
                                   'Chiclayo'],
-                 'correcta': 'B'}]},
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'GEOGRAFÍA POLÍTICA',
+                      'items': ['La geografía política estudia la '
+                                'organización política y administrativa de '
+                                'los Estados, sus formas de gobierno, '
+                                'fronteras y relaciones con otros Estados.']},
+                     {'titulo': 'DIVISIÓN POLÍTICA DEL PERÚ',
+                      'items': ['El territorio peruano está dividido en 25 '
+                                'regiones, 24 departamentos, 195 provincias '
+                                'más la provincia constitucional del Callao, '
+                                'y 1874 distritos.']},
+                     {'titulo': 'CENTRALISMO, DESCENTRALIZACIÓN Y '
+                                'REGIONALIZACIÓN',
+                      'items': ['El centralismo es el sistema donde el poder '
+                                'político, administrativo y económico emana '
+                                'del gobierno central.']},
+                     {'titulo': 'PRINCIPALES AEROPUERTOS DEL PERÚ',
+                      'items': ['El aeropuerto internacional Jorge Chávez, '
+                                'en Lima, es el principal aeropuerto del '
+                                'Perú.']}]},
  {'num': 18,
   'titulo': 'Espacio Geográfico Físico del Cusco',
   'secciones': [{'titulo': '18.1 LOCALIZACIÓN Y EXTENSIÓN',
@@ -4159,7 +4475,26 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Ayacucho',
                                   'Madre de Dios',
                                   'Arequipa'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y EXTENSIÓN',
+                      'items': ['El departamento del Cusco se ubica en la '
+                                'parte sur-oriental del Perú, entre la '
+                                'Cordillera de los Andes, la Selva Alta y la '
+                                'Selva Baja.']},
+                     {'titulo': 'LÍMITES DEL DEPARTAMENTO',
+                      'items': ['El Cusco limita por el norte con Ucayali, '
+                                'por el noroeste con Junín, y por el noreste '
+                                'con Madre de Dios.']},
+                     {'titulo': 'REGIONES NATURALES DEL CUSCO',
+                      'items': ['La región Andina o Sierra representa el 53% '
+                                'del territorio del departamento del '
+                                'Cusco.']},
+                     {'titulo': 'DIVISIÓN POLÍTICA DEL CUSCO',
+                      'items': ['El departamento del Cusco tiene 13 '
+                                'provincias y 112 distritos.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['El departamento del Cusco se ubica en la '
+                                'parte Sur-oriental del Perú.']}]},
  {'num': 19,
   'titulo': 'Geografía de América',
   'secciones': [{'titulo': '19.1 GENERALIDADES DEL CONTINENTE',
@@ -4382,4 +4717,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Ríos cortos y de bajo caudal',
                                   'Ríos estacionales secos',
                                   'Ríos extensos y caudalosos'],
-                 'correcta': 'E'}]}]
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'GENERALIDADES DEL CONTINENTE',
+                      'items': ['América es el segundo continente por su '
+                                'extensión, después de Asia, con cerca de 42 '
+                                '974 372 km².']},
+                     {'titulo': 'AMÉRICA DEL SUR: RELIEVE E HIDROGRAFÍA',
+                      'items': ['América del Sur se extiende desde Punta '
+                                'Gallinas, en Colombia, hasta la isla Diego '
+                                'Ramírez, en Cabo de Hornos, Chile.']},
+                     {'titulo': 'PAÍSES DE AMÉRICA DEL SUR',
+                      'items': ['La capital de Brasil es Brasilia, y su '
+                                'moneda es el Real.']},
+                     {'titulo': 'DATOS COMPLEMENTARIOS',
+                      'items': ['América es el segundo continente por su '
+                                'extensión, después de Asia.']}]}]
