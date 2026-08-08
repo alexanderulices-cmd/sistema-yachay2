@@ -1081,14 +1081,81 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            'bilabial, oclusivo, {sonoro} y oral.',
                            '«Peso» y «beso» se diferencian por un único '
                            'rasgo distintivo: el valor de la {sonoridad}.']},
-                {'titulo': '3.4 ELEMENTOS SEGMENTALES Y SUPRASEGMENTALES',
+                {'titulo': '3.4 FONEMAS VOCÁLICOS Y SU CLASIFICACIÓN',
+                 'items': ['El español tiene {24} fonemas segmentales: 5 son '
+                           '{vocálicos} y 19 consonánticos.',
+                           'En los {fonemas vocálicos}, el flujo de aire no '
+                           'encuentra ningún {obstáculo} para atravesar el '
+                           'canal fonatorio: /a/, /e/, /i/, /o/, /u/.',
+                           'Por el grado de abertura de la boca: vocales '
+                           '{cerradas} (/i/, /u/), semiabiertas (/e/, /o/), '
+                           'y vocal {abierta} (/a/).',
+                           'Por la posición de la lengua: vocales '
+                           '{anteriores} o palatales (/e/, /i/), vocal '
+                           '{central} (/a/), y vocales posteriores o velares '
+                           '(/o/, /u/).',
+                           'Por el grado de sonoridad: vocales {agudas} '
+                           '(/e/, /i/), vocal media (/a/), y vocales '
+                           '{graves} (/o/, /u/).',
+                           'Por la vibración de las cuerdas vocales, todas '
+                           'las vocales del español son {sonoras}; no '
+                           'existen vocales {sordas}.',
+                           'El {triángulo vocálico} fue propuesto por {F. '
+                           'Hellwag} en 1781.']},
+                {'titulo': '3.5 FONEMAS CONSONÁNTICOS: PUNTO DE ARTICULACIÓN',
+                 'items': ['En los {fonemas consonánticos} se produce una '
+                           'interrupción total o parcial del flujo de aire, '
+                           'combinando movimientos de {lengua}, labios y '
+                           'dientes.',
+                           'Por el {punto de articulación}: son {bilabiales} '
+                           'los fonemas /p/, /b/, /m/, donde intervienen '
+                           'ambos labios.',
+                           'Es {labiodental} el fonema /f/, donde el labio '
+                           'inferior se dirige hacia los dientes {incisivos} '
+                           'superiores.',
+                           'Son {dentales} los fonemas /t/, /d/, donde el '
+                           'ápice de la lengua toca los {dientes} incisivos '
+                           'superiores.',
+                           'Es {interdental} el fonema /z/, donde el ápice '
+                           'de la lengua se ubica entre los {dientes}.',
+                           'Son {alveolares} los fonemas /s/, /n/, /l/, /r/, '
+                           '/rr/, donde el ápice de la lengua se dirige '
+                           'hacia los {alvéolos}.',
+                           'Son {palatales} los fonemas /ch/, /y/, /ll/, '
+                           '/ñ/, donde el dorso de la lengua se dirige hacia '
+                           'el {paladar} medio.',
+                           'Son {velares} los fonemas /k/, /g/, /j/, donde '
+                           'la raíz de la lengua se dirige hacia el {velo} '
+                           'del paladar.']},
+                {'titulo': '3.6 FONEMAS CONSONÁNTICOS: MODO DE ARTICULACIÓN',
+                 'items': ['Por el {modo de articulación}: son {oclusivos} '
+                           'los fonemas /p/, /b/, /d/, /k/, /g/, /t/, donde '
+                           'el aire encuentra un cierre momentáneo con breve '
+                           '{explosión}.',
+                           'Son {fricativos} los fonemas /f/, /z/, /s/, /y/, '
+                           '/j/, donde el aire pasa friccionando o {rozando} '
+                           'las paredes del canal.',
+                           'Es {africado} el fonema /ch/, que resulta de la '
+                           'combinación de la oclusiva con la {fricativa}.',
+                           'Son {laterales} los fonemas /l/, /ll/, donde el '
+                           'aire sale por los {lados} de la lengua.',
+                           'Son {nasales} los fonemas /m/, /n/, /ñ/, donde '
+                           'el aire sale por la cavidad {nasal} y la cavidad '
+                           'oral.',
+                           'Son {vibrantes} los fonemas /rr/, /r/, donde el '
+                           'órgano activo vibra {obstruyendo} y abriendo el '
+                           'paso del aire.',
+                           'Por el grado de vibración de las cuerdas '
+                           'vocales, los fonemas consonánticos se clasifican '
+                           'en {sonoros} y sordos.']},
+                {'titulo': '3.7 ELEMENTOS SEGMENTALES Y SUPRASEGMENTALES',
                  'items': ['Los elementos {segmentales} constituyen la '
                            'cadena hablada, definidos según criterios '
                            'articulatorios, acústicos y perceptivos.',
                            'Los elementos {suprasegmentales}, como la '
                            'entonación y el acento, se superponen a la '
                            'cadena de sonidos.']},
-                {'titulo': '3.5 RAMAS DE LA FONÉTICA',
+                {'titulo': '3.8 RAMAS DE LA FONÉTICA',
                  'items': ['La {fonética articulatoria} estudia cómo se '
                            'producen los sonidos mediante los órganos del '
                            '{habla}.',
@@ -1276,6 +1343,178 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Descriptiva',
                                   'Perceptiva exclusiva',
                                   'Fonológica'],
+                 'correcta': 'B'},
+                {'pregunta': 'El español tiene 24 fonemas segmentales, de '
+                             'los cuales el número de fonemas vocálicos es:',
+                 'alternativas': ['3', '5', '7', '19', '10'],
+                 'correcta': 'B'},
+                {'pregunta': 'En los fonemas vocálicos, durante su '
+                             'producción, el flujo de aire:',
+                 'alternativas': ['Encuentra un obstáculo total',
+                                  'No encuentra ningún obstáculo',
+                                  'Se interrumpe parcialmente',
+                                  'Vibra en las cuerdas vocales',
+                                  'Se detiene completamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por el grado de abertura de la boca, las '
+                             'vocales /i/ y /u/ se clasifican como:',
+                 'alternativas': ['Abiertas',
+                                  'Cerradas',
+                                  'Semiabiertas',
+                                  'Centrales',
+                                  'Posteriores'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por la posición de la lengua, la vocal /a/ se '
+                             'clasifica como vocal:',
+                 'alternativas': ['Anterior o palatal',
+                                  'Central',
+                                  'Posterior o velar',
+                                  'Cerrada',
+                                  'Aguda'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por el grado de sonoridad, las vocales /o/ y '
+                             '/u/ se clasifican como vocales:',
+                 'alternativas': ['Agudas',
+                                  'Graves',
+                                  'Medias',
+                                  'Cerradas',
+                                  'Abiertas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Respecto a la vibración de las cuerdas '
+                             'vocales, en español:',
+                 'alternativas': ['Existen vocales sordas y sonoras por '
+                                  'igual',
+                                  'Todas las vocales son sonoras',
+                                  'Todas las vocales son sordas',
+                                  'Solo /a/ es sonora',
+                                  'Ninguna vocal es sonora'],
+                 'correcta': 'B'},
+                {'pregunta': 'El triángulo vocálico, herramienta para '
+                             'clasificar las vocales, fue propuesto en 1781 '
+                             'por:',
+                 'alternativas': ['Ferdinand de Saussure',
+                                  'F. Hellwag',
+                                  'Noam Chomsky',
+                                  'Roman Jakobson',
+                                  'André Martinet'],
+                 'correcta': 'B'},
+                {'pregunta': 'En los fonemas consonánticos, durante su '
+                             'realización, se produce:',
+                 'alternativas': ['Ninguna interrupción del flujo de aire',
+                                  'Una interrupción total o parcial del '
+                                  'flujo de aire',
+                                  'Solo vibración de cuerdas vocales',
+                                  'Solo resonancia nasal',
+                                  'Solo fricción labial'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /p/, /b/ y /m/, donde intervienen '
+                             'ambos labios, se clasifican por su punto de '
+                             'articulación como:',
+                 'alternativas': ['Labiodentales',
+                                  'Bilabiales',
+                                  'Dentales',
+                                  'Alveolares',
+                                  'Palatales'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fonema /f/, donde el labio inferior se '
+                             'dirige hacia los dientes incisivos superiores, '
+                             'se clasifica como:',
+                 'alternativas': ['Bilabial',
+                                  'Labiodental',
+                                  'Dental',
+                                  'Interdental',
+                                  'Alveolar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /s/, /n/, /l/, /r/, /rr/, donde el '
+                             'ápice de la lengua se dirige hacia los '
+                             'alvéolos, se clasifican como:',
+                 'alternativas': ['Dentales',
+                                  'Alveolares',
+                                  'Palatales',
+                                  'Velares',
+                                  'Interdentales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /ch/, /y/, /ll/, /ñ/, donde el '
+                             'dorso de la lengua se dirige hacia el paladar '
+                             'medio, se clasifican como:',
+                 'alternativas': ['Alveolares',
+                                  'Palatales',
+                                  'Velares',
+                                  'Dentales',
+                                  'Bilabiales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /k/, /g/, /j/, donde la raíz de la '
+                             'lengua se dirige hacia el velo del paladar, se '
+                             'clasifican como:',
+                 'alternativas': ['Palatales',
+                                  'Velares',
+                                  'Alveolares',
+                                  'Dentales',
+                                  'Labiodentales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /p/, /b/, /d/, /k/, /g/, /t/, '
+                             'donde el aire encuentra un cierre momentáneo '
+                             'con breve explosión, se clasifican por su modo '
+                             'de articulación como:',
+                 'alternativas': ['Fricativos',
+                                  'Oclusivos',
+                                  'Africados',
+                                  'Laterales',
+                                  'Nasales'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /f/, /z/, /s/, /y/, /j/, donde el '
+                             'aire pasa friccionando las paredes del canal, '
+                             'se clasifican como:',
+                 'alternativas': ['Oclusivos',
+                                  'Fricativos',
+                                  'Africados',
+                                  'Vibrantes',
+                                  'Nasales'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fonema /ch/, que resulta de la combinación '
+                             'de una oclusiva con una fricativa, se '
+                             'clasifica como:',
+                 'alternativas': ['Oclusivo',
+                                  'Africado',
+                                  'Fricativo',
+                                  'Lateral',
+                                  'Nasal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /m/, /n/, /ñ/, donde el aire sale '
+                             'por la cavidad nasal y la cavidad oral, se '
+                             'clasifican como:',
+                 'alternativas': ['Laterales',
+                                  'Nasales',
+                                  'Vibrantes',
+                                  'Oclusivos',
+                                  'Fricativos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fonemas /rr/ y /r/, donde el órgano activo '
+                             'vibra obstruyendo y abriendo el paso del aire, '
+                             'se clasifican como:',
+                 'alternativas': ['Nasales',
+                                  'Vibrantes',
+                                  'Laterales',
+                                  'Fricativos',
+                                  'Oclusivos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fonema /g/, clasificado por punto de '
+                             'articulación, modo de articulación y '
+                             'sonoridad, corresponde a:',
+                 'alternativas': ['Velar - fricativo - sordo',
+                                  'Velar - oclusivo - sonoro',
+                                  'Bilabial - oclusivo - sonoro',
+                                  'Alveolar - vibrante - sonoro',
+                                  'Palatal - africado - sordo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El fonema /j/, clasificado por punto de '
+                             'articulación, modo de articulación y '
+                             'sonoridad, corresponde a:',
+                 'alternativas': ['Velar - oclusivo - sonoro',
+                                  'Velar - fricativo - sordo',
+                                  'Bilabial - nasal - sonoro',
+                                  'Alveolar - lateral - sonoro',
+                                  'Palatal - africado - sordo'],
                  'correcta': 'B'}]},
  {'num': 4,
   'titulo': 'La Sílaba',
@@ -1312,50 +1551,42 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                            '{separan} entre ambas: as-ma.',
                            'No existe en español frontera silábica en la '
                            'secuencia {consonante-vocal}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La sílaba se define como la unidad estructural '
-                           'que actúa como principio {Organizador de la '
-                           'lengua}.',
-                           'La sílaba se agrupa en torno al segmento de '
-                           'máxima {Sonoridad}.',
-                           'En español, el núcleo silábico es siempre de '
-                           'naturaleza {Vocálica}.',
-                           'El constituyente silábico que es la cumbre o '
-                           'centro de la sílaba es {El núcleo}.',
-                           'El margen silábico anterior, de naturaleza '
-                           'consonántica, se llama {Inicio o ataque}.',
-                           'El margen silábico posterior, en posición '
-                           'implosiva, se llama {Coda}.',
-                           'La rima silábica está constituida por {El núcleo '
-                           'y la coda}.',
-                           'El silabeo consiste en {Pronunciar o escribir '
-                           'separadas las sílabas de una palabra}.',
-                           'Una consonante entre dos vocales siempre forma '
-                           'sílaba con la vocal que {La sigue}.',
-                           'En la palabra «pato», la separación silábica '
-                           'correcta es {Pa-to}.',
-                           'Los grupos tautosilábicos pr, br, tr, cr, pl, '
-                           'bl, cl se caracterizan por ser {Inseparables}.',
-                           'En la palabra «apretar», el grupo «pr» se '
-                           'mantiene {Junto, formando sílaba con la vocal '
-                           'siguiente}.',
-                           'Cuando una sílaba termina en consonante y la '
-                           'siguiente comienza en otra consonante, ambas se '
-                           '{Separan entre ambas consonantes}.',
-                           'En la palabra «asma», la separación silábica es '
-                           '{As-ma}.',
-                           'En la palabra «Cuba», la separación silábica '
-                           'correcta es {Cu-ba}.',
-                           'Un vocablo monosilábico, como «pan», tiene {Una '
-                           'sola sílaba}.',
-                           'La palabra «amor» se divide silábicamente como '
-                           '{A-mor}.',
-                           'El núcleo silábico, según el texto, resulta '
-                           'determinante para asignar {El acento léxico}.',
-                           'Un sonido o grupo de sonidos pronunciados en un '
-                           'solo golpe de voz constituye {Una sílaba}.',
-                           'Las vocales solas, por sí mismas, pueden '
-                           'constituir {Sílabas}.']}],
+                {'titulo': '4.4 GRUPOS TAUTOSILÁBICOS Y DIPTONGOS',
+                 'items': ['Los {grupos tautosilábicos} ocurren cuando dos '
+                           'elementos contiguos pertenecen a la misma '
+                           '{sílaba}: combinaciones pl, pr, cl, cr, fl, fr, '
+                           'bl, br, gl, gr, tl, tr.',
+                           'El {diptongo} es la concurrencia de dos vocales '
+                           'que forman una sola {sílaba}.',
+                           'El diptongo {creciente} combina una vocal '
+                           'cerrada y una abierta, o dos vocales cerradas '
+                           'diferentes; ejemplo: {pue}s.',
+                           'El diptongo {decreciente} combina una vocal '
+                           'abierta y una cerrada; ejemplo: {ai}re.']},
+                {'titulo': '4.5 EL TRIPTONGO',
+                 'items': ['El {triptongo} está constituido por dos vocales '
+                           'cerradas (débiles) y una abierta (fuerte) en '
+                           'medio, según el esquema VC + {VA} + VC.',
+                           'Las vocales del triptongo se pronuncian como una '
+                           'sola sílaba y no pueden {separarse}; ejemplo: '
+                           '{cam-biáis}.']},
+                {'titulo': '4.6 EL HIATO (GRUPOS HETEROSILÁBICOS)',
+                 'items': ['En los {grupos heterosilábicos}, dos segmentos '
+                           'consecutivos se integran en sílabas '
+                           '{diferentes}: es el caso del hiato.',
+                           'El {hiato} son dos vocales seguidas que se '
+                           'separan para formar dos {sílabas}.',
+                           'Cuando hay dos vocales {fuertes} (abiertas) '
+                           'juntas, siempre se produce hiato; ejemplo: '
+                           'pe-{ón}.',
+                           'Cuando hay una vocal {débil} (cerrada) tónica '
+                           'junto a una fuerte, se deshace el diptongo y se '
+                           'forma un hiato; ejemplo: {dí}-a.']},
+                {'titulo': '4.7 PRINCIPIOS DE ORDENACIÓN DE LOS SEGMENTOS',
+                 'items': ['Los sonidos dentro de la sílaba se organizan '
+                           'según la {escala universal de sonoridad}, donde '
+                           'las {vocales} son las unidades más '
+                           'perceptibles.']}],
   'cuadros': [{'titulo': '4.2 CONSTITUYENTES DE LA SÍLABA',
                'encabezados': ['Constituyente', 'Posición', 'Naturaleza'],
                'filas': [['{Núcleo}', 'Centro', '{Vocálica}'],
@@ -1528,7 +1759,102 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Sílabas',
                                   'Solo consonantes',
                                   'Solo palabras compuestas'],
-                 'correcta': 'C'}]},
+                 'correcta': 'C'},
+                {'pregunta': 'Cuando dos elementos contiguos, como una '
+                             'consonante y una líquida (pl, tr, cl), '
+                             'pertenecen a la misma sílaba, se llaman '
+                             'grupos:',
+                 'alternativas': ['Heterosilábicos',
+                                  'Tautosilábicos',
+                                  'Vocálicos',
+                                  'Consonánticos exclusivos',
+                                  'Silábicos simples'],
+                 'correcta': 'B'},
+                {'pregunta': 'La concurrencia de dos vocales que forman una '
+                             'sola sílaba se llama:',
+                 'alternativas': ['Hiato',
+                                  'Diptongo',
+                                  'Triptongo',
+                                  'Sinéresis exclusiva',
+                                  'Sinalefa exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'El diptongo que combina una vocal cerrada y '
+                             'una abierta (en ese orden), como en «pues», se '
+                             'llama diptongo:',
+                 'alternativas': ['Decreciente',
+                                  'Creciente',
+                                  'Neutro',
+                                  'Homogéneo',
+                                  'Simple'],
+                 'correcta': 'B'},
+                {'pregunta': 'El diptongo que combina una vocal abierta y '
+                             'una cerrada (en ese orden), como en «aire», se '
+                             'llama diptongo:',
+                 'alternativas': ['Creciente',
+                                  'Decreciente',
+                                  'Neutro',
+                                  'Homogéneo',
+                                  'Compuesto'],
+                 'correcta': 'B'},
+                {'pregunta': 'El triptongo está constituido, según el '
+                             'esquema VC+VA+VC, por dos vocales cerradas y '
+                             'una vocal:',
+                 'alternativas': ['Cerrada adicional',
+                                  'Abierta',
+                                  'Neutra',
+                                  'Nasal',
+                                  'Tónica exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las vocales de un triptongo se pronuncian como '
+                             'una sola sílaba y, bajo ninguna circunstancia, '
+                             'pueden:',
+                 'alternativas': ['Llevar tilde',
+                                  'Separarse',
+                                  'Repetirse',
+                                  'Combinarse con consonantes',
+                                  'Iniciar palabra'],
+                 'correcta': 'B'},
+                {'pregunta': 'Dos segmentos consecutivos que se integran en '
+                             'sílabas diferentes forman grupos:',
+                 'alternativas': ['Tautosilábicos',
+                                  'Heterosilábicos',
+                                  'Diptongados',
+                                  'Triptongados',
+                                  'Fonéticos simples'],
+                 'correcta': 'B'},
+                {'pregunta': 'Dos vocales seguidas que se separan para '
+                             'formar dos sílabas distintas constituyen:',
+                 'alternativas': ['Un diptongo',
+                                  'Un hiato',
+                                  'Un triptongo',
+                                  'Una sinalefa',
+                                  'Un grupo tautosilábico'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando hay dos vocales fuertes o abiertas '
+                             'juntas, como en «peón», siempre se produce:',
+                 'alternativas': ['Diptongo',
+                                  'Hiato',
+                                  'Triptongo',
+                                  'Sinéresis',
+                                  'Elisión'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando una vocal débil o cerrada es tónica '
+                             '(lleva tilde) junto a una vocal fuerte, como '
+                             'en «día», el diptongo se deshace y se forma:',
+                 'alternativas': ['Un triptongo',
+                                  'Un hiato',
+                                  'Una sinalefa',
+                                  'Un grupo consonántico',
+                                  'Una elisión'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los sonidos dentro de la sílaba se organizan '
+                             'de acuerdo con la:',
+                 'alternativas': ['Escala fonética simple',
+                                  'Escala universal de sonoridad',
+                                  'Norma académica',
+                                  'Regla de acentuación',
+                                  'Ley de Grimm'],
+                 'correcta': 'B'}]},
  {'num': 5,
   'titulo': 'Acentuación Gráfica o Tildación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ACENTO PROSÓDICO',
