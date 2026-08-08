@@ -335,21 +335,67 @@ BIOLOGIA_TEMAS = [{'num': 1,
   'resumen_visual': [{'titulo': 'DEFINICIÓN DE BIOLOGÍA',
                       'items': ['Etimológicamente, «biología» deriva de las '
                                 'raíces griegas «bios» (vida) y «logos» '
-                                '(tratado o estudio).']},
+                                '(tratado o estudio).',
+                                'La biología es la ciencia que estudia a los '
+                                'seres vivos, su origen, evolución, '
+                                'clasificación, estructura, función y '
+                                'herencia.',
+                                'La biología también estudia la interacción '
+                                'de los organismos entre sí y con el '
+                                'ambiente.']},
                      {'titulo': 'RAMAS DE LA BIOLOGÍA',
                       'items': ['La anatomía estudia los órganos, aparatos y '
-                                'sistemas de los seres vivos.']},
+                                'sistemas de los seres vivos.',
+                                'La fisiología estudia las funciones de los '
+                                'seres vivos; la embriología estudia la '
+                                'formación y desarrollo de los embriones.',
+                                'La zoología estudia a los animales; la '
+                                'botánica estudia a las plantas; la '
+                                'micología estudia a los hongos.',
+                                'La bacteriología estudia a las bacterias; '
+                                'la ficología estudia a las algas; la '
+                                'protozoología estudia a los protozoarios.',
+                                'La taxonomía clasifica a los seres vivos; '
+                                'la histología estudia los tejidos; la '
+                                'paleontología estudia los fósiles.',
+                                'La genética estudia las variaciones y la '
+                                'herencia; la ingeniería genética estudia '
+                                'organismos y productos transgénicos.']},
                      {'titulo': 'RELACIÓN CON OTRAS CIENCIAS',
                       'items': ['La unión de la física y la biología da '
                                 'origen a la biofísica, que estudia la '
-                                'estructura de los seres vivos.']},
+                                'estructura de los seres vivos.',
+                                'La astrofísica ayuda a comprender el origen '
+                                'de la vida en el planeta, a través del '
+                                'estudio del universo.',
+                                'La bioquímica aporta las bases del '
+                                'conocimiento de la estructura de la materia '
+                                'viva.',
+                                'La bioestadística surge de la relación '
+                                'entre la biología y las matemáticas.']},
                      {'titulo': 'NIVEL QUÍMICO DE ORGANIZACIÓN',
                       'items': ['El nivel subatómico está formado por '
-                                'protón, neutrón y electrón.']},
+                                'protón, neutrón y electrón.',
+                                'El nivel atómico es la unidad más pequeña '
+                                'de un elemento químico, como H, C, N, O.',
+                                'Las macromoléculas tienen un peso de miles '
+                                'de daltons y resultan de la unión de '
+                                'unidades monoméricas.',
+                                'El nivel de complejos supramoleculares, o '
+                                'nivel prebiótico, incluye virus, ribosomas '
+                                'y glucoproteínas.',
+                                'Los orgánulos celulares, u organelos, '
+                                'incluyen la membrana plasmática, '
+                                'mitocondrias y cloroplastos, y aún no '
+                                'cumplen funciones de ser vivo.']},
                      {'titulo': 'NIVEL BIOLÓGICO DE ORGANIZACIÓN',
                       'items': ['El nivel celular es la unidad mínima de la '
                                 'materia viva; los organismos formados por '
-                                'muchas células son pluricelulares.']}]},
+                                'muchas células son pluricelulares.',
+                                'A partir de la especie siguen los niveles '
+                                'de organización ecológica: población, '
+                                'comunidad, ecosistema, bioma y '
+                                'biosfera.']}]},
  {'num': 2,
   'titulo': 'Composición Química de la Materia Viviente',
   'secciones': [{'titulo': '2.1 BIOELEMENTOS',
@@ -654,23 +700,69 @@ BIOLOGIA_TEMAS = [{'num': 1,
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'BIOELEMENTOS',
                       'items': ['La materia está formada por 118 elementos '
-                                'químicos, de los cuales 92 son naturales.']},
+                                'químicos, de los cuales 92 son naturales.',
+                                'Los seres vivos están constituidos por 40 '
+                                'elementos en cantidades variables.',
+                                'Los bioelementos son elementos químicos '
+                                'presentes en los organismos vivos; 20 de '
+                                'ellos son biogenésicos.',
+                                'Los bioelementos se clasifican en '
+                                'macroelementos (primarios y secundarios) y '
+                                'microelementos u oligoelementos.']},
                      {'titulo': '.A BIOELEMENTOS PRIMARIOS',
                       'items': ['Los macroelementos representan el 99,6% de '
                                 'la materia viva, y están conformados por 11 '
-                                'bioelementos.']},
+                                'bioelementos.',
+                                'Los bioelementos primarios son seis: '
+                                'carbono, hidrógeno, oxígeno, nitrógeno, '
+                                'fósforo y azufre, llamados organógenos.',
+                                'Los primeros cuatro bioelementos primarios '
+                                'representan el 96% de la materia viva.',
+                                'El carbono es la piedra angular en la '
+                                'construcción de moléculas biológicas.',
+                                'El oxígeno es el elemento más abundante en '
+                                'la naturaleza y forma parte de la molécula '
+                                'del agua.',
+                                'El nitrógeno forma las proteínas, '
+                                'esenciales para el crecimiento de los seres '
+                                'vivos.']},
                      {'titulo': '.B BIOELEMENTOS SECUNDARIOS',
                       'items': ['Los bioelementos secundarios son cinco: '
-                                'sodio, potasio, calcio, magnesio y cloro.']},
+                                'sodio, potasio, calcio, magnesio y cloro.',
+                                'El sodio es el principal ión positivo del '
+                                'líquido intersticial, esencial en la '
+                                'conducción de impulsos nerviosos.',
+                                'El potasio es el principal catión del '
+                                'interior de las células.']},
                      {'titulo': '.A MICROELEMENTOS NO VARIABLES',
                       'items': ['Los microelementos, u oligoelementos, se '
                                 'encuentran en los seres vivos en cantidades '
                                 'muy pequeñas: apenas 0,4% de la materia '
-                                'viva.']},
+                                'viva.',
+                                'Los microelementos no variables son: '
+                                'hierro, manganeso, cobre, zinc, yodo, '
+                                'flúor, cobalto, molibdeno y boro.',
+                                'El hierro forma el grupo prostético hemo de '
+                                'la hemoglobina, que transporta oxígeno en '
+                                'la sangre.',
+                                'El yodo se concentra en la glándula '
+                                'tiroides, donde se convierte en tiroxina y '
+                                'yodotirosina.',
+                                'El flúor aumenta la resistencia del esmalte '
+                                'dental e inhibe el proceso de caries.',
+                                'El zinc activa numerosas enzimas y es '
+                                'constituyente de proteínas como la '
+                                'insulina.']},
                      {'titulo': '.B MICROELEMENTOS VARIABLES',
                       'items': ['Los microelementos variables son: selenio, '
                                 'silicio, cromo, aluminio, litio, níquel y '
-                                'bromo.']}]},
+                                'bromo.',
+                                'El cromo tiene una función preponderante en '
+                                'el metabolismo de la insulina como factor '
+                                'de tolerancia a la glucosa.',
+                                'El selenio cumple funciones antioxidantes, '
+                                'de regulación hormonal, y tiene efectos '
+                                'anticancerígenos.']}]},
  {'num': 3,
   'titulo': 'Biomoléculas Inorgánicas',
   'secciones': [{'titulo': 'CARACTERÍSTICAS GENERALES DE LAS BIOMOLÉCULAS '
@@ -1109,31 +1201,66 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'BIOMOLÉCULAS INORGÁNICAS',
                       'items': ['Las biomoléculas inorgánicas se '
                                 'caracterizan por la ausencia de enlaces '
-                                'carbono-carbono en su estructura química.']},
+                                'carbono-carbono en su estructura química.',
+                                'Los minerales sólidos forman estructuras '
+                                'duras, como huesos, dientes y conchas.',
+                                'Los minerales en disolución son '
+                                'electrolitos que participan en la '
+                                'contracción muscular y el equilibrio '
+                                'osmótico.']},
                      {'titulo': 'EL AGUA',
                       'items': ['La molécula de agua está formada por dos '
                                 'átomos de hidrógeno y uno de oxígeno, '
-                                'unidos por enlaces covalentes.']},
+                                'unidos por enlaces covalentes.',
+                                'La molécula de agua tiene una estructura '
+                                'tetraédrica, con un ángulo entre los '
+                                'hidrógenos de 104,5°.',
+                                'La molécula de agua forma dipolos, porque '
+                                'el oxígeno tiene carga negativa parcial y '
+                                'el hidrógeno, carga positiva parcial.']},
                      {'titulo': 'AGUA EN LA CÉLULA',
                       'items': ['El agua libre representa el 95% del agua '
                                 'celular, y actúa como solvente estable e '
-                                'ionizante.']},
+                                'ionizante.',
+                                'El agua ligada representa el 5% restante, y '
+                                'comprende el agua de imbibición y el agua '
+                                'de constitución.']},
                      {'titulo': 'PROPIEDADES DEL AGUA',
                       'items': ['El poder solvente del agua es su capacidad '
                                 'de disolver gran cantidad de moléculas '
-                                'inorgánicas y orgánicas.']},
+                                'inorgánicas y orgánicas.',
+                                'La polaridad de la molécula de agua '
+                                'favorece la disociación de moléculas '
+                                'formadoras de iones.']},
                      {'titulo': 'FUNCIONES DEL AGUA',
                       'items': ['La función de transporte: el agua '
                                 'transporta sustancias del interior al '
-                                'exterior de la célula y viceversa.']},
+                                'exterior de la célula y viceversa.',
+                                'La función estructural: el agua da forma y '
+                                'volumen a las células.',
+                                'La función termorreguladora: el agua actúa '
+                                'en los cambios de temperatura para mantener '
+                                'el cuerpo a temperatura constante, como en '
+                                'la sudoración.']},
                      {'titulo': 'SALES MINERALES Y ELECTROLITOS',
                       'items': ['Las sales minerales son compuestos neutros '
                                 'producidos por la reacción de un ácido y '
-                                'una base.']},
+                                'una base.',
+                                'En estado sólido, las sales forman '
+                                'estructuras duras, como caparazones, huesos '
+                                'y dientes.',
+                                'Cuando una sal se disuelve en agua, se '
+                                'disocia en iones: cationes y aniones.']},
                      {'titulo': 'FUNCIONES DE LOS ELECTROLITOS',
                       'items': ['La concentración elevada de sodio '
                                 '(Na<super>+</super>) en la sangre produce '
-                                'hipertensión arterial.']}]},
+                                'hipertensión arterial.',
+                                'La concentración elevada de potasio '
+                                '(K<super>+</super>) en la sangre conlleva a '
+                                'la hipotensión.',
+                                'El calcio (Ca<super>2+</super>) participa '
+                                'también en los procesos de secreción de las '
+                                'células nerviosas.']}]},
  {'num': 4,
   'titulo': 'Biomoléculas Orgánicas',
   'secciones': [{'titulo': '4.1.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
@@ -2904,28 +3031,61 @@ BIOLOGIA_TEMAS = [{'num': 1,
   'resumen_visual': [{'titulo': 'GENERALIDADES Y ORIGEN DEL TÉRMINO',
                       'items': ['La palabra «célula» proviene del latín '
                                 '«cella», que significa «pequeña habitación '
-                                'o celda».']},
+                                'o celda».',
+                                'La célula es la unidad estructural y '
+                                'funcional fundamental de todos los seres '
+                                'vivos.',
+                                'En 1665, Robert Hooke introdujo el término '
+                                '«célula» al observar cavidades en un corte '
+                                'de corcho.']},
                      {'titulo': 'LA TEORÍA CELULAR',
                       'items': ['Los fundadores de la teoría celular fueron '
                                 'Mathias Schleiden (1838) y Theodor Schwann '
-                                '(1839).']},
+                                '(1839).',
+                                'Schleiden concluyó que todas las plantas '
+                                'están formadas por células; Schwann, lo '
+                                'mismo sobre los animales.',
+                                'En 1855, Rudolph Virchow sintetizó la frase '
+                                '«omnis cellula ex cellula»: toda célula '
+                                'proviene de otra célula.']},
                      {'titulo': 'CÉLULA PROCARIOTA Y EUCARIOTA',
                       'items': ['«Procariota» proviene del griego «protos» '
-                                '(primitivo) y «karyon» (núcleo).']},
+                                '(primitivo) y «karyon» (núcleo).',
+                                'Las células procariotas tienen su material '
+                                'genético como una molécula circular de ADN, '
+                                'en una región llamada nucleoide.',
+                                '«Eucariota» proviene del griego «eu» '
+                                '(verdadero) y «karyon» (núcleo).']},
                      {'titulo': 'ESTRUCTURA BACTERIANA',
                       'items': ['La cápsula es una estructura de '
                                 'polisacáridos que forma un glucocálix '
-                                'grueso y rígido, con función de '
-                                'adherencia.']},
+                                'grueso y rígido, con función de adherencia.',
+                                'La pared celular bacteriana está formada '
+                                'principalmente por peptidoglicano o '
+                                'mureína.',
+                                'La tinción de Gram clasifica a las '
+                                'bacterias en Gram positivas y Gram '
+                                'negativas.']},
                      {'titulo': 'MICOPLASMAS',
                       'items': ['Los micoplasmas, también llamados '
                                 'Mollicutes o PPLO, son las bacterias más '
                                 'pequeñas conocidas, con diámetro de 0,125 a '
-                                '0,150 µm.']},
+                                '0,150 µm.',
+                                'Los micoplasmas son pleomórficos: varían su '
+                                'forma (ovoide, esférica, vesicular) según '
+                                'las condiciones del medio.',
+                                'Los micoplasmas son los únicos procariotas '
+                                'conocidos que carecen de pared celular.']},
                      {'titulo': 'CIANOBACTERIAS',
                       'items': ['Las cianobacterias, o algas verde-azules, '
                                 'son las bacterias fotosintéticas más '
-                                'evolucionadas.']}]},
+                                'evolucionadas.',
+                                'Tienen pared celular semejante a la de las '
+                                'bacterias Gram negativas, y carecen de '
+                                'cilios o flagelos.',
+                                'Además de clorofila, contienen pigmentos '
+                                'llamados ficobilinas: la ficocianina (azul) '
+                                'y la ficoeritrina (roja).']}]},
  {'num': 6,
   'titulo': 'Célula Eucariota',
   'secciones': [{'titulo': '6.1 ESTRUCTURA GENERAL',
@@ -4573,49 +4733,83 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'QUIMIOAUTÓTROFA',
                       'items': ['La nutrición celular puede ser de dos '
                                 'tipos: autótrofa y heterótrofa.',
+                                'La nutrición autótrofa es realizada por '
+                                'células capaces de fabricar sus propios '
+                                'alimentos a partir de productos '
+                                'inorgánicos.',
                                 'La nutrición quimioautótrofa, o '
                                 'quimiosíntesis, es característica de los '
-                                'organismos procariontes.']},
+                                'organismos procariontes.',
+                                'Los quimiótrofos usan energía química, '
+                                'obtenida por oxidación de productos '
+                                'inorgánicos, en vez de energía luminosa.']},
                      {'titulo': 'NUTRICIÓN FOTOAUTÓTROFA: LA FOTOSÍNTESIS / '
                                 'FASE LUMINOSA: FOTOSISTEMAS',
                       'items': ['El organelo típicamente vegetal necesario '
                                 'para la fotosíntesis es el cloroplasto.',
+                                'Las pilas de «monedas» dentro del '
+                                'cloroplasto se llaman tilacoides; su '
+                                'conjunto se llama grana.',
                                 'La fase luminosa ocurre en las membranas de '
                                 'los tilacoides, donde la clorofila rompe la '
-                                'molécula de agua (fotólisis).']},
+                                'molécula de agua (fotólisis).',
+                                'Existen dos fotosistemas: el 1, rico en '
+                                'clorofila a, y el 2, rico en clorofila b.']},
                      {'titulo': 'FASE OSCURA: EL CICLO DE CALVIN / NUTRICIÓN '
                                 'HETERÓTROFA',
                       'items': ['La fase oscura, o reacciones independientes '
                                 'de la luz, ocurre en el estroma del '
                                 'cloroplasto.',
+                                'En esta fase, el CO2 y el agua se unen para '
+                                'producir glucosa, usando el ATP y NADPH de '
+                                'la fase luminosa.',
                                 'Un heterótrofo es un organismo que no puede '
                                 'fabricar sus propios alimentos y deriva '
-                                'nutrientes de materia orgánica ajena.']},
+                                'nutrientes de materia orgánica ajena.',
+                                'Son heterótrofos los animales, hongos, '
+                                'protozoos y la mayoría de las bacterias.']},
                      {'titulo': 'RESPIRACIÓN AERÓBICA: GLUCÓLISIS / '
                                 'FORMACIÓN DE ACETIL COA',
                       'items': ['La respiración aeróbica requiere presencia '
                                 'de oxígeno, produciendo dióxido de carbono '
                                 'y agua.',
+                                'La glucólisis es el proceso en que una '
+                                'molécula de glucosa se rompe en dos '
+                                'moléculas de ácido pirúvico, en el citosol.',
                                 'La respiración celular comprende cuatro '
                                 'etapas: glucólisis, formación de acetil '
                                 'CoA, ciclo de Krebs, y cadena de transporte '
-                                'de electrones.']},
+                                'de electrones.',
+                                'En la formación de acetil CoA, el ácido '
+                                'pirúvico llega a la matriz mitocondrial y '
+                                'se une a la coenzima A.']},
                      {'titulo': 'EL CICLO DE KREBS / CADENA RESPIRATORIA '
                                 '(FOSFORILACIÓN OXIDATIVA)',
                       'items': ['El ciclo de Krebs, o del ácido cítrico, '
                                 'debe su nombre a Hans Adolf Krebs, quien lo '
                                 'estudió hacia 1937.',
+                                'El ciclo de Krebs se realiza en la matriz '
+                                'mitocondrial; cada acetil CoA se oxida '
+                                'hasta CO2 y agua.',
                                 'La cadena respiratoria, o fosforilación '
                                 'oxidativa, es la etapa final de la '
                                 'respiración celular, donde se produce la '
-                                'mayor cantidad de ATP.']},
+                                'mayor cantidad de ATP.',
+                                'Ocurre en el espacio intermembranoso; los '
+                                'electrones fluyen desde el NADH y FADH2 '
+                                'hasta formar agua.']},
                      {'titulo': 'RESPIRACIÓN ANAERÓBICA O FERMENTACIÓN / '
                                 'TIPOS DE FERMENTACIÓN',
                       'items': ['La respiración anaeróbica, o fermentación, '
                                 'se lleva a cabo en ausencia de oxígeno.',
+                                'En ambos tipos de fermentación ocurre '
+                                'primero la glucólisis normal.',
                                 'En la fermentación alcohólica, los '
                                 'piruvatos se reducen a etanol, con '
-                                'liberación de CO2.']}]},
+                                'liberación de CO2.',
+                                'La fermentación alcohólica es causada por '
+                                'levaduras, como el Saccharomyces '
+                                'cerevisiae.']}]},
  {'num': 8,
   'titulo': 'Nivel Sistémico',
   'secciones': [{'titulo': '8.1 EL SISTEMA RESPIRATORIO HUMANO',
@@ -6339,24 +6533,66 @@ BIOLOGIA_TEMAS = [{'num': 1,
   'resumen_visual': [{'titulo': 'EL SISTEMA NERVIOSO EN ANIMALES',
                       'items': ['El sistema nervioso lleva información desde '
                                 'los órganos sensoriales hasta los centros '
-                                'de control, generando una respuesta.']},
+                                'de control, generando una respuesta.',
+                                'La unidad funcional básica del sistema '
+                                'nervioso es la neurona, especializada en la '
+                                'transducción de señales.']},
                      {'titulo': 'SISTEMA NERVIOSO EN INVERTEBRADOS',
                       'items': ['Los cnidarios son los organismos más '
                                 'sencillos con células nerviosas: una red '
-                                'difusa de protoneuronas.']},
+                                'difusa de protoneuronas.',
+                                'Los platelmintos son el primer grupo con '
+                                'sistema nervioso hiponeuro, con ganglios '
+                                'cerebroides, dando inicio a la '
+                                'cefalización.',
+                                'Los nematodos tienen un sistema nervioso '
+                                'formado por un anillo nervioso alrededor '
+                                'del esófago.',
+                                'Los anélidos presentan dos ganglios '
+                                'cerebrales desarrollados y un cordón '
+                                'nervioso central metamérico.',
+                                'Los moluscos más simples tienen un anillo '
+                                'periesofágico con tres ganglios; los '
+                                'cefalópodos tienen un cerebro complejo '
+                                'similar al de vertebrados.',
+                                'Los artrópodos tienen un sistema nervioso '
+                                'metamérico, con cerebro dividido en '
+                                'protocerebro, deutocerebro y '
+                                'tritocerebro.']},
                      {'titulo': 'SISTEMA NERVIOSO EN VERTEBRADOS',
                       'items': ['El sistema nervioso de los vertebrados se '
                                 'forma por invaginación dorsal del '
-                                'ectodermo, dando lugar al tubo neural.']},
+                                'ectodermo, dando lugar al tubo neural.',
+                                'Se diferencian dos regiones funcionales: el '
+                                'encéfalo y la médula espinal.',
+                                'El encéfalo está protegido por la caja '
+                                'craneal; la médula espinal, por el canal '
+                                'vertebral.']},
                      {'titulo': 'TIPOS DE SISTEMA NERVIOSO',
                       'items': ['El sistema nervioso central consiste en el '
                                 'encéfalo y la médula espinal; el '
                                 'periférico, en los nervios que recorren el '
-                                'cuerpo.']},
+                                'cuerpo.',
+                                'El sistema nervioso somático regula '
+                                'funciones voluntarias; el sistema nervioso '
+                                'autónomo o vegetativo regula funciones '
+                                'inconscientes.']},
                      {'titulo': 'SISTEMA NERVIOSO HUMANO',
                       'items': ['El sistema nervioso humano se divide en '
                                 'sistema nervioso central (SNC) y sistema '
-                                'nervioso periférico (SNP).']}]},
+                                'nervioso periférico (SNP).',
+                                'El número de neuronas en el cerebro humano '
+                                'ronda los 100 000 millones.',
+                                'El SNC está conformado por el encéfalo y la '
+                                'médula espinal.',
+                                'El encéfalo incluye el bulbo raquídeo, la '
+                                'protuberancia, el mesencéfalo, el cerebelo, '
+                                'el diencéfalo y el cerebro.',
+                                'La médula espinal transmite señales entre '
+                                'la periferia y el cerebro, e interviene en '
+                                'el tacto.',
+                                'Los nervios son cordones de sustancia '
+                                'blanca formados por axones y dendritas.']}]},
  {'num': 10,
   'titulo': 'Reproducción',
   'secciones': [{'titulo': '10.1 REPRODUCCIÓN ASEXUAL O AGÁMICA',
@@ -7095,40 +7331,71 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'REPRODUCCIÓN ASEXUAL',
                       'items': ['En la reproducción asexual interviene un '
                                 'solo organismo, sin fusión de gametos.',
+                                'La descendencia asexual es genéticamente '
+                                'idéntica entre sí y al progenitor.',
                                 'La escisión binaria, o bipartición, se da '
                                 'por estrangulación en el plano medio, '
-                                'obteniendo dos nuevos individuos.']},
+                                'obteniendo dos nuevos individuos.',
+                                'La escisión binaria transversal pasa por el '
+                                'eje central en ángulo recto, como en '
+                                'Paramecium.']},
                      {'titulo': 'REPRODUCCIÓN CELULAR / EL CICLO CELULAR',
                       'items': ['La capacidad de perpetuar la especie es la '
                                 'característica que mejor distingue a los '
                                 'seres vivos.',
+                                'En organismos eucariotas existen dos tipos '
+                                'de división: la mitosis, que produce '
+                                'células genéticamente idénticas, y la '
+                                'meiosis, con la mitad del contenido '
+                                'genético.',
                                 'El ciclo celular es la sucesión de etapas '
                                 'en que una célula alterna entre crecimiento '
-                                'y división a lo largo de su vida.']},
+                                'y división a lo largo de su vida.',
+                                'En células somáticas, el ciclo celular '
+                                'comprende la interfase y la división por '
+                                'mitosis, dando dos células hijas diploides '
+                                'idénticas.']},
                      {'titulo': 'LA INTERFASE Y SUS ETAPAS / LA MITOSIS: '
                                 'CONCEPTO Y FASES',
                       'items': ['La interfase es el período entre dos '
                                 'divisiones celulares consecutivas, en el '
                                 'que la célula permanece hasta el 95% del '
                                 'tiempo.',
+                                'Durante la interfase ocurre la duplicación '
+                                'del ADN, síntesis de histonas, y producción '
+                                'de organelos para las células hijas.',
                                 'La mitosis es un proceso de división '
                                 'nuclear, o cariocinesis, que reparte el ADN '
-                                'replicado.']},
+                                'replicado.',
+                                'La mitosis asegura que cada célula posea el '
+                                'mismo número y tipo de cromosomas que las '
+                                'demás.']},
                      {'titulo': 'LA CITOCINESIS / LA MEIOSIS',
                       'items': ['La citocinesis es el proceso de división '
                                 'del citoplasma, que reparte el contenido '
                                 'citoplasmático y los organelos.',
+                                'La citocinesis ocurre principalmente '
+                                'durante la telofase, dividiendo la célula '
+                                'en dos partes casi iguales.',
                                 'La meiosis consiste en dos divisiones '
                                 'celulares sucesivas, que reducen el número '
-                                'de cromosomas a la mitad.']},
+                                'de cromosomas a la mitad.',
+                                'Los cromosomas iguales que se emparejan '
+                                'durante la meiosis se llaman cromosomas '
+                                'homólogos.']},
                      {'titulo': 'REPRODUCCIÓN SEXUAL: CONCEPTO Y FECUNDACIÓN '
                                 '/ GAMETOS Y TIPOS DE ORGANISMOS',
                       'items': ['La reproducción sexual implica la fusión de '
                                 'dos gametos y la mezcla de sus materiales '
                                 'genéticos.',
+                                'La reproducción sexual promueve la '
+                                'variabilidad genética, base de la evolución '
+                                'biológica.',
                                 'Los gametos masculinos, pequeños, se llaman '
                                 'espermatozoides; los femeninos, más '
-                                'grandes, se llaman óvulos.']}]},
+                                'grandes, se llaman óvulos.',
+                                'Los espermatozoides se producen en los '
+                                'testículos; los óvulos, en los ovarios.']}]},
  {'num': 11,
   'titulo': 'Genética',
   'secciones': [{'titulo': '11.1 CONCEPTO Y RAMAS DE LA GENÉTICA',
@@ -7525,40 +7792,85 @@ BIOLOGIA_TEMAS = [{'num': 1,
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y RAMAS DE LA GENÉTICA',
                       'items': ['«Genética» deriva de la raíz griega «gen», '
-                                'que significa «llegar a ser».']},
+                                'que significa «llegar a ser».',
+                                'La genética estudia todo lo relacionado con '
+                                'la herencia biológica de los seres vivos.',
+                                'La genética molecular estudia la '
+                                'organización, replicación y expresión del '
+                                'ADN.']},
                      {'titulo': 'TERMINOLOGÍA GENÉTICA',
                       'items': ['El gen es la unidad de la herencia que '
                                 'produce la expresión característica '
-                                'observable.']},
+                                'observable.',
+                                'El locus es el sitio específico en la '
+                                'cadena nucleotídica donde se encuentra el '
+                                'gen.',
+                                'El alelo es cada una de las variantes '
+                                'génicas que determinan un carácter.']},
                      {'titulo': 'INTRODUCCIÓN A LAS LEYES DE MENDEL',
                       'items': ['Los organismos diploides tienen los '
                                 'cromosomas en pares; un cromosoma de cada '
                                 'par viene del óvulo y el otro del '
-                                'espermatozoide.']},
+                                'espermatozoide.',
+                                'Las dos copias de un gen para una '
+                                'característica se llaman alelos; se '
+                                'escriben en forma dominante o recesiva.',
+                                'Mendel utilizó como organismo de estudio el '
+                                'chícharo, guisante o arveja (Pisum '
+                                'sativum), estudiando siete características '
+                                'genéticas.']},
                      {'titulo': 'PRIMERA LEY DE MENDEL: DOMINANCIA',
                       'items': ['La Primera Ley de Mendel, o Ley de la '
                                 'Uniformidad o de la Dominancia, se obtiene '
                                 'al cruzar dos líneas puras de una '
-                                'característica.']},
+                                'característica.',
+                                'Al cruzar semilla lisa dominante (AA) con '
+                                'rugosa recesiva (aa), la descendencia F1 '
+                                'será fenotípicamente dominante (lisa) y '
+                                'genotípicamente heterocigota (Aa).',
+                                'En la F1, todos los descendientes presentan '
+                                'el fenotipo dominante.']},
                      {'titulo': 'SEGUNDA LEY DE MENDEL: SEGREGACIÓN',
                       'items': ['La Segunda Ley de Mendel, o Ley de la '
                                 'Segregación de los Alelos, se obtiene al '
                                 'cruzar dos individuos heterocigotos de la '
-                                'F1.']},
+                                'F1.',
+                                'En la F2, se obtiene 25% homocigoto '
+                                'recesivo (aa), 50% heterocigoto (Aa), y 25% '
+                                'homocigoto dominante (AA).',
+                                'Fenotípicamente en la F2, el 75% presenta '
+                                'el carácter dominante y el 25% el carácter '
+                                'recesivo (proporción 3:1).']},
                      {'titulo': 'TERCERA LEY DE MENDEL: DISTRIBUCIÓN '
                                 'INDEPENDIENTE',
                       'items': ['La Tercera Ley de Mendel, o Ley de la '
                                 'Distribución Independiente, estudia la '
                                 'herencia de dos características al mismo '
-                                'tiempo.']},
+                                'tiempo.',
+                                'Mendel cruzó semillas lisas y amarillas '
+                                '(dominantes) con rugosas y verdes '
+                                '(recesivas); en la F1 todas resultaron '
+                                'lisas y amarillas, heterocigotas.',
+                                'En la F2, aparecieron todas las '
+                                'combinaciones posibles, mostrando que las '
+                                'características se heredan de forma '
+                                'independiente.']},
                      {'titulo': 'EL CUADRO DE PUNNETT',
                       'items': ['Para realizar los cruzamientos genéticos y '
                                 'predecir la descendencia, se utiliza el '
-                                'cuadro de Punnett.']},
+                                'cuadro de Punnett.',
+                                'En la tabla, los gametos de un padre se '
+                                'escriben en las columnas y los del otro '
+                                'padre en las filas.',
+                                'Cada cuadrado interior muestra un genotipo '
+                                'posible de la descendencia, combinando los '
+                                'alelos de fila y columna.']},
                      {'titulo': 'IMPORTANCIA Y APLICACIONES',
                       'items': ['En la agricultura y ganadería se aplica la '
-                                'selección artificial para mejorar '
-                                'especies.']}]},
+                                'selección artificial para mejorar especies.',
+                                'En biotecnología, bacterias y hongos '
+                                'manipulados genéticamente sintetizan '
+                                'medicamentos.']}]},
  {'num': 12,
   'titulo': 'Evolución y Origen de la Vida',
   'secciones': [{'titulo': '12.1 CONCEPTO Y ANTECEDENTES',
@@ -7997,38 +8309,89 @@ BIOLOGIA_TEMAS = [{'num': 1,
                       'items': ['La evolución es todo cambio en una '
                                 'población mediante el cual se forman nuevas '
                                 'especies a lo largo del tiempo.',
+                                'La palabra «evolución» fue empleada por '
+                                'primera vez por el naturalista suizo '
+                                'Charles Bonnet, a mediados del siglo XVIII.',
+                                'La hipótesis de Bonnet, que explicaba los '
+                                'fósiles por catástrofes periódicas, se '
+                                'conoce como catastrofismo.',
                                 'La primera hipótesis completa de la '
                                 'evolución fue de Jean Baptiste Lamarck, '
-                                'publicada en 1809 en «Filosofía '
-                                'Zoológica».']},
+                                'publicada en 1809 en «Filosofía Zoológica».',
+                                'El principio de uso y desuso de Lamarck '
+                                'dice que las estructuras que más se usan se '
+                                'desarrollan.',
+                                'El principio de la herencia de los '
+                                'caracteres adquiridos sostiene que la '
+                                'modificación por uso y desuso es '
+                                'heredable.']},
                      {'titulo': 'TEORÍA DE LA SELECCIÓN NATURAL / '
                                 'MUTACIONISMO Y TEORÍA SINTÉTICA',
                       'items': ['Charles Darwin es el fundador de la teoría '
                                 'de la evolución, y publicó en 1859 «El '
                                 'origen de las especies».',
+                                'Alfred Russel Wallace llegó a conclusiones '
+                                'similares a las de Darwin de forma '
+                                'independiente.',
+                                'Los cuatro conceptos centrales de la '
+                                'selección natural son: variación, '
+                                'sobreproducción, lucha por la existencia y '
+                                'selección natural.',
                                 'Hugo De Vries publicó en 1889 «Pangénesis '
                                 'intracelular», reemplazando la variación '
-                                'continua por la mutación.']},
+                                'continua por la mutación.',
+                                'Una mutación es la aparición repentina de '
+                                'una variante en un gen particular.',
+                                'Theodosius Dobzhansky publicó en 1937 «La '
+                                'Genética y el Origen de las Especies», '
+                                'dando origen a la Teoría Sintética.']},
                      {'titulo': 'TEORÍAS DEL ORIGEN DE LA VIDA / '
                                 'EXPERIMENTOS CLAVE: REDI, SPALLANZANI Y PAS',
                       'items': ['Entre las principales teorías del origen de '
                                 'la vida están el creacionismo, la '
                                 'generación espontánea, la biogénesis, la '
                                 'panspermia y la teoría quimiosintética.',
+                                'La teoría de la generación espontánea, o '
+                                'abiogénesis, sostenía que la vida surgía de '
+                                'materia inerte sin reproducción.',
                                 'En el siglo XVII, el italiano Francisco '
                                 'Redi demostró con frascos de carne que la '
-                                'vida no surgía de materia inerte.']},
+                                'vida no surgía de materia inerte.',
+                                'En 1745, el inglés John Needham defendió la '
+                                'generación espontánea con un experimento de '
+                                'caldo hervido mal sellado.',
+                                'El italiano Lázaro Spallanzani repitió el '
+                                'experimento sellando bien los frascos, '
+                                'refutando a Needham.']},
                      {'titulo': 'TEORÍA COSMOZOICA O PANSPERMIA / TEORÍA DE '
                                 'LA QUIMIOSÍNTESIS',
                       'items': ['La teoría de la panspermia fue propuesta en '
                                 '1879 por Herman Von Helmholtz.',
+                                'El químico sueco Svante Arrhenius '
+                                'popularizó la panspermia en 1908.',
+                                'Según la panspermia, la vida se originó en '
+                                'el espacio, llegando a la Tierra en '
+                                'meteoritos.',
                                 'La teoría quimiosintética fue planteada en '
                                 '1921 por el bioquímico ruso Alexander '
-                                'Oparin.']},
+                                'Oparin.',
+                                'Oparin propuso que la atmósfera primitiva '
+                                'era rica en metano, amoniaco, CO2 y agua, y '
+                                'muy pobre en oxígeno.',
+                                'Oparin propuso también la teoría de la '
+                                'coacervación: macromoléculas que formaban '
+                                'agregados llamados coacervados.']},
                      {'titulo': 'EL EXPERIMENTO DE MILLER Y UREY',
                       'items': ['En 1953, Stanley Miller y Harold Urey '
                                 'simularon en laboratorio las condiciones de '
-                                'la atmósfera primitiva.']}]},
+                                'la atmósfera primitiva.',
+                                'El experimento de Miller y Urey usó una '
+                                'mezcla de hidrógeno, vapor de agua, '
+                                'amoniaco y metano, con descargas '
+                                'eléctricas.',
+                                'El experimento produjo aminoácidos como '
+                                'ácido glutámico, ácido aspártico, glicina y '
+                                'alanina.']}]},
  {'num': 13,
   'titulo': 'Ecología, Factores Ecológicos y Ecosistemas',
   'secciones': [{'titulo': '13.1 CONCEPTO DE ECOLOGÍA',
@@ -8701,51 +9064,89 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'TIPOS',
                       'items': ['«Ecología» proviene de los vocablos griegos '
                                 '«oikos» (casa) y «logos» (ciencia).',
+                                'El primer estudioso de las interacciones '
+                                'entre seres vivos y ambiente fue Teofrasto, '
+                                'condiscípulo de Aristóteles.',
                                 'El ecologismo es el activismo de la '
                                 'ecología, un movimiento cívico para el '
-                                'cuidado del ambiente.']},
+                                'cuidado del ambiente.',
+                                'El ecologismo tecnicista busca reducir la '
+                                'contaminación proponiendo energías '
+                                'alternativas.']},
                      {'titulo': 'FACTORES AMBIENTALES / EL ECOSISTEMA: '
                                 'CONCEPTO Y TÉRMINOS RELACIONADOS',
                       'items': ['Los factores ambientales se clasifican en '
                                 'bióticos y abióticos.',
+                                'Los factores bióticos, o animados, '
+                                'corresponden a todos los seres vivos.',
                                 'El término «ecosistema» fue acuñado por '
                                 'Arthur Tansley en 1935, como el complejo de '
-                                'organismos y factores físicos del '
-                                'ambiente.']},
+                                'organismos y factores físicos del ambiente.',
+                                'Un ecosistema es un sistema abierto: hay '
+                                'una corriente continua de captación y '
+                                'pérdida de sustancias y energía.']},
                      {'titulo': 'COMPONENTES ABIÓTICOS DEL ECOSISTEMA / '
                                 'RELACIONES INTRAESPECÍFICAS',
                       'items': ['La luz solar es la fuente de energía de la '
                                 'mayoría de los ecosistemas.',
+                                'Los nutrientes principales del tejido vivo '
+                                'son carbono, nitrógeno, oxígeno, hidrógeno, '
+                                'fósforo y azufre.',
                                 'Las relaciones intraespecíficas u '
                                 'homotípicas se dan entre individuos de la '
-                                'misma especie.']},
+                                'misma especie.',
+                                'Las agrupaciones casuales o agregaciones no '
+                                'generan vínculos, como guacamayos en colpas '
+                                'o mariposas en flores.']},
                      {'titulo': 'RELACIONES INTERESPECÍFICAS / MUTUA '
                                 'TOLERANCIA Y CONVIVENCIA',
                       'items': ['Las relaciones interespecíficas u '
                                 'heterotípicas se dan entre individuos de '
                                 'especies diferentes.',
+                                'La sinequia ocurre cuando dos organismos '
+                                'viven juntos y se toleran sin hacerse daño.',
                                 'La foresia ocurre cuando un individuo se '
                                 'deja transportar temporalmente por otra '
                                 'especie, como los ácaros que se prenden de '
-                                'insectos.']},
+                                'insectos.',
+                                'El comensalismo beneficia a una especie sin '
+                                'efecto sobre la otra; ejemplo: los zorros '
+                                'que consumen restos dejados por el puma.']},
                      {'titulo': 'MUTUALISMO Y SIMBIOSIS / DEPREDACIÓN',
                       'items': ['El mutualismo beneficia a ambas especies; '
                                 'puede ser facultativo (no imprescindible) u '
                                 'obligado.',
+                                'La simbiosis es un mutualismo obligado para '
+                                'ambos, donde los organismos no pueden vivir '
+                                'separados.',
                                 'La depredación es el consumo de un '
                                 'organismo viviente por otro, en la relación '
-                                'presa-depredador.']},
+                                'presa-depredador.',
+                                'La depredación dinamiza el ciclo de la '
+                                'energía y nutrientes, y favorece la '
+                                'selección natural al eliminar a los menos '
+                                'aptos.']},
                      {'titulo': 'PARASITISMO / FUNCIONES DE LOS ECOSISTEMAS: '
                                 'SUCESIÓN ECOLÓGICA',
                       'items': ['El parasitismo es la relación donde un '
                                 'organismo (parásito) usa a otro (hospedero) '
                                 'como fuente de alimento, debilitándolo.',
+                                'El ectoparasitismo ocurre cuando el '
+                                'parásito vive u obtiene alimento en el '
+                                'exterior del hospedero, como pulgas y '
+                                'garrapatas.',
                                 'La sucesión ecológica es la secuencia de '
                                 'cambios que experimenta un ecosistema a '
-                                'través del tiempo.']},
+                                'través del tiempo.',
+                                'Las sucesiones llevan a un ecosistema a su '
+                                'máxima expresión armónica, llamada '
+                                'comunidad clímax.']},
                      {'titulo': 'ECOSISTEMAS DEL PERÚ',
                       'items': ['Los biomas son áreas climáticas definidas '
-                                'con condiciones ecológicas similares.']}]},
+                                'con condiciones ecológicas similares.',
+                                'Las zonas de vida de Holdridge se definen '
+                                'por biotemperatura, precipitación, humedad '
+                                'y altitud.']}]},
  {'num': 14,
   'titulo': 'Flujo de Energía y Ciclos Biogeoquímicos',
   'secciones': [{'titulo': '14.1 ENERGÍA CINÉTICA Y POTENCIAL',
@@ -9316,40 +9717,70 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'TERMODINÁMICA',
                       'items': ['La energía solar llega a la Tierra en '
                                 'partículas energéticas llamadas fotones.',
+                                'La energía cinética es la energía en '
+                                'movimiento, como la energía mecánica, la '
+                                'luz o el calor.',
                                 'Los ecosistemas son sistemas '
                                 'termodinámicamente abiertos: la energía y '
-                                'materia entran y salen de ellos.']},
+                                'materia entran y salen de ellos.',
+                                'La primera ley de la termodinámica, o '
+                                'principio de conservación de la energía, '
+                                'fue postulada por R. Mayer en 1841.']},
                      {'titulo': 'LA LEY DEL DIEZMO ECOLÓGICO / EL FLUJO DE '
                                 'ENERGÍA',
                       'items': ['Según la Ley del Diezmo Ecológico, al pasar '
                                 'de un nivel trófico a otro, solo se '
                                 'transfiere el 10% de la energía.',
+                                'Los organismos usan el 90% de la energía '
+                                'capturada en su propio metabolismo y '
+                                'movimiento.',
                                 'Aproximadamente el 99,98% de la energía '
-                                'disponible en la Tierra proviene del sol.']},
+                                'disponible en la Tierra proviene del sol.',
+                                'El resto de la energía proviene de las '
+                                'mareas, la energía nuclear, la termal y la '
+                                'gravitacional.']},
                      {'titulo': 'NIVELES TRÓFICOS / CADENAS, REDES Y '
                                 'PIRÁMIDES TRÓFICAS',
                       'items': ['El primer nivel trófico lo forman los '
                                 'productores, organismos autótrofos que '
                                 'fabrican su propio alimento.',
+                                'El segundo nivel trófico lo forman los '
+                                'consumidores primarios o herbívoros.',
                                 'Una cadena alimenticia muestra cómo la '
                                 'energía fluye de un organismo a otro a '
-                                'través de cada nivel trófico.']},
+                                'través de cada nivel trófico.',
+                                'En ecosistemas marinos, las cadenas '
+                                'tróficas llegan hasta 6 eslabones; en '
+                                'ecosistemas pequeños, hasta 3.']},
                      {'titulo': 'CICLOS BIOGEOQUÍMICOS: CONCEPTO Y '
                                 'CLASIFICACIÓN / EL CICLO DEL CARBONO',
                       'items': ['Los ciclos biogeoquímicos son el movimiento '
                                 'circular de elementos y compuestos entre el '
                                 'ambiente y los organismos.',
+                                'Se llaman biogeoquímicos porque involucran '
+                                'componentes geológicos, biológicos y '
+                                'químicos.',
                                 'Los dos procesos básicos que participan en '
                                 'el ciclo del carbono son la fotosíntesis y '
-                                'la respiración celular.']},
+                                'la respiración celular.',
+                                'Cada año se fijan aproximadamente 200 '
+                                'billones de toneladas de carbono mediante '
+                                'fotosíntesis; el 90% lo fijan las algas '
+                                'oceánicas.']},
                      {'titulo': 'EL CICLO DEL NITRÓGENO / EL CICLO '
                                 'HIDROLÓGICO',
                       'items': ['La atmósfera está formada por '
                                 'aproximadamente 78% de gas nitrógeno libre '
                                 '(N2).',
+                                'Las plantas y animales no pueden usar el '
+                                'nitrógeno atmosférico directamente; debe '
+                                'convertirse en nitratos.',
                                 'El ciclo hidrológico, o ciclo del agua, es '
                                 'el movimiento repetido de agua entre la '
-                                'superficie de la Tierra y la atmósfera.']}]},
+                                'superficie de la Tierra y la atmósfera.',
+                                'El mayor reservorio de agua en el mundo es '
+                                'el océano, que contiene más del 97% del '
+                                'agua disponible.']}]},
  {'num': 15,
   'titulo': 'Diversidad Biológica y Deterioro de la Flora y la Fauna',
   'secciones': [{'titulo': '15.1 EL CONVENIO SOBRE LA DIVERSIDAD BIOLÓGICA',
@@ -9942,41 +10373,72 @@ BIOLOGIA_TEMAS = [{'num': 1,
                       'items': ['El Convenio sobre la Diversidad Biológica '
                                 '(CDB) se celebró en la «Cumbre de la '
                                 'Tierra», en Río de Janeiro, en 1992.',
+                                'El CDB define la diversidad biológica como '
+                                'la variabilidad de organismos vivos de '
+                                'cualquier fuente.',
                                 'La biodiversidad comprende tres '
                                 'componentes: diversidad genética, '
                                 'diversidad de especies y diversidad de '
-                                'ecosistemas.']},
+                                'ecosistemas.',
+                                'La diversidad genética se refiere a las '
+                                'diferencias en el material genético entre '
+                                'poblaciones e individuos.']},
                      {'titulo': 'BENEFICIOS DE LA DIVERSIDAD BIOLÓGICA / '
                                 'PELIGROS PARA LA DIVERSIDAD BIOLÓGI',
                       'items': ['Los servicios de aprovisionamiento '
                                 'suministran bienes con valor monetario '
                                 'directo: alimentos, agua, madera.',
+                                'Los servicios reguladores incluyen la '
+                                'regulación del clima, el control de erosión '
+                                'y la polinización.',
                                 'La causa principal de extinción de especies '
                                 'es la destrucción del hábitat por expansión '
-                                'de poblaciones humanas.']},
+                                'de poblaciones humanas.',
+                                'Entre las causas de pérdida de '
+                                'biodiversidad están el cambio de uso de '
+                                'suelo, la sobreexplotación de recursos, y '
+                                'especies exóticas invasivas.']},
                      {'titulo': 'EL PERÚ COMO PAÍS MEGADIVERSO / RECURSOS '
                                 'GENÉTICOS DEL PERÚ',
                       'items': ['El Perú es uno de los cinco países con '
                                 'mayor diversidad biológica del mundo, y uno '
                                 'de los doce países megadiversos.',
+                                'Los países megadiversos poseen el 70% de la '
+                                'biodiversidad del mundo; entre ellos están '
+                                'Brasil, Colombia, México y Perú.',
                                 'El Perú posee al menos 182 especies de '
                                 'plantas domesticadas, como la papa, el '
-                                'tomate, el camote y el maíz.']},
+                                'tomate, el camote y el maíz.',
+                                'El Perú es el primer país en variedades de '
+                                'papa (unas 3000) y de maíz (36 ecotipos).']},
                      {'titulo': 'DIVERSIDAD DE FLORA EN EL PERÚ / DIVERSIDAD '
                                 'DE FAUNA EN EL PERÚ',
                       'items': ['El Perú posee al menos 20 533 especies de '
                                 'plantas, de las cuales un 30% son '
                                 'endémicas.',
                                 'El Perú es primero en el mundo en número de '
-                                'especies de peces (1200) y de mariposas.']},
+                                'especies de orquídeas, y posee la orquídea '
+                                'más grande del planeta, en Huachucolpa, '
+                                'Huancavelica.',
+                                'El Perú es primero en el mundo en número de '
+                                'especies de peces (1200) y de mariposas.',
+                                'El Perú es segundo en el mundo en variedad '
+                                'de aves (1857 especies) y en primates (34 '
+                                'especies).']},
                      {'titulo': 'DETERIORO DE LA FLORA Y FAUNA / TIPOS DE '
                                 'DETERIORO',
                       'items': ['La flora y fauna son recursos naturales '
                                 'renovables, que se regeneran por '
                                 'reproducción o propagación.',
+                                'El uso insostenible de flora y fauna genera '
+                                'deterioro de hábitat, extinción de especies '
+                                'y erosión genética.',
                                 'El uso excesivo de biomasa es la '
                                 'utilización insostenible de materia '
-                                'orgánica de plantas y animales.']}]},
+                                'orgánica de plantas y animales.',
+                                'La extracción selectiva sin control afecta '
+                                'especies de alta demanda comercial, como el '
+                                'cedro y la caoba.']}]},
  {'num': 16,
   'titulo': 'Contaminación, Problemas Ambientales y Conservación',
   'secciones': [{'titulo': '16.1 CONCEPTO DE CONTAMINACIÓN',
@@ -10589,42 +11051,73 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'presencia cuantitativa o cualitativa de '
                                 'materia o energía, se produce un '
                                 'desequilibrio ambiental.',
+                                'La contaminación es la adición de una '
+                                'sustancia al ambiente en cantidades que '
+                                'sobrepasan los niveles regulares de la '
+                                'naturaleza.',
                                 'La contaminación natural es causada por '
                                 'fuentes como volcanes o efectos '
-                                'geoclimáticos.']},
+                                'geoclimáticos.',
+                                'La contaminación antrópica es producida por '
+                                'el ser humano, como basura, esmog y '
+                                'descargas industriales.']},
                      {'titulo': 'TIPOS DE CONTAMINANTES / CONTAMINACIÓN DEL '
                                 'AGUA',
                       'items': ['Los contaminantes biológicos son '
                                 'microorganismos como bacterias, hongos y '
                                 'virus; ejemplo, el vibrión colérico.',
+                                'Los contaminantes físicos se relacionan con '
+                                'la energía: altas temperaturas, ruido y '
+                                'ondas electromagnéticas.',
                                 'El agua cubre alrededor del 71% de la '
                                 'superficie del planeta, pero está '
-                                'disponible en cantidades limitadas.']},
+                                'disponible en cantidades limitadas.',
+                                'Entre las sustancias químicas que '
+                                'contaminan el agua figuran el petróleo, '
+                                'detergentes sintéticos y plaguicidas.']},
                      {'titulo': 'INCREMENTO DEL EFECTO INVERNADERO / '
                                 'CALENTAMIENTO GLOBAL Y CAMBIO CLIMÁTICO',
                       'items': ['El efecto invernadero es un fenómeno '
                                 'natural que permite la vida en la Tierra, '
                                 'por la absorción de radiación solar por los '
                                 'gases de efecto invernadero.',
+                                'Los principales gases de efecto invernadero '
+                                'naturales son el vapor de agua, el dióxido '
+                                'de carbono y el metano.',
                                 'El calentamiento global es el aumento de la '
                                 'temperatura media global de la atmósfera y '
                                 'los océanos; su principal causa es el '
-                                'efecto invernadero.']},
+                                'efecto invernadero.',
+                                'El cambio climático es un cambio del clima '
+                                'atribuido directa o indirectamente a la '
+                                'actividad humana.']},
                      {'titulo': 'DISMINUCIÓN DE LA CAPA DE OZONO / '
                                 'CONSERVACIÓN DEL MEDIO AMBIENTE',
                       'items': ['El ozono se encuentra en una franja entre '
                                 'los 20 y 40 km de altura, en la '
                                 'estratosfera.',
+                                'La capa de ozono absorbe los rayos '
+                                'ultravioleta nocivos del sol, protegiendo '
+                                'al fitoplancton y a los organismos marinos.',
                                 'Según la UICN (1980), la conservación es la '
                                 'gestión de la biosfera para el mayor '
                                 'beneficio sostenido de las generaciones '
-                                'presentes y futuras.']},
+                                'presentes y futuras.',
+                                'Los tres objetivos de la conservación son: '
+                                'mantener procesos ecológicos, preservar la '
+                                'diversidad genética, y asegurar el '
+                                'aprovechamiento sostenido.']},
                      {'titulo': 'FORESTACIÓN Y REFORESTACIÓN / ÁREAS '
                                 'NATURALES PROTEGIDAS DEL PERÚ (ANP)',
                       'items': ['La forestación es poblar con árboles áreas '
                                 'que nunca o hace mucho tiempo tuvieron '
                                 'bosque.',
+                                'La reforestación es repoblar con especies '
+                                'arbóreas suelos que sí tuvieron cobertura '
+                                'forestal antes.',
                                 'Las ANP están reguladas por la Ley N° '
                                 '29834, para conservar la diversidad '
-                                'biológica y valores culturales '
-                                'asociados.']}]}]
+                                'biológica y valores culturales asociados.',
+                                'El artículo 68 de la Constitución obliga al '
+                                'Estado a promover la conservación de la '
+                                'diversidad biológica y las ANP.']}]}]

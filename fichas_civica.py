@@ -313,22 +313,80 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'EL DERECHO: CONCEPTO Y CLASES',
                       'items': ['La palabra Derecho viene del latín «IUS», '
                                 'término con el que los romanos lo '
-                                'designaban.']},
+                                'designaban.',
+                                'Con el Corpus Iuris Civilis se aplicó la '
+                                'palabra «Directum», que significa «recto», '
+                                '«lo que está conforme a la regla».',
+                                'Para Mario Alzamora Valdez, el Derecho es '
+                                'la regulación de la vida social del hombre '
+                                'para alcanzar la justicia.',
+                                'Para Claude Du Pasquier, el Derecho es la '
+                                'ordenación social e imperativa de la vida '
+                                'humana orientada a la realización de '
+                                'justicia.',
+                                'El Derecho Objetivo es el conjunto de '
+                                'normas jurídicas que regulan la conducta de '
+                                'una persona en relación a otra '
+                                '(Constitución, leyes, códigos).',
+                                'El Derecho Subjetivo es el conjunto de '
+                                'prerrogativas, facultades y potestades que '
+                                'tiene una persona, como el derecho a la '
+                                'vida, a la libertad o a la propiedad.']},
                      {'titulo': 'FUENTES DEL DERECHO',
                       'items': ['Las fuentes del Derecho son los '
                                 'procedimientos por los que se produce '
                                 'válidamente normas jurídicas con carácter '
-                                'obligatorio.']},
+                                'obligatorio.',
+                                'Las fuentes materiales o reales hacen '
+                                'referencia a los orígenes mediatos de la '
+                                'norma (factores sociales, económicos, '
+                                'culturales).',
+                                'Las fuentes formales son el origen '
+                                'inmediato de las normas jurídicas: la ley, '
+                                'la costumbre, la jurisprudencia, la '
+                                'doctrina y los principios generales del '
+                                'derecho.',
+                                'La costumbre es una forma de conducta '
+                                'implantada por una colectividad, repetida '
+                                'de forma uniforme y permanente, cuya '
+                                'observancia se hace obligatoria.',
+                                'La jurisprudencia es el conjunto de '
+                                'resoluciones judiciales de la Corte Suprema '
+                                'y del Tribunal Constitucional sobre una '
+                                'cuestión determinada.',
+                                'La doctrina son los estudios especializados '
+                                'del derecho; carece de fuerza legal '
+                                'obligatoria.']},
                      {'titulo': 'LA LEY: CONCEPTO Y CARACTERÍSTICAS',
                       'items': ['La Ley es toda norma jurídica emanada del '
                                 'poder público, destinada a regular la '
                                 'conducta externa de los miembros de la '
-                                'comunidad.']},
+                                'comunidad.',
+                                'Es obligatoria: debe ser cumplida por '
+                                'todos, incluso en contra de la voluntad del '
+                                'individuo; su desconocimiento no excusa su '
+                                'incumplimiento.',
+                                'Es impersonal: se aplica a un grupo '
+                                'indeterminado de sujetos, no a una sola '
+                                'persona.',
+                                'Es abstracta: se aplica a un número de '
+                                'casos no particularizados.',
+                                'Es permanente: tiene carácter indefinido '
+                                'hasta que sea subrogada, abrogada o '
+                                'derogada.',
+                                'Es irretroactiva: regula hechos posteriores '
+                                'a su sanción, no rige sobre conductas '
+                                'anteriores.']},
                      {'titulo': 'LA MORAL Y SUS RELACIONES CON EL DERECHO',
                       'items': ['La Moral es la forma de conducta que la '
                                 'convivencia fija entre los hombres; '
-                                'concierne al fuero interno y busca el '
-                                'bien.']}]},
+                                'concierne al fuero interno y busca el bien.',
+                                'Etimológicamente, Moral proviene del latín '
+                                '«mores» (costumbre); Ética proviene del '
+                                'griego «ethos» (costumbre).',
+                                'La Ética es la disciplina que trata la '
+                                'moral, y la Moral es la práctica de la '
+                                'ética.']}]},
  {'num': 2,
   'titulo': 'Valores Cívicos Sociales',
   'secciones': [{'titulo': '2.1 CONCEPTO DE VALOR',
@@ -584,23 +642,72 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['Los valores son las vivencias e ideales que '
                                 'orientan nuestros actos en beneficio propio '
                                 'y de la colectividad, llevándonos a la '
-                                'superación personal.']},
+                                'superación personal.',
+                                'El estudio de los valores corresponde a la '
+                                'Axiología, una rama de la Filosofía.',
+                                'Aplicadamente, otras ciencias también se '
+                                'ocupan de los valores, como la Sociología, '
+                                'la Economía y la Política.']},
                      {'titulo': 'LA DIGNIDAD Y LA JUSTICIA',
                       'items': ['La dignidad hace referencia al valor '
                                 'inherente del ser humano por el simple '
                                 'hecho de serlo, en cuanto ser racional '
-                                'dotado de libertad.']},
+                                'dotado de libertad.',
+                                'La dignidad no depende de ningún '
+                                'condicionamiento de raza, sexo o condición '
+                                'social.',
+                                'Etimológicamente, justicia proviene de la '
+                                'voz latina iustitia, que significa dar a '
+                                'cada cual lo que le corresponde.',
+                                'La justicia general busca el bien de la '
+                                'sociedad entera; la justicia particular '
+                                'armoniza los intereses individuales.',
+                                'La justicia distributiva considera que el '
+                                'individuo se enfrenta no a otros '
+                                'individuos, sino al todo social.',
+                                'La justicia conmutativa es la forma clásica '
+                                'de justicia, aplicada en la relación mutua '
+                                'entre individuos como pares '
+                                'independientes.']},
                      {'titulo': 'LA SOLIDARIDAD Y LA HONESTIDAD',
                       'items': ['Solidaridad proviene del latín solidus, que '
-                                'significa sólido, firme, compacto.']},
+                                'significa sólido, firme, compacto.',
+                                'La solidaridad se practica sin distinción '
+                                'de credo, sexo, raza, nacionalidad o '
+                                'afiliación política.',
+                                'Honestidad proviene del latín honestitad y '
+                                'significa cualidad de decente, decoroso y '
+                                'razonable.',
+                                'La honestidad es el respeto a la verdad en '
+                                'relación con el mundo, los hechos y las '
+                                'personas.']},
                      {'titulo': 'EL RESPETO, LA LIBERTAD Y LA IGUALDAD',
                       'items': ['El respeto es el reconocimiento del valor '
                                 'propio y de los derechos de los individuos '
-                                'y de la sociedad.']},
+                                'y de la sociedad.',
+                                'La libertad es la capacidad de la persona '
+                                'de autodeterminarse y actuar según su '
+                                'propia voluntad.',
+                                'La igualdad implica que todas las personas '
+                                'tienen los mismos derechos y oportunidades '
+                                'ante la ley.']},
                      {'titulo': 'PROFUNDIZANDO LIBERTAD E IGUALDAD',
                       'items': ['Etimológicamente, «respeto» proviene del '
                                 'latín respectus y significa atención o '
-                                'consideración.']}]},
+                                'consideración.',
+                                'Etimológicamente, «libertad» deriva del '
+                                'latín libertas, libertatis.',
+                                'La libertad implica actuar de acuerdo a la '
+                                'conciencia propia, sin sujeción a coacción '
+                                'interior o exterior.',
+                                'La libertad está limitada por la ley, la '
+                                'moral y las buenas costumbres.',
+                                'El filósofo francés Jean Jacques Rousseau '
+                                'afirmó: «El hombre nace libre, pero en '
+                                'todas partes está encadenado».',
+                                'Cuando la libertad se ejerce sin '
+                                'responsabilidad por los propios actos, se '
+                                'habla de libertinaje.']}]},
  {'num': 3,
   'titulo': 'Persona y Sociedad',
   'secciones': [{'titulo': '3.1 LA PERSONA: ENFOQUE CONSTITUCIONAL Y LEGAL',
@@ -850,20 +957,70 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['El «Derecho de las personas» es el conjunto '
                                 'de normas jurídicas que regulan el '
                                 'reconocimiento de los derechos '
-                                'fundamentales de la persona.']},
+                                'fundamentales de la persona.',
+                                'En el Perú, el Derecho de las personas se '
+                                'desarrolla en el Libro I del Código Civil.',
+                                'El Libro I del Código Civil se divide en '
+                                'cuatro secciones: personas naturales, '
+                                'personas jurídicas, '
+                                'asociación/fundación/comité no inscritos, y '
+                                'comunidades campesinas y nativas.',
+                                'Etimológicamente, «persona» proviene del '
+                                'latín, y originalmente designaba la máscara '
+                                'que usaban los actores en el teatro '
+                                'antiguo.',
+                                'Según Aníbal Torres Vásquez, la persona '
+                                'natural es todo ser humano cuya existencia '
+                                'comienza con la concepción y termina con la '
+                                'muerte.',
+                                'Según Carlos Fernández Sessarego, la '
+                                'persona humana es una unidad psicosomática '
+                                'constituida y sustentada en su libertad.']},
                      {'titulo': 'LA SOCIEDAD',
                       'items': ['La sociedad es el conjunto de personas que '
                                 'se relacionan entre sí y comparten una '
-                                'cultura, normas e instituciones comunes.']},
+                                'cultura, normas e instituciones comunes.',
+                                'El ser humano es un ser social por '
+                                'naturaleza, que se realiza plenamente en '
+                                'convivencia con otros.']},
                      {'titulo': 'CLASES DE PERSONAS Y TEORÍAS DE '
                                 'FALLECIMIENTO CONJUNTO',
                       'items': ['La persona natural o física es todo ser '
                                 'humano cuya existencia comienza con la '
-                                'concepción y termina con la muerte.']},
+                                'concepción y termina con la muerte.',
+                                'Según Aníbal Torres Vásquez, la persona '
+                                'jurídica es la agrupación de sujetos '
+                                'individuales para el logro de ciertos fines '
+                                'que el ordenamiento jurídico reconoce.',
+                                'La persona jurídica existe por una ficción '
+                                'de la ley; es distinta de sus miembros y '
+                                'tiene existencia independiente de quienes '
+                                'la integran.',
+                                'La premoriencia es una ficción jurídica que '
+                                'establece criterios sobre quién murió '
+                                'antes, cuando no se puede acreditar con '
+                                'certeza.',
+                                'El Perú adopta la teoría de la '
+                                'conmoriencia, regulada en el artículo 62 '
+                                'del Código Civil.',
+                                'Según la conmoriencia, si no se puede '
+                                'probar cuál de dos personas murió primero, '
+                                'se las reputa muertas al mismo tiempo, sin '
+                                'transmisión de derechos hereditarios entre '
+                                'ellas.']},
                      {'titulo': 'EXISTENCIA Y CAPACIDAD DE LA PERSONA',
                       'items': ['La existencia de la persona natural '
                                 'comienza con la concepción y culmina con la '
-                                'muerte.']}]},
+                                'muerte.',
+                                'El reconocimiento de existencia se obtiene '
+                                'mediante resolución del Poder Judicial, a '
+                                'instancia del Ministerio Público o partes '
+                                'interesadas.',
+                                'El reconocimiento de existencia faculta a '
+                                'la persona a reivindicar sus bienes.',
+                                'Las personas jurídicas pueden ser de '
+                                'derecho público o de derecho privado, según '
+                                'la doctrina.']}]},
  {'num': 4,
   'titulo': 'Familia',
   'secciones': [{'titulo': '4.1 CONCEPTO Y NATURALEZA',
@@ -1199,23 +1356,89 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['Para Rodríguez Iturri, la familia humana es '
                                 'un núcleo de origen natural; no ha sido '
                                 'creada por la ley, sino que es obra de la '
-                                'naturaleza.']},
+                                'naturaleza.',
+                                'La familia es una institución natural, '
+                                'jurídica y social que constituye la célula '
+                                'de la sociedad.',
+                                'Según Aguilar Llanos, las familias peruanas '
+                                'no se originan únicamente en el matrimonio, '
+                                'sino también en las uniones de hecho.',
+                                'Según Cussiánovich, la familia es el lugar '
+                                'natural de acogimiento de un ser humano, '
+                                'encargado de garantizar su sobrevivencia '
+                                'física, emocional y afectiva.',
+                                'El Tribunal Constitucional (Exp. N° '
+                                '06572-2006-PA/TC) señala que la familia no '
+                                'solo tiene dimensión de procreación, sino '
+                                'que también transmite valores éticos, '
+                                'cívicos y culturales.',
+                                'El artículo 4 de la Constitución peruana '
+                                'reconoce a la familia como un instituto '
+                                'natural y fundamental de la sociedad.']},
                      {'titulo': 'PARENTESCO: GRADOS Y LÍNEAS',
                       'items': ['El tronco es la persona a quien reconocen '
                                 'como ascendiente común las personas de un '
-                                'mismo parentesco.']},
+                                'mismo parentesco.',
+                                'El grado es la distancia que existe entre '
+                                'dos parientes.',
+                                'La línea recta se forma con personas que '
+                                'descienden unas de otras (artículo 236 del '
+                                'Código Civil).',
+                                'La línea colateral, también llamada '
+                                'horizontal o transversal, une a personas '
+                                'que sin descender unas de otras comparten '
+                                'un ascendiente común.',
+                                'Para efectos civiles, en la línea colateral '
+                                'solo se considera hasta el cuarto grado.',
+                                'El parentesco espiritual se establece con '
+                                'motivo de un sacramento como el bautismo, '
+                                'la confirmación o el matrimonio, entre '
+                                'padrinos y ahijados.']},
                      {'titulo': 'INSTITUCIONES DE AMPARO FAMILIAR: LA PATRIA '
                                 'POTESTAD',
                       'items': ['Etimológicamente, «patria potestad» '
                                 'proviene de raíces romanas: «patria» alude '
                                 'al pater familia y «potestad» denota '
-                                'dominio o poder.']},
+                                'dominio o poder.',
+                                'La patria potestad es el conjunto de '
+                                'derechos y deberes que tienen los '
+                                'progenitores para cuidar de la persona y '
+                                'bienes de sus hijos (artículo 418 del '
+                                'Código Civil).',
+                                'La patria potestad se ejerce conjuntamente '
+                                'por el padre y la madre durante el '
+                                'matrimonio.',
+                                'En caso de divorcio, separación de cuerpos '
+                                'o invalidación del matrimonio, la patria '
+                                'potestad la ejerce el cónyuge a quien se '
+                                'confían los hijos.',
+                                'La patria potestad no alcanza a los '
+                                'ascendientes ni parientes colaterales; '
+                                'quien cuida a un menor sin ser su '
+                                'progenitor lo hace a título de tutor.',
+                                'La patria potestad tiene finalidad tuitiva, '
+                                'es decir, está dirigida a la protección y '
+                                'defensa de los hijos y su patrimonio.']},
                      {'titulo': 'INSTITUCIONES SUPLETORIAS DE AMPARO '
                                 'FAMILIAR',
                       'items': ['La tutela protege a los menores de edad '
                                 'que, por desaparición o incapacidad de los '
                                 'progenitores, no tienen quién ejerza la '
-                                'patria potestad.']}]},
+                                'patria potestad.',
+                                'La tutela testamentaria es la que '
+                                'establecen los padres antes de morir, '
+                                'designando en su testamento al tutor.',
+                                'La tutela legítima dispone, a falta de la '
+                                'testamentaria, que sean tutores los abuelos '
+                                'u otros descendientes.',
+                                'La tutela dativa es la que establece el '
+                                'consejo de familia cuando no hay tutela '
+                                'testamentaria ni legítima.',
+                                'La tutela estatal es ejercida por el Estado '
+                                'a falta de las demás, para niños huérfanos '
+                                'o abandonados.',
+                                'La curatela protege a la persona y bienes '
+                                'del mayor de edad incapacitado.']}]},
  {'num': 5,
   'titulo': 'Nación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ELEMENTOS',
@@ -1697,34 +1920,84 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO Y ELEMENTOS',
                       'items': ['Etimológicamente, «nación» proviene del '
                                 'latín natio, nationis, que significa '
-                                'nacimiento o raza.']},
+                                'nacimiento o raza.',
+                                'Para Herder y Fichte, la nación son quienes '
+                                'comparten elementos como la etnia, el '
+                                'folclore, la mitología y la cultura, '
+                                'expresión de un alma colectiva.',
+                                'Anthony D. Smith define la nación como una '
+                                'comunidad humana con nombre propio, '
+                                'asociada a un territorio nacional, con '
+                                'mitos comunes de antepasados.']},
                      {'titulo': 'NACIONALIDAD: ADQUISICIÓN Y RENUNCIA',
                       'items': ['La nacionalidad es una capacidad especial '
                                 'que define derechos y obligaciones '
                                 'específicos para quienes el orden jurídico '
                                 'considera integrantes permanentes del '
-                                'Estado.']},
+                                'Estado.',
+                                'El artículo 52 de la Constitución de 1993 '
+                                'establece que son peruanos por nacimiento '
+                                'los nacidos en el territorio de la '
+                                'República.',
+                                'También son peruanos por nacimiento los '
+                                'nacidos en el exterior de padre o madre '
+                                'peruanos, inscritos en el registro '
+                                'correspondiente durante su minoría de '
+                                'edad.']},
                      {'titulo': 'IDENTIDAD NACIONAL Y LA PERUANIDAD',
                       'items': ['La identidad nacional es el sentimiento '
                                 'subjetivo del individuo de pertenecer a una '
-                                'nación concreta.']},
+                                'nación concreta.',
+                                'El término «peruanidad» fue acuñado por el '
+                                'historiador Víctor Andrés Belaunde García.',
+                                'La peruanidad es el sentimiento de '
+                                'identidad y unidad profunda que vincula a '
+                                'los pueblos del Perú con sus tradiciones y '
+                                'la fe en su futuro.']},
                      {'titulo': 'SISTEMA DE DEFENSA NACIONAL',
                       'items': ['El Sistema de Defensa Nacional garantiza la '
                                 'seguridad integral del Estado; lo preside y '
-                                'dirige el Presidente de la República.']},
+                                'dirige el Presidente de la República.',
+                                'Está integrado por el Consejo de Ministros, '
+                                'el Ministerio de Defensa, el Sistema de '
+                                'Inteligencia Nacional y el Sistema de '
+                                'Defensa Civil.',
+                                'Las Fuerzas Armadas (Ejército, Marina de '
+                                'Guerra y Fuerza Aérea) garantizan la '
+                                'independencia, soberanía e integridad '
+                                'territorial.']},
                      {'titulo': 'LOS SÍMBOLOS PATRIOS: LA BANDERA',
                       'items': ['La vexilología es el estudio de las '
                                 'banderas; quien se dedica a ella es el '
-                                'vexilólogo.']},
+                                'vexilólogo.',
+                                'El artículo 49 de la Constitución señala '
+                                'que los símbolos de la Patria son la '
+                                'bandera, el escudo y el himno nacional.',
+                                'La primera bandera republicana fue creada '
+                                'por José de San Martín el 21 de octubre de '
+                                '1820.']},
                      {'titulo': 'EL ESCUDO Y EL HIMNO NACIONAL',
                       'items': ['El Escudo Nacional se estableció el 25 de '
                                 'febrero de 1825, mediante ley promulgada '
-                                'por Simón Bolívar.']},
+                                'por Simón Bolívar.',
+                                'El escudo tiene tres partes: la vicuña '
+                                '(reino animal), el árbol de la quina (reino '
+                                'vegetal), y la cornucopia (reino mineral).',
+                                'La letra del Himno Nacional es de José de '
+                                'la Torre Ugarte, y la música de José '
+                                'Bernardo Alcedo.']},
                      {'titulo': 'PATRIMONIO CULTURAL Y NATURAL',
                       'items': ['Según la Convención de la UNESCO de 1972, '
                                 'el patrimonio cultural se compone de '
                                 'aquello que a lo largo de la historia han '
-                                'creado los hombres de una nación.']}]},
+                                'creado los hombres de una nación.',
+                                'El patrimonio cultural se clasifica en '
+                                'arqueológico, histórico, artístico, '
+                                'bibliográfico y documental.',
+                                'El Ministerio de Cultura es el principal '
+                                'organismo encargado de la defensa, '
+                                'preservación y restauración de los bienes '
+                                'culturales del país.']}]},
  {'num': 6,
   'titulo': 'El Estado',
   'secciones': [{'titulo': '6.1 CONCEPTO Y ELEMENTOS',
@@ -2076,24 +2349,78 @@ BALOTAS_CIVICA = [{'num': 1,
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ELEMENTOS',
                       'items': ['En sentido amplio, el Estado es la nación '
-                                'jurídicamente organizada.']},
+                                'jurídicamente organizada.',
+                                'En sentido restringido, el Estado es el '
+                                'conjunto de organismos que ejercen el poder '
+                                'de una nación.',
+                                'Los elementos del Estado son: población, '
+                                'territorio, organización jurídica y '
+                                'soberanía.',
+                                'El territorio se caracteriza por ser '
+                                'inalienable e inviolable, según el artículo '
+                                '54 de la Constitución.',
+                                'El territorio comprende el suelo, el '
+                                'subsuelo, el espacio aéreo y el mar '
+                                'territorial.',
+                                'La organización jurídica es el esquema '
+                                'legal del Estado, integrado por la '
+                                'Constitución, leyes y decretos.']},
                      {'titulo': 'FORMAS DE ESTADO SEGÚN EL PROCESO HISTÓRICO',
                       'items': ['El Estado Constitucional surgió en '
                                 'Inglaterra a mediados del siglo XVII, para '
                                 'limitar las decisiones de los monarcas '
-                                'absolutos.']},
+                                'absolutos.',
+                                'El Estado Liberal surgió a lo largo del '
+                                'siglo XIX, con pilares como el '
+                                'constitucionalismo y la propiedad privada.',
+                                'En la democracia liberal o representativa, '
+                                'las decisiones no las toma toda la '
+                                'comunidad, sino representantes elegidos.',
+                                'En los Estados de partido único, solo una '
+                                'organización puede ser la legítima '
+                                'expresión de la voluntad general, como en '
+                                'los sistemas comunistas.']},
                      {'titulo': 'FORMAS DE ESTADO SEGÚN SU ESTRUCTURA',
                       'items': ['El Estado unitario reconoce como fuente de '
                                 'soberanía una sola nación, con un gobierno, '
-                                'un parlamento y un poder judicial únicos.']},
+                                'un parlamento y un poder judicial únicos.',
+                                'En el Estado unitario existe un solo centro '
+                                'de poder para todo el territorio '
+                                'nacional.']},
                      {'titulo': 'EL GOBIERNO: CONCEPTO Y FORMAS CLÁSICAS',
                       'items': ['El Gobierno es el principal pilar del '
                                 'Estado; la autoridad que dirige, controla y '
-                                'administra sus instituciones.']},
+                                'administra sus instituciones.',
+                                'El Gobierno consiste en la conducción '
+                                'política general o ejercicio del poder '
+                                'ejecutivo del Estado.',
+                                'Según Aristóteles, las formas de gobierno '
+                                'se dividen en puras e impuras.',
+                                'Las formas puras son monarquía (gobierno de '
+                                'uno), aristocracia (gobierno de pocos) y '
+                                'democracia (gobierno de muchos).',
+                                'Las formas impuras son tiranía (deformación '
+                                'de la monarquía), oligarquía (deformación '
+                                'de la aristocracia) y demagogia '
+                                '(deformación de la democracia).',
+                                'La tiranía ocurre cuando el único '
+                                'gobernante abusa del poder.']},
                      {'titulo': 'OTRAS FORMAS DE GOBIERNO',
                       'items': ['El gobierno de jure, o de derecho, es el '
-                                'que está de acuerdo con la '
-                                'Constitución.']}]},
+                                'que está de acuerdo con la Constitución.',
+                                'El gobierno de facto, o de hecho, no ha '
+                                'sido elegido según la Constitución, pero no '
+                                'necesariamente usa la fuerza.',
+                                'El gobierno usurpador carece de título por '
+                                'no haber sido elegido, y se mantiene en el '
+                                'poder mediante la fuerza.',
+                                'El gobierno parlamentario o de gabinete '
+                                'tiene un jefe de Estado sin responsabilidad '
+                                'y un consejo de ministros responsable ante '
+                                'el parlamento.',
+                                'El gobierno presidencialista también tiene '
+                                'división de poderes, con el Presidente como '
+                                'jefe de Estado y de gobierno.']}]},
  {'num': 7,
   'titulo': 'Constitución Política',
   'secciones': [{'titulo': '7.1 CONCEPTO Y NATURALEZA',
@@ -2510,25 +2837,90 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['La Constitución es la fuente de fuentes del '
                                 'Derecho positivo, la Ley Suprema, que no '
                                 'está sujeta a evaluación de validez formal '
-                                'porque no existe precepto superior a '
-                                'ella.']},
+                                'porque no existe precepto superior a ella.',
+                                'La Constitución es el resultado del '
+                                'ejercicio del Poder Constituyente, cuyo '
+                                'titular es el pueblo.',
+                                'El artículo 51 de la Constitución establece '
+                                'que esta prevalece sobre toda otra norma '
+                                'legal.',
+                                'Según Blancas Bustamante, la Constitución '
+                                'establece la organización de los poderes '
+                                'del Estado y reconoce las libertades y '
+                                'derechos de las personas.',
+                                'El fin de la Constitución debe ser afianzar '
+                                'la Justicia.']},
                      {'titulo': 'ETIMOLOGÍA Y ANTECEDENTES',
                       'items': ['La palabra griega «politeía» fue traducida '
                                 'al latín por Cicerón con el término '
-                                '«constitutio».']},
+                                '«constitutio».',
+                                'Rousseau llamó «contrato social» a la '
+                                'decisión originaria del pueblo de fundar la '
+                                'comunidad política.',
+                                'Vattel definió la Constitución del Estado '
+                                'como el reglamento fundamental que '
+                                'determina cómo debe ejercerse la autoridad '
+                                'pública.',
+                                'En julio de 1776, el Congreso de Estados '
+                                'Unidos resolvió que los Estados de la '
+                                'Confederación se dieran sus propias '
+                                'Constituciones.',
+                                'A partir de Thomas Hobbes se dio el paso de '
+                                'la doctrina del derecho natural a la teoría '
+                                'del Estado como contrato social.',
+                                'John Locke explicaba que los individuos '
+                                'acuerdan formar una sociedad contractual '
+                                'para beneficiarse mutuamente bajo la '
+                                'protección del Estado y la ley.']},
                      {'titulo': 'CONSTITUCIÓN FORMAL Y MATERIAL',
                       'items': ['Edmund Burke y Ferdinand Lassalle, al igual '
                                 'que Kelsen, establecieron la división entre '
-                                'Constitución formal y material.']},
+                                'Constitución formal y material.',
+                                'La Constitución peruana de 1993 es la norma '
+                                'vigente que rige actualmente el '
+                                'ordenamiento jurídico del país.']},
                      {'titulo': 'CLASES DE CONSTITUCIONES',
                       'items': ['Las constituciones escritas están '
                                 'contenidas en un documento formal; las '
                                 'consuetudinarias no están en un único '
-                                'texto.']},
+                                'texto.',
+                                'Según su origen: las otorgadas nacen de un '
+                                'acto voluntario del Rey; las pactadas '
+                                'surgen de un convenio entre el Rey y el '
+                                'Parlamento.',
+                                'Las constituciones populares expresan la '
+                                'voluntad de la Nación como Poder '
+                                'Constituyente, aceptadas por el Rey.',
+                                'Las flexibles pueden modificarse por el '
+                                'procedimiento legislativo ordinario; las '
+                                'rígidas requieren un procedimiento complejo '
+                                'de reforma.',
+                                'Las originarias tienen un principio '
+                                'fundamental nuevo; las derivadas siguen '
+                                'modelos constitucionales ya existentes, '
+                                'adaptándolos.',
+                                'Las ideológicas están cargadas de un '
+                                'programa ideológico; las utilitarias tienen '
+                                'carácter neutral.']},
                      {'titulo': 'LA JERARQUÍA NORMATIVA (PIRÁMIDE DE KELSEN)',
                       'items': ['El conjunto de normas legales vigentes se '
                                 'organiza jerárquicamente en forma de '
-                                'pirámide.']}]},
+                                'pirámide.',
+                                'El creador de esta jerarquía piramidal fue '
+                                'el filósofo austriaco Hans Kelsen, por lo '
+                                'que se llama «pirámide de Kelsen».',
+                                'Kelsen esquematizó esta jerarquía en su '
+                                'obra «La Teoría Pura del Derecho», en el '
+                                'año 1934.',
+                                'El primer nivel de la jerarquía normativa '
+                                'es la Constitución, ley fundamental de la '
+                                'organización del Estado.',
+                                'El segundo nivel incluye los tratados, las '
+                                'leyes y las resoluciones legislativas.',
+                                'Los tratados son acuerdos que el Perú '
+                                'celebra con otros Estados; el Presidente de '
+                                'la República está facultado para '
+                                'celebrarlos.']}]},
  {'num': 8,
   'titulo': 'Derechos Civiles y Políticos',
   'secciones': [{'titulo': '8.1 EL PACTO INTERNACIONAL DE DERECHOS CIVILES Y '
@@ -2938,31 +3330,66 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Y POLÍTICOS',
                       'items': ['El PIDCP fue adoptado por la Asamblea '
                                 'General de la ONU mediante la Resolución '
-                                '2200 A (XXI), el 16 de diciembre de 1966.']},
+                                '2200 A (XXI), el 16 de diciembre de 1966.',
+                                'El PIDCP entró en vigor el 23 de marzo de '
+                                '1976, y ha sido ratificado por 167 Estados.',
+                                'El PIDCP consta de 6 partes, 53 artículos y '
+                                'dos protocolos facultativos.']},
                      {'titulo': 'CONCEPTO DE DERECHOS CIVILES',
                       'items': ['Los derechos civiles son reconocidos por '
                                 'todos los ciudadanos y por la ley, dentro '
-                                'de un Estado determinado.']},
+                                'de un Estado determinado.',
+                                'A diferencia de los derechos civiles, los '
+                                'derechos naturales o humanos son '
+                                'internacionales y se tienen por el mero '
+                                'hecho de nacer.',
+                                'John Locke sostuvo que los derechos '
+                                'naturales a la vida, la libertad y la '
+                                'propiedad debían convertirse en derechos '
+                                'civiles protegidos por el Estado.']},
                      {'titulo': 'CONCEPTO DE DERECHOS POLÍTICOS',
                       'items': ['Los derechos políticos son los reconocidos '
                                 'por la Constitución y las leyes, que '
                                 'permiten participar directa o '
-                                'indirectamente en el gobierno del Estado.']},
+                                'indirectamente en el gobierno del Estado.',
+                                'Los derechos políticos posibilitan la toma '
+                                'de decisiones respecto del gobierno del '
+                                'Estado.']},
                      {'titulo': 'LEY DE PARTICIPACIÓN Y CONTROL CIUDADANO '
                                 '(LEY 26300)',
                       'items': ['La Ley 26300, Ley de los Derechos de '
                                 'Participación y Control Ciudadano, regula '
                                 'el ejercicio de estos derechos junto con la '
-                                'Constitución de 1993.']},
+                                'Constitución de 1993.',
+                                'Los ciudadanos pueden participar mediante '
+                                'referéndum, iniciativa legislativa, '
+                                'remoción o revocación de autoridades y '
+                                'rendición de cuentas.',
+                                'Es nulo y punible todo acto que prohíba o '
+                                'limite al ciudadano el ejercicio de estos '
+                                'derechos de participación.']},
                      {'titulo': 'DERECHOS DE PARTICIPACIÓN CIUDADANA',
                       'items': ['La iniciativa de reforma constitucional '
                                 'requiere la adhesión del 0,3% de la '
-                                'población electoral nacional.']},
+                                'población electoral nacional.',
+                                'Es improcedente toda iniciativa de reforma '
+                                'que recorte los derechos ciudadanos del '
+                                'artículo 2° de la Constitución.',
+                                'La iniciativa en la formación de leyes '
+                                'requiere firmas de no menos del 0,3% del '
+                                'electorado; el Congreso tiene 120 días para '
+                                'dictaminarla.']},
                      {'titulo': 'DERECHOS DE CONTROL DE LOS CIUDADANOS',
                       'items': ['La revocatoria es el derecho de la '
                                 'ciudadanía para destituir de sus cargos a '
                                 'alcaldes, regidores y autoridades de '
-                                'elección popular.']}]},
+                                'elección popular.',
+                                'La revocatoria no procede durante el primer '
+                                'y último año de mandato, salvo el caso de '
+                                'magistrados.',
+                                'Para solicitar la revocatoria, la solicitud '
+                                'no requiere ser probada, solo '
+                                'fundamentada.']}]},
  {'num': 9,
   'titulo': 'Derechos Económicos, Sociales y Culturales',
   'secciones': [{'titulo': '9.1 CONCEPTO Y FUNDAMENTO',
@@ -3332,27 +3759,87 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'culturales incluyen el derecho a un nivel '
                                 'de vida adecuado, a la alimentación, a la '
                                 'vivienda digna, a la educación y a la '
-                                'salud.']},
+                                'salud.',
+                                'El Protocolo Adicional a la Convención '
+                                'Americana en esta materia se conoce como el '
+                                'Protocolo de San Salvador.',
+                                'Según Hakansson, estos derechos son el '
+                                'conjunto de normas de rango constitucional '
+                                'con las que el Estado ejerce su función '
+                                'equilibradora de las desigualdades '
+                                'sociales.',
+                                'La dignidad de la persona humana es el '
+                                'valor básico que fundamenta todos los '
+                                'derechos humanos.',
+                                'Según Nogueira, la dignidad humana '
+                                'fundamenta tanto los derechos civiles y '
+                                'políticos como los derechos económicos, '
+                                'sociales y culturales.']},
                      {'titulo': 'EL DERECHO AL TRABAJO EN LA CONSTITUCIÓN',
                       'items': ['El artículo 22 de la Constitución establece '
                                 'que el trabajo es un deber y un derecho, '
-                                'base del bienestar social.']},
+                                'base del bienestar social.',
+                                'El artículo 23 de la Constitución señala '
+                                'que el Estado protege especialmente a la '
+                                'madre, al menor de edad y al impedido que '
+                                'trabajan.',
+                                'Según el artículo 23, ninguna relación '
+                                'laboral puede limitar el ejercicio de los '
+                                'derechos constitucionales ni rebajar la '
+                                'dignidad del trabajador.',
+                                'El artículo 24 de la Constitución establece '
+                                'que el trabajador tiene derecho a una '
+                                'remuneración equitativa y suficiente.']},
                      {'titulo': 'EL DERECHO A LA SALUD EN LA CONSTITUCIÓN',
                       'items': ['El artículo 7° de la Constitución establece '
                                 'que todos tienen derecho a la protección de '
-                                'su salud, la de su familia y la '
-                                'comunidad.']},
+                                'su salud, la de su familia y la comunidad.',
+                                'El artículo 9° señala que el Estado '
+                                'determina la política nacional de salud, en '
+                                'forma plural y descentralizadora.',
+                                'El artículo 11° garantiza el libre acceso a '
+                                'prestaciones de salud y pensiones, mediante '
+                                'entidades públicas, privadas o mixtas.',
+                                'Los cuatro aspectos que garantizan la salud '
+                                'son: disponibilidad, accesibilidad, '
+                                'aceptabilidad y calidad.']},
                      {'titulo': 'EL DERECHO A LA EDUCACIÓN EN LA '
                                 'CONSTITUCIÓN',
                       'items': ['El artículo 13° establece que la educación '
                                 'tiene como finalidad el desarrollo integral '
-                                'de la persona humana.']},
+                                'de la persona humana.',
+                                'El artículo 14° señala que la formación '
+                                'ética y cívica y la enseñanza de la '
+                                'Constitución son obligatorias en todo el '
+                                'proceso educativo.',
+                                'El artículo 15° establece que el '
+                                'profesorado en la enseñanza oficial es '
+                                'carrera pública.',
+                                'El artículo 17° establece que la educación '
+                                'inicial, primaria y secundaria son '
+                                'obligatorias, y gratuita en instituciones '
+                                'del Estado.',
+                                'El artículo 18° establece que la educación '
+                                'universitaria tiene como fines la formación '
+                                'profesional, la difusión cultural y la '
+                                'investigación.',
+                                'Cada universidad es autónoma en su régimen '
+                                'normativo, de gobierno, académico, '
+                                'administrativo y económico.']},
                      {'titulo': 'EL PIDESC Y EL PROTOCOLO DE SAN SALVADOR',
                       'items': ['El PIDESC (Pacto Internacional de Derechos '
                                 'Económicos, Sociales y Culturales) es un '
                                 'tratado multilateral que reconoce estos '
-                                'derechos y sus mecanismos de '
-                                'protección.']}]},
+                                'derechos y sus mecanismos de protección.',
+                                'El PIDESC fue adoptado por la Asamblea '
+                                'General de la ONU mediante la Resolución '
+                                '2200A (XXI), el 16 de diciembre de 1966.',
+                                'El PIDESC entró en vigor el 3 de enero de '
+                                '1976.',
+                                'El Protocolo de San Salvador entiende el '
+                                'derecho a la salud como el disfrute del más '
+                                'alto nivel de bienestar físico, mental y '
+                                'social.']}]},
  {'num': 10,
   'titulo': 'Poder Legislativo',
   'secciones': [{'titulo': '10.1 CONCEPTO Y ÓRGANO',
@@ -3786,30 +4273,65 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO Y ÓRGANO',
                       'items': ['El Poder Legislativo es la facultad del '
                                 'Estado para dictar, modificar, interpretar '
-                                'y derogar leyes.']},
+                                'y derogar leyes.',
+                                'El Parlamento es el órgano que ejerce la '
+                                'potestad legislativa, órgano de control del '
+                                'gobierno y entidad representativa de la '
+                                'Nación.',
+                                'Según el artículo 91 de la Constitución, el '
+                                'Poder Legislativo reside en el Congreso.']},
                      {'titulo': 'OTRAS INSTITUCIONES CON FACULTAD '
                                 'LEGISLATIVA',
                       'items': ['El Presidente de la República puede expedir '
                                 'Decretos de Urgencia y Decretos '
-                                'Legislativos.']},
+                                'Legislativos.',
+                                'En regímenes de facto, se gobierna mediante '
+                                'Decretos Ley.',
+                                'Los Gobiernos Regionales expiden normas con '
+                                'rango de ley llamadas normas generales.']},
                      {'titulo': 'LA FUNCIÓN LEGISLATIVA Y SUS FASES',
                       'items': ['El artículo 102 de la Constitución '
                                 'establece que dar leyes es atribución del '
-                                'Congreso.']},
+                                'Congreso.',
+                                'La fase introductoria corresponde a la '
+                                'iniciativa para proponer un proyecto de '
+                                'ley.',
+                                'La «iniciativa popular» en el Perú requiere '
+                                'representar el 0,3% de la población '
+                                'electoral.']},
                      {'titulo': 'LA FUNCIÓN REPRESENTATIVA Y COMPOSICIÓN DEL '
                                 'CONGRESO',
                       'items': ['Mediante la función representativa, los '
                                 'congresistas son los voceros de los '
-                                'ciudadanos, canalizando sus demandas.']},
+                                'ciudadanos, canalizando sus demandas.',
+                                'El Congreso está integrado por 130 '
+                                'parlamentarios, elegidos por sufragio '
+                                'directo, por un periodo de 5 años.',
+                                'Los congresistas no pueden ser reelegidos '
+                                'de manera inmediata para un nuevo periodo '
+                                'en el mismo cargo.']},
                      {'titulo': 'ÓRGANOS DEL PODER LEGISLATIVO',
                       'items': ['El Pleno del Congreso es la máxima asamblea '
                                 'deliberativa, integrada por todos los '
-                                'congresistas.']},
+                                'congresistas.',
+                                'La Mesa Directiva tiene a cargo la '
+                                'dirección administrativa del Congreso; está '
+                                'compuesta por el Presidente y tres '
+                                'Vicepresidentes.',
+                                'Las Comisiones Ordinarias se encargan del '
+                                'estudio y dictamen de asuntos ordinarios.']},
                      {'titulo': 'ATRIBUCIONES DEL CONGRESO Y FUNCIÓN DEL '
                                 'CARGO',
                       'items': ['El Congreso tiene, además de la '
                                 'legislativa, función fiscalizadora y '
-                                'función representativa.']}]},
+                                'función representativa.',
+                                'Mediante la función fiscalizadora, el '
+                                'Congreso puede iniciar investigaciones '
+                                'sobre cualquier asunto de interés público.',
+                                'En la formación de la orientación política '
+                                'general, el Congreso aprueba tratados '
+                                'internacionales y declara la guerra y la '
+                                'paz.']}]},
  {'num': 11,
   'titulo': 'El Poder Ejecutivo',
   'secciones': [{'titulo': '11.1 CONCEPTO Y ORGANIZACIÓN',
@@ -4315,34 +4837,77 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO Y ORGANIZACIÓN',
                       'items': ['El Poder Ejecutivo está constituido por el '
                                 'Presidente, quien desarrolla las funciones '
-                                'de Jefe de Estado y Jefe de Gobierno.']},
+                                'de Jefe de Estado y Jefe de Gobierno.',
+                                'El Poder Ejecutivo es el órgano encargado '
+                                'de la administración del Estado y de la '
+                                'ejecución de las leyes.',
+                                'Integran el Poder Ejecutivo el Presidente '
+                                'de la República y el Consejo de '
+                                'Ministros.']},
                      {'titulo': 'ELECCIÓN DEL PRESIDENTE',
                       'items': ['Para ser presidente se requiere ser peruano '
                                 'de nacimiento, tener 35 años de edad como '
-                                'mínimo y gozar del derecho de sufragio.']},
+                                'mínimo y gozar del derecho de sufragio.',
+                                'El presidente se elige por sufragio '
+                                'directo, secreto y universal, para un '
+                                'mandato de 5 años, sin reelección '
+                                'inmediata.',
+                                'Para ganar en primera vuelta se requiere '
+                                'obtener la mayoría absoluta, sin computar '
+                                'votos nulos ni en blanco.']},
                      {'titulo': 'ATRIBUCIONES DEL PRESIDENTE',
                       'items': ['Entre las atribuciones del Presidente están '
                                 'cumplir y hacer cumplir la Constitución, '
                                 'representar al Estado y dirigir la política '
-                                'general del Gobierno.']},
+                                'general del Gobierno.',
+                                'El Presidente puede convocar al Congreso a '
+                                'legislatura extraordinaria, firmando el '
+                                'decreto de convocatoria.',
+                                'El Presidente dirige mensajes al Congreso, '
+                                'obligatoriamente en forma personal y por '
+                                'escrito, al instalarse la primera '
+                                'legislatura ordinaria anual.']},
                      {'titulo': 'VACANCIA Y SUSPENSIÓN DEL PRESIDENTE',
                       'items': ['La Presidencia vaca por muerte, incapacidad '
                                 'moral o física declarada por el Congreso, '
-                                'aceptación de renuncia, o destitución.']},
+                                'aceptación de renuncia, o destitución.',
+                                'La Presidencia también vaca si el '
+                                'Presidente sale del territorio nacional sin '
+                                'permiso del Congreso o no regresa a tiempo.',
+                                'El ejercicio de la Presidencia se suspende '
+                                'por incapacidad temporal o por estar '
+                                'sometido a proceso judicial.']},
                      {'titulo': 'EL CONSEJO DE MINISTROS',
                       'items': ['El Consejo de Ministros es el organismo del '
                                 'Poder Ejecutivo constituido por la reunión '
-                                'de los ministros.']},
+                                'de los ministros.',
+                                'Son nulos los actos del Presidente que '
+                                'carecen de refrendación ministerial.',
+                                'El Consejo está conformado por los '
+                                'ministros y el Presidente del Consejo de '
+                                'Ministros, o premier, quien puede tener '
+                                'cartera o no.']},
                      {'titulo': 'INTERPELACIÓN Y DISOLUCIÓN DEL CONGRESO',
                       'items': ['La interpelación es la facultad de los '
                                 'congresistas de requerir a los ministros '
                                 'que informen sobre determinado asunto; se '
                                 'presenta por escrito por no menos del 15% '
-                                'de congresistas.']},
+                                'de congresistas.',
+                                'El resultado de la interpelación puede ser '
+                                'un voto de confianza o un voto de censura.',
+                                'Toda moción de censura debe ser presentada '
+                                'por no menos del 25% del número legal de '
+                                'congresistas.']},
                      {'titulo': 'REGÍMENES DE EXCEPCIÓN',
                       'items': ['El artículo 137 de la Constitución '
                                 'establece dos regímenes de excepción: '
-                                'estado de emergencia y estado de sitio.']}]},
+                                'estado de emergencia y estado de sitio.',
+                                'Ambos son declarados por el Presidente '
+                                'mediante decreto supremo, con acuerdo del '
+                                'Consejo de Ministros.',
+                                'El hábeas corpus y el amparo no se '
+                                'suspenden durante los regímenes de '
+                                'excepción.']}]},
  {'num': 12,
   'titulo': 'Poder Judicial',
   'secciones': [{'titulo': '12.1 CONCEPTO Y AUTONOMÍA',
@@ -4663,22 +5228,70 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['El Poder Judicial es el organismo encargado '
                                 'de administrar justicia a través de sus '
                                 'órganos jerárquicos, con arreglo a la '
-                                'Constitución y las leyes.']},
+                                'Constitución y las leyes.',
+                                'El Poder Judicial es autónomo en lo '
+                                'político, administrativo, económico y '
+                                'disciplinario, e independiente en lo '
+                                'jurisdiccional.',
+                                'La potestad de administrar justicia emana '
+                                'del pueblo y se ejerce a través de los '
+                                'órganos jerárquicos del Poder Judicial.',
+                                'La competencia del Poder Judicial se '
+                                'extiende a todo el territorio de la '
+                                'República.']},
                      {'titulo': 'ESTRUCTURA ORGÁNICA',
                       'items': ['Los órganos jurisdiccionales del Poder '
                                 'Judicial son: Corte Suprema, Cortes '
                                 'Superiores, Juzgados Especializados y '
                                 'Mixtos, Juzgados de Paz Letrados y Juzgados '
-                                'de Paz.']},
+                                'de Paz.',
+                                'Los órganos de gestión incluyen la '
+                                'Presidencia de la Corte Suprema, la Sala '
+                                'Plena y el Consejo Ejecutivo del Poder '
+                                'Judicial.',
+                                'No existe ni puede establecerse '
+                                'jurisdicción independiente, salvo la '
+                                'militar y la arbitral.']},
                      {'titulo': 'PRINCIPIOS DE LA FUNCIÓN JURISDICCIONAL',
                       'items': ['El primer principio es la unidad y '
-                                'exclusividad de la función '
-                                'jurisdiccional.']},
+                                'exclusividad de la función jurisdiccional.',
+                                'El principio de independencia establece que '
+                                'ninguna autoridad puede avocarse a causas '
+                                'pendientes ni interferir en las funciones '
+                                'jurisdiccionales.',
+                                'El debido proceso y la tutela '
+                                'jurisdiccional impiden que una persona sea '
+                                'juzgada por comisiones especiales o '
+                                'desviada de la jurisdicción predeterminada.',
+                                'La publicidad en los procesos es la regla '
+                                'general, salvo disposición contraria de la '
+                                'ley.',
+                                'Los procesos por responsabilidad de '
+                                'funcionarios públicos y por delitos de '
+                                'prensa son siempre públicos.',
+                                'La motivación escrita de las resoluciones '
+                                'judiciales es obligatoria en todas las '
+                                'instancias.']},
                      {'titulo': 'MÁS PRINCIPIOS DE LA ADMINISTRACIÓN DE '
                                 'JUSTICIA',
                       'items': ['El principio de pluralidad de instancia '
                                 'permite que una resolución pueda ser '
-                                'revisada por un órgano superior.']}]},
+                                'revisada por un órgano superior.',
+                                'El Estado debe indemnizar, por los errores '
+                                'judiciales en procesos penales y por '
+                                'detenciones arbitrarias.',
+                                'El principio de no dejar de administrar '
+                                'justicia por vacío legal obliga a aplicar '
+                                'los principios generales del derecho y el '
+                                'derecho consuetudinario.',
+                                'El principio de inaplicabilidad por '
+                                'analogía impide aplicar por semejanza la '
+                                'ley penal o normas que restrinjan derechos.',
+                                'El principio de no ser penado sin proceso '
+                                'judicial previo.',
+                                'En caso de duda o conflicto entre leyes '
+                                'penales, se aplica la ley más favorable al '
+                                'procesado.']}]},
  {'num': 13,
   'titulo': 'Organismos Constitucionales Autónomos',
   'secciones': [{'titulo': '13.1 CONCEPTO Y RELACIÓN',
@@ -5140,30 +5753,74 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO Y RELACIÓN',
                       'items': ['El Estado peruano se organiza a nivel '
                                 'nacional, regional y local, según el '
-                                'artículo 189 de la Constitución.']},
+                                'artículo 189 de la Constitución.',
+                                'Existen diez organismos constitucionales '
+                                'autónomos (OCA) en el Perú.',
+                                'Según Rubio, la autonomía de estos '
+                                'organismos implica que sus directivos toman '
+                                'decisiones sin someterse a órdenes '
+                                'superiores.']},
                      {'titulo': 'EL TRIBUNAL CONSTITUCIONAL',
                       'items': ['El Tribunal Constitucional es el órgano de '
                                 'control de la Constitución, autónomo e '
-                                'independiente, según el artículo 201.']},
+                                'independiente, según el artículo 201.',
+                                'El Tribunal Constitucional se compone de '
+                                'siete miembros, elegidos por un periodo de '
+                                'cinco años.',
+                                'Los miembros del Tribunal Constitucional '
+                                'son elegidos por el Congreso con el voto '
+                                'favorable de los dos tercios del número '
+                                'legal de sus miembros.']},
                      {'titulo': 'EL MINISTERIO PÚBLICO',
                       'items': ['El Ministerio Público es el órgano '
                                 'persecutor del delito, y es presidido por '
-                                'el Fiscal de la Nación.']},
+                                'el Fiscal de la Nación.',
+                                'El Fiscal de la Nación es elegido por la '
+                                'Junta de Fiscales Supremos, y su cargo dura '
+                                'tres años, prorrogable por reelección solo '
+                                'dos años más.',
+                                'Según el artículo 159, el Ministerio '
+                                'Público conduce desde su inicio la '
+                                'investigación del delito.']},
                      {'titulo': 'LA JUNTA NACIONAL DE JUSTICIA',
                       'items': ['La Junta Nacional de Justicia sustituyó al '
                                 'Consejo Nacional de la Magistratura, '
-                                'entrando en funciones a inicios de 2020.']},
+                                'entrando en funciones a inicios de 2020.',
+                                'Según el artículo 150 de la Constitución, '
+                                'la Junta selecciona y nombra a jueces y '
+                                'fiscales, salvo los de elección popular.',
+                                'Para ser miembro se requiere ser peruano de '
+                                'nacimiento, abogado, y tener entre 45 y 75 '
+                                'años de edad.']},
                      {'titulo': 'LA DEFENSORÍA DEL PUEBLO',
                       'items': ['La Defensoría del Pueblo tiene su origen en '
                                 'Suecia; en el Perú se incorporó con la '
-                                'Constitución de 1993.']},
+                                'Constitución de 1993.',
+                                'El Defensor del Pueblo es elegido y '
+                                'removido por el Congreso con el voto de los '
+                                'dos tercios de su número legal.',
+                                'Para ser Defensor del Pueblo se requiere '
+                                'tener 35 años de edad y ser abogado.']},
                      {'titulo': 'BCR, SBS Y CONTRALORÍA',
                       'items': ['La finalidad del Banco Central de Reserva '
-                                'es preservar la estabilidad monetaria.']},
+                                'es preservar la estabilidad monetaria.',
+                                'El BCR regula la moneda y el crédito del '
+                                'sistema financiero, y administra las '
+                                'reservas internacionales.',
+                                'El BCR está prohibido de conceder '
+                                'financiamiento al erario, salvo compra en '
+                                'el mercado secundario de valores del '
+                                'Tesoro.']},
                      {'titulo': 'EL SISTEMA ELECTORAL: JNE, ONPE, RENIEC',
                       'items': ['El sistema electoral es tricéfalo: JNE, '
                                 'ONPE y RENIEC, que actúan con autonomía y '
-                                'coordinación entre sí.']}]},
+                                'coordinación entre sí.',
+                                'Los integrantes del Pleno del Jurado '
+                                'Nacional de Elecciones (JNE) tienen entre '
+                                '45 y 70 años, elegidos por cuatro años.',
+                                'El JNE fiscaliza la legalidad del sufragio '
+                                'y de los procesos electorales, y proclama a '
+                                'los candidatos elegidos.']}]},
  {'num': 14,
   'titulo': 'Régimen Económico',
   'secciones': [{'titulo': '14.1 CONCEPTO',
@@ -5596,30 +6253,62 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['Según Sumar Albujar, el régimen económico '
                                 'consiste en las normas o principios que '
                                 'definen el rol del Estado en materia '
-                                'económica.']},
+                                'económica.',
+                                'Según Rodríguez Cairo, el régimen económico '
+                                'se orienta a garantizar la gobernabilidad '
+                                'de un país y contribuir al desempeño '
+                                'económico.']},
                      {'titulo': 'LA CONSTITUCIÓN ECONÓMICA',
                       'items': ['Según García Belaúnde, la Constitución '
                                 'Económica surgió en el periodo de '
                                 'entreguerras, en la primera mitad del siglo '
-                                'XX.']},
+                                'XX.',
+                                'La Constitución de Weimar es considerada '
+                                'pionera del constitucionalismo económico.',
+                                'La Constitución de Weimar garantiza el '
+                                'derecho de propiedad, aunque admite límites '
+                                'por el bien general o función social.']},
                      {'titulo': 'LA ECONOMÍA SOCIAL DE MERCADO',
                       'items': ['La economía social de mercado es '
                                 'representativa de los valores '
-                                'constitucionales de libertad y justicia.']},
+                                'constitucionales de libertad y justicia.',
+                                'Según Herhärd y Müller Armack, este orden '
+                                'asegura la competencia y transforma la '
+                                'productividad individual en progreso '
+                                'social.',
+                                'La economía social de mercado combate la '
+                                'formación de carteles y la concentración de '
+                                'poder económico.']},
                      {'titulo': 'LIBERTADES ECONÓMICAS',
                       'items': ['El artículo 58 de la Constitución establece '
                                 'que la iniciativa privada es libre, '
-                                'ejercida en una economía social de '
-                                'mercado.']},
+                                'ejercida en una economía social de mercado.',
+                                'El reconocimiento constitucional de las '
+                                'libertades económicas en el Perú se inicia '
+                                'con el texto de 1823.',
+                                'La libertad de empresa comprende la '
+                                'facultad de emprender, crear, organizar, '
+                                'gestionar, competir y cerrar una empresa.']},
                      {'titulo': 'EL TRIBUTO Y SUS CLASES',
                       'items': ['El tributo es el concepto fundamental del '
                                 'Derecho Tributario; el impuesto, la tasa y '
-                                'la contribución son sus especies.']},
+                                'la contribución son sus especies.',
+                                'El impuesto es la categoría jurídica más '
+                                'importante del tributo; su fundamento es la '
+                                'capacidad contributiva.',
+                                'La recaudación de impuestos es controlada '
+                                'por el Tesoro Público del Ministerio de '
+                                'Economía y Finanzas, mediante caja única.']},
                      {'titulo': 'PRINCIPIOS DE LA POTESTAD TRIBUTARIA',
                       'items': ['El artículo 74 de la Constitución establece '
                                 'que los tributos se crean, modifican o '
                                 'derogan exclusivamente por ley o decreto '
-                                'legislativo.']}]},
+                                'legislativo.',
+                                'Los gobiernos locales pueden crear, '
+                                'modificar y suprimir contribuciones y tasas '
+                                'dentro de su jurisdicción.',
+                                'Ningún tributo puede tener efecto '
+                                'confiscatorio.']}]},
  {'num': 15,
   'titulo': 'Descentralización, Gobiernos Regionales y Gobiernos Locales',
   'secciones': [{'titulo': '15.1 CONCEPTO DE DESCENTRALIZACIÓN',
@@ -5994,23 +6683,83 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['La descentralización es un proceso '
                                 'político-técnico que forma parte de la '
                                 'reforma del Estado peruano, orientado a '
-                                'lograr un buen gobierno.']},
+                                'lograr un buen gobierno.',
+                                'Según Finot, la descentralización es un '
+                                'proceso de transferencia organizada del '
+                                'gobierno nacional a una autoridad '
+                                'subnacional o local.',
+                                'La descentralización busca mejorar la '
+                                'eficiencia del Estado en la redistribución '
+                                'social, con programas contra la pobreza y '
+                                'la corrupción.']},
                      {'titulo': 'OBJETIVOS DE LA DESCENTRALIZACIÓN',
                       'items': ['Entre los objetivos generales figura que '
                                 'cada gobierno regional y local decida sobre '
-                                'sus propios recursos.']},
+                                'sus propios recursos.',
+                                'Entre los objetivos políticos está la '
+                                'unidad y eficiencia del Estado mediante la '
+                                'distribución ordenada de competencias '
+                                'públicas.',
+                                'Entre los objetivos económicos figura el '
+                                'desarrollo económico autosostenido y de la '
+                                'competitividad regional.',
+                                'Otro objetivo económico es la '
+                                'redistribución equitativa de los recursos '
+                                'del Estado.']},
                      {'titulo': 'ANTECEDENTES HISTÓRICOS',
                       'items': ['Los analistas coinciden en caracterizar al '
                                 'Perú como un país históricamente '
-                                'centralista.']},
+                                'centralista.',
+                                'El primer periodo de descentralismo, '
+                                'llamado «descentralismo centralista», se '
+                                'extiende desde el inicio de la República '
+                                'hasta 1920.',
+                                'Los primeros proyectos de descentralización '
+                                'provinieron del pensamiento capitalino, '
+                                'elaborados por la élite política de Lima, '
+                                'por lo que carecieron de respaldo social '
+                                'provinciano.',
+                                'El periodo del federalismo fallido se ubica '
+                                'entre 1821 y 1873.']},
                      {'titulo': 'ORGANIZACIÓN DE LOS GOBIERNOS REGIONALES',
                       'items': ['El Consejo Regional es el órgano normativo '
                                 'y fiscalizador del Gobierno Regional, '
-                                'elegido por sufragio directo por 4 años.']},
+                                'elegido por sufragio directo por 4 años.',
+                                'La Presidencia Regional es el órgano '
+                                'ejecutivo; desde 2015 se le llama '
+                                'Gobernador Regional.',
+                                'El Consejo de Coordinación Regional es un '
+                                'órgano consultivo integrado por alcaldes '
+                                'provinciales y representantes de la '
+                                'sociedad civil.',
+                                'Las ordenanzas regionales norman asuntos de '
+                                'carácter general; son dictadas por el '
+                                'Consejo Regional.',
+                                'Los acuerdos regionales expresan la '
+                                'decisión del Consejo Regional sobre asuntos '
+                                'internos o de interés público.',
+                                'Los decretos regionales establecen normas '
+                                'reglamentarias; son aprobados por la '
+                                'presidencia regional.']},
                      {'titulo': 'LOS GOBIERNOS LOCALES',
                       'items': ['Los Gobiernos Locales conforman el tercer '
                                 'nivel de gobierno del Estado, elegidos por '
-                                'voto popular.']}]},
+                                'voto popular.',
+                                'Los Gobiernos Locales también se denominan '
+                                'municipalidades, y pueden ser provinciales '
+                                'o distritales.',
+                                'Los alcaldes son elegidos por sufragio '
+                                'directo por 4 años, en forma conjunta con '
+                                'los regidores.',
+                                'La estructura orgánica básica de las '
+                                'municipalidades está compuesta por el '
+                                'Concejo Municipal y la Alcaldía.',
+                                'El Concejo Municipal está conformado por el '
+                                'alcalde y los regidores, con funciones '
+                                'normativas y fiscalizadoras.',
+                                'La Alcaldía es el órgano ejecutivo; el '
+                                'alcalde es el representante legal de la '
+                                'municipalidad.']}]},
  {'num': 16,
   'titulo': 'Derechos Humanos',
   'secciones': [{'titulo': '16.1 CONCEPTO',
@@ -6469,32 +7218,69 @@ BALOTAS_CIVICA = [{'num': 1,
                       'items': ['Los derechos humanos son libertades, '
                                 'facultades e instituciones que incluyen a '
                                 'toda persona por el simple hecho de su '
-                                'condición humana.']},
+                                'condición humana.',
+                                'Según Hernández Gómez, los derechos humanos '
+                                'son condiciones instrumentales que permiten '
+                                'a la persona su realización.']},
                      {'titulo': 'CARACTERÍSTICAS DE LOS DERECHOS HUMANOS',
                       'items': ['Los derechos humanos son universales: se '
                                 'aplican a todos los seres humanos sin '
-                                'distinción.']},
+                                'distinción.',
+                                'Son imprescriptibles: no se pierden por el '
+                                'transcurso del tiempo.',
+                                'Son indivisibles: no puede hablarse de '
+                                'división, todos deben ser respetados.']},
                      {'titulo': 'DIMENSIONES DE LOS DERECHOS HUMANOS',
                       'items': ['Los derechos humanos pueden '
                                 'conceptualizarse desde cuatro dimensiones: '
-                                'histórica, ética, política y jurídica.']},
+                                'histórica, ética, política y jurídica.',
+                                'La dimensión histórica reconoce que los '
+                                'derechos humanos tienen un pasado, presente '
+                                'y futuro.',
+                                'La dimensión ética se fundamenta en valores '
+                                'como la dignidad humana y la libertad.']},
                      {'titulo': 'EVOLUCIÓN: EL PRIMER MOMENTO O '
                                 'JURIDIFICACIÓN',
                       'items': ['La evolución de los derechos humanos '
                                 'comprende dos grandes momentos: la '
-                                'juridificación y la internacionalización.']},
+                                'juridificación y la internacionalización.',
+                                'La Carta Magna, conocida como la Petición '
+                                'de los Derechos, se dio en Inglaterra en el '
+                                'año 1215.',
+                                'La Ley de Habeas Corpus fue dictada en '
+                                'Inglaterra en 1679.']},
                      {'titulo': 'SEGUNDO MOMENTO: LA UNIVERSALIZACIÓN',
                       'items': ['El segundo momento en la evolución de los '
-                                'derechos humanos es la universalización.']},
+                                'derechos humanos es la universalización.',
+                                'La universalización se plasma cuando la '
+                                'comunidad internacional reconoce que la '
+                                'libertad debe ser de todos los hombres, sin '
+                                'discriminación.',
+                                'Este momento se consolida con la Carta de '
+                                'San Francisco de 1945 y la Declaración '
+                                'Universal de los Derechos Humanos.']},
                      {'titulo': 'CLASIFICACIÓN POR GENERACIONES',
                       'items': ['La división de los derechos humanos en tres '
                                 'generaciones fue propuesta en 1979 por el '
-                                'jurista checo Karel Vasak.']},
+                                'jurista checo Karel Vasak.',
+                                'Los derechos de primera generación se '
+                                'establecieron desde el siglo XVIII a '
+                                'inicios del XX; consideran a la persona '
+                                'como individuo con libertad y autonomía.',
+                                'Los derechos de primera generación también '
+                                'se llaman derechos civiles y políticos; el '
+                                'más importante es el derecho a la vida.']},
                      {'titulo': 'INSTRUMENTOS JURÍDICOS SUPRANACIONALES',
                       'items': ['La Carta Internacional de los Derechos '
                                 'Humanos agrupa la Carta de la ONU (1945), '
                                 'la Declaración Universal (1948), y los dos '
-                                'Pactos de 1966.']}]},
+                                'Pactos de 1966.',
+                                'Otros documentos internacionales incluyen '
+                                'la Convención contra el Genocidio (1948) y '
+                                'la Convención contra la Tortura (1984).',
+                                'La Declaración Universal de los Derechos '
+                                'Humanos fue encargada a un comité de '
+                                'redacción integrado por ocho expertos.']}]},
  {'num': 17,
   'titulo': 'Garantías Constitucionales',
   'secciones': [{'titulo': '17.1 CONCEPTO Y ANTECEDENTES',
@@ -6876,32 +7662,71 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO Y ANTECEDENTES',
                       'items': ['El término garantía se define como la '
                                 'seguridad o protección frente a un peligro '
-                                'en el disfrute de los derechos.']},
+                                'en el disfrute de los derechos.',
+                                'Las Garantías Constitucionales tienen su '
+                                'origen en la tradición francesa.',
+                                'En el Perú, la institucionalidad de las '
+                                'garantías se inicia con la Constitución de '
+                                '1920, que distinguió garantías nacionales, '
+                                'individuales y sociales.']},
                      {'titulo': 'LAS SEIS GARANTÍAS EN LA CONSTITUCIÓN DE '
                                 '1993',
                       'items': ['El artículo 200 de la Constitución de 1993 '
-                                'establece seis Garantías '
-                                'Constitucionales.']},
+                                'establece seis Garantías Constitucionales.',
+                                'La Constitución de 1920 reconoció el Habeas '
+                                'Corpus; la de 1933 sumó la Acción Popular.',
+                                'La Constitución de 1979 sumó la Acción de '
+                                'Amparo y la Acción de '
+                                'Inconstitucionalidad.']},
                      {'titulo': 'LA ACCIÓN DE HABEAS CORPUS',
                       'items': ['La expresión «habeas corpus», de origen '
                                 'latino, significa literalmente «que traigas '
-                                'el cuerpo».']},
+                                'el cuerpo».',
+                                'El antecedente del habeas corpus es la ley '
+                                'inglesa de 1679.',
+                                'En el Perú, el habeas corpus fue regulado '
+                                'por primera vez en la Constitución de '
+                                '1920.']},
                      {'titulo': 'LA ACCIÓN DE AMPARO',
                       'items': ['La Acción de Amparo fue introducida por '
                                 'primera vez en la Constitución de 1979, '
-                                'como garantía distinta al hábeas corpus.']},
+                                'como garantía distinta al hábeas corpus.',
+                                'El Amparo protege todos los derechos '
+                                'constitucionales, excepto los protegidos '
+                                'por hábeas corpus y hábeas data.',
+                                'El Amparo tiene por objeto reponer las '
+                                'cosas al estado anterior a la violación de '
+                                'un derecho.']},
                      {'titulo': 'LA ACCIÓN DE HÁBEAS DATA',
                       'items': ['El Hábeas Data fue introducido por la '
                                 'Constitución de 1993, para proteger frente '
-                                'al abuso de la informática.']},
+                                'al abuso de la informática.',
+                                'El Hábeas Data protege el derecho a '
+                                'solicitar y recibir información, y la '
+                                'protección de la intimidad personal y '
+                                'familiar.',
+                                'El plazo para presentar el Hábeas Data es '
+                                'de 60 días hábiles después de la respuesta '
+                                'denegatoria.']},
                      {'titulo': 'LA ACCIÓN DE INCONSTITUCIONALIDAD',
                       'items': ['La Acción de Inconstitucionalidad se crea '
                                 'con la Constitución de 1979; procede contra '
-                                'normas de rango de ley.']},
+                                'normas de rango de ley.',
+                                'Es la única garantía que se presenta en '
+                                'instancia única y definitiva ante el '
+                                'Tribunal Constitucional.',
+                                'Están facultados para interponerla, entre '
+                                'otros, el Presidente, el Fiscal de la '
+                                'Nación, y el 25% de congresistas.']},
                      {'titulo': 'LA ACCIÓN POPULAR Y DE CUMPLIMIENTO',
                       'items': ['La Acción Popular se originó en la justicia '
                                 'romana; se introdujo por primera vez en la '
-                                'Constitución de 1933.']}]},
+                                'Constitución de 1933.',
+                                'La Acción Popular procede contra normas de '
+                                'rango de decretos y resoluciones, y es '
+                                'competencia exclusiva del Poder Judicial.',
+                                'El plazo para la Acción Popular es de 5 '
+                                'años desde su publicación.']}]},
  {'num': 18,
   'titulo': 'Sistemas de Protección de los Derechos Humanos',
   'secciones': [{'titulo': '18.1 ANTECEDENTES: LA SOCIEDAD DE NACIONES',
@@ -7248,27 +8073,60 @@ BALOTAS_CIVICA = [{'num': 1,
   'resumen_visual': [{'titulo': 'ANTECEDENTES: LA SOCIEDAD DE NACIONES',
                       'items': ['La precursora de las Naciones Unidas fue la '
                                 'Sociedad de Naciones, concebida durante la '
-                                'Primera Guerra Mundial.']},
+                                'Primera Guerra Mundial.',
+                                'La Sociedad de Naciones se estableció en '
+                                '1919 en virtud del Tratado de Versalles.',
+                                'La Sociedad de Naciones fracasó en su '
+                                'propósito, lo que llevó a la Segunda Guerra '
+                                'Mundial.']},
                      {'titulo': 'CREACIÓN DE LA ONU',
                       'items': ['El nombre «Naciones Unidas» fue acuñado por '
                                 'el presidente estadounidense Franklin D. '
-                                'Roosevelt.']},
+                                'Roosevelt.',
+                                'El nombre se usó por primera vez el 1 de '
+                                'enero de 1942, cuando 26 naciones aprobaron '
+                                'la Declaración de las Naciones Unidas.',
+                                'La Carta de creación de las Naciones Unidas '
+                                'fue firmada el 26 de junio de 1945 por 50 '
+                                'países.']},
                      {'titulo': 'ORGANIZACIÓN Y FINES DE LA ONU',
                       'items': ['La ONU tiene actualmente 193 Estados '
-                                'Miembros.']},
+                                'Miembros.',
+                                'La sede principal de la ONU se ubica en '
+                                'Nueva York, y tiene sedes secundarias en '
+                                'Ginebra, Viena y Nairobi.',
+                                'Los idiomas oficiales de la ONU son inglés, '
+                                'chino, francés, ruso, español y árabe.']},
                      {'titulo': 'EL SISTEMA INTERAMERICANO (SIDH)',
                       'items': ['El Sistema Interamericano de Protección de '
                                 'los Derechos Humanos (SIDH) opera en el '
                                 'marco de la Organización de Estados '
-                                'Americanos (OEA).']},
+                                'Americanos (OEA).',
+                                'En 1948 se aprobó la Declaración Americana '
+                                'de los Deberes y Derechos del Hombre, meses '
+                                'antes que la Declaración Universal.',
+                                'La Convención Americana de Derechos Humanos '
+                                'se aprobó el 22 de noviembre de 1969, '
+                                'entrando en vigencia en 1978.']},
                      {'titulo': 'LA COMISIÓN INTERAMERICANA DE DERECHOS '
                                 'HUMANOS (CIDH)',
                       'items': ['La CIDH se originó de la Declaración de '
                                 'Santiago de 1959; el Consejo aprobó su '
-                                'Estatuto en 1960.']},
+                                'Estatuto en 1960.',
+                                'En 1965 se adoptó el Protocolo de Buenos '
+                                'Aires, estableciendo a la CIDH como órgano '
+                                'principal de la OEA.',
+                                'La sede de la CIDH está en Washington DC.']},
                      {'titulo': 'LA CORTE INTERAMERICANA Y LA CORTE DE LA '
                                 'HAYA',
                       'items': ['La Corte Interamericana de Derechos Humanos '
                                 '(CORTEIDH) se instala en 1978, cuando entra '
                                 'en vigor la CADH; su sede está en San José '
-                                'de Costa Rica.']}]}]
+                                'de Costa Rica.',
+                                'La Corte Interamericana está constituida '
+                                'por siete jueces, electos por un periodo de '
+                                'seis años, reelegibles una vez.',
+                                'La Corte Interamericana cumple una función '
+                                'jurisdiccional (sobre casos sometidos) y '
+                                'una función consultiva (interpretación de '
+                                'normas).']}]}]

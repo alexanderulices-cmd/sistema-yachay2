@@ -429,27 +429,59 @@ BALOTAS_FILO = [{'num': 1,
                       'items': ['Cosmogonía: de kosmos = mundo y goneia = '
                                 'nacimiento. Conjunto de mitos y narraciones '
                                 'con que las primeras civilizaciones '
-                                'explicaron el origen del universo.']},
+                                'explicaron el origen del universo.',
+                                'Hesíodo, en su poema «Teogonía», narra la '
+                                'creación del mundo a partir del caos.',
+                                'Cosmología: de kosmos y logos = estudio. '
+                                'Estudia el universo mediante modelos '
+                                'contrastables empírica y '
+                                'experimentalmente.']},
                      {'titulo': 'TEORÍA DEL BIG BANG',
                       'items': ['Modelo cosmológico según el cual el '
                                 'universo se originó en una singularidad '
                                 'espaciotemporal de densidad infinita, hace '
-                                'unos 14 000 millones de años.']},
+                                'unos 14 000 millones de años.',
+                                'Hubble descubrió en 1929 que la distancia '
+                                'entre galaxias es cada vez mayor.',
+                                'Ley de Hubble: la velocidad de una galaxia '
+                                'es proporcional a su distancia.']},
                      {'titulo': 'ORIGEN Y CONCEPCIONES DE LA FILOSOFÍA',
                       'items': ['Como reflexión racional y sistemática se '
-                                'origina en Grecia, siglos VII–VI a.C.']},
+                                'origina en Grecia, siglos VII–VI a.C.',
+                                'Se atribuye a Pitágoras de Samos el primer '
+                                'uso del término filosofía. Sócrates se '
+                                'llamó a sí mismo «amante de la sabiduría».',
+                                'Platón decía que el asombro es el origen de '
+                                'la filosofía; Aristóteles, que es la '
+                                'admiración lo que impulsa a filosofar.']},
                      {'titulo': 'PROBLEMA FUNDAMENTAL DE LA FILOSOFÍA',
                       'items': ['El problema fundamental de la filosofía es '
                                 'el carácter de la relación entre el ser y '
                                 'el pensar, entre lo material y lo '
-                                'espiritual.']},
+                                'espiritual.',
+                                'El primer aspecto de este problema busca '
+                                'resolver si la materia es lo primario, o lo '
+                                'es la conciencia.',
+                                'El segundo aspecto responde si el mundo es '
+                                'cognoscible o no, es decir, si la razón '
+                                'humana puede penetrar sus misterios.']},
                      {'titulo': 'ACTITUD FILOSÓFICA',
                       'items': ['Es la disposición humana por comprender el '
-                                'porqué y el para qué de las cosas.']},
+                                'porqué y el para qué de las cosas.',
+                                'Características: problemática, crítica, '
+                                'incondicional, universal, trascendental, '
+                                'racional y reflexiva, y un saber '
+                                'totalitario.']},
                      {'titulo': 'DISCIPLINAS FILOSÓFICAS',
                       'items': ['La gnoseología o Teoría del Conocimiento '
                                 'analiza la naturaleza, posibilidad y '
-                                'límites del conocimiento en general.']}]},
+                                'límites del conocimiento en general.',
+                                'La epistemología es el estudio crítico del '
+                                'conocimiento científico, su fundamento y '
+                                'metodología.',
+                                'La axiología estudia el problema de los '
+                                'valores: su existencia, origen, naturaleza '
+                                'y características.']}]},
  {'num': 2,
   'titulo': 'Historia de la filosofía: edad antigua',
   'secciones': [{'titulo': '2.1 LOS PRESOCRÁTICOS',
@@ -767,18 +799,57 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'LOS PRESOCRÁTICOS',
                       'items': ['Buscaron el arjé: el principio u origen de '
-                                'todas las cosas.']},
+                                'todas las cosas.',
+                                'Tales de Mileto: el principio de todo es el '
+                                'agua. Fundador de la Escuela Jónica, '
+                                'considerado el primer filósofo.',
+                                'Anaximandro: el arjé es el ápeiron, lo '
+                                'indeterminado e infinito.',
+                                'Anaxímenes: el principio es el aire.',
+                                'Heráclito de Éfeso: el arjé es el fuego; '
+                                'todo cambia —«nadie se baña dos veces en el '
+                                'mismo río»—. Doctrina del devenir.',
+                                'Pitágoras de Samos fundó en Crotona una '
+                                'escuela místico-filosófica basada en la '
+                                'doctrina de la metempsicosis, la '
+                                'transmigración de las almas.']},
                      {'titulo': 'SOFISTAS Y SÓCRATES',
                       'items': ['Los sofistas enseñaban retórica a cambio de '
-                                'dinero y defendían el relativismo.']},
+                                'dinero y defendían el relativismo.',
+                                'Protágoras: «el hombre es la medida de '
+                                'todas las cosas».',
+                                'Gorgias de Leontinos fue considerado el '
+                                'creador de la sofística; sostuvo en su '
+                                'tratado «Sobre la naturaleza o el no ser» '
+                                'tres tesis: nada existe, si algo existiera '
+                                'no podría conocerse, y si pudiera conocerse '
+                                'no podría comunicarse.',
+                                'Sócrates se opuso al relativismo; su método '
+                                'fue la mayéutica, el arte de dar a luz '
+                                'ideas mediante preguntas.',
+                                'Su lema fue «conócete a ti mismo» y '
+                                'afirmaba «solo sé que nada sé».']},
                      {'titulo': 'PLATÓN Y ARISTÓTELES',
                       'items': ['Platón: teoría de las Ideas. Existen dos '
                                 'mundos: el sensible, cambiante y aparente, '
-                                'y el inteligible, de las Ideas eternas.']},
+                                'y el inteligible, de las Ideas eternas.',
+                                'Su alegoría más famosa es el mito de la '
+                                'caverna. Fundó la Academia.',
+                                'Aristóteles: discípulo de Platón; fundó el '
+                                'Liceo. Rechazó el mundo separado de las '
+                                'Ideas.',
+                                'Sostuvo que todo ser se compone de materia '
+                                'y forma: teoría hilemórfica.',
+                                'Distinguió cuatro causas: material, formal, '
+                                'eficiente y final. Es el padre de la '
+                                'lógica.']},
                      {'titulo': 'EPICURO Y EL ESTOICISMO',
                       'items': ['Epicuro de Samos: el fin de la vida es el '
                                 'placer entendido como ausencia de dolor y '
-                                'serenidad o ataraxia.']}]},
+                                'serenidad o ataraxia.',
+                                'Marco Aurelio, emperador y filósofo '
+                                'estoico, sostuvo que se debe vivir conforme '
+                                'a la razón y aceptar el destino.']}]},
  {'num': 3,
   'titulo': 'Edad medieval y renacimiento',
   'secciones': [{'titulo': '3.1 CARACTERÍSTICAS DE LA EDAD MEDIA',
@@ -1017,17 +1088,49 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CARACTERÍSTICAS DE LA EDAD MEDIA',
                       'items': ['El pensamiento medieval fue teocéntrico: '
-                                'Dios es el centro de toda explicación.']},
+                                'Dios es el centro de toda explicación.',
+                                'La filosofía fue considerada sierva de la '
+                                'teología («ancilla theologiae»).',
+                                'Problema central: la relación entre razón y '
+                                'fe.']},
                      {'titulo': 'LA PATRÍSTICA',
                       'items': ['Etapa de los Padres de la Iglesia, que '
                                 'defendieron el cristianismo frente al '
-                                'paganismo.']},
+                                'paganismo.',
+                                'San Agustín de Hipona: influido por Platón. '
+                                'Obras «Confesiones» y «La ciudad de Dios».',
+                                'Sostuvo la doctrina de la iluminación: Dios '
+                                'ilumina la mente para conocer la verdad.',
+                                'Su lema fue «cree para comprender y '
+                                'comprende para creer».',
+                                'San Agustín nació en Tagaste, en la actual '
+                                'Argelia.']},
                      {'titulo': 'LA ESCOLÁSTICA',
                       'items': ['Método de enseñanza medieval basado en la '
-                                'disputa y el comentario de textos.']},
+                                'disputa y el comentario de textos.',
+                                'Santo Tomás de Aquino: influido por '
+                                'Aristóteles. Su obra principal es la «Suma '
+                                'Teológica».',
+                                'Formuló las cinco vías para demostrar '
+                                'racionalmente la existencia de Dios.',
+                                'Sostuvo que razón y fe no se contradicen, '
+                                'sino que se complementan.']},
                      {'titulo': 'EL RENACIMIENTO',
                       'items': ['Se caracteriza por el antropocentrismo: el '
-                                'hombre pasa a ser el centro.']}]},
+                                'hombre pasa a ser el centro.',
+                                'Recuperación de la cultura grecolatina y '
+                                'valoración del humanismo.',
+                                'Nicolás Copérnico, astrónomo polaco '
+                                '(1473-1543), formuló la teoría '
+                                'heliocéntrica: la Tierra gira sobre su eje '
+                                'y orbita alrededor del Sol.',
+                                'Su obra «De Revolutionibus Orbium '
+                                'Coelestium» resolvía los problemas del '
+                                'modelo geocéntrico de Ptolomeo.',
+                                'Nicolás Maquiavelo: autor de «El Príncipe». '
+                                'Separó la política de la moral; se le '
+                                'atribuye la máxima «el fin justifica los '
+                                'medios».']}]},
  {'num': 4,
   'titulo': 'La filosofía moderna y filosofía en el Perú',
   'secciones': [{'titulo': '4.1 RACIONALISMO Y EMPIRISMO',
@@ -1555,35 +1658,80 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'RACIONALISMO Y EMPIRISMO',
                       'items': ['Francisco Bacon, materialista inglés, '
                                 'propuso el método inductivo en su obra '
-                                '«Novum Organum».']},
+                                '«Novum Organum».',
+                                'Bacon sostuvo que antes de investigar hay '
+                                'que eliminar los ídolos de la mente: '
+                                'prejuicios que impiden el conocimiento '
+                                'verdadero.',
+                                'Los cuatro ídolos de Bacon son: de la tribu '
+                                '(interpretación antropomórfica), de la '
+                                'caverna (prejuicios personales), del foro '
+                                '(mal uso del lenguaje) y del teatro '
+                                '(aceptación acrítica de autoridades).']},
                      {'titulo': 'THOMAS HOBBES Y EL CONTRATO SOCIAL',
                       'items': ['Tomás Hobbes, filósofo inglés, sostuvo que '
                                 'las leyes que rigen al hombre son las '
-                                'mismas que rigen el universo.']},
+                                'mismas que rigen el universo.',
+                                'Para Hobbes, en estado natural el hombre es '
+                                'antisocial y se mueve por el deseo y el '
+                                'temor.',
+                                'Su célebre frase «el hombre es un lobo para '
+                                'el hombre» describe el estado de «guerra de '
+                                'todos contra todos».']},
                      {'titulo': 'KANT Y HEGEL',
                       'items': ['Immanuel Kant: realizó la síntesis entre '
                                 'racionalismo y empirismo, llamada '
                                 'criticismo. Su lema fue «atrévete a saber» '
-                                '(sapere aude).']},
+                                '(sapere aude).',
+                                'Distinguió el fenómeno, lo que podemos '
+                                'conocer, del noúmeno o cosa en sí, '
+                                'incognoscible.',
+                                'En ética formuló el imperativo categórico: '
+                                'obra de tal modo que tu acción pueda '
+                                'convertirse en ley universal.']},
                      {'titulo': 'FRIEDRICH NIETZSCHE',
                       'items': ['Friedrich Nietzsche es considerado el '
                                 'filósofo más importante del voluntarismo '
-                                'del siglo XIX.']},
+                                'del siglo XIX.',
+                                'Estuvo influenciado por Schopenhauer y su '
+                                'obra «El mundo como voluntad y '
+                                'representación».',
+                                'Distinguió dos tipos de moral: la moral del '
+                                'amo, que exalta la fuerza y la nobleza, y '
+                                'la moral del esclavo, que exalta la '
+                                'compasión y la resignación.']},
                      {'titulo': 'MARX Y EL MATERIALISMO',
                       'items': ['Carlos Marx: invirtió la dialéctica de '
                                 'Hegel y creó el materialismo dialéctico e '
-                                'histórico.']},
+                                'histórico.',
+                                'Sostuvo que la infraestructura económica '
+                                'determina la superestructura jurídica, '
+                                'política e ideológica.',
+                                '«Los filósofos se han limitado a '
+                                'interpretar el mundo; de lo que se trata es '
+                                'de transformarlo».']},
                      {'titulo': 'MANUEL GONZÁLEZ PRADA',
                       'items': ['Manuel González Prada (1846-1918) mostró su '
                                 'inclinación al positivismo peruano, como '
                                 'respuesta a la crisis tras el caudillismo y '
-                                'la guerra con Chile.']},
+                                'la guerra con Chile.',
+                                'Su balance de la Independencia peruana fue '
+                                'pesimista: la calificó de una «orgía» que '
+                                'dejó heces, manchada por la guerra civil.',
+                                'Según González Prada, la ignorancia y el '
+                                'espíritu de servidumbre determinaron la '
+                                'derrota del Perú en la Guerra del '
+                                'Pacífico.']},
                      {'titulo': 'FILOSOFÍA EN EL PERÚ',
                       'items': ['José Carlos Mariátegui: autor de «7 ensayos '
                                 'de interpretación de la realidad peruana». '
                                 'Aplicó el marxismo al análisis del Perú, '
                                 'señalando que el problema del indio es un '
-                                'problema de la tierra.']}]},
+                                'problema de la tierra.',
+                                'Augusto Salazar Bondy: autor de «¿Existe '
+                                'una filosofía de nuestra América?». Sostuvo '
+                                'que nuestra filosofía ha sido imitativa por '
+                                'ser reflejo de una sociedad dominada.']}]},
  {'num': 5,
   'titulo': 'Antropología filosófica: el problema del hombre',
   'secciones': [{'titulo': '5.1 CONCEPTO',
@@ -1801,17 +1949,35 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Disciplina filosófica que estudia al hombre '
                                 'en su totalidad: su esencia, su origen y el '
-                                'sentido de su existencia.']},
+                                'sentido de su existencia.',
+                                'Se diferencia de la antropología cultural '
+                                'porque no describe costumbres, sino que '
+                                'reflexiona sobre el ser del hombre.']},
                      {'titulo': 'TEORÍAS SOBRE EL ORIGEN DEL HOMBRE',
                       'items': ['Creacionismo: el hombre fue creado por un '
                                 'ser superior. Incluye la tradición '
                                 'judeocristiana y el mito griego de '
-                                'Prometeo.']},
+                                'Prometeo.',
+                                'Evolucionismo: el hombre es producto de un '
+                                'proceso de evolución; formulado por Charles '
+                                'Darwin mediante la selección natural.',
+                                'Neodarwinismo o Teoría Sintética: '
+                                'complementa a Darwin con los aportes de la '
+                                'genética; sus representantes son '
+                                'Dobzhansky, Mayr y Simpson.']},
                      {'titulo': 'Y 5.4 EL HOMBRE COMO SER NATURAL Y '
                                 'ESPIRITUAL',
                       'items': ['Como ser natural: posee un cuerpo biológico '
                                 'sujeto a las leyes de la naturaleza, con '
-                                'necesidades e instintos.']}]},
+                                'necesidades e instintos.',
+                                'Como ser espiritual: posee conciencia, '
+                                'libertad, capacidad de crear cultura, '
+                                'valores y símbolos.',
+                                'El hombre es un ser social por naturaleza, '
+                                'según Aristóteles («zoon politikon»).',
+                                'Es también un ser racional, capaz de '
+                                'lenguaje simbólico y de trabajo '
+                                'transformador.']}]},
  {'num': 6,
   'titulo': 'Gnoseología: problema del conocimiento',
   'secciones': [{'titulo': '6.1 CONCEPTO',
@@ -2019,16 +2185,34 @@ BALOTAS_FILO = [{'num': 1,
                                 'conocimiento en general: su origen, su '
                                 'esencia y sus límites.']},
                      {'titulo': 'ESTRUCTURA DEL CONOCIMIENTO',
-                      'items': ['El sujeto cognoscente: quien conoce.']},
+                      'items': ['El sujeto cognoscente: quien conoce.',
+                                'El objeto de conocimiento: aquello que es '
+                                'conocido.',
+                                'La imagen o representación mental que el '
+                                'sujeto elabora del objeto.',
+                                'En el acto de conocer, el sujeto sale de sí '
+                                'y aprehende las propiedades del objeto; el '
+                                'objeto permanece inalterado.']},
                      {'titulo': 'CLASES DE CONOCIMIENTO',
                       'items': ['Conocimiento sensible: se obtiene por los '
                                 'sentidos; es singular, concreto y '
-                                'subjetivo.']},
+                                'subjetivo.',
+                                'Conocimiento lógico o racional: se obtiene '
+                                'por la razón; es universal, abstracto y '
+                                'objetivo.',
+                                'El conocimiento vulgar es espontáneo y no '
+                                'verificado; el científico es metódico, '
+                                'sistemático y verificable.']},
                      {'titulo': 'LA VERDAD',
                       'items': ['Teoría de la correspondencia: la verdad es '
                                 'la adecuación entre el pensamiento y la '
                                 'realidad. Es la concepción clásica o '
-                                'aristotélica.']}]},
+                                'aristotélica.',
+                                'Teoría pragmática: es verdadero aquello que '
+                                'resulta útil o funciona en la práctica.',
+                                'Teoría de la coherencia: un enunciado es '
+                                'verdadero si no contradice al conjunto del '
+                                'sistema.']}]},
  {'num': 7,
   'titulo': 'Corrientes del problema del conocimiento',
   'secciones': [{'titulo': '7.1 POSIBILIDAD DEL CONOCIMIENTO',
@@ -2484,16 +2668,47 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'POSIBILIDAD DEL CONOCIMIENTO',
                       'items': ['Dogmatismo: sostiene que el conocimiento es '
                                 'posible y seguro; representantes: los '
-                                'presocráticos.']},
+                                'presocráticos.',
+                                'Escepticismo: niega la posibilidad de '
+                                'alcanzar un conocimiento seguro. Su '
+                                'representante clásico es Pirrón de Elis.',
+                                'El escepticismo radical o absoluto, '
+                                'representado por Gorgias, niega toda '
+                                'posibilidad de conocer.',
+                                'El escepticismo relativo, representado por '
+                                'Protágoras, sostiene que toda verdad es '
+                                'relativa.',
+                                'El escepticismo absoluto niega toda '
+                                'posibilidad de conocer; el relativo solo la '
+                                'duda en algunos campos.',
+                                'Criticismo: posición intermedia sostenida '
+                                'por Kant; el conocimiento es posible pero '
+                                'con límites.']},
                      {'titulo': 'ORIGEN DEL CONOCIMIENTO',
                       'items': ['Racionalismo: el origen del conocimiento es '
                                 'la razón; su método es la deducción. '
                                 'Representantes: Descartes, Leibniz, Spinoza '
-                                'y Malebranche.']},
+                                'y Malebranche.',
+                                'Empirismo: el origen es la experiencia; su '
+                                'método es la inducción. Representantes: '
+                                'Locke, Hume, Bacon y Berkeley.',
+                                'Criticismo: razón y experiencia se '
+                                'complementan; «los conceptos sin '
+                                'intuiciones son vacíos, las intuiciones sin '
+                                'conceptos son ciegas».']},
                      {'titulo': 'ESENCIA DEL CONOCIMIENTO',
                       'items': ['Idealismo subjetivo: la realidad depende de '
                                 'la conciencia del sujeto. «Ser es ser '
-                                'percibido» (Berkeley).']}]},
+                                'percibido» (Berkeley).',
+                                'Idealismo objetivo: existe una realidad '
+                                'ideal independiente del sujeto, como las '
+                                'Ideas de Platón o el Espíritu de Hegel.',
+                                'Materialismo: la materia es lo primario; el '
+                                'mundo es cognoscible y la praxis es el '
+                                'criterio de verdad.',
+                                'Fenomenalismo: solo conocemos los '
+                                'fenómenos, no la cosa en sí o noúmeno; '
+                                'representante: Kant.']}]},
  {'num': 8,
   'titulo': 'Problema de la ciencia: epistemología',
   'secciones': [{'titulo': '8.1 CONCEPTO',
@@ -2814,25 +3029,61 @@ BALOTAS_FILO = [{'num': 1,
                       'items': ['Del griego episteme = ciencia y logos = '
                                 'estudio. Es la disciplina que estudia el '
                                 'conocimiento científico: su estructura, sus '
-                                'métodos y su validez.']},
+                                'métodos y su validez.',
+                                'Se distingue de la gnoseología porque esta '
+                                'estudia el conocimiento en general y la '
+                                'epistemología solo el científico.']},
                      {'titulo': 'CARACTERÍSTICAS DE LA CIENCIA',
                       'items': ['La ciencia es especializada porque solo '
                                 'investiga una clase determinada de objetos, '
                                 'y metódica porque su proceder responde a un '
-                                'plan.']},
+                                'plan.',
+                                'Es sistemática porque sus conocimientos '
+                                'forman un sistema articulado, y objetiva '
+                                'porque busca reflejar la realidad tal cual '
+                                'es.',
+                                'Es explicativa porque busca responder al '
+                                'porqué de las cosas, y experimental porque '
+                                'puede probarse y comprobarse.',
+                                'Es universal porque es válida para todos '
+                                'los hombres, y falible porque es pasible de '
+                                'error, aunque perfectible.',
+                                'Es falsacionista porque la verdad de una '
+                                'hipótesis puede demostrarse también por su '
+                                'falsedad.',
+                                'Es predictiva porque prevé situaciones '
+                                'futuras, y de contrastación porque toda '
+                                'teoría está sometida a prueba.']},
                      {'titulo': 'ESTRUCTURA DE LA CIENCIA',
                       'items': ['Teoría científica: conjunto sistemático de '
                                 'leyes e hipótesis que explican un ámbito de '
-                                'la realidad.']},
+                                'la realidad.',
+                                'Ley científica: enunciado que expresa una '
+                                'relación constante y necesaria entre '
+                                'fenómenos.',
+                                'Hipótesis: suposición o respuesta '
+                                'provisional que debe ser contrastada.',
+                                'Axioma: proposición evidente que se acepta '
+                                'sin demostración.']},
                      {'titulo': 'EL MÉTODO CIENTÍFICO',
                       'items': ['El método hipotético-deductivo comprende: '
                                 'observación, formulación del problema, '
                                 'planteamiento de la hipótesis, deducción de '
                                 'consecuencias, experimentación y '
-                                'conclusión.']},
+                                'conclusión.',
+                                'El método inductivo va de lo particular a '
+                                'lo general; el deductivo, de lo general a '
+                                'lo particular.']},
                      {'titulo': 'FUNCIONES Y CLASIFICACIÓN',
                       'items': ['Funciones de la ciencia: describir, '
-                                'explicar y predecir.']}]},
+                                'explicar y predecir.',
+                                'Mario Bunge clasificó las ciencias en '
+                                'formales (lógica y matemática, de objeto '
+                                'ideal) y fácticas (de objeto real).',
+                                'Las fácticas se dividen en ciencias '
+                                'naturales (física, química, biología) y '
+                                'ciencias sociales (historia, economía, '
+                                'sociología).']}]},
  {'num': 9,
   'titulo': 'Problema del valor y la ética',
   'secciones': [{'titulo': '9.1 AXIOLOGÍA',
@@ -3224,29 +3475,63 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'AXIOLOGÍA',
                       'items': ['Del griego axios = valor y logos = estudio. '
                                 'Es la disciplina filosófica que estudia los '
-                                'valores.']},
+                                'valores.',
+                                'El acto valorativo es el proceso por el '
+                                'cual el sujeto atribuye un valor a un '
+                                'objeto o conducta.']},
                      {'titulo': 'CARACTERÍSTICAS Y CLASIFICACIÓN',
                       'items': ['Características de los valores: polaridad '
                                 '(todo valor tiene su contravalor: '
                                 'bueno-malo), jerarquía (unos valen más que '
                                 'otros), materia y objetividad o '
-                                'subjetividad según la corriente.']},
+                                'subjetividad según la corriente.',
+                                'Max Scheler clasificó los valores en '
+                                'jerarquía: sensibles, vitales, espirituales '
+                                'y religiosos.',
+                                'Valores éticos fundamentales: el bien, la '
+                                'justicia, la dignidad y la solidaridad.']},
                      {'titulo': 'TEORÍAS DEL VALOR',
                       'items': ['Subjetivismo: el valor depende del sujeto, '
                                 'de su agrado o interés; no existe fuera de '
-                                'la valoración.']},
+                                'la valoración.',
+                                'Objetivismo: los valores existen '
+                                'independientemente del sujeto; se '
+                                'descubren, no se crean.',
+                                'Relacionismo: el valor surge de la relación '
+                                'entre el sujeto y el objeto.']},
                      {'titulo': 'LA ÉTICA Y LA MORAL',
                       'items': ['La ética es la disciplina filosófica que '
-                                'reflexiona sobre la moral; es teórica.']},
+                                'reflexiona sobre la moral; es teórica.',
+                                'La moral es el conjunto de normas y '
+                                'costumbres concretas de una sociedad; es '
+                                'práctica.',
+                                'Corrientes éticas: el eudemonismo de '
+                                'Aristóteles (el fin es la felicidad), la '
+                                'ética kantiana del deber, y el utilitarismo '
+                                'de Stuart Mill (la mayor felicidad para el '
+                                'mayor número).']},
                      {'titulo': 'EL PROBLEMA DE LA CONDUCTA MORALMENTE BUENA',
                       'items': ['Cuatro teorías clásicas explican en qué '
                                 'consiste actuar moralmente bien: hedonismo, '
-                                'eudemonismo, utilitarismo y formalismo.']},
+                                'eudemonismo, utilitarismo y formalismo.',
+                                'El hedonismo de Epicuro (341-271 a.C.) '
+                                'sostiene que el bien y el fin supremo de la '
+                                'vida humana es el placer.',
+                                'A diferencia de Aristipo de Cirene, que '
+                                'solo consideraba los placeres sensibles, '
+                                'Epicuro defendía un cálculo racional y '
+                                'prudente de los placeres.']},
                      {'titulo': 'LA PERSONA MORAL Y LA SANCIÓN',
                       'items': ['La persona es el sujeto con conciencia de '
                                 'sus actos, capaz de crear valores y '
-                                'conducir su existencia según '
-                                'principios.']}]},
+                                'conducir su existencia según principios.',
+                                'El individuo es cualquier ser sin '
+                                'conciencia de sus actos, que gobierna su '
+                                'existencia por instintos, como los '
+                                'infantes.',
+                                'Las características de la persona moral '
+                                'son: conciencia moral, libertad moral y '
+                                'responsabilidad moral.']}]},
  {'num': 10,
   'titulo': 'Lógica, lenguaje y pensamiento',
   'secciones': [{'titulo': '10.1 DEFINICIÓN DE LÓGICA',
@@ -3587,23 +3872,65 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'DEFINICIÓN DE LÓGICA',
                       'items': ['La lógica es la ciencia formal que estudia '
                                 'la validez o corrección de los '
-                                'razonamientos.']},
+                                'razonamientos.',
+                                'Estudia la forma del razonamiento, no su '
+                                'contenido ni su verdad material.',
+                                'Ramas: la lógica formal clásica '
+                                '(aristotélica), la lógica proposicional y '
+                                'la lógica de clases.']},
                      {'titulo': 'HISTORIA DE LA LÓGICA',
                       'items': ['Aristóteles es el fundador de la lógica; su '
-                                'obra se reunió bajo el nombre de '
-                                '«Órganon».']},
+                                'obra se reunió bajo el nombre de «Órganon».',
+                                'En la lógica medieval destaca Porfirio de '
+                                'Tiro con su «Isagoge» y el árbol de '
+                                'Porfirio.',
+                                'La lógica moderna o simbólica emplea '
+                                'símbolos matemáticos; destacan Boole, Frege '
+                                'y Russell.',
+                                'En el Perú destaca Francisco Miró Quesada '
+                                'Cantuarias, quien acuñó el término «lógica '
+                                'jurídica».',
+                                'Protágoras, el sofista más importante, '
+                                'sostuvo que «el hombre es la medida de '
+                                'todas las cosas» (homo mensura).',
+                                'Sócrates descubrió el concepto de la '
+                                'definición y de la inducción mediante la '
+                                'mayéutica.']},
                      {'titulo': 'RAMAS DE LA LÓGICA',
                       'items': ['La lógica formal estudia los actos del '
                                 'pensar (concepto, juicio, razonamiento y '
                                 'demostración) según su estructura, sin '
-                                'importar el contenido.']},
+                                'importar el contenido.',
+                                'La lógica proposicional, o lógica de '
+                                'enunciados, estudia las proposiciones como '
+                                'bloque, y las relaciones y conectivos entre '
+                                'ellas.',
+                                'Una proposición es una expresión '
+                                'lingüística con la propiedad de ser '
+                                'verdadera o falsa; tiene sujeto, predicado '
+                                'y cópula.',
+                                'La lógica de clases estudia las relaciones '
+                                'formales entre las clases que aparecen en '
+                                'una proposición categórica.',
+                                'Una clase es el conjunto de objetos con '
+                                'propiedades comunes; por sí sola no es ni '
+                                'verdadera ni falsa.']},
                      {'titulo': 'FUNCIONES BÁSICAS DEL LENGUAJE',
                       'items': ['Función informativa o descriptiva: '
                                 'transmite información; puede ser verdadera '
-                                'o falsa.']},
+                                'o falsa.',
+                                'Función expresiva: manifiesta emociones y '
+                                'sentimientos; no es verdadera ni falsa.',
+                                'Función directiva: busca provocar una '
+                                'conducta; órdenes, ruegos y pedidos.']},
                      {'titulo': 'LENGUAJE NATURAL Y FORMALIZADO',
                       'items': ['El lenguaje natural es el de uso cotidiano; '
-                                'es rico pero ambiguo y vago.']}]},
+                                'es rico pero ambiguo y vago.',
+                                'El lenguaje formalizado usa símbolos, es '
+                                'preciso, unívoco y sin ambigüedad.',
+                                'La argumentación es el conjunto de razones '
+                                '(premisas) que sustentan una '
+                                'conclusión.']}]},
  {'num': 11,
   'titulo': 'Falacias',
   'secciones': [{'titulo': '11.1 FALACIAS FORMALES',
@@ -3827,13 +4154,45 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'FALACIAS FORMALES',
                       'items': ['Una falacia es un razonamiento que parece '
-                                'válido pero no lo es.']},
+                                'válido pero no lo es.',
+                                'Las falacias formales tienen un error en la '
+                                'estructura o forma del razonamiento.',
+                                'La falacia de afirmación del consecuente se '
+                                'comete al invertir la ley del Modus Ponens: '
+                                'de (p→q) y q, se concluye erróneamente p. '
+                                'Ejemplo: «si la población aumenta, escasean '
+                                'las subsistencias; escasean las '
+                                'subsistencias; por lo tanto, aumentó la '
+                                'población».']},
                      {'titulo': 'FALACIAS DE ATINENCIA',
                       'items': ['Se cometen cuando las premisas no son '
-                                'pertinentes para la conclusión.']},
+                                'pertinentes para la conclusión.',
+                                'Ignoratio elenchi o conclusión inatinente: '
+                                'se prueba una conclusión diferente de la '
+                                'que se pretendía.',
+                                'Causa falsa: concluir que un hecho causa '
+                                'otro solo porque lo precede. Ejemplo: «me '
+                                'levanté con el pie izquierdo, hoy será un '
+                                'mal día».',
+                                'Ad populum: apelación emocional al pueblo o '
+                                'a la galería. Recurso favorito de '
+                                'propagandistas y demagogos.',
+                                'Ad hominem: se ataca a la persona en vez de '
+                                'refutar su argumento. Puede ser ofensivo o '
+                                'circunstancial.',
+                                'Ad ignorantiam: afirmar que algo es '
+                                'verdadero porque no se ha demostrado su '
+                                'falsedad.']},
                      {'titulo': 'FALACIAS DE AMBIGÜEDAD',
                       'items': ['Aparecen cuando el razonamiento contiene '
-                                'palabras o frases ambiguas.']}]},
+                                'palabras o frases ambiguas.',
+                                'Equívoco: se usa una palabra con dos o más '
+                                'significados distintos en el mismo '
+                                'razonamiento.',
+                                'Anfibología: la ambigüedad proviene de la '
+                                'construcción gramatical de la frase.',
+                                'Énfasis: el significado cambia según la '
+                                'palabra que se acentúa o destaca.']}]},
  {'num': 12,
   'titulo': 'Pruebas formales en la lógica proposicional',
   'secciones': [{'titulo': '12.1 LA PROPOSICIÓN',
@@ -4107,20 +4466,62 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA PROPOSICIÓN',
                       'items': ['Es todo enunciado del que se puede afirmar '
-                                'que es verdadero o falso.']},
+                                'que es verdadero o falso.',
+                                'No son proposiciones las preguntas, las '
+                                'órdenes, los deseos ni las exclamaciones.',
+                                'Proposición simple o atómica: no contiene '
+                                'ningún operador lógico. Se representa con '
+                                'una sola variable.',
+                                'Proposición compuesta o molecular: contiene '
+                                'uno o más operadores.']},
                      {'titulo': 'SIGNOS LÓGICOS',
                       'items': ['Variables: representan proposiciones '
                                 'simples; se usan las letras minúsculas p, '
-                                'q, r, s.']},
+                                'q, r, s.',
+                                'Conectores monádicos: afectan a una sola '
+                                'variable. El único es la negación (~).',
+                                'Conectores diádicos o binarios: unen dos '
+                                'variables. Son la conjunción, la disyunción '
+                                'débil, la disyunción fuerte, la condicional '
+                                'y la bicondicional.',
+                                'Símbolos auxiliares: paréntesis, corchetes '
+                                'y llaves, que sirven para agrupar.']},
                      {'titulo': 'FORMALIZACIÓN',
                       'items': ['Fórmula atómica: se representa con una sola '
                                 'variable. Ejemplo: «El asno es vertebrado» '
-                                '= p.']},
+                                '= p.',
+                                'Fórmula molecular: contiene uno o más '
+                                'operadores. Ejemplo: «El zorrino no es '
+                                'mamífero» = ~p.',
+                                '«La vaca es mamífero y el caballo también» '
+                                'se formaliza como p ∧ q.',
+                                '«El asno es mamífero pero el loro no» se '
+                                'formaliza como p ∧ ~q.']},
                      {'titulo': 'RAZONAMIENTOS VÁLIDOS: REGLAS DE INFERENCIA',
                       'items': ['El Modus Ponendo Ponens (MPP): de una '
                                 'premisa condicional, si se afirma el '
                                 'antecedente, se concluye la afirmación del '
-                                'consecuente.']}]},
+                                'consecuente.',
+                                'Ejemplo de MPP: «Si Luis es ingeniero, es '
+                                'profesional. Luis es ingeniero. Por lo '
+                                'tanto, Luis es profesional».',
+                                'El Modus Tollendo Tollens (MTT): de una '
+                                'premisa condicional, si se niega el '
+                                'consecuente, se concluye la negación del '
+                                'antecedente.',
+                                'El Silogismo Disyuntivo (SD): de una '
+                                'proposición disyuntiva, si se niega uno de '
+                                'los extremos, se concluye la afirmación del '
+                                'otro extremo.',
+                                'El Silogismo Hipotético Puro (SHP): con dos '
+                                'premisas condicionales donde el consecuente '
+                                'de la primera es el antecedente de la '
+                                'segunda, se concluye antecedente de la '
+                                'primera con consecuente de la segunda.',
+                                'Ejemplo de SHP: «Si es viernes, nos vamos '
+                                'de paseo. Si nos vamos de paseo, estamos '
+                                'felices. Por lo tanto, si es viernes, '
+                                'estamos felices».']}]},
  {'num': 13,
   'titulo': 'Tablas de verdad y razonamientos válidos',
   'secciones': [{'titulo': '13.1 LA TABLA DE VERDAD',
@@ -4325,15 +4726,35 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'LA TABLA DE VERDAD',
                       'items': ['Es el diagrama que muestra todos los '
-                                'valores posibles de una fórmula '
-                                'molecular.']},
+                                'valores posibles de una fórmula molecular.',
+                                'El número de combinaciones o arreglos se '
+                                'calcula con la fórmula 2ⁿ, donde n es el '
+                                'número de variables.',
+                                'Con 2 variables hay 4 combinaciones; con 3 '
+                                'variables, 8.']},
                      {'titulo': 'PRINCIPALES ESQUEMAS',
                       'items': ['Tautología: la fórmula resulta verdadera en '
-                                'todos los casos.']},
+                                'todos los casos.',
+                                'Contradicción: la fórmula resulta falsa en '
+                                'todos los casos.',
+                                'Contingencia o consistencia: resulta '
+                                'verdadera en algunos casos y falsa en '
+                                'otros.']},
                      {'titulo': 'VALIDEZ MEDIANTE TABLAS DE VERDAD',
                       'items': ['Un razonamiento es válido cuando es '
                                 'imposible que las premisas sean verdaderas '
-                                'y la conclusión falsa a la vez.']}]},
+                                'y la conclusión falsa a la vez.',
+                                'Para comprobar la validez con tablas de '
+                                'verdad, se construye la fórmula «(premisas) '
+                                '→ conclusión»; si resulta tautológica, el '
+                                'razonamiento es válido.',
+                                'Si en alguna fila las premisas son '
+                                'verdaderas y la conclusión falsa, el '
+                                'razonamiento es inválido.',
+                                'La Ley de De Morgan establece que la '
+                                'negación de una conjunción equivale a la '
+                                'disyunción de las negaciones: ~(p ∧ q) ≡ '
+                                '(~p ∨ ~q).']}]},
  {'num': 14,
   'titulo': 'Principios lógicos y lógica formal clásica',
   'secciones': [{'titulo': '14.1 PRINCIPIOS LÓGICOS',
@@ -4527,19 +4948,43 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'PRINCIPIOS LÓGICOS',
                       'items': ['Principio de identidad: toda cosa es '
-                                'idéntica a sí misma. Se expresa «p es p».']},
+                                'idéntica a sí misma. Se expresa «p es p».',
+                                'Principio de no contradicción: una '
+                                'proposición no puede ser verdadera y falsa '
+                                'a la vez.',
+                                'Principio del tercio excluido: entre dos '
+                                'proposiciones contradictorias, una es '
+                                'verdadera y la otra falsa; no hay una '
+                                'tercera posibilidad.']},
                      {'titulo': 'EL CONCEPTO',
                       'items': ['Es la representación mental de un objeto. '
                                 'Sus características pueden ser esenciales o '
-                                'accidentales.']},
+                                'accidentales.',
+                                'Propiedades del concepto: la extensión, que '
+                                'es el número de objetos a los que se '
+                                'aplica, y la comprensión, que es el '
+                                'conjunto de notas o características.',
+                                'Ambas son inversamente proporcionales: a '
+                                'mayor extensión, menor comprensión.']},
                      {'titulo': 'EL JUICIO',
                       'items': ['Es la operación mental que afirma o niega '
                                 'algo de algo. Su expresión verbal es la '
-                                'proposición.']},
+                                'proposición.',
+                                'Por su cantidad: universales y '
+                                'particulares.',
+                                'Por su cualidad: afirmativos y negativos.',
+                                'Juicios categóricos típicos: A (universal '
+                                'afirmativo), E (universal negativo), I '
+                                '(particular afirmativo) y O (particular '
+                                'negativo).']},
                      {'titulo': 'EL RAZONAMIENTO',
                       'items': ['Razonamiento deductivo: va de lo general a '
                                 'lo particular; la conclusión se sigue '
-                                'necesariamente.']}]},
+                                'necesariamente.',
+                                'Razonamiento inductivo: va de lo particular '
+                                'a lo general; la conclusión es probable.',
+                                'Razonamiento analógico: concluye por '
+                                'semejanza entre casos.']}]},
  {'num': 15,
   'titulo': 'Inferencias',
   'secciones': [{'titulo': '15.1 INFERENCIAS INMEDIATAS',
@@ -4776,13 +5221,50 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'INFERENCIAS INMEDIATAS',
                       'items': ['Son aquellas en que se obtiene una '
-                                'conclusión a partir de una sola premisa.']},
+                                'conclusión a partir de una sola premisa.',
+                                'Por oposición: se basan en el cuadro '
+                                'tradicional de oposición, o cuadro de '
+                                'Boecio, entre juicios A, E, I, O. Comprende '
+                                'contradicción, contrariedad, '
+                                'subcontrariedad y subalternación.',
+                                'Por conversión: se intercambian el sujeto y '
+                                'el predicado. Ejemplo: «Ningún S es P» se '
+                                'convierte en «Ningún P es S».',
+                                'Por obversión: se cambia la cualidad del '
+                                'juicio y se niega el predicado. «Todo S es '
+                                'P» se obvierte en «Ningún S es no-P».',
+                                'Son contradictorias los pares A—O y E—I: no '
+                                'pueden ser ambas verdaderas ni ambas '
+                                'falsas.',
+                                'En la subalternación, la proposición '
+                                'universal (subalternante) implica a la '
+                                'particular (subalterna); si la universal es '
+                                'verdadera, la subalterna también lo es; si '
+                                'la universal es falsa, la subalterna queda '
+                                'indeterminada.']},
                      {'titulo': 'Y 15.3 CONTRAPUESTA E INFERENCIA MEDIATA',
                       'items': ['Por contrapuesta parcial: se obtiene '
-                                'combinando obversión y conversión.']},
+                                'combinando obversión y conversión.',
+                                'Por contrapuesta total: se niegan ambos '
+                                'términos y se intercambian.',
+                                'La inferencia mediata obtiene la conclusión '
+                                'a partir de dos o más premisas; su forma '
+                                'típica es el silogismo.']},
                      {'titulo': 'EL SILOGISMO CATEGÓRICO',
                       'items': ['Consta de tres proposiciones: premisa '
-                                'mayor, premisa menor y conclusión.']}]},
+                                'mayor, premisa menor y conclusión.',
+                                'Y de tres términos: mayor (P, predicado de '
+                                'la conclusión), menor (S, sujeto de la '
+                                'conclusión) y medio (M), que aparece en '
+                                'ambas premisas pero no en la conclusión.',
+                                'Reglas principales: de dos premisas '
+                                'negativas no se sigue conclusión; de dos '
+                                'premisas particulares tampoco; el término '
+                                'medio debe estar distribuido al menos una '
+                                'vez.',
+                                'Las figuras del silogismo se determinan por '
+                                'la posición del término medio: son '
+                                'cuatro.']}]},
  {'num': 16,
   'titulo': 'Lógica de clases',
   'secciones': [{'titulo': '16.1 EL ÁLGEBRA BOOLEANA',
@@ -5005,16 +5487,44 @@ BALOTAS_FILO = [{'num': 1,
   'resumen_visual': [{'titulo': 'EL ÁLGEBRA BOOLEANA',
                       'items': ['Fue desarrollada por George Boole. Aplica '
                                 'procedimientos algebraicos al razonamiento '
-                                'lógico.']},
+                                'lógico.',
+                                'Una clase es el conjunto de todos los '
+                                'objetos que poseen una característica '
+                                'común.',
+                                'Clase universal: contiene todos los '
+                                'elementos del universo del discurso '
+                                '—llamado así por De Morgan—; se representa '
+                                'por 1.',
+                                'Clase vacía o nula: no contiene ningún '
+                                'elemento; se representa por 0 o por la '
+                                'letra griega fi.']},
                      {'titulo': 'TIPOS DE CLASES',
                       'items': ['Clase universal, clase particular y '
-                                'complemento de una clase.']},
+                                'complemento de una clase.',
+                                'El complemento de una clase A está formado '
+                                'por todos los elementos que no pertenecen a '
+                                'A. Se simboliza Ā.',
+                                'Clase no vacía: tiene al menos un elemento, '
+                                'como la clase de los alcaldes o la clase de '
+                                'libros.',
+                                'El álgebra booleana también rige circuitos '
+                                'digitales; Claudio Shannon desarrolló sus '
+                                'primeras aplicaciones en 1938.']},
                      {'titulo': 'RELACIONES ENTRE CLASES',
                       'items': ['Inclusión: todos los elementos de una clase '
-                                'están contenidos en otra.']},
+                                'están contenidos en otra.',
+                                'Igualdad: dos clases tienen exactamente los '
+                                'mismos elementos.',
+                                'Exclusión: dos clases no tienen ningún '
+                                'elemento en común.']},
                      {'titulo': 'OPERACIONES CON CLASES',
                       'items': ['Unión o suma: reúne los elementos de ambas '
-                                'clases. Se simboliza ∪.']}]},
+                                'clases. Se simboliza ∪.',
+                                'Intersección o producto: reúne los '
+                                'elementos comunes a ambas clases. Se '
+                                'simboliza ∩.',
+                                'Diferencia: elementos que pertenecen a una '
+                                'clase pero no a la otra.']}]},
  {'num': 17,
   'titulo': 'Fórmulas booleanas y diagramas de Venn',
   'secciones': [{'titulo': '17.1 DIAGRAMACIÓN DE UNA CLASE',
@@ -5234,14 +5744,43 @@ BALOTAS_FILO = [{'num': 1,
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'DIAGRAMACIÓN DE UNA CLASE',
                       'items': ['Los diagramas de Venn representan '
-                                'gráficamente las clases mediante '
-                                'círculos.']},
+                                'gráficamente las clases mediante círculos.',
+                                'El sombreado indica que la región está '
+                                'vacía; una X indica que la región tiene al '
+                                'menos un elemento.',
+                                '«Ningún S es P» se representa sombreando la '
+                                'región común a ambos círculos.',
+                                '«Algún S es P» se representa colocando una '
+                                'X en la región común.']},
                      {'titulo': 'DIAGRAMACIÓN DE DOS CLASES',
                       'items': ['Con dos clases se generan 4 regiones '
-                                'distintas.']},
+                                'distintas.',
+                                '«Todo S es P» se representa sombreando la '
+                                'parte de S que no es P.',
+                                '«Algún S no es P» se representa con una X '
+                                'en la parte de S fuera de P.']},
                      {'titulo': 'PROPOSICIONES TÍPICAS Y ATÍPICAS',
                       'items': ['Proposiciones típicas: las que corresponden '
-                                'a las formas A, E, I y O.']},
+                                'a las formas A, E, I y O.',
+                                'Proposiciones atípicas: deben ser '
+                                'traducidas previamente a una forma típica '
+                                'para poder diagramarse.',
+                                'Ejemplos de atípicas: «solo», «únicamente», '
+                                '«nadie salvo», que suelen equivaler a '
+                                'juicios universales.']},
                      {'titulo': 'VALIDEZ DEL SILOGISMO POR DIAGRAMAS',
                       'items': ['Para evaluar un silogismo se usan tres '
-                                'círculos, uno por cada término.']}]}]
+                                'círculos, uno por cada término.',
+                                'Se diagraman primero las premisas, nunca la '
+                                'conclusión.',
+                                'Si al diagramar las premisas queda '
+                                'automáticamente representada la conclusión, '
+                                'el silogismo es válido.',
+                                'Conviene diagramar primero las premisas '
+                                'universales y después las particulares.',
+                                'De los 256 modos posibles del silogismo '
+                                'categórico, solo 19 son considerados '
+                                'válidos según la lógica tradicional.',
+                                'La ley del contenido existencial se aplica '
+                                'cuando ambas premisas son universales y la '
+                                'conclusión es particular.']}]}]
