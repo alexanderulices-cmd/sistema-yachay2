@@ -401,8 +401,20 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'muchas células son pluricelulares.',
                                 'A partir de la especie siguen los niveles '
                                 'de organización ecológica: población, '
-                                'comunidad, ecosistema, bioma y '
-                                'biosfera.']}]},
+                                'comunidad, ecosistema, bioma y biosfera.']}],
+  'qr_reto': [{'pregunta': 'La rama que surge de la relación entre biología '
+                           'y matemáticas se llama:',
+               'respuesta': 'Bioestadística'},
+              {'pregunta': 'Los orgánulos celulares, como las mitocondrias, '
+                           'no se consideran seres vivos porque:',
+               'respuesta': 'No cumplen las funciones de nutrición, relación '
+                            'y reproducción'},
+              {'pregunta': 'El almidón es un polímero de glucosa, mientras '
+                           'que las proteínas son polímeros de:',
+               'respuesta': 'Aminoácidos'}],
+  'qr_dato': 'A partir de la especie siguen los niveles de organización '
+             'ecológica: población, comunidad, ecosistema, bioma y '
+             'biosfera.'},
  {'num': 2,
   'titulo': 'Composición Química de la Materia Viviente',
   'secciones': [{'titulo': '2.1 BIOELEMENTOS',
@@ -777,7 +789,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'de tolerancia a la glucosa.',
                                 'El selenio cumple funciones antioxidantes, '
                                 'de regulación hormonal, y tiene efectos '
-                                'anticancerígenos.']}]},
+                                'anticancerígenos.']}],
+  'qr_reto': [{'pregunta': 'El microelemento que es constituyente de '
+                           'proteínas como la insulina es:',
+               'respuesta': 'El zinc'},
+              {'pregunta': 'El elemento que desempeña un papel esencial en '
+                           'la transferencia de energía, como en el ATP, es:',
+               'respuesta': 'El fósforo'},
+              {'pregunta': 'El azufre se encuentra, entre otros lugares, en '
+                           'la bilis, el cartílago y:',
+               'respuesta': 'Las glándulas suprarrenales'}],
+  'qr_dato': 'Los bioelementos se clasifican en macroelementos (primarios y '
+             'secundarios) y microelementos u oligoelementos.'},
  {'num': 3,
   'titulo': 'Biomoléculas Inorgánicas',
   'secciones': [{'titulo': 'CARACTERÍSTICAS GENERALES DE LAS BIOMOLÉCULAS '
@@ -1309,7 +1332,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'El bicarbonato '
                                 '(HCO<sub>3</sub><super>-</super>) actúa '
                                 'como tampón extracelular, a diferencia del '
-                                'fosfato, que es tampón intracelular.']}]},
+                                'fosfato, que es tampón intracelular.']}],
+  'qr_reto': [{'pregunta': 'El calcio, además de la estructura ósea y la '
+                           'coagulación, participa en los procesos de:',
+               'respuesta': 'Secreción de las células nerviosas'},
+              {'pregunta': 'La concentración elevada de potasio en la sangre '
+                           'conlleva a:',
+               'respuesta': 'Hipotensión'},
+              {'pregunta': 'Los iones con carga positiva se llaman:',
+               'respuesta': 'Cationes'}],
+  'qr_dato': 'La función termorreguladora: el agua actúa en los cambios de '
+             'temperatura para mantener el cuerpo a temperatura constante, '
+             'como en la sudoración.'},
  {'num': 4,
   'titulo': 'Biomoléculas Orgánicas',
   'secciones': [{'titulo': '4.1.1 CARACTERÍSTICAS DE LOS CARBOHIDRATOS',
@@ -2665,7 +2699,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'proteínas que necesita la célula.',
                                 'El ARN une los aminoácidos de una proteína '
                                 'en el orden indicado por el código '
-                                'genético.']}]},
+                                'genético.']}],
+  'qr_reto': [{'pregunta': 'La galactosa no se encuentra libre, sino '
+                           'combinada con la glucosa para formar:',
+               'respuesta': 'Lactosa'},
+              {'pregunta': 'El monosacárido más abundante en la naturaleza y '
+                           'principal fuente de energía es la:',
+               'respuesta': 'Glucosa'},
+              {'pregunta': 'En las lipoproteínas, el grupo prostético es un '
+                           'lípido transportado en:',
+               'respuesta': 'El plasma sanguíneo'}],
+  'qr_dato': 'En la estructura piranosa, el anillo está formado por 5 átomos '
+             'de carbono, como en la glucosa.'},
  {'num': 5,
   'titulo': 'La Célula',
   'secciones': [{'titulo': '5.1 GENERALIDADES Y ORIGEN DEL TÉRMINO',
@@ -3263,7 +3308,19 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'Nostoc.',
                                 'El género Nostoc es comestible y se conoce '
                                 'comúnmente como «llullucha» o '
-                                '«murmunta».']}]},
+                                '«murmunta».']}],
+  'qr_reto': [{'pregunta': 'Schwann concluyó la misma idea que Schleiden, '
+                           'pero referida a:',
+               'respuesta': 'Los animales'},
+              {'pregunta': 'La palabra «célula» proviene del latín «cella», '
+                           'que significa:',
+               'respuesta': 'Pequeña habitación o celda'},
+              {'pregunta': 'Además de la clorofila, las cianobacterias '
+                           'contienen pigmentos llamados ficobilinas, entre '
+                           'ellos la ficocianina, de color:',
+               'respuesta': 'Azul'}],
+  'qr_dato': 'Los micoplasmas son los únicos procariotas conocidos que '
+             'carecen de pared celular.'},
  {'num': 6,
   'titulo': 'Célula Eucariota',
   'secciones': [{'titulo': '6.1 ESTRUCTURA GENERAL',
@@ -4294,7 +4351,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                       'items': ['Los cromosomas resultan del empaquetamiento '
                                 'máximo del ADN nuclear con proteínas.',
                                 'Las células con dos juegos completos de '
-                                'cromosomas se llaman diploides o 2n.']}]},
+                                'cromosomas se llaman diploides o 2n.']}],
+  'qr_reto': [{'pregunta': 'Las mitocondrias producen ATP mediante el '
+                           'proceso de:',
+               'respuesta': 'Respiración celular'},
+              {'pregunta': 'Las enzimas de los peroxisomas que producen '
+                           'peróxido de hidrógeno se llaman:',
+               'respuesta': 'Peroxidasas'},
+              {'pregunta': 'Las mitocondrias se encuentran en todas las '
+                           'células eucariotas y tienen:',
+               'respuesta': 'Doble membrana'}],
+  'qr_dato': 'Las proteínas periféricas o extrínsecas se localizan en las '
+             'superficies de la membrana y son solubles en agua.'},
  {'num': 7,
   'titulo': 'Nutrición',
   'secciones': [{'titulo': '7.1 TIPOS DE NUTRICIÓN CELULAR',
@@ -5095,7 +5163,20 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'láctico.',
                                 'La fermentación láctica es causada por '
                                 'bacterias como Lactobacillus y '
-                                'Streptococcus.']}]},
+                                'Streptococcus.']}],
+  'qr_reto': [{'pregunta': 'La fase de la fotosíntesis independiente de la '
+                           'luz puede ocurrir:',
+               'respuesta': 'De día y de noche'},
+              {'pregunta': 'En la elaboración de pan, el dióxido de carbono '
+                           'producido por la fermentación alcohólica es '
+                           'responsable de:',
+               'respuesta': 'El crecimiento de la masa'},
+              {'pregunta': 'Los procariontes que oxidan el hierro desde el '
+                           'estado ferroso al férrico se llaman '
+                           'procariontes:',
+               'respuesta': 'Ferrosos'}],
+  'qr_dato': 'La respiración aeróbica requiere presencia de oxígeno, '
+             'produciendo dióxido de carbono y agua.'},
  {'num': 8,
   'titulo': 'Nivel Sistémico',
   'secciones': [{'titulo': '8.1 EL SISTEMA RESPIRATORIO HUMANO',
@@ -6558,7 +6639,17 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'funcional del riñón; cada riñón tiene cerca '
                                 'de un millón.',
                                 'La cápsula de Bowman contiene en su '
-                                'interior al glomérulo de Malpighi.']}]},
+                                'interior al glomérulo de Malpighi.']}],
+  'qr_reto': [{'pregunta': 'De los dos arcos dentales, el que es móvil es el '
+                           'arco:',
+               'respuesta': 'Inferior'},
+              {'pregunta': 'Los riñones de los reptiles son de tipo:',
+               'respuesta': 'Metanefros'},
+              {'pregunta': 'Si el sistema respiratorio o cardiovascular '
+                           'fallan, las células empiezan a morir por:',
+               'respuesta': 'Falta de oxígeno y acumulación de CO2'}],
+  'qr_dato': 'Las cavidades derechas del corazón impulsan la sangre con '
+             'desechos hacia los pulmones para su eliminación.'},
  {'num': 9,
   'titulo': 'Coordinación',
   'secciones': [{'titulo': '9.1 EL SISTEMA NERVIOSO EN ANIMALES',
@@ -6951,7 +7042,19 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'ramifican en la columna vertebral.',
                                 'Los ganglios son estructuras formadas por '
                                 'cuerpos de neuronas ubicados fuera del '
-                                'encéfalo y la médula.']}]},
+                                'encéfalo y la médula.']}],
+  'qr_reto': [{'pregunta': 'Los organismos más sencillos en tener células '
+                           'nerviosas son los:',
+               'respuesta': 'Cnidarios'},
+              {'pregunta': 'El sistema nervioso que regula las funciones '
+                           'voluntarias, como el movimiento muscular, se '
+                           'llama sistema nervioso:',
+               'respuesta': 'Somático'},
+              {'pregunta': 'El número de neuronas en el cerebro humano ronda '
+                           'aproximadamente:',
+               'respuesta': '100 000 millones'}],
+  'qr_dato': 'El encéfalo está protegido por la caja craneal; la médula '
+             'espinal, por el canal vertebral.'},
  {'num': 10,
   'titulo': 'Reproducción',
   'secciones': [{'titulo': '10.1 REPRODUCCIÓN ASEXUAL O AGÁMICA',
@@ -7844,7 +7947,17 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'llaman protándricos.',
                                 'Los organismos dioicos, o unisexuales, '
                                 'tienen sexos separados, como la mayoría de '
-                                'los vertebrados.']}]},
+                                'los vertebrados.']}],
+  'qr_reto': [{'pregunta': 'La citocinesis ocurre principalmente durante la:',
+               'respuesta': 'Telofase'},
+              {'pregunta': 'La fragmentación se observa, por ejemplo, en '
+                           'estrellas de mar y:',
+               'respuesta': 'Planarias'},
+              {'pregunta': 'En la metafase, los cromosomas se alinean en el '
+                           'ecuador de la célula formando la:',
+               'respuesta': 'Placa metafásica'}],
+  'qr_dato': 'La capacidad de perpetuar la especie es la característica que '
+             'mejor distingue a los seres vivos.'},
  {'num': 11,
   'titulo': 'Genética',
   'secciones': [{'titulo': '11.1 CONCEPTO Y RAMAS DE LA GENÉTICA',
@@ -8342,7 +8455,17 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'selección artificial para mejorar especies.',
                                 'En biotecnología, bacterias y hongos '
                                 'manipulados genéticamente sintetizan '
-                                'medicamentos.']}]},
+                                'medicamentos.']}],
+  'qr_reto': [{'pregunta': 'En la F2, según la Segunda Ley de Mendel, el '
+                           'porcentaje de homocigotos recesivos (aa) es:',
+               'respuesta': '25%'},
+              {'pregunta': 'AA se representa como un ejemplo de genotipo:',
+               'respuesta': 'Homocigoto dominante'},
+              {'pregunta': 'El individuo que porta dos alelos idénticos para '
+                           'un carácter se llama:',
+               'respuesta': 'Homocigoto'}],
+  'qr_dato': 'Para realizar los cruzamientos genéticos y predecir la '
+             'descendencia, se utiliza el cuadro de Punnett.'},
  {'num': 12,
   'titulo': 'Evolución y Origen de la Vida',
   'secciones': [{'titulo': '12.1 CONCEPTO Y ANTECEDENTES',
@@ -8892,7 +9015,19 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'Las etapas del origen de la vida según esta '
                                 'teoría son: síntesis de moléculas simples, '
                                 'formación de polímeros, formación de '
-                                'membranas, e inicio de la herencia.']}]},
+                                'membranas, e inicio de la herencia.']}],
+  'qr_reto': [{'pregunta': 'El italiano que refutó a Needham sellando bien '
+                           'los frascos fue:',
+               'respuesta': 'Lázaro Spallanzani'},
+              {'pregunta': 'Los cuatro conceptos centrales de la selección '
+                           'natural son variación, sobreproducción, lucha '
+                           'por la existencia y:',
+               'respuesta': 'Selección natural'},
+              {'pregunta': 'Según Oparin, la atmósfera primitiva era rica en '
+                           'metano, amoniaco, CO2 y agua, pero pobre en:',
+               'respuesta': 'Oxígeno'}],
+  'qr_dato': 'Lamarck ilustró su teoría con el ejemplo del cuello de la '
+             'jirafa, alargado por el esfuerzo de alcanzar ramas altas.'},
  {'num': 13,
   'titulo': 'Ecología, Factores Ecológicos y Ecosistemas',
   'secciones': [{'titulo': '13.1 CONCEPTO DE ECOLOGÍA',
@@ -9710,7 +9845,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'condiciones homogéneas de clima, suelo, '
                                 'flora y fauna.',
                                 'Según Antonio Brack, el Perú tiene 11 '
-                                'ecorregiones.']}]},
+                                'ecorregiones.']}],
+  'qr_reto': [{'pregunta': 'Cuando el parásito vive u obtiene alimento en el '
+                           'exterior del hospedero, se llama:',
+               'respuesta': 'Ectoparasitismo'},
+              {'pregunta': 'Cuando una planta crece sobre otra usándola de '
+                           'soporte sin dañarla, ocurre:',
+               'respuesta': 'Epifitismo'},
+              {'pregunta': 'La Taenia solium y el Ascaris lumbricoides son '
+                           'ejemplos de:',
+               'respuesta': 'Enteroparásitos'}],
+  'qr_dato': 'La asociación o sociedad es la relación temporal o permanente '
+             'con vínculos, como la defensa común.'},
  {'num': 14,
   'titulo': 'Flujo de Energía y Ciclos Biogeoquímicos',
   'secciones': [{'titulo': '14.1 ENERGÍA CINÉTICA Y POTENCIAL',
@@ -10412,7 +10558,18 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'Parte del agua precipitada es tomada por '
                                 'plantas y animales; otra alimenta cuerpos '
                                 'de agua superficiales y subterráneos '
-                                '(mantos freáticos).']}]},
+                                '(mantos freáticos).']}],
+  'qr_reto': [{'pregunta': 'Un vegetal aprovecha para sus funciones de '
+                           'supervivencia aproximadamente:',
+               'respuesta': '90% de la energía solar fijada'},
+              {'pregunta': 'Según la primera ley de la termodinámica, la '
+                           'energía:',
+               'respuesta': 'No se crea ni se destruye, solo se transforma'},
+              {'pregunta': 'Según la Ley del Diezmo Ecológico, los '
+                           'organismos usan en su propio metabolismo:',
+               'respuesta': 'El 90% de la energía capturada'}],
+  'qr_dato': 'Cuando la energía se transfiere de un organismo a otro, gran '
+             'parte se degrada como calor.'},
  {'num': 15,
   'titulo': 'Diversidad Biológica y Deterioro de la Flora y la Fauna',
   'secciones': [{'titulo': '15.1 EL CONVENIO SOBRE LA DIVERSIDAD BIOLÓGICA',
@@ -11145,7 +11302,19 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'la tortuga charapa.',
                                 'La pesca no planificada es la pesca '
                                 'insostenible sin respetar las épocas de '
-                                'veda.']}]},
+                                'veda.']}],
+  'qr_reto': [{'pregunta': 'El mar peruano es conocido como «una sopa de '
+                           'plancton» debido a su gran cantidad de:',
+               'respuesta': 'Nutrientes'},
+              {'pregunta': 'Especies como la anchoveta, sardina y merluza '
+                           'han reducido sus poblaciones debido a:',
+               'respuesta': 'Actividades antrópicas como la pesca no '
+                            'planificada'},
+              {'pregunta': 'El Convenio sobre la Diversidad Biológica se '
+                           'celebró en el año:',
+               'respuesta': '1992'}],
+  'qr_dato': 'En 2010, en Nagoya, Japón, se adoptó el Plan Estratégico para '
+             'la Diversidad Biológica 2011-2020.'},
  {'num': 16,
   'titulo': 'Contaminación, Problemas Ambientales y Conservación',
   'secciones': [{'titulo': '16.1 CONCEPTO DE CONTAMINACIÓN',
@@ -11909,4 +12078,17 @@ BIOLOGIA_TEMAS = [{'num': 1,
                                 'Las áreas de uso indirecto permiten '
                                 'investigación y turismo, pero no la '
                                 'extracción de recursos; incluyen Parques y '
-                                'Santuarios Nacionales.']}]}]
+                                'Santuarios Nacionales.']}],
+  'qr_reto': [{'pregunta': 'Las áreas de uso directo, a diferencia de las de '
+                           'uso indirecto, sí permiten:',
+               'respuesta': 'El aprovechamiento de recursos naturales'},
+              {'pregunta': 'Entre las sustancias químicas que contaminan el '
+                           'agua figuran el petróleo y los:',
+               'respuesta': 'Detergentes sintéticos'},
+              {'pregunta': 'El aumento del dióxido de carbono atmosférico se '
+                           'debe principalmente al uso de combustibles '
+                           'fósiles y a la:',
+               'respuesta': 'Deforestación'}],
+  'qr_dato': 'El efecto invernadero es un fenómeno natural que permite la '
+             'vida en la Tierra, por la absorción de radiación solar por los '
+             'gases de efecto invernadero.'}]

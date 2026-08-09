@@ -551,7 +551,19 @@ BALOTAS_FILO = [{'num': 1,
                                 'realidades bellas.',
                                 'La antropología filosófica estudia la '
                                 'esencia del hombre, su significado y la '
-                                'finalidad de su existencia.']}]},
+                                'finalidad de su existencia.']}],
+  'qr_reto': [{'pregunta': 'La disciplina filosófica que es el estudio del '
+                           'ser de las cosas, del ser en tanto ser, se '
+                           'llama:',
+               'respuesta': 'Ontología'},
+              {'pregunta': 'La filosofía, como reflexión racional y '
+                           'sistemática, se origina en:',
+               'respuesta': 'Grecia'},
+              {'pregunta': 'Para Aristóteles, la filosofía es la ciencia de:',
+               'respuesta': 'Los primeros principios y las primeras causas'}],
+  'qr_dato': 'Según Wittgenstein, la filosofía es una actividad orientada '
+             'hacia el esclarecimiento del lenguaje, indagando si los '
+             'enunciados tienen sentido.'},
  {'num': 2,
   'titulo': 'Historia de la filosofía: edad antigua',
   'secciones': [{'titulo': '2.1 LOS PRESOCRÁTICOS',
@@ -959,7 +971,16 @@ BALOTAS_FILO = [{'num': 1,
                                 'serenidad o ataraxia.',
                                 'Marco Aurelio, emperador y filósofo '
                                 'estoico, sostuvo que se debe vivir conforme '
-                                'a la razón y aceptar el destino.']}]},
+                                'a la razón y aceptar el destino.']}],
+  'qr_reto': [{'pregunta': 'Para Heráclito de Éfeso, el arjé es:',
+               'respuesta': 'El fuego'},
+              {'pregunta': 'Pitágoras de Samos fundó una escuela '
+                           'místico-filosófica en la ciudad de:',
+               'respuesta': 'Crotona'},
+              {'pregunta': 'La escuela fundada por Aristóteles fue:',
+               'respuesta': 'El Liceo'}],
+  'qr_dato': 'Epicuro de Samos: el fin de la vida es el placer entendido '
+             'como ausencia de dolor y serenidad o ataraxia.'},
  {'num': 3,
   'titulo': 'Edad medieval y renacimiento',
   'secciones': [{'titulo': '3.1 CARACTERÍSTICAS DE LA EDAD MEDIA',
@@ -1240,7 +1261,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'Nicolás Maquiavelo: autor de «El Príncipe». '
                                 'Separó la política de la moral; se le '
                                 'atribuye la máxima «el fin justifica los '
-                                'medios».']}]},
+                                'medios».']}],
+  'qr_reto': [{'pregunta': 'El movimiento que valoró la dignidad y las '
+                           'capacidades del ser humano se llamó:',
+               'respuesta': 'Humanismo'},
+              {'pregunta': 'La escolástica se basó como método en:',
+               'respuesta': 'La disputa y el comentario de textos'},
+              {'pregunta': 'San Agustín de Hipona nació en la ciudad de '
+                           'Tagaste, ubicada en la actual:',
+               'respuesta': 'Argelia'}],
+  'qr_dato': 'Etapa de los Padres de la Iglesia, que defendieron el '
+             'cristianismo frente al paganismo.'},
  {'num': 4,
   'titulo': 'La filosofía moderna y filosofía en el Perú',
   'secciones': [{'titulo': '4.1 RACIONALISMO Y EMPIRISMO',
@@ -1891,7 +1922,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'Augusto Salazar Bondy: autor de «¿Existe '
                                 'una filosofía de nuestra América?». Sostuvo '
                                 'que nuestra filosofía ha sido imitativa por '
-                                'ser reflejo de una sociedad dominada.']}]},
+                                'ser reflejo de una sociedad dominada.']}],
+  'qr_reto': [{'pregunta': 'Según Salazar Bondy, la filosofía '
+                           'latinoamericana ha sido:',
+               'respuesta': 'Imitativa, reflejo de una sociedad dominada'},
+              {'pregunta': 'El ídolo baconiano relacionado con el mal uso '
+                           'del lenguaje se llama ídolo del:',
+               'respuesta': 'Foro'},
+              {'pregunta': 'El ideal nietzscheano del hombre que acepta la '
+                           'muerte de Dios y vive fiel a la tierra se llama:',
+               'respuesta': 'El superhombre'}],
+  'qr_dato': 'Hegel: desarrolló el método dialéctico, con tres momentos: '
+             'tesis, antítesis y síntesis. Su sistema es idealista.'},
  {'num': 5,
   'titulo': 'Antropología filosófica: el problema del hombre',
   'secciones': [{'titulo': '5.1 CONCEPTO',
@@ -2145,7 +2187,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'según Aristóteles («zoon politikon»).',
                                 'Es también un ser racional, capaz de '
                                 'lenguaje simbólico y de trabajo '
-                                'transformador.']}]},
+                                'transformador.']}],
+  'qr_reto': [{'pregunta': 'El hombre es considerado un ser bidimensional '
+                           'porque es a la vez:',
+               'respuesta': 'Natural y espiritual'},
+              {'pregunta': 'Lo que distingue al hombre del resto de '
+                           'animales, según la antropología filosófica, es:',
+               'respuesta': 'Su racionalidad y capacidad simbólica'},
+              {'pregunta': 'El lenguaje simbólico es una característica:',
+               'respuesta': 'Propia del ser humano'}],
+  'qr_dato': 'Disciplina filosófica que estudia al hombre en su totalidad: '
+             'su esencia, su origen y el sentido de su existencia.'},
  {'num': 6,
   'titulo': 'Gnoseología: problema del conocimiento',
   'secciones': [{'titulo': '6.1 CONCEPTO',
@@ -2398,7 +2450,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'resulta útil o funciona en la práctica.',
                                 'Teoría de la coherencia: un enunciado es '
                                 'verdadero si no contradice al conjunto del '
-                                'sistema.']}]},
+                                'sistema.']}],
+  'qr_reto': [{'pregunta': 'La disciplina que estudia el conocimiento en '
+                           'general se denomina:',
+               'respuesta': 'Gnoseología'},
+              {'pregunta': 'El conocimiento racional se caracteriza por ser:',
+               'respuesta': 'Universal, abstracto y objetivo'},
+              {'pregunta': 'En gnoseología, la corriente que afirma que la '
+                           'verdad está relacionada con la fe y la '
+                           'espiritualidad es el:',
+               'respuesta': 'Dogmatismo Religioso'}],
+  'qr_dato': 'En el acto de conocer, el sujeto sale de sí y aprehende las '
+             'propiedades del objeto; el objeto permanece inalterado.'},
  {'num': 7,
   'titulo': 'Corrientes del problema del conocimiento',
   'secciones': [{'titulo': '7.1 POSIBILIDAD DEL CONOCIMIENTO',
@@ -2897,7 +2960,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'criterio de verdad.',
                                 'Fenomenalismo: solo conocemos los '
                                 'fenómenos, no la cosa en sí o noúmeno; '
-                                'representante: Kant.']}]},
+                                'representante: Kant.']}],
+  'qr_reto': [{'pregunta': 'Entre los representantes del racionalismo '
+                           'figuran Descartes, Spinoza y:',
+               'respuesta': 'Leibniz'},
+              {'pregunta': 'El escepticismo relativo, que afirma que toda '
+                           'verdad es relativa, tiene como representante a:',
+               'respuesta': 'Protágoras'},
+              {'pregunta': 'El criticismo fue formulado por:',
+               'respuesta': 'Kant'}],
+  'qr_dato': 'Empirismo: el origen es la experiencia; su método es la '
+             'inducción. Representantes: Locke, Hume, Bacon y Berkeley.'},
  {'num': 8,
   'titulo': 'Problema de la ciencia: epistemología',
   'secciones': [{'titulo': '8.1 CONCEPTO',
@@ -3272,7 +3345,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'Las fácticas se dividen en ciencias '
                                 'naturales (física, química, biología) y '
                                 'ciencias sociales (historia, economía, '
-                                'sociología).']}]},
+                                'sociología).']}],
+  'qr_reto': [{'pregunta': 'Mario Bunge clasificó las ciencias en formales '
+                           'y:',
+               'respuesta': 'Fácticas'},
+              {'pregunta': 'La disciplina que estudia el conocimiento '
+                           'científico es la:',
+               'respuesta': 'Epistemología'},
+              {'pregunta': 'Que la ciencia busque reflejar la realidad tal '
+                           'cual es corresponde a que es:',
+               'respuesta': 'Objetiva'}],
+  'qr_dato': 'Ley científica: enunciado que expresa una relación constante y '
+             'necesaria entre fenómenos.'},
  {'num': 9,
   'titulo': 'Problema del valor y la ética',
   'secciones': [{'titulo': '9.1 AXIOLOGÍA',
@@ -3774,7 +3858,19 @@ BALOTAS_FILO = [{'num': 1,
                                 'acción negativa: el remordimiento.',
                                 'La sanción jurídica es la pena impuesta por '
                                 'el Estado a quien viola una ley, regulada '
-                                'por los tribunales.']}]},
+                                'por los tribunales.']}],
+  'qr_reto': [{'pregunta': 'La pena impuesta por el Estado a quien viola una '
+                           'ley, regulada por los tribunales, se llama:',
+               'respuesta': 'Sanción jurídica'},
+              {'pregunta': 'El utilitarismo sostiene que una acción es moral '
+                           'si:',
+               'respuesta': 'Es útil, es decir, produce felicidad'},
+              {'pregunta': 'El imperativo categórico de Kant establece: obra '
+                           'de tal modo que tu acción pueda convertirse en:',
+               'respuesta': 'Ley universal'}],
+  'qr_dato': 'Corrientes éticas: el eudemonismo de Aristóteles (el fin es la '
+             'felicidad), la ética kantiana del deber, y el utilitarismo de '
+             'Stuart Mill (la mayor felicidad para el mayor número).'},
  {'num': 10,
   'titulo': 'Lógica, lenguaje y pensamiento',
   'secciones': [{'titulo': '10.1 DEFINICIÓN DE LÓGICA',
@@ -4192,8 +4288,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'El lenguaje formalizado usa símbolos, es '
                                 'preciso, unívoco y sin ambigüedad.',
                                 'La argumentación es el conjunto de razones '
-                                '(premisas) que sustentan una '
-                                'conclusión.']}]},
+                                '(premisas) que sustentan una conclusión.']}],
+  'qr_reto': [{'pregunta': 'En el campo de la lógica, Sócrates es reconocido '
+                           'por descubrir el concepto de la definición y de:',
+               'respuesta': 'La inducción'},
+              {'pregunta': 'En la lógica moderna, el filósofo que intentó '
+                           'construir un Lenguaje Universal fue:',
+               'respuesta': 'Wilhelm Leibniz'},
+              {'pregunta': 'El fundador de la lógica es:',
+               'respuesta': 'Aristóteles'}],
+  'qr_dato': 'La argumentación es el conjunto de razones (premisas) que '
+             'sustentan una conclusión.'},
  {'num': 11,
   'titulo': 'Falacias',
   'secciones': [{'titulo': '11.1 FALACIAS FORMALES',
@@ -4469,7 +4574,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'Anfibología: la ambigüedad proviene de la '
                                 'construcción gramatical de la frase.',
                                 'Énfasis: el significado cambia según la '
-                                'palabra que se acentúa o destaca.']}]},
+                                'palabra que se acentúa o destaca.']}],
+  'qr_reto': [{'pregunta': '«Si presenta un reclamo, su permanencia en la '
+                           'empresa puede acortarse» es una falacia:',
+               'respuesta': 'Ad báculum'},
+              {'pregunta': 'La falacia formal que se comete al invertir la '
+                           'ley del Modus Ponens se llama:',
+               'respuesta': 'Afirmación del consecuente'},
+              {'pregunta': '«Me levanté con el pie izquierdo, hoy será un '
+                           'mal día» es una falacia de:',
+               'respuesta': 'Causa falsa'}],
+  'qr_dato': 'Ad báculum: apelación a la fuerza o a la amenaza. «La fuerza '
+             'hace el derecho».'},
  {'num': 12,
   'titulo': 'Pruebas formales en la lógica proposicional',
   'secciones': [{'titulo': '12.1 LA PROPOSICIÓN',
@@ -4802,7 +4918,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'La Transitividad Simétrica (TS) es la '
                                 'transitividad de bicondicionales, con la '
                                 'misma estructura que el SHP pero con '
-                                'premisas bicondicionales.']}]},
+                                'premisas bicondicionales.']}],
+  'qr_reto': [{'pregunta': 'Los paréntesis, corchetes y llaves son símbolos:',
+               'respuesta': 'Auxiliares'},
+              {'pregunta': '«El zorrino no es mamífero» se formaliza como:',
+               'respuesta': '~p'},
+              {'pregunta': 'La regla que combina dos premisas condicionales, '
+                           'donde el consecuente de la primera es el '
+                           'antecedente de la segunda, se llama:',
+               'respuesta': 'Silogismo Hipotético Puro'}],
+  'qr_dato': 'Fórmula molecular: contiene uno o más operadores. Ejemplo: «El '
+             'zorrino no es mamífero» = ~p.'},
  {'num': 13,
   'titulo': 'Tablas de verdad y razonamientos válidos',
   'secciones': [{'titulo': '13.1 LA TABLA DE VERDAD',
@@ -5035,7 +5161,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'La Ley de De Morgan establece que la '
                                 'negación de una conjunción equivale a la '
                                 'disyunción de las negaciones: ~(p ∧ q) ≡ '
-                                '(~p ∨ ~q).']}]},
+                                '(~p ∨ ~q).']}],
+  'qr_reto': [{'pregunta': 'La fórmula que resulta falsa en todos los casos '
+                           'es una:',
+               'respuesta': 'Contradicción'},
+              {'pregunta': 'Una fórmula con 3 variables tiene un número de '
+                           'combinaciones igual a:',
+               'respuesta': '8'},
+              {'pregunta': 'El Silogismo Hipotético Puro concluye p → r a '
+                           'partir de:',
+               'respuesta': 'p → q y q → r'}],
+  'qr_dato': 'Si en alguna fila las premisas son verdaderas y la conclusión '
+             'falsa, el razonamiento es inválido.'},
  {'num': 14,
   'titulo': 'Principios lógicos y lógica formal clásica',
   'secciones': [{'titulo': '14.1 PRINCIPIOS LÓGICOS',
@@ -5265,7 +5402,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'Razonamiento inductivo: va de lo particular '
                                 'a lo general; la conclusión es probable.',
                                 'Razonamiento analógico: concluye por '
-                                'semejanza entre casos.']}]},
+                                'semejanza entre casos.']}],
+  'qr_reto': [{'pregunta': 'El juicio tipo A es:',
+               'respuesta': 'Universal afirmativo'},
+              {'pregunta': 'El número de objetos a los que se aplica un '
+                           'concepto es su:',
+               'respuesta': 'Extensión'},
+              {'pregunta': 'El conjunto de notas o características de un '
+                           'concepto es su:',
+               'respuesta': 'Comprensión'}],
+  'qr_dato': 'Razonamiento inductivo: va de lo particular a lo general; la '
+             'conclusión es probable.'},
  {'num': 15,
   'titulo': 'Inferencias',
   'secciones': [{'titulo': '15.1 INFERENCIAS INMEDIATAS',
@@ -5565,7 +5712,20 @@ BALOTAS_FILO = [{'num': 1,
                                 'vez.',
                                 'Las figuras del silogismo se determinan por '
                                 'la posición del término medio: son '
-                                'cuatro.']}]},
+                                'cuatro.']}],
+  'qr_reto': [{'pregunta': 'De dos premisas negativas:',
+               'respuesta': 'No se sigue conclusión alguna'},
+              {'pregunta': 'De las premisas «Los cusqueños son peruanos» y '
+                           '«Los anteños son cusqueños», la conclusión '
+                           'pertinente sería:',
+               'respuesta': 'Los anteños son peruanos'},
+              {'pregunta': '«Todos los felinos andinos son carnívoros. El '
+                           'puma es un felino; entonces, el puma es un '
+                           'carnívoro» es un razonamiento de tipo:',
+               'respuesta': 'Deductivo'}],
+  'qr_dato': 'Reglas principales: de dos premisas negativas no se sigue '
+             'conclusión; de dos premisas particulares tampoco; el término '
+             'medio debe estar distribuido al menos una vez.'},
  {'num': 16,
   'titulo': 'Lógica de clases',
   'secciones': [{'titulo': '16.1 EL ÁLGEBRA BOOLEANA',
@@ -5825,7 +5985,17 @@ BALOTAS_FILO = [{'num': 1,
                                 'elementos comunes a ambas clases. Se '
                                 'simboliza ∩.',
                                 'Diferencia: elementos que pertenecen a una '
-                                'clase pero no a la otra.']}]},
+                                'clase pero no a la otra.']}],
+  'qr_reto': [{'pregunta': 'La clase universal se representa con el símbolo:',
+               'respuesta': '1'},
+              {'pregunta': 'La operación que toma los elementos de una clase '
+                           'que no están en la otra es la:',
+               'respuesta': 'Diferencia'},
+              {'pregunta': 'El conjunto de todos los objetos que poseen una '
+                           'característica común es una:',
+               'respuesta': 'Clase'}],
+  'qr_dato': 'Unión o suma: reúne los elementos de ambas clases. Se '
+             'simboliza ∪.'},
  {'num': 17,
   'titulo': 'Fórmulas booleanas y diagramas de Venn',
   'secciones': [{'titulo': '17.1 DIAGRAMACIÓN DE UNA CLASE',
@@ -6084,4 +6254,15 @@ BALOTAS_FILO = [{'num': 1,
                                 'válidos según la lógica tradicional.',
                                 'La ley del contenido existencial se aplica '
                                 'cuando ambas premisas son universales y la '
-                                'conclusión es particular.']}]}]
+                                'conclusión es particular.']}],
+  'qr_reto': [{'pregunta': 'Expresiones como «solo» y «únicamente» suelen '
+                           'equivaler a juicios:',
+               'respuesta': 'Universales'},
+              {'pregunta': 'La ley del contenido existencial se aplica en un '
+                           'silogismo cuando ambas premisas son universales '
+                           'y la conclusión es:',
+               'respuesta': 'Particular'},
+              {'pregunta': 'Al diagramar conviene comenzar por las premisas:',
+               'respuesta': 'Universales'}],
+  'qr_dato': 'La ley del contenido existencial se aplica cuando ambas '
+             'premisas son universales y la conclusión es particular.'}]

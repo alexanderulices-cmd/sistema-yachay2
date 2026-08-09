@@ -506,19 +506,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 '193 países, con una población de 7 450 '
                                 'millones de habitantes (Censo EE.UU. '
                                 '2018).']}],
-  'qr_reto': [{'pregunta': '¿Qué significa etimológicamente Geografía?',
-               'respuesta': 'Descripción de la Tierra (Geo=Tierra, '
-                            'Graphía=Descripción)'},
-              {'pregunta': '¿Quién calculó la circunferencia terrestre en la '
-                           'Antigüedad?',
-               'respuesta': 'Eratóstenes'},
-              {'pregunta': '¿Qué principio metodológico propuso Federico '
-                           'Ratzel?',
-               'respuesta': 'Principio de Localización, Distribución o '
-                            'Extensión'}],
-  'qr_dato': 'El territorio peruano tiene 1 285 216 km² y se ubica '
-             'íntegramente en el hemisferio sur y occidental. ¡Es el 19º '
-             'país más extenso del mundo! 🌎'},
+  'qr_reto': [{'pregunta': 'El objeto de estudio de la Ciencia geográfica es '
+                           'el:',
+               'respuesta': 'Espacio geográfico'},
+              {'pregunta': 'Dentro de la Biogeografía, el estudio de la '
+                           'distribución de los animales corresponde a la:',
+               'respuesta': 'Zoogeografía'},
+              {'pregunta': 'El origen, estructura y clases de suelos es '
+                           'estudiado por la:',
+               'respuesta': 'Edafología'}],
+  'qr_dato': 'Herramientas de la Geografía Aplicada: cartografía digital, '
+             'Sistemas de Información Geográfica (SIG) y teledetección.'},
  {'num': 2,
   'titulo': 'Geosistema y Espacio Exterior',
   'secciones': [{'titulo': '2.1 EL GEOSISTEMA',
@@ -1058,7 +1056,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'forma achatada de la Tierra.',
                                 'La rotación también genera la desviación de '
                                 'vientos y corrientes marinas, y la '
-                                'presencia de las mareas.']}]},
+                                'presencia de las mareas.']}],
+  'qr_reto': [{'pregunta': 'El Sol contiene de la masa total del Sistema '
+                           'Solar aproximadamente:',
+               'respuesta': '98,85%'},
+              {'pregunta': 'La ciencia que estudia y determina la forma y '
+                           'dimensiones de la Tierra y su campo de gravedad '
+                           'se llama:',
+               'respuesta': 'Geodesia'},
+              {'pregunta': 'Según el Big-Bang, el universo se originó hace '
+                           'aproximadamente:',
+               'respuesta': '15 000 millones de años'}],
+  'qr_dato': 'La entidad biótica del geosistema es la biósfera; la entidad '
+             'antrópica es la sociósfera o antropósfera.'},
  {'num': 3,
   'titulo': 'Cartografía y Sistemas de Información Geográfica',
   'secciones': [{'titulo': '3.1 LA CARTOGRAFÍA',
@@ -1508,7 +1518,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 '360 grados.',
                                 'La convención universal que estableció los '
                                 'husos horarios se realizó en Washington en '
-                                'el año 1884.']}]},
+                                'el año 1884.']}],
+  'qr_reto': [{'pregunta': 'Los meridianos convergen (se unen) en:',
+               'respuesta': 'Los polos'},
+              {'pregunta': 'El Trópico de Capricornio se ubica en el '
+                           'hemisferio:',
+               'respuesta': 'Sur'},
+              {'pregunta': 'El meridiano de Greenwich y su opuesto dividen '
+                           'la Tierra en los hemisferios:',
+               'respuesta': 'Occidental y Oriental'}],
+  'qr_dato': 'La proyección cilíndrica más utilizada es la de Mercator.'},
  {'num': 4,
   'titulo': 'Mapas: Lectura e Interpretación',
   'secciones': [{'titulo': '4.1 CONCEPTO Y CLASIFICACIÓN',
@@ -1973,7 +1992,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'procedimiento.',
                                 'Las escalas gráficas, expresadas como un '
                                 'segmento graduado, también se pueden '
-                                'convertir a escala numérica.']}]},
+                                'convertir a escala numérica.']}],
+  'qr_reto': [{'pregunta': 'Los mapas de continentes y del mundo '
+                           'corresponden a una escala:',
+               'respuesta': 'Muy pequeña'},
+              {'pregunta': 'Un mapa hidrográfico indica principalmente:',
+               'respuesta': 'La distribución de ríos y lagos'},
+              {'pregunta': 'La ventaja principal del mapa frente a la esfera '
+                           'terrestre es:',
+               'respuesta': 'Facilidad de manejo y representación ampliada '
+                            'de áreas pequeñas'}],
+  'qr_dato': 'La Carta Geográfica Nacional es un gran mapa de nuestro país '
+             'dividido en 501 hojas o mapas topográficos.'},
  {'num': 5,
   'titulo': 'Relieve Terrestre: Origen y Procesos Dinámicos',
   'secciones': [{'titulo': '5.1 ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO Y '
@@ -2602,8 +2632,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'El cono aluvial o cono de deyección son '
                                 'materiales depositados por corrientes '
                                 'fluviales tras las precipitaciones; también '
-                                'incluyen derrames volcánicos y '
-                                'morrenas.']}]},
+                                'incluyen derrames volcánicos y morrenas.']}],
+  'qr_reto': [{'pregunta': 'Las placas tectónicas en sentido convergente '
+                           'originan bordes:',
+               'respuesta': 'Destructivos'},
+              {'pregunta': 'La geodinámica interna comprende movimientos '
+                           'orogénicos, epirogénicos y:',
+               'respuesta': 'Vulcanismo'},
+              {'pregunta': 'El relieve terrestre se define como el conjunto '
+                           'de:',
+               'respuesta': 'Irregularidades o geoformas de la superficie'}],
+  'qr_dato': 'El cono aluvial o cono de deyección son materiales depositados '
+             'por corrientes fluviales tras las precipitaciones; también '
+             'incluyen derrames volcánicos y morrenas.'},
  {'num': 6,
   'titulo': 'Espacio Geográfico Peruano: Región Andina',
   'secciones': [{'titulo': '6.1 LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
@@ -3143,7 +3184,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Entre las importancias de los glaciares '
                                 'están constituir reservas de agua dulce y '
                                 'mantener el balance hídrico de las '
-                                'cuencas.']}]},
+                                'cuencas.']}],
+  'qr_reto': [{'pregunta': 'El punto extremo este del Perú limita con:',
+               'respuesta': 'Bolivia'},
+              {'pregunta': 'La longitud del litoral peruano es '
+                           'aproximadamente de:',
+               'respuesta': '3 080 km'},
+              {'pregunta': 'El territorio peruano se ubica en la zona:',
+               'respuesta': 'Tórrida'}],
+  'qr_dato': 'La longitud del litoral peruano es de 3 080 km, desde Boca de '
+             'Capones hasta el hito La Concordia.'},
  {'num': 7,
   'titulo': 'Espacio Geográfico Peruano: Región Amazónica y Costa',
   'secciones': [{'titulo': '7.1 LA REGIÓN AMAZÓNICA',
@@ -3617,7 +3667,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 '(Áncash), Paracas (Ica).',
                                 'Las islas son porciones de tierra en medio '
                                 'del mar; albergan aves guaneras: San '
-                                'Lorenzo, Ballestas, Pachacámac.']}]},
+                                'Lorenzo, Ballestas, Pachacámac.']}],
+  'qr_reto': [{'pregunta': 'Los entrantes de mar en el continente, como '
+                           'Paracas en Ica, se llaman:',
+               'respuesta': 'Bahías'},
+              {'pregunta': 'La selva alta también se conoce como:',
+               'respuesta': 'Rupa Rupa o Ceja de Selva'},
+              {'pregunta': 'Los valles de Tocache y Chanchamayo se '
+                           'encuentran, respectivamente, en los '
+                           'departamentos de:',
+               'respuesta': 'San Martín - Junín'}],
+  'qr_dato': 'La región amazónica comprende dos subregiones: la selva alta y '
+             'la selva baja.'},
  {'num': 8,
   'titulo': 'Hidrografía del Perú: Ríos y Lagos',
   'secciones': [{'titulo': '8.1 CARACTERÍSTICAS DE LOS RÍOS',
@@ -3915,7 +3976,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                       'items': ['El río más extenso del Perú es el Ucayali, '
                                 'con 1771 km.',
                                 'El segundo río más extenso del Perú es el '
-                                'Marañón, con 1414 km.']}]},
+                                'Marañón, con 1414 km.']}],
+  'qr_reto': [{'pregunta': 'El río Ramis, principal afluente del Titicaca, '
+                           'tiene una longitud de:',
+               'respuesta': '304 km'},
+              {'pregunta': 'La ANA ha identificado en el Perú un total de '
+                           'unidades hidrográficas de:',
+               'respuesta': '159'},
+              {'pregunta': 'El sector del Titicaca correspondiente al Perú '
+                           'se llama lago Mayor o:',
+               'respuesta': 'Chucuito'}],
+  'qr_dato': 'La cuenca del Amazonas representa el 74,5% del territorio '
+             'nacional, y es la cuenca más extensa del Perú, de América y '
+             'del mundo.'},
  {'num': 9,
   'titulo': 'Hidrografía del Perú: Mar Peruano',
   'secciones': [{'titulo': '9.1 EL MAR PERUANO',
@@ -4297,7 +4370,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'es agua subterránea.',
                                 'Las aguas subterráneas son importantes para '
                                 'el sostenimiento de ríos, lagos, humedales '
-                                'y otros ecosistemas.']}]},
+                                'y otros ecosistemas.']}],
+  'qr_reto': [{'pregunta': 'Las fosas marinas se producen por:',
+               'respuesta': 'La subducción de la Placa de Nasca'},
+              {'pregunta': 'El mar peruano se extiende, en distancia, hasta:',
+               'respuesta': '200 millas'},
+              {'pregunta': 'El fenómeno del afloramiento consiste en:',
+               'respuesta': 'El ascenso de aguas frías hacia la superficie'}],
+  'qr_dato': 'Del total del agua dulce terrestre, el 21% es agua '
+             'subterránea.'},
  {'num': 10,
   'titulo': 'Atmósfera y Cambio Climático',
   'secciones': [{'titulo': '10.1 LA ATMÓSFERA Y SU COMPOSICIÓN',
@@ -4844,7 +4925,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'ausencia de precipitaciones.',
                                 'El Anticiclón del Pacífico Sur, junto con '
                                 'la Corriente Peruana, determina el clima '
-                                'árido de la costa.']}]},
+                                'árido de la costa.']}],
+  'qr_reto': [{'pregunta': 'Sin la atmósfera, el paisaje terrestre sería '
+                           'similar al de:',
+               'respuesta': 'La Luna'},
+              {'pregunta': 'El estado medio de las condiciones atmosféricas '
+                           'de un lugar a lo largo de un año se llama:',
+               'respuesta': 'Clima'},
+              {'pregunta': 'El peso o fuerza que ejerce el aire sobre la '
+                           'superficie terrestre se llama:',
+               'respuesta': 'Presión atmosférica'}],
+  'qr_dato': 'El gas más abundante de la atmósfera es el nitrógeno, con '
+             '78,08%; le sigue el oxígeno, con 20,94%.'},
  {'num': 11,
   'titulo': 'Recursos Naturales, Conservación e Impacto Ambiental',
   'secciones': [{'titulo': '11.1 CONCEPTO Y CLASIFICACIÓN',
@@ -5317,7 +5409,20 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'climático, según el IPCC.',
                                 'La pobreza, más que cualquier otro factor, '
                                 'determina la vulnerabilidad frente al '
-                                'cambio climático.']}]},
+                                'cambio climático.']}],
+  'qr_reto': [{'pregunta': 'Los compuestos formados por cloro, flúor y '
+                           'carbono, usados como refrigerantes y '
+                           'disolventes, que deterioran la capa de ozono, se '
+                           'llaman:',
+               'respuesta': 'Clorofluorocarburos (CFC)'},
+              {'pregunta': 'Cuando el hombre aprovecha un recurso natural, '
+                           'este se convierte en:',
+               'respuesta': 'Recurso económico'},
+              {'pregunta': 'Los fosfatos como fertilizante se explotan en:',
+               'respuesta': 'Bayóvar, Piura'}],
+  'qr_dato': 'El calentamiento global es el aumento de la temperatura media '
+             'de los océanos y la atmósfera, causado por emisiones que '
+             'realzan el efecto invernadero.'},
  {'num': 12,
   'titulo': 'Riesgo de Desastres en el Perú',
   'secciones': [{'titulo': '12.1 EL SINAGERD',
@@ -5945,7 +6050,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Distrital, por el Alcalde Distrital.',
                                 'El brigadista es la persona entre 16 y 40 '
                                 'años que, de forma voluntaria, conforma la '
-                                'Brigada de Defensa Civil.']}]},
+                                'Brigada de Defensa Civil.']}],
+  'qr_reto': [{'pregunta': 'Una situación en la que un animal produce daños '
+                           'económicos a intereses de las personas se llama:',
+               'respuesta': 'Plaga'},
+              {'pregunta': 'El SINAGERD busca capacitar a los componentes '
+                           'del sistema para:',
+               'respuesta': 'La toma de decisiones'},
+              {'pregunta': 'El punto en la profundidad de la Tierra desde '
+                           'donde se libera la energía en un movimiento '
+                           'sísmico se llama:',
+               'respuesta': 'Hipocentro o foco'}],
+  'qr_dato': 'No puede haber riesgo sin amenaza y tampoco sin '
+             'vulnerabilidad.'},
  {'num': 13,
   'titulo': 'Dinámica Poblacional en el Perú',
   'secciones': [{'titulo': '13.1 DEMOGRAFÍA Y DEMOGEOGRAFÍA',
@@ -6327,7 +6444,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'población urbana.',
                                 'Provoca problemas sociales en las ciudades '
                                 'como delincuencia, drogadicción y '
-                                'alcoholismo.']}]},
+                                'alcoholismo.']}],
+  'qr_reto': [{'pregunta': 'Según el INEI, la población del Perú al 2017 '
+                           'superaba:',
+               'respuesta': '31 237 385 habitantes'},
+              {'pregunta': 'La población nominal es:',
+               'respuesta': 'El número total de habitantes censados'},
+              {'pregunta': 'El desplazamiento de la población de un lugar de '
+                           'origen a un lugar de residencia se llama:',
+               'respuesta': 'Migración'}],
+  'qr_dato': 'La población relativa o densidad de población es el número de '
+             'habitantes por km² de área territorial.'},
  {'num': 14,
   'titulo': 'Actividades Económicas Extractivas en el Perú',
   'secciones': [{'titulo': '14.1 LA PESCA EN EL MAR PERUANO',
@@ -6849,7 +6976,20 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'neumoconiosis y cáncer de pulmón.',
                                 'La minería ilegal en Madre de Dios ha '
                                 'destruido una extensión de bosques '
-                                'equivalente a 41 mil canchas de fútbol.']}]},
+                                'equivalente a 41 mil canchas de fútbol.']}],
+  'qr_reto': [{'pregunta': 'El principal productor de maíz amiláceo en el '
+                           'territorio peruano es el departamento de:',
+               'respuesta': 'Cajamarca'},
+              {'pregunta': 'El principal puerto pesquero del Perú, según '
+                           'datos de 2018, fue:',
+               'respuesta': 'Chimbote'},
+              {'pregunta': 'El centro minero que constituye la mayor reserva '
+                           'minera del Perú, ubicado en Áncash, que '
+                           'transporta cobre y zinc por un mineroducto, es:',
+               'respuesta': 'Antamina'}],
+  'qr_dato': 'El petróleo, llamado «oro negro», es un mineral energético '
+             'formado a partir de microorganismos marinos enterrados hace '
+             'millones de años.'},
  {'num': 15,
   'titulo': 'Actividades Económicas Reproductivas en el Perú',
   'secciones': [{'titulo': '15.1 LA AGRICULTURA EN EL PERÚ',
@@ -7301,8 +7441,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La ganadería utiliza el 30% de la '
                                 'superficie terrestre del planeta; en el '
                                 'Amazonas, el 70% de los bosques '
-                                'desaparecidos se dedicaron a '
-                                'pastizales.']}]},
+                                'desaparecidos se dedicaron a pastizales.']}],
+  'qr_reto': [{'pregunta': 'Según la FAO, el Perú tiene en cultivo '
+                           'aproximadamente:',
+               'respuesta': '4,4 millones de hectáreas'},
+              {'pregunta': 'La agricultura de la región andina se '
+                           'caracteriza por ser:',
+               'respuesta': 'Extensiva y tradicional'},
+              {'pregunta': 'En el antiguo Perú se cultivaba, entre otros '
+                           'productos:',
+               'respuesta': 'Papa, quinua y oca'}],
+  'qr_dato': 'La agricultura costeña goza de asistencia crediticia por parte '
+             'de bancos y entidades financieras.'},
  {'num': 16,
   'titulo': 'Actividades del Transporte en el Perú',
   'secciones': [{'titulo': '16.1 CARRETERAS LONGITUDINALES DEL PERÚ',
@@ -7447,7 +7597,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Neuman, en Nasca, Ica.',
                                 'El aeropuerto Carlos Martínez de Pinillos '
                                 'está en Trujillo, La Libertad; el Padre '
-                                'Aldamiz, en Puerto Maldonado.']}]},
+                                'Aldamiz, en Puerto Maldonado.']}],
+  'qr_reto': [{'pregunta': 'El aeropuerto internacional Padre Aldamiz está '
+                           'ubicado en la ciudad de:',
+               'respuesta': 'Puerto Maldonado'},
+              {'pregunta': 'El aeropuerto internacional Francisco Secada '
+                           'Vignetta está ubicado en la ciudad de:',
+               'respuesta': 'Iquitos'},
+              {'pregunta': 'La Carretera Longitudinal de la Sierra Sur llega '
+                           'hasta Desaguadero, en la frontera con:',
+               'respuesta': 'Bolivia'}],
+  'qr_dato': 'La Carretera Longitudinal de la Costa se divide en tramo norte '
+             '(Tumbes-Lima) y tramo sur (Lima-Tacna, frontera con Chile).'},
  {'num': 17,
   'titulo': 'Geografía Política del Perú y Gestión Territorial',
   'secciones': [{'titulo': '17.1 GEOGRAFÍA POLÍTICA',
@@ -7806,7 +7967,21 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'ancestrales.',
                                 'Según estudios de la UNMSM, a nivel '
                                 'distrital el 80% de las capitales tienen la '
-                                'categoría de pueblo.']}]},
+                                'categoría de pueblo.']}],
+  'qr_reto': [{'pregunta': 'El nivel de estudio de la ZEE que contribuye a '
+                           'la elaboración de políticas y planes de '
+                           'desarrollo en el ámbito local o distrital, con '
+                           'escala 1:25 000, es el nivel de:',
+               'respuesta': 'Microzonificación'},
+              {'pregunta': 'La descentralización implica la transferencia de '
+                           'recursos del gobierno nacional hacia:',
+               'respuesta': 'Los gobiernos regionales y locales'},
+              {'pregunta': 'El departamento de Tumbes tiene una extensión '
+                           'aproximada de:',
+               'respuesta': '4 669 km²'}],
+  'qr_dato': 'La geografía política estudia la organización política y '
+             'administrativa de los Estados, sus formas de gobierno, '
+             'fronteras y relaciones con otros Estados.'},
  {'num': 18,
   'titulo': 'Espacio Geográfico Físico del Cusco',
   'secciones': [{'titulo': '18.1 LOCALIZACIÓN Y EXTENSIÓN',
@@ -8341,7 +8516,21 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'una montaña con más de 1,5 millones de '
                                 'toneladas de desechos.',
                                 'El botadero de Jaquira recibe a diario un '
-                                'promedio de 380 toneladas de desechos.']}]},
+                                'promedio de 380 toneladas de desechos.']}],
+  'qr_reto': [{'pregunta': 'El departamento del Cusco tiene un número de '
+                           'distritos igual a:',
+               'respuesta': '112'},
+              {'pregunta': 'El sistema de fallas del Cusco, que comprende '
+                           'más de 100 km entre Abancay y Urcos, incluye la '
+                           'falla:',
+               'respuesta': 'Tambomachay'},
+              {'pregunta': 'El valle del Vilcanota-Urubamba concentra '
+                           'aproximadamente qué porcentaje de la población '
+                           'del departamento del Cusco:',
+               'respuesta': '79%'}],
+  'qr_dato': 'El sistema de fallas del Cusco comprende más de 100 km, entre '
+             'Abancay y Urcos, pasando cerca de la ciudad; incluye las '
+             'fallas Zurite, Chinchero y Tambomachay.'},
  {'num': 19,
   'titulo': 'Geografía de América',
   'secciones': [{'titulo': '19.1 GENERALIDADES DEL CONTINENTE',
@@ -8750,7 +8939,21 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'petróleo y plata.',
                                 'La capital de Estados Unidos es Washington, '
                                 'y su moneda es el dólar; su principal '
-                                'actividad económica es la industria.']}]},
+                                'actividad económica es la industria.']}],
+  'qr_reto': [{'pregunta': 'La estrecha franja de terreno que conecta '
+                           'Norteamérica y América del Sur, rodeada por el '
+                           'mar Caribe y el océano Pacífico, se llama:',
+               'respuesta': 'América Central'},
+              {'pregunta': 'La Gran Llanura Central de Norteamérica es '
+                           'drenada principalmente por el río Mississippi y '
+                           'el río:',
+               'respuesta': 'Missouri'},
+              {'pregunta': 'El país con menor extensión territorial de '
+                           'América del Norte es:',
+               'respuesta': 'Belice'}],
+  'qr_dato': 'El relieve centroamericano es mayormente montañoso y '
+             'escarpado, con una cadena volcánica; en su territorio se '
+             'construyó el Canal de Panamá.'},
  {'num': 20,
   'titulo': 'Geografía de Europa, Asia, África, Antártida y Oceanía',
   'secciones': [{'titulo': '20.1 EUROPA',
@@ -8989,4 +9192,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'políticamente en 14 países.',
                                 'Australia es el país más extenso de '
                                 'Oceanía, con relieve llano y numerosos '
-                                'desiertos.']}]}]
+                                'desiertos.']}],
+  'qr_reto': [{'pregunta': 'El desierto más grande de la Tierra, ubicado en '
+                           'África, es el desierto:',
+               'respuesta': 'Sahara'},
+              {'pregunta': 'Las cuatro áreas geográficas en que se agrupa '
+                           'Oceanía son Australasia, Micronesia, Polinesia '
+                           'y:',
+               'respuesta': 'Melanesia'},
+              {'pregunta': 'Oceanía es el continente más pequeño de la '
+                           'Tierra y se caracteriza por ser eminentemente:',
+               'respuesta': 'Insular'}],
+  'qr_dato': 'Europa tiene 10 400 000 km² y está dividida políticamente en '
+             '43 países.'}]

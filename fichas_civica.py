@@ -464,7 +464,21 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'griego «ethos» (costumbre).',
                                 'La Ética es la disciplina que trata la '
                                 'moral, y la Moral es la práctica de la '
-                                'ética.']}]},
+                                'ética.']}],
+  'qr_reto': [{'pregunta': 'A la práctica general, uniforme y constantemente '
+                           'repetida de una determinada conducta por los '
+                           'miembros de una comunidad se le denomina:',
+               'respuesta': 'Costumbre'},
+              {'pregunta': 'La Ley es toda norma jurídica emanada del poder '
+                           'público, destinada a regular la conducta:',
+               'respuesta': 'Externa de las personas dentro de la sociedad'},
+              {'pregunta': 'Los estudios especializados del derecho, que dan '
+                           'lugar a escuelas y teorías jurídicas pero '
+                           'carecen de fuerza legal obligatoria, '
+                           'constituyen:',
+               'respuesta': 'La doctrina'}],
+  'qr_dato': 'Según el artículo 139 de la Constitución vigente, los '
+             'principios generales del derecho tienen fuerza de ley.'},
  {'num': 2,
   'titulo': 'Valores Cívicos Sociales',
   'secciones': [{'titulo': '2.1 CONCEPTO DE VALOR',
@@ -826,7 +840,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'conformidad en la calidad, cantidad o forma '
                                 'de dos o más elementos.',
                                 'La igualdad se asocia con otras palabras '
-                                'como la justicia y la solidaridad.']}]},
+                                'como la justicia y la solidaridad.']}],
+  'qr_reto': [{'pregunta': 'Tener valores se relaciona directamente con:',
+               'respuesta': 'Respetar a los demás'},
+              {'pregunta': 'La justicia social comprende:',
+               'respuesta': 'El conjunto de decisiones, normas y principios '
+                            'razonables de una organización social'},
+              {'pregunta': 'La justicia que busca el bien de la sociedad '
+                           'entera se llama:',
+               'respuesta': 'General'}],
+  'qr_dato': 'Los valores son las vivencias e ideales que orientan nuestros '
+             'actos en beneficio propio y de la colectividad, llevándonos a '
+             'la superación personal.'},
  {'num': 3,
   'titulo': 'Persona y Sociedad',
   'secciones': [{'titulo': '3.1 LA PERSONA: ENFOQUE CONSTITUCIONAL Y LEGAL',
@@ -1175,7 +1200,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'la persona a reivindicar sus bienes.',
                                 'Las personas jurídicas pueden ser de '
                                 'derecho público o de derecho privado, según '
-                                'la doctrina.']}]},
+                                'la doctrina.']}],
+  'qr_reto': [{'pregunta': 'La unidad psicosomática de la persona implica '
+                           'que lo que afecta al cuerpo:',
+               'respuesta': 'Repercute también en la psique, y viceversa'},
+              {'pregunta': 'Etimológicamente, la palabra «persona» '
+                           'originalmente designaba:',
+               'respuesta': 'La máscara usada por los actores de teatro'},
+              {'pregunta': 'La palabra persona es considerada, según el '
+                           'texto, equívoca y:',
+               'respuesta': 'Polisémica'}],
+  'qr_dato': 'Si dos personas perecen en un peligro común, se presume que la '
+             'muerte fue simultánea, salvo prueba de que fue sucesiva.'},
  {'num': 4,
   'titulo': 'Familia',
   'secciones': [{'titulo': '4.1 CONCEPTO Y NATURALEZA',
@@ -1654,7 +1690,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Los apoyos son formas de asistencia '
                                 'libremente elegidas por una persona mayor '
                                 'de edad para facilitar el ejercicio de sus '
-                                'derechos.']}]},
+                                'derechos.']}],
+  'qr_reto': [{'pregunta': 'La persona es sujeto de derecho desde:',
+               'respuesta': 'La concepción'},
+              {'pregunta': 'Para efectos civiles, en la línea colateral se '
+                           'considera hasta el:',
+               'respuesta': 'Cuarto grado'},
+              {'pregunta': 'El artículo de la Constitución peruana que '
+                           'reconoce a la familia como instituto natural y '
+                           'fundamental es el:',
+               'respuesta': 'Artículo 4'}],
+  'qr_dato': 'El parentesco espiritual se establece con motivo de un '
+             'sacramento como el bautismo, la confirmación o el matrimonio, '
+             'entre padrinos y ahijados.'},
  {'num': 5,
   'titulo': 'Nación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ELEMENTOS',
@@ -2310,7 +2358,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El patrimonio natural está constituido por '
                                 'los animales, plantas y territorios con '
                                 'valor excepcional desde el punto de vista '
-                                'estético, científico o ambiental.']}]},
+                                'estético, científico o ambiental.']}],
+  'qr_reto': [{'pregunta': 'El territorio, la raza, la religión y el idioma '
+                           'son elementos de la nación considerados:',
+               'respuesta': 'Secundarios'},
+              {'pregunta': 'El término «peruanidad» fue acuñado por:',
+               'respuesta': 'Víctor Andrés Belaunde García'},
+              {'pregunta': 'La doble nacionalidad confiere a los extranjeros '
+                           'naturalizados:',
+               'respuesta': 'Ningún derecho privativo de los peruanos por '
+                            'nacimiento'}],
+  'qr_dato': 'Los elementos esenciales de la nación son la tradición '
+             'histórica y la conciencia nacional.'},
  {'num': 6,
   'titulo': 'El Estado',
   'secciones': [{'titulo': '6.1 CONCEPTO Y ELEMENTOS',
@@ -2781,7 +2840,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'el parlamento.',
                                 'El gobierno presidencialista también tiene '
                                 'división de poderes, con el Presidente como '
-                                'jefe de Estado y de gobierno.']}]},
+                                'jefe de Estado y de gobierno.']}],
+  'qr_reto': [{'pregunta': 'Las lenguas oficiales adoptadas por la ONU son:',
+               'respuesta': 'Árabe - chino - inglés - francés - ruso - '
+                            'español'},
+              {'pregunta': 'La Organización de los Estados Americanos es un '
+                           'organismo de carácter:',
+               'respuesta': 'Regional'},
+              {'pregunta': 'Sin la organización jurídica, el Estado:',
+               'respuesta': 'Carecería de forma'}],
+  'qr_dato': 'El Estado Constitucional surgió en Inglaterra a mediados del '
+             'siglo XVII, para limitar las decisiones de los monarcas '
+             'absolutos.'},
  {'num': 7,
   'titulo': 'Constitución Política',
   'secciones': [{'titulo': '7.1 CONCEPTO Y NATURALEZA',
@@ -3360,7 +3430,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'materia económica y financiera.',
                                 'El Congreso de la República es unicameral y '
                                 'está integrado por 130 congresistas '
-                                'elegidos directamente.']}]},
+                                'elegidos directamente.']}],
+  'qr_reto': [{'pregunta': 'El Congreso de la República del Perú es de tipo:',
+               'respuesta': 'Unicameral'},
+              {'pregunta': 'Las Constituciones que surgen de un '
+                           'convenio-pacto entre el Rey y el Parlamento se '
+                           'llaman:',
+               'respuesta': 'Pactadas'},
+              {'pregunta': 'La Constitución es descrita como la «norma de '
+                           'normas» porque:',
+               'respuesta': 'Es la primera de las normas de producción'}],
+  'qr_dato': 'La Constitución peruana de 1993 es la norma vigente que rige '
+             'actualmente el ordenamiento jurídico del país.'},
  {'num': 8,
   'titulo': 'Derechos Civiles y Políticos',
   'secciones': [{'titulo': '8.1 EL PACTO INTERNACIONAL DE DERECHOS CIVILES Y '
@@ -3886,7 +3967,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'años.',
                                 'Tras la revocatoria, asume el cargo quien '
                                 'alcanzó el siguiente lugar en votos de la '
-                                'misma lista.']}]},
+                                'misma lista.']}],
+  'qr_reto': [{'pregunta': 'Según la Ley 26300, los ciudadanos pueden '
+                           'participar mediante referéndum, iniciativa '
+                           'legislativa, remoción o:',
+               'respuesta': 'Revocación de autoridades'},
+              {'pregunta': 'John Locke sostuvo que debían convertirse en '
+                           'derechos civiles protegidos por el Estado:',
+               'respuesta': 'La vida, la libertad y la propiedad'},
+              {'pregunta': 'Para que el referéndum sea válido, debe ser '
+                           'aprobado por no menos del:',
+               'respuesta': '30% del total de votantes'}],
+  'qr_dato': 'Los derechos políticos posibilitan la toma de decisiones '
+             'respecto del gobierno del Estado.'},
  {'num': 9,
   'titulo': 'Derechos Económicos, Sociales y Culturales',
   'secciones': [{'titulo': '9.1 CONCEPTO Y FUNDAMENTO',
@@ -4373,7 +4466,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Protocolo de San Salvador entiende el '
                                 'derecho a la salud como el disfrute del más '
                                 'alto nivel de bienestar físico, mental y '
-                                'social.']}]},
+                                'social.']}],
+  'qr_reto': [{'pregunta': 'El artículo 17° establece que la educación '
+                           'inicial, primaria y secundaria son:',
+               'respuesta': 'Obligatorias'},
+              {'pregunta': 'El derecho que constituye la base del bienestar '
+                           'social y un medio de realización de la persona '
+                           'es:',
+               'respuesta': 'El trabajo'},
+              {'pregunta': 'El Estado, según Nogueira, está al servicio de:',
+               'respuesta': 'La persona humana'}],
+  'qr_dato': 'El PIDESC entró en vigor el 3 de enero de 1976.'},
  {'num': 10,
   'titulo': 'Poder Legislativo',
   'secciones': [{'titulo': '10.1 CONCEPTO Y ÓRGANO',
@@ -4942,7 +5045,21 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'funcionamiento.',
                                 'El mandato del congresista es incompatible '
                                 'con otra función pública, excepto la de '
-                                'Ministro de Estado.']}]},
+                                'Ministro de Estado.']}],
+  'qr_reto': [{'pregunta': 'Mediante la función fiscalizadora, el Congreso '
+                           'puede iniciar investigaciones sobre asuntos de '
+                           'interés:',
+               'respuesta': 'Público'},
+              {'pregunta': 'El órgano que tiene a cargo la dirección '
+                           'administrativa del Congreso se llama:',
+               'respuesta': 'La Mesa Directiva'},
+              {'pregunta': 'La función de congresista es de tiempo completo; '
+                           'le está prohibido ejercer otra profesión '
+                           'durante:',
+               'respuesta': 'Las horas de funcionamiento del Congreso'}],
+  'qr_dato': 'La función de congresista es de tiempo completo; le está '
+             'prohibido ejercer otra profesión durante las horas de '
+             'funcionamiento.'},
  {'num': 11,
   'titulo': 'El Poder Ejecutivo',
   'secciones': [{'titulo': '11.1 CONCEPTO Y ORGANIZACIÓN',
@@ -5578,7 +5695,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'el Presidente.',
                                 'El estado de sitio se declara por invasión, '
                                 'guerra exterior o guerra civil; dura hasta '
-                                '45 días.']}]},
+                                '45 días.']}],
+  'qr_reto': [{'pregunta': 'El Poder Ejecutivo está constituido por el '
+                           'Presidente, quien es Jefe de Estado y:',
+               'respuesta': 'Jefe de Gobierno'},
+              {'pregunta': 'Si ningún candidato obtiene mayoría absoluta, se '
+                           'realiza:',
+               'respuesta': 'Una segunda elección entre los dos más votados'},
+              {'pregunta': 'Según el artículo 116, el Presidente jura y '
+                           'asume el cargo ante:',
+               'respuesta': 'El Congreso'}],
+  'qr_dato': 'El Poder Ejecutivo es el órgano encargado de la administración '
+             'del Estado y de la ejecución de las leyes.'},
  {'num': 12,
   'titulo': 'Poder Judicial',
   'secciones': [{'titulo': '12.1 CONCEPTO Y AUTONOMÍA',
@@ -5979,7 +6107,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'el indulto producen efectos de cosa '
                                 'juzgada.',
                                 'El derecho de defensa no puede ser negado '
-                                'en ningún estado del proceso.']}]},
+                                'en ningún estado del proceso.']}],
+  'qr_reto': [{'pregunta': 'En caso de vacío o deficiencia de la ley, el '
+                           'juez debe aplicar los principios generales del '
+                           'derecho y:',
+               'respuesta': 'El derecho consuetudinario'},
+              {'pregunta': 'El principio que impide aplicar por semejanza la '
+                           'ley penal se llama principio de:',
+               'respuesta': 'Inaplicabilidad por analogía'},
+              {'pregunta': 'La motivación escrita de las resoluciones '
+                           'judiciales es obligatoria en:',
+               'respuesta': 'Todas las instancias'}],
+  'qr_dato': 'La publicidad en los procesos es la regla general, salvo '
+             'disposición contraria de la ley.'},
  {'num': 13,
   'titulo': 'Organismos Constitucionales Autónomos',
   'secciones': [{'titulo': '13.1 CONCEPTO Y RELACIÓN',
@@ -6610,7 +6750,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Junta Nacional de Justicia por cuatro años.',
                                 'A la ONPE le corresponde organizar todos '
                                 'los procesos electorales y el diseño de la '
-                                'cédula de sufragio.']}]},
+                                'cédula de sufragio.']}],
+  'qr_reto': [{'pregunta': 'El organismo encargado de inscribir los actos '
+                           'relativos a la capacidad y estado civil de las '
+                           'personas naturales es:',
+               'respuesta': 'RENIEC'},
+              {'pregunta': 'Los miembros del Tribunal Constitucional son '
+                           'elegidos por un periodo de:',
+               'respuesta': 'Cinco años'},
+              {'pregunta': 'El Estado peruano se organiza a nivel nacional, '
+                           'regional y:',
+               'respuesta': 'Local'}],
+  'qr_dato': 'El Ministerio Público es el órgano persecutor del delito, y es '
+             'presidido por el Fiscal de la Nación.'},
  {'num': 14,
   'titulo': 'Régimen Económico',
   'secciones': [{'titulo': '14.1 CONCEPTO',
@@ -7165,7 +7317,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El principio de igualdad tributaria '
                                 'establece que situaciones iguales deben ser '
                                 'tratadas igualmente y las desiguales, '
-                                'desigualmente.']}]},
+                                'desigualmente.']}],
+  'qr_reto': [{'pregunta': 'El mercado y la competencia, según el texto, '
+                           'deben garantizar la libertad de:',
+               'respuesta': 'Consumidores, empleadores y trabajadores'},
+              {'pregunta': 'La libertad de comercio se define como la '
+                           'capacidad de mediar entre la oferta y:',
+               'respuesta': 'La demanda'},
+              {'pregunta': 'Entre los principios que rigen el régimen '
+                           'económico peruano figura la libre:',
+               'respuesta': 'Competencia'}],
+  'qr_dato': 'La libertad de empresa comprende la facultad de emprender, '
+             'crear, organizar, gestionar, competir y cerrar una empresa.'},
  {'num': 15,
   'titulo': 'Descentralización, Gobiernos Regionales y Gobiernos Locales',
   'secciones': [{'titulo': '15.1 CONCEPTO DE DESCENTRALIZACIÓN',
@@ -7649,7 +7812,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Consejo de Coordinación Local y las '
                                 'Juntas de Delegados Vecinales son '
                                 'mecanismos de participación ciudadana '
-                                'municipal.']}]},
+                                'municipal.']}],
+  'qr_reto': [{'pregunta': 'El periodo del federalismo fallido en el Perú se '
+                           'ubica entre:',
+               'respuesta': '1821 y 1873'},
+              {'pregunta': 'Históricamente, el Perú ha sido caracterizado '
+                           'por los analistas como un país:',
+               'respuesta': 'Centralista'},
+              {'pregunta': 'Un objetivo general de la descentralización es '
+                           'que cada gobierno regional y local:',
+               'respuesta': 'Decida sobre sus propios recursos'}],
+  'qr_dato': 'Los analistas coinciden en caracterizar al Perú como un país '
+             'históricamente centralista.'},
  {'num': 16,
   'titulo': 'Derechos Humanos',
   'secciones': [{'titulo': '16.1 CONCEPTO',
@@ -8266,7 +8440,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'la Asamblea General de la ONU el 10 de '
                                 'diciembre de 1948.',
                                 'La Declaración Universal consta de un '
-                                'preámbulo y 30 artículos.']}]},
+                                'preámbulo y 30 artículos.']}],
+  'qr_reto': [{'pregunta': 'La Carta Internacional de los Derechos Humanos '
+                           'incluye la Carta de la ONU, la Declaración '
+                           'Universal y:',
+               'respuesta': 'Los dos Pactos Internacionales de 1966'},
+              {'pregunta': 'La Convención Internacional para la prevención y '
+                           'sanción del crimen de genocidio data de:',
+               'respuesta': '1948'},
+              {'pregunta': 'El derecho a la vida, como derecho inviolable, '
+                           'no puede ser violentado:',
+               'respuesta': 'En ninguna circunstancia'}],
+  'qr_dato': 'La división de los derechos humanos en tres generaciones fue '
+             'propuesta en 1979 por el jurista checo Karel Vasak.'},
  {'num': 17,
   'titulo': 'Garantías Constitucionales',
   'secciones': [{'titulo': '17.1 CONCEPTO Y ANTECEDENTES',
@@ -8791,7 +8977,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'normas legales o actos administrativos.',
                                 'El plazo para la Acción de Cumplimiento es '
                                 'de 60 días después de no cumplirse el '
-                                'mandato.']}]},
+                                'mandato.']}],
+  'qr_reto': [{'pregunta': 'El plazo para interponer una Acción de '
+                           'Inconstitucionalidad es de 6 años desde su '
+                           'publicación, y en tratados internacionales el '
+                           'plazo es de:',
+               'respuesta': '6 meses'},
+              {'pregunta': 'El habeas corpus protege principalmente:',
+               'respuesta': 'La libertad individual y la seguridad personal'},
+              {'pregunta': 'El habeas corpus se presenta, en primera '
+                           'instancia, ante:',
+               'respuesta': 'El Juez especializado en lo Penal'}],
+  'qr_dato': 'La Constitución de 1979 sumó la Acción de Amparo y la Acción '
+             'de Inconstitucionalidad.'},
  {'num': 18,
   'titulo': 'Sistemas de Protección de los Derechos Humanos',
   'secciones': [{'titulo': '18.1 ANTECEDENTES: LA SOCIEDAD DE NACIONES',
@@ -9266,4 +9464,12 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Bajos).',
                                 'La Corte de La Haya decide controversias '
                                 'jurídicas entre Estados, y tiene quince '
-                                'magistrados.']}]}]
+                                'magistrados.']}],
+  'qr_reto': [{'pregunta': 'La Carta de la ONU fue firmada inicialmente por:',
+               'respuesta': '50 países'},
+              {'pregunta': 'Entre las sedes secundarias de la ONU figura:',
+               'respuesta': 'Ginebra'},
+              {'pregunta': 'Los jueces de la Corte Interamericana son '
+                           'elegidos por un periodo de:',
+               'respuesta': 'Seis años'}],
+  'qr_dato': 'La sede de la CIDH está en Washington DC.'}]

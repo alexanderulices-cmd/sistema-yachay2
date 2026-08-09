@@ -664,7 +664,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El ruido semántico ocurre cuando el '
                                 'receptor interpreta las palabras del emisor '
                                 'de manera distinta a la intención '
-                                'original.']}]},
+                                'original.']}],
+  'qr_reto': [{'pregunta': 'El ruido que ocurre cuando el receptor '
+                           'interpreta las palabras del emisor de manera '
+                           'distinta a la intención original se llama ruido:',
+               'respuesta': 'Semántico'},
+              {'pregunta': 'La disciplina que estudia el uso del tiempo en '
+                           'la comunicación es la:',
+               'respuesta': 'Cronémica'},
+              {'pregunta': 'El ruido que surge por defectos orgánicos de los '
+                           'interlocutores, como alteraciones visuales o '
+                           'auditivas, se llama ruido:',
+               'respuesta': 'Fisiológico'}],
+  'qr_dato': 'El carácter recíproco implica que, por medio de la '
+             'comunicación, los hombres ejercen una influencia mutua.'},
  {'num': 2,
   'titulo': 'El Lenguaje',
   'secciones': [{'titulo': '2.1 CONCEPTO',
@@ -1367,7 +1380,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'un hablante, en el eje sincrónico.',
                                 'El signo lingüístico es mutable: la '
                                 'relación entre significado y significante '
-                                'cambia a través del tiempo.']}]},
+                                'cambia a través del tiempo.']}],
+  'qr_reto': [{'pregunta': 'Que el lenguaje sea resultado de un acuerdo '
+                           'comunitario corresponde a que es:',
+               'respuesta': 'Convencional'},
+              {'pregunta': '«El precio del gas subió excesivamente» es un '
+                           'ejemplo de la función:',
+               'respuesta': 'Referencial'},
+              {'pregunta': 'Un signo que guarda relación física de '
+                           'causa-efecto con el objeto que representa, como '
+                           'el humo y el fuego, se llama:',
+               'respuesta': 'Indicio'}],
+  'qr_dato': 'La variación dialectal sintáctica se manifiesta en la '
+             'estructura de la oración.'},
  {'num': 3,
   'titulo': 'Fonología y Fonética',
   'secciones': [{'titulo': '3.1 CONCEPTO DE FONOLOGÍA Y FONÉTICA',
@@ -2100,7 +2125,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'del habla.',
                                 'La fonética descriptiva o auditiva estudia '
                                 'cómo el oído percibe los sonidos del '
-                                'habla.']}]},
+                                'habla.']}],
+  'qr_reto': [{'pregunta': 'El español tiene 24 fonemas segmentales, de los '
+                           'cuales el número de fonemas vocálicos es:',
+               'respuesta': '5'},
+              {'pregunta': 'Los fonemas carecen de significación:',
+               'respuesta': 'Por sí solos'},
+              {'pregunta': 'Un fonema se define como un segmento fonológico '
+                           'que:',
+               'respuesta': 'No puede descomponerse en unidades sucesivas '
+                            'menores'}],
+  'qr_dato': 'La fonética descriptiva o auditiva estudia cómo el oído '
+             'percibe los sonidos del habla.'},
  {'num': 4,
   'titulo': 'La Sílaba',
   'secciones': [{'titulo': '4.1 CONCEPTO',
@@ -2580,7 +2616,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                       'items': ['Los sonidos dentro de la sílaba se '
                                 'organizan según la escala universal de '
                                 'sonoridad, donde las vocales son las '
-                                'unidades más perceptibles.']}]},
+                                'unidades más perceptibles.']}],
+  'qr_reto': [{'pregunta': 'En la palabra «Cuba», la separación silábica '
+                           'correcta es:',
+               'respuesta': 'Cu-ba'},
+              {'pregunta': 'Las vocales de un triptongo se pronuncian como '
+                           'una sola sílaba y, bajo ninguna circunstancia, '
+                           'pueden:',
+               'respuesta': 'Separarse'},
+              {'pregunta': 'Un vocablo monosilábico, como «pan», tiene:',
+               'respuesta': 'Una sola sílaba'}],
+  'qr_dato': 'Los sonidos dentro de la sílaba se organizan según la escala '
+             'universal de sonoridad, donde las vocales son las unidades más '
+             'perceptibles.'},
  {'num': 5,
   'titulo': 'Acentuación Gráfica o Tildación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ACENTO PROSÓDICO',
@@ -3181,7 +3229,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Aun, sin tilde, tiene valor '
                                 'inclusivo-ponderativo (equivale a '
                                 '«incluso», «hasta») o valor concesivo '
-                                '(equivale a «aunque»).']}]},
+                                '(equivale a «aunque»).']}],
+  'qr_reto': [{'pregunta': 'La palabra «música» es un ejemplo de palabra:',
+               'respuesta': 'Esdrújula'},
+              {'pregunta': 'El signo diacrítico que marca la acentuación de '
+                           'una palabra por escrito se llama:',
+               'respuesta': 'Tilde'},
+              {'pregunta': 'Palabras como «raíz» y «maíz» llevan tilde en el '
+                           'hiato a pesar de ser palabras agudas terminadas '
+                           'en:',
+               'respuesta': 'Consonante distinta de n o s'}],
+  'qr_dato': 'Las palabras con triptongo también siguen las reglas '
+             'generales; cuando deben tildarse, la tilde va siempre sobre la '
+             'vocal abierta: apreciáis, cambiéis.'},
  {'num': 6,
   'titulo': 'Uso de las Letras Mayúsculas y Minúsculas',
   'secciones': [{'titulo': '6.1 CONSIDERACIONES BÁSICAS',
@@ -3674,7 +3734,21 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'llevan mayúscula si nombran una institución '
                                 '(Banco Central Europeo), y minúscula si son '
                                 'expresiones comunes (documento nacional de '
-                                'identidad).']}]},
+                                'identidad).']}],
+  'qr_reto': [{'pregunta': 'Las siglas que deben deletrearse al leerse, como '
+                           'FBI o DDT, mantienen siempre su escritura:',
+               'respuesta': 'En mayúsculas'},
+              {'pregunta': 'Los títulos, cargos y nombres de dignidad, como '
+                           '«rey», «papa» o «presidente», se escriben con:',
+               'respuesta': 'Minúscula'},
+              {'pregunta': 'Los principios activos de medicamentos, como '
+                           '«ibuprofeno», se escriben con minúscula, a '
+                           'diferencia de:',
+               'respuesta': 'Los nombres comerciales registrados, que llevan '
+                            'mayúscula inicial'}],
+  'qr_dato': 'Después de dos puntos se escribe mayúscula cuando estos '
+             'anuncian el inicio de una unidad independiente, como en el '
+             'saludo de una carta.'},
  {'num': 7,
   'titulo': 'Signos de Puntuación',
   'secciones': [{'titulo': '7.1 CONCEPTO Y FUNCIONES',
@@ -4495,7 +4569,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'exclamaciones breves y consecutivas, cada '
                                 'una se escribe con su propio signo de '
                                 'apertura y cierre: «¿Quién era? ¿De dónde '
-                                'vino?»']}]},
+                                'vino?»']}],
+  'qr_reto': [{'pregunta': '«A quien madruga…» ejemplifica la función de los '
+                           'signos de puntuación de indicar:',
+               'respuesta': 'La omisión de una parte del enunciado'},
+              {'pregunta': 'La raya que enmarca las palabras de un narrador '
+                           "o transcriptor dentro de una cita, como en «'Es "
+                           "imprescindible —señaló el ministro— que...'», "
+                           'tiene función:',
+               'respuesta': 'De narrador o transcriptor'},
+              {'pregunta': 'El uso de comillas en las expresiones '
+                           'denominativas se aprecia en:',
+               'respuesta': 'Se ha clausurado con gran éxito la exposición '
+                            '«Las vanguardias andinas»'}],
+  'qr_dato': 'El punto se usa en las abreviaturas, como «Sra.» o «pág.».'},
  {'num': 8,
   'titulo': 'El Sustantivo',
   'secciones': [{'titulo': '8.1 CRITERIOS PARA DEFINIR EL SUSTANTIVO',
@@ -5162,8 +5249,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'avestruces hembra.',
                                 'En compuestos de dos adjetivos, unidos o '
                                 'separados por guion, se pluraliza solo el '
-                                'segundo: conversaciones '
-                                'árabe-israelíes.']}]},
+                                'segundo: conversaciones árabe-israelíes.']}],
+  'qr_reto': [{'pregunta': 'Los sustantivos ambiguos son:',
+               'respuesta': 'Interrogante - dote'},
+              {'pregunta': 'Los sustantivos propios, ortográficamente, se '
+                           'escriben con:',
+               'respuesta': 'Mayúscula inicial'},
+              {'pregunta': 'Los sustantivos que solo presentan número plural '
+                           'son:',
+               'respuesta': 'Nupcias - bruces'}],
+  'qr_dato': 'Los nombres terminados en vocal átona o tónica hacen el plural '
+             'agregando -s: casas, cafés, sofás.'},
  {'num': 9,
   'titulo': 'El Pronombre',
   'secciones': [{'titulo': '9.1 CRITERIOS PARA DEFINIR EL PRONOMBRE',
@@ -5642,7 +5738,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los pronombres exclamativos son los '
                                 'relativos que expresan asombro, admiración '
                                 'o exclamación: «¡Cuánto te quiere!», '
-                                '«¡Quién lo hubiera creído!».']}]},
+                                '«¡Quién lo hubiera creído!».']}],
+  'qr_reto': [{'pregunta': 'En «No me entienden», el pronombre «me» funciona '
+                           'en caso:',
+               'respuesta': 'Acusativo'},
+              {'pregunta': 'Los pronombres posesivos indican posesión o '
+                           'pertenencia, nombrando al objeto a través de:',
+               'respuesta': 'El poseedor'},
+              {'pregunta': 'El caso del pronombre que funciona como sujeto '
+                           'se llama caso:',
+               'respuesta': 'Nominativo o recto'}],
+  'qr_dato': 'El caso preposicional corresponde a pronombres como «mí», '
+             '«ti», «él», usados después de una preposición.'},
  {'num': 10,
   'titulo': 'El Adjetivo',
   'secciones': [{'titulo': '10.1 CRITERIOS PARA DEFINIR EL ADJETIVO',
@@ -6183,7 +6290,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Ejemplos de apócope: grande→gran chico; '
                                 'bueno→un buen amigo; primero→el primer '
                                 'hijo; alguno→algún consejo; ninguno→ningún '
-                                'alumno.']}]},
+                                'alumno.']}],
+  'qr_reto': [{'pregunta': 'El adjetivo calificativo que señala una cualidad '
+                           'propia e inherente del sustantivo, como en '
+                           '«blanca nieve», se llama:',
+               'respuesta': 'Epíteto'},
+              {'pregunta': 'En «La población está asustada», el adjetivo '
+                           '«asustada» funciona como:',
+               'respuesta': 'Atributo'},
+              {'pregunta': 'El grado superlativo absoluto sintético de un '
+                           'adjetivo terminado en -re o -ro se forma '
+                           'añadiendo el sufijo:',
+               'respuesta': '-érrimo'}],
+  'qr_dato': 'El adjetivo explicativo o no restrictivo aparece entre pausas, '
+             'va antepuesto y no tiene carga excluyente.'},
  {'num': 11,
   'titulo': 'El Artículo y el Adverbio',
   'secciones': [{'titulo': '11.1 CRITERIOS DEL ARTÍCULO',
@@ -6663,7 +6783,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'profesor»; lo correcto es «Íbamos delante '
                                 'del profesor».',
                                 'Es incorrecto decir «Se puso atrás de ti»; '
-                                'lo correcto es «Se puso detrás de ti».']}]},
+                                'lo correcto es «Se puso detrás de ti».']}],
+  'qr_reto': [{'pregunta': 'En «Viajaremos a El Cairo», la ausencia de '
+                           'contracción se debe a que:',
+               'respuesta': 'El artículo forma parte del topónimo'},
+              {'pregunta': 'La mayoría de los adverbios terminados en '
+                           '«-mente», como «rápidamente», son adverbios de:',
+               'respuesta': 'Modo'},
+              {'pregunta': 'El artículo neutro «lo» sirve para sustantivar:',
+               'respuesta': 'Adjetivos'}],
+  'qr_dato': 'Las contracciones se usan solo ante sustantivos comunes.'},
  {'num': 12,
   'titulo': 'El Verbo',
   'secciones': [{'titulo': '12.1 CRITERIOS PARA DEFINIR EL VERBO',
@@ -7203,7 +7332,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El participio activo termina en -ante, '
                                 '-iente, -ente, -ador, -edor, -idor, y '
                                 'funciona como sustantivo o adjetivo: el '
-                                'oyente, el gobernador.']}]},
+                                'oyente, el gobernador.']}],
+  'qr_reto': [{'pregunta': 'El modo verbal que expresa la acción de manera '
+                           'subjetiva, como deseo o duda, se llama modo:',
+               'respuesta': 'Subjuntivo'},
+              {'pregunta': 'Los verbos cuasireflexivos, a diferencia de los '
+                           'reflexivos, NO aceptan el refuerzo:',
+               'respuesta': '«Mismo(a)»'},
+              {'pregunta': 'El carácter recíproco de un verbo se comprueba '
+                           'con el refuerzo:',
+               'respuesta': '«Mutuamente» o «recíprocamente»'}],
+  'qr_dato': 'El accidente tiempo indica la época en que se realiza la '
+             'acción: pasado, presente o futuro.'},
  {'num': 13,
   'titulo': 'Conectores Lógico-Semánticos: La Preposición',
   'secciones': [{'titulo': '13.1 CRITERIOS DE LA PREPOSICIÓN',
@@ -7666,7 +7806,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Las ilativas (luego, conque, en '
                                 'consecuencia) introducen una oración como '
                                 'consecuencia de la anterior: «Pienso, luego '
-                                'existo».']}]},
+                                'existo».']}],
+  'qr_reto': [{'pregunta': 'Las agrupaciones de palabras que adquieren en '
+                           'conjunto el sentido y función de una preposición '
+                           'se llaman:',
+               'respuesta': 'Locuciones prepositivas'},
+              {'pregunta': 'La preposición «hasta» puede indicar término de '
+                           'lugar, acción o:',
+               'respuesta': 'Tiempo'},
+              {'pregunta': 'Las preposiciones que encabezan al agente en voz '
+                           'pasiva son:',
+               'respuesta': 'Por y de'}],
+  'qr_dato': 'Las finales (para que, a fin de que) indican finalidad o '
+             'propósito: «Toca el piano para que vean lo bien que lo '
+             'haces».'},
  {'num': 14,
   'titulo': 'La Sintaxis y la Oración Gramatical',
   'secciones': [{'titulo': '14.1 CONCEPTO DE SINTAXIS Y SINTAGMA',
@@ -8221,7 +8374,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'imperativo: «Abre la ventana».',
                                 'Las oraciones exclamativas expresan '
                                 'emociones, con signos de exclamación: «¡Qué '
-                                'susto pasamos!»']}]},
+                                'susto pasamos!»']}],
+  'qr_reto': [{'pregunta': 'Las oraciones que afirman o niegan hechos de '
+                           'manera objetiva, para transmitir información, se '
+                           'llaman oraciones:',
+               'respuesta': 'Enunciativas o declarativas'},
+              {'pregunta': 'El complemento sobre el que recae directamente '
+                           'la acción verbal, sustituible por lo/la/los/las, '
+                           'se llama:',
+               'respuesta': 'Complemento directo'},
+              {'pregunta': 'La unidad básica de la sintaxis es:',
+               'respuesta': 'El sintagma'}],
+  'qr_dato': 'Las oraciones simples presentan un solo verbo principal o '
+             'conjugado, sin proposiciones.'},
  {'num': 15,
   'titulo': 'El Texto y la Lectura',
   'secciones': [{'titulo': '15.1 CONCEPTO DEL TEXTO',
@@ -8680,7 +8845,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los juicios del nivel crítico pueden ser de '
                                 'realidad o fantasía, de adecuación y '
                                 'validez, de apropiación, o de rechazo o '
-                                'aceptación.']}]},
+                                'aceptación.']}],
+  'qr_reto': [{'pregunta': 'El texto que no presenta idea principal ni ideas '
+                           'secundarias, donde todas las ideas tienen igual '
+                           'importancia, se llama texto:',
+               'respuesta': 'Paralelo'},
+              {'pregunta': 'El texto que representa con palabras un objeto, '
+                           'paisaje o persona se llama texto:',
+               'respuesta': 'Descriptivo'},
+              {'pregunta': 'El texto que presenta la idea principal al medio '
+                           'del párrafo se llama texto:',
+               'respuesta': 'Centrado'}],
+  'qr_dato': 'El nivel literal, textual o lineal, se somete estrictamente a '
+             'los contenidos explícitos del texto, sin entrar en '
+             'interpretación.'},
  {'num': 16,
   'titulo': 'Relaciones Semánticas',
   'secciones': [{'titulo': '16.1 LA SINONIMIA',
@@ -9152,4 +9330,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La connotación es el doble sentido o '
                                 'sentido figurado atribuido a las palabras; '
                                 'es subjetiva y propia del lenguaje '
-                                'literario: «Esa señorita es un bombón».']}]}]
+                                'literario: «Esa señorita es un bombón».']}],
+  'qr_reto': [{'pregunta': 'Las analogías que relacionan términos de '
+                           'significado semejante, como «sereno : ecuánime», '
+                           'se llaman analogías de:',
+               'respuesta': 'Sinonimia'},
+              {'pregunta': 'Las palabras que tienen igual sonido pero '
+                           'escritura y significado distintos, como «bello» '
+                           'y «vello», presentan:',
+               'respuesta': 'Homofonía'},
+              {'pregunta': 'Las tres relaciones semánticas estudiadas son '
+                           'sinonimia, antonimia y:',
+               'respuesta': 'Paronimia'}],
+  'qr_dato': 'Etimológicamente, «sinónimo» proviene del griego «sin» (con) y '
+             '«onomas» (nombre), es decir, equivalencia de significados.'}]

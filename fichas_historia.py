@@ -130,7 +130,9 @@ def _texto_qr_dato(tema, dato):
 def render_linea(texto, con_claves):
     """Devuelve el texto listo para el PDF.
 
-    con_claves=False -> espacios en blanco proporcionales a la palabra
+    con_claves=False -> espacios en blanco proporcionales a la palabra,
+                         con la inicial de cada palabra como pista si el
+                         hueco tiene varias palabras (ej. "D.......... E..........").
     con_claves=True  -> respuesta en negrita y color, para el docente
     """
     fuera = []
@@ -140,10 +142,13 @@ def render_linea(texto, con_claves):
         elif con_claves:
             fuera.append(f'<b><font color="#B01C22">{val}</font></b>')
         else:
-            # Longitud proporcional para que la línea invite a escribir
-            # la palabra correcta y no cualquier cosa.
-            n = max(6, min(int(len(val) * 1.5), 34))
-            fuera.append(f'<font color="#94A3B8">{"_" * n}</font>')
+            palabras = val.split()
+            trozos = []
+            for palabra in palabras:
+                n = max(4, min(int(len(palabra) * 1.5), 20))
+                inicial = palabra[0].upper() if palabra[0].isalpha() else ""
+                trozos.append(inicial + "." * n)
+            fuera.append(f'<font color="#94A3B8">{" ".join(trozos)}</font>')
     return "".join(fuera)
 
 
@@ -169,12 +174,13 @@ def _estilos():
     from reportlab.lib import colors
     ss = getSampleStyleSheet()
     return {
-        "marca": ParagraphStyle("m", parent=ss["Title"], fontSize=13,
+        "marca": ParagraphStyle("m", parent=ss["Title"], fontSize=17,
                                 textColor=colors.HexColor("#12307F"),
-                                alignment=TA_CENTER, spaceAfter=0, leading=15),
-        "lema": ParagraphStyle("l", parent=ss["Normal"], fontSize=7,
+                                alignment=TA_CENTER, spaceAfter=1, leading=19),
+        "lema": ParagraphStyle("l", parent=ss["Normal"], fontSize=9,
                                textColor=colors.HexColor("#B45309"),
-                               alignment=TA_CENTER, spaceAfter=6),
+                               alignment=TA_CENTER, spaceAfter=6,
+                               fontName="Helvetica-Bold"),
         "titulo": ParagraphStyle("t", parent=ss["Title"], fontSize=13,
                                  textColor=colors.HexColor("#12307F"),
                                  alignment=TA_CENTER, spaceAfter=2,
@@ -209,8 +215,14 @@ def _banda_titulo(story, tema, subtitulo, est, ancho, con_claves=False):
     from reportlab.lib.units import cm
     import os
 
-    _marca = [Paragraph(ENCABEZADO_L1, est["marca"]),
-              Paragraph(ENCABEZADO_L2, est["lema"])]
+    _titulo_encabezado = (
+        '<font color="#12307F">I.E.P. YACHAY</font>'
+        '<font color="#B01C22">  ·  </font>'
+        '<font color="#12307F">ACADEMIA YACHAY</font>'
+    )
+    _lema_espaciado = "&nbsp;&nbsp;".join(" ".join(w) for w in ENCABEZADO_L2.split(" "))
+    _marca = [Paragraph(_titulo_encabezado, est["marca"]),
+              Paragraph(_lema_espaciado, est["lema"])]
     if os.path.exists(LOGO_PATH):
         try:
             _logo = RLImage(LOGO_PATH, width=1.55 * cm, height=1.55 * cm)
@@ -264,7 +276,7 @@ def _pie(canvas, doc):
     # Marca de agua tenue centrada en la hoja
     if os.path.exists(LOGO_MARCA_AGUA):
         try:
-            lado = 11 * cm
+            lado = 14 * cm
             canvas.drawImage(
                 LOGO_MARCA_AGUA,
                 (doc.pagesize[0] - lado) / 2, (doc.pagesize[1] - lado) / 2,
@@ -1319,7 +1331,18 @@ BALOTAS = [{'num': 1,
                                 'Las fuentes audiovisuales son testimonios '
                                 'tecnológicos que registran voces, sonidos e '
                                 'imágenes, como los «vladivideos» y '
-                                '«petroaudios».']}]},
+                                '«petroaudios».']}],
+  'qr_reto': [{'pregunta': 'La historia «como hecho» se refiere a:',
+               'respuesta': 'Los acontecimientos y procesos sociales del '
+                            'pasado'},
+              {'pregunta': 'El fondo documental del Estado peruano es '
+                           'custodiado por:',
+               'respuesta': 'El Archivo General de la Nación'},
+              {'pregunta': 'El folclore es una fuente histórica:',
+               'respuesta': 'Tradicional'}],
+  'qr_dato': 'Las fuentes de la historia son restos, huellas, evidencias y '
+             'testimonios que dan cuenta del pasado y sirven para '
+             'reconstruir la historia.'},
  {'num': 2,
   'titulo': 'Hombre de la prehistoria',
   'secciones': [{'titulo': '2.1 PROCESO DE HOMINIZACIÓN',
@@ -2095,7 +2118,14 @@ BALOTAS = [{'num': 1,
                                 'iniciada por los hititas de Turquía.',
                                 'El hierro tenía dos ventajas sobre el '
                                 'bronce: mayor abundancia del mineral, y '
-                                'mayor dureza de las armas.']}]},
+                                'mayor dureza de las armas.']}],
+  'qr_reto': [{'pregunta': 'En la edad de los metales el hombre descubre:',
+               'respuesta': 'Cobre - Bronce - Hierro'},
+              {'pregunta': 'La división de la prehistoria la propuso:',
+               'respuesta': 'Christian Thomsen'},
+              {'pregunta': 'En el proceso de hominización fue fundamental:',
+               'respuesta': 'La capacidad de fabricar objetos'}],
+  'qr_dato': 'Se desarrolló la industria microlítica y la pesca con arpón.'},
  {'num': 3,
   'titulo': 'Grandes culturas de la antigüedad',
   'secciones': [{'titulo': '3.1 MESOPOTAMIA — UBICACIÓN',
@@ -2968,7 +2998,20 @@ BALOTAS = [{'num': 1,
                                 'empleada por escribas y sacerdotes.',
                                 'La escritura demótica era la escritura '
                                 'popular, más simple, utilizada por el '
-                                'pueblo.']}]},
+                                'pueblo.']}],
+  'qr_reto': [{'pregunta': 'Además de los toros alados y el príncipe Gudea, '
+                           'la escultura mesopotámica destacó con la estatua '
+                           'de:',
+               'respuesta': 'El rey Hammurabi'},
+              {'pregunta': 'En el periodo histórico del Imperio Medio de '
+                           'Egipto los territorios conquistados fueron:',
+               'respuesta': 'Nubia, Libia y Siria'},
+              {'pregunta': 'Las tres pirámides colosales que datan del '
+                           'Imperio Antiguo, previas a las de Guiza, fueron '
+                           'construidas por:',
+               'respuesta': 'Seneferu'}],
+  'qr_dato': 'La escritura jeroglífica, la más antigua, formada por imágenes '
+             'de objetos, se usaba en tumbas y templos.'},
  {'num': 4,
   'titulo': 'Mundo greco romano',
   'secciones': [{'titulo': '4.1 GRECIA — PROCESO HISTÓRICO',
@@ -3540,7 +3583,19 @@ BALOTAS = [{'num': 1,
                                 'Entre las construcciones romanas más '
                                 'representativas están el Coliseo '
                                 '(Anfiteatro de Flavio), el Arco de Tito y '
-                                'el Arco de Trajano.']}]},
+                                'el Arco de Trajano.']}],
+  'qr_reto': [{'pregunta': 'Las ciudades de Mileto, Éfeso y otras, fueron '
+                           'constituidas en la región de la Grecia:',
+               'respuesta': 'Jónica'},
+              {'pregunta': 'La cultura que incorporó en sus construcciones '
+                           'arquitectónicas, las columnas y capiteles '
+                           'griegos:',
+               'respuesta': 'Romana'},
+              {'pregunta': 'Alejandro Magno extendió la cultura griega '
+                           'hasta:',
+               'respuesta': 'La India'}],
+  'qr_dato': 'Escultura: Fidias fue autor de los relieves de los frontones y '
+             'las metopas del Partenón.'},
  {'num': 5,
   'titulo': 'Primeras culturas andinas',
   'secciones': [{'titulo': '5.1 EL POBLAMIENTO DE AMÉRICA',
@@ -4171,7 +4226,19 @@ BALOTAS = [{'num': 1,
                                 'Templo de las Manos Cruzadas, considerado '
                                 'el primer monumento religioso.',
                                 'El periodo se denomina precerámico porque '
-                                'aún no se conocía la cerámica.']}]},
+                                'aún no se conocía la cerámica.']}],
+  'qr_reto': [{'pregunta': 'Según Antonio Méndez Correa el hombre proviene '
+                           'de:',
+               'respuesta': 'Australia'},
+              {'pregunta': 'La Teoría de Origen Asiático del Hombre '
+                           'Americano fue planteada por:',
+               'respuesta': 'Alex Hrdlicka'},
+              {'pregunta': 'Según Florentino Ameghino, el hombre americano '
+                           'se habría dispersado desde la comarca de '
+                           'Chapalmalal por el resto del mundo a través:',
+               'respuesta': 'Del estrecho de Bering'}],
+  'qr_dato': 'El periodo se denomina precerámico porque aún no se conocía la '
+             'cerámica.'},
  {'num': 6,
   'titulo': 'Culturas preincas',
   'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL',
@@ -4848,7 +4915,19 @@ BALOTAS = [{'num': 1,
                                 'ciudad de barro más grande de América. '
                                 'Destacaron en orfebrería.',
                                 'Chanca: región de Apurímac y Ayacucho; '
-                                'fueron derrotados por los incas.']}]},
+                                'fueron derrotados por los incas.']}],
+  'qr_reto': [{'pregunta': 'El Lanzón monolítico y la estela Raimondi '
+                           'pertenecen a:',
+               'respuesta': 'Chavín'},
+              {'pregunta': 'Del asentamiento humano de Paracas, los mantos '
+                           'fueron de carácter:',
+               'respuesta': 'Religioso y ritual'},
+              {'pregunta': 'Según los últimos avances arqueológicos, Caral:',
+               'respuesta': 'Es la civilización más antigua del Perú y '
+                            'América'}],
+  'qr_dato': 'Nasca (300 a.C. – 600 d.C.): departamento de Ica. Destacan las '
+             'líneas de Nasca, estudiadas por María Reiche, y los acueductos '
+             'de Cantalloc.'},
  {'num': 7,
   'titulo': 'Civilización inca',
   'secciones': [{'titulo': '7.1 EL AYLLU',
@@ -5701,7 +5780,18 @@ BALOTAS = [{'num': 1,
                                 'cumbi y los toscos abasca.',
                                 'El registro de información se hacía '
                                 'mediante los quipus, a cargo de los '
-                                'quipucamayocs.']}]},
+                                'quipucamayocs.']}],
+  'qr_reto': [{'pregunta': 'Los jefes de los pueblos incorporados al '
+                           'Tahuantinsuyo constituyeron la nobleza:',
+               'respuesta': 'Por privilegio'},
+              {'pregunta': 'En el proceso histórico de los incas, Titu Cusi '
+                           'Yupanqui gobernó el periodo:',
+               'respuesta': 'De resistencia de Vilcabamba'},
+              {'pregunta': 'Lloque Yupanqui y Mayta Cápac corresponden al '
+                           'periodo:',
+               'respuesta': 'Legendario o de los comienzos del Incario'}],
+  'qr_dato': 'El registro de información se hacía mediante los quipus, a '
+             'cargo de los quipucamayocs.'},
  {'num': 8,
   'titulo': 'Mundo medieval y el tránsito al mundo moderno',
   'secciones': [{'titulo': '8.1 EL FEUDALISMO: CONCEPTO',
@@ -6194,7 +6284,18 @@ BALOTAS = [{'num': 1,
                                 'La Última Cena y la Gioconda, y el dibujo '
                                 'El Hombre de Vitruvio.',
                                 'Miguel Ángel destacó por la escultura de '
-                                'David, Moisés y la Piedad.']}]},
+                                'David, Moisés y la Piedad.']}],
+  'qr_reto': [{'pregunta': 'El movimiento cultural que recuperó la cultura '
+                           'grecolatina fue:',
+               'respuesta': 'El Renacimiento'},
+              {'pregunta': 'La nueva clase social surgida con el renacer del '
+                           'comercio y las ciudades fue:',
+               'respuesta': 'La burguesía'},
+              {'pregunta': 'El origen de la burguesía se remonta al siglo '
+                           'XII, con villanos que residían en:',
+               'respuesta': 'Los burgos o ciudades'}],
+  'qr_dato': 'Se basó en la posesión de la tierra y en relaciones personales '
+             'de dependencia entre señores y vasallos.'},
  {'num': 9,
   'titulo': 'Expansión europea',
   'secciones': [{'titulo': '9.1 DESCUBRIMIENTOS GEOGRÁFICOS',
@@ -6626,7 +6727,17 @@ BALOTAS = [{'num': 1,
                                 'América Central.',
                                 'El nombre «América» proviene del navegante '
                                 'italiano Américo Vespucio, quien reconoció '
-                                'que se trataba de un nuevo continente.']}]},
+                                'que se trataba de un nuevo continente.']}],
+  'qr_reto': [{'pregunta': 'La embarcación ligera y maniobrable usada en los '
+                           'viajes de exploración fue:',
+               'respuesta': 'La carabela'},
+              {'pregunta': 'En su cuarto viaje, Colón recorrió '
+                           'principalmente:',
+               'respuesta': 'Las costas de América Central'},
+              {'pregunta': 'Cristóbal Colón descubrió Panamá en el:',
+               'respuesta': 'Cuarto viaje'}],
+  'qr_dato': 'Los navegantes portugueses llegaron a las Indias bordeando '
+             'África: Vasco de Gama en 1499.'},
  {'num': 10,
   'titulo': 'Conquista del Perú',
   'secciones': [{'titulo': '10.1 y 10.2 LA EMPRESA DE CONQUISTA',
@@ -6901,7 +7012,15 @@ BALOTAS = [{'num': 1,
                                 'Batalla de Añaquito (1546): muerte del '
                                 'primer virrey Blasco Núñez de Vela.',
                                 'Batalla de Jaquijahuana (1548): derrota y '
-                                'ejecución de Gonzalo Pizarro.']}]},
+                                'ejecución de Gonzalo Pizarro.']}],
+  'qr_reto': [{'pregunta': 'El tercer viaje de la conquista partió de Panamá '
+                           'en el año:',
+               'respuesta': '1531'},
+              {'pregunta': 'La captura del Inca ocurrió en la plaza de:',
+               'respuesta': 'Cajamarca'},
+              {'pregunta': 'La Capitulación de Toledo se firmó en el año:',
+               'respuesta': '1529'}],
+  'qr_dato': 'Batalla de las Salinas (1538): Pizarro venció a Almagro.'},
  {'num': 11,
   'titulo': 'El periodo colonial peruano',
   'secciones': [{'titulo': '11.1 y 11.2 REPARTIMIENTO Y ENCOMIENDA',
@@ -7354,7 +7473,19 @@ BALOTAS = [{'num': 1,
                                 'San Antonio Abad del Cusco.',
                                 'El primer rector de la Universidad de San '
                                 'Antonio Abad del Cusco fue el Dr. Juan '
-                                'Cárdenas y Céspedes.']}]},
+                                'Cárdenas y Céspedes.']}],
+  'qr_reto': [{'pregunta': 'El obispo que creó el seminario del que se '
+                           'originó la Universidad de San Antonio Abad del '
+                           'Cusco fue:',
+               'respuesta': 'Antonio de la Raya'},
+              {'pregunta': 'El principal centro minero de plata en el '
+                           'virreinato fue:',
+               'respuesta': 'Potosí'},
+              {'pregunta': 'El primer rector de la Universidad de San '
+                           'Antonio Abad del Cusco fue:',
+               'respuesta': 'Juan Cárdenas y Céspedes'}],
+  'qr_dato': 'El virrey Francisco de Toledo organizó el virreinato y creó '
+             'las reducciones de indios.'},
  {'num': 12,
   'titulo': 'El mundo durante el siglo XVIII',
   'secciones': [{'titulo': '12.1 LA ILUSTRACIÓN',
@@ -7575,7 +7706,17 @@ BALOTAS = [{'num': 1,
                                 'pueblo, pero sin el pueblo».',
                                 'Los monarcas impulsaron reformas en '
                                 'educación, economía y administración, pero '
-                                'mantuvieron el poder absoluto.']}]},
+                                'mantuvieron el poder absoluto.']}],
+  'qr_reto': [{'pregunta': 'El autor de «El contrato social» fue:',
+               'respuesta': 'Rousseau'},
+              {'pregunta': 'Las intendencias en la Colonia fueron creadas en '
+                           'el reinado de:',
+               'respuesta': 'Carlos III'},
+              {'pregunta': 'La teoría de la división de poderes fue '
+                           'formulada por:',
+               'respuesta': 'Montesquieu'}],
+  'qr_dato': 'Se resume en la frase: «Todo para el pueblo, pero sin el '
+             'pueblo».'},
  {'num': 13,
   'titulo': 'Movimientos sociales en el mundo colonial americano',
   'secciones': [{'titulo': '13.1 LAS REFORMAS BORBÓNICAS',
@@ -7928,7 +8069,20 @@ BALOTAS = [{'num': 1,
                                 'Garcilaso de la Vega.',
                                 'Túpac Amaru II era descendiente de Felipe '
                                 'Túpac Amaru, el último inca de '
-                                'Vilcabamba.']}]},
+                                'Vilcabamba.']}],
+  'qr_reto': [{'pregunta': 'Micaela Bastidas fue traicionada y capturada '
+                           'por:',
+               'respuesta': 'Ventura Landaeta'},
+              {'pregunta': 'Las reformas borbónicas tuvieron como objetivo '
+                           'principal:',
+               'respuesta': 'Recuperar el control económico y político de '
+                            'las colonias'},
+              {'pregunta': 'Una consecuencia cultural de la derrota de Túpac '
+                           'Amaru II fue:',
+               'respuesta': 'La prohibición del quechua en documentos y de '
+                            'los Comentarios Reales'}],
+  'qr_dato': 'Micaela Bastidas fue esposa y colíder de Túpac Amaru II; fue '
+             'traicionada por Ventura Landaeta.'},
  {'num': 14,
   'titulo': 'Tiempo de las revoluciones',
   'secciones': [{'titulo': '14.1 INDEPENDENCIA DE ESTADOS UNIDOS',
@@ -8184,7 +8338,16 @@ BALOTAS = [{'num': 1,
                                 'los Derechos del Hombre y del Ciudadano.',
                                 'Consecuencias: fin del absolutismo y del '
                                 'régimen feudal, y difusión de las ideas '
-                                'liberales por Europa y América.']}]},
+                                'liberales por Europa y América.']}],
+  'qr_reto': [{'pregunta': 'El número de colonias inglesas que se '
+                           'independizaron en Norteamérica fue:',
+               'respuesta': 'Trece'},
+              {'pregunta': 'La Revolución Francesa se inició en el año:',
+               'respuesta': '1789'},
+              {'pregunta': 'El Directorio francés terminó con:',
+               'respuesta': 'El golpe de Estado de Napoleón'}],
+  'qr_dato': 'Causas: los impuestos sin representación política —«no hay '
+             'impuestos sin representación»— y el Motín del Té de Boston.'},
  {'num': 15,
   'titulo': 'Crisis del orden colonial e independencia',
   'secciones': [{'titulo': '15.1 al 15.4 LA CRISIS DE ESPAÑA',
@@ -8463,7 +8626,16 @@ BALOTAS = [{'num': 1,
                                 '1824): dirigida por Antonio José de Sucre; '
                                 'selló la independencia.',
                                 'La Capitulación de Ayacucho fue firmada por '
-                                'el virrey José de la Serna.']}]},
+                                'el virrey José de la Serna.']}],
+  'qr_reto': [{'pregunta': 'La batalla de Ayacucho se libró el:',
+               'respuesta': '9 de diciembre de 1824'},
+              {'pregunta': 'Antes de llegar al Perú, San Martín liberó:',
+               'respuesta': 'Chile'},
+              {'pregunta': 'La independencia de Venezuela se logró en la '
+                           'batalla de:',
+               'respuesta': 'Carabobo'}],
+  'qr_dato': 'Proclamó la Independencia del Perú en la plaza de armas de '
+             'Lima el 28 de julio de 1821.'},
  {'num': 16,
   'titulo': 'Construcción de la república peruana',
   'secciones': [{'titulo': '16.1 al 16.3 LOS PRIMEROS AÑOS',
@@ -8882,7 +9054,17 @@ BALOTAS = [{'num': 1,
                                 'La guerra terminó con el Tratado de Ancón '
                                 '(1883): el Perú cedió Tarapacá y Tacna y '
                                 'Arica quedaron en poder chileno por 10 '
-                                'años.']}]},
+                                'años.']}],
+  'qr_reto': [{'pregunta': 'La Confederación Perú-Boliviana fue creada por:',
+               'respuesta': 'Andrés de Santa Cruz'},
+              {'pregunta': 'La apropiación de los recursos naturales que '
+                           'desencadenó la Guerra del Pacífico fueron el:',
+               'respuesta': 'Salitre y Guano'},
+              {'pregunta': 'Es considerada como causa principal de la Guerra '
+                           'del Pacífico:',
+               'respuesta': 'El salitre del Perú y Bolivia'}],
+  'qr_dato': 'El guano de las islas se convirtió en la principal fuente de '
+             'ingresos del Estado desde 1840.'},
  {'num': 17,
   'titulo': 'Estado peruano en transformación',
   'secciones': [{'titulo': '17.1 LA RECONSTRUCCIÓN NACIONAL',
@@ -9207,7 +9389,17 @@ BALOTAS = [{'num': 1,
                                 'Luis M. Sánchez Cerro en Arequipa.',
                                 'El Oncenio de Leguía terminó con el golpe '
                                 'de Estado del teniente coronel Luis Sánchez '
-                                'Cerro en 1930.']}]},
+                                'Cerro en 1930.']}],
+  'qr_reto': [{'pregunta': 'El Tratado Salomón-Lozano se firmó con:',
+               'respuesta': 'Colombia'},
+              {'pregunta': 'Por el Contrato Grace el Perú entregó por 66 '
+                           'años:',
+               'respuesta': 'Los ferrocarriles'},
+              {'pregunta': 'El Oncenio de Leguía terminó con el golpe de '
+                           'Estado dirigido por:',
+               'respuesta': 'Luis Sánchez Cerro'}],
+  'qr_dato': 'Fue el periodo del auge del caucho en la Amazonía, con graves '
+             'abusos contra las poblaciones indígenas.'},
  {'num': 18,
   'titulo': 'El mundo entre guerras',
   'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL (1914–1918)',
@@ -9444,7 +9636,18 @@ BALOTAS = [{'num': 1,
                                 'ONU.',
                                 'La Guerra Fría enfrentó a Estados Unidos y '
                                 'la URSS sin combate directo, dividiendo el '
-                                'mundo en dos bloques.']}]},
+                                'mundo en dos bloques.']}],
+  'qr_reto': [{'pregunta': 'Entre las causas de la Primera Guerra Mundial NO '
+                           'figura:',
+               'respuesta': 'La caída del Muro de Berlín'},
+              {'pregunta': 'La causa inmediata de la Primera Guerra Mundial '
+                           'fue:',
+               'respuesta': 'El asesinato del archiduque Francisco Fernando'},
+              {'pregunta': 'El organismo creado tras la Primera Guerra '
+                           'Mundial para preservar la paz fue:',
+               'respuesta': 'La Sociedad de Naciones'}],
+  'qr_dato': 'La Segunda Guerra Mundial (1939–1945) se inició con la '
+             'invasión alemana a Polonia.'},
  {'num': 19,
   'titulo': 'Entre dictaduras y democracias: gobernantes del Perú siglos '
             'XX-XXI',
@@ -9729,4 +9932,15 @@ BALOTAS = [{'num': 1,
                                 'regionales.',
                                 'Segundo gobierno de Alan García (2006–2011) '
                                 'y gobierno de Ollanta Humala '
-                                '(2011–2016).']}]}]
+                                '(2011–2016).']}],
+  'qr_reto': [{'pregunta': 'El primer gobierno de Belaunde fue derrocado por '
+                           'el escándalo de:',
+               'respuesta': 'La página once'},
+              {'pregunta': 'El gobierno de Ollanta Humala corresponde al '
+                           'periodo:',
+               'respuesta': '2011-2016'},
+              {'pregunta': 'La Asamblea Constituyente de 1978 fue presidida '
+                           'por:',
+               'respuesta': 'Víctor Raúl Haya de la Torre'}],
+  'qr_dato': 'Segundo gobierno de Alan García (2006–2011) y gobierno de '
+             'Ollanta Humala (2011–2016).'}]

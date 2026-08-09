@@ -424,7 +424,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La macroeconomía explica los fenómenos '
                                 'económicos realizados en forma colectiva o '
                                 'agregada: demanda agregada, PBI, '
-                                'inflación.']}]},
+                                'inflación.']}],
+  'qr_reto': [{'pregunta': 'La obra donde se acuñó el término costo de '
+                           'oportunidad se publicó en:',
+               'respuesta': '1914'},
+              {'pregunta': 'El fin práctico de la economía busca el '
+                           'bienestar general y una distribución:',
+               'respuesta': 'Justa de la riqueza'},
+              {'pregunta': 'Según Barre, la economía estudia el '
+                           'comportamiento humano en el uso de los recursos:',
+               'respuesta': 'Con un costo'}],
+  'qr_dato': 'Carlos Marx es representante de la escuela marxista, que '
+             'sostiene que el valor de las mercancías proviene del trabajo.'},
  {'num': 2,
   'titulo': 'Necesidades Humanas',
   'secciones': [{'titulo': '2.1 CONCEPTO Y ORIGEN',
@@ -861,7 +872,20 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'De acuerdo al tiempo de satisfacción, las '
                                 'necesidades se clasifican en presentes (se '
                                 'satisfacen de inmediato) y futuras (se '
-                                'satisfacen de manera mediata).']}]},
+                                'satisfacen de manera mediata).']}],
+  'qr_reto': [{'pregunta': 'La última fase del proceso de satisfacción de '
+                           'las necesidades es:',
+               'respuesta': 'Satisfacción'},
+              {'pregunta': 'El concepto de costo de oportunidad está '
+                           'presente en la ley de las necesidades '
+                           'denominada:',
+               'respuesta': 'Sustitución'},
+              {'pregunta': 'Maslow planteó su teoría de las necesidades en '
+                           'la década de:',
+               'respuesta': 'Los 40'}],
+  'qr_dato': 'Las necesidades primarias son indispensables para la '
+             'conservación de la vida; también llamadas vitales o '
+             'biológicas: alimentación, vestido, vivienda.'},
  {'num': 3,
   'titulo': 'Bienes y Servicios',
   'secciones': [{'titulo': '3.1 CONCEPTO DE BIENES Y RECURSOS ECONÓMICOS',
@@ -1328,7 +1352,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'pueden ser privados, administrados por la '
                                 'empresa privada, o públicos.',
                                 'Los servicios económicos tienen como precio '
-                                'una tarifa.']}]},
+                                'una tarifa.']}],
+  'qr_reto': [{'pregunta': 'Los bienes que se utilizan una sola vez y '
+                           'desaparecen en su primer uso se llaman bienes:',
+               'respuesta': 'Fungibles'},
+              {'pregunta': 'Los bienes que se utilizan varias veces sin '
+                           'agotarse en el primer uso se llaman bienes:',
+               'respuesta': 'Infungibles o duraderos'},
+              {'pregunta': 'Un ejemplo típico de bien libre es:',
+               'respuesta': 'El aire'}],
+  'qr_dato': 'Los servicios económicos tienen como precio una tarifa.'},
  {'num': 4,
   'titulo': 'Proceso Económico',
   'secciones': [{'titulo': '4.1 CONCEPTO Y FASES',
@@ -1926,7 +1959,21 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'de la organización.',
                                 'La competitividad externa busca ventajas '
                                 'competitivas en el contexto del mercado, '
-                                'evaluando factores como la innovación.']}]},
+                                'evaluando factores como la innovación.']}],
+  'qr_reto': [{'pregunta': 'Los factores productivos que no se pueden '
+                           'modificar en el corto plazo, como fábricas, se '
+                           'llaman factores:',
+               'respuesta': 'Fijos'},
+              {'pregunta': 'La productividad media se obtiene dividiendo la '
+                           'producción total entre:',
+               'respuesta': 'El total de unidades del factor utilizado'},
+              {'pregunta': 'Se considera dentro del Producto Bruto Interno '
+                           '(PBI):',
+               'respuesta': 'La prestación de servicios de peluquería en la '
+                            'ciudad del Cusco'}],
+  'qr_dato': 'La función de producción es una relación técnica que expresa '
+             'los máximos niveles de producción según la combinación de '
+             'factores.'},
  {'num': 5,
   'titulo': 'Trabajo',
   'secciones': [{'titulo': '5.1 CONCEPTO',
@@ -2411,7 +2458,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'lo general semanalmente.',
                                 'El sueldo, o haber, es el pago que perciben '
                                 'los empleados del sector público o '
-                                'privado.']}]},
+                                'privado.']}],
+  'qr_reto': [{'pregunta': 'Según el texto, el trabajo dignifica al hombre '
+                           'porque le otorga:',
+               'respuesta': 'La estimación y el respeto de sus semejantes'},
+              {'pregunta': 'En la etapa de Verificar se comprueba:',
+               'respuesta': 'El buen funcionamiento de la mejora '
+                            'implementada'},
+              {'pregunta': 'La mejora continua busca optimizar la calidad de '
+                           'un producto, proceso o:',
+               'respuesta': 'Servicio'}],
+  'qr_dato': 'El pago diario del salario recibe el nombre de jornal, del '
+             'término jornada.'},
  {'num': 6,
   'titulo': 'Capital',
   'secciones': [{'titulo': '6.1 CONCEPTO',
@@ -2904,7 +2962,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'estabilizarse.',
                                 'La retribución que se obtiene por el uso '
                                 'del capital se denomina interés, la '
-                                'ganancia para el dueño del capital.']}]},
+                                'ganancia para el dueño del capital.']}],
+  'qr_reto': [{'pregunta': 'Una forma de obtención del capital es mediante '
+                           'el sobrante de la producción, llamado:',
+               'respuesta': 'Excedente económico'},
+              {'pregunta': 'El capital comercial se originó en la fase '
+                           'mercantilista del capitalismo, priorizando:',
+               'respuesta': 'El comercio exterior'},
+              {'pregunta': 'Para la ciencia económica, el capital es el '
+                           'conjunto de objetos fabricados por el hombre '
+                           'para:',
+               'respuesta': 'Ser usados en la producción de otros bienes'}],
+  'qr_dato': 'El capital de trabajo es la diferencia entre el activo '
+             'circulante y el pasivo a corto plazo.'},
  {'num': 7,
   'titulo': 'Naturaleza',
   'secciones': [{'titulo': '7.1 CONCEPTO Y CARACTERÍSTICAS',
@@ -3284,7 +3354,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'minerales.',
                                 'La política de volver a sembrar árboles '
                                 'donde se han talado otros se llama '
-                                'reforestación.']}]},
+                                'reforestación.']}],
+  'qr_reto': [{'pregunta': 'Las materias primas provienen de tres fuentes: '
+                           'animal, vegetal y:',
+               'respuesta': 'Mineral'},
+              {'pregunta': 'El algodón, fruto del trabajo agrícola, es un '
+                           'ejemplo de:',
+               'respuesta': 'Materia prima'},
+              {'pregunta': 'La energía generada a partir del agua se conoce '
+                           'como:',
+               'respuesta': 'Hidráulica'}],
+  'qr_dato': 'Los recursos naturales son aquellos que la naturaleza brinda '
+             'espontáneamente y de los cuales el hombre se sirve para '
+             'satisfacer sus necesidades.'},
  {'num': 8,
   'titulo': 'Empresa',
   'secciones': [{'titulo': '8.1 CONCEPTO',
@@ -3784,7 +3866,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'su patrimonio personal por las deudas.',
                                 'La Junta General de Accionistas es el '
                                 'órgano máximo y soberano de la Sociedad '
-                                'Anónima.']}]},
+                                'Anónima.']}],
+  'qr_reto': [{'pregunta': 'La empresa es descrita como el centro del '
+                           'proceso productivo en una economía:',
+               'respuesta': 'Capitalista'},
+              {'pregunta': 'En la Sociedad Anónima, los socios reciben el '
+                           'nombre de:',
+               'respuesta': 'Accionistas'},
+              {'pregunta': 'Para ser considerada mixta, el Estado debe tener '
+                           'como mínimo un porcentaje de acciones de:',
+               'respuesta': '20%'}],
+  'qr_dato': 'Quien dirige la empresa es el empresario, que busca la '
+             'maximización de ganancias optimizando el uso de recursos.'},
  {'num': 9,
   'titulo': 'Demanda',
   'secciones': [{'titulo': '9.1 CONCEPTO',
@@ -4232,7 +4325,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'porcentaje que el precio.',
                                 'La demanda relativamente inelástica tiene '
                                 'valor absoluto menor a 1: la cantidad '
-                                'reacciona menos que proporcionalmente.']}]},
+                                'reacciona menos que proporcionalmente.']}],
+  'qr_reto': [{'pregunta': 'El ingreso se define como la suma de sueldos, '
+                           'utilidades, intereses y:',
+               'respuesta': 'Rentas'},
+              {'pregunta': 'Las inversiones en publicidad buscan influir '
+                           'principalmente en:',
+               'respuesta': 'Los gustos y preferencias de los consumidores'},
+              {'pregunta': 'En la demanda relativamente inelástica, la '
+                           'cantidad demandada reacciona ante el precio de '
+                           'forma:',
+               'respuesta': 'Menos que proporcional'}],
+  'qr_dato': 'La riqueza es el valor total de las pertenencias de una '
+             'familia, descontadas sus deudas.'},
  {'num': 10,
   'titulo': 'Oferta',
   'secciones': [{'titulo': '10.1 CONCEPTO',
@@ -4626,7 +4731,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'al alza sobre el precio.',
                                 'Cuando el precio está por encima del '
                                 'equilibrio, se genera abundancia o '
-                                'sobreproducción, con presión a la baja.']}]},
+                                'sobreproducción, con presión a la baja.']}],
+  'qr_reto': [{'pregunta': 'La oferta expresa, en esencia, los deseos de '
+                           'venta o producción en función de:',
+               'respuesta': 'Los distintos precios existentes en el mercado'},
+              {'pregunta': 'Un precio elevado motiva a los ofertantes a:',
+               'respuesta': 'Producir y vender más'},
+              {'pregunta': 'Cuando el precio está por debajo del equilibrio, '
+                           'se genera una situación de:',
+               'respuesta': 'Escasez'}],
+  'qr_dato': 'Cuando el precio está por debajo del equilibrio, se genera '
+             'escasez, con presión al alza sobre el precio.'},
  {'num': 11,
   'titulo': 'Mercado',
   'secciones': [{'titulo': '11.1 CONCEPTO Y COMPONENTES',
@@ -4905,7 +5020,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'para fijar precios.',
                                 'La competencia imperfecta va desde el '
                                 'monopolio puro hasta el oligopolio y la '
-                                'competencia monopolística.']}]},
+                                'competencia monopolística.']}],
+  'qr_reto': [{'pregunta': 'En un mercado de competencia imperfecta con '
+                           'monopolio, quien fija el precio es:',
+               'respuesta': 'El monopolista'},
+              {'pregunta': 'Todo mercado obedece al comportamiento de las '
+                           'leyes económicas de:',
+               'respuesta': 'La oferta y la demanda'},
+              {'pregunta': 'El mercado, según la ciencia económica, '
+                           'determina y fija:',
+               'respuesta': 'Los precios'}],
+  'qr_dato': 'El mercado no requiere necesariamente la presencia física de '
+             'compradores y vendedores.'},
  {'num': 12,
   'titulo': 'Dinero e Inflación',
   'secciones': [{'titulo': '12.1 FUNCIONES DEL DINERO',
@@ -5353,7 +5479,20 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'dolarización de la economía.',
                                 'La inflación también genera especulación y '
                                 'acaparamiento, disminución del ahorro, y '
-                                'empobrecimiento de los trabajadores.']}]},
+                                'empobrecimiento de los trabajadores.']}],
+  'qr_reto': [{'pregunta': 'Que los billetes de igual denominación tengan '
+                           'las mismas características corresponde a la '
+                           'característica de:',
+               'respuesta': 'Homogeneidad'},
+              {'pregunta': 'La función más importante del dinero, que '
+                           'facilita las transacciones comerciales, es:',
+               'respuesta': 'Medio de pago o de cambio'},
+              {'pregunta': 'La inflación con tasa porcentual de un solo '
+                           'dígito se llama inflación:',
+               'respuesta': 'Moderada'}],
+  'qr_dato': 'La inflación también genera especulación y acaparamiento, '
+             'disminución del ahorro, y empobrecimiento de los '
+             'trabajadores.'},
  {'num': 13,
   'titulo': 'Sistema Financiero y Crédito',
   'secciones': [{'titulo': '13.1 INTERMEDIACIÓN FINANCIERA',
@@ -5975,7 +6114,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El INDECOPI (Instituto Nacional de Defensa '
                                 'de la Competencia) también forma parte de '
                                 'las entidades de regulación del sistema '
-                                'económico.']}]},
+                                'económico.']}],
+  'qr_reto': [{'pregunta': 'La banca estatal peruana está formada por el '
+                           'Banco Central de Reserva y:',
+               'respuesta': 'El Banco de la Nación'},
+              {'pregunta': 'El mercado donde se colocan por primera vez los '
+                           'valores emitidos se llama mercado:',
+               'respuesta': 'Primario'},
+              {'pregunta': 'El Banco de la Nación fue creado formalmente '
+                           'mediante ley del Congreso el 27 de enero de:',
+               'respuesta': '1966'}],
+  'qr_dato': 'Ofrece mayor variedad de instrumentos financieros al agente '
+             'deficitario.'},
  {'num': 14,
   'titulo': 'Distribución',
   'secciones': [{'titulo': '14.1 LA DISTRIBUCIÓN DE LA RIQUEZA',
@@ -6400,7 +6550,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'de renta fija o depósitos a plazo.',
                                 'La liquidez de una inversión es la rapidez '
                                 'con que se puede recuperar el dinero '
-                                'invertido.']}]},
+                                'invertido.']}],
+  'qr_reto': [{'pregunta': 'Keynes desarrolló la función consumo en su obra:',
+               'respuesta': 'Teoría general del empleo, el interés y el '
+                            'dinero'},
+              {'pregunta': 'Una inversión, en sentido económico, es la '
+                           'colocación de capital para obtener:',
+               'respuesta': 'Una ganancia futura'},
+              {'pregunta': 'Un inversor conservador tiende a invertir en '
+                           'productos de bajo riesgo, como títulos de renta '
+                           'fija o:',
+               'respuesta': 'Depósitos a plazo'}],
+  'qr_dato': 'El reparto del producto bruto entre las clases sociales no es '
+             'equitativo: la mayor parte se destina a los que más tienen.'},
  {'num': 15,
   'titulo': 'Sector Público y Presupuesto Nacional',
   'secciones': [{'titulo': '15.1 CONCEPTO DE SECTOR PÚBLICO',
@@ -6900,7 +7062,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                      {'titulo': 'ESTRUCTURA DEL PRESUPUESTO',
                       'items': ['El presupuesto se elabora bajo el principio '
                                 'contable de la partida doble: contiene '
-                                'ingresos fiscales y egresos fiscales.']}]},
+                                'ingresos fiscales y egresos fiscales.']}],
+  'qr_reto': [{'pregunta': 'El sector público está representado por el '
+                           'Gobierno en los niveles nacional, regional y:',
+               'respuesta': 'Local'},
+              {'pregunta': 'El Presupuesto Público se elabora bajo el '
+                           'principio contable de:',
+               'respuesta': 'La partida doble'},
+              {'pregunta': 'El principio que exige la publicación del '
+                           'presupuesto en el diario oficial «El Peruano» se '
+                           'llama:',
+               'respuesta': 'Publicidad'}],
+  'qr_dato': 'El PBI también se conoce como Producto Geográfico Bruto.'},
  {'num': 16,
   'titulo': 'Sector Externo',
   'secciones': [{'titulo': '16.1 CONCEPTO DE SECTOR EXTERNO',
@@ -7753,7 +7926,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'el mercado mundial para obtener ganancias.',
                                 'El capital productivo se invierte en la '
                                 'compra de factores de producción para '
-                                'fabricar bienes y servicios.']}]},
+                                'fabricar bienes y servicios.']}],
+  'qr_reto': [{'pregunta': 'Un bloque económico se define como un conjunto '
+                           'de países que se asocian para impulsar:',
+               'respuesta': 'El intercambio comercial entre ellos'},
+              {'pregunta': 'Entre los actores de la globalización están los '
+                           'bancos multinacionales y las empresas:',
+               'respuesta': 'Multinacionales'},
+              {'pregunta': 'Según la teoría de la ventaja absoluta, un país '
+                           'debe especializarse en el bien que produce con:',
+               'respuesta': 'Menor costo'}],
+  'qr_dato': 'La UNASUR agrupó a doce países sudamericanos, pero varios '
+             'miembros suspendieron su participación desde 2018.'},
  {'num': 17,
   'titulo': 'Crisis y Ciclos Económicos',
   'secciones': [{'titulo': '17.1 CONCEPTO DEL CICLO ECONÓMICO',
@@ -8348,7 +8532,20 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El Encaje Legal son reservas de activos '
                                 'líquidos que las empresas del sistema '
                                 'financiero deben mantener para fines de '
-                                'regulación monetaria.']}]},
+                                'regulación monetaria.']}],
+  'qr_reto': [{'pregunta': 'Una política monetaria orientada a controlar la '
+                           'inflación y estabilizar la economía se llama '
+                           'política:',
+               'respuesta': 'Contractiva'},
+              {'pregunta': 'El efecto por el cual una crisis se traslada de '
+                           'un sector a otro se conoce como efecto:',
+               'respuesta': 'Dominó'},
+              {'pregunta': 'La crisis que ocurre cuando no es posible '
+                           'comercializar todo el stock disponible se llama '
+                           'crisis de:',
+               'respuesta': 'Demanda'}],
+  'qr_dato': 'La recesión inicia con la inestabilidad del auge: se frenan '
+             'las inversiones y sube el desempleo.'},
  {'num': 18,
   'titulo': 'Desarrollo y Crecimiento Económico',
   'secciones': [{'titulo': '18.1 CONCEPTO DE DESARROLLO ECONÓMICO',
@@ -8831,4 +9028,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'ahorro empresarial.',
                                 'Según el Parlamento Europeo, la economía '
                                 'circular podría generar cerca de 580 000 '
-                                'empleos en toda la Unión Europea.']}]}]
+                                'empleos en toda la Unión Europea.']}],
+  'qr_reto': [{'pregunta': 'El Índice de Desarrollo Humano (IDH) fue creado '
+                           'por:',
+               'respuesta': 'El Programa de las Naciones Unidas para el '
+                            'Desarrollo (PNUD)'},
+              {'pregunta': 'Una característica del desarrollo económico es '
+                           'que el país utiliza sus recursos potenciales '
+                           'con:',
+               'respuesta': 'Muy poco capital ocioso'},
+              {'pregunta': 'En el IDH, el valor más alto de desarrollo '
+                           'corresponde a:',
+               'respuesta': '1'}],
+  'qr_dato': 'El PIB per cápita se calcula dividiendo el Producto Interior '
+             'Bruto entre el número de habitantes.'}]
