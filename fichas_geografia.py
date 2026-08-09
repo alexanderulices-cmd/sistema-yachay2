@@ -455,7 +455,20 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'millones de km², dividido políticamente en '
                                 '193 países, con una población de 7 450 '
                                 'millones de habitantes (Censo EE.UU. '
-                                '2018).']}]},
+                                '2018).']}],
+  'qr_reto': [{'pregunta': '¿Qué significa etimológicamente Geografía?',
+               'respuesta': 'Descripción de la Tierra (Geo=Tierra, '
+                            'Graphía=Descripción)'},
+              {'pregunta': '¿Quién calculó la circunferencia terrestre en la '
+                           'Antigüedad?',
+               'respuesta': 'Eratóstenes'},
+              {'pregunta': '¿Qué principio metodológico propuso Federico '
+                           'Ratzel?',
+               'respuesta': 'Principio de Localización, Distribución o '
+                            'Extensión'}],
+  'qr_dato': 'El territorio peruano tiene 1 285 216 km² y se ubica '
+             'íntegramente en el hemisferio sur y occidental. ¡Es el 19º '
+             'país más extenso del mundo! 🌎'},
  {'num': 2,
   'titulo': 'Geosistema y Espacio Exterior',
   'secciones': [{'titulo': '2.1 EL GEOSISTEMA',

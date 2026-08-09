@@ -424,6 +424,27 @@ BALOTAS_FILO = [{'num': 1,
                                   'Ontología',
                                   'Axiología',
                                   'Lógica'],
+                 'correcta': 'B'},
+                {'pregunta': 'El conjunto de narraciones e historias de las '
+                             'primeras civilizaciones acerca del origen del '
+                             'universo corresponde a: (I CEPRU 2023)',
+                 'alternativas': ['Cosmología',
+                                  'Antropogonía',
+                                  'Cosmogonía',
+                                  'Teogonía',
+                                  'B y C son correctas'],
+                 'correcta': 'C'},
+                {'pregunta': 'El fundamento moral de Kant señala que: (I '
+                             'CEPRU 2025)',
+                 'alternativas': ['No existe hombre malo, solo ignorante, y '
+                                  'la virtud está en el conocimiento',
+                                  'Las acciones morales se realizan solo por '
+                                  'respeto al deber y obediencia a la ley '
+                                  'que dicta nuestra conciencia',
+                                  'La utilidad pública y la felicidad para '
+                                  'la mayoría',
+                                  'La felicidad en la contemplación de Dios',
+                                  'Ninguna de las anteriores'],
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'COSMOGONÍA Y COSMOLOGÍA',
                       'items': ['Cosmogonía: de kosmos = mundo y goneia = '
@@ -796,7 +817,32 @@ BALOTAS_FILO = [{'num': 1,
                                   'Se transformaría en fuego',
                                   'Sería eterno',
                                   'Sería material'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'Propuso la teoría atómica: (Primera '
+                             'Oportunidad UNSAAC 2025)',
+                 'alternativas': ['Pitágoras de Samos',
+                                  'Anaxímenes de Mileto',
+                                  'Heráclito de Éfeso',
+                                  'Demócrito de Abdera',
+                                  'Parménides de Elea'],
+                 'correcta': 'D'},
+                {'pregunta': 'El filósofo que, en relación a la ética, '
+                             'sostuvo que el mal es producto de la '
+                             'ignorancia y la verdad se busca practicando la '
+                             'virtud, es: (Primera Oportunidad UNSAAC 2025)',
+                 'alternativas': ['Protágoras',
+                                  'Heráclito',
+                                  'Sócrates',
+                                  'Platón',
+                                  'Aristóteles'],
+                 'correcta': 'C'},
+                {'pregunta': 'La «Metafísica» es una obra de: (I CEPRU 2023)',
+                 'alternativas': ['Pitágoras',
+                                  'Platón',
+                                  'Aristóteles',
+                                  'Gorgias',
+                                  'Sócrates'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LOS PRESOCRÁTICOS',
                       'items': ['Buscaron el arjé: el principio u origen de '
                                 'todas las cosas.',
@@ -1654,7 +1700,20 @@ BALOTAS_FILO = [{'num': 1,
                                   'Horas de lucha',
                                   'Nuevas páginas libres',
                                   'Páginas Libres'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'Respecto al conocimiento, Descartes afirmó '
+                             'que: (Primera Oportunidad UNSAAC 2025)',
+                 'alternativas': ['La mente del hombre es como una tabula '
+                                  'rasa',
+                                  'El hombre nace con ideas innatas en el '
+                                  'entendimiento',
+                                  'No existen ideas innatas en la mente del '
+                                  'hombre',
+                                  'Nada hay en el entendimiento que no haya '
+                                  'estado primero en los sentidos',
+                                  'Debemos confiar en nuestros sentidos, ya '
+                                  'que nos dan conocimiento'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'RACIONALISMO Y EMPIRISMO',
                       'items': ['Francisco Bacon, materialista inglés, '
                                 'propuso el método inductivo en su obra '
@@ -1945,7 +2004,15 @@ BALOTAS_FILO = [{'num': 1,
                                   'Mendel',
                                   'Simpson',
                                   'Haeckel'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El problema del hombre es estudiado por la: (I '
+                             'CEPRU 2025)',
+                 'alternativas': ['Antropología filosófica',
+                                  'Epistemología',
+                                  'Ética',
+                                  'Estética',
+                                  'Teoría del conocimiento'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Disciplina filosófica que estudia al hombre '
                                 'en su totalidad: su esencia, su origen y el '
@@ -2178,6 +2245,24 @@ BALOTAS_FILO = [{'num': 1,
                                   'El consenso',
                                   'La coherencia',
                                   'El pragmatismo'],
+                 'correcta': 'B'},
+                {'pregunta': 'En gnoseología, la corriente que afirma que la '
+                             'verdad está relacionada con la fe y la '
+                             'espiritualidad es el: (Primera Oportunidad '
+                             'UNSAAC 2025)',
+                 'alternativas': ['Dogmatismo Ingenuo',
+                                  'Escepticismo',
+                                  'Dogmatismo Religioso',
+                                  'Agnosticismo',
+                                  'Fenomenalismo'],
+                 'correcta': 'C'},
+                {'pregunta': 'El conocimiento empírico lo adquirimos por '
+                             'medio: (I CEPRU 2025)',
+                 'alternativas': ['De la razón',
+                                  'De la experiencia',
+                                  'Del entendimiento',
+                                  'De la inferencia',
+                                  'Del proceso lógico'],
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Del griego gnosis = conocimiento y logos = '
@@ -3471,7 +3556,24 @@ BALOTAS_FILO = [{'num': 1,
                                   'Autocrítica',
                                   'Remordimiento',
                                   'Sanción moral'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Las características del valor son: (Banco '
+                             'UNSAAC 2025)',
+                 'alternativas': ['Veracidad y sensualidad',
+                                  'Integridad e intuición',
+                                  'Grado y metodicidad',
+                                  'Polaridad y jerarquía',
+                                  'Subjetividad y selectividad'],
+                 'correcta': 'D'},
+                {'pregunta': 'La teoría del valor que consiste en la '
+                             'dependencia de los valores respecto al sujeto '
+                             'se llama: (I CEPRU 2023)',
+                 'alternativas': ['Objetivismo',
+                                  'Naturalismo',
+                                  'Subjetivismo',
+                                  'Escepticismo',
+                                  'Relacionismo'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'AXIOLOGÍA',
                       'items': ['Del griego axios = valor y logos = estudio. '
                                 'Es la disciplina filosófica que estudia los '
@@ -3868,7 +3970,15 @@ BALOTAS_FILO = [{'num': 1,
                                   'Wittgenstein',
                                   'Leibniz',
                                   'Frege'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La fórmula correcta del razonamiento válido '
+                             'Modus Ponendo Ponens es: (Banco UNSAAC)',
+                 'alternativas': ['[((p ∨ q) ∧ ~p) → q]',
+                                  '[((p ∨ q) ∧ p) → q]',
+                                  '(p → q) → (p ∨ q)',
+                                  '[((p → q) ∧ ~q) → ~p]',
+                                  '[((p → q) ∧ p) → q]'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'DEFINICIÓN DE LÓGICA',
                       'items': ['La lógica es la ciencia formal que estudia '
                                 'la validez o corrección de los '
@@ -4151,6 +4261,16 @@ BALOTAS_FILO = [{'num': 1,
                                   'Petición de principio',
                                   'Afirmación del consecuente',
                                   'Ad hominem'],
+                 'correcta': 'D'},
+                {'pregunta': 'Al considerar que, si ayer vi un gato negro y '
+                             'me fue mal, es por culpa del gato, la falacia '
+                             'en la que se cae es: (Primera Oportunidad '
+                             'UNSAAC 2025)',
+                 'alternativas': ['Ad hominem',
+                                  'Ad verecundiam',
+                                  'Ad Ignorantiam',
+                                  'Causa Falsa',
+                                  'Ignoratio Elenchi'],
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'FALACIAS FORMALES',
                       'items': ['Una falacia es un razonamiento que parece '
@@ -5218,7 +5338,27 @@ BALOTAS_FILO = [{'num': 1,
                                   'Verdadera',
                                   'Imposible de evaluar',
                                   'Contradictoria'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'De las premisas «Los cusqueños son peruanos» y '
+                             '«Los anteños son cusqueños», la conclusión '
+                             'pertinente sería: (Primera Oportunidad UNSAAC '
+                             '2025)',
+                 'alternativas': ['Los cusqueños no son peruanos',
+                                  'Todo cusqueño es peruano',
+                                  'Los anteños son peruanos',
+                                  'Los peruanos son anteños',
+                                  'Algunos anteños son cusqueños'],
+                 'correcta': 'C'},
+                {'pregunta': '«Todos los felinos andinos son carnívoros. El '
+                             'puma es un felino; entonces, el puma es un '
+                             'carnívoro» es un razonamiento de tipo: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Hipotético',
+                                  'Analógico',
+                                  'Disyuntivo',
+                                  'Inductivo',
+                                  'Deductivo'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'INFERENCIAS INMEDIATAS',
                       'items': ['Son aquellas en que se obtiene una '
                                 'conclusión a partir de una sola premisa.',

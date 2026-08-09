@@ -252,7 +252,45 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'John Keynes',
                                   'Karl Menger',
                                   'Alfred Marshall'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fenómenos económicos de inflación, '
+                             'desempleo, recesión y crecimiento económico '
+                             'son estudiados por la: (Banco UNSAAC)',
+                 'alternativas': ['Economía normativa',
+                                  'Microeconomía',
+                                  'Macroeconomía',
+                                  'Política económica',
+                                  'Economía descriptiva'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si un país se especializa en la producción de '
+                             'un bien a un menor costo, entonces es: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Activo',
+                                  'Social',
+                                  'Calificado',
+                                  'Complejo',
+                                  'Eficiente'],
+                 'correcta': 'E'},
+                {'pregunta': 'La economía busca conocer y explicar los '
+                             'fenómenos económicos desde un punto de vista '
+                             'positivo y tiene un fin: (Primera Oportunidad '
+                             'UNSAAC 2018)',
+                 'alternativas': ['Descriptivo',
+                                  'Práctico',
+                                  'Analítico',
+                                  'Cuantitativo',
+                                  'Teórico'],
+                 'correcta': 'A'},
+                {'pregunta': 'Cuando la economía busca el bienestar general '
+                             'de la sociedad y la justa distribución de la '
+                             'riqueza, cumple un fin: (Primera Oportunidad '
+                             'UNSAAC 2016)',
+                 'alternativas': ['Programático',
+                                  'Práctico',
+                                  'Teórico',
+                                  'Cuantitativo',
+                                  'Cualitativo'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE ECONOMÍA',
                       'items': ['Según Raymond Barre, la economía es la '
                                 'ciencia social dirigida a la administración '
@@ -518,6 +556,68 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Bienes y servicios',
                                   'Solo información',
                                   'Solo tecnología'],
+                 'correcta': 'C'},
+                {'pregunta': 'Es la falta de recursos necesarios para '
+                             'satisfacer una o más necesidades, las cuales '
+                             'pueden o no ser clave para la supervivencia; '
+                             'corresponde al concepto de: (I CEPRU 2025)',
+                 'alternativas': ['Necesidades',
+                                  'Escasez',
+                                  'Producción',
+                                  'Costo de oportunidad',
+                                  'Economía normativa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La última fase del proceso de satisfacción de '
+                             'las necesidades es: (Primera Oportunidad '
+                             'UNSAAC 2024)',
+                 'alternativas': ['Apetencia',
+                                  'Deseo',
+                                  'Satisfacción',
+                                  'Esfuerzo físico',
+                                  'Carencia'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si en un mismo momento se presentan muchas '
+                             'necesidades por satisfacer y no es posible '
+                             'satisfacerlas todas a la vez, hay que aplacar '
+                             'primero las más urgentes; este hecho '
+                             'corresponde a la ley de: (Banco UNSAAC)',
+                 'alternativas': ['Saturación',
+                                  'Concurrencia',
+                                  'Complementariedad',
+                                  'Equivalencia económica',
+                                  'Fijación'],
+                 'correcta': 'B'},
+                {'pregunta': 'La representación mental del objeto capaz de '
+                             'satisfacer una necesidad se denomina: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Ansiedad',
+                                  'Necesidad',
+                                  'Carencia',
+                                  'Esfuerzo',
+                                  'Deseo'],
+                 'correcta': 'E'},
+                {'pregunta': 'El concepto de costo de oportunidad está '
+                             'presente en la ley de las necesidades '
+                             'denominada: (Primera Oportunidad UNSAAC 2016)',
+                 'alternativas': ['Complementariedad',
+                                  'Saturación',
+                                  'Concurrencia',
+                                  'Fijación',
+                                  'Sustitución'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las fases del proceso de satisfacción de las '
+                             'necesidades, respectivamente, son: (Primera '
+                             'Oportunidad UNSAAC 2016)',
+                 'alternativas': ['Satisfacción, sensación de carencia, '
+                                  'deseo y esfuerzo físico',
+                                  'Deseo, sensación de carencia, esfuerzo '
+                                  'físico y satisfacción',
+                                  'Sensación de carencia, deseo, esfuerzo '
+                                  'físico y satisfacción',
+                                  'Sensación de carencia, esfuerzo físico, '
+                                  'deseo y satisfacción',
+                                  'Esfuerzo físico, deseo, sensación de '
+                                  'carencia y satisfacción'],
                  'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ORIGEN',
                       'items': ['Necesidad es la sensación de carencia o '
@@ -924,7 +1024,44 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Materias primas',
                                   'Bienes tangibles',
                                   'Bienes públicos puros exclusivos'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Una característica de los servicios es que '
+                             'son: (Banco UNSAAC)',
+                 'alternativas': ['Homogéneos',
+                                  'Indivisibles',
+                                  'Acumulables',
+                                  'Tangibles',
+                                  'Ahorrables'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los bienes que se caracterizan por ser de '
+                             'consumo masivo, no excluibles y no rivales, se '
+                             'denominan bienes: (Banco UNSAAC)',
+                 'alternativas': ['Comunes',
+                                  'Privados',
+                                  'Económicos',
+                                  'Públicos',
+                                  'Libres'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las actividades económicas que se caracterizan '
+                             'por producirse y consumirse al mismo tiempo se '
+                             'denominan: (Banco UNSAAC)',
+                 'alternativas': ['Ahorro',
+                                  'Servicios',
+                                  'Bienes',
+                                  'Mercancías',
+                                  'Plusvalía'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando los satisfactores son escasos, útiles y '
+                             'transables a un determinado precio, y son '
+                             'fruto del trabajo y poseen propietario, se '
+                             'denominan bienes: (Primera Oportunidad UNSAAC '
+                             '2016)',
+                 'alternativas': ['Colectivos',
+                                  'Libres',
+                                  'Privados',
+                                  'Sociales',
+                                  'Económicos'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE BIENES Y RECURSOS ECONÓMICOS',
                       'items': ['Los bienes son objetos que satisfacen '
                                 'necesidades humanas; también se les conoce '
@@ -1419,7 +1556,47 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo la ubicación geográfica',
                                   'La estabilidad económica',
                                   'Solo los salarios internos'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'En la función de producción a corto plazo, son '
+                             'parte de los factores fijos: (Banco UNSAAC)',
+                 'alternativas': ['Materias primas',
+                                  'Insumos',
+                                  'Maquinarias',
+                                  'Trabajo',
+                                  'Fuerza laboral'],
+                 'correcta': 'C'},
+                {'pregunta': 'Se considera dentro del Producto Bruto Interno '
+                             '(PBI): (Primera Oportunidad UNSAAC 2024)',
+                 'alternativas': ['La producción de plátanos de un peruano '
+                                  'en Ecuador',
+                                  'La producción de televisores en China',
+                                  'La prestación de servicios de peluquería '
+                                  'en la ciudad del Cusco',
+                                  'La producción de bienes y servicios '
+                                  'dentro y fuera del país',
+                                  'La producción de mesas en Chile'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si dividimos la producción total obtenida de '
+                             'una empresa entre el factor productivo '
+                             'utilizado, en una unidad de tiempo, obtenemos '
+                             'la: (Banco UNSAAC)',
+                 'alternativas': ['Eficiencia técnica',
+                                  'Productividad marginal',
+                                  'Eficiencia económica',
+                                  'Productividad media',
+                                  'Eficacia económica'],
+                 'correcta': 'D'},
+                {'pregunta': 'A la reunión y combinación de los factores de '
+                             'producción e insumos para generar bienes con '
+                             'mayor valor agregado, bajo los principios de '
+                             'eficiencia y eficacia, se conoce como: '
+                             '(Primera Oportunidad UNSAAC 2016)',
+                 'alternativas': ['Proceso acumulativo',
+                                  'Función de producción',
+                                  'Productividad media',
+                                  'Productividad marginal',
+                                  'Proceso productivo'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FASES',
                       'items': ['El proceso económico es el conjunto de '
                                 'actividades económicas que realizan los '
@@ -1858,7 +2035,44 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Opcional del Estado',
                                   'Solo privado',
                                   'Exclusivo de adultos mayores'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Que el trabajo no sea eterno, sino que se '
+                             'adecue a los cambios e innovaciones, '
+                             'corresponde a que el trabajo es: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Fijo',
+                                  'Una actividad consciente',
+                                  'Dignifica al hombre',
+                                  'Requiere de un esfuerzo',
+                                  'Dinámico'],
+                 'correcta': 'E'},
+                {'pregunta': 'El trabajo especializado se denomina trabajo: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Intelectual',
+                                  'Manual',
+                                  'Calificado',
+                                  'Directivo',
+                                  'Simple'],
+                 'correcta': 'C'},
+                {'pregunta': 'El trabajo que consiste en realizar una '
+                             'actividad especificada dentro de un área '
+                             'productiva se conoce como división: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Dependiente',
+                                  'Social',
+                                  'Interna',
+                                  'Internacional',
+                                  'Grupal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cuando un empleado está sujeto a la '
+                             'reglamentación interna de la empresa, se '
+                             'denomina trabajador: (Banco UNSAAC)',
+                 'alternativas': ['Honorable',
+                                  'Libre',
+                                  'Ejecutor',
+                                  'Manual',
+                                  'Dependiente'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['El trabajo es el conjunto de aptitudes '
                                 'físicas y mentales, propias solamente del '
@@ -2256,7 +2470,34 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Bancario',
                                   'Circulante',
                                   'Lucrativo'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'La fusión del capital industrial y el capital '
+                             'bancario da lugar al capital: (Banco UNSAAC)',
+                 'alternativas': ['Tecnológico',
+                                  'Comercial',
+                                  'Fijo',
+                                  'Financiero',
+                                  'Calculante'],
+                 'correcta': 'D'},
+                {'pregunta': 'El factor productivo que se caracteriza por '
+                             'ser clásico, derivado y auxiliar se denomina: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Estado',
+                                  'Naturaleza',
+                                  'Capital',
+                                  'Trabajo',
+                                  'Empresa'],
+                 'correcta': 'C'},
+                {'pregunta': 'Que los ingresos percibidos por las personas '
+                             'se destinen, una parte al consumo presente y '
+                             'otra al consumo futuro, es una teoría '
+                             'planteada por: (Banco UNSAAC)',
+                 'alternativas': ['Nassau Senior',
+                                  'Adam Smith',
+                                  'David Ricardo',
+                                  'León Walras',
+                                  'Carlos Marx'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Para la ciencia económica, el capital es el '
                                 'conjunto de objetos fabricados por el '
@@ -2547,7 +2788,60 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Una búsqueda de armonía entre el hombre y '
                                   'la naturaleza',
                                   'El abandono total de la agricultura'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'La energía generada a partir del agua se '
+                             'conoce como: (Banco UNSAAC)',
+                 'alternativas': ['Eólica',
+                                  'Hidráulica',
+                                  'Solar',
+                                  'Atómica',
+                                  'Nuclear'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los seres bióticos están conformados por: '
+                             '(Primera Oportunidad UNSAAC 2024)',
+                 'alternativas': ['Animales y plantas',
+                                  'Minerales y plantas',
+                                  'Hongos y agua',
+                                  'Agua y tierra',
+                                  'Oxígeno y animales'],
+                 'correcta': 'A'},
+                {'pregunta': 'La naturaleza influye en las actividades '
+                             'productivas, como la agrícola, pesquera, '
+                             'minera y forestal; por eso decimos que cumple '
+                             'un rol: (Banco UNSAAC)',
+                 'alternativas': ['Regulador',
+                                  'Pasivo',
+                                  'Activo',
+                                  'Condicionante',
+                                  'Derivado'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las materias brutas y primas son aspectos que '
+                             'corresponden al factor productivo denominado: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Naturaleza',
+                                  'Capital',
+                                  'Recursos monetarios',
+                                  'Recursos comunes',
+                                  'Capital humano'],
+                 'correcta': 'A'},
+                {'pregunta': 'El aire que respiramos, el agua de los ríos y '
+                             'los pastos silvestres son recursos naturales: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Medioambientales',
+                                  'No renovables',
+                                  'Condicionantes',
+                                  'Renovables',
+                                  'Inorgánicos'],
+                 'correcta': 'D'},
+                {'pregunta': 'Un factor productivo clásico, originario, '
+                             'pasivo y condicionante es: (Primera '
+                             'Oportunidad UNSAAC 2016)',
+                 'alternativas': ['La naturaleza',
+                                  'El capital',
+                                  'El trabajo',
+                                  'La empresa',
+                                  'El Estado'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CARACTERÍSTICAS',
                       'items': ['La naturaleza es el conjunto de elementos '
                                 'preexistentes al hombre que componen la '
@@ -2936,7 +3230,75 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'La Gerencia General',
                                   'El Titular',
                                   'El Consejo de Vigilancia'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Los dos tipos de socios de una sociedad en '
+                             'comandita simple son: (Banco UNSAAC)',
+                 'alternativas': ['Comanditarios y colectivos',
+                                  'Comanditados y participacioncitas',
+                                  'Individuales y colectivos',
+                                  'Capitalistas y comanditarios',
+                                  'Colectivos e industriales'],
+                 'correcta': 'A'},
+                {'pregunta': 'A la protección de un invento se le denomina: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Patente',
+                                  'Propiedad',
+                                  'Seguridad',
+                                  'Arancel',
+                                  'Incentivos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las empresas, según el tipo de propiedad, se '
+                             'clasifican en: (Banco UNSAAC)',
+                 'alternativas': ['Privada, pública, transnacional',
+                                  'Pública, transnacionales, multinacionales',
+                                  'Privada, pública, multinacional',
+                                  'Privada, pública, mixta',
+                                  'Pública, mixta, transnacional'],
+                 'correcta': 'D'},
+                {'pregunta': 'La empresa donde sus socios son accionistas se '
+                             'denomina sociedad: (Banco UNSAAC)',
+                 'alternativas': ['Comercial',
+                                  'En comandita',
+                                  'Colectiva',
+                                  'Mercantil',
+                                  'Anónima'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las empresas que no exceden las 150 UIT en sus '
+                             'ingresos por ventas anuales se denominan '
+                             'empresas: (Banco UNSAAC)',
+                 'alternativas': ['Conglomeradas',
+                                  'Pequeñas',
+                                  'Medianas',
+                                  'Grandes',
+                                  'Micro'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las organizaciones cuyo capital social está '
+                             'conformado exclusivamente por el aporte de '
+                             'personas particulares se denominan empresas: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Mercantiles',
+                                  'Públicas',
+                                  'Cooperativas',
+                                  'Mixtas',
+                                  'Privadas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Cuando el propietario de una empresa la '
+                             'administra él mismo, se denomina: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Sociedad mercantil',
+                                  'Director',
+                                  'Titular gerente',
+                                  'Persona natural',
+                                  'Persona jurídica'],
+                 'correcta': 'C'},
+                {'pregunta': 'La empresa Backus y Johnston, según su tamaño, '
+                             'es una: (Banco UNSAAC)',
+                 'alternativas': ['Industria artesanal',
+                                  'Mediana empresa',
+                                  'Pequeña empresa',
+                                  'Gran empresa',
+                                  'Micro empresa'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La empresa es una unidad económica de '
                                 'producción de bienes o prestación de '
@@ -3337,6 +3699,42 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Menos que proporcional',
                                   'Idéntica al precio',
                                   'Nula'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si hay exceso de oferta, el mecanismo para '
+                             'volver al equilibrio es: (Primera Oportunidad '
+                             'UNSAAC 2024)',
+                 'alternativas': ['Aumentar el precio',
+                                  'Disminuir el precio',
+                                  'Estabilizar los precios',
+                                  'Aumentar la producción',
+                                  'Mejorar la tecnología'],
+                 'correcta': 'B'},
+                {'pregunta': 'El coeficiente que mide el grado de '
+                             'sensibilidad en el cual la cantidad demandada '
+                             'responde a las variaciones del precio de '
+                             'mercado se denomina elasticidad: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Arco del ingreso',
+                                  'Precio de la oferta',
+                                  'Precio de la demanda',
+                                  'Cruzada de la oferta',
+                                  'Cruzada del ingreso'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si el precio de un producto sube en un 25% y '
+                             'la cantidad demandada disminuye en 50%, el '
+                             'coeficiente de elasticidad precio de la '
+                             'demanda es: (Banco UNSAAC)',
+                 'alternativas': ['1', '2,5', '0,5', '4', '2'],
+                 'correcta': 'E'},
+                {'pregunta': 'Cuando aumenta el ingreso del consumidor y '
+                             'este demanda menor cantidad de un bien, dicho '
+                             'bien se denomina bien: (Primera Oportunidad '
+                             'UNSAAC 2016)',
+                 'alternativas': ['Transable',
+                                  'Normal',
+                                  'Inferior',
+                                  'Giffen',
+                                  'Sustitutorio'],
                  'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La demanda es la cantidad de bienes y '
@@ -3704,7 +4102,24 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo productos de lujo',
                                   'Solo una parte de lo demandado',
                                   'Todo lo que se desea demandar'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'En épocas de sequía, la curva de la oferta de '
+                             'la papa se traslada hacia: (Banco UNSAAC)',
+                 'alternativas': ['Arriba',
+                                  'La derecha',
+                                  'Abajo',
+                                  'La izquierda',
+                                  'El infinito'],
+                 'correcta': 'D'},
+                {'pregunta': 'El precio que pone el productor al bien que '
+                             'ofrece en el mercado se denomina precio de: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Consumo',
+                                  'Oferta',
+                                  'Demanda',
+                                  'Consolidación',
+                                  'Equilibrio'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La oferta es la cantidad de un bien o '
                                 'servicio que los vendedores-productores '
@@ -3978,7 +4393,31 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Solo los salarios',
                                   'Solo los impuestos',
                                   'Solo el tipo de cambio'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Una de las funciones del INDECOPI es: (Primera '
+                             'Oportunidad UNSAAC CEPRU 2023)',
+                 'alternativas': ['Evitar prácticas monopólicas o '
+                                  'restrictivas de la libre competencia',
+                                  'Fortalecer los actos de competencia '
+                                  'desleal',
+                                  'Fomentar el desarrollo de prácticas '
+                                  'desleales en el mercado internacional '
+                                  'mediante dumping o subsidios',
+                                  'Ejercer supervisión integral de las '
+                                  'empresas del Sistema Financiero del país',
+                                  'Dictar las normas legales que regulen el '
+                                  'mercado de valores, de productos y fondos '
+                                  'colectivos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Cuando el precio de un bien es fijado por un '
+                             'comprador, se dice que es un precio de: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Monopsonio',
+                                  'Monopolio',
+                                  'Mercado',
+                                  'Costo',
+                                  'Venta'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y COMPONENTES',
                       'items': ['El mercado es el espacio donde interactúan '
                                 'las unidades económicas en las '
@@ -4376,7 +4815,19 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Tipo de cambio',
                                   'Consumo exclusivo',
                                   'Gasto público'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'Que el público no solo tenga dinero para '
+                             'realizar transacciones necesarias, sino '
+                             'también como depósito de valor por el cual '
+                             'espera obtener un rendimiento en términos de '
+                             'intereses, corresponde, según John Keynes, a '
+                             'la demanda de dinero para: (Banco UNSAAC)',
+                 'alternativas': ['Precaución',
+                                  'Transacción',
+                                  'Intercambio',
+                                  'Especulación',
+                                  'Transferencia'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'FUNCIONES DEL DINERO',
                       'items': ['La función de medio de pago o de cambio es '
                                 'la más importante del dinero, y facilita '
@@ -5268,7 +5719,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Rentabilidad',
                                   'Rendimiento',
                                   'Liquidez'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'La distribución de la riqueza o de los '
+                             'ingresos es la forma en la cual el producto '
+                             'total generado por un país se reparte entre: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Gobierno y empresarios',
+                                  'Exportadores e importadores',
+                                  'El gobierno regional, nacional y local',
+                                  'Empresarios y trabajadores',
+                                  'Trabajadores y sus hijos'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA DISTRIBUCIÓN DE LA RIQUEZA',
                       'items': ['La distribución de la riqueza es la forma '
                                 'en que el producto total generado por un '
@@ -5746,7 +6207,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Activos fiscales',
                                   'Pasivos fiscales',
                                   'Reservas fiscales'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La clasificación de los bienes públicos según '
+                             'el principio de «no exclusión» es: (Primera '
+                             'Oportunidad UNSAAC 2024)',
+                 'alternativas': ['Libres y económicos',
+                                  'Puros e impuros',
+                                  'Individuales y colectivos',
+                                  'Excluibles y no excluibles',
+                                  'Públicos y privados'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE SECTOR PÚBLICO',
                       'items': ['El sector público es el sector de la '
                                 'economía conformado por instituciones que '
@@ -6477,7 +6947,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Estatales exclusivas',
                                   'Locales exclusivas',
                                   'Multinacionales'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'Es el tipo de cambio en el cual el tipo de '
+                             'cambio se determina de acuerdo a las fuerzas '
+                             'del mercado y existe intervención del Banco '
+                             'Central en este mercado; corresponde a: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Tipo de cambio contable',
+                                  'Flotación sucia',
+                                  'Flotación limpia',
+                                  'Tipo de cambio bancario',
+                                  'Tipo de cambio fijo'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE SECTOR EXTERNO / TEORÍAS DEL '
                                 'COMERCIO INTERNACIONAL',
                       'items': ['Ningún país tiene una economía autárquica; '
@@ -7041,7 +7522,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Redescuento',
                                   'Operaciones de Mercado Abierto',
                                   'Divisas'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'Es la fase del ciclo económico donde existe un '
+                             'retroceso relativo de toda la actividad '
+                             'económica en general (producción, comercio, '
+                             'banca), disminuyendo en forma notable: '
+                             '(Primera Oportunidad UNSAAC CEPRU 2023)',
+                 'alternativas': ['Auge',
+                                  'Depresión',
+                                  'Recesión',
+                                  'Fondo',
+                                  'Crecimiento'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DEL CICLO ECONÓMICO',
                       'items': ['El proceso económico no se desarrolla de '
                                 'manera lineal y continua, sino por ciclos '

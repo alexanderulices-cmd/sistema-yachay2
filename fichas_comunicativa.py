@@ -512,7 +512,28 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Competencia lexicológica',
                                   'Redundancia',
                                   'Contexto sociocultural'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El lenguaje no es un producto individual sino '
+                             'el resultado de un trabajo colectivo; esta '
+                             'característica se refiere a que es: '
+                             '(Dirimencia 2018-I)',
+                 'alternativas': ['Aprendido',
+                                  'Universal',
+                                  'Racional',
+                                  'Sistemático',
+                                  'Convencional'],
+                 'correcta': 'E'},
+                {'pregunta': 'El lenguaje es: (Dirimencia 2017-II)',
+                 'alternativas': ['Utilizado solo por algunos sectores '
+                                  'sociales',
+                                  'Una facultad exclusiva de los seres '
+                                  'humanos para comunicarse',
+                                  'Un sistema de signos no convencionales '
+                                  'para la comunicación',
+                                  'Un fenómeno instintivo e incomplejo',
+                                  'Una facultad de todos los seres vivos '
+                                  'para interactuar'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FASES',
                       'items': ['La comunicación es el acto, hecho o proceso '
                                 'a través del cual dos o más individuos '
@@ -1128,6 +1149,57 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Mutable',
                                   'Lineal',
                                   'Inmutable'],
+                 'correcta': 'A'},
+                {'pregunta': 'El habla, en relación a la lengua, es: '
+                             '(Dirimencia 2018-I)',
+                 'alternativas': ['Estable',
+                                  'Latente',
+                                  'Mental',
+                                  'Patente',
+                                  'Social'],
+                 'correcta': 'D'},
+                {'pregunta': 'El lenguaje, por ser un legado cultural y '
+                             'adquirido en sociedad, tiene un carácter: '
+                             '(Dirimencia 2017-II)',
+                 'alternativas': ['Aprendido',
+                                  'Cultural',
+                                  'Multiforme',
+                                  'Convencional',
+                                  'Universal'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los niveles básicos de la lengua son: '
+                             '(Dirimencia 2017-II)',
+                 'alternativas': ['Semántico - ortográfico - sintáctico - '
+                                  'lexicológico',
+                                  'Fonológico - fonético - lexicológico - '
+                                  'pragmático',
+                                  'Fonético - morfológico - ortográfico',
+                                  'Morfológico - semántico - sintáctico - '
+                                  'lexicológico',
+                                  'Fonológico - morfológico - sintáctico - '
+                                  'semántico'],
+                 'correcta': 'E'},
+                {'pregunta': 'Cuando Mario Vargas Llosa realiza un discurso '
+                             'académico en una prestigiosa universidad, '
+                             'emplea el nivel sociolecto denominado: '
+                             '(Dirimencia 2018-I)',
+                 'alternativas': ['Idiolecto',
+                                  'Acrolecto',
+                                  'Basilecto',
+                                  'Mesolecto',
+                                  'Dialecto'],
+                 'correcta': 'B'},
+                {'pregunta': 'La expresión que pertenece a la variación '
+                             'diastrática del acrolecto es: (Dirimencia '
+                             '2017-II)',
+                 'alternativas': ['El policía puso muchas infracciones de '
+                                  'tránsito',
+                                  'Enrique no tiene plata para su desayuno',
+                                  'Todos le llamaban «tecla» porque '
+                                  'aparentaba tener ochenta años',
+                                  'A Carlos le duele la barriga '
+                                  'terriblemente',
+                                  'Los niños estaban con dolor de panza'],
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO / CARACTERÍSTICAS DEL LENGUAJE',
                       'items': ['Según la RAE, el lenguaje es la facultad '
@@ -1677,7 +1749,150 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Alveolar - lateral - sonoro',
                                   'Velar - oclusivo - sonoro',
                                   'Palatal - africado - sordo'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Las unidades suprasegmentales son: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Sonidos acústicos y mentales',
+                                  'Ritmo y cadencia',
+                                  'Vocales y consonantes',
+                                  'Acento y entonación',
+                                  'Fonética y Fonología'],
+                 'correcta': 'D'},
+                {'pregunta': 'La Fonética Articulatoria está centrada en: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Los fonemas',
+                                  'El canal',
+                                  'El receptor',
+                                  'El referente',
+                                  'El emisor'],
+                 'correcta': 'E'},
+                {'pregunta': 'La acción coordinada del conjunto de '
+                             'estructuras anatómicas que constituyen el '
+                             'aparato fonador y resonador interviene en: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['El debate académico-científico',
+                                  'El sentido de las expresiones',
+                                  'La producción de los sonidos',
+                                  'Solo en los fonemas vocálicos',
+                                  'El habla culta de las personas'],
+                 'correcta': 'C'},
+                {'pregunta': 'La producción de los sonidos en el acto del '
+                             'habla está materializada en los: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Textos',
+                                  'Grafemas',
+                                  'Fonemas',
+                                  'Sonidos inarticulados',
+                                  'Fonos'],
+                 'correcta': 'E'},
+                {'pregunta': 'La disciplina lingüística que analiza las '
+                             'características físicas de las ondas sonoras '
+                             'que conforman los sonidos de la lengua se '
+                             'denomina fonética: (Banco UNSAAC)',
+                 'alternativas': ['Descriptiva',
+                                  'Articulatoria',
+                                  'Perceptiva',
+                                  'Acústica',
+                                  'General'],
+                 'correcta': 'D'},
+                {'pregunta': 'La estructura física de los sonidos del habla '
+                             'puede ser medida a través de la: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Duración, frecuencia y amplitud',
+                                  'Frecuencia, ritmo y acento',
+                                  'Amplitud, duración y voz',
+                                  'Acento, fonema y grafema',
+                                  'Onda, frecuencia y amplitud'],
+                 'correcta': 'A'},
+                {'pregunta': 'El acento es un fonema suprasegmental y se '
+                             'evidencia a través de la función: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Distintiva',
+                                  'Ortográfica',
+                                  'Contrastiva',
+                                  'Metalingüística',
+                                  'Culminativa'],
+                 'correcta': 'E'},
+                {'pregunta': 'La fonación se produce fundamentalmente en la '
+                             'cavidad: (Dirimencia 2018-I)',
+                 'alternativas': ['Nasal',
+                                  'Infraglótica',
+                                  'Glótica',
+                                  'Supraglótica',
+                                  'Oral'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los movimientos de espiración e inspiración en '
+                             'el acto del habla corresponden a mecanismos de '
+                             'la: (Dirimencia 2018-I)',
+                 'alternativas': ['Respiración',
+                                  'Fonación',
+                                  'Articulación',
+                                  'Vocalización',
+                                  'Sonorización'],
+                 'correcta': 'A'},
+                {'pregunta': 'La cavidad en la que se origina el aire '
+                             'utilizado para la fonación es la: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Faríngea',
+                                  'Glótica',
+                                  'Subglótica',
+                                  'Supraglótica',
+                                  'Laríngea'],
+                 'correcta': 'C'},
+                {'pregunta': 'El término que solo presenta fonemas '
+                             'consonánticos bilabiales es: (Banco UNSAAC)',
+                 'alternativas': ['Risa', 'Tiza', 'Pomo', 'Panel', 'Goma'],
+                 'correcta': 'C'},
+                {'pregunta': 'La fonética que estudia la producción de '
+                             'sonidos del habla se denomina: (Banco UNSAAC)',
+                 'alternativas': ['Articulatoria',
+                                  'Ortoepía',
+                                  'Acústica',
+                                  'Perceptiva',
+                                  'Genérica'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los fonos se originan en la cavidad: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Nasal',
+                                  'Subglótica',
+                                  'Oral',
+                                  'Glótica',
+                                  'Supraglótica'],
+                 'correcta': 'E'},
+                {'pregunta': 'La Fonética Acústica está relacionada al: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Contexto',
+                                  'Emisor',
+                                  'Canal',
+                                  'Receptor',
+                                  'Mensaje'],
+                 'correcta': 'C'},
+                {'pregunta': 'La amplitud, como parámetro de medida de las '
+                             'ondas sonoras, mide: (Banco UNSAAC)',
+                 'alternativas': ['La vibración',
+                                  'La intensidad',
+                                  'La rapidez',
+                                  'El movimiento',
+                                  'El tiempo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La fonética que se ocupa de analizar los '
+                             'sonidos particulares de una lengua, como el '
+                             'quechua, es la: (Banco UNSAAC)',
+                 'alternativas': ['Fisiológica',
+                                  'Descriptiva',
+                                  'Articulatoria',
+                                  'Acústica',
+                                  'Perceptiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'La palabra «cítara» es un sustantivo y '
+                             '«citará» un verbo en tiempo futuro; entonces '
+                             'se aprecia la función: (Banco UNSAAC)',
+                 'alternativas': ['Disyuntiva del acento',
+                                  'Culminativa del acento',
+                                  'Homonímica del sustantivo',
+                                  'Distintiva del acento',
+                                  'Homofónica del sustantivo'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE FONOLOGÍA Y FONÉTICA',
                       'items': ['La fonología estudia cómo se estructuran '
                                 'los segmentos de la lengua para transmitir '
@@ -2098,6 +2313,72 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Escala fonética simple',
                                   'Regla de acentuación',
                                   'Escala universal de sonoridad'],
+                 'correcta': 'E'},
+                {'pregunta': 'De acuerdo con los principios de ordenación de '
+                             'los segmentos en la sílaba, los márgenes '
+                             'extremos en la Escala Universal de Sonoridad '
+                             'son: (Banco UNSAAC)',
+                 'alternativas': ['Vocales silábicas - nasales',
+                                  'Vocales satelitales - africada',
+                                  'Vocales silábicas - oclusivas',
+                                  'Vocales - consonantes',
+                                  'Aproximantes - fricativas'],
+                 'correcta': 'C'},
+                {'pregunta': 'La sílaba subrayada en la palabra '
+                             '«Tráns-fu-ga» es del tipo: (Banco UNSAAC)',
+                 'alternativas': ['CCVCS',
+                                  'CSVCC',
+                                  'CCVSC',
+                                  'CCVCC',
+                                  'CSVCS'],
+                 'correcta': 'A'},
+                {'pregunta': 'Por el grado de abertura de la vocal, la '
+                             'palabra «vértigo» presenta la secuencia de '
+                             'fonemas vocálicos: (Banco UNSAAC)',
+                 'alternativas': ['Semiabierto - cerrado - semiabierto',
+                                  'Anterior - cerrado - velar',
+                                  'Intermedio - semiabierto - cerrado',
+                                  'Abierto - semiabierto - semiabierto',
+                                  'Abierto - cerrado - abierto'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las sílabas que presenta la palabra FRAGUA '
+                             'son: (Banco UNSAAC)',
+                 'alternativas': ['Diptongadas',
+                                  'Tautosilábicas',
+                                  'Cerradas',
+                                  'Heterosilábicas',
+                                  'Trabadas'],
+                 'correcta': 'B'},
+                {'pregunta': 'De acuerdo a la Escala Universal de Sonoridad, '
+                             'la palabra PLAN presenta, en orden '
+                             'decreciente: (Banco UNSAAC)',
+                 'alternativas': ['A>N>P>L',
+                                  'P<N<L<A',
+                                  'A>L>N>P',
+                                  'A>N>L>P',
+                                  'P<L<N<A'],
+                 'correcta': 'D'},
+                {'pregunta': 'De acuerdo a la Escala Universal de Sonoridad: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Las consonantes líquidas son menos '
+                                  'perceptibles que las oclusivas',
+                                  'Las consonantes nasales son más '
+                                  'perceptibles que las líquidas',
+                                  'Las consonantes nasales son menos '
+                                  'perceptibles que las líquidas',
+                                  'Las consonantes oclusivas son más '
+                                  'perceptibles que las fricativas',
+                                  'Las vocales silábicas son menos '
+                                  'perceptibles que las satelitales'],
+                 'correcta': 'C'},
+                {'pregunta': 'Tomando en cuenta los tipos de sílaba, la '
+                             'palabra «constructivo» presenta la siguiente '
+                             'estructura: (Banco UNSAAC)',
+                 'alternativas': ['CVCC - CCVS - VC - CV',
+                                  'CVCC - CVCC - CV - CV',
+                                  'CVCS - CCVC - CV - VC',
+                                  'CVSC - CCVS - CV - VC',
+                                  'CVCC - CCVC - CV - CV'],
                  'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La sílaba es la unidad estructural que '
@@ -2610,7 +2891,40 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Temporal',
                                   'Interrogativo',
                                   'Concesivo'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'La palabra que debe presentar tilde es: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Este', 'Solo', 'Libertad', 'Áspid', 'Fe'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las palabras que se acentúan gráficamente en '
+                             'la preantepenúltima sílaba (sobresdrújulas) '
+                             'son: (Banco UNSAAC)',
+                 'alternativas': ['Ideológico e imagíneselo',
+                                  'Comuníquesenos y péndulo',
+                                  'Infórmesenos e indíquesenos',
+                                  'Laberíntico y premiésete',
+                                  'Descuajeringado e iconográfico'],
+                 'correcta': 'C'},
+                {'pregunta': 'La palabra compuesta con acentuación adecuada '
+                             'es: (Banco UNSAAC)',
+                 'alternativas': ['Dime',
+                                  'Arrepintiendose',
+                                  'Pasapuré',
+                                  'Comunmente',
+                                  'Baloncesto'],
+                 'correcta': 'C'},
+                {'pregunta': 'La oración interrogativa indirecta con tilde '
+                             'diacrítica es: (Banco UNSAAC)',
+                 'alternativas': ['No sé quién preguntó por ti',
+                                  'Esos jóvenes son como niños',
+                                  '¿Dónde vendiste el reloj que te dio?',
+                                  'El libro está donde lo dejaste',
+                                  '¿Quién es ese joven con el inglés?'],
+                 'correcta': 'A'},
+                {'pregunta': 'La palabra que en ningún caso lleva tilde es: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Aun', 'Fue', 'Te', 'De', 'Mi'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ACENTO PROSÓDICO',
                       'items': ['La tilde, o acento gráfico, es el signo '
                                 'diacrítico que marca la acentuación de una '
@@ -3657,7 +3971,141 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Punto y aparte',
                                   'Dos puntos',
                                   'Puntos suspensivos'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'La coma es utilizada de manera pertinente en: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Cusco, 25 de febrero de 2018',
+                                  'Carlos estudia, en la universidad',
+                                  'Ellos, trabajan',
+                                  'Lo olvidó, lamentablemente',
+                                  'María, vive en Lima, César, en Arequipa'],
+                 'correcta': 'A'},
+                {'pregunta': 'El uso adecuado del punto y coma se observa '
+                             'en: (Banco UNSAAC)',
+                 'alternativas': ['Yo vivo; tú existes; él murió',
+                                  'Azul; amarillo y rojo son colores '
+                                  'primarios',
+                                  'El bebé se enfermó; sus padres lo '
+                                  'llevaron a la clínica',
+                                  'Quillabamba; Ciudad del Eterno Verano; mi '
+                                  'tierra',
+                                  'Señores; estudien conscientemente'],
+                 'correcta': 'A'},
+                {'pregunta': 'El signo de puntuación que se utiliza para '
+                             'separar párrafos se denomina: (Banco UNSAAC)',
+                 'alternativas': ['Punto final',
+                                  'Punto y coma',
+                                  'Punto seguido',
+                                  'Dos puntos',
+                                  'Punto aparte'],
+                 'correcta': 'E'},
+                {'pregunta': 'La coma elíptica se halla en: (Dirimencia '
+                             '2017-II)',
+                 'alternativas': ['Mañana llegará mi hermano y el jueves, mi '
+                                  'tío',
+                                  'Queridos estudiantes, les deseo la mejor '
+                                  'de las suertes',
+                                  'Regresó preocupado, la razón, discutió '
+                                  'con sus amigos',
+                                  'Compraremos lápices, borradores, '
+                                  'tajadores y reglas',
+                                  'Eres muy bonita, pero despreocupada en '
+                                  'tus estudios'],
+                 'correcta': 'A'},
+                {'pregunta': 'La oración en la cual se usa adecuadamente el '
+                             'punto y coma es: (Dirimencia 2017-II)',
+                 'alternativas': ['Los puntos cardinales de orientación son; '
+                                  'este, oeste, norte y sur',
+                                  'El abuelo se sintió mal de salud; sus '
+                                  'familiares lo llevaron a la clínica',
+                                  'Julio César; tiene que jugar carnavales '
+                                  'sola con sus amigas',
+                                  'Ellos estudian Competencia Lingüística; '
+                                  'Aritmética; Álgebra',
+                                  'En el parque zonal; los alumnos juegan '
+                                  'fútbol el fin de semana'],
+                 'correcta': 'B'},
+                {'pregunta': 'El signo de puntuación que se usa para separar '
+                             'párrafos es: (Dirimencia 2017-II)',
+                 'alternativas': ['La coma hiperbática',
+                                  'El punto y coma',
+                                  'El punto y aparte',
+                                  'El punto y seguido',
+                                  'Los dos puntos'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los signos de interrogación en la lengua '
+                             'española son dos, al inicio y al final de la '
+                             'expresión, y se utilizan para: (Dirimencia)',
+                 'alternativas': ['Inducir',
+                                  'Exclamar',
+                                  'Permutar',
+                                  'Inquirir',
+                                  'Rememorar'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las comillas en uso metalingüístico se '
+                             'aprecian en: (Banco UNSAAC)',
+                 'alternativas': ['Carlos «El Apache» Tévez juega en el '
+                                  'fútbol chino',
+                                  'El «vocativo» no es parte del sintagma '
+                                  'nominal ni verbal',
+                                  'Cuando estés en Roma compórtate como los '
+                                  'romanos',
+                                  'En esa joyería venden hermosos «anillos» '
+                                  'de oro fino',
+                                  'El lingüista Noam Chomsky escribió la '
+                                  '«Teoría minimalista»'],
+                 'correcta': 'B'},
+                {'pregunta': 'Se aprecia coma hiperbática en: (Banco UNSAAC)',
+                 'alternativas': ['Andrés, debes levantarte temprano para ir '
+                                  'al colegio',
+                                  'Los colores primarios son: rojo, azul y '
+                                  'amarillo',
+                                  'José juega fútbol; su amigo, básquet',
+                                  'En el estadio, el entrenador entregó un '
+                                  'premio al jugador',
+                                  'Los niños estudian, los padres trabajan y '
+                                  'los maestros enseñan'],
+                 'correcta': 'D'},
+                {'pregunta': 'El enunciado que presenta punto y coma en la '
+                             'oración yuxtapuesta de causa y efecto es: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Colocó la vajilla en el cajón; los '
+                                  'cubiertos en la gaveta',
+                                  'Puede irse a casa; no hay nada que hacer',
+                                  'El perro fue atropellado; murió '
+                                  'inmediatamente',
+                                  'Es un ejemplo social; lo hizo por su '
+                                  'familia',
+                                  'Tienes que irte a tu morada; cumpliste tu '
+                                  'misión'],
+                 'correcta': 'C'},
+                {'pregunta': 'La expresión en la que se utiliza '
+                             'correctamente el punto de abreviatura es: '
+                             '(Banco UNSAAC)',
+                 'alternativas': ['Miles de personas mueren en el mundo por '
+                                  'el V.I.H.',
+                                  'J. Pérez de Cuéllar representó a la '
+                                  'O.N.U.',
+                                  'La O.N.G. Calandria tiene subvención '
+                                  'económica de la Comunidad Europea',
+                                  'Eduardo viajó a Bs.As. para estudiar un '
+                                  'posgrado',
+                                  'El Mundial de Fútbol «Rusia 2018» es '
+                                  'organizado por la FI.FA.'],
+                 'correcta': 'D'},
+                {'pregunta': 'El uso de comillas en las expresiones '
+                             'denominativas se aprecia en: (Banco UNSAAC)',
+                 'alternativas': ['Se ha clausurado con gran éxito la '
+                                  'exposición «Las vanguardias andinas»',
+                                  '«Los Heraldos Negros» pertenecen a '
+                                  'Vallejo',
+                                  'La palabra «cándido» lleva tilde por ser '
+                                  'esdrújula',
+                                  'La voz apicultura está formada a partir '
+                                  'del término latino «apis»',
+                                  'En el salón han puesto un «cuadro» que '
+                                  'les ha costado un dineral'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FUNCIONES / EL PUNTO',
                       'items': ['Los signos de puntuación son signos '
                                 'ortográficos que organizan el discurso para '
@@ -4177,7 +4625,115 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                   'Llevan artículo determinado',
                                   'Van en plural genérico',
                                   'Van al inicio de la oración'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'La oración con dos sustantivos comunes en '
+                             'cuanto al género es: (Banco UNSAAC)',
+                 'alternativas': ['El ciclista atropelló con fuerza a una '
+                                  'yegua',
+                                  'El dentista prohibió el uso excesivo de '
+                                  'azúcar',
+                                  'El taxista llevó al turista a la estación',
+                                  'El deportista obtuvo un pendiente de paga',
+                                  'La auxiliar tiene una ardilla hermosa'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los sustantivos ambiguos son: (Banco UNSAAC)',
+                 'alternativas': ['Actor - yegua',
+                                  'Alumno - poeta',
+                                  'Artista - vodka',
+                                  'Interrogante - dote',
+                                  'Profesional - rehén'],
+                 'correcta': 'D'},
+                {'pregunta': 'El enunciado que presenta un sustantivo '
+                             'epiceno con concordancia adecuada es: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['El ombú hembra es frondosa',
+                                  'El rinoceronte hembra es hermoso',
+                                  'El personaje de la comedia salió '
+                                  'victorioso',
+                                  'La víbora macho es muy venenoso',
+                                  'La avispa macho es peligroso'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los sustantivos que solo presentan número '
+                             'plural son: (Banco UNSAAC)',
+                 'alternativas': ['Anales - noticias',
+                                  'Peces - albricias',
+                                  'Fauces - flores',
+                                  'Nupcias - bruces',
+                                  'Comicios - tenazas'],
+                 'correcta': 'D'},
+                {'pregunta': 'En cuanto al género, la oración con sustantivo '
+                             'común es: (Banco UNSAAC)',
+                 'alternativas': ['La tigresa es exhibida en el zoológico',
+                                  'La doctora auscultó al paciente',
+                                  'El adolescente concurrió al festival',
+                                  'El internet es usado por multitudes',
+                                  'El Papa visitará nuestro país'],
+                 'correcta': 'C'},
+                {'pregunta': 'El sustantivo ambiguo está presente en: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['La capital está muy lejos',
+                                  'La tilde no se usa siempre',
+                                  'El Sol irradia rayos nocivos',
+                                  'El taxista nos llevó al aeropuerto',
+                                  'El yerno es aceptado por la familia'],
+                 'correcta': 'C'},
+                {'pregunta': 'Son sustantivos epicenos: (Banco UNSAAC)',
+                 'alternativas': ['El foco macho - la foca hembra',
+                                  'El palto - la palta',
+                                  'El león macho - el león hembra',
+                                  'La jirafa macho - la jirafa hembra',
+                                  'Toro - vaca'],
+                 'correcta': 'D'},
+                {'pregunta': 'El sustantivo que se usa únicamente en número '
+                             'singular es: (Banco UNSAAC)',
+                 'alternativas': ['Salud',
+                                  'Bucle',
+                                  'Alicate',
+                                  'Pantalón',
+                                  'Enfermedad'],
+                 'correcta': 'A'},
+                {'pregunta': 'En el proceso de feminización, el sustantivo '
+                             'de terminación variable es: (Banco UNSAAC)',
+                 'alternativas': ['Obstetra',
+                                  'Periodista',
+                                  'Mar',
+                                  'Senador',
+                                  'Cóndor'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las palabras «yerno» y «nuera» constituyen '
+                             'sustantivos: (Banco UNSAAC)',
+                 'alternativas': ['Ambiguos',
+                                  'Heterónimos',
+                                  'Polisémicos',
+                                  'Epicenos',
+                                  'Homónimos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El enunciado que presenta un sustantivo '
+                             'polisémico es: (Banco UNSAAC)',
+                 'alternativas': ['El calor es sofocante en verano',
+                                  'Ese caballo de paso es de mi compadre',
+                                  'La adolescente expuso su nuevo proyecto',
+                                  'El guitarrista se presentó en el teatro',
+                                  'La editorial Alfaguara es muy '
+                                  'prestigiosa'],
+                 'correcta': 'E'},
+                {'pregunta': 'El sustantivo «jueves» se pluraliza a través '
+                             'de: (Banco UNSAAC)',
+                 'alternativas': ['El artículo «los»',
+                                  'El morfema «-s»',
+                                  'El artículo «las»',
+                                  'El morfema «-es»',
+                                  'El artículo «el»'],
+                 'correcta': 'A'},
+                {'pregunta': 'El nombre propio bien pluralizado es: (Banco '
+                             'UNSAAC)',
+                 'alternativas': ['Los Fernandos Belaúndes son políticos',
+                                  'Los Albertos Fujimori deben estar '
+                                  'encarcelados',
+                                  'Los Sancho Panza son personas indeseables',
+                                  'Marios Vargas Llosas es un gran escritor',
+                                  'La María Cristina juegan en el parque'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CRITERIOS PARA DEFINIR EL SUSTANTIVO / '
                                 'FUNCIONES DEL SUSTANTIVO',
                       'items': ['Según el criterio semántico, el sustantivo '

@@ -86,6 +86,47 @@ def _partes(texto):
     return salida
 
 
+def _generar_qr_bytes(texto):
+    """Genera un código QR a partir de texto plano y devuelve los bytes
+    PNG de la imagen. El QR contiene el texto directamente (no una URL),
+    para que funcione sin conexión al escanearlo con cualquier lector."""
+    import qrcode
+    import io as _io
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=8,
+        border=2,
+    )
+    qr.add_data(texto)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#12307F", back_color="white")
+    buf = _io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def _texto_qr_reto(tema, reto):
+    """Arma el texto plano del QR de 'Reto Relámpago': 3 preguntas con
+    sus respuestas, para autoevaluación instantánea sin internet."""
+    lineas = ["🎓 ACADEMIA YACHAY", "Pioneros en la Educación de Calidad", "",
+              f"⚡ RETO RELÁMPAGO · {tema['titulo']}", ""]
+    for i, pr in enumerate(reto, start=1):
+        lineas.append(f"{i}. {pr['pregunta']}")
+        lineas.append(f"   ✅ {pr['respuesta']}")
+        lineas.append("")
+    return "\n".join(lineas).strip()
+
+
+def _texto_qr_dato(tema, dato):
+    """Arma el texto plano del QR de 'Dato Yachay': un dato adicional
+    curioso o motivador relacionado con el tema."""
+    return (
+        "🎓 ACADEMIA YACHAY\nPioneros en la Educación de Calidad\n\n"
+        f"✨ DATO YACHAY · {tema['titulo']}\n\n{dato}"
+    )
+
+
 def render_linea(texto, con_claves):
     """Devuelve el texto listo para el PDF.
 
@@ -500,6 +541,40 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                 ]))
                 st_.append(grid)
                 fila_actual = []
+
+        qr_reto = tema.get("qr_reto")
+        qr_dato = tema.get("qr_dato")
+        if qr_reto or qr_dato:
+            from reportlab.platypus import Image as RLImage
+            st_.append(Spacer(1, 14))
+            celdas_qr = []
+            ancho_qr = 3.2 * cm
+            if qr_reto:
+                png = _generar_qr_bytes(_texto_qr_reto(tema, qr_reto))
+                img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
+                celdas_qr.append([
+                    img,
+                    Paragraph("<b>⚡ Reto Relámpago</b><br/>Escanea y autoevalúate", est["cel"]),
+                ])
+            if qr_dato:
+                png = _generar_qr_bytes(_texto_qr_dato(tema, qr_dato))
+                img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
+                celdas_qr.append([
+                    img,
+                    Paragraph("<b>✨ Dato Yachay</b><br/>Un dato extra para recordar", est["cel"]),
+                ])
+            fila_qr = []
+            for img, etiqueta in celdas_qr:
+                fila_qr.append(img)
+                fila_qr.append(etiqueta)
+            tabla_qr = Table([fila_qr],
+                              colWidths=[ancho_qr, 4.5 * cm] * len(celdas_qr))
+            tabla_qr.setStyle(TableStyle([
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ]))
+            st_.append(tabla_qr)
 
     doc.build(st_)
     buf.seek(0)

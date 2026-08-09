@@ -309,7 +309,76 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Ámbito',
                                   'Campo de acción',
                                   'Fuerza'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'El conjunto de normas de conducta humana para '
+                             'organizar y regularizar la vida social del '
+                             'hombre se llama: (I CEPRU 2025-I)',
+                 'alternativas': ['La ley',
+                                  'El derecho',
+                                  'La moral',
+                                  'Los valores',
+                                  'Las virtudes'],
+                 'correcta': 'B'},
+                {'pregunta': 'La ley que es de carácter indefinido y '
+                             'permanente, y solo deja de tener vigencia '
+                             'cuando es reemplazada por otra ley del mismo '
+                             'rango, se caracteriza por ser: (I CEPRU '
+                             '2024-II)',
+                 'alternativas': ['Permanente',
+                                  'Irretroactiva',
+                                  'General',
+                                  'Obligatoria',
+                                  'Coercible'],
+                 'correcta': 'A'},
+                {'pregunta': 'El no conocimiento de la ley no es excusa para '
+                             'su no cumplimiento; es una característica de '
+                             'la ley: (I CEPRU 2023-II)',
+                 'alternativas': ['Universal',
+                                  'Jerárquica',
+                                  'Flexible',
+                                  'De polaridad',
+                                  'Obligatoria'],
+                 'correcta': 'E'},
+                {'pregunta': 'Una característica de la ley es que es: (I '
+                             'CEPRU 2023-I)',
+                 'alternativas': ['Voluntaria',
+                                  'Incoercible',
+                                  'Retroactiva',
+                                  'Impersonal',
+                                  'Efímera'],
+                 'correcta': 'D'},
+                {'pregunta': 'Una característica de la ley es que es: (II '
+                             'CEPRU 2022-II)',
+                 'alternativas': ['Individual',
+                                  'Concreta',
+                                  'Coercitiva',
+                                  'Retroactiva',
+                                  'Voluntaria'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Ley es toda norma jurídica emanada del '
+                             'poder público, destinada a regular la '
+                             'conducta: (II CEPRU 2016-II)',
+                 'alternativas': ['Interna de las personas fuera de la '
+                                  'sociedad',
+                                  'Externa de las personas dentro de la '
+                                  'familia',
+                                  'Interna de las personas dentro de la '
+                                  'ciudad',
+                                  'Externa de las personas dentro de la '
+                                  'sociedad',
+                                  'Externa de las personas fuera de la '
+                                  'familia'],
+                 'correcta': 'D'},
+                {'pregunta': 'A la práctica general, uniforme y '
+                             'constantemente repetida de una determinada '
+                             'conducta por los miembros de una comunidad se '
+                             'le denomina: (II CEPRU 2016-II)',
+                 'alternativas': ['Historia',
+                                  'Hábito',
+                                  'Costumbre',
+                                  'Idiosincrasia',
+                                  'Arte'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'EL DERECHO: CONCEPTO Y CLASES',
                       'items': ['La palabra Derecho viene del latín «IUS», '
                                 'término con el que los romanos lo '
@@ -637,7 +706,43 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Adquirida',
                                   'Religiosa',
                                   'Política'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'Es la colaboración mutua entre dos personas: '
+                             '(I CEPRU 2025-I)',
+                 'alternativas': ['La solidaridad',
+                                  'El respeto',
+                                  'La dignidad',
+                                  'La igualdad',
+                                  'La tolerancia'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las vivencias e ideales que orientan nuestros '
+                             'actos en beneficio propio y de la '
+                             'colectividad, llevándonos a la superación '
+                             'personal, se refieren a: (III CEPRU 2025-I)',
+                 'alternativas': ['Moral',
+                                  'Derecho',
+                                  'Valores',
+                                  'Ética',
+                                  'Virtud'],
+                 'correcta': 'C'},
+                {'pregunta': 'Que el hombre pueda determinarse sin sujeción '
+                             'a ninguna fuerza o coacción psicológica '
+                             'interior o exterior pertenece al valor de: (I '
+                             'CEPRU 2023-II)',
+                 'alternativas': ['Derecho',
+                                  'Moral',
+                                  'Solidaridad',
+                                  'Respeto',
+                                  'Libertad'],
+                 'correcta': 'E'},
+                {'pregunta': 'El valor que permite apreciar, reconocer y '
+                             'valorar a la sociedad es: (I CEPRU 2023-I)',
+                 'alternativas': ['Libertad',
+                                  'Respeto',
+                                  'Solidaridad',
+                                  'Justicia',
+                                  'Igualdad'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE VALOR',
                       'items': ['Los valores son las vivencias e ideales que '
                                 'orientan nuestros actos en beneficio propio '
@@ -952,7 +1057,32 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Se desarrolla y realiza en el marco de la '
                                   'vida social',
                                   'Es anterior a toda organización social'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'Las personas creadas por ley y con un fin '
+                             'social, dentro de la clasificación de persona, '
+                             'se refieren a la: (III CEPRU 2025-I)',
+                 'alternativas': ['Persona jurídica',
+                                  'Persona jurídica de derecho público',
+                                  'Persona natural',
+                                  'Persona física',
+                                  'Persona jurídica de derecho privado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según el Código Civil, el inicio de la vida '
+                             'humana es desde: (I CEPRU 2023-II)',
+                 'alternativas': ['El nacimiento',
+                                  '30 días de nacido',
+                                  '5 días de nacido',
+                                  '2 horas de nacido',
+                                  'La concepción'],
+                 'correcta': 'E'},
+                {'pregunta': 'Desde un enfoque legal, la persona humana es '
+                             'sujeto de derecho desde su: (II CEPRU 2022-II)',
+                 'alternativas': ['Involución',
+                                  'Concepción',
+                                  'Anidación',
+                                  'Evolución',
+                                  'Nacimiento'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'LA PERSONA: ENFOQUE CONSTITUCIONAL Y LEGAL',
                       'items': ['El «Derecho de las personas» es el conjunto '
                                 'de normas jurídicas que regulan el '
@@ -1351,6 +1481,53 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Sus bienes exclusivamente',
                                   'Sus contratos exclusivamente',
                                   'Sus deudas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Es la unión entre una mujer y un varón '
+                             'reconocida por el Código Civil: (I CEPRU '
+                             '2025-I)',
+                 'alternativas': ['La convivencia',
+                                  'La unión de hecho',
+                                  'El matrimonio civil',
+                                  'El matrimonio religioso',
+                                  'La comunidad'],
+                 'correcta': 'C'},
+                {'pregunta': 'Respecto a la muerte presunta, es correcto '
+                             'afirmar que: (I CEPRU 2025-I)',
+                 'alternativas': ['No apertura la sucesión',
+                                  'No disuelve el matrimonio del '
+                                  'desaparecido',
+                                  'Si la persona es mayor de 80 años debe '
+                                  'transcurrir 10 años',
+                                  'Se declara al transcurrir 7 años de la '
+                                  'desaparición',
+                                  'Pone fin a la persona humana'],
+                 'correcta': 'D'},
+                {'pregunta': 'Dentro de los requisitos de fondo para '
+                             'contraer matrimonio está: (III CEPRU 2025-I)',
+                 'alternativas': ['Certificado médico de no padecer '
+                                  'enfermedad crónica',
+                                  'Certificado médico',
+                                  'Ser mayor de 18 años',
+                                  'Edicto matrimonial',
+                                  'Certificado domiciliario con residencia '
+                                  'actual'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los parientes del cónyuge constituyen una '
+                             'clase de parentesco denominada: (I CEPRU '
+                             '2023-I)',
+                 'alternativas': ['Afinidad',
+                                  'Consanguinidad',
+                                  'Adopción',
+                                  'Territorio',
+                                  'Espiritual'],
+                 'correcta': 'A'},
+                {'pregunta': 'La persona es sujeto de derecho desde: (I '
+                             'CEPRU 2023-I)',
+                 'alternativas': ['La concepción',
+                                  'La fecundación',
+                                  'El nacimiento',
+                                  'La muerte',
+                                  'El bautizo'],
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y NATURALEZA',
                       'items': ['Para Rodríguez Iturri, la familia humana es '
@@ -1916,6 +2093,50 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Oficial exclusivo',
                                   'Prohibido por ley',
                                   'Militar exclusivo'],
+                 'correcta': 'A'},
+                {'pregunta': 'Respecto a los elementos esenciales de la '
+                             'Nación, es correcto señalar: (III CEPRU '
+                             '2025-I)',
+                 'alternativas': ['Costumbre',
+                                  'Lengua',
+                                  'Conciencia nacional',
+                                  'Ideales al futuro',
+                                  'Tradiciones'],
+                 'correcta': 'C'},
+                {'pregunta': '¿Quién escribió el libro «7 Ensayos de '
+                             'Interpretación de la Realidad Peruana»? (IV '
+                             'CEPRU 2023-II)',
+                 'alternativas': ['Víctor Andrés Belaunde',
+                                  'Julio César Tello',
+                                  'Luis Guillermo Lumbreras',
+                                  'John Rowe',
+                                  'José Carlos Mariátegui'],
+                 'correcta': 'E'},
+                {'pregunta': 'El término «Peruanidad» fue acuñado por: (II '
+                             'CEPRU 2022-II)',
+                 'alternativas': ['Blasco Núñez de Vela',
+                                  'Hipólito Unanue',
+                                  'Víctor Andrés Belaúnde García',
+                                  'Fernando Belaúnde Terry',
+                                  'José de la Serna'],
+                 'correcta': 'C'},
+                {'pregunta': 'El elemento integrante de nuestra peruanidad '
+                             'de larga tradición y posesión histórica es el: '
+                             '(II CEPRU 2022-I)',
+                 'alternativas': ['Sistema jurídico',
+                                  'Sistema político',
+                                  'Territorio ancestral',
+                                  'Sentido de organización',
+                                  'Folclore'],
+                 'correcta': 'C'},
+                {'pregunta': 'El sistema mercantilista, en los aspectos que '
+                             'fundamentan la peruanidad, se implantó en la '
+                             'etapa de: (I CEPRU 2016-I)',
+                 'alternativas': ['La influencia hispánica',
+                                  'La cultura prehispánica',
+                                  'El desarrollo de la República',
+                                  'El desarrollo económico',
+                                  'El desarrollo industrial'],
                  'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ELEMENTOS',
                       'items': ['Etimológicamente, «nación» proviene del '
@@ -2346,7 +2567,45 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'De facto',
                                   'Revolucionario',
                                   'Presidencialista'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': '¿Quién preside el Sistema de Defensa Nacional? '
+                             '(I CEPRU 2023-I)',
+                 'alternativas': ['El Congreso',
+                                  'El Premier',
+                                  'La Primera Dama',
+                                  'El Presidente del Tribunal Constitucional',
+                                  'El Presidente de la República'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las lenguas oficiales adoptadas por la ONU '
+                             'son: (IV CEPRU 2022-I)',
+                 'alternativas': ['Árabe - chino - inglés - holandés - ruso '
+                                  '- francés',
+                                  'Árabe - chino - inglés - portugués - ruso '
+                                  '- español',
+                                  'Chino - árabe - inglés - italiano - ruso '
+                                  '- español',
+                                  'Árabe - chino - inglés - francés - ruso - '
+                                  'español',
+                                  'Árabe - inglés - chino - alemán - ruso - '
+                                  'español'],
+                 'correcta': 'D'},
+                {'pregunta': 'La Organización de los Estados Americanos es '
+                             'un organismo de carácter: (IV CEPRU 2022-I)',
+                 'alternativas': ['Regional',
+                                  'Nacional',
+                                  'Local',
+                                  'Mundial',
+                                  'Universal'],
+                 'correcta': 'A'},
+                {'pregunta': 'El que dirige el Sistema de Defensa Nacional '
+                             'es el presidente: (II CEPRU 2022-I)',
+                 'alternativas': ['Del Consejo de Ministros',
+                                  'De la Corte Suprema',
+                                  'Del Pleno del Jurado Nacional de '
+                                  'Elecciones',
+                                  'De la Corte Superior de Justicia',
+                                  'De la República'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ELEMENTOS',
                       'items': ['En sentido amplio, el Estado es la nación '
                                 'jurídicamente organizada.',
@@ -2832,7 +3091,62 @@ BALOTAS_CIVICA = [{'num': 1,
                 {'pregunta': 'El número de congresistas que integran el '
                              'Congreso de la República es:',
                  'alternativas': ['150', '110', '120', '130', '100'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El titular del poder constituyente viene a '
+                             'ser: (II CEPRU 2025-I)',
+                 'alternativas': ['El congreso',
+                                  'El presidente',
+                                  'El pueblo',
+                                  'La ONU',
+                                  'El Estado'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según el artículo 43 de la Constitución, son '
+                             'características del gobierno del Perú: (III '
+                             'CEPRU 2025-I)',
+                 'alternativas': ['Democrático - social - unitario',
+                                  'Independiente - democrático - soberano',
+                                  'Inviolable - inalienable',
+                                  'Uno e indivisible',
+                                  'Unitario - representativo - '
+                                  'descentralizado'],
+                 'correcta': 'E'},
+                {'pregunta': 'La norma fundamental del Estado que establece '
+                             'la organización de sus poderes, la competencia '
+                             'de estos y la posición de la persona en '
+                             'relación con el Estado, es: (II CEPRU 2023-II)',
+                 'alternativas': ['La ley',
+                                  'El decreto',
+                                  'La Constitución',
+                                  'La resolución',
+                                  'El reglamento'],
+                 'correcta': 'C'},
+                {'pregunta': 'El derecho de todo ciudadano de presentar uno '
+                             'o más proyectos de ley se denomina: (II CEPRU '
+                             '2023-II)',
+                 'alternativas': ['Iniciativa Legislativa',
+                                  'Iniciativa de reforma Constitucional',
+                                  'Referéndum',
+                                  'Remoción',
+                                  'Revocatoria'],
+                 'correcta': 'A'},
+                {'pregunta': '¿Con qué Constitución se aprobó el voto a los '
+                             'analfabetos? (II CEPRU 2022-II)',
+                 'alternativas': ['Constitución de 1979',
+                                  'Constitución de 1933',
+                                  'Constitución de 1993',
+                                  'Constitución de 1920',
+                                  'Constitución de 1956'],
+                 'correcta': 'A'},
+                {'pregunta': 'La Constitución Política del Estado de 1993, '
+                             'durante el gobierno del ex presidente Alberto '
+                             'Fujimori, fue redactada por el: (II CEPRU '
+                             '2022-II)',
+                 'alternativas': ['Poder constituido democrático',
+                                  'Poder constituyente democrático',
+                                  'Poder Legislativo democrático',
+                                  'Congreso Ejecutivo democrático',
+                                  'Congreso constituyente democrático'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y NATURALEZA',
                       'items': ['La Constitución es la fuente de fuentes del '
                                 'Derecho positivo, la Ley Suprema, que no '
@@ -3325,7 +3639,23 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'El regidor de mayor edad',
                                   'Quien alcanzó el siguiente lugar en votos '
                                   'de la misma lista'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'Un derecho constitucional conexo con la '
+                             'libertad individual es: (II CEPRU 2018-I)',
+                 'alternativas': ['La rectificación',
+                                  'La remuneración',
+                                  'El debido proceso',
+                                  'La inviolabilidad científica',
+                                  'La petición de pensión'],
+                 'correcta': 'C'},
+                {'pregunta': 'Una característica del derecho al voto es que '
+                             'es: (II CEPRU 2022-I)',
+                 'alternativas': ['Limitado',
+                                  'Desigual',
+                                  'Irrenunciable',
+                                  'Renunciable',
+                                  'Impersonal'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'EL PACTO INTERNACIONAL DE DERECHOS CIVILES '
                                 'Y POLÍTICOS',
                       'items': ['El PIDCP fue adoptado por la Asamblea '
@@ -3753,7 +4083,44 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Económico',
                                   'Político',
                                   'Religioso'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'El Pacto Internacional de los Derechos '
+                             'Económicos, Sociales y Culturales se aprobó en '
+                             'la asamblea general de: (II CEPRU 2025-I)',
+                 'alternativas': ['La OEA',
+                                  'La CAN',
+                                  'La ONU',
+                                  'La OTAN',
+                                  'El CEPAL'],
+                 'correcta': 'C'},
+                {'pregunta': 'El derecho que viene a ser la base del '
+                             'bienestar social y un medio de realización de '
+                             'la persona es el derecho al: (II CEPRU '
+                             '2023-II)',
+                 'alternativas': ['Educación',
+                                  'Trabajo',
+                                  'Salud',
+                                  'Bienestar',
+                                  'Patrimonio'],
+                 'correcta': 'B'},
+                {'pregunta': 'El derecho mediante el cual se combate y '
+                             'sanciona el tráfico ilícito de drogas es el '
+                             'derecho a la: (II CEPRU 2023-II)',
+                 'alternativas': ['Salud',
+                                  'Trabajo',
+                                  'Educación',
+                                  'Medio Ambiente',
+                                  'Paz'],
+                 'correcta': 'A'},
+                {'pregunta': 'El derecho que constituye la base del '
+                             'bienestar social y un medio de realización de '
+                             'la persona es: (II CEPRU 2022-II)',
+                 'alternativas': ['La educación',
+                                  'La salud',
+                                  'El trabajo',
+                                  'La cultura',
+                                  'El conocimiento'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y FUNDAMENTO',
                       'items': ['Los derechos económicos, sociales y '
                                 'culturales incluyen el derecho a un nivel '
@@ -4269,7 +4636,35 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Gobernador Regional',
                                   'Juez',
                                   'Alcalde'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La Cuenta General de la República, como '
+                             'documento oficial, es aprobada por: (II CEPRU '
+                             '2025-I)',
+                 'alternativas': ['El Consejo de Ministros',
+                                  'El Congreso de la República',
+                                  'El Ministerio de Economía y Finanzas',
+                                  'La Contraloría General de la República',
+                                  'La Comisión de Presupuesto'],
+                 'correcta': 'B'},
+                {'pregunta': 'Es una atribución del Congreso: (III CEPRU '
+                             '2025-I)',
+                 'alternativas': ['Cumplir y hacer cumplir la Constitución, '
+                                  'los tratados, leyes y demás disposiciones '
+                                  'legales',
+                                  'Dirigir la política general del Gobierno',
+                                  'Administrar la hacienda pública',
+                                  'Autorizar los empréstitos',
+                                  'Emitir los Decretos Legislativos y de '
+                                  'Urgencia'],
+                 'correcta': 'D'},
+                {'pregunta': 'Es un requisito para ser congresista: (II '
+                             'CEPRU 2022-II)',
+                 'alternativas': ['Terminar el 5to de secundaria',
+                                  'Tener estudios universitarios',
+                                  'Tener primaria completa',
+                                  'Ser varón',
+                                  'Ser peruano de nacimiento'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ÓRGANO',
                       'items': ['El Poder Legislativo es la facultad del '
                                 'Estado para dictar, modificar, interpretar '
@@ -4833,7 +5228,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                   '15 días',
                                   '45 días',
                                   '90 días'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El encargado de elegir al presidente del '
+                             'Consejo de Ministros, así como de removerlo, '
+                             'es el presidente de: (IV CEPRU 2025-I)',
+                 'alternativas': ['La República',
+                                  'El Tribunal Constitucional',
+                                  'El Congreso de la República',
+                                  'El Consejo de Ministros',
+                                  'La Corte Suprema de Justicia'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ORGANIZACIÓN',
                       'items': ['El Poder Ejecutivo está constituido por el '
                                 'Presidente, quien desarrolla las funciones '
@@ -5223,7 +5627,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Proceso civil exclusivo',
                                   'Estado del proceso',
                                   'Juicio oral exclusivo'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El órgano jurisdiccional jerárquico que ejerce '
+                             'sus funciones en un distrito judicial es: (IV '
+                             'CEPRU 2025-I)',
+                 'alternativas': ['La Corte Suprema',
+                                  'Los Juzgados de Paz',
+                                  'Las Cortes Superiores',
+                                  'Los Juzgados de Paz Letrados',
+                                  'Los Juzgados Mixtos Provinciales'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y AUTONOMÍA',
                       'items': ['El Poder Judicial es el organismo encargado '
                                 'de administrar justicia a través de sus '
@@ -5749,7 +6162,70 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Vehículos',
                                   'Empresas',
                                   'Defunciones'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'El organismo encargado de inscribir los actos '
+                             'relativos a la capacidad y estado civil de las '
+                             'personas naturales es: (II CEPRU 2023-II)',
+                 'alternativas': ['SUNAT',
+                                  'Registros Públicos',
+                                  'JNE',
+                                  'ONPE',
+                                  'RENIEC'],
+                 'correcta': 'E'},
+                {'pregunta': 'El Organismo Constitucional Autónomo que '
+                             'protege los derechos constitucionales de la '
+                             'persona y la comunidad se denomina: (II CEPRU '
+                             '2017-I)',
+                 'alternativas': ['Ministerio de Justicia y Derechos Humanos',
+                                  'Comisión Andina de Juristas',
+                                  'Asociación Pro Derechos Humanos',
+                                  'Defensoría del Pueblo',
+                                  'Comisión de la Verdad y la '
+                                  'Reconciliación'],
+                 'correcta': 'D'},
+                {'pregunta': 'Una atribución del Jurado Nacional de '
+                             'Elecciones es: (II CEPRU 2017-I)',
+                 'alternativas': ['Organizar y ejecutar los procesos '
+                                  'electorales, referéndum y consultas '
+                                  'populares',
+                                  'Velar por la obtención de la fiel y libre '
+                                  'expresión de la voluntad popular',
+                                  'Proclamar a los candidatos elegidos y '
+                                  'expedir las credenciales correspondientes',
+                                  'Confeccionar un registro único de '
+                                  'identificación',
+                                  'Asignar un código único de '
+                                  'identificación'],
+                 'correcta': 'C'},
+                {'pregunta': 'Es atribución de la Oficina Nacional de '
+                             'Procesos Electorales (ONPE): (II CEPRU 2018-I)',
+                 'alternativas': ['Disponer la protección de la libertad '
+                                  'personal en los comicios',
+                                  'Fiscalizar la realización de los procesos '
+                                  'electorales',
+                                  'Preparar el padrón electoral',
+                                  'Expedir las credenciales a las '
+                                  'autoridades elegidas',
+                                  'Organizar los procesos electorales'],
+                 'correcta': 'E'},
+                {'pregunta': 'La atribución del JNE de mantener y custodiar '
+                             'el registro de: (II CEPRU 2018-I)',
+                 'alternativas': ['Organizaciones Políticas',
+                                  'Personas Jurídicas',
+                                  'Personas Naturales',
+                                  'Defunciones',
+                                  'Nacimientos'],
+                 'correcta': 'A'},
+                {'pregunta': 'El organismo que prepara, mantiene y actualiza '
+                             'el padrón electoral es: (II CEPRU 2018-I)',
+                 'alternativas': ['La Corte Superior de Justicia',
+                                  'El Registro Nacional de Identificación y '
+                                  'Estado Civil',
+                                  'El Jurado Nacional de Elecciones',
+                                  'El Consejo Nacional de la Magistratura',
+                                  'La Oficina Nacional de Procesos '
+                                  'Electorales'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y RELACIÓN',
                       'items': ['El Estado peruano se organiza a nivel '
                                 'nacional, regional y local, según el '
@@ -6248,7 +6724,32 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Sin ningún criterio',
                                   'Desigualmente',
                                   'Con exención total'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'En el régimen tributario, conforma un impuesto '
+                             'indirecto: (IV CEPRU 2025-I)',
+                 'alternativas': ['Impuesto General a las Ventas',
+                                  'Impuesto a la Renta',
+                                  'Impuesto al Patrimonio Vehicular',
+                                  'Impuesto a la Venta de Arroz Pilado',
+                                  'Impuesto a los Activos Netos'],
+                 'correcta': 'A'},
+                {'pregunta': '¿Cómo se llama el título de la Constitución '
+                             'que regula la economía del país? (II CEPRU '
+                             '2022-II)',
+                 'alternativas': ['Régimen Económico',
+                                  'Los Tributos',
+                                  'Estructura del Estado',
+                                  'Del Estado y la Nación',
+                                  'De las Garantías Constitucionales'],
+                 'correcta': 'A'},
+                {'pregunta': 'La tercera vía entre el capitalismo y el '
+                             'socialismo es la: (I CEPRU 2016-I)',
+                 'alternativas': ['Economía Social de Mercado',
+                                  'Economía Liberal',
+                                  'Economía Subordinada',
+                                  'Economía Transversal',
+                                  'Economía Mixta Radical'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Según Sumar Albujar, el régimen económico '
                                 'consiste en las normas o principios que '
@@ -6678,6 +7179,33 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'El Poder Judicial Local',
                                   'Las Juntas de Delegados Vecinales',
                                   'El Congreso Local'],
+                 'correcta': 'D'},
+                {'pregunta': 'El órgano normativo y fiscalizador dentro de '
+                             'la organización de los gobiernos regionales '
+                             'es: (IV CEPRU 2025-I)',
+                 'alternativas': ['El Consejo Regional',
+                                  'La Gerencia Regional',
+                                  'El Consejo de Coordinación',
+                                  'La Secretaría Regional',
+                                  'El Gobernador Regional'],
+                 'correcta': 'A'},
+                {'pregunta': 'La autoridad que puede ser revocada es: (II '
+                             'CEPRU 2025-I)',
+                 'alternativas': ['Los alcaldes',
+                                  'Los senadores',
+                                  'Los diputados',
+                                  'Los jueces',
+                                  'Los congresistas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Como antecedente de la descentralización en el '
+                             'Perú existieron grupos antagónicos en la '
+                             'organización de un Estado eficiente, '
+                             'denominados: (IV CEPRU 2022-II)',
+                 'alternativas': ['Centralistas y caudillistas',
+                                  'Regionalistas y centralistas',
+                                  'Caudillistas y centralistas',
+                                  'Federalistas y centralistas',
+                                  'Caciquistas y federalistas'],
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE DESCENTRALIZACIÓN',
                       'items': ['La descentralización es un proceso '
@@ -7213,7 +7741,66 @@ BALOTAS_CIVICA = [{'num': 1,
                              'Humanos consta de un preámbulo y un número de '
                              'artículos igual a:',
                  'alternativas': ['20', '40', '30', '50', '25'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'La Declaración Universal de los Derechos '
+                             'Humanos se aprobó el: (IV CEPRU 2025-I)',
+                 'alternativas': ['10 de diciembre de 1948',
+                                  '02 de mayo de 1948',
+                                  '26 de junio de 1945',
+                                  '24 de octubre de 1945',
+                                  '22 de noviembre de 1969'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los idiomas oficiales de la Corte '
+                             'Internacional de Justicia son: (IV CEPRU '
+                             '2025-I)',
+                 'alternativas': ['Inglés y francés',
+                                  'Portugués e inglés',
+                                  'Ruso y español',
+                                  'Inglés y español',
+                                  'Inglés y chino'],
+                 'correcta': 'A'},
+                {'pregunta': 'Dentro de los instrumentos supranacionales de '
+                             'protección de derechos humanos tenemos: (IV '
+                             'CEPRU 2025-I)',
+                 'alternativas': ['La Declaración Africana de los Derechos '
+                                  'del Hombre y Ciudadano',
+                                  'La Declaración Interamericana de los '
+                                  'Derechos Humanos',
+                                  'El Pacto Internacional de los Derechos '
+                                  'Civiles y Políticos',
+                                  'La Carta Magna de Juan Sin Tierra',
+                                  'El Pacto Americano de los Derechos '
+                                  'Económicos, Sociales y Culturales'],
+                 'correcta': 'C'},
+                {'pregunta': 'Son un conjunto de bienes materiales heredados '
+                             'como legado, transmitidos a futuras '
+                             'generaciones a lo largo de la historia: (I '
+                             'CEPRU 2023-II)',
+                 'alternativas': ['Patrimonio material',
+                                  'Patrimonio inmaterial',
+                                  'Fuentes culturales',
+                                  'Patrimonio natural',
+                                  'Patrimonio cultural'],
+                 'correcta': 'A'},
+                {'pregunta': 'En la clasificación de los Derechos Humanos, '
+                             'el derecho a la protección de la salud '
+                             'pertenece a la generación: (IV CEPRU 2022-I)',
+                 'alternativas': ['Segunda',
+                                  'Primera',
+                                  'Tercera',
+                                  'Cuarta',
+                                  'Quinta'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los Derechos Humanos de tercera generación '
+                             'reconocen el derecho a la: (II CEPRU 2022-I)',
+                 'alternativas': ['Paz y protección del medio ambiente',
+                                  'Libre sindicación y protección de la '
+                                  'salud',
+                                  'Propiedad y herencia',
+                                  'Igualdad ante la ley y libertad de '
+                                  'conciencia',
+                                  'Libertad y seguridad personal'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Los derechos humanos son libertades, '
                                 'facultades e instituciones que incluyen a '
@@ -7658,7 +8245,47 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'La demanda inicial',
                                   'No haberse cumplido el mandato',
                                   'La notificación fiscal'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'La vulneración o amenaza, por cualquier '
+                             'autoridad, del derecho de solicitar '
+                             'información de cualquier entidad pública, es '
+                             'protegida por la acción: (IV CEPRU 2025-I)',
+                 'alternativas': ['De Habeas Corpus',
+                                  'De Amparo',
+                                  'De Habeas Data',
+                                  'Popular',
+                                  'De Inconstitucionalidad'],
+                 'correcta': 'C'},
+                {'pregunta': 'La garantía constitucional que protege la '
+                             'libertad individual y la seguridad personal '
+                             'corresponde a la acción de: (IV CEPRU 2022-II)',
+                 'alternativas': ['Habeas Corpus',
+                                  'Inconstitucionalidad',
+                                  'Constitucionalidad',
+                                  'Amparo',
+                                  'Habeas Data'],
+                 'correcta': 'A'},
+                {'pregunta': 'La Acción de Habeas Data, introducida por '
+                             'primera vez en la Constitución de 1993, tiene '
+                             'por objeto la protección del ciudadano frente '
+                             'al abuso de: (IV CEPRU 2022-I)',
+                 'alternativas': ['La comunicación familiar y social',
+                                  'Las autoridades civiles y políticas',
+                                  'La información nacional e internacional',
+                                  'La informática vinculada con el derecho a '
+                                  'la privacidad',
+                                  'La información social y cultural'],
+                 'correcta': 'D'},
+                {'pregunta': 'La Acción de Cumplimiento, que procede contra '
+                             'cualquier autoridad o funcionario renuente a '
+                             'acatar una norma legal, se interpone ante el '
+                             'juez: (IV CEPRU 2022-I)',
+                 'alternativas': ['De Familia',
+                                  'Civil',
+                                  'Penal',
+                                  'Laboral',
+                                  'Agrario'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ANTECEDENTES',
                       'items': ['El término garantía se define como la '
                                 'seguridad o protección frente a un peligro '
@@ -8069,7 +8696,46 @@ BALOTAS_CIVICA = [{'num': 1,
                                   'Quince',
                                   'Veintiuno',
                                   'Once'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': '¿Cuál es la sede de la Corte Interamericana de '
+                             'los Derechos Humanos? (IV CEPRU 2023-II)',
+                 'alternativas': ['Washington D.C.',
+                                  'Nueva York',
+                                  'Lima',
+                                  'San José',
+                                  'Barcelona'],
+                 'correcta': 'D'},
+                {'pregunta': 'Es uno de los instrumentos supranacionales de '
+                             'protección de los Derechos Humanos: (IV CEPRU '
+                             '2023-II)',
+                 'alternativas': ['Convención de los Derechos Políticos de '
+                                  'la Mujer',
+                                  'Constitución Política del Perú',
+                                  'Declaración de los Derechos Civiles y '
+                                  'Políticos',
+                                  'Petición de Derechos',
+                                  'Convenio de Miami'],
+                 'correcta': 'A'},
+                {'pregunta': 'La institución constituida por 7 jueces '
+                             'elegidos a título personal con reconocida '
+                             'competencia en derechos humanos es la: (II '
+                             'CEPRU 2023-II)',
+                 'alternativas': ['Comisión Interamericana de Derechos '
+                                  'Humanos',
+                                  'Corte Americana de Justicia',
+                                  'Corte de la Haya',
+                                  'Corte Internacional de Justicia',
+                                  'Corte Interamericana de Derechos Humanos'],
+                 'correcta': 'E'},
+                {'pregunta': 'El principal órgano judicial de las Naciones '
+                             'Unidas, con sede en el Palacio de la Paz, es '
+                             'la Corte: (IV CEPRU 2022-II)',
+                 'alternativas': ['Superior de Justicia',
+                                  'Marcial de Justicia',
+                                  'Suprema de Justicia',
+                                  'Subalterna de Justicia',
+                                  'Internacional de Justicia'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'ANTECEDENTES: LA SOCIEDAD DE NACIONES',
                       'items': ['La precursora de las Naciones Unidas fue la '
                                 'Sociedad de Naciones, concebida durante la '
