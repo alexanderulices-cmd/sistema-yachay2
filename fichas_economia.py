@@ -66,7 +66,32 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '{John Maynard Keynes} es representante de la '
                            'escuela {keynesiana}, que defiende la '
                            'intervención del Estado para estimular la '
-                           'demanda.']}],
+                           'demanda.']},
+                {'titulo': '1.5 ECONOMÍA POSITIVA Y NORMATIVA',
+                 'items': ['La {economía positiva} busca hacer una '
+                           'descripción de los fenómenos económicos; estudia '
+                           'las fuerzas que afectan la economía y busca '
+                           '{predecir} consecuencias.',
+                           'La {economía normativa} busca definir criterios '
+                           'que guíen las decisiones económicas; responde a '
+                           'la pregunta de «{qué debe ser}» o «qué debe '
+                           'hacerse».',
+                           'La {teoría económica} se divide en microeconomía '
+                           'y {macroeconomía}.',
+                           'Se considera a {Adam Smith} como el fundador de '
+                           'la microeconomía, por su libro «{La Riqueza de '
+                           'las Naciones}».',
+                           'La {microeconomía} explica los fenómenos '
+                           'económicos realizados por los seres humanos en '
+                           'forma {individual}: personas, familias, '
+                           'empresas.',
+                           'Se considera a {John Maynard Keynes} como el '
+                           'fundador de la macroeconomía, por su libro '
+                           '«Teoría General del Empleo, el {Interés} y el '
+                           'Dinero».',
+                           'La {macroeconomía} explica los fenómenos '
+                           'económicos realizados en forma {colectiva} o '
+                           'agregada: demanda agregada, PBI, inflación.']}],
   'cuadros': [{'titulo': '1.3 ECONOMÍA POSITIVA Y NORMATIVA',
                'encabezados': ['Enfoque', 'Pregunta que responde'],
                'filas': [['Economía {positiva}', '«Lo que {es}»'],
@@ -290,7 +315,42 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Teórico',
                                   'Cuantitativo',
                                   'Cualitativo'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'La rama de la economía que busca describir los '
+                             'fenómenos económicos y predecir consecuencias '
+                             'se llama economía:',
+                 'alternativas': ['Normativa',
+                                  'Positiva',
+                                  'Aplicada',
+                                  'Social',
+                                  'Descriptiva exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'La rama de la economía que responde a la '
+                             'pregunta «qué debe ser» o «qué debe hacerse» '
+                             'se llama economía:',
+                 'alternativas': ['Positiva',
+                                  'Normativa',
+                                  'Aplicada',
+                                  'Empírica',
+                                  'Descriptiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Se considera fundador de la microeconomía, por '
+                             'su libro «La Riqueza de las Naciones», a:',
+                 'alternativas': ['John Keynes',
+                                  'Adam Smith',
+                                  'David Ricardo',
+                                  'Carlos Marx',
+                                  'León Walras'],
+                 'correcta': 'B'},
+                {'pregunta': 'Se considera fundador de la macroeconomía, por '
+                             'su libro «Teoría General del Empleo, el '
+                             'Interés y el Dinero», a:',
+                 'alternativas': ['Adam Smith',
+                                  'John Maynard Keynes',
+                                  'David Ricardo',
+                                  'Carlos Marx',
+                                  'Alfred Marshall'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO DE ECONOMÍA',
                       'items': ['Según Raymond Barre, la economía es la '
                                 'ciencia social dirigida a la administración '
@@ -338,7 +398,33 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'John Maynard Keynes es representante de la '
                                 'escuela keynesiana, que defiende la '
                                 'intervención del Estado para estimular la '
-                                'demanda.']}]},
+                                'demanda.']},
+                     {'titulo': 'ECONOMÍA POSITIVA Y NORMATIVA',
+                      'items': ['La economía positiva busca hacer una '
+                                'descripción de los fenómenos económicos; '
+                                'estudia las fuerzas que afectan la economía '
+                                'y busca predecir consecuencias.',
+                                'La economía normativa busca definir '
+                                'criterios que guíen las decisiones '
+                                'económicas; responde a la pregunta de «qué '
+                                'debe ser» o «qué debe hacerse».',
+                                'La teoría económica se divide en '
+                                'microeconomía y macroeconomía.',
+                                'Se considera a Adam Smith como el fundador '
+                                'de la microeconomía, por su libro «La '
+                                'Riqueza de las Naciones».',
+                                'La microeconomía explica los fenómenos '
+                                'económicos realizados por los seres humanos '
+                                'en forma individual: personas, familias, '
+                                'empresas.',
+                                'Se considera a John Maynard Keynes como el '
+                                'fundador de la macroeconomía, por su libro '
+                                '«Teoría General del Empleo, el Interés y el '
+                                'Dinero».',
+                                'La macroeconomía explica los fenómenos '
+                                'económicos realizados en forma colectiva o '
+                                'agregada: demanda agregada, PBI, '
+                                'inflación.']}]},
  {'num': 2,
   'titulo': 'Necesidades Humanas',
   'secciones': [{'titulo': '2.1 CONCEPTO Y ORIGEN',
@@ -388,7 +474,39 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'aumenta la cantidad {consumida}.',
                            'La ley de la {variación} en intensidad indica '
                            'que las necesidades no se perciben con la misma '
-                           'urgencia.']}],
+                           'urgencia.']},
+                {'titulo': '2.4 CLASIFICACIÓN DE LAS NECESIDADES: POR '
+                           'INTENSIDAD',
+                 'items': ['Según su {intensidad}, las necesidades se '
+                           'clasifican en primarias, secundarias y '
+                           '{terciarias}.',
+                           'Las necesidades {primarias} son indispensables '
+                           'para la conservación de la vida; también '
+                           'llamadas vitales o {biológicas}: alimentación, '
+                           'vestido, vivienda.',
+                           'Las necesidades {secundarias} contribuyen a '
+                           'mejorar el nivel de vida, de carácter social y '
+                           'psicológico, {facultativas}: educación, '
+                           'electricidad.',
+                           'Las necesidades {terciarias}, también llamadas '
+                           'suntuarias o de {lujo}, pertenecen al ámbito '
+                           'psicológico: joyas, autos costosos.']},
+                {'titulo': '2.5 CLASIFICACIÓN DE LAS NECESIDADES: OTROS '
+                           'CRITERIOS',
+                 'items': ['De acuerdo a su {naturaleza}, las necesidades se '
+                           'clasifican en materiales-corporales-biológicas, '
+                           'y {espirituales}.',
+                           'De acuerdo a cómo deben ser satisfechas, las '
+                           'necesidades se clasifican en {individuales} '
+                           '(afectan a una sola persona) y colectivas '
+                           '(afectan a un grupo o la sociedad).',
+                           'Según las necesidades {colectivas}, actualmente '
+                           'se considera que le corresponde al {Estado} '
+                           'satisfacerlas: seguridad, defensa, educación.',
+                           'De acuerdo al tiempo de satisfacción, las '
+                           'necesidades se clasifican en {presentes} (se '
+                           'satisfacen de inmediato) y futuras (se '
+                           'satisfacen de manera {mediata}).']}],
   'cuadros': [{'titulo': '2.2 NIVELES DE LA PIRÁMIDE DE MASLOW',
                'encabezados': ['Nivel', 'Necesidad'],
                'filas': [['1', '{Fisiológicas}'],
@@ -618,7 +736,44 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'deseo y satisfacción',
                                   'Esfuerzo físico, deseo, sensación de '
                                   'carencia y satisfacción'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'Según su intensidad, las necesidades '
+                             'indispensables para la conservación de la vida '
+                             'se llaman necesidades:',
+                 'alternativas': ['Secundarias',
+                                  'Primarias',
+                                  'Terciarias',
+                                  'Suntuarias',
+                                  'Facultativas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las necesidades suntuarias, superfluas o de '
+                             'lujo, según su intensidad, se llaman '
+                             'necesidades:',
+                 'alternativas': ['Primarias',
+                                  'Terciarias',
+                                  'Secundarias',
+                                  'Vitales',
+                                  'Biológicas'],
+                 'correcta': 'B'},
+                {'pregunta': 'De acuerdo a cómo deben ser satisfechas, las '
+                             'necesidades que afectan a un grupo o a la '
+                             'sociedad, correspondiendo al Estado '
+                             'satisfacerlas, se llaman necesidades:',
+                 'alternativas': ['Individuales',
+                                  'Colectivas',
+                                  'Presentes',
+                                  'Futuras',
+                                  'Terciarias'],
+                 'correcta': 'B'},
+                {'pregunta': 'De acuerdo al tiempo de satisfacción, las '
+                             'necesidades que se satisfacen de manera '
+                             'mediata se llaman necesidades:',
+                 'alternativas': ['Presentes',
+                                  'Futuras',
+                                  'Individuales',
+                                  'Colectivas',
+                                  'Primarias'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y ORIGEN',
                       'items': ['Necesidad es la sensación de carencia o '
                                 'insuficiencia, material o inmaterial, que '
@@ -669,7 +824,44 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'que aumenta la cantidad consumida.',
                                 'La ley de la variación en intensidad indica '
                                 'que las necesidades no se perciben con la '
-                                'misma urgencia.']}]},
+                                'misma urgencia.']},
+                     {'titulo': 'CLASIFICACIÓN DE LAS NECESIDADES: POR '
+                                'INTENSIDAD',
+                      'items': ['Según su intensidad, las necesidades se '
+                                'clasifican en primarias, secundarias y '
+                                'terciarias.',
+                                'Las necesidades primarias son '
+                                'indispensables para la conservación de la '
+                                'vida; también llamadas vitales o '
+                                'biológicas: alimentación, vestido, '
+                                'vivienda.',
+                                'Las necesidades secundarias contribuyen a '
+                                'mejorar el nivel de vida, de carácter '
+                                'social y psicológico, facultativas: '
+                                'educación, electricidad.',
+                                'Las necesidades terciarias, también '
+                                'llamadas suntuarias o de lujo, pertenecen '
+                                'al ámbito psicológico: joyas, autos '
+                                'costosos.']},
+                     {'titulo': 'CLASIFICACIÓN DE LAS NECESIDADES: OTROS '
+                                'CRITERIOS',
+                      'items': ['De acuerdo a su naturaleza, las necesidades '
+                                'se clasifican en '
+                                'materiales-corporales-biológicas, y '
+                                'espirituales.',
+                                'De acuerdo a cómo deben ser satisfechas, '
+                                'las necesidades se clasifican en '
+                                'individuales (afectan a una sola persona) y '
+                                'colectivas (afectan a un grupo o la '
+                                'sociedad).',
+                                'Según las necesidades colectivas, '
+                                'actualmente se considera que le corresponde '
+                                'al Estado satisfacerlas: seguridad, '
+                                'defensa, educación.',
+                                'De acuerdo al tiempo de satisfacción, las '
+                                'necesidades se clasifican en presentes (se '
+                                'satisfacen de inmediato) y futuras (se '
+                                'satisfacen de manera mediata).']}]},
  {'num': 3,
   'titulo': 'Bienes y Servicios',
   'secciones': [{'titulo': '3.1 CONCEPTO DE BIENES Y RECURSOS ECONÓMICOS',
@@ -2269,7 +2461,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'En época de {crisis} económica aumenta la '
                            'demanda de capital por falta de capitales '
                            'disponibles.']},
-                {'titulo': '6.5 CLASES DE CAPITAL (TEORÍA CLÁSICA)',
+                {'titulo': '6.4 CLASES DE CAPITAL (TEORÍA CLÁSICA)',
                  'items': ['El {capital productivo} son bienes usados en la '
                            'producción de nuevos bienes, como maquinaria '
                            'industrial.',
@@ -2282,7 +2474,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El {capital lucrativo} son bienes que sin '
                            'destinarse a la producción generan renta, como '
                            'una casa en {alquiler}.']},
-                {'titulo': '6.6 OTROS TIPOS DE CAPITAL',
+                {'titulo': '6.5 OTROS TIPOS DE CAPITAL',
                  'items': ['El {capital comercial} se originó en la fase '
                            'mercantilista del capitalismo, con el excedente '
                            'del comercio {exterior}.',
@@ -2297,7 +2489,23 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'a los {ahorristas}.',
                            'El {capital financiero} corresponde a la etapa '
                            'monopólica del capitalismo, y surge de la fusión '
-                           'del capital industrial y {bancario}.']}],
+                           'del capital industrial y {bancario}.']},
+                {'titulo': '6.6 CARACTERÍSTICAS DEL ROL DEL CAPITAL',
+                 'items': ['El capital no interviene directamente en la '
+                           'satisfacción de necesidades, solo en forma '
+                           '{indirecta}, al incrementar la producción de '
+                           'bienes.',
+                           'El capital está sujeto a {desgaste} y deterioro '
+                           'por su uso; para reponerlo, se retiene parte de '
+                           'los ingresos en un concepto contable llamado '
+                           '{depreciación}.',
+                           'En época de crisis económica aumenta la '
+                           '{demanda} de capital por escasez; en época de '
+                           'prosperidad su valor tiende a {bajar} o '
+                           'estabilizarse.',
+                           'La retribución que se obtiene por el uso del '
+                           'capital se denomina {interés}, la ganancia para '
+                           'el dueño del capital.']}],
   'cuadros': [{'titulo': '6.2 FORMAS DE OBTENCIÓN DEL CAPITAL',
                'encabezados': ['Forma', 'Mecanismo'],
                'filas': [['Acción del {hombre}', 'Sobre la {naturaleza}'],
@@ -2582,7 +2790,26 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'David Ricardo',
                                   'León Walras',
                                   'Carlos Marx'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'El capital, al estar sujeto a desgaste y '
+                             'deterioro por su uso, requiere que se retenga '
+                             'parte de los ingresos en un concepto contable '
+                             'llamado:',
+                 'alternativas': ['Amortización exclusiva',
+                                  'Depreciación',
+                                  'Interés',
+                                  'Dividendo',
+                                  'Renta'],
+                 'correcta': 'B'},
+                {'pregunta': 'La retribución que se obtiene por el uso del '
+                             'capital, como ganancia para su dueño, se '
+                             'denomina:',
+                 'alternativas': ['Salario',
+                                  'Interés',
+                                  'Renta agrícola',
+                                  'Utilidad bruta',
+                                  'Dividendo exclusivo'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['Para la ciencia económica, el capital es el '
                                 'conjunto de objetos fabricados por el '
@@ -2661,7 +2888,23 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El capital financiero corresponde a la '
                                 'etapa monopólica del capitalismo, y surge '
                                 'de la fusión del capital industrial y '
-                                'bancario.']}]},
+                                'bancario.']},
+                     {'titulo': 'CARACTERÍSTICAS DEL ROL DEL CAPITAL',
+                      'items': ['El capital no interviene directamente en la '
+                                'satisfacción de necesidades, solo en forma '
+                                'indirecta, al incrementar la producción de '
+                                'bienes.',
+                                'El capital está sujeto a desgaste y '
+                                'deterioro por su uso; para reponerlo, se '
+                                'retiene parte de los ingresos en un '
+                                'concepto contable llamado depreciación.',
+                                'En época de crisis económica aumenta la '
+                                'demanda de capital por escasez; en época de '
+                                'prosperidad su valor tiende a bajar o '
+                                'estabilizarse.',
+                                'La retribución que se obtiene por el uso '
+                                'del capital se denomina interés, la '
+                                'ganancia para el dueño del capital.']}]},
  {'num': 7,
   'titulo': 'Naturaleza',
   'secciones': [{'titulo': '7.1 CONCEPTO Y CARACTERÍSTICAS',
@@ -2705,7 +2948,25 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'transformados.',
                            'Las materias primas provienen de tres fuentes: '
                            'de origen {animal}, de origen {vegetal} y de '
-                           'origen mineral.']}],
+                           'origen mineral.']},
+                {'titulo': '7.3 RECURSOS NATURALES: CLASIFICACIÓN',
+                 'items': ['Los {recursos naturales} son aquellos que la '
+                           'naturaleza brinda espontáneamente y de los '
+                           'cuales el hombre se sirve para satisfacer sus '
+                           'necesidades.',
+                           'Por su modo de existencia, los recursos '
+                           'naturales se clasifican en {renovables} y no '
+                           'renovables.',
+                           'Los recursos {renovables} son capaces de '
+                           'reproducirse a sí mismos, formándose o '
+                           'reponiéndose con rapidez: agua, aire, {pastos} '
+                           'naturales.',
+                           'Los recursos {no renovables}, o reservas, no se '
+                           'reemplazan en relación con los horizontes de '
+                           'tiempo humano, pues demoran millones de años en '
+                           'renovarse: los {minerales}.',
+                           'La política de volver a sembrar árboles donde se '
+                           'han talado otros se llama {reforestación}.']}],
   'cuadros': [{'titulo': '7.1 CARACTERÍSTICAS DE LA NATURALEZA COMO FACTOR '
                          'PRODUCTIVO',
                'encabezados': ['Característica', 'Significado'],
@@ -2926,7 +3187,41 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'El trabajo',
                                   'La empresa',
                                   'El Estado'],
-                 'correcta': 'A'}],
+                 'correcta': 'A'},
+                {'pregunta': 'Por su modo de existencia, los recursos '
+                             'naturales se clasifican en no renovables y:',
+                 'alternativas': ['Ilimitados',
+                                  'Renovables',
+                                  'Escasos',
+                                  'Económicos',
+                                  'Libres'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los recursos naturales capaces de reproducirse '
+                             'a sí mismos, formándose o reponiéndose con '
+                             'rapidez, se llaman recursos:',
+                 'alternativas': ['No renovables',
+                                  'Renovables',
+                                  'Minerales exclusivos',
+                                  'Escasos',
+                                  'Fijos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los recursos naturales que demoran millones de '
+                             'años en renovarse, como los minerales, se '
+                             'llaman recursos:',
+                 'alternativas': ['Renovables',
+                                  'No renovables o reservas',
+                                  'De flujo continuo',
+                                  'Biológicos',
+                                  'Hídricos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La política de volver a sembrar árboles en los '
+                             'lugares donde se han talado otros se llama:',
+                 'alternativas': ['Explotación forestal',
+                                  'Reforestación',
+                                  'Deforestación',
+                                  'Silvicultura extractiva',
+                                  'Tala selectiva'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CARACTERÍSTICAS',
                       'items': ['La naturaleza es el conjunto de elementos '
                                 'preexistentes al hombre que componen la '
@@ -2969,7 +3264,27 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'transformados.',
                                 'Las materias primas provienen de tres '
                                 'fuentes: de origen animal, de origen '
-                                'vegetal y de origen mineral.']}]},
+                                'vegetal y de origen mineral.']},
+                     {'titulo': 'RECURSOS NATURALES: CLASIFICACIÓN',
+                      'items': ['Los recursos naturales son aquellos que la '
+                                'naturaleza brinda espontáneamente y de los '
+                                'cuales el hombre se sirve para satisfacer '
+                                'sus necesidades.',
+                                'Por su modo de existencia, los recursos '
+                                'naturales se clasifican en renovables y no '
+                                'renovables.',
+                                'Los recursos renovables son capaces de '
+                                'reproducirse a sí mismos, formándose o '
+                                'reponiéndose con rapidez: agua, aire, '
+                                'pastos naturales.',
+                                'Los recursos no renovables, o reservas, no '
+                                'se reemplazan en relación con los '
+                                'horizontes de tiempo humano, pues demoran '
+                                'millones de años en renovarse: los '
+                                'minerales.',
+                                'La política de volver a sembrar árboles '
+                                'donde se han talado otros se llama '
+                                'reforestación.']}]},
  {'num': 8,
   'titulo': 'Empresa',
   'secciones': [{'titulo': '8.1 CONCEPTO',
@@ -5141,7 +5456,41 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'de interés {activa}.',
                            'El {sobregiro bancario} ocurre cuando el cliente '
                            'gira cheques sin provisión de fondos suficiente '
-                           'en su cuenta.']}],
+                           'en su cuenta.']},
+                {'titulo': '13.9 AGENTES DEL CRÉDITO',
+                 'items': ['El {agente acreedor} es quien otorga el crédito '
+                           'al contar con superávit de dinero; es el titular '
+                           'del derecho a exigir el pago, el sujeto {activo} '
+                           'del crédito.',
+                           'El {agente deudor} es quien recibe el crédito, '
+                           'contrayendo la obligación de pagar; es el sujeto '
+                           '{pasivo} del crédito, y puede ser persona '
+                           'natural o jurídica.',
+                           'En la modalidad de crédito financiero, el agente '
+                           'deudor es llamado {prestatario}.',
+                           'Entre las funciones del crédito está permitir '
+                           'elevar los niveles de {producción}, y facilitar '
+                           'la formación de {capital}.']},
+                {'titulo': '13.10 ENTIDADES DE REGULACIÓN Y SUPERVISIÓN',
+                 'items': ['La {SBS} (Superintendencia de Banca, Seguros y '
+                           'AFP) es el organismo encargado de la regulación '
+                           'y supervisión del Sistema {Financiero}, de '
+                           'Seguros y Privado de Pensiones.',
+                           'La SBS adquirió rango constitucional en la '
+                           'Constitución de {1979}, con autonomía funcional '
+                           'respecto del {Ministerio de Economía y '
+                           'Finanzas}.',
+                           'La SBS también se encarga de prevenir y detectar '
+                           'el {lavado de activos} y financiamiento del '
+                           'terrorismo.',
+                           'La {Superintendencia del Mercado de Valores} '
+                           '(SMV) es un organismo descentralizado del MEF, '
+                           'cuya finalidad es impulsar y regular el {mercado '
+                           'de valores}.',
+                           'El {INDECOPI} (Instituto Nacional de Defensa de '
+                           'la Competencia) también forma parte de las '
+                           'entidades de regulación del sistema '
+                           'económico.']}],
   'cuadros': [{'titulo': '13.2 MERCADO PRIMARIO FRENTE A SECUNDARIO',
                'encabezados': ['Mercado', 'Función'],
                'filas': [['{Primario}', 'Primera {colocación} de valores'],
@@ -5453,8 +5802,46 @@ ECONOMIA_TEMAS = [{'num': 1,
                 {'pregunta': 'El Banco de la Nación fue creado formalmente '
                              'mediante ley del Congreso el 27 de enero de:',
                  'alternativas': ['1927', '1966', '1990', '1905', '1963'],
+                 'correcta': 'B'},
+                {'pregunta': 'El agente que otorga el crédito al contar con '
+                             'superávit de dinero, titular del derecho a '
+                             'exigir el pago, se llama agente:',
+                 'alternativas': ['Deudor',
+                                  'Acreedor',
+                                  'Prestatario',
+                                  'Fiador',
+                                  'Avalista'],
+                 'correcta': 'B'},
+                {'pregunta': 'El agente que recibe el crédito y contrae la '
+                             'obligación de pagar, llamado también '
+                             'prestatario, se llama agente:',
+                 'alternativas': ['Acreedor',
+                                  'Deudor',
+                                  'Fiador',
+                                  'Avalista',
+                                  'Garante'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo encargado de la regulación y '
+                             'supervisión del Sistema Financiero, de Seguros '
+                             'y Privado de Pensiones en el Perú es la:',
+                 'alternativas': ['SMV', 'SBS', 'SUNAT', 'INDECOPI', 'BCRP'],
+                 'correcta': 'B'},
+                {'pregunta': 'La SBS adquirió rango constitucional, con '
+                             'autonomía funcional respecto del MEF, en la '
+                             'Constitución de:',
+                 'alternativas': ['1933', '1979', '1993', '1920', '1856'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo descentralizado del MEF cuya '
+                             'finalidad es impulsar y regular el mercado de '
+                             'valores es la:',
+                 'alternativas': ['SBS',
+                                  'Superintendencia del Mercado de Valores',
+                                  'SUNAT',
+                                  'Bolsa de Valores exclusiva',
+                                  'INDECOPI'],
                  'correcta': 'B'}],
-  'resumen_visual': [{'titulo': 'INTERMEDIACIÓN FINANCIERA',
+  'resumen_visual': [{'titulo': 'INTERMEDIACIÓN FINANCIERA / MERCADOS '
+                                'PRIMARIO Y SECUNDARIO',
                       'items': ['La intermediación financiera es el proceso '
                                 'por el cual se trasladan recursos de los '
                                 'agentes superavitarios hacia los agentes '
@@ -5464,9 +5851,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'de otorgar sus recursos al deficitario.',
                                 'En la intermediación directa se negocian '
                                 'títulos valores: bonos de renta fija y '
-                                'acciones de renta variable.']},
-                     {'titulo': 'MERCADOS PRIMARIO Y SECUNDARIO',
-                      'items': ['El mercado primario es donde se colocan por '
+                                'acciones de renta variable.',
+                                'El mercado primario es donde se colocan por '
                                 'primera vez los valores emitidos, por '
                                 'oferta pública o privada.',
                                 'El mercado secundario es donde se revenden '
@@ -5476,16 +5862,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'bancos de inversión; en el mercado '
                                 'secundario, las sociedades agentes de '
                                 'bolsa.']},
-                     {'titulo': 'VENTAJAS DE LA INTERMEDIACIÓN DIRECTA',
+                     {'titulo': 'VENTAJAS DE LA INTERMEDIACIÓN DIRECTA / '
+                                'INSTRUMENTOS Y PRINCIPALES INSTITUC',
                       'items': ['Los costos de operación son menores para '
                                 'ambos agentes.',
                                 'Permite al agente deficitario acceder a '
                                 'grandes sumas sin necesidad de prendar sus '
                                 'activos.',
                                 'Ofrece mayor variedad de instrumentos '
-                                'financieros al agente deficitario.']},
-                     {'titulo': 'INSTRUMENTOS Y PRINCIPALES INSTITUCIONES',
-                      'items': ['Los instrumentos de renta fija son títulos '
+                                'financieros al agente deficitario.',
+                                'Los instrumentos de renta fija son títulos '
                                 'de deuda que generan pago fijo de intereses '
                                 'y devolución del capital.',
                                 'Los instrumentos de renta variable dan al '
@@ -5500,7 +5886,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La Bolsa de Valores es una asociación civil '
                                 'sin fines de lucro que facilita la '
                                 'negociación de valores mobiliarios.']},
-                     {'titulo': 'CLASIFICACIÓN DE LOS BANCOS',
+                     {'titulo': 'CLASIFICACIÓN DE LOS BANCOS / LA EMPRESA '
+                                'BANCARIA',
                       'items': ['La banca privada, o banca múltiple, está '
                                 'autorizada a realizar operaciones activas, '
                                 'pasivas y neutras o servicios.',
@@ -5520,10 +5907,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Reserva del Perú.',
                                 'El Banco de la Nación es el agente '
                                 'financiero del Estado, encargado de las '
-                                'actividades financieras del sector '
-                                'público.']},
-                     {'titulo': 'LA EMPRESA BANCARIA',
-                      'items': ['El banco es una empresa que actúa como '
+                                'actividades financieras del sector público.',
+                                'El banco es una empresa que actúa como '
                                 'intermediario indirecto en el mercado '
                                 'monetario, captando dinero del público.',
                                 'La función más importante del banco es la '
@@ -5532,7 +5917,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'empleo.',
                                 'Los bancos también apoyan al BCR en regular '
                                 'y facilitar la moneda en circulación.']},
-                     {'titulo': 'OPERACIONES BANCARIAS: PASIVAS',
+                     {'titulo': 'OPERACIONES BANCARIAS: PASIVAS / '
+                                'OPERACIONES BANCARIAS: ACTIVAS',
                       'items': ['Las operaciones pasivas son los fondos '
                                 'depositados por los clientes, que el banco '
                                 'usa para sus operaciones activas.',
@@ -5545,9 +5931,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El depósito de CTS (Compensación por Tiempo '
                                 'de Servicios) es un fondo obligatorio del '
                                 'empleador que sirve como seguro de '
-                                'desempleo.']},
-                     {'titulo': 'OPERACIONES BANCARIAS: ACTIVAS',
-                      'items': ['Las operaciones activas son aquellas en las '
+                                'desempleo.',
+                                'Las operaciones activas son aquellas en las '
                                 'que el banco otorga crédito: préstamos, '
                                 'descuentos, anticipos.',
                                 'El préstamo es la operación mediante la '
@@ -5555,7 +5940,42 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'una tasa de interés activa.',
                                 'El sobregiro bancario ocurre cuando el '
                                 'cliente gira cheques sin provisión de '
-                                'fondos suficiente en su cuenta.']}]},
+                                'fondos suficiente en su cuenta.']},
+                     {'titulo': 'AGENTES DEL CRÉDITO / ENTIDADES DE '
+                                'REGULACIÓN Y SUPERVISIÓN',
+                      'items': ['El agente acreedor es quien otorga el '
+                                'crédito al contar con superávit de dinero; '
+                                'es el titular del derecho a exigir el pago, '
+                                'el sujeto activo del crédito.',
+                                'El agente deudor es quien recibe el '
+                                'crédito, contrayendo la obligación de '
+                                'pagar; es el sujeto pasivo del crédito, y '
+                                'puede ser persona natural o jurídica.',
+                                'En la modalidad de crédito financiero, el '
+                                'agente deudor es llamado prestatario.',
+                                'Entre las funciones del crédito está '
+                                'permitir elevar los niveles de producción, '
+                                'y facilitar la formación de capital.',
+                                'La SBS (Superintendencia de Banca, Seguros '
+                                'y AFP) es el organismo encargado de la '
+                                'regulación y supervisión del Sistema '
+                                'Financiero, de Seguros y Privado de '
+                                'Pensiones.',
+                                'La SBS adquirió rango constitucional en la '
+                                'Constitución de 1979, con autonomía '
+                                'funcional respecto del Ministerio de '
+                                'Economía y Finanzas.',
+                                'La SBS también se encarga de prevenir y '
+                                'detectar el lavado de activos y '
+                                'financiamiento del terrorismo.',
+                                'La Superintendencia del Mercado de Valores '
+                                '(SMV) es un organismo descentralizado del '
+                                'MEF, cuya finalidad es impulsar y regular '
+                                'el mercado de valores.',
+                                'El INDECOPI (Instituto Nacional de Defensa '
+                                'de la Competencia) también forma parte de '
+                                'las entidades de regulación del sistema '
+                                'económico.']}]},
  {'num': 14,
   'titulo': 'Distribución',
   'secciones': [{'titulo': '14.1 LA DISTRIBUCIÓN DE LA RIQUEZA',
