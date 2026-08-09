@@ -75,7 +75,11 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'Santos}, Fred Kurt Schaefer y William Bunge.',
                            '{Karl Ritter}, junto con Alexander von Humboldt, '
                            'es considerado fundador de la Geografía '
-                           '{Moderna} o Científica.']},
+                           '{Moderna} o Científica.',
+                           'En la Geografía Antigua destacaron '
+                           '{Eratóstenes}, quien calculó la circunferencia '
+                           'terrestre, y {Claudio Ptolomeo}, el primero en '
+                           'elaborar un Atlas Universal.']},
                 {'titulo': '1.3 EL ESPACIO GEOGRÁFICO: OBJETO DE ESTUDIO',
                  'items': ['Para {Milton Santos da Almeida}, el Espacio '
                            'Geográfico es el objeto de estudio de la ciencia '
@@ -338,7 +342,50 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Fred Schaefer',
                                   'William Bunge',
                                   'Eratóstenes'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'En la Geografía Antigua, el geógrafo que '
+                             'calculó la circunferencia terrestre con '
+                             'notable aproximación fue:',
+                 'alternativas': ['Claudio Ptolomeo',
+                                  'Eratóstenes',
+                                  'Alexander von Humboldt',
+                                  'Karl Ritter',
+                                  'Estrabón'],
+                 'correcta': 'B'},
+                {'pregunta': 'La ciencia que se encarga de estudiar la '
+                             'distribución de plantas y animales en el '
+                             'espacio geográfico es la: (I CEPRU 2024)',
+                 'alternativas': ['Edafología',
+                                  'Biogeografía',
+                                  'Hidrogeografía',
+                                  'Demogeografía',
+                                  'Biología'],
+                 'correcta': 'B'},
+                {'pregunta': 'El origen, estructura y clases de suelos es '
+                             'estudiado por la: (Primera Oportunidad UNSAAC '
+                             '2021)',
+                 'alternativas': ['Geomorfología',
+                                  'Edafología',
+                                  'Geología',
+                                  'Limnología',
+                                  'Fisiografía'],
+                 'correcta': 'B'},
+                {'pregunta': 'El objeto de estudio de la Ciencia geográfica '
+                             'es el: (Primera Oportunidad UNSAAC 2023)',
+                 'alternativas': ['Geosistema del universo',
+                                  'Fenómeno global de la Tierra',
+                                  'Espacio geográfico',
+                                  'Espacio terrestre',
+                                  'Ecosistema del hombre'],
+                 'correcta': 'C'},
+                {'pregunta': 'El principio de Dinamismo se le atribuye a: '
+                             '(Primera Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Federico Ratzel',
+                                  'A. Von Humboldt',
+                                  'Jean Brunhes',
+                                  'P. Vidal de la Blache',
+                                  'Karl Ritter'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LA GEOGRAFÍA: ETIMOLOGÍA Y EVOLUCIÓN',
                       'items': ['El término Geografía proviene de dos voces '
                                 'griegas: Geo = Tierra y Graphía = '
@@ -652,7 +699,109 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Magnetosfera exclusiva',
                                   'Exosfera',
                                   'Termosfera'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'Una consecuencia del movimiento de rotación '
+                             'terrestre es: (II CEPRU 2024)',
+                 'alternativas': ['Desviación de los vientos y las '
+                                  'corrientes marinas',
+                                  'Puntos cardinales y las zonas térmicas',
+                                  'Día artificial y achatamiento polar',
+                                  'Zonas climáticas y día artificial',
+                                  'Presencia de mareas y las estaciones del '
+                                  'año'],
+                 'correcta': 'C'},
+                {'pregunta': 'Marque una consecuencia del movimiento de '
+                             'rotación de la Tierra: (II CEPRU 2022)',
+                 'alternativas': ['Día artificial',
+                                  'Estaciones del año',
+                                  'Achatamiento polar',
+                                  'Zonas climáticas',
+                                  'Desigual distribución de los rayos del '
+                                  'sol'],
+                 'correcta': 'A'},
+                {'pregunta': 'La ciudad «X» está ubicada a 75° de longitud. '
+                             '¿Cuántas horas de diferencia existe con el '
+                             'meridiano de Greenwich? (II CEPRU 2022)',
+                 'alternativas': ['10 horas',
+                                  '5 horas',
+                                  '4 horas',
+                                  '6 horas',
+                                  '7 horas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las entidades del Geosistema a escala Global '
+                             'son: (Primera Oportunidad UNSAAC 2025)',
+                 'alternativas': ['Antrópicas, fitogeográficas y bióticas',
+                                  'Abióticas, bióticas y antrópicas',
+                                  'Hidrosfera, sociósfera y zoogeografía',
+                                  'Bióticas, litosfera y heliomasa',
+                                  'Abióticas, naturales y culturales'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Longitud es: (Primera Oportunidad UNSAAC '
+                             '2025)',
+                 'alternativas': ['Distancia angular de un punto de la '
+                                  'superficie terrestre a la línea '
+                                  'ecuatorial',
+                                  'Distancia angular de un punto de la '
+                                  'superficie terrestre hacia el círculo '
+                                  'polar ártico',
+                                  'Distancia angular de un punto de la '
+                                  'superficie terrestre al meridiano base de '
+                                  'Greenwich',
+                                  'Distancia angular de un punto de la '
+                                  'superficie terrestre al meridiano de '
+                                  'referencia del Perú',
+                                  'Sistema de referencia basado en paralelos '
+                                  'y meridianos'],
+                 'correcta': 'C'},
+                {'pregunta': 'El cuarto y séptimo planeta en la órbita solar '
+                             'corresponden a: (Primera Oportunidad UNSAAC '
+                             '2021)',
+                 'alternativas': ['Venus y Neptuno',
+                                  'Tierra y Saturno',
+                                  'Marte y Urano',
+                                  'Ceres y Eris',
+                                  'Júpiter y Neptuno'],
+                 'correcta': 'C'},
+                {'pregunta': 'Si en la ciudad «X» (28°30\'40" N, 75°29\'10" '
+                             'W) son las 14:29 horas del 11 de diciembre, la '
+                             'hora y fecha en la ciudad «Y» (71°40\'50" S, '
+                             '135°10\'50" E) es: (Primera Oportunidad UNSAAC '
+                             '2021)',
+                 'alternativas': ['04:29 horas del 12 de diciembre',
+                                  '16:29 horas del 12 de diciembre',
+                                  '03:29 horas del 11 de diciembre',
+                                  '05:29 horas del 11 de diciembre',
+                                  '05:29 horas del 12 de diciembre'],
+                 'correcta': 'A'},
+                {'pregunta': 'El paralelo del trópico de Cáncer, ubicado en '
+                             'el hemisferio norte, se encuentra situado a '
+                             'una latitud de: (Primera Oportunidad UNSAAC '
+                             '2023)',
+                 'alternativas': ["25° 30'",
+                                  "28° 25'",
+                                  "63° 27'",
+                                  "66° 33'",
+                                  "23° 27'"],
+                 'correcta': 'E'},
+                {'pregunta': 'Una característica que corresponde a un '
+                             'planeta interior o terrestre del Sistema '
+                             'Planetario Solar es: (Primera Oportunidad '
+                             'UNSAAC 2020)',
+                 'alternativas': ['Son más fríos y lejanos al Sol',
+                                  'Poseen menor masa y volumen',
+                                  'Se les denomina planetas jovianos',
+                                  'Tienen mayor cantidad de satélites',
+                                  'Son más gaseosos'],
+                 'correcta': 'B'},
+                {'pregunta': "Cuando en el Cusco son las 9 h 37', ¿qué hora "
+                             'será en Roma (10° E)? (Primera Oportunidad '
+                             'UNSAAC 2020)',
+                 'alternativas': ["13 h 25'",
+                                  "14 h 27'",
+                                  "15 h 37'",
+                                  "03 h 27'",
+                                  "03 h 39'"],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'EL GEOSISTEMA',
                       'items': ['El geosistema, o planeta Tierra considerado '
                                 'como unidad, es el conjunto de entidades '
@@ -962,7 +1111,60 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Esféricas puras',
                                   'Desarrollables, como conos y cilindros',
                                   'Curvas irregulares'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'En la hoja de la Carta Geográfica Nacional, la '
+                             'planimetría y altimetría forman parte de: (II '
+                             'CEPRU 2025)',
+                 'alternativas': ['El sistema de coordenadas',
+                                  'La escala de la hoja',
+                                  'El cuerpo de la hoja',
+                                  'La información marginal',
+                                  'Los signos convencionales'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según las Coordenadas Universal Transversal de '
+                             'Mercator (UTM), la Tierra está dividida en: '
+                             '(II CEPRU 2024)',
+                 'alternativas': ['60 zonas y 20 bandas',
+                                  '24 zonas y 20 bandas',
+                                  '60 bandas y 20 zonas',
+                                  '60 zonas y 19 bandas',
+                                  '60 husos y 20 bandas'],
+                 'correcta': 'A'},
+                {'pregunta': 'La carta geográfica nacional del territorio '
+                             'peruano se encuentra dividida en: (II CEPRU '
+                             '2024)',
+                 'alternativas': ['305 hojas',
+                                  '501 hojas',
+                                  '505 hojas',
+                                  '201 hojas',
+                                  '101 hojas'],
+                 'correcta': 'C'},
+                {'pregunta': 'La escala de la carta nacional del Perú es: (I '
+                             'CEPRU 2023)',
+                 'alternativas': ['1:50 000',
+                                  '1:1 000 000',
+                                  '1:100 000',
+                                  '1:10 000 000',
+                                  '1:200 000'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Carta Geográfica Nacional es un gran mapa '
+                             'de nuestro país dividido en 501 mapas: (I '
+                             'CEPRU 2024)',
+                 'alternativas': ['Hidrográficos',
+                                  'Geográficos',
+                                  'Geológicos',
+                                  'Topográficos',
+                                  'Económicos'],
+                 'correcta': 'D'},
+                {'pregunta': 'Respecto al sistema de coordenadas UTM, el '
+                             'territorio peruano se encuentra entre las '
+                             'zonas: (Primera Oportunidad UNSAAC 2024)',
+                 'alternativas': ['54, 56 y 57',
+                                  '14, 15 y 17',
+                                  '17, 18 y 19',
+                                  '20, 21 y 22',
+                                  '45, 46 y 47'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LA CARTOGRAFÍA',
                       'items': ['La cartografía es la ciencia y arte de '
                                 'expresar gráficamente, por medio de mapas, '
@@ -1274,7 +1476,25 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Mayor exactitud absoluta',
                                   'Representar en tres dimensiones',
                                   'No requerir escala'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La escala que emplea segmentos gráficos para '
+                             'indicar la proporción entre la distancia y su '
+                             'medida en el mapa es la: (II CEPRU 2022)',
+                 'alternativas': ['Escala numérica',
+                                  'Escala natural',
+                                  'Escala gráfica',
+                                  'Escala de reducción',
+                                  'Escala de ampliación'],
+                 'correcta': 'C'},
+                {'pregunta': 'La proyección cartográfica que se emplea para '
+                             'graficar zonas de alta latitud es: (Primera '
+                             'Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Mercator',
+                                  'Cónica',
+                                  'Escalar',
+                                  'Rectangular',
+                                  'Azimutal'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
                       'items': ['Un mapa es una representación, total o '
                                 'parcial, de la superficie curva de la '
@@ -1584,7 +1804,98 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                 {'pregunta': 'El manto representa aproximadamente qué '
                              'porcentaje del volumen terrestre:',
                  'alternativas': ['16%', '83%', '1%', '25%', '50%'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La segunda cordillera con mayor superficie '
+                             'glaciar en el Perú es: (II CEPRU 2025)',
+                 'alternativas': ['Huatapallana',
+                                  'Vilcanota',
+                                  'Ampato',
+                                  'Huayhuash',
+                                  'Vilcabamba'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las placas tectónicas en sentido convergente '
+                             'originan bordes: (II CEPRU 2024)',
+                 'alternativas': ['Constructivos',
+                                  'Conservativos',
+                                  'Destructivos',
+                                  'Moderados',
+                                  'Convencionales'],
+                 'correcta': 'C'},
+                {'pregunta': 'En un glaciar, la parte donde se produce la '
+                             'pérdida de masa de hielo se llama: (II CEPRU '
+                             '2024)',
+                 'alternativas': ['Zona de acumulación',
+                                  'Morrenas glaciares',
+                                  'Línea de equilibrio',
+                                  'Zona de ablación',
+                                  'Área de compactación'],
+                 'correcta': 'D'},
+                {'pregunta': 'Es la discontinuidad entre el núcleo interno y '
+                             'el núcleo externo: (II CEPRU 2022)',
+                 'alternativas': ['Conrad',
+                                  'W. Gutenberg',
+                                  'Mohorovicic',
+                                  'Lehman',
+                                  'Repetti'],
+                 'correcta': 'D'},
+                {'pregunta': 'Ciencia que estudia el origen, evolución y '
+                             'formas de relieve: (I CEPRU 2023)',
+                 'alternativas': ['Geodesia',
+                                  'Geomorfología',
+                                  'Geosistema',
+                                  'Edafología',
+                                  'Fitogeografía'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las placas tectónicas se mueven en tres '
+                             'direcciones: (I CEPRU 2024)',
+                 'alternativas': ['Lateral - convergente - divergente',
+                                  'Lateral - horizontal - convergente',
+                                  'Divergente - colateral - convergente',
+                                  'Convergente - lineal - paralelo',
+                                  'Divergente - vertical - lineal'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las partes de un volcán son: (I CEPRU 2024)',
+                 'alternativas': ['Cono, cráter y magma',
+                                  'Chimenea, cono y cráter',
+                                  'Cámara magmática, cono y lava',
+                                  'Cráter, chimenea y cámara magmática',
+                                  'Lava, cráter y chimenea'],
+                 'correcta': 'B'},
+                {'pregunta': 'El intemperismo y la erosión son procesos que '
+                             'forman el relieve terrestre, originados por la '
+                             'energía: (Primera Oportunidad UNSAAC 2021)',
+                 'alternativas': ['De meteoritos',
+                                  'Volcánica',
+                                  'De la luna',
+                                  'Interna de la Tierra',
+                                  'Solar'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las placas tectónicas en su sentido divergente '
+                             'se caracterizan por ser: (Primera Oportunidad '
+                             'UNSAAC 2023)',
+                 'alternativas': ['Constructivas',
+                                  'Destructivas',
+                                  'Laterales',
+                                  'Conservativas',
+                                  'Compresivas'],
+                 'correcta': 'A'},
+                {'pregunta': 'La discontinuidad más próxima al centro de la '
+                             'Tierra es: (Primera Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Repetti',
+                                  'Gutenberg',
+                                  'Conrad',
+                                  'Mohorovicic',
+                                  'Lehman'],
+                 'correcta': 'E'},
+                {'pregunta': 'Es considerado el nevado más alto de la zona '
+                             'tropical del mundo: (Primera Oportunidad '
+                             'UNSAAC 2020)',
+                 'alternativas': ['Misti',
+                                  'Barroso',
+                                  'Salkantay',
+                                  'Huascarán',
+                                  'Alpamayo'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO '
                                 'Y EL MANTO',
                       'items': ['El núcleo alcanza temperaturas entre 4000° '
@@ -1886,7 +2197,42 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '800 km',
                                   '1 640 km',
                                   '2 135 km'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'Son características morfológicas de la región '
+                             'andina: (I CEPRU 2024)',
+                 'alternativas': ['Pampas, manantes y valles transversales',
+                                  'Altiplanos, desiertos y acantilados',
+                                  'Valles interandinos, mesetas y altiplanos',
+                                  'Andenes, quebradas y lagos',
+                                  'Mesetas, ríos y picos'],
+                 'correcta': 'C'},
+                {'pregunta': 'El piso altitudinal que se desarrolla por '
+                             'encima de los 4600 m.s.n.m., con temperatura '
+                             'media anual menor a 3°C, es: (II CEPRU 2022)',
+                 'alternativas': ["Rit'i",
+                                  'Puna baja',
+                                  'Puna alta',
+                                  'Qheswa',
+                                  'Yunka'],
+                 'correcta': 'A'},
+                {'pregunta': 'Es una característica de la vertiente o '
+                             'llamada oriental de la Región Andina: (Primera '
+                             'Oportunidad UNSAAC 2024)',
+                 'alternativas': ['Escasa precipitación',
+                                  'Ríos de corto recorrido',
+                                  'Árido',
+                                  'Escasa vegetación',
+                                  'Abundante vegetación'],
+                 'correcta': 'E'},
+                {'pregunta': 'La ciudad de Yauri, ubicada a 3915 m.s.n.m., '
+                             'pertenece al piso climático: (Primera '
+                             'Oportunidad UNSAAC 2021)',
+                 'alternativas': ['Qheswa baja',
+                                  'Qheswa alta',
+                                  'Puna baja',
+                                  'Transición',
+                                  'Puna alta'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
                       'items': ['El territorio peruano se ubica en la parte '
                                 'occidental y central de Sudamérica, en la '
@@ -2195,7 +2541,51 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Huallaga',
                                   'Urubamba',
                                   'Tambo'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'El desierto de Sechura se localiza en el '
+                             'departamento de: (II CEPRU 2025)',
+                 'alternativas': ['Lambayeque',
+                                  'Moquegua',
+                                  'Áncash',
+                                  'Piura',
+                                  'Ica'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los bosques de algarrobos y vegetación de '
+                             'monte ribereño pertenecen a la: (II CEPRU '
+                             '2024)',
+                 'alternativas': ['Costa sur',
+                                  'Sierra sur',
+                                  'Costa central',
+                                  'Costa norte',
+                                  'Selva norte'],
+                 'correcta': 'D'},
+                {'pregunta': 'En la costa peruana, los espacios o áreas '
+                             'interfluviales emplazadas entre los valles se '
+                             'llaman: (II CEPRU 2022)',
+                 'alternativas': ['Tablazos',
+                                  'Desiertos',
+                                  'Depresiones',
+                                  'Lomas',
+                                  'Pampas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los valles de Tocache y Chanchamayo se '
+                             'encuentran, respectivamente, en los '
+                             'departamentos de: (Primera Oportunidad UNSAAC '
+                             '2025)',
+                 'alternativas': ['Loreto - Pasco',
+                                  'San Martín - Junín',
+                                  'Amazonas - La Libertad',
+                                  'Junín - Cajamarca',
+                                  'Puno - Ucayali'],
+                 'correcta': 'B'},
+                {'pregunta': 'La depresión más importante de la costa '
+                             'peruana es: (Primera Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Bayóvar',
+                                  'Chilca',
+                                  'Chivay',
+                                  'Otuma',
+                                  'Pariñas'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'LA REGIÓN AMAZÓNICA',
                       'items': ['La región amazónica o selva es la región '
                                 'geográfica más extensa del Perú, '
@@ -2503,7 +2893,54 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Coropuna',
                                   'Salkantay',
                                   'Ausangate'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La confluencia de los ríos Apurímac y Mantaro '
+                             'forman el río: (II CEPRU 2025)',
+                 'alternativas': ['Tambo',
+                                  'Ucayali',
+                                  'Huallaga',
+                                  'Ene',
+                                  'Perené'],
+                 'correcta': 'D'},
+                {'pregunta': 'En la llanura amazónica, las Qochas o lagos de '
+                             'media luna son originados por la dinámica: '
+                             '(Primera Oportunidad UNSAAC 2021)',
+                 'alternativas': ['Forestal',
+                                  'Fluvial',
+                                  'Faunística',
+                                  'Eólica',
+                                  'Mareomotriz'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ríos cuyas nacientes y recorrido se '
+                             'encuentran en la vertiente occidental de los '
+                             'Andes peruanos, de régimen irregular y con '
+                             'dirección de este a oeste, corresponden a la '
+                             'región hidrográfica del: (Primera Oportunidad '
+                             'UNSAAC 2021)',
+                 'alternativas': ['Ucayali',
+                                  'Alto Madre de Dios',
+                                  'Titicaca',
+                                  'Pacífico',
+                                  'Amazonas'],
+                 'correcta': 'D'},
+                {'pregunta': 'El río de la cuenca del Pacífico que erosiona '
+                             'el Cañón del Pato es el río: (Primera '
+                             'Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Rímac',
+                                  'Virú',
+                                  'Tumbes',
+                                  'Santa',
+                                  'Chira'],
+                 'correcta': 'D'},
+                {'pregunta': 'El río Amazonas se forma en la localidad de '
+                             'Nauta a partir de la confluencia de los ríos: '
+                             '(Primera Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Tambo y Urubamba',
+                                  'Palcazu y Piches',
+                                  'Mantaro y Apurímac',
+                                  'Marañón y Ucayali',
+                                  'Ene y Perené'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CARACTERÍSTICAS DE LOS RÍOS',
                       'items': ['El curso de un río es la distancia entre su '
                                 'origen y desembocadura, y comprende tres '
@@ -2808,7 +3245,61 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '40 gr/l',
                                   '45 gr/l',
                                   '30 gr/l'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La alteración del fenómeno de afloramiento y '
+                             'la desaparición de la capa de inversión '
+                             'térmica son consecuencias de: (II CEPRU 2025)',
+                 'alternativas': ['Las olas y mareas',
+                                  'El fenómeno de El Niño',
+                                  'La corriente de Humboldt',
+                                  'La circumpolar Antártica',
+                                  'El fenómeno de La Niña'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un impacto negativo de la actividad pesquera '
+                             'es: (II CEPRU 2024)',
+                 'alternativas': ['Incremento de la economía',
+                                  'Desarrollo sostenible',
+                                  'La pesca selectiva',
+                                  'La pesca controlada',
+                                  'La pesca de arrastre'],
+                 'correcta': 'E'},
+                {'pregunta': 'El fundamento de la tesis de las 200 millas '
+                             'marinas, que consiste en la continuidad del '
+                             'zócalo continental, es de carácter: (II CEPRU '
+                             '2022)',
+                 'alternativas': ['Geográfico',
+                                  'Jurídico',
+                                  'Geológico',
+                                  'Biológico',
+                                  'Económico'],
+                 'correcta': 'C'},
+                {'pregunta': 'La corriente peruana circula con una '
+                             'dirección: (I CEPRU 2024)',
+                 'alternativas': ['NW a SE',
+                                  'SW a NE',
+                                  'NW a SW',
+                                  'SE a NW',
+                                  'NE a SE'],
+                 'correcta': 'D'},
+                {'pregunta': 'La ausencia de la inversión térmica y la '
+                             'alteración del fenómeno de afloramiento '
+                             'costero son consecuencias del fenómeno de: (II '
+                             'CEPRU 2022)',
+                 'alternativas': ['La corriente ecuatorial del sur',
+                                  'El aguaje o pintor',
+                                  'El Niño',
+                                  'La Niña',
+                                  'La corriente circumpolar antártica'],
+                 'correcta': 'C'},
+                {'pregunta': 'Uno de los fundamentos de la Tesis de las 200 '
+                             'Millas Marítimas es: (Primera Oportunidad '
+                             'UNSAAC 2025)',
+                 'alternativas': ['La presencia de riqueza ictiológica',
+                                  'La presencia de fauna tropical',
+                                  'El dominio marítimo y terrestre',
+                                  'La seguridad territorial',
+                                  'El enfriamiento del mar'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'EL MAR PERUANO',
                       'items': ['El mar peruano se extiende desde la línea '
                                 'de Concordia hasta la Boca de Capones, y '
@@ -3102,7 +3593,50 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Tropopausa',
                                   'Termopausa',
                                   'Estratopausa'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'La mayor cantidad de climas en el Perú está '
+                             'determinada por el factor: (II CEPRU 2025)',
+                 'alternativas': ['Corrientes marinas',
+                                  'Vegetación',
+                                  'Altitud',
+                                  'Anticiclón del Pacífico Sur',
+                                  'Latitud'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los registros de los fenómenos meteorológicos '
+                             'sirven para pronosticar: (I CEPRU 2025)',
+                 'alternativas': ['Cambio climático',
+                                  'Variabilidad climática',
+                                  'Tiempo meteorológico',
+                                  'Tiempo cronológico',
+                                  'Calentamiento global'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las auroras polares se producen en la capa '
+                             'atmosférica de la: (Primera Oportunidad UNSAAC '
+                             '2025)',
+                 'alternativas': ['Estratosfera',
+                                  'Ionosfera',
+                                  'Mesosfera',
+                                  'Troposfera',
+                                  'Termosfera exclusiva'],
+                 'correcta': 'B'},
+                {'pregunta': 'Corresponde a la Tropósfera: (Primera '
+                             'Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Se producen los fenómenos meteorológicos',
+                                  'Tiene una subcapa llamada Ozonósfera',
+                                  'Es una zona de radiación cósmica',
+                                  'Alcanza hasta la termopausa',
+                                  'Existen los cinturones de radiación de '
+                                  'Van Allen'],
+                 'correcta': 'A'},
+                {'pregunta': 'El instrumento que mide la intensidad de los '
+                             'vientos es el: (Primera Oportunidad UNSAAC '
+                             '2020)',
+                 'alternativas': ['Veleta',
+                                  'Termómetro',
+                                  'Barómetro',
+                                  'Pluviómetro',
+                                  'Anemómetro'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'LA ATMÓSFERA Y SU COMPOSICIÓN',
                       'items': ['La atmósfera regula las temperaturas '
                                 'extremas y nos protege de los rayos '
@@ -3390,6 +3924,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Cajamarca',
                                   'Áncash',
                                   'Lima'],
+                 'correcta': 'D'},
+                {'pregunta': 'Satisfacer las necesidades del presente sin '
+                             'comprometer los recursos de las futuras '
+                             'generaciones corresponde al concepto de: (II '
+                             'CEPRU 2022)',
+                 'alternativas': ['Contaminación ambiental',
+                                  'Desastre ecológico',
+                                  'Riesgo de desastre',
+                                  'Desarrollo sostenible',
+                                  'Impacto ambiental'],
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
                       'items': ['Los recursos naturales son elementos que la '
@@ -3704,7 +4248,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Solo el turismo',
                                   'La población, la economía y el ambiente',
                                   'Solo el ambiente'],
-                 'correcta': 'D'}],
+                 'correcta': 'D'},
+                {'pregunta': 'El brote de una enfermedad infectocontagiosa '
+                             'que aparece en forma masiva en una región se '
+                             'denomina: (II CEPRU 2025)',
+                 'alternativas': ['Calamidad',
+                                  'Plaga',
+                                  'Epidemia',
+                                  'Endemia',
+                                  'Pandemia'],
+                 'correcta': 'C'},
+                {'pregunta': 'La autoridad que preside el Comité de Defensa '
+                             'Civil Regional es: (II CEPRU 2024)',
+                 'alternativas': ['Consejo Regional',
+                                  'Alcalde Provincial',
+                                  'Gobernador Regional',
+                                  'Teniente Alcalde',
+                                  'Concejo Municipal'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'EL SINAGERD',
                       'items': ['El Sistema Nacional de Gestión del Riesgo '
                                 'de Desastres, SINAGERD, fue creado por la '
@@ -4001,7 +4562,35 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '65 años',
                                   '35,6 años',
                                   '71,2 años'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'La ciencia que estudia estadísticamente la '
+                             'estructura y la dinámica de las poblaciones '
+                             'humanas es: (I CEPRU 2024)',
+                 'alternativas': ['Edafología',
+                                  'Demogeografía',
+                                  'Geomorfología',
+                                  'Geodesia',
+                                  'Demografía'],
+                 'correcta': 'E'},
+                {'pregunta': 'Considerando los periodos censales entre 1940 '
+                             'y 2017, la región natural que presenta '
+                             'tendencia negativa en su crecimiento '
+                             'poblacional es la: (II CEPRU 2022)',
+                 'alternativas': ['Faja subandina',
+                                  'Vertiente occidental',
+                                  'Sierra',
+                                  'Costa',
+                                  'Selva'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según el censo del 2017, la región natural con '
+                             'mayor tendencia al crecimiento poblacional es: '
+                             '(Primera Oportunidad UNSAAC 2025)',
+                 'alternativas': ['El Norte',
+                                  'La Sierra',
+                                  'La Costa',
+                                  'El Sur',
+                                  'La Selva'],
+                 'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'DEMOGRAFÍA Y DEMOGEOGRAFÍA',
                       'items': ['La demogeografía pertenece a la geografía '
                                 'humana y estudia la distribución de la '
@@ -4306,7 +4895,42 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Anzuelos, redes y balsas',
                                   'Redes industriales',
                                   'Explosivos'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'El segundo departamento productor de gas en el '
+                             'Perú es: (II CEPRU 2025)',
+                 'alternativas': ['Junín',
+                                  'Loreto',
+                                  'Madre de Dios',
+                                  'Piura',
+                                  'Ucayali'],
+                 'correcta': 'E'},
+                {'pregunta': 'La refinería de La Oroya se ubica en el '
+                             'departamento de: (II CEPRU 2022)',
+                 'alternativas': ['Ayacucho',
+                                  'Cajamarca',
+                                  'Junín',
+                                  'Moquegua',
+                                  'Lima'],
+                 'correcta': 'C'},
+                {'pregunta': 'El principal productor de maíz amiláceo en el '
+                             'territorio peruano es el departamento de: (II '
+                             'CEPRU 2022)',
+                 'alternativas': ['Arequipa',
+                                  'Puno',
+                                  'Pasco',
+                                  'Cajamarca',
+                                  'Lima'],
+                 'correcta': 'D'},
+                {'pregunta': 'El uso continuo del suelo y el predominio de '
+                             'herramientas mecanizadas es una característica '
+                             'de la agricultura denominada: (Primera '
+                             'Oportunidad UNSAAC 2025)',
+                 'alternativas': ['Tradicional',
+                                  'Intensiva',
+                                  'Extensiva',
+                                  'Experimental',
+                                  'Migratoria'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'LA PESCA EN EL MAR PERUANO',
                       'items': ['La pesca es una actividad económica '
                                 'extractiva que consiste en el '
@@ -4612,7 +5236,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'El exceso de maquinaria',
                                   'La limitación en transporte y '
                                   'comercialización'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'Una característica de la ganadería de la selva '
+                             'es: (I CEPRU 2024)',
+                 'alternativas': ['Extensiva y migratoria',
+                                  'Intensiva y migratoria',
+                                  'Intensiva y experimental',
+                                  'Extensiva y experimental',
+                                  'Intensiva y extensiva'],
+                 'correcta': 'A'},
+                {'pregunta': 'La especie exótica de mayor reproducción '
+                             'acuícola en la región andina corresponde a la: '
+                             '(Primera Oportunidad UNSAAC 2025)',
+                 'alternativas': ['Palometa',
+                                  'Ractacara',
+                                  'Llambina',
+                                  'Trucha',
+                                  'Gamitana'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA AGRICULTURA EN EL PERÚ',
                       'items': ['La agricultura es la actividad económica '
                                 'reproductiva que consiste en el cultivo del '
@@ -4675,6 +5316,151 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'mecanizada.',
                                 'En la costa se pueden obtener anualmente '
                                 'Hasta dos cosechas.']}]},
+ {'num': 16,
+  'titulo': 'Actividades del Transporte en el Perú',
+  'secciones': [{'titulo': '16.1 CARRETERAS LONGITUDINALES DEL PERÚ',
+                 'items': ['El Perú cuenta con {seis} carreteras '
+                           'longitudinales principales, que recorren de '
+                           'norte a sur las tres regiones naturales.',
+                           'La {Carretera Longitudinal de la Costa} se '
+                           'divide en tramo norte (Tumbes-Lima) y tramo '
+                           '{sur} (Lima-Tacna, frontera con Chile).',
+                           'La {Carretera Longitudinal de la Sierra} se '
+                           'divide en tramo norte (La Oroya-Ayabaca, '
+                           'frontera con Ecuador) y tramo {sur} (La '
+                           'Oroya-Desaguadero, frontera con Bolivia).',
+                           'La {Carretera Longitudinal de la Selva} se '
+                           'divide en tramo norte (Chanchamayo-La Balsa, '
+                           'frontera con Ecuador) y tramo {sur} '
+                           '(Chanchamayo-Río Heath, frontera con Bolivia).']},
+                {'titulo': '16.2 PRINCIPALES AEROPUERTOS DEL PERÚ',
+                 'items': ['El aeropuerto internacional {Jorge Chávez}, en '
+                           'el Callao, es el principal aeropuerto del Perú.',
+                           'El aeropuerto {Rodríguez Ballón} está en '
+                           'Arequipa; el {Alejandro Velasco Astete}, en '
+                           'Cusco.',
+                           'El aeropuerto {José Abelardo Quiñones} está en '
+                           'Chiclayo; el {Inca Manco Cápac}, en Juliaca, '
+                           'Puno.',
+                           'El aeropuerto {Francisco Secada Vignetta} está '
+                           'en Iquitos, Loreto; el {María Reiche Neuman}, en '
+                           'Nasca, Ica.',
+                           'El aeropuerto {Carlos Martínez de Pinillos} está '
+                           'en Trujillo, La Libertad; el {Padre Aldamiz}, en '
+                           'Puerto Maldonado.']}],
+  'cuadros': [],
+  'preguntas': [{'pregunta': 'El Perú cuenta con un número de carreteras '
+                             'longitudinales principales igual a:',
+                 'alternativas': ['Tres', 'Seis', 'Cuatro', 'Ocho', 'Diez'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Carretera Longitudinal de la Costa Sur va '
+                             'desde Lima hasta la ciudad de Tacna, en la '
+                             'frontera con:',
+                 'alternativas': ['Bolivia',
+                                  'Chile',
+                                  'Ecuador',
+                                  'Brasil',
+                                  'Colombia'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Carretera Longitudinal de la Sierra Sur '
+                             'llega hasta Desaguadero, en la frontera con:',
+                 'alternativas': ['Chile',
+                                  'Bolivia',
+                                  'Ecuador',
+                                  'Brasil',
+                                  'Colombia'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Carretera Longitudinal de la Selva Norte '
+                             'llega hasta el Puente Internacional La Balsa, '
+                             'en la frontera con:',
+                 'alternativas': ['Bolivia',
+                                  'Ecuador',
+                                  'Colombia',
+                                  'Brasil',
+                                  'Chile'],
+                 'correcta': 'B'},
+                {'pregunta': 'El aeropuerto internacional Inca Manco Cápac '
+                             'está ubicado en la ciudad de:',
+                 'alternativas': ['Cusco',
+                                  'Juliaca',
+                                  'Puno capital',
+                                  'Arequipa',
+                                  'Tacna'],
+                 'correcta': 'B'},
+                {'pregunta': 'El aeropuerto internacional Francisco Secada '
+                             'Vignetta está ubicado en la ciudad de:',
+                 'alternativas': ['Pucallpa',
+                                  'Iquitos',
+                                  'Tarapoto',
+                                  'Yurimaguas',
+                                  'Tingo María'],
+                 'correcta': 'B'},
+                {'pregunta': 'El aeropuerto María Reiche Neuman, llamado así '
+                             'en honor a la investigadora de las líneas de '
+                             'Nasca, está ubicado en:',
+                 'alternativas': ['Ica capital',
+                                  'Nasca',
+                                  'Pisco',
+                                  'Chincha',
+                                  'Palpa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El aeropuerto internacional Padre Aldamiz está '
+                             'ubicado en la ciudad de:',
+                 'alternativas': ['Iquitos',
+                                  'Puerto Maldonado',
+                                  'Pucallpa',
+                                  'Tarapoto',
+                                  'Atalaya'],
+                 'correcta': 'B'},
+                {'pregunta': 'El aeropuerto internacional más importante del '
+                             'Perú después de Jorge Chávez es: (II CEPRU '
+                             '2025)',
+                 'alternativas': ['Inca Manco Cápac',
+                                  'Alejandro Velasco Astete',
+                                  'Carlos Martínez de Pinillos',
+                                  'Alfredo Rodríguez Ballón',
+                                  'José Abelardo Quiñones'],
+                 'correcta': 'B'},
+                {'pregunta': 'La carretera más importante del Perú es la: (I '
+                             'CEPRU 2024)',
+                 'alternativas': ['De enlace',
+                                  'De penetración',
+                                  'Marginal de la selva',
+                                  'Panamericana',
+                                  'Interoceánica'],
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'CARRETERAS LONGITUDINALES DEL PERÚ',
+                      'items': ['El Perú cuenta con seis carreteras '
+                                'longitudinales principales, que recorren de '
+                                'norte a sur las tres regiones naturales.',
+                                'La Carretera Longitudinal de la Costa se '
+                                'divide en tramo norte (Tumbes-Lima) y tramo '
+                                'sur (Lima-Tacna, frontera con Chile).',
+                                'La Carretera Longitudinal de la Sierra se '
+                                'divide en tramo norte (La Oroya-Ayabaca, '
+                                'frontera con Ecuador) y tramo sur (La '
+                                'Oroya-Desaguadero, frontera con Bolivia).',
+                                'La Carretera Longitudinal de la Selva se '
+                                'divide en tramo norte (Chanchamayo-La '
+                                'Balsa, frontera con Ecuador) y tramo sur '
+                                '(Chanchamayo-Río Heath, frontera con '
+                                'Bolivia).']},
+                     {'titulo': 'PRINCIPALES AEROPUERTOS DEL PERÚ',
+                      'items': ['El aeropuerto internacional Jorge Chávez, '
+                                'en el Callao, es el principal aeropuerto '
+                                'del Perú.',
+                                'El aeropuerto Rodríguez Ballón está en '
+                                'Arequipa; el Alejandro Velasco Astete, en '
+                                'Cusco.',
+                                'El aeropuerto José Abelardo Quiñones está '
+                                'en Chiclayo; el Inca Manco Cápac, en '
+                                'Juliaca, Puno.',
+                                'El aeropuerto Francisco Secada Vignetta '
+                                'está en Iquitos, Loreto; el María Reiche '
+                                'Neuman, en Nasca, Ica.',
+                                'El aeropuerto Carlos Martínez de Pinillos '
+                                'está en Trujillo, La Libertad; el Padre '
+                                'Aldamiz, en Puerto Maldonado.']}]},
  {'num': 17,
   'titulo': 'Geografía Política del Perú y Gestión Territorial',
   'secciones': [{'titulo': '17.1 GEOGRAFÍA POLÍTICA',
@@ -4897,6 +5683,39 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Tacna',
                                   'Puno',
                                   'Chiclayo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El proceso técnico-geográfico para delimitar '
+                             'los distritos, provincias y demás áreas '
+                             'geográficas se llama: (II CEPRU 2024)',
+                 'alternativas': ['Ordenamiento territorial',
+                                  'Demarcación territorial',
+                                  'Zonificación ecológica y económica',
+                                  'Gestión territorial',
+                                  'Regionalización'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los niveles de estudio de la Zonificación '
+                             'Ecológica y Económica (ZEE) son ejecutados en '
+                             'tres niveles, estos son: (I CEPRU 2024)',
+                 'alternativas': ['Microzonificación, mesozonificación y '
+                                  'macrozonificación',
+                                  'Departamental, provincial y distrital',
+                                  'Macrozonificación, descentralización y '
+                                  'regionalización',
+                                  'Microzonificación, centralismo y '
+                                  'descentralización',
+                                  'Centralismo, descentralización y '
+                                  'regionalización'],
+                 'correcta': 'A'},
+                {'pregunta': 'El nivel de estudio de la ZEE que contribuye a '
+                             'la elaboración de políticas y planes de '
+                             'desarrollo en el ámbito local o distrital, con '
+                             'escala 1:25 000, es el nivel de: (II CEPRU '
+                             '2022)',
+                 'alternativas': ['Zonificación extra',
+                                  'Microzonificación',
+                                  'Mesozonificación',
+                                  'Macrozonificación',
+                                  'Demarcación territorial'],
                  'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'GEOGRAFÍA POLÍTICA',
                       'items': ['La geografía política estudia la '
@@ -5159,6 +5978,41 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Ayacucho',
                                   'Madre de Dios',
                                   'Arequipa'],
+                 'correcta': 'C'},
+                {'pregunta': 'La montaña de origen volcánico que domina la '
+                             'ciudad del Cusco es: (II CEPRU 2025)',
+                 'alternativas': ['Araway',
+                                  'Viva el Perú',
+                                  'Pachatusan',
+                                  'Wanaqauri',
+                                  'Fortaleza'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las capitales de las provincias de '
+                             'Quispicanchi, Canchis y Paruro son, '
+                             'respectivamente: (II CEPRU 2024)',
+                 'alternativas': ['Urcos, Sicuani y Paruro',
+                                  'Yanaoca, Canchis y Paruro',
+                                  'Yanaoca, Sicuani y Paruro',
+                                  'Yauri, Sicuani y Paruro',
+                                  'Urcos, Yanaoca y Paruro'],
+                 'correcta': 'A'},
+                {'pregunta': 'Constituyen parte de los distritos de la '
+                             'Provincia del Cusco: (Primera Oportunidad '
+                             'UNSAAC 2025)',
+                 'alternativas': ['Poroy, Huasao y Ccorca',
+                                  'Ccorca, Saylla y Poroy',
+                                  'Saylla, Huasao y Tipón',
+                                  'Oropesa, Saylla y Poroy',
+                                  'Wanchaq, Oropesa y Lucre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las ciudades de Yanaoca y Quillabamba son las '
+                             'capitales de las provincias de: (Primera '
+                             'Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Paruro y La Convención',
+                                  'Canas y Urubamba',
+                                  'Canas y La Convención',
+                                  'Calca y La Convención',
+                                  'Acomayo y Anta'],
                  'correcta': 'C'}],
   'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y EXTENSIÓN',
                       'items': ['El departamento del Cusco se ubica en la '
@@ -5434,7 +6288,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Ríos cortos y de bajo caudal',
                                   'Ríos estacionales secos',
                                   'Ríos extensos y caudalosos'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'El país con menor extensión territorial de '
+                             'América del Norte es: (II CEPRU 2022)',
+                 'alternativas': ['Canadá',
+                                  'Belice',
+                                  'México',
+                                  'El Salvador',
+                                  'Estados Unidos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las montañas localizadas al oriente de '
+                             'Norteamérica son los: (Primera Oportunidad '
+                             'UNSAAC 2025)',
+                 'alternativas': ['Montes Atlas',
+                                  'Apalaches',
+                                  'Alpes',
+                                  'Escandinavos',
+                                  'Urales'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'GENERALIDADES DEL CONTINENTE',
                       'items': ['América es el segundo continente por su '
                                 'extensión, después de Asia, con cerca de 42 '
@@ -5485,4 +6356,243 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La altitud aproximada del Aconcagua es de 6 '
                                 '960 m.',
                                 'América está dividida políticamente en un '
-                                'número de países igual a 35.']}]}]
+                                'número de países igual a 35.']}]},
+ {'num': 20,
+  'titulo': 'Geografía de Europa, Asia, África, Antártida y Oceanía',
+  'secciones': [{'titulo': '20.1 EUROPA',
+                 'items': ['{Europa} se ubica en el hemisferio norte y '
+                           'morfológicamente es una península del continente '
+                           '{asiático}.',
+                           'Europa tiene 10 400 000 km² y está dividida '
+                           'políticamente en {43} países.',
+                           'Europa limita al sur con el {mar Mediterráneo}, '
+                           'al este con los Montes Urales y el mar Caspio, y '
+                           'al oeste con el océano {Atlántico}.',
+                           'El sistema montañoso más importante del sur de '
+                           'Europa incluye el Cáucaso, {Alpes}, Balcanes, '
+                           'Pirineos y Apeninos.',
+                           'El río {Volga}, que desemboca en el mar Caspio, '
+                           'es el más largo de Europa; el {Danubio} es el '
+                           'más internacional.']},
+                {'titulo': '20.2 ASIA',
+                 'items': ['{Asia} es el continente más extenso del planeta, '
+                           'con 44 614 000 km², dividido políticamente en '
+                           '{48} países.',
+                           'Asia limita al norte con el océano Glacial '
+                           'Ártico, al este con el {Pacífico}, al sur con el '
+                           'océano Índico y al oeste con {Europa}.',
+                           'El sistema orográfico más importante del mundo '
+                           'es el {Himalaya}; su pico más elevado es el '
+                           '{Everest}, con 8848 m.',
+                           'Asia se conecta con Europa mediante los Montes '
+                           '{Urales}, y con África mediante el Canal de '
+                           '{Suez}.']},
+                {'titulo': '20.3 LA ANTÁRTIDA',
+                 'items': ['La {Antártida} es el continente más austral de '
+                           'la Tierra, con 14 000 000 km², el cuarto más '
+                           'grande después de Asia, América y {África}.',
+                           'Alrededor del {98}% de la Antártida está '
+                           'cubierta de hielo, con un espesor promedio de '
+                           '1,9 km.',
+                           'La Antártida es el continente más frío, seco y '
+                           '{ventoso}; se rige por el {Tratado Antártico}, '
+                           'firmado en 1959.']},
+                {'titulo': '20.4 ÁFRICA',
+                 'items': ['{África} es el tercer continente más extenso, '
+                           'con 30 365 000 km², considerada cuna de la raza '
+                           '{humana}.',
+                           'África está dividida políticamente en {53} '
+                           'países.',
+                           'El {Kilimanjaro} es el punto más alto de África; '
+                           'el {Sahara} es el desierto más grande de la '
+                           'Tierra.',
+                           'El río {Nilo}, con 6671 km, es el río más largo '
+                           'de África.']},
+                {'titulo': '20.5 OCEANÍA',
+                 'items': ['{Oceanía} es el continente más pequeño de la '
+                           'Tierra y eminentemente {insular}, con cerca de '
+                           '30 000 islas.',
+                           'Oceanía se agrupa en cuatro áreas geográficas: '
+                           'Australasia, {Melanesia}, Micronesia y '
+                           'Polinesia.',
+                           'Oceanía tiene 8 505 070 km² y está dividida '
+                           'políticamente en {14} países.',
+                           '{Australia} es el país más extenso de Oceanía, '
+                           'con relieve llano y numerosos desiertos.']}],
+  'cuadros': [{'titulo': '20.1 LOS CINCO CONTINENTES: ÁREA Y PAÍSES',
+               'despues_de': '20.5 OCEANÍA',
+               'encabezados': ['Continente', 'Número de países'],
+               'filas': [['Europa', '{43} países'],
+                         ['Asia', '{48} países'],
+                         ['África', '{53} países'],
+                         ['Oceanía', '{14} países']]}],
+  'preguntas': [{'pregunta': 'Morfológicamente, el continente europeo se '
+                             'presenta como una península del continente:',
+                 'alternativas': ['Africano',
+                                  'Asiático',
+                                  'Americano',
+                                  'Antártico',
+                                  'Oceánico'],
+                 'correcta': 'B'},
+                {'pregunta': 'Europa está dividida políticamente en un '
+                             'número de países igual a:',
+                 'alternativas': ['27', '43', '48', '53', '14'],
+                 'correcta': 'B'},
+                {'pregunta': 'El río más largo de Europa, que desemboca en '
+                             'el mar Caspio, es el río:',
+                 'alternativas': ['Danubio', 'Volga', 'Rin', 'Sena', 'Ebro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El continente más extenso del planeta es:',
+                 'alternativas': ['África',
+                                  'Asia',
+                                  'América',
+                                  'Europa',
+                                  'Oceanía'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema orográfico más importante del '
+                             'mundo, ubicado en Asia, cuyo pico más elevado '
+                             'es el Everest, se llama:',
+                 'alternativas': ['Los Andes',
+                                  'El Himalaya',
+                                  'El Cáucaso',
+                                  'Los Alpes',
+                                  'El Atlas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Asia se conecta con África a través del:',
+                 'alternativas': ['Estrecho de Gibraltar',
+                                  'Canal de Suez',
+                                  'Estrecho de Bering',
+                                  'Canal de Panamá',
+                                  'Mar Rojo exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'El porcentaje de la superficie de la Antártida '
+                             'cubierta de hielo es aproximadamente:',
+                 'alternativas': ['80%', '98%', '50%', '70%', '90%'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tratado que rige a la Antártida, firmado en '
+                             '1959, prohibiendo actividades militares y '
+                             'extracción de minerales, se llama:',
+                 'alternativas': ['Tratado de Kioto',
+                                  'Tratado Antártico',
+                                  'Tratado de Montreal',
+                                  'Protocolo de Madrid',
+                                  'Convenio de Basilea'],
+                 'correcta': 'B'},
+                {'pregunta': 'África es considerada la cuna de la:',
+                 'alternativas': ['Agricultura',
+                                  'Raza humana',
+                                  'Civilización occidental',
+                                  'Escritura',
+                                  'Ganadería'],
+                 'correcta': 'B'},
+                {'pregunta': 'El desierto más grande de la Tierra, ubicado '
+                             'en África, es el desierto:',
+                 'alternativas': ['Atacama',
+                                  'Sahara',
+                                  'Gobi',
+                                  'Kalahari',
+                                  'Namib'],
+                 'correcta': 'B'},
+                {'pregunta': 'El río más largo de África es el río:',
+                 'alternativas': ['Congo',
+                                  'Nilo',
+                                  'Níger',
+                                  'Senegal',
+                                  'Zambeze'],
+                 'correcta': 'B'},
+                {'pregunta': 'Oceanía es el continente más pequeño de la '
+                             'Tierra y se caracteriza por ser eminentemente:',
+                 'alternativas': ['Continental',
+                                  'Insular',
+                                  'Desértico',
+                                  'Glaciar',
+                                  'Montañoso'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las cuatro áreas geográficas en que se agrupa '
+                             'Oceanía son Australasia, Micronesia, Polinesia '
+                             'y:',
+                 'alternativas': ['Indonesia',
+                                  'Melanesia',
+                                  'Malasia',
+                                  'Filipinas',
+                                  'Antillas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El país más extenso de Oceanía, con relieve '
+                             'llano y numerosos desiertos, es:',
+                 'alternativas': ['Nueva Zelanda',
+                                  'Australia',
+                                  'Papúa Nueva Guinea',
+                                  'Fiji',
+                                  'Samoa'],
+                 'correcta': 'B'},
+                {'pregunta': 'El continente con la ubicación más austral es: '
+                             '(II CEPRU 2025)',
+                 'alternativas': ['América',
+                                  'Asia',
+                                  'Oceanía',
+                                  'África',
+                                  'Antártida'],
+                 'correcta': 'E'}],
+  'resumen_visual': [{'titulo': 'EUROPA',
+                      'items': ['Europa se ubica en el hemisferio norte y '
+                                'morfológicamente es una península del '
+                                'continente asiático.',
+                                'Europa tiene 10 400 000 km² y está dividida '
+                                'políticamente en 43 países.',
+                                'Europa limita al sur con el mar '
+                                'Mediterráneo, al este con los Montes Urales '
+                                'y el mar Caspio, y al oeste con el océano '
+                                'Atlántico.',
+                                'El sistema montañoso más importante del sur '
+                                'de Europa incluye el Cáucaso, Alpes, '
+                                'Balcanes, Pirineos y Apeninos.',
+                                'El río Volga, que desemboca en el mar '
+                                'Caspio, es el más largo de Europa; el '
+                                'Danubio es el más internacional.']},
+                     {'titulo': 'ASIA',
+                      'items': ['Asia es el continente más extenso del '
+                                'planeta, con 44 614 000 km², dividido '
+                                'políticamente en 48 países.',
+                                'Asia limita al norte con el océano Glacial '
+                                'Ártico, al este con el Pacífico, al sur con '
+                                'el océano Índico y al oeste con Europa.',
+                                'El sistema orográfico más importante del '
+                                'mundo es el Himalaya; su pico más elevado '
+                                'es el Everest, con 8848 m.',
+                                'Asia se conecta con Europa mediante los '
+                                'Montes Urales, y con África mediante el '
+                                'Canal de Suez.']},
+                     {'titulo': 'LA ANTÁRTIDA',
+                      'items': ['La Antártida es el continente más austral '
+                                'de la Tierra, con 14 000 000 km², el cuarto '
+                                'más grande después de Asia, América y '
+                                'África.',
+                                'Alrededor del 98% de la Antártida está '
+                                'cubierta de hielo, con un espesor promedio '
+                                'de 1,9 km.',
+                                'La Antártida es el continente más frío, '
+                                'seco y ventoso; se rige por el Tratado '
+                                'Antártico, firmado en 1959.']},
+                     {'titulo': 'ÁFRICA',
+                      'items': ['África es el tercer continente más extenso, '
+                                'con 30 365 000 km², considerada cuna de la '
+                                'raza humana.',
+                                'África está dividida políticamente en 53 '
+                                'países.',
+                                'El Kilimanjaro es el punto más alto de '
+                                'África; el Sahara es el desierto más grande '
+                                'de la Tierra.',
+                                'El río Nilo, con 6671 km, es el río más '
+                                'largo de África.']},
+                     {'titulo': 'OCEANÍA',
+                      'items': ['Oceanía es el continente más pequeño de la '
+                                'Tierra y eminentemente insular, con cerca '
+                                'de 30 000 islas.',
+                                'Oceanía se agrupa en cuatro áreas '
+                                'geográficas: Australasia, Melanesia, '
+                                'Micronesia y Polinesia.',
+                                'Oceanía tiene 8 505 070 km² y está dividida '
+                                'políticamente en 14 países.',
+                                'Australia es el país más extenso de '
+                                'Oceanía, con relieve llano y numerosos '
+                                'desiertos.']}]}]
