@@ -526,7 +526,30 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'radiación que rodean la Tierra, formadas por '
                            'partículas cargadas atrapadas por el campo '
                            '{magnético}.']},
-                {'titulo': '2.5 DIMENSIONES Y MOVIMIENTOS DE LA TIERRA',
+                {'titulo': '2.5 LA GEODESIA Y LAS FORMAS DE LA TIERRA',
+                 'items': ['La {geodesia} es una de las ciencias más '
+                           'antiguas cultivadas por el hombre; estudia y '
+                           'determina la forma y dimensiones de la Tierra y '
+                           'su campo de {gravedad}.',
+                           'La edad de la Tierra se ha calculado mediante '
+                           'isótopos radiactivos en unos {4600} millones de '
+                           'años.',
+                           'La forma {física} o topográfica es la forma real '
+                           'de la Tierra, considerando sus partes salientes '
+                           'y entrantes; es una forma {irregular}.',
+                           'La forma {geoide} resulta de nivelar la '
+                           'superficie continental con el nivel medio del '
+                           'mar; es una superficie {equipotencial} de '
+                           'gravedad terrestre.',
+                           'La forma {elipsoide de revolución} es la forma '
+                           'matemática o geométrica de la Tierra, achatada '
+                           'en los {polos} y ensanchada en el ecuador.',
+                           'La superficie total de la Tierra es de {510 000 '
+                           '000} km²; la superficie continental es de 149 '
+                           '000 000 km² y la marítima de {361 000 000} km².',
+                           'La densidad media de la Tierra es de {5,518} '
+                           'gr/cm³.']},
+                {'titulo': '2.6 DIMENSIONES Y MOVIMIENTOS DE LA TIERRA',
                  'items': ['La circunferencia ecuatorial de la Tierra mide '
                            '{40 076} km, y la circunferencia polar {40 009} '
                            'km.',
@@ -814,7 +837,66 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   "15 h 37'",
                                   "03 h 27'",
                                   "03 h 39'"],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'La ciencia que estudia y determina la forma y '
+                             'dimensiones de la Tierra y su campo de '
+                             'gravedad se llama:',
+                 'alternativas': ['Cartografía',
+                                  'Geodesia',
+                                  'Topografía',
+                                  'Geomorfología',
+                                  'Astronomía'],
+                 'correcta': 'B'},
+                {'pregunta': 'La edad de la Tierra, calculada mediante '
+                             'isótopos radiactivos, se estima en:',
+                 'alternativas': ['4600 millones de años',
+                                  '2300 millones de años',
+                                  '6000 millones de años',
+                                  '1000 millones de años',
+                                  '10000 millones de años'],
+                 'correcta': 'A'},
+                {'pregunta': 'La forma real de la Tierra, considerando sus '
+                             'partes salientes y entrantes tal como es, se '
+                             'llama forma:',
+                 'alternativas': ['Geoide',
+                                  'Física o topográfica',
+                                  'Elipsoide de revolución',
+                                  'Esférica',
+                                  'Achatada'],
+                 'correcta': 'B'},
+                {'pregunta': 'La forma de la Tierra que resulta de nivelar '
+                             'la superficie continental con el nivel medio '
+                             'del mar se llama forma:',
+                 'alternativas': ['Física',
+                                  'Elipsoide de revolución',
+                                  'Geoide',
+                                  'Topográfica',
+                                  'Esférica'],
+                 'correcta': 'C'},
+                {'pregunta': 'La forma matemática o geométrica de la Tierra, '
+                             'achatada en los polos y ensanchada en el '
+                             'ecuador, se llama:',
+                 'alternativas': ['Geoide',
+                                  'Elipsoide de revolución',
+                                  'Forma física',
+                                  'Forma topográfica',
+                                  'Esfera perfecta'],
+                 'correcta': 'B'},
+                {'pregunta': 'La superficie total de la Tierra es '
+                             'aproximadamente de:',
+                 'alternativas': ['361 000 000 km²',
+                                  '510 000 000 km²',
+                                  '149 000 000 km²',
+                                  '200 000 000 km²',
+                                  '700 000 000 km²'],
+                 'correcta': 'B'},
+                {'pregunta': 'La densidad media de la Tierra es de:',
+                 'alternativas': ['1 gr/cm³',
+                                  '5,518 gr/cm³',
+                                  '10 gr/cm³',
+                                  '3,2 gr/cm³',
+                                  '8,9 gr/cm³'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'EL GEOSISTEMA',
                       'items': ['El geosistema, o planeta Tierra considerado '
                                 'como unidad, es el conjunto de entidades '
@@ -824,10 +906,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'la hidrósfera, la atmósfera y la litósfera.',
                                 'La entidad biótica del geosistema es la '
                                 'biósfera; la entidad antrópica es la '
-                                'sociósfera o antropósfera.',
-                                'El geosistema se autodesarrolla y se '
-                                'encuentra en equilibrio dinámico '
-                                'relativo.']},
+                                'sociósfera o antropósfera.']},
                      {'titulo': 'EL UNIVERSO Y SU ORIGEN',
                       'items': ['El universo es la totalidad de la materia, '
                                 'la radiación y el espacio-tiempo, que se '
@@ -849,15 +928,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'estrellas.',
                                 'Las estrellas son esferas de gases '
                                 'calientes que producen su propia luz '
-                                'mediante fusión nuclear.',
-                                'Las nebulosas son regiones del medio '
-                                'interestelar donde nacen las estrellas, '
-                                'constituidas principalmente por hidrógeno y '
-                                'helio.',
-                                'El año luz es la distancia que recorre la '
-                                'luz en un año, a 300 000 km por segundo.',
-                                'La luz del Sol tarda 8,3 minutos en llegar '
-                                'a la Tierra.']},
+                                'mediante fusión nuclear.']},
                      {'titulo': 'EL SISTEMA PLANETARIO SOLAR',
                       'items': ['El Sol contiene el 98,85% de la masa total '
                                 'del Sistema Solar y domina su campo '
@@ -867,15 +938,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'planeta enano y cuerpos menores.',
                                 'Los planetas interiores o terrestres son '
                                 'Mercurio, Venus, Tierra y Marte: sólidos, '
-                                'densos y cercanos al Sol.',
-                                'Los planetas exteriores o jovianos son '
-                                'Júpiter, Saturno, Urano y Neptuno: '
-                                'gaseosos, de mayor tamaño y más lejanos al '
-                                'Sol.',
-                                'Los cinturones de Van Allen son zonas de '
-                                'radiación que rodean la Tierra, formadas '
-                                'por partículas cargadas atrapadas por el '
-                                'campo magnético.']},
+                                'densos y cercanos al Sol.']},
+                     {'titulo': 'LA GEODESIA Y LAS FORMAS DE LA TIERRA',
+                      'items': ['La geodesia es una de las ciencias más '
+                                'antiguas cultivadas por el hombre; estudia '
+                                'y determina la forma y dimensiones de la '
+                                'Tierra y su campo de gravedad.',
+                                'La edad de la Tierra se ha calculado '
+                                'mediante isótopos radiactivos en unos 4600 '
+                                'millones de años.',
+                                'La forma física o topográfica es la forma '
+                                'real de la Tierra, considerando sus partes '
+                                'salientes y entrantes; es una forma '
+                                'irregular.']},
                      {'titulo': 'DIMENSIONES Y MOVIMIENTOS DE LA TIERRA',
                       'items': ['La circunferencia ecuatorial de la Tierra '
                                 'mide 40 076 km, y la circunferencia polar '
@@ -885,16 +960,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'km.',
                                 'Los dos principales movimientos de la '
                                 'Tierra son el de rotación y el de '
-                                'traslación.',
-                                'El movimiento de rotación se realiza '
-                                'alrededor de un eje imaginario, cuyos '
-                                'extremos son los polos, en un día.',
-                                'La rotación terrestre tiene una dirección '
-                                'de W a E, con una velocidad de 1674 km/h en '
-                                'la zona ecuatorial.',
-                                'El tiempo que emplea la Tierra en dar una '
-                                'vuelta completa sobre su eje es de 23 '
-                                'horas, 56 minutos y 4,09 segundos.']}]},
+                                'traslación.']}]},
  {'num': 3,
   'titulo': 'Cartografía y Sistemas de Información Geográfica',
   'secciones': [{'titulo': '3.1 LA CARTOGRAFÍA',
