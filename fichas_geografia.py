@@ -1014,7 +1014,30 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            "hemisferio sur, también a {23}° 27' de latitud.",
                            'Los Círculos Polares, Ártico y Antártico, se '
                            "ubican a {66}° 33' de latitud."]},
-                {'titulo': '3.4 TELEDETECCIÓN, GPS Y HUSOS HORARIOS',
+                {'titulo': '3.4 SISTEMA DE COORDENADAS UTM',
+                 'items': ['El sistema de coordenadas {UTM} (Universal '
+                           'Transversal de Mercator) se basa en la '
+                           'proyección cartográfica transversa de '
+                           '{Mercator}, tangente a un meridiano.',
+                           'A diferencia de las coordenadas geográficas '
+                           '(longitud/latitud), las magnitudes UTM se '
+                           'expresan en {metros}.',
+                           'El sistema UTM fue desarrollado por el Cuerpo de '
+                           'Ingenieros del Ejército de EE.UU. en la década '
+                           'de {1940}; actualmente usa el elipsoide {WGS84}.',
+                           'La Tierra está dividida en {60} zonas o husos '
+                           'UTM de 6° de longitud cada uno.',
+                           'La Tierra está dividida en {20} bandas UTM: 19 '
+                           'de 8° de latitud y una última de 12°, '
+                           'identificadas con letras de la {C} a la X (sin I '
+                           'ni O).',
+                           'El territorio peruano se ubica en las zonas o '
+                           'husos {17}, 18 y 19, y en las bandas K, L y {M}.',
+                           'La Red UTM se utiliza entre los 80° de latitud '
+                           'sur y los 84° de latitud norte; por encima se '
+                           'usa la Red Universal Estereográfica {Polar} '
+                           '(UPS).']},
+                {'titulo': '3.5 TELEDETECCIÓN, GPS Y HUSOS HORARIOS',
                  'items': ['La {teledetección} es la técnica que permite '
                            'obtener información de un objeto o área mediante '
                            'el análisis de imágenes, sin contacto físico.',
@@ -1243,7 +1266,46 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   '17, 18 y 19',
                                   '20, 21 y 22',
                                   '45, 46 y 47'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'El sistema de coordenadas UTM se basa en la '
+                             'proyección cartográfica transversa de:',
+                 'alternativas': ['Robinson',
+                                  'Mercator',
+                                  'Peters',
+                                  'Azimutal',
+                                  'Cónica'],
+                 'correcta': 'B'},
+                {'pregunta': 'A diferencia de las coordenadas geográficas '
+                             '(longitud/latitud), las magnitudes del sistema '
+                             'UTM se expresan en:',
+                 'alternativas': ['Grados sexagesimales',
+                                  'Metros',
+                                  'Millas náuticas',
+                                  'Radianes',
+                                  'Kilómetros cuadrados'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema UTM fue desarrollado por el Cuerpo '
+                             'de Ingenieros del Ejército de Estados Unidos '
+                             'en la década de:',
+                 'alternativas': ['1920', '1940', '1960', '1980', '1900'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Tierra está dividida, según el sistema UTM, '
+                             'en un número de zonas o husos igual a:',
+                 'alternativas': ['24', '60', '20', '180', '360'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Tierra está dividida, según el sistema UTM, '
+                             'en un número de bandas igual a:',
+                 'alternativas': ['60', '20', '24', '12', '30'],
+                 'correcta': 'B'},
+                {'pregunta': 'Por encima de los 80° de latitud sur y 84° de '
+                             'latitud norte, en vez de la Red UTM, se '
+                             'utiliza la Red Universal:',
+                 'alternativas': ['Geográfica Polar',
+                                  'Estereográfica Polar (UPS)',
+                                  'Cónica Polar',
+                                  'Cilíndrica Polar',
+                                  'Azimutal Ecuatorial'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'LA CARTOGRAFÍA',
                       'items': ['La cartografía es la ciencia y arte de '
                                 'expresar gráficamente, por medio de mapas, '
@@ -1293,6 +1355,27 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La línea del Ecuador es el paralelo 0°, y '
                                 'divide al planeta en hemisferio Norte y '
                                 'hemisferio Sur.']},
+                     {'titulo': 'SISTEMA DE COORDENADAS UTM',
+                      'items': ['El sistema de coordenadas UTM (Universal '
+                                'Transversal de Mercator) se basa en la '
+                                'proyección cartográfica transversa de '
+                                'Mercator, tangente a un meridiano.',
+                                'A diferencia de las coordenadas geográficas '
+                                '(longitud/latitud), las magnitudes UTM se '
+                                'expresan en metros.',
+                                'El sistema UTM fue desarrollado por el '
+                                'Cuerpo de Ingenieros del Ejército de EE.UU. '
+                                'en la década de 1940; actualmente usa el '
+                                'elipsoide WGS84.',
+                                'La Tierra está dividida en 60 zonas o husos '
+                                'UTM de 6° de longitud cada uno.',
+                                'La Tierra está dividida en 20 bandas UTM: '
+                                '19 de 8° de latitud y una última de 12°, '
+                                'identificadas con letras de la C a la X '
+                                '(sin I ni O).',
+                                'El territorio peruano se ubica en las zonas '
+                                'o husos 17, 18 y 19, y en las bandas K, L y '
+                                'M.']},
                      {'titulo': 'TELEDETECCIÓN, GPS Y HUSOS HORARIOS',
                       'items': ['La teledetección es la técnica que permite '
                                 'obtener información de un objeto o área '
@@ -1347,7 +1430,43 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'el terreno real para representarlo en el mapa; '
                            'por ejemplo, 1:100 000 significa una reducción '
                            'de {100 000} veces.']},
-                {'titulo': '4.3 CLASES DE ESCALA Y CÁLCULO DE DISTANCIAS',
+                {'titulo': '4.3 LA CARTA GEOGRÁFICA NACIONAL DEL PERÚ',
+                 'items': ['La {Carta Geográfica Nacional} es un gran mapa '
+                           'de nuestro país dividido en {501} hojas o mapas '
+                           'topográficos.',
+                           'La Carta Nacional se ha levantado a una escala '
+                           'de {1:100 000}; el trabajo fue iniciado por el '
+                           '{Instituto Geográfico Militar}.',
+                           'Originalmente se usó el sistema de la plancheta '
+                           'con escala de {1:200 000}; hoy se emplean '
+                           'procedimientos modernos.',
+                           'Cada hoja representa un área de {30} minutos de '
+                           'longitud por 30 minutos de latitud.',
+                           'Una hoja mide 55,4 cm x 54,1 cm, equivalente en '
+                           'el terreno a {55,4} km de largo por 54,1 km de '
+                           'ancho, con un área de 2997,1 km².']},
+                {'titulo': '4.4 PARTES DE LA HOJA O MAPA TOPOGRÁFICO',
+                 'items': ['Una hoja o mapa topográfico está compuesta de '
+                           'tres partes: {cuerpo}, información marginal, y '
+                           'signos convencionales o {leyenda}.',
+                           'El {cuerpo} de la hoja constituye la '
+                           'representación del espacio geográfico; presenta '
+                           'la {planimetría} y la altimetría.',
+                           'La {planimetría} es la ubicación del espacio en '
+                           'un plano mediante simbología convencional, '
+                           'representando elementos naturales o '
+                           '{culturales}.',
+                           'La {altimetría} está representada por las curvas '
+                           'de nivel, que indican la {altitud} sobre el '
+                           'nivel del mar.',
+                           'Las {curvas de nivel} son líneas a intervalos '
+                           'iguales, con un valor determinado de altitud.',
+                           'La {información marginal} constituye el borde de '
+                           'la carta; incluye nombre y número de la hoja, '
+                           'cuadro de hojas vecinas, {coordenadas} y escala.',
+                           'Los {signos convencionales} o leyenda permiten '
+                           'interpretar la simbología de la carta.']},
+                {'titulo': '4.5 CLASES DE ESCALA Y CÁLCULO DE DISTANCIAS',
                  'items': ['Existen dos clases de escala: la escala '
                            '{numérica}, expresada como una fracción, y la '
                            'escala {gráfica}, un segmento graduado.',
@@ -1362,7 +1481,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'son: hallar la distancia en el terreno real, '
                            'hallar la distancia en el {mapa}, y hallar la '
                            '{escala} del mapa.']},
-                {'titulo': '4.4 EJEMPLO: HALLANDO LA ESCALA DE UN MAPA',
+                {'titulo': '4.6 EJEMPLO: HALLANDO LA ESCALA DE UN MAPA',
                  'items': ['Para hallar la escala de un mapa, el número {1} '
                            'siempre se coloca al inicio de la proporción (1: '
                            '?).',
@@ -1573,7 +1692,69 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Escalar',
                                   'Rectangular',
                                   'Azimutal'],
-                 'correcta': 'E'}],
+                 'correcta': 'E'},
+                {'pregunta': 'La Carta Geográfica Nacional del Perú es un '
+                             'gran mapa dividido en un número de hojas igual '
+                             'a:',
+                 'alternativas': ['305', '501', '201', '101', '601'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Carta Geográfica Nacional del Perú se ha '
+                             'levantado a una escala de:',
+                 'alternativas': ['1:50 000',
+                                  '1:100 000',
+                                  '1:200 000',
+                                  '1:1 000 000',
+                                  '1:10 000'],
+                 'correcta': 'B'},
+                {'pregunta': 'El trabajo de la Carta Geográfica Nacional fue '
+                             'iniciado por el:',
+                 'alternativas': ['Instituto Nacional de Estadística',
+                                  'Instituto Geográfico Militar',
+                                  'Ministerio de Defensa',
+                                  'Instituto Geofísico del Perú',
+                                  'Servicio Nacional de Meteorología'],
+                 'correcta': 'B'},
+                {'pregunta': 'Cada hoja de la Carta Geográfica Nacional '
+                             'representa un área de longitud y latitud de:',
+                 'alternativas': ['15 minutos',
+                                  '30 minutos',
+                                  '60 minutos',
+                                  '45 minutos',
+                                  '20 minutos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una hoja o mapa topográfico está compuesta de '
+                             'tres partes: cuerpo, signos convencionales y:',
+                 'alternativas': ['Escala numérica',
+                                  'Información marginal',
+                                  'Coordenadas UTM',
+                                  'Curvas de nivel',
+                                  'Red geográfica'],
+                 'correcta': 'B'},
+                {'pregunta': 'En la hoja de la Carta Geográfica Nacional, la '
+                             'planimetría y la altimetría forman parte de:',
+                 'alternativas': ['El sistema de coordenadas',
+                                  'La escala de la hoja',
+                                  'El cuerpo de la hoja',
+                                  'La información marginal',
+                                  'Los signos convencionales'],
+                 'correcta': 'C'},
+                {'pregunta': 'La ubicación del espacio en un plano mediante '
+                             'simbología convencional, representando '
+                             'elementos naturales o culturales, se llama:',
+                 'alternativas': ['Altimetría',
+                                  'Planimetría',
+                                  'Isoyeta',
+                                  'Curva de nivel',
+                                  'Leyenda'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las curvas de nivel, que indican la altitud '
+                             'sobre el nivel del mar, forman parte de la:',
+                 'alternativas': ['Planimetría',
+                                  'Altimetría',
+                                  'Leyenda',
+                                  'Información marginal',
+                                  'Escala'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
                       'items': ['Un mapa es una representación, total o '
                                 'parcial, de la superficie curva de la '
@@ -1581,14 +1762,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Los mapas se clasifican según el tamaño de '
                                 'la escala y según su función.',
                                 'Según su función, los mapas pueden ser '
-                                'temáticos o generales.',
-                                'Los mapas temáticos representan el '
-                                'territorio mediante símbolos de un aspecto '
-                                'concreto de la realidad, físico o humano.',
-                                'Los mapas generales representan de manera '
-                                'completa pero genérica los elementos de un '
-                                'territorio, como los que aparecen en los '
-                                'atlas.']},
+                                'temáticos o generales.']},
                      {'titulo': 'ELEMENTOS DEL MAPA',
                       'items': ['El título del mapa se ubica en la parte '
                                 'superior y representa el contenido del '
@@ -1599,15 +1773,30 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'superior.',
                                 'La ubicación de un mapa se realiza mediante '
                                 'la red geográfica de meridianos y '
-                                'paralelos.',
-                                'La leyenda, llamada también signos '
-                                'convencionales, es el lenguaje visual que '
-                                'representa elementos del terreno como '
-                                'carreteras o líneas férreas.',
-                                'La escala indica cuántas veces se ha '
-                                'reducido el terreno real para representarlo '
-                                'en el mapa; por ejemplo, 1:100 000 '
-                                'significa una reducción de 100 000 veces.']},
+                                'paralelos.']},
+                     {'titulo': 'LA CARTA GEOGRÁFICA NACIONAL DEL PERÚ',
+                      'items': ['La Carta Geográfica Nacional es un gran '
+                                'mapa de nuestro país dividido en 501 hojas '
+                                'o mapas topográficos.',
+                                'La Carta Nacional se ha levantado a una '
+                                'escala de 1:100 000; el trabajo fue '
+                                'iniciado por el Instituto Geográfico '
+                                'Militar.',
+                                'Originalmente se usó el sistema de la '
+                                'plancheta con escala de 1:200 000; hoy se '
+                                'emplean procedimientos modernos.']},
+                     {'titulo': 'PARTES DE LA HOJA O MAPA TOPOGRÁFICO',
+                      'items': ['Una hoja o mapa topográfico está compuesta '
+                                'de tres partes: cuerpo, información '
+                                'marginal, y signos convencionales o '
+                                'leyenda.',
+                                'El cuerpo de la hoja constituye la '
+                                'representación del espacio geográfico; '
+                                'presenta la planimetría y la altimetría.',
+                                'La planimetría es la ubicación del espacio '
+                                'en un plano mediante simbología '
+                                'convencional, representando elementos '
+                                'naturales o culturales.']},
                      {'titulo': 'CLASES DE ESCALA Y CÁLCULO DE DISTANCIAS',
                       'items': ['Existen dos clases de escala: la escala '
                                 'numérica, expresada como una fracción, y la '
@@ -1617,14 +1806,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'terreno real.',
                                 'En un mapa de escala 1:250 000, cada '
                                 'centímetro del mapa equivale a 2,5 km en el '
-                                'terreno real.',
-                                'Para hallar la distancia real a partir del '
-                                'mapa, se aplica una regla de tres simple '
-                                'entre la escala y la medida tomada.',
-                                'Los tres casos típicos de ejercicios con '
-                                'escalas son: hallar la distancia en el '
-                                'terreno real, hallar la distancia en el '
-                                'mapa, y hallar la escala del mapa.']},
+                                'terreno real.']},
                      {'titulo': 'EJEMPLO: HALLANDO LA ESCALA DE UN MAPA',
                       'items': ['Para hallar la escala de un mapa, el número '
                                 '1 siempre se coloca al inicio de la '
@@ -1635,10 +1817,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Para hallar la distancia en el mapa a '
                                 'partir de la real, también se aplica una '
                                 'regla de tres, invirtiendo el '
-                                'procedimiento.',
-                                'Las escalas gráficas, expresadas como un '
-                                'segmento graduado, también se pueden '
-                                'convertir a escala numérica.']}]},
+                                'procedimiento.']}]},
  {'num': 5,
   'titulo': 'Relieve Terrestre: Origen y Procesos Dinámicos',
   'secciones': [{'titulo': '5.1 ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO Y '
