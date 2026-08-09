@@ -341,7 +341,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                           topMargin=MY, bottomMargin=1.4 * cm)
 
     # Primera página: encabezado ancho arriba y dos columnas debajo
-    alto_enc = 4.3 * cm
+    alto_enc = 5.1 * cm
     f_enc = Frame(MX, A4[1] - MY - alto_enc, ancho_util, alto_enc, id="enc",
                   leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     alto_col1 = A4[1] - MY - alto_enc - 1.4 * cm
@@ -588,14 +588,14 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                 img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
                 celdas_qr.append([
                     img,
-                    Paragraph("<b>⚡ Reto Relámpago</b><br/>Escanea y autoevalúate", est["cel"]),
+                    Paragraph('<b><font color="#B01C22">Reto Relámpago</font></b><br/>Escanea y autoevalúate', est["cel"]),
                 ])
             if qr_dato:
                 png = _generar_qr_bytes(_texto_qr_dato(tema, qr_dato))
                 img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
                 celdas_qr.append([
                     img,
-                    Paragraph("<b>✨ Dato Yachay</b><br/>Un dato extra para recordar", est["cel"]),
+                    Paragraph('<b><font color="#12307F">Dato Yachay</font></b><br/>Un dato extra para recordar', est["cel"]),
                 ])
             fila_qr = []
             for img, etiqueta in celdas_qr:
@@ -743,7 +743,7 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
     doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=MX, rightMargin=MX,
                           topMargin=MY, bottomMargin=1.4 * cm)
 
-    alto_enc = 4.4 * cm
+    alto_enc = 5.2 * cm
     f_enc = Frame(MX, A4[1] - MY - alto_enc, ancho_util, alto_enc, id="e",
                   leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     alto1 = A4[1] - MY - alto_enc - 1.4 * cm
@@ -4263,55 +4263,231 @@ BALOTAS = [{'num': 1,
              'cerámica.'},
  {'num': 6,
   'titulo': 'Culturas preincas',
-  'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL',
-                 'items': ['Considerada la civilización más {antigua} de '
-                           'América, ubicada en el valle de {Supe} '
-                           '(Barranca, Lima).',
-                           'Fue investigada por la arqueóloga {Ruth Shady}. '
-                           'Corresponde al periodo {precerámico} tardío.']},
-                {'titulo': '6.2.1 CHAVÍN (Horizonte Temprano)',
-                 'items': ['Su capital, {Chavín de Huántar}, se ubica en '
-                           'Áncash, a orillas del río {Mosna}, en el flanco '
-                           'oriental de la Cordillera {Blanca}.',
-                           'Fue descubierta y estudiada por Julio C. '
-                           '{Tello}, quien la llamó «cultura {matriz} de la '
-                           'civilización andina».',
-                           'Su organización política fue {teocrática}: la '
-                           'autoridad política derivaba de lo {religioso}. '
-                           'Su sociedad fue {clasista}.',
-                           'Monumentos líticos: el {Lanzón} monolítico, la '
-                           'estela {Raimondi}, el obelisco {Tello} y las '
-                           'cabezas {clavas}, guardianes del templo.']},
-                {'titulo': '6.2.2 PARACAS',
-                 'items': ['Se ubicó en el departamento de {Ica}, provincia '
-                           'de Pisco, en la bahía de {Paracas}. Fue '
-                           'descubierta por Julio C. {Tello}.',
-                           'Paracas {Cavernas}: cuenca del río Ica, capital '
-                           '{Tajahuana}, con influencia {Chavín}. Cerámica '
-                           '{polícroma}, pintada en {post-cocción}.',
-                           'Paracas {Necrópolis}: valle de Pisco, capital '
-                           '{Topará}. Cerámica {monocroma}, pintada en '
-                           '{pre-cocción}.',
-                           'Destacaron por sus {mantos} bordados y por las '
-                           '{trepanaciones} craneanas.']},
-                {'titulo': '6.3 INTERMEDIO TEMPRANO',
-                 'items': ['{Nasca} (300 a.C. – 600 d.C.): departamento de '
-                           'Ica. Destacan las {líneas} de Nasca, estudiadas '
-                           'por María {Reiche}, y los acueductos de '
-                           '{Cantalloc}.',
-                           '{Mochica}: costa norte, valles de Moche y '
-                           'Chicama. Cerámica {realista} o retrato y '
-                           '{escultórica}. Destaca el Señor de {Sipán}.']},
-                {'titulo': '6.4 y 6.5 HORIZONTE MEDIO E INTERMEDIO TARDÍO',
-                 'items': ['{Tiahuanaco}: altiplano del lago {Titicaca}. '
-                           'Destaca la Portada del {Sol}.',
-                           '{Wari}: primer {imperio} andino, con capital en '
-                           'Ayacucho. Impuso el urbanismo planificado.',
-                           '{Chimú}: costa norte, capital {Chan Chan}, la '
-                           'ciudad de {barro} más grande de América. '
-                           'Destacaron en {orfebrería}.',
-                           '{Chanca}: región de Apurímac y Ayacucho; fueron '
-                           'derrotados por los {incas}.']}],
+  'secciones': [{'titulo': '6.1 CIVILIZACIÓN CARAL: UBICACIÓN Y '
+                           'DESCUBRIMIENTO',
+                 'items': ['{Caral} se ubica en la región Lima, provincia de '
+                           'Barranca, distrito de Supe, en el valle medio '
+                           'del río {Supe}.',
+                           'La antigüedad de Caral es de {2800} a.C., '
+                           'posterior a Egipto (2900 a.C.) y Mesopotamia '
+                           '(3000 a.C.).',
+                           'Fue declarada Patrimonio Cultural de la '
+                           'Humanidad por la {UNESCO} en Sevilla, el 28 de '
+                           'junio de 2009.',
+                           'La arqueóloga {Ruth Shady Solís} inició en 1994 '
+                           'el reconocimiento detallado de la zona, y en '
+                           '1996 descubrió la ciudadela sagrada.',
+                           'El Complejo Arqueológico del valle de Supe está '
+                           'dividido en cuatro zonas: Lurihuasi, {Miraya}, '
+                           'Chupacigarro y Caral.']},
+                {'titulo': '6.2 CIVILIZACIÓN CARAL: SOCIEDAD Y '
+                           'CARACTERÍSTICAS',
+                 'items': ['Caral es considerada la civilización más antigua '
+                           'del {Perú} y de América.',
+                           'Tuvo un gobierno de carácter {teocrático}, no '
+                           'militarizado, dirigido por sacerdotes '
+                           'astrónomos.',
+                           'Su economía se basó en una agricultura variada: '
+                           'calabaza, algodón, camote, frijol, {maíz} y ají.',
+                           'Practicaron la pesca de moluscos, {anchovetas} y '
+                           'sardinas, e intercambiaron productos de costa, '
+                           'sierra y selva.',
+                           'Se halló en Caral el {quipu} más antiguo '
+                           'conocido, y hasta 84 flautas de hueso decoradas '
+                           'con figuras de aves.']},
+                {'titulo': '6.3 CIVILIZACIÓN CARAL: ARQUITECTURA',
+                 'items': ['Caral está conformada por 32 conjuntos '
+                           'arquitectónicos: pirámides, templos, sectores '
+                           'residenciales, {anfiteatro}, almacenes y '
+                           'altares.',
+                           'Entre sus construcciones destacan el {Templo '
+                           'Anfiteatro}, el Templo Mayor, la Pirámide de la '
+                           'Cantera y el Altar del Fuego Sagrado.',
+                           'Predominan construcciones ceremoniales '
+                           '{piramidales}, con plataformas superpuestas y '
+                           'plazas circulares hundidas.']},
+                {'titulo': '6.4 CHAVÍN: UBICACIÓN Y SOCIEDAD (Horizonte '
+                           'Temprano)',
+                 'items': ['{Chavín} se ubica en el distrito de Huántar, '
+                           'provincia de Huari, región Áncash, a orillas de '
+                           'los ríos Mosna y Huachecsa.',
+                           'Chavín es considerada una cultura {panperuana} '
+                           'por su amplia influencia en sierra, costa y ceja '
+                           'de selva.',
+                           'Fue descubierta por {Julio C. Tello} en 1919.',
+                           'Su gobierno fue {teocrático}, ejercido por '
+                           'sacerdotes astrónomos que controlaban tierras y '
+                           'producción.',
+                           'La sociedad se dividía en sacerdotes astrónomos, '
+                           '{artesanos} (escultores, ceramistas, orfebres) y '
+                           'el pueblo (agricultores, pastores, '
+                           'pescadores).']},
+                {'titulo': '6.5 CHAVÍN: ARQUITECTURA Y ESCULTURA',
+                 'items': ['El templo principal, de forma piramidal trunca '
+                           'con patios en forma de {U}, se ubica en Chavín '
+                           'de Huántar.',
+                           'El {Lanzón Monolítico} y las cabezas clavas son '
+                           'monolitos que representan guardianes del templo.',
+                           'La {Estela de Raimondi}, descubierta por Timoteo '
+                           'Espinoza, representa al dios Viracocha en forma '
+                           'de jaguar.',
+                           'El {Obelisco de Tello} tiene grabados de '
+                           'serpiente, caimán, ají y yuca.',
+                           'Chavín rindió culto a tres deidades zoomorfas: '
+                           'el {jaguar}, el cóndor y la serpiente.']},
+                {'titulo': '6.6 PARACAS: UBICACIÓN Y ETAPAS (Horizonte '
+                           'Temprano)',
+                 'items': ['{Paracas} se ubica en el departamento de Ica, '
+                           'provincia de Pisco, entre Cañete y Yauca.',
+                           'Fue descubierta por {Julio C. Tello} en 1925, y '
+                           'estudiada también por Toribio Mejía Xesspe.',
+                           'La etapa {Paracas Cavernas} tuvo su capital en '
+                           'Tajahuana, con tumbas subterráneas en forma de '
+                           'copa invertida.',
+                           'La etapa {Paracas Necrópolis} tuvo su capital en '
+                           'Topara, con tumbas subterráneas cuadrangulares y '
+                           'mejor calidad textil.']},
+                {'titulo': '6.7 PARACAS: MOMIFICACIÓN, TREPANACIONES Y '
+                           'TEJIDOS',
+                 'items': ['Los paracas practicaron la {momificación}, con '
+                           'alto conocimiento de anatomía y fisiología.',
+                           'Practicaron {trepanaciones craneanas}, usando '
+                           'coca como anestésico e instrumentos como el '
+                           'cincel tumi.',
+                           'Según Tello, un {40}% de los cráneos de las '
+                           'momias muestran señales de trepanación en vida.',
+                           'El {tejido} paracas destaca por su finura y '
+                           'policromía; sobresalen los mantos ceremoniales '
+                           'con diseños geométricos y zoomorfos.']},
+                {'titulo': '6.8 NASCA: UBICACIÓN Y SOCIEDAD (Intermedio '
+                           'Temprano)',
+                 'items': ['{Nasca} tuvo su centro en el valle de Río '
+                           'Grande, provincia de Nasca, departamento de Ica; '
+                           'es cultura {regional}.',
+                           'Fue descubierta por {Federico Max Uhle} en 1901.',
+                           'Su Estado fue de carácter '
+                           '{teocrático-militarista}, gobernado por '
+                           'sacerdotes-militares.',
+                           'Desarrollaron los {puquios}, tecnología de '
+                           'canales de riego subterráneo para aprovechar '
+                           'aguas del subsuelo.']},
+                {'titulo': '6.9 NASCA: CERÁMICA Y LÍNEAS DE NASCA',
+                 'items': ['La cerámica nasca es {pictórica} (con temor al '
+                           'vacío), {policroma} (8 colores), realista y '
+                           'fantástica.',
+                           'Su capital fue {Cahuachi}; otras ciudades fueron '
+                           'Estaquería, Tambo Viejo y Ocucaje.',
+                           'Las {Líneas de Nasca} fueron descubiertas en '
+                           '1927 por {Toribio Mejía Xesspe}, y estudiadas '
+                           'por María Reiche.',
+                           'María Reiche concluyó que las líneas constituían '
+                           'un gigantesco {calendario astronómico} '
+                           'agrícola.']},
+                {'titulo': '6.10 MOCHICA: UBICACIÓN Y SOCIEDAD (Intermedio '
+                           'Temprano)',
+                 'items': ['{Mochica} se desarrolló en los valles de Moche, '
+                           'Chicama y Virú, en La Libertad; su capital fue '
+                           '{Moche}.',
+                           'Fue descubierta por {Federico Max Uhle} en 1902; '
+                           'es cultura regional.',
+                           'La aristocracia militar estaba representada por '
+                           'el {Cie Quich}, rey o máxima autoridad.',
+                           'La casta sacerdotal rendía culto a la divinidad '
+                           '{Aiapaec}, y también ejercía la medicina.']},
+                {'titulo': '6.11 MOCHICA: CERÁMICA Y ARQUITECTURA',
+                 'items': ['La cerámica mochica alcanzó el nivel más alto '
+                           'del Perú Antiguo, destacando los {huacos '
+                           'retratos}, que expresan estados psicológicos.',
+                           'Es de forma globular con asa {estribo} y un solo '
+                           'pico; predominó la bicromía rojo ocre y blanco '
+                           'crema.',
+                           'La {Huaca del Sol} estaba dedicada al culto de '
+                           'Aiapaec; la {Huaca de la Luna}, a la diosa Shi.',
+                           'La {Huaca Rajada} del Señor de Sipán fue '
+                           'descubierta por {Walter Alva} en 1987, en '
+                           'Chiclayo.']},
+                {'titulo': '6.12 TIAHUANACO: UBICACIÓN Y SOCIEDAD (Horizonte '
+                           'Medio)',
+                 'items': ['{Tiahuanaco} se ubica a 21 km al sureste del '
+                           'lago Titicaca (Bolivia); es cultura '
+                           '{panperuana}.',
+                           'Fue descubierta por el cronista {Pedro Cieza de '
+                           'León} en 1551.',
+                           'Tuvo un sistema {teocrático} de carácter '
+                           'pacífico, sin recurrir a acciones bélicas.',
+                           'Su dios principal fue {Wiracocha}, creador del '
+                           'mundo andino, representado con caracteres '
+                           'antropomorfos y felínicos.']},
+                {'titulo': '6.13 TIAHUANACO: TECNOLOGÍA Y ARTE',
+                 'items': ['Construyeron {camellones} o waru waru, suelos '
+                           'elevados alrededor de lagos, y elaboraron chuño '
+                           'y moraya.',
+                           'En arquitectura usaron grandes bloques de piedra '
+                           'con {grapas de cobre}; destacan Kalasasaya, '
+                           'Akapana y Pumapunku.',
+                           'La {Portada del Sol}, en Kalasasaya, está '
+                           'tallada en una sola piedra con la imagen de '
+                           'Wiracocha.',
+                           'Su cerámica es policroma; destaca el {kero} '
+                           '(vaso ceremonial) y el pebetero.']},
+                {'titulo': '6.14 WARI: UBICACIÓN Y ORIGEN (Horizonte Medio)',
+                 'items': ['{Wari} se ubica a 12 km al noroeste de Ayacucho; '
+                           'es cultura {panperuana}, con capital en la '
+                           'ciudad de Wari o Viñaque.',
+                           'Fue descubierta por {Luis Guillermo Lumbreras}.',
+                           'Los antecesores de los Waris fueron los '
+                           '{Huarpas}, de Chaquipampa, entre Ayacucho y '
+                           'Huanta.',
+                           'Según Pablo Macera, los Waris son producto de 4 '
+                           'pueblos: Huarpa, Nasca, {Tiahuanaco} y '
+                           'Pachacamac.']},
+                {'titulo': '6.15 WARI: ORGANIZACIÓN Y EXPANSIÓN',
+                 'items': ['Constituyeron un gran Estado '
+                           '{militarista-teocrático} de tipo imperial, '
+                           'dirigido por una élite militar.',
+                           'Construyeron una importante red de {caminos} '
+                           'para comunicar a los pueblos sometidos.',
+                           'Fundaron ciudades capitales de región como '
+                           '{Pikillacta} (Cusco), Cajamarquilla (Lima) y '
+                           'Cerro Baúl (Moquegua).',
+                           'Su caída se debió a contradicciones internas: '
+                           'rebelión de ciudades, división de clases '
+                           'dirigentes y falta de {producción}.']},
+                {'titulo': '6.16 CHIMÚ: UBICACIÓN Y ARQUITECTURA (Intermedio '
+                           'Tardío)',
+                 'items': ['{Chimú} se originó en el valle de Chimor, La '
+                           'Libertad; su capital fue {Chan Chan}, la ciudad '
+                           'de barro más grande.',
+                           'Es cultura {regional}, descubierta por Federico '
+                           'Max Uhle en 1902.',
+                           'Otras ciudades chimú fueron Pacatnamú y las '
+                           'fortalezas de {Paramonga} y Pativilca.',
+                           'Su cerámica es {monocroma}, de color negro '
+                           'lustroso, producida en serie mediante moldes.']},
+                {'titulo': '6.17 CHIMÚ: METALURGIA Y CONQUISTA INCA',
+                 'items': ['Los chimú fueron los más grandes {joyeros} del '
+                           'Perú antiguo, dominando el martillado, soldadura '
+                           'y fundición.',
+                           'Fabricaron el {Tumi}, cuchillo ceremonial, y '
+                           'vasos con incrustaciones de piedras preciosas.',
+                           'El último gobernante chimú, {Minchancamán}, fue '
+                           'derrotado por Túpac Inca Yupanqui.',
+                           'Los chimú quedaron incorporados al Estado Inca '
+                           'como principal población del {Chinchaysuyo}.']},
+                {'titulo': '6.18 CHANCA: UBICACIÓN Y SOCIEDAD (Intermedio '
+                           'Tardío)',
+                 'items': ['{Chanca} se desarrolló en Huancavelica, '
+                           'Ayacucho, Apurímac (río Pampas) y parte del '
+                           'Cusco.',
+                           'Sus fundadores míticos fueron {Uscovilca} y '
+                           'Ancovilca.',
+                           'El reino chanca surgió tras la caída del imperio '
+                           '{Wari}, formando un Estado militarista.',
+                           'Su arquitectura destaca en {Sondor}, Curamba y '
+                           'el Inti Huatana de Uranmarca, en Andahuaylas.',
+                           'Chancas e incas lucharon por la supremacía '
+                           'andina, hecho recordado en el mito de los '
+                           '{Pururaucas}.']}],
   'cuadros': [{'titulo': '6. CULTURAS Y SUS RASGOS',
                'encabezados': ['Cultura', 'Ubicación', 'Rasgo distintivo'],
                'filas': [['Caral',
@@ -4886,58 +5062,342 @@ BALOTAS = [{'num': 1,
                                   'El gigantesco calendario astronómico',
                                   'La organización del primer estado '
                                   'teocrático en el Perú'],
-                 'correcta': 'D'}],
-  'resumen_visual': [{'titulo': 'CIVILIZACIÓN CARAL',
-                      'items': ['Considerada la civilización más antigua de '
-                                'América, ubicada en el valle de Supe '
-                                '(Barranca, Lima).',
-                                'Fue investigada por la arqueóloga Ruth '
-                                'Shady. Corresponde al periodo precerámico '
-                                'tardío.']},
-                     {'titulo': 'CHAVÍN (HORIZONTE TEMPRANO)',
-                      'items': ['Su capital, Chavín de Huántar, se ubica en '
-                                'Áncash, a orillas del río Mosna, en el '
-                                'flanco oriental de la Cordillera Blanca.',
-                                'Fue descubierta y estudiada por Julio C. '
-                                'Tello, quien la llamó «cultura matriz de la '
-                                'civilización andina».',
-                                'Su organización política fue teocrática: la '
-                                'autoridad política derivaba de lo '
-                                'religioso. Su sociedad fue clasista.',
-                                'Monumentos líticos: el Lanzón monolítico, '
-                                'la estela Raimondi, el obelisco Tello y las '
-                                'cabezas clavas, guardianes del templo.']},
-                     {'titulo': 'PARACAS',
-                      'items': ['Se ubicó en el departamento de Ica, '
-                                'provincia de Pisco, en la bahía de Paracas. '
-                                'Fue descubierta por Julio C. Tello.',
-                                'Paracas Cavernas: cuenca del río Ica, '
-                                'capital Tajahuana, con influencia Chavín. '
-                                'Cerámica polícroma, pintada en '
-                                'post-cocción.',
-                                'Paracas Necrópolis: valle de Pisco, capital '
-                                'Topará. Cerámica monocroma, pintada en '
-                                'pre-cocción.',
-                                'Destacaron por sus mantos bordados y por '
-                                'las trepanaciones craneanas.']},
-                     {'titulo': 'INTERMEDIO TEMPRANO',
-                      'items': ['Nasca (300 a.C. – 600 d.C.): departamento '
-                                'de Ica. Destacan las líneas de Nasca, '
-                                'estudiadas por María Reiche, y los '
-                                'acueductos de Cantalloc.',
-                                'Mochica: costa norte, valles de Moche y '
-                                'Chicama. Cerámica realista o retrato y '
-                                'escultórica. Destaca el Señor de Sipán.']},
-                     {'titulo': 'Y 6.5 HORIZONTE MEDIO E INTERMEDIO TARDÍO',
-                      'items': ['Tiahuanaco: altiplano del lago Titicaca. '
-                                'Destaca la Portada del Sol.',
-                                'Wari: primer imperio andino, con capital en '
-                                'Ayacucho. Impuso el urbanismo planificado.',
-                                'Chimú: costa norte, capital Chan Chan, la '
-                                'ciudad de barro más grande de América. '
-                                'Destacaron en orfebrería.',
-                                'Chanca: región de Apurímac y Ayacucho; '
-                                'fueron derrotados por los incas.']}],
+                 'correcta': 'D'},
+                {'pregunta': 'La civilización Caral se ubica en el valle '
+                             'medio del río:',
+                 'alternativas': ['Chillón',
+                                  'Supe',
+                                  'Chancay',
+                                  'Huaura',
+                                  'Pativilca'],
+                 'correcta': 'B'},
+                {'pregunta': 'La arqueóloga que descubrió la ciudadela '
+                             'sagrada de Caral en 1996 fue:',
+                 'alternativas': ['María Reiche',
+                                  'Ruth Shady Solís',
+                                  'Rebeca Carrión Cachot',
+                                  'Julio C. Tello',
+                                  'Elena Pardo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Caral fue declarada Patrimonio Cultural de la '
+                             'Humanidad por la UNESCO en:',
+                 'alternativas': ['1994', '1996', '2009', '2000', '1979'],
+                 'correcta': 'C'},
+                {'pregunta': 'En Caral se encontró el más antiguo elemento '
+                             'de registro numérico conocido en el Perú, '
+                             'llamado:',
+                 'alternativas': ['Yupana',
+                                  'Quipu',
+                                  'Tocapu',
+                                  'Kero',
+                                  'Chuspa'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Chavín se ubica en el distrito de '
+                             'Huántar, provincia de Huari, en la región:',
+                 'alternativas': ['Junín',
+                                  'Áncash',
+                                  'Cajamarca',
+                                  'La Libertad',
+                                  'Huánuco'],
+                 'correcta': 'B'},
+                {'pregunta': 'Chavín fue descubierta por el arqueólogo:',
+                 'alternativas': ['Max Uhle',
+                                  'Julio C. Tello',
+                                  'Ruth Shady',
+                                  'Federico Kauffmann',
+                                  'Luis Lumbreras'],
+                 'correcta': 'B'},
+                {'pregunta': 'El monolito de Chavín que representa al dios '
+                             'Viracocha en forma de jaguar, descubierto por '
+                             'Timoteo Espinoza, se llama:',
+                 'alternativas': ['Lanzón Monolítico',
+                                  'Estela de Raimondi',
+                                  'Obelisco de Tello',
+                                  'Cabeza Clava',
+                                  'Portada del Sol'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Paracas fue descubierta por Julio '
+                             'C. Tello en:',
+                 'alternativas': ['1919', '1925', '1901', '1902', '1937'],
+                 'correcta': 'B'},
+                {'pregunta': 'La etapa de Paracas caracterizada por tumbas '
+                             'subterráneas cuadrangulares, con capital en '
+                             'Topara, se llama:',
+                 'alternativas': ['Paracas Cavernas',
+                                  'Paracas Necrópolis',
+                                  'Paracas Formativo',
+                                  'Paracas Clásico',
+                                  'Paracas Tardío'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Tello, el porcentaje de cráneos de '
+                             'momias paracas con señales de trepanación en '
+                             'vida fue de:',
+                 'alternativas': ['20%', '40%', '60%', '10%', '80%'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Nasca fue descubierta por:',
+                 'alternativas': ['Julio C. Tello',
+                                  'Federico Max Uhle',
+                                  'Toribio Mejía Xesspe',
+                                  'María Reiche',
+                                  'Paul Kosok'],
+                 'correcta': 'B'},
+                {'pregunta': 'La tecnología de canales de riego subterráneo '
+                             'desarrollada por los nasca para aprovechar '
+                             'aguas del subsuelo se llama:',
+                 'alternativas': ['Camellones',
+                                  'Puquios',
+                                  'Waru waru',
+                                  'Andenes',
+                                  'Cochas'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las Líneas de Nasca fueron descubiertas en '
+                             '1927 por:',
+                 'alternativas': ['María Reiche',
+                                  'Toribio Mejía Xesspe',
+                                  'Paul Kosok',
+                                  'Federico Max Uhle',
+                                  'Julio C. Tello'],
+                 'correcta': 'B'},
+                {'pregunta': 'La capital de la cultura Nasca fue la ciudad '
+                             'de:',
+                 'alternativas': ['Tambo Viejo',
+                                  'Cahuachi',
+                                  'Estaquería',
+                                  'Ocucaje',
+                                  'Paredones'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Mochica tuvo su capital en la '
+                             'ciudad de:',
+                 'alternativas': ['Chan Chan',
+                                  'Moche',
+                                  'Pachacamac',
+                                  'Cajamarquilla',
+                                  'Sipán'],
+                 'correcta': 'B'},
+                {'pregunta': 'La máxima autoridad o rey de la sociedad '
+                             'mochica era llamado:',
+                 'alternativas': ['Inca',
+                                  'Cie Quich',
+                                  'Curaca',
+                                  'Aiapaec',
+                                  'Naylamp'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Huaca Rajada del Señor de Sipán fue '
+                             'descubierta por Walter Alva en el año:',
+                 'alternativas': ['1937', '1987', '1994', '1901', '1979'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los ceramios mochica que expresan estados '
+                             'psicológicos de las personas se llaman:',
+                 'alternativas': ['Keros',
+                                  'Huacos retratos',
+                                  'Pebeteros',
+                                  'Tumis',
+                                  'Ídolos'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Tiahuanaco se ubica al sureste del '
+                             'lago Titicaca, en el actual territorio de:',
+                 'alternativas': ['Perú',
+                                  'Bolivia',
+                                  'Chile',
+                                  'Ecuador',
+                                  'Argentina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El dios principal de Tiahuanaco, creador del '
+                             'mundo andino, fue:',
+                 'alternativas': ['Aiapaec',
+                                  'Wiracocha',
+                                  'Pachacámac',
+                                  'Inti',
+                                  'Ai Apaec'],
+                 'correcta': 'B'},
+                {'pregunta': 'La escultura de Tiahuanaco tallada en una sola '
+                             'piedra, ubicada en el complejo de Kalasasaya, '
+                             'se llama:',
+                 'alternativas': ['Lanzón Monolítico',
+                                  'Portada del Sol',
+                                  'Estela de Raimondi',
+                                  'Obelisco de Tello',
+                                  'Monolito Bennett'],
+                 'correcta': 'B'},
+                {'pregunta': 'La cultura Wari fue descubierta por el '
+                             'arqueólogo:',
+                 'alternativas': ['Julio C. Tello',
+                                  'Luis Guillermo Lumbreras',
+                                  'Federico Max Uhle',
+                                  'Ruth Shady',
+                                  'Max Uhle'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según Pablo Macera, los waris son producto de '
+                             'la fusión de 4 pueblos: Huarpa, Nasca, '
+                             'Pachacamac y:',
+                 'alternativas': ['Chimú',
+                                  'Tiahuanaco',
+                                  'Chavín',
+                                  'Paracas',
+                                  'Mochica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La ciudad Wari ubicada en Cusco, importante '
+                             'centro administrativo, fue:',
+                 'alternativas': ['Cerro Baúl',
+                                  'Pikillacta',
+                                  'Wariwillca',
+                                  'Cajamarquilla',
+                                  'Willkawain'],
+                 'correcta': 'B'},
+                {'pregunta': 'La capital de la cultura Chimú, considerada la '
+                             'ciudad de barro más grande, fue:',
+                 'alternativas': ['Sipán',
+                                  'Chan Chan',
+                                  'Pacatnamú',
+                                  'Purgatorio',
+                                  'Apurlec'],
+                 'correcta': 'B'},
+                {'pregunta': 'El último gobernante chimú, derrotado por '
+                             'Túpac Inca Yupanqui, fue:',
+                 'alternativas': ['Naylamp',
+                                  'Minchancamán',
+                                  'Cie Quich',
+                                  'Uscovilca',
+                                  'Cuismancu'],
+                 'correcta': 'B'},
+                {'pregunta': 'Tras su conquista, los chimú fueron '
+                             'incorporados al Estado Inca como principal '
+                             'población del:',
+                 'alternativas': ['Collasuyo',
+                                  'Chinchaysuyo',
+                                  'Antisuyo',
+                                  'Contisuyo',
+                                  'Cuntisuyo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El reino Chanca surgió en el territorio de '
+                             'Huancavelica, Ayacucho y Apurímac tras la '
+                             'caída de la cultura:',
+                 'alternativas': ['Chimú',
+                                  'Wari',
+                                  'Tiahuanaco',
+                                  'Nasca',
+                                  'Mochica'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los fundadores míticos del reino Chanca fueron '
+                             'Uscovilca y:',
+                 'alternativas': ['Ancovilca',
+                                  'Manco Cápac',
+                                  'Pachacútec',
+                                  'Cápac Yupanqui',
+                                  'Sinchi Roca'],
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'CIVILIZACIÓN CARAL: UBICACIÓN Y '
+                                'DESCUBRIMIENTO / CIVILIZACIÓN CARAL: SOCIED',
+                      'items': ['Caral se ubica en la región Lima, provincia '
+                                'de Barranca, distrito de Supe, en el valle '
+                                'medio del río Supe.',
+                                'La antigüedad de Caral es de 2800 a.C., '
+                                'posterior a Egipto (2900 a.C.) y '
+                                'Mesopotamia (3000 a.C.).',
+                                'Caral es considerada la civilización más '
+                                'antigua del Perú y de América.',
+                                'Tuvo un gobierno de carácter teocrático, no '
+                                'militarizado, dirigido por sacerdotes '
+                                'astrónomos.',
+                                'Caral está conformada por 32 conjuntos '
+                                'arquitectónicos: pirámides, templos, '
+                                'sectores residenciales, anfiteatro, '
+                                'almacenes y altares.',
+                                'Entre sus construcciones destacan el Templo '
+                                'Anfiteatro, el Templo Mayor, la Pirámide de '
+                                'la Cantera y el Altar del Fuego Sagrado.']},
+                     {'titulo': 'CHAVÍN: UBICACIÓN Y SOCIEDAD (HORIZONTE '
+                                'TEMPRANO) / CHAVÍN: ARQUITECTURA Y ',
+                      'items': ['Chavín se ubica en el distrito de Huántar, '
+                                'provincia de Huari, región Áncash, a '
+                                'orillas de los ríos Mosna y Huachecsa.',
+                                'Chavín es considerada una cultura '
+                                'panperuana por su amplia influencia en '
+                                'sierra, costa y ceja de selva.',
+                                'El templo principal, de forma piramidal '
+                                'trunca con patios en forma de U, se ubica '
+                                'en Chavín de Huántar.',
+                                'El Lanzón Monolítico y las cabezas clavas '
+                                'son monolitos que representan guardianes '
+                                'del templo.',
+                                'Paracas se ubica en el departamento de Ica, '
+                                'provincia de Pisco, entre Cañete y Yauca.',
+                                'Fue descubierta por Julio C. Tello en 1925, '
+                                'y estudiada también por Toribio Mejía '
+                                'Xesspe.']},
+                     {'titulo': 'PARACAS: MOMIFICACIÓN, TREPANACIONES Y '
+                                'TEJIDOS / NASCA: UBICACIÓN Y SOCIEDA',
+                      'items': ['Los paracas practicaron la momificación, '
+                                'con alto conocimiento de anatomía y '
+                                'fisiología.',
+                                'Practicaron trepanaciones craneanas, usando '
+                                'coca como anestésico e instrumentos como el '
+                                'cincel tumi.',
+                                'Nasca tuvo su centro en el valle de Río '
+                                'Grande, provincia de Nasca, departamento de '
+                                'Ica; es cultura regional.',
+                                'Fue descubierta por Federico Max Uhle en '
+                                '1901.',
+                                'La cerámica nasca es pictórica (con temor '
+                                'al vacío), policroma (8 colores), realista '
+                                'y fantástica.',
+                                'Su capital fue Cahuachi; otras ciudades '
+                                'fueron Estaquería, Tambo Viejo y Ocucaje.']},
+                     {'titulo': 'MOCHICA: UBICACIÓN Y SOCIEDAD (INTERMEDIO '
+                                'TEMPRANO) / MOCHICA: CERÁMICA Y A',
+                      'items': ['Mochica se desarrolló en los valles de '
+                                'Moche, Chicama y Virú, en La Libertad; su '
+                                'capital fue Moche.',
+                                'Fue descubierta por Federico Max Uhle en '
+                                '1902; es cultura regional.',
+                                'La cerámica mochica alcanzó el nivel más '
+                                'alto del Perú Antiguo, destacando los '
+                                'huacos retratos, que expresan estados '
+                                'psicológicos.',
+                                'Es de forma globular con asa estribo y un '
+                                'solo pico; predominó la bicromía rojo ocre '
+                                'y blanco crema.',
+                                'Tiahuanaco se ubica a 21 km al sureste del '
+                                'lago Titicaca (Bolivia); es cultura '
+                                'panperuana.',
+                                'Fue descubierta por el cronista Pedro Cieza '
+                                'de León en 1551.']},
+                     {'titulo': 'TIAHUANACO: TECNOLOGÍA Y ARTE / WARI: '
+                                'UBICACIÓN Y ORIGEN (HORIZONTE MEDIO) ',
+                      'items': ['Construyeron camellones o waru waru, suelos '
+                                'elevados alrededor de lagos, y elaboraron '
+                                'chuño y moraya.',
+                                'En arquitectura usaron grandes bloques de '
+                                'piedra con grapas de cobre; destacan '
+                                'Kalasasaya, Akapana y Pumapunku.',
+                                'Wari se ubica a 12 km al noroeste de '
+                                'Ayacucho; es cultura panperuana, con '
+                                'capital en la ciudad de Wari o Viñaque.',
+                                'Fue descubierta por Luis Guillermo '
+                                'Lumbreras.',
+                                'Constituyeron un gran Estado '
+                                'militarista-teocrático de tipo imperial, '
+                                'dirigido por una élite militar.',
+                                'Construyeron una importante red de caminos '
+                                'para comunicar a los pueblos sometidos.']},
+                     {'titulo': 'CHIMÚ: UBICACIÓN Y ARQUITECTURA (INTERMEDIO '
+                                'TARDÍO) / CHIMÚ: METALURGIA Y C',
+                      'items': ['Chimú se originó en el valle de Chimor, La '
+                                'Libertad; su capital fue Chan Chan, la '
+                                'ciudad de barro más grande.',
+                                'Es cultura regional, descubierta por '
+                                'Federico Max Uhle en 1902.',
+                                'Los chimú fueron los más grandes joyeros '
+                                'del Perú antiguo, dominando el martillado, '
+                                'soldadura y fundición.',
+                                'Fabricaron el Tumi, cuchillo ceremonial, y '
+                                'vasos con incrustaciones de piedras '
+                                'preciosas.',
+                                'Chanca se desarrolló en Huancavelica, '
+                                'Ayacucho, Apurímac (río Pampas) y parte del '
+                                'Cusco.',
+                                'Sus fundadores míticos fueron Uscovilca y '
+                                'Ancovilca.']}],
   'qr_reto': [{'pregunta': 'El Lanzón monolítico y la estela Raimondi '
                            'pertenecen a:',
                'respuesta': 'Chavín'},
@@ -9424,241 +9884,401 @@ BALOTAS = [{'num': 1,
              'abusos contra las poblaciones indígenas.'},
  {'num': 18,
   'titulo': 'El mundo entre guerras',
-  'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL (1914–1918)',
-                 'items': ['Causas: el {imperialismo}, el {nacionalismo}, la '
-                           'carrera {armamentista} y los sistemas de '
-                           '{alianzas}.',
-                           'Causa inmediata: el asesinato del archiduque '
-                           '{Francisco Fernando} en {Sarajevo}.',
-                           'Bandos: la {Triple Alianza} y la {Triple '
-                           'Entente}.',
-                           'Terminó con el Tratado de {Versalles} ({1919}), '
-                           'que impuso duras condiciones a {Alemania}.',
-                           'Se creó la Sociedad de {Naciones} para preservar '
-                           'la paz.']},
-                {'titulo': '18.2 LA DEPRESIÓN MUNDIAL DE 1929',
-                 'items': ['Se inició con el {crac} de la bolsa de {Nueva '
-                           'York} el «jueves {negro}».',
-                           'Consecuencias: quiebra de bancos, {desempleo} '
-                           'masivo y caída del {comercio} mundial.',
-                           'En Estados Unidos se aplicó el {New Deal} de '
-                           'Franklin D. {Roosevelt}.']},
-                {'titulo': '18.3 y 18.4 SEGUNDA GUERRA MUNDIAL Y GUERRA FRÍA',
-                 'items': ['La Segunda Guerra Mundial ({1939}–1945) se '
-                           'inició con la invasión alemana a {Polonia}.',
-                           'Bandos: las potencias del {Eje} (Alemania, '
-                           'Italia, Japón) y los {Aliados}.',
-                           'Terminó con las bombas atómicas sobre '
-                           '{Hiroshima} y {Nagasaki} en {1945}. Se creó la '
-                           '{ONU}.',
-                           'La Guerra {Fría} enfrentó a {Estados Unidos} y '
-                           'la {URSS} sin combate directo, dividiendo el '
-                           'mundo en dos {bloques}.']}],
+  'secciones': [{'titulo': '18.1 PRIMERA GUERRA MUNDIAL: CONTEXTO Y BLOQUES',
+                 'items': ['Entre 1871 y 1914, Europa vivió la llamada «{Paz '
+                           'Armada}», periodo de desarrollo económico pero '
+                           'de creciente rivalidad y armamentismo entre '
+                           'potencias.',
+                           'El pretexto de la guerra fue el asesinato del '
+                           'archiduque {Francisco Fernando}, heredero '
+                           'austro-húngaro, en Sarajevo, a manos del '
+                           'nacionalista serbio {Gavrilo Princip}.',
+                           'La {Triple Entente} (1907) agrupó a Francia, '
+                           'Gran Bretaña y Rusia, luego Serbia; también '
+                           'llamada los «{aliados}».',
+                           'La {Triple Alianza} agrupó a Alemania, '
+                           'Austria-Hungría e Italia; Italia luego se pasó '
+                           'al bando de la {Entente}.',
+                           'Los {imperios centrales} (Alemania y '
+                           'Austria-Hungría) perdieron finalmente la '
+                           'guerra.']},
+                {'titulo': '18.2 PRIMERA GUERRA MUNDIAL: CAUSAS Y '
+                           'CONSECUENCIAS',
+                 'items': ['Entre las causas están la agresiva política '
+                           '{alemana} por el predominio europeo, el '
+                           'desarrollo industrial con expansión {colonial}, '
+                           'y el acentuado {nacionalismo}.',
+                           'La guerra causó la pérdida de más de {10} '
+                           'millones de vidas humanas y 30 millones de '
+                           'heridos y desaparecidos.',
+                           'Surgieron {Estados Unidos} y Japón como nuevas '
+                           'potencias mundiales tras la guerra.',
+                           'En {Rusia} se estableció el primer Estado '
+                           'autodenominado comunista de la historia, tras la '
+                           'caída de la monarquía de los {zares}.']},
+                {'titulo': '18.3 LA DEPRESIÓN MUNDIAL DE 1929',
+                 'items': ['El «{jueves negro}» ocurrió el 24 de octubre de '
+                           '1929, día del inicio del desplome de la bolsa de '
+                           'valores de {Nueva York}.',
+                           'Cinco días después llegó el «{martes negro}», la '
+                           'jornada más sombría de Wall Street, extendiendo '
+                           'la crisis a casi todo el mundo.',
+                           'Hacia 1932, más de {5000} bancos habían quebrado '
+                           'en Estados Unidos.',
+                           'En 1932, tres años después del crac, la '
+                           'producción mundial había descendido casi un '
+                           '{40}%, y el comercio internacional se redujo a '
+                           'un tercio.',
+                           'Los trabajadores urbanos vieron reducidos sus '
+                           'ingresos a casi la {mitad}, y muchos '
+                           'agricultores emigraron a las ciudades en busca '
+                           'de empleo.']},
+                {'titulo': '18.4 SEGUNDA GUERRA MUNDIAL: CONTEXTO Y LÍDERES',
+                 'items': ['La Segunda Guerra Mundial se inició en {1939} y '
+                           'culminó en 1945, enfrentando a los bloques del '
+                           '{Eje} y los Aliados.',
+                           'Líderes del Eje: {Adolfo Hitler} (Alemania), '
+                           '{Benito Mussolini} (Italia, fundador del '
+                           'fascismo), y Hideki Tojo (primer ministro '
+                           'japonés).',
+                           'Líderes aliados: {Winston Churchill} (Gran '
+                           'Bretaña), Franklin Roosevelt (EE.UU.), y {José '
+                           'Stalin} (Unión Soviética).',
+                           'El genocidio nazi, dirigido principalmente '
+                           'contra los {judíos}, y el empleo de la {bomba '
+                           'atómica} marcaron un hito macabro en la '
+                           'historia.']},
+                {'titulo': '18.5 SEGUNDA GUERRA MUNDIAL: CAUSAS',
+                 'items': ['Alemania había sido humillada tras la Primera '
+                           'Guerra por el Tratado de {Versalles}.',
+                           'Fracasó la {Sociedad de Naciones}, creada en '
+                           '1920, al no contar con países como Estados '
+                           'Unidos, Alemania, Italia y Japón.',
+                           'El ascenso del {fascismo} aprovechó las crisis '
+                           'económicas de las débiles democracias europeas.',
+                           'Hitler reclamó el «{espacio vital}» para '
+                           'Alemania, armó un ejército poderoso y formó el '
+                           'eje {Roma-Berlín-Tokio}.',
+                           'El {imperialismo japonés} buscó apropiarse de '
+                           'Asia, teniendo a China como principal víctima.']},
+                {'titulo': '18.6 SEGUNDA GUERRA MUNDIAL: CONSECUENCIAS',
+                 'items': ['La guerra causó la pérdida de más de {55} '
+                           'millones de vidas humanas, entre civiles y '
+                           'militares.',
+                           'Se consolidaron {Estados Unidos} y la {Unión '
+                           'Soviética} como las dos grandes potencias '
+                           'mundiales.',
+                           'Alemania fue dividida en {cuatro} zonas de '
+                           'ocupación, dando origen luego a la República '
+                           'Federal Alemana y la República Democrática '
+                           'Alemana.',
+                           'Se creó la {Organización de las Naciones Unidas} '
+                           '(ONU) en 1945, sustituyendo a la Sociedad de '
+                           'Naciones.']},
+                {'titulo': '18.7 LA GUERRA FRÍA: CAUSAS Y CONSECUENCIAS',
+                 'items': ['La {Guerra Fría} fue el conflicto indirecto '
+                           'entre Estados Unidos y la Unión Soviética, entre '
+                           '1947 y {1991}.',
+                           'Se caracterizó por el intento de ambas '
+                           'superpotencias de extender sus modelos '
+                           'ideológicos sin llegar al enfrentamiento '
+                           '{directo}.',
+                           'Entre sus episodios más sonados están la '
+                           'división de Alemania y el {Muro de Berlín}, la '
+                           'Guerra de Corea, la crisis de los misiles '
+                           'cubanos y la Guerra de {Vietnam}.',
+                           'La causa principal fue la incompatibilidad entre '
+                           'el modelo {capitalista} estadounidense y el '
+                           'modelo {comunista} soviético.',
+                           'La Guerra Fría terminó en 1989 con la '
+                           'declaración de {Malta}, entre George Bush y '
+                           'Mijaíl Gorbachov.',
+                           'Como consecuencia, se dio el desmantelamiento de '
+                           'la {Unión Soviética}, la consolidación de EE.UU. '
+                           'como única potencia, y el nacimiento de la '
+                           '{globalización}.']}],
   'cuadros': [{'titulo': '18. LAS DOS GUERRAS MUNDIALES',
                'encabezados': ['Guerra', 'Años', 'Fin'],
                'filas': [['Primera', '{1914}–1918', 'Tratado de {Versalles}'],
                          ['Segunda',
                           '{1939}–{1945}',
                           'Bombas de {Hiroshima} y Nagasaki']]}],
-  'preguntas': [{'pregunta': 'La causa inmediata de la Primera Guerra '
-                             'Mundial fue:',
-                 'alternativas': ['El hundimiento del Lusitania',
-                                  'La invasión de Polonia',
-                                  'El crac de 1929',
-                                  'La toma de la Bastilla',
-                                  'El asesinato del archiduque Francisco '
-                                  'Fernando'],
-                 'correcta': 'E'},
-                {'pregunta': 'El asesinato que desencadenó la Primera Guerra '
-                             'Mundial ocurrió en:',
-                 'alternativas': ['Viena',
-                                  'París',
-                                  'Sarajevo',
-                                  'Berlín',
-                                  'Múnich'],
-                 'correcta': 'C'},
-                {'pregunta': 'La Primera Guerra Mundial se desarrolló entre:',
-                 'alternativas': ['1939-1945',
-                                  '1918-1922',
-                                  '1910-1914',
-                                  '1914-1918',
-                                  '1929-1933'],
-                 'correcta': 'D'},
-                {'pregunta': 'El tratado que puso fin a la Primera Guerra '
-                             'Mundial fue:',
-                 'alternativas': ['Tratado de Roma',
-                                  'Tratado de Versalles',
-                                  'Tratado de Lima',
-                                  'Pacto de Varsovia',
-                                  'Tratado de Ancón'],
+  'preguntas': [{'pregunta': 'El periodo entre 1871 y 1914 en Europa, de '
+                             'desarrollo económico pero creciente '
+                             'armamentismo entre potencias, se conoció como:',
+                 'alternativas': ['La Belle Époque',
+                                  'La Paz Armada',
+                                  'El Concierto Europeo',
+                                  'La Era Victoriana',
+                                  'El Equilibrio de Poderes'],
                  'correcta': 'B'},
-                {'pregunta': 'El organismo creado tras la Primera Guerra '
-                             'Mundial para preservar la paz fue:',
-                 'alternativas': ['La Cruz Roja',
-                                  'El Pacto de Varsovia',
-                                  'La ONU',
-                                  'La Sociedad de Naciones',
-                                  'La OTAN'],
-                 'correcta': 'D'},
-                {'pregunta': 'El país más perjudicado por el Tratado de '
-                             'Versalles fue:',
-                 'alternativas': ['Francia',
+                {'pregunta': 'El asesinato que sirvió de pretexto para el '
+                             'inicio de la Primera Guerra Mundial fue el del '
+                             'archiduque:',
+                 'alternativas': ['Francisco José',
+                                  'Francisco Fernando',
+                                  'Guillermo II',
+                                  'Nicolás II',
+                                  'Otto von Bismarck'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Triple Entente, formada en 1907, agrupó a '
+                             'Francia, Gran Bretaña y:',
+                 'alternativas': ['Italia',
                                   'Rusia',
+                                  'Serbia exclusivamente',
+                                  'Estados Unidos',
+                                  'Bélgica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Primera Guerra Mundial causó la pérdida de '
+                             'más de 10 millones de vidas y el surgimiento '
+                             'de nuevas potencias como Estados Unidos y:',
+                 'alternativas': ['China',
+                                  'Japón',
                                   'Alemania',
-                                  'Inglaterra',
-                                  'Italia'],
-                 'correcta': 'C'},
-                {'pregunta': 'La Gran Depresión se inició con el crac de la '
-                             'bolsa de:',
-                 'alternativas': ['Berlín',
-                                  'Nueva York',
-                                  'Londres',
-                                  'Tokio',
-                                  'París'],
+                                  'Italia',
+                                  'España'],
                  'correcta': 'B'},
-                {'pregunta': 'La Gran Depresión mundial se inició en el año:',
-                 'alternativas': ['1945', '1929', '1914', '1939', '1919'],
+                {'pregunta': 'Tras la Primera Guerra Mundial, en Rusia se '
+                             'estableció el primer Estado autodenominado:',
+                 'alternativas': ['Fascista',
+                                  'Comunista',
+                                  'Democrático liberal',
+                                  'Monárquico constitucional',
+                                  'Republicano'],
                  'correcta': 'B'},
-                {'pregunta': 'El programa aplicado en Estados Unidos para '
-                             'superar la crisis fue:',
-                 'alternativas': ['El Plan Cóndor',
-                                  'El Plan Marshall',
-                                  'La Alianza para el Progreso',
-                                  'La Doctrina Monroe',
-                                  'El New Deal'],
-                 'correcta': 'E'},
-                {'pregunta': 'El presidente que aplicó el New Deal fue:',
-                 'alternativas': ['Herbert Hoover',
-                                  'Franklin D. Roosevelt',
-                                  'Theodore Roosevelt',
-                                  'Woodrow Wilson',
-                                  'Harry Truman'],
+                {'pregunta': 'El día del inicio del desplome de la bolsa de '
+                             'valores de Nueva York en 1929 se conoció como:',
+                 'alternativas': ['Martes negro',
+                                  'Jueves negro',
+                                  'Lunes negro',
+                                  'Viernes negro',
+                                  'Miércoles negro'],
                  'correcta': 'B'},
-                {'pregunta': 'La Segunda Guerra Mundial se inició con la '
-                             'invasión alemana a:',
-                 'alternativas': ['Austria',
-                                  'Francia',
-                                  'Checoslovaquia',
-                                  'La URSS',
-                                  'Polonia'],
-                 'correcta': 'E'},
-                {'pregunta': 'Las potencias del Eje fueron:',
-                 'alternativas': ['URSS, China y EE.UU.',
-                                  'Francia, Rusia e Inglaterra',
-                                  'Alemania, Italia y Japón',
-                                  'Inglaterra, Francia y EE.UU.',
-                                  'Alemania, Austria y Turquía'],
-                 'correcta': 'C'},
-                {'pregunta': 'La Segunda Guerra Mundial terminó con:',
-                 'alternativas': ['El crac de 1929',
-                                  'La Revolución Rusa',
-                                  'El Tratado de Versalles',
-                                  'La caída del Muro de Berlín',
-                                  'Las bombas atómicas sobre Hiroshima y '
-                                  'Nagasaki'],
-                 'correcta': 'E'},
-                {'pregunta': 'El organismo internacional creado en 1945 fue:',
-                 'alternativas': ['El FMI',
-                                  'La ONU',
-                                  'La Sociedad de Naciones',
-                                  'La OEA',
-                                  'La OTAN'],
+                {'pregunta': 'Hacia 1932, la cantidad de bancos que habían '
+                             'quebrado en Estados Unidos como consecuencia '
+                             'de la crisis de 1929 fue de más de:',
+                 'alternativas': ['1000', '5000', '500', '10000', '2000'],
                  'correcta': 'B'},
-                {'pregunta': 'La Guerra Fría enfrentó a:',
-                 'alternativas': ['China y Japón',
-                                  'Estados Unidos y la URSS',
-                                  'Alemania y Francia',
-                                  'India y Pakistán',
-                                  'Inglaterra y España'],
+                {'pregunta': 'La Segunda Guerra Mundial se inició en 1939 y '
+                             'culminó en:',
+                 'alternativas': ['1943', '1945', '1941', '1947', '1944'],
                  'correcta': 'B'},
-                {'pregunta': 'Un rasgo característico de la Guerra Fría fue:',
-                 'alternativas': ['La desaparición de los bloques',
-                                  'El combate directo entre las potencias',
-                                  'La ausencia de enfrentamiento militar '
-                                  'directo entre las potencias',
-                                  'La alianza militar entre EE.UU. y la URSS',
-                                  'El desarme total'],
-                 'correcta': 'C'},
-                {'pregunta': 'Entre las causas de la Primera Guerra Mundial '
-                             'NO figura:',
-                 'alternativas': ['El nacionalismo',
-                                  'Los sistemas de alianzas',
-                                  'La carrera armamentista',
-                                  'El imperialismo',
-                                  'La caída del Muro de Berlín'],
-                 'correcta': 'E'},
-                {'pregunta': 'Los bandos de la Primera Guerra Mundial '
-                             'fueron:',
-                 'alternativas': ['Triple Alianza y Triple Entente',
-                                  'Unión y Confederación',
-                                  'Aliados y Neutrales',
-                                  'OTAN y Pacto de Varsovia',
-                                  'Eje y Aliados'],
-                 'correcta': 'A'},
-                {'pregunta': 'Una consecuencia social de la Gran Depresión '
+                {'pregunta': 'El dictador italiano, fundador del fascismo, '
+                             'que se alió con Hitler durante la Segunda '
+                             'Guerra Mundial fue:',
+                 'alternativas': ['Francisco Franco',
+                                  'Benito Mussolini',
+                                  'Hideki Tojo',
+                                  'Miklós Horthy',
+                                  'Ion Antonescu'],
+                 'correcta': 'B'},
+                {'pregunta': 'El primer ministro inglés que animó a los '
+                             'ingleses a enfrentarse a la Alemania de Hitler '
                              'fue:',
-                 'alternativas': ['El aumento de salarios',
-                                  'La estabilidad bancaria',
-                                  'El desempleo masivo',
-                                  'El pleno empleo',
-                                  'El auge del comercio'],
-                 'correcta': 'C'},
-                {'pregunta': 'La Segunda Guerra Mundial se desarrolló entre '
-                             'los años:',
-                 'alternativas': ['1939-1945',
-                                  '1929-1933',
-                                  '1945-1991',
-                                  '1936-1939',
-                                  '1914-1918'],
-                 'correcta': 'A'},
-                {'pregunta': 'El surgimiento de la Organización de las '
-                             'Naciones Unidas para velar la paz mundial, fue '
-                             'a consecuencia de la: (UNSAAC Ordinario)',
-                 'alternativas': ['Segunda Guerra Mundial de 1939',
-                                  'Gran Depresión Económica de 1929',
-                                  'Primera Guerra Mundial de 1914',
-                                  'Revolución Rusa de 1917',
-                                  'Rivalidad entre Estados Unidos y Rusia'],
-                 'correcta': 'A'},
-                {'pregunta': 'En la Segunda Guerra Mundial, los países que '
-                             'se consolidan como las grandes potencias '
-                             'mundiales, son: (UNSAAC Ordinario)',
-                 'alternativas': ['Estados Unidos - Unión Soviética',
-                                  'Alemania - Hungría',
-                                  'Francia - Ucrania',
-                                  'Holanda - Bélgica',
-                                  'Inglaterra - Irán'],
-                 'correcta': 'A'}],
-  'resumen_visual': [{'titulo': 'PRIMERA GUERRA MUNDIAL (1914–1918)',
-                      'items': ['Causas: el imperialismo, el nacionalismo, '
-                                'la carrera armamentista y los sistemas de '
-                                'alianzas.',
-                                'Causa inmediata: el asesinato del '
-                                'archiduque Francisco Fernando en Sarajevo.',
-                                'Bandos: la Triple Alianza y la Triple '
-                                'Entente.',
-                                'Terminó con el Tratado de Versalles (1919), '
-                                'que impuso duras condiciones a Alemania.',
-                                'Se creó la Sociedad de Naciones para '
-                                'preservar la paz.']},
+                 'alternativas': ['Neville Chamberlain',
+                                  'Winston Churchill',
+                                  'Clement Attlee',
+                                  'Anthony Eden',
+                                  'Stanley Baldwin'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tratado que humilló a Alemania tras la '
+                             'Primera Guerra Mundial, generando '
+                             'resentimiento que contribuyó a la Segunda, fue '
+                             'el Tratado de:',
+                 'alternativas': ['Locarno',
+                                  'Versalles',
+                                  'Rapallo',
+                                  'Brest-Litovsk',
+                                  'Neuilly'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo internacional creado en 1920 que '
+                             'fracasó en evitar la Segunda Guerra Mundial '
+                             'fue:',
+                 'alternativas': ['La ONU',
+                                  'La Sociedad de Naciones',
+                                  'La OTAN',
+                                  'El Pacto de Varsovia',
+                                  'La Liga Panamericana'],
+                 'correcta': 'B'},
+                {'pregunta': 'El eje de alianza formado por Alemania, Italia '
+                             'y Japón durante la Segunda Guerra Mundial se '
+                             'conoció como el eje:',
+                 'alternativas': ['Berlín-Tokio-Roma',
+                                  'Roma-Berlín-Tokio',
+                                  'Tokio-Roma-Berlín',
+                                  'Berlín-Roma-Tokio',
+                                  'Roma-Tokio-Berlín'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Segunda Guerra Mundial causó la pérdida de '
+                             'más de 55 millones de vidas humanas, entre:',
+                 'alternativas': ['Solo militares',
+                                  'Civiles y militares',
+                                  'Solo civiles',
+                                  'Solo prisioneros de guerra',
+                                  'Solo combatientes europeos'],
+                 'correcta': 'B'},
+                {'pregunta': 'Tras la Segunda Guerra Mundial, Alemania fue '
+                             'dividida en un número de zonas de ocupación '
+                             'igual a:',
+                 'alternativas': ['Dos', 'Cuatro', 'Tres', 'Seis', 'Ocho'],
+                 'correcta': 'B'},
+                {'pregunta': 'El organismo internacional creado en 1945 que '
+                             'sustituyó a la Sociedad de Naciones fue:',
+                 'alternativas': ['La OTAN',
+                                  'La Organización de las Naciones Unidas '
+                                  '(ONU)',
+                                  'La Unión Europea',
+                                  'El Pacto de Varsovia',
+                                  'La Liga Árabe'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Guerra Fría, conflicto indirecto entre '
+                             'Estados Unidos y la Unión Soviética, se '
+                             'desarrolló entre 1947 y:',
+                 'alternativas': ['1985', '1991', '1989', '1995', '2000'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los episodios más sonados de la Guerra '
+                             'Fría están la crisis de los misiles cubanos y '
+                             'la Guerra de:',
+                 'alternativas': ['Corea exclusivamente',
+                                  'Vietnam',
+                                  'Las Malvinas',
+                                  'Afganistán exclusivamente',
+                                  'Independencia de la India'],
+                 'correcta': 'B'},
+                {'pregunta': 'La causa principal de la Guerra Fría fue la '
+                             'incompatibilidad entre el modelo capitalista '
+                             'estadounidense y el modelo:',
+                 'alternativas': ['Fascista soviético',
+                                  'Comunista soviético',
+                                  'Monárquico soviético',
+                                  'Socialdemócrata soviético',
+                                  'Anarquista soviético'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Guerra Fría terminó en 1989 con la '
+                             'declaración de Malta, entre George Bush y:',
+                 'alternativas': ['Nikita Jrushchov',
+                                  'Mijaíl Gorbachov',
+                                  'Leonid Brézhnev',
+                                  'Boris Yeltsin',
+                                  'Vladimir Putin'],
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'PRIMERA GUERRA MUNDIAL: CONTEXTO Y BLOQUES',
+                      'items': ['Entre 1871 y 1914, Europa vivió la llamada '
+                                '«Paz Armada», periodo de desarrollo '
+                                'económico pero de creciente rivalidad y '
+                                'armamentismo entre potencias.',
+                                'El pretexto de la guerra fue el asesinato '
+                                'del archiduque Francisco Fernando, heredero '
+                                'austro-húngaro, en Sarajevo, a manos del '
+                                'nacionalista serbio Gavrilo Princip.',
+                                'La Triple Entente (1907) agrupó a Francia, '
+                                'Gran Bretaña y Rusia, luego Serbia; también '
+                                'llamada los «aliados».',
+                                'La Triple Alianza agrupó a Alemania, '
+                                'Austria-Hungría e Italia; Italia luego se '
+                                'pasó al bando de la Entente.',
+                                'Los imperios centrales (Alemania y '
+                                'Austria-Hungría) perdieron finalmente la '
+                                'guerra.']},
+                     {'titulo': 'PRIMERA GUERRA MUNDIAL: CAUSAS Y '
+                                'CONSECUENCIAS',
+                      'items': ['Entre las causas están la agresiva política '
+                                'alemana por el predominio europeo, el '
+                                'desarrollo industrial con expansión '
+                                'colonial, y el acentuado nacionalismo.',
+                                'La guerra causó la pérdida de más de 10 '
+                                'millones de vidas humanas y 30 millones de '
+                                'heridos y desaparecidos.',
+                                'Surgieron Estados Unidos y Japón como '
+                                'nuevas potencias mundiales tras la guerra.',
+                                'En Rusia se estableció el primer Estado '
+                                'autodenominado comunista de la historia, '
+                                'tras la caída de la monarquía de los '
+                                'zares.']},
                      {'titulo': 'LA DEPRESIÓN MUNDIAL DE 1929',
-                      'items': ['Se inició con el crac de la bolsa de Nueva '
-                                'York el «jueves negro».',
-                                'Consecuencias: quiebra de bancos, desempleo '
-                                'masivo y caída del comercio mundial.',
-                                'En Estados Unidos se aplicó el New Deal de '
-                                'Franklin D. Roosevelt.']},
-                     {'titulo': 'Y 18.4 SEGUNDA GUERRA MUNDIAL Y GUERRA FRÍA',
-                      'items': ['La Segunda Guerra Mundial (1939–1945) se '
-                                'inició con la invasión alemana a Polonia.',
-                                'Bandos: las potencias del Eje (Alemania, '
-                                'Italia, Japón) y los Aliados.',
-                                'Terminó con las bombas atómicas sobre '
-                                'Hiroshima y Nagasaki en 1945. Se creó la '
-                                'ONU.',
-                                'La Guerra Fría enfrentó a Estados Unidos y '
-                                'la URSS sin combate directo, dividiendo el '
-                                'mundo en dos bloques.']}],
+                      'items': ['El «jueves negro» ocurrió el 24 de octubre '
+                                'de 1929, día del inicio del desplome de la '
+                                'bolsa de valores de Nueva York.',
+                                'Cinco días después llegó el «martes negro», '
+                                'la jornada más sombría de Wall Street, '
+                                'extendiendo la crisis a casi todo el mundo.',
+                                'Hacia 1932, más de 5000 bancos habían '
+                                'quebrado en Estados Unidos.',
+                                'En 1932, tres años después del crac, la '
+                                'producción mundial había descendido casi un '
+                                '40%, y el comercio internacional se redujo '
+                                'a un tercio.',
+                                'Los trabajadores urbanos vieron reducidos '
+                                'sus ingresos a casi la mitad, y muchos '
+                                'agricultores emigraron a las ciudades en '
+                                'busca de empleo.']},
+                     {'titulo': 'SEGUNDA GUERRA MUNDIAL: CONTEXTO Y LÍDERES',
+                      'items': ['La Segunda Guerra Mundial se inició en 1939 '
+                                'y culminó en 1945, enfrentando a los '
+                                'bloques del Eje y los Aliados.',
+                                'Líderes del Eje: Adolfo Hitler (Alemania), '
+                                'Benito Mussolini (Italia, fundador del '
+                                'fascismo), y Hideki Tojo (primer ministro '
+                                'japonés).',
+                                'Líderes aliados: Winston Churchill (Gran '
+                                'Bretaña), Franklin Roosevelt (EE.UU.), y '
+                                'José Stalin (Unión Soviética).',
+                                'El genocidio nazi, dirigido principalmente '
+                                'contra los judíos, y el empleo de la bomba '
+                                'atómica marcaron un hito macabro en la '
+                                'historia.']},
+                     {'titulo': 'SEGUNDA GUERRA MUNDIAL: CAUSAS',
+                      'items': ['Alemania había sido humillada tras la '
+                                'Primera Guerra por el Tratado de Versalles.',
+                                'Fracasó la Sociedad de Naciones, creada en '
+                                '1920, al no contar con países como Estados '
+                                'Unidos, Alemania, Italia y Japón.',
+                                'El ascenso del fascismo aprovechó las '
+                                'crisis económicas de las débiles '
+                                'democracias europeas.',
+                                'Hitler reclamó el «espacio vital» para '
+                                'Alemania, armó un ejército poderoso y formó '
+                                'el eje Roma-Berlín-Tokio.',
+                                'El imperialismo japonés buscó apropiarse de '
+                                'Asia, teniendo a China como principal '
+                                'víctima.']},
+                     {'titulo': 'SEGUNDA GUERRA MUNDIAL: CONSECUENCIAS',
+                      'items': ['La guerra causó la pérdida de más de 55 '
+                                'millones de vidas humanas, entre civiles y '
+                                'militares.',
+                                'Se consolidaron Estados Unidos y la Unión '
+                                'Soviética como las dos grandes potencias '
+                                'mundiales.',
+                                'Alemania fue dividida en cuatro zonas de '
+                                'ocupación, dando origen luego a la '
+                                'República Federal Alemana y la República '
+                                'Democrática Alemana.',
+                                'Se creó la Organización de las Naciones '
+                                'Unidas (ONU) en 1945, sustituyendo a la '
+                                'Sociedad de Naciones.']},
+                     {'titulo': 'LA GUERRA FRÍA: CAUSAS Y CONSECUENCIAS',
+                      'items': ['La Guerra Fría fue el conflicto indirecto '
+                                'entre Estados Unidos y la Unión Soviética, '
+                                'entre 1947 y 1991.',
+                                'Se caracterizó por el intento de ambas '
+                                'superpotencias de extender sus modelos '
+                                'ideológicos sin llegar al enfrentamiento '
+                                'directo.',
+                                'Entre sus episodios más sonados están la '
+                                'división de Alemania y el Muro de Berlín, '
+                                'la Guerra de Corea, la crisis de los '
+                                'misiles cubanos y la Guerra de Vietnam.',
+                                'La causa principal fue la incompatibilidad '
+                                'entre el modelo capitalista estadounidense '
+                                'y el modelo comunista soviético.',
+                                'La Guerra Fría terminó en 1989 con la '
+                                'declaración de Malta, entre George Bush y '
+                                'Mijaíl Gorbachov.',
+                                'Como consecuencia, se dio el '
+                                'desmantelamiento de la Unión Soviética, la '
+                                'consolidación de EE.UU. como única '
+                                'potencia, y el nacimiento de la '
+                                'globalización.']}],
   'qr_reto': [{'pregunta': 'Entre las causas de la Primera Guerra Mundial NO '
                            'figura:',
                'respuesta': 'La caída del Muro de Berlín'},
@@ -9673,46 +10293,194 @@ BALOTAS = [{'num': 1,
  {'num': 19,
   'titulo': 'Entre dictaduras y democracias: gobernantes del Perú siglos '
             'XX-XXI',
-  'secciones': [{'titulo': '19.1 al 19.4 DE ODRÍA A VELASCO',
-                 'items': ['El {Ochenio} de Manuel A. {Odría} (1948–1956) '
-                           'fue una dictadura militar que impulsó grandes '
-                           'obras {públicas} y otorgó el voto a la {mujer} '
-                           '(1955).',
-                           'Primer gobierno de Fernando {Belaunde} '
-                           '(1963–1968): impulsó Cooperación {Popular} y fue '
-                           'derrocado por el escándalo de la página {once} '
-                           'del contrato con la IPC.',
-                           'Gobierno militar de Juan {Velasco Alvarado} '
-                           '(1968–1975): aplicó la {Reforma} Agraria '
-                           '({1969}), nacionalizó el {petróleo} y la banca, '
-                           'y reconoció el {quechua} como lengua oficial.',
-                           'Segunda fase, de Francisco {Morales Bermúdez} '
-                           '(1975–1980): convocó a la Asamblea '
-                           '{Constituyente} de 1978, presidida por Víctor '
-                           'Raúl {Haya de la Torre}.']},
-                {'titulo': '19.5 al 19.7 RETORNO A LA DEMOCRACIA',
-                 'items': ['Segundo gobierno de Belaunde (1980–1985): se '
-                           'promulgó la Constitución de {1979} y se inició '
-                           'la violencia de {Sendero Luminoso} en Chuschi, '
-                           'Ayacucho ({1980}).',
-                           'Primer gobierno de Alan {García} (1985–1990): '
-                           'crisis económica con {hiperinflación} y '
-                           'estatización de la {banca}.',
-                           'Década del {fujimorismo} (1990–2000): '
-                           '{autogolpe} del {5} de abril de 1992, captura de '
-                           'Abimael {Guzmán} el mismo año, y Constitución de '
-                           '{1993}.',
-                           'En 2000 Fujimori renunció por {fax} desde Japón, '
-                           'tras los {vladivideos}.']},
-                {'titulo': '19.8 al 19.11 SIGLO XXI',
-                 'items': ['Gobierno transitorio de Valentín {Paniagua} '
-                           '(2000–2001): creó la Comisión de la {Verdad} y '
-                           'Reconciliación.',
-                           'Alejandro {Toledo} (2001–2006): impulsó la '
-                           '{descentralización} y los gobiernos '
-                           '{regionales}.',
-                           'Segundo gobierno de Alan García (2006–2011) y '
-                           'gobierno de Ollanta {Humala} (2011–2016).']}],
+  'secciones': [{'titulo': '19.1 EL OCHENIO DE MANUEL A. ODRÍA (1948-1956)',
+                 'items': ['El 27 de octubre de 1948, el general {Manuel A. '
+                           'Odría} se pronunció desde Arequipa contra el '
+                           'gobierno de {José Luis Bustamante y Rivero}, en '
+                           'la «Revolución Restauradora de Arequipa».',
+                           'Odría gobernó bajo el lema político «{Salud, '
+                           'Educación y Trabajo}».',
+                           'Reconstruyó la ciudad del {Cusco}, destruida por '
+                           'el terremoto del 21 de mayo de 1950.',
+                           'El 5 de setiembre de 1955 se estableció el '
+                           '{sufragio femenino} en las elecciones políticas, '
+                           'mediante decreto ley 12391.',
+                           'Se construyeron las {Grandes Unidades Escolares} '
+                           'en todo el país, y unidades vecinales como '
+                           'Matute para obreros y empleados.']},
+                {'titulo': '19.2 PRIMER GOBIERNO DE FERNANDO BELAÚNDE TERRY '
+                           '(1963-1968)',
+                 'items': ['El gobierno firmó con la petrolera IPC '
+                           '(International Petroleum Company) el {Acta de '
+                           'Talara}, cuya página once, con privilegios a la '
+                           'empresa, misteriosamente se extravió.',
+                           'Este escándalo, conocido como la «{página '
+                           'once}», precipitó el golpe de Estado del 3 de '
+                           'octubre de 1968 liderado por el general {Juan '
+                           'Velasco Alvarado}.',
+                           'Se construyó la carretera «{Marginal de la '
+                           'Selva}» y el aeropuerto internacional {Jorge '
+                           'Chávez}.',
+                           'Se emitió la Ley de {Cooperativas} (15260) y se '
+                           'decretó la gratuidad de la enseñanza en todos '
+                           'los niveles.']},
+                {'titulo': '19.3 GOBIERNO MILITAR DE JUAN VELASCO ALVARADO '
+                           '(1968-1975)',
+                 'items': ['Velasco asumió como jefe del «{Gobierno '
+                           'Revolucionario} de las Fuerzas Armadas», dejando '
+                           'de lado la Constitución de 1933 y redactando el '
+                           '«{Plan Inca}».',
+                           'El 9 de octubre de 1968 estatizó el petróleo, '
+                           'nacionalizando la {IPC} y llamando a esa fecha '
+                           'el «Día de la {Dignidad Nacional}».',
+                           'Implementó la {Reforma Agraria} mediante el '
+                           'Decreto Ley N.º {17716}, del 24 de junio de '
+                           '1969, expropiando latifundios.',
+                           'La Reforma Educativa, bajo el lema «Un hombre '
+                           'nuevo para una nueva sociedad», oficializó el '
+                           '{quechua}.',
+                           'Nacionalizó empresas mineras creando {HIERRO '
+                           'PERÚ}, y la empresa eléctrica creando {ELECTRO '
+                           'PERÚ}.',
+                           'En 1975, Francisco Morales Bermúdez dio un '
+                           'contragolpe de Estado contra Velasco en {Tacna}, '
+                           'frustrando una posible invasión militar a '
+                           'Chile.']},
+                {'titulo': '19.4 SEGUNDA FASE MILITAR: FRANCISCO MORALES '
+                           'BERMÚDEZ (1975-1980)',
+                 'items': ['Morales Bermúdez llevó a cabo la contrarreforma '
+                           'con el «Plan {Túpac Amaru}».',
+                           'Convocó a una Asamblea Constituyente en 1978, '
+                           'presidida por {Víctor Raúl Haya de la Torre}.',
+                           'Esta Asamblea redactó la nueva {Constitución de '
+                           '1979}, que derogó la de 1933.',
+                           'Su gobierno restituyó el poder a los {civiles}, '
+                           'iniciando la transición a la democracia.']},
+                {'titulo': '19.5 SEGUNDO GOBIERNO DE BELAÚNDE: REGRESO A LA '
+                           'DEMOCRACIA (1980-1985)',
+                 'items': ['Belaúnde regresó al poder tras vencer en las '
+                           'elecciones de 1980 a {Armando Villanueva del '
+                           'Campo}.',
+                           'Se produjo el conflicto con {Ecuador} en la '
+                           'Cordillera del Cóndor (el «falso {Paquisha}»); '
+                           'las tropas peruanas fueron comandadas por Rafael '
+                           'Hoyos Rubio.',
+                           'Aparecieron los movimientos alzados en armas '
+                           '{Sendero Luminoso} y el MRTA.',
+                           'Ocurrió la masacre de {Uchuraccay}, en Ayacucho, '
+                           'donde fueron asesinados varios periodistas.',
+                           'El papa {Juan Pablo II} visitó el Perú en '
+                           'febrero de 1985 y coronó a la Virgen del Carmen '
+                           'de Paucartambo en Sacsayhuamán.']},
+                {'titulo': '19.6 PRIMER GOBIERNO DE ALAN GARCÍA (1985-1990): '
+                           'LA DÉCADA DE LA CRISIS',
+                 'items': ['Alan García fue el presidente electo más joven '
+                           'del Perú, con {35} años; representó la primera '
+                           'llegada al poder del {APRA} desde su fundación '
+                           'en 1924.',
+                           'Se descubrió el reservorio de gas de {Camisea}, '
+                           'en el Cusco, y petróleo en Ucayali.',
+                           'Promovió la ley de {Estatización de la Banca}, '
+                           'lo que originó el surgimiento del Movimiento '
+                           'Libertad, liderado por {Mario Vargas Llosa}.',
+                           'García se negó a pagar más del {10}% de la deuda '
+                           'externa, lo que aisló al Perú del crédito '
+                           'financiero internacional.',
+                           'Cambió la moneda del Sol al {Inti}, lo que '
+                           'ocasionó una fuerte devaluación monetaria en '
+                           'medio de hiperinflación.']},
+                {'titulo': '19.7 PRIMER GOBIERNO DE ALBERTO FUJIMORI '
+                           '(1990-1995)',
+                 'items': ['Fujimori llegó al poder con su movimiento '
+                           '{Cambio 90}, derrotando en elecciones al '
+                           'novelista {Mario Vargas Llosa}.',
+                           'Dio un {autogolpe} de Estado en abril de 1992, '
+                           'disolviendo el Congreso.',
+                           'En agosto de 1990 decretó el «{fujishock}» '
+                           '(paquetazo económico), a través de su premier '
+                           'Juan Carlos Hurtado Miller.',
+                           'Se elaboró una nueva {Constitución}, neoliberal '
+                           'y reeleccionista, vigente desde 1993.',
+                           'Creó el {RENIEC}, la SUNAT, el INDECOPI, '
+                           'FONCODES y la ONPE.',
+                           'El grupo paramilitar «{Colina}» ejecutó la '
+                           'masacre de Barrios Altos y el asesinato de '
+                           'estudiantes y un profesor de La Cantuta.',
+                           'Se capturó a {Abimael Guzmán}, jefe de Sendero '
+                           'Luminoso, y se cambió la moneda de Inti a {Nuevo '
+                           'Sol}.']},
+                {'titulo': '19.8 SEGUNDO Y TERCER GOBIERNO DE FUJIMORI '
+                           '(1995-2000)',
+                 'items': ['En su segundo gobierno, Fujimori derrotó a '
+                           '{Javier Pérez de Cuéllar} en las elecciones de '
+                           '1995.',
+                           'Se firmó la paz definitiva con {Ecuador} en '
+                           '1998, cediendo 1 km² de territorio en {Tiwinza}.',
+                           'El grupo {MRTA} tomó la residencia del embajador '
+                           'de Japón; los rehenes fueron liberados por el '
+                           'comando «{Chavín de Huántar}».',
+                           'En el 2000, Fujimori venció en elecciones '
+                           'fraudulentas a {Alejandro Toledo}, iniciando su '
+                           'tercer gobierno.',
+                           'Se descubrieron los «{Vladivideos}», que '
+                           'evidenciaron la corrupción del régimen a través '
+                           'de Vladimiro Montesinos.',
+                           'Fujimori renunció por fax desde {Japón}; el '
+                           'Congreso, presidido por Valentín Paniagua, lo '
+                           'vacó por incapacidad moral.']},
+                {'titulo': '19.9 GOBIERNO TRANSITORIO DE VALENTÍN PANIAGUA '
+                           '(2000-2001)',
+                 'items': ['{Valentín Paniagua} asumió la presidencia '
+                           'provisional tras la renuncia de Fujimori y de '
+                           'ambos vicepresidentes.',
+                           'Se dio el contrato de concesión del {Lote 88} de '
+                           'Camisea, firmado en diciembre de 2000.',
+                           'Su gobierno inició la investigación de los actos '
+                           'de {corrupción} de la década fujimorista.',
+                           'Entregó el mando el 28 de julio a {Alejandro '
+                           'Toledo}, ganador de la segunda vuelta electoral '
+                           'del 2001.']},
+                {'titulo': '19.10 GOBIERNO DE ALEJANDRO TOLEDO (2001-2006)',
+                 'items': ['En 2003 se presentó el informe final de la '
+                           '{Comisión de la Verdad y Reconciliación}, '
+                           'responsabilizando al Estado y a la subversión.',
+                           'En 2005 ocurrió el «{Andahuaylazo}», cuando '
+                           'Antauro Humala y los etnocaceristas tomaron una '
+                           'comisaría.',
+                           'Se capturó a {Alberto Fujimori} el 7 de '
+                           'noviembre de 2005 en Chile, y se gestionó su '
+                           'extradición.',
+                           'Toledo impulsó el proyecto del gas de {Camisea} '
+                           'y acuerdos de libre comercio con Estados '
+                           'Unidos.']},
+                {'titulo': '19.11 SEGUNDO GOBIERNO DE ALAN GARCÍA '
+                           '(2006-2011)',
+                 'items': ['García derrotó en segunda vuelta a {Ollanta '
+                           'Humala} y se aprobaron TLC con EE.UU., China y '
+                           'la Unión Europea.',
+                           'En 2008 se creó el {Ministerio del Medio '
+                           'Ambiente}, siendo su primer titular {Antonio '
+                           'Brack Egg}.',
+                           'Surgió el escándalo de los «{Petroaudios}» o '
+                           'caso Business (2008), que provocó la caída del '
+                           'gabinete de Jorge del Castillo.',
+                           'Ocurrió «{El Baguazo}» en 2009, un conflicto '
+                           'social que causó la caída del gabinete de Yehude '
+                           'Simon.',
+                           'En 2008, el Perú presentó una demanda contra '
+                           '{Chile} ante la Corte Internacional de La Haya '
+                           'por límites marítimos.']},
+                {'titulo': '19.12 GOBIERNO DE OLLANTA HUMALA TASSO '
+                           '(2011-2016)',
+                 'items': ['Humala, líder del {Partido Nacionalista '
+                           'Peruano}, derrotó en segunda vuelta a {Keiko '
+                           'Fujimori}, con el apoyo de Mario Vargas Llosa.',
+                           'Amplió y creó programas sociales como {Beca 18}, '
+                           'Pensión 65 y Qali Warma.',
+                           'Se desarrolló el conflicto minero de {Conga}, en '
+                           'Cajamarca.',
+                           'Promulgó la ley de {consulta previa} a los '
+                           'pueblos indígenas.']}],
   'cuadros': [{'titulo': '19. GOBIERNOS Y HECHOS CLAVE',
                'encabezados': ['Gobernante', 'Periodo', 'Hecho principal'],
                'filas': [['Manuel A. {Odría}',
@@ -9730,231 +10498,375 @@ BALOTAS = [{'num': 1,
                          ['Valentín {Paniagua}',
                           '2000-2001',
                           'Comisión de la {Verdad}']]}],
-  'preguntas': [{'pregunta': 'El «Ochenio» corresponde al gobierno de:',
-                 'alternativas': ['Velasco',
-                                  'Prado',
-                                  'Odría',
-                                  'Manuel A. Odría',
-                                  'Leguía'],
-                 'correcta': 'D'},
-                {'pregunta': 'El voto a la mujer en el Perú se otorgó '
-                             'durante el gobierno de:',
-                 'alternativas': ['Bustamante',
-                                  'Belaunde',
-                                  'Leguía',
-                                  'Odría',
-                                  'Prado'],
-                 'correcta': 'D'},
-                {'pregunta': 'El primer gobierno de Belaunde fue derrocado '
-                             'por el escándalo de:',
-                 'alternativas': ['Los vladivideos',
-                                  'Los petroaudios',
-                                  'El caso Dreyfus',
-                                  'La página once',
-                                  'El contrato Grace'],
-                 'correcta': 'D'},
-                {'pregunta': 'La Reforma Agraria fue aplicada en 1969 por:',
-                 'alternativas': ['Juan Velasco Alvarado',
-                                  'Prado',
-                                  'Belaunde',
-                                  'Odría',
-                                  'Morales Bermúdez'],
-                 'correcta': 'A'},
-                {'pregunta': 'El gobierno de Velasco reconoció como lengua '
-                             'oficial al:',
-                 'alternativas': ['Castellano únicamente',
-                                  'Ashaninka',
-                                  'Quechua',
-                                  'Aimara',
-                                  'Inglés'],
-                 'correcta': 'C'},
-                {'pregunta': 'La Asamblea Constituyente de 1978 fue '
-                             'presidida por:',
-                 'alternativas': ['Belaunde',
-                                  'Morales Bermúdez',
-                                  'Alan García',
-                                  'Víctor Raúl Haya de la Torre',
-                                  'Bedoya Reyes'],
-                 'correcta': 'D'},
-                {'pregunta': 'La Constitución promulgada durante el segundo '
-                             'gobierno de Belaunde fue la de:',
-                 'alternativas': ['1867', '1920', '1933', '1979', '1993'],
-                 'correcta': 'D'},
-                {'pregunta': 'La violencia de Sendero Luminoso se inició en '
-                             '1980 en:',
-                 'alternativas': ['Lima',
-                                  'Cusco',
-                                  'Chuschi, Ayacucho',
-                                  'Huancayo',
-                                  'Huánuco'],
-                 'correcta': 'C'},
-                {'pregunta': 'El primer gobierno de Alan García se '
-                             'caracterizó por:',
-                 'alternativas': ['La hiperinflación',
-                                  'El superávit fiscal',
-                                  'El pleno empleo',
-                                  'La estabilidad monetaria',
-                                  'El auge exportador'],
-                 'correcta': 'A'},
-                {'pregunta': 'El autogolpe de Estado de Fujimori se produjo '
-                             'el:',
-                 'alternativas': ['5 de abril de 1992',
-                                  '9 de diciembre de 2000',
-                                  '3 de octubre de 1968',
-                                  '28 de julio de 1990',
-                                  '12 de septiembre de 1992'],
-                 'correcta': 'A'},
-                {'pregunta': 'El líder de Sendero Luminoso capturado en 1992 '
-                             'fue:',
-                 'alternativas': ['Abimael Guzmán',
-                                  'Nelson Cerpa',
-                                  'Víctor Polay',
-                                  'Óscar Ramírez',
-                                  'Feliciano'],
-                 'correcta': 'A'},
-                {'pregunta': 'La Constitución vigente del Perú fue '
-                             'promulgada en:',
-                 'alternativas': ['1920', '2001', '1933', '1993', '1979'],
-                 'correcta': 'D'},
-                {'pregunta': 'Fujimori renunció a la presidencia en el año '
-                             '2000 mediante:',
-                 'alternativas': ['Un discurso en el Congreso',
-                                  'Un fax desde Japón',
-                                  'Una carta al Papa',
-                                  'Un mensaje a la nación',
-                                  'Un referéndum'],
+  'preguntas': [{'pregunta': 'El movimiento militar que depuso a José Luis '
+                             'Bustamante y Rivero en 1948, liderado por '
+                             'Manuel A. Odría, se llamó:',
+                 'alternativas': ['Plan Inca',
+                                  'Revolución Restauradora de Arequipa',
+                                  'Estatuto Revolucionario',
+                                  'Plan Túpac Amaru',
+                                  'Contragolpe de Tacna'],
                  'correcta': 'B'},
-                {'pregunta': 'Los videos que evidenciaron la corrupción del '
-                             'régimen fujimorista se conocen como:',
-                 'alternativas': ['Vladivideos',
-                                  'Los cuellos blancos',
-                                  'Cocteles',
-                                  'Narcoaudios',
-                                  'Petroaudios'],
-                 'correcta': 'A'},
-                {'pregunta': 'El gobierno transitorio del año 2000-2001 fue '
-                             'presidido por:',
-                 'alternativas': ['Ollanta Humala',
-                                  'Paniagua Corazao hijo',
-                                  'Alejandro Toledo',
-                                  'Alan García',
-                                  'Valentín Paniagua'],
-                 'correcta': 'E'},
-                {'pregunta': 'La Comisión de la Verdad y Reconciliación fue '
-                             'creada durante el gobierno de:',
-                 'alternativas': ['Fujimori',
-                                  'Toledo',
-                                  'Humala',
-                                  'Valentín Paniagua',
-                                  'Alan García'],
-                 'correcta': 'D'},
-                {'pregunta': 'El gobierno de Alejandro Toledo impulsó '
-                             'principalmente:',
-                 'alternativas': ['La estatización de la banca',
-                                  'La descentralización y los gobiernos '
-                                  'regionales',
-                                  'La Reforma Agraria',
-                                  'El autogolpe',
-                                  'La nacionalización del petróleo'],
+                {'pregunta': 'El lema político bajo el cual gobernó Manuel '
+                             'A. Odría fue:',
+                 'alternativas': ['Pan, Tierra y Libertad',
+                                  'Salud, Educación y Trabajo',
+                                  'Orden y Progreso',
+                                  'Un hombre nuevo para una nueva sociedad',
+                                  'Paz y Desarrollo'],
                  'correcta': 'B'},
-                {'pregunta': 'El gobierno militar de la segunda fase '
-                             '(1975-1980) estuvo encabezado por:',
-                 'alternativas': ['Nicolás Lindley',
-                                  'Francisco Morales Bermúdez',
-                                  'Manuel A. Odría',
-                                  'Juan Velasco Alvarado',
-                                  'Ricardo Pérez Godoy'],
+                {'pregunta': 'El escándalo de la «página once» extraviada, '
+                             'referida al Acta de Talara, precipitó la caída '
+                             'de:',
+                 'alternativas': ['El gobierno de Odría',
+                                  'El primer gobierno de Belaúnde Terry',
+                                  'El gobierno de García',
+                                  'El gobierno de Fujimori',
+                                  'El gobierno de Morales Bermúdez'],
                  'correcta': 'B'},
-                {'pregunta': 'El gobierno de Ollanta Humala corresponde al '
-                             'periodo:',
-                 'alternativas': ['2006-2011',
-                                  '1990-1995',
-                                  '2011-2016',
-                                  '2016-2018',
-                                  '2001-2006'],
-                 'correcta': 'C'},
-                {'pregunta': 'Una medida económica central del primer '
-                             'gobierno de Alan García fue:',
-                 'alternativas': ['La firma del contrato Grace',
-                                  'La privatización de empresas',
-                                  'La dolarización',
-                                  'La estatización de la banca',
-                                  'La apertura comercial total'],
-                 'correcta': 'D'},
-                {'pregunta': 'La sesión del llamado Trapecio Amazónico, '
-                             'corresponde al gobierno de: (UNSAAC Ordinario)',
-                 'alternativas': ['Luis M. Sánchez Cerro',
-                                  'Manuel A. Odría',
-                                  'Manuel Prado Ugarteche',
-                                  'Oscar R. Benavides',
-                                  'Augusto B. Leguía'],
-                 'correcta': 'D'},
-                {'pregunta': 'Julio Cotler considera al gobierno de Alberto '
-                             'Fujimori como: (UNSAAC Ordinario)',
-                 'alternativas': ['Golpista',
-                                  'Democradura',
-                                  'De facto',
-                                  'Neoliberal',
-                                  'Populista'],
+                {'pregunta': 'El documento que estableció los lineamientos '
+                             'del gobierno revolucionario de Juan Velasco '
+                             'Alvarado se llamó:',
+                 'alternativas': ['Plan Túpac Amaru',
+                                  'Plan Inca',
+                                  'Acta de Talara',
+                                  'Estatuto de 1979',
+                                  'Plan Restaurador'],
                  'correcta': 'B'},
-                {'pregunta': 'El sociólogo Julio Cotler considera al '
-                             'gobierno de Fujimori como: (UNSAAC Ordinario)',
-                 'alternativas': ['Populista',
-                                  'Democradura',
-                                  'Dictadura',
-                                  'Democrático',
-                                  'De facto'],
+                {'pregunta': 'El Decreto Ley N.º 17716, promulgado por '
+                             'Velasco Alvarado en 1969, estableció la:',
+                 'alternativas': ['Reforma Educativa',
+                                  'Reforma Agraria',
+                                  'Estatización de la Banca',
+                                  'Ley de Regionalización',
+                                  'Nacionalización eléctrica'],
                  'correcta': 'B'},
-                {'pregunta': 'El gobierno de transición de Valentín Paniagua '
-                             'Corazao, se dio luego de la renuncia por '
-                             'corrupción de: (UNSAAC Ordinario)',
+                {'pregunta': 'El general que dio un contragolpe de Estado '
+                             'contra Velasco Alvarado en 1975, iniciando la '
+                             'segunda fase del gobierno militar, fue:',
                  'alternativas': ['Manuel Odría',
+                                  'Francisco Morales Bermúdez',
+                                  'Valentín Paniagua',
+                                  'Juan Velasco',
+                                  'Alberto Fujimori'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Asamblea Constituyente convocada por '
+                             'Morales Bermúdez en 1978, que redactó la '
+                             'Constitución de 1979, fue presidida por:',
+                 'alternativas': ['Fernando Belaúnde',
+                                  'Víctor Raúl Haya de la Torre',
+                                  'Alan García',
+                                  'Manuel Odría',
+                                  'Valentín Paniagua'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante el segundo gobierno de Belaúnde Terry '
+                             '(1980-1985), ocurrió el conflicto fronterizo '
+                             'con Ecuador conocido como:',
+                 'alternativas': ['El Cenepa',
+                                  'El falso Paquisha',
+                                  'La Guerra del Pacífico',
+                                  'El Andahuaylazo',
+                                  'El Baguazo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La matanza de periodistas ocurrida en Ayacucho '
+                             'durante el segundo gobierno de Belaúnde se '
+                             'conoce como la masacre de:',
+                 'alternativas': ['Barrios Altos',
+                                  'Uchuraccay',
+                                  'La Cantuta',
+                                  'Accomarca',
+                                  'Cayara'],
+                 'correcta': 'B'},
+                {'pregunta': 'El presidente electo más joven en la historia '
+                             'del Perú, con 35 años de edad, fue:',
+                 'alternativas': ['Fernando Belaúnde',
                                   'Alan García',
                                   'Alberto Fujimori',
+                                  'Alejandro Toledo',
+                                  'Ollanta Humala'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante el primer gobierno de Alan García se '
+                             'descubrió el reservorio de gas natural de:',
+                 'alternativas': ['Camisea',
+                                  'Aguaytía',
+                                  'Talara',
+                                  'Zorritos',
+                                  'Sechura'],
+                 'correcta': 'A'},
+                {'pregunta': 'La ley de Estatización de la Banca, promovida '
+                             'por Alan García, propició el surgimiento del '
+                             'movimiento liderado por:',
+                 'alternativas': ['Alfonso Barrantes',
+                                  'Mario Vargas Llosa',
+                                  'Alberto Fujimori',
+                                  'Javier Pérez de Cuéllar',
+                                  'Rafael Belaúnde'],
+                 'correcta': 'B'},
+                {'pregunta': 'Durante el primer gobierno de García, la '
+                             'moneda peruana cambió del Sol al:',
+                 'alternativas': ['Nuevo Sol',
+                                  'Inti',
+                                  'Dólar',
+                                  'Real',
+                                  'Sucre'],
+                 'correcta': 'B'},
+                {'pregunta': 'Alberto Fujimori derrotó en las elecciones de '
+                             '1990 al candidato:',
+                 'alternativas': ['Alan García',
+                                  'Mario Vargas Llosa',
+                                  'Alfonso Barrantes',
+                                  'Javier Pérez de Cuéllar',
+                                  'Alejandro Toledo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El paquete de medidas económicas de shock '
+                             'aplicado por Fujimori en agosto de 1990 se '
+                             'conoció popularmente como:',
+                 'alternativas': ['El fujishock',
+                                  'El garcishock',
+                                  'La dolarización',
+                                  'El ajuste toledista',
+                                  'La estabilización'],
+                 'correcta': 'A'},
+                {'pregunta': 'El grupo paramilitar responsable de la masacre '
+                             'de Barrios Altos y La Cantuta durante el '
+                             'gobierno de Fujimori se llamó:',
+                 'alternativas': ['Sendero Luminoso',
+                                  'Grupo Colina',
+                                  'MRTA',
+                                  'Comando Rodrigo Franco',
+                                  'Los Notables'],
+                 'correcta': 'B'},
+                {'pregunta': 'El territorio cedido a Ecuador tras la firma '
+                             'de la paz definitiva en 1998, durante el '
+                             'segundo gobierno de Fujimori, fue:',
+                 'alternativas': ['El falso Paquisha',
+                                  'Tiwinza',
+                                  'La Cordillera del Cóndor completa',
+                                  'Zarumilla',
+                                  'Jaén'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los documentos que evidenciaron la red de '
+                             'corrupción de Vladimiro Montesinos durante el '
+                             'fujimorismo se conocieron como:',
+                 'alternativas': ['Petroaudios',
+                                  'Vladivideos',
+                                  'Panama Papers',
+                                  'BTR',
+                                  'Wikileaks Perú'],
+                 'correcta': 'B'},
+                {'pregunta': 'El presidente que asumió el gobierno '
+                             'transitorio del Perú entre el 2000 y el 2001, '
+                             'tras la renuncia de Fujimori, fue:',
+                 'alternativas': ['Alejandro Toledo',
+                                  'Valentín Paniagua',
+                                  'Francisco Tudela',
+                                  'Ricardo Márquez',
+                                  'Alan García'],
+                 'correcta': 'B'},
+                {'pregunta': 'El informe final de la Comisión de la Verdad y '
+                             'Reconciliación Nacional se presentó durante el '
+                             'gobierno de:',
+                 'alternativas': ['Valentín Paniagua',
+                                  'Alejandro Toledo',
+                                  'Alan García',
+                                  'Alberto Fujimori',
+                                  'Ollanta Humala'],
+                 'correcta': 'B'},
+                {'pregunta': 'El levantamiento de Antauro Humala y los '
+                             'etnocaceristas en una comisaría, ocurrido en '
+                             '2005, se conoce como:',
+                 'alternativas': ['El Baguazo',
+                                  'El Andahuaylazo',
+                                  'El Conga',
+                                  'El Cenepazo',
+                                  'La Marcha de los Cuatro Suyos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El primer titular del Ministerio del Ambiente, '
+                             'creado en 2008 durante el segundo gobierno de '
+                             'García, fue:',
+                 'alternativas': ['Antonio Brack Egg',
+                                  'Yehude Simon',
+                                  'Jorge del Castillo',
+                                  'Manuel Pulgar-Vidal',
+                                  'José Serra'],
+                 'correcta': 'A'},
+                {'pregunta': 'El conflicto social ocurrido en 2009 que '
+                             'provocó la caída del gabinete de Yehude Simon '
+                             'se conoce como:',
+                 'alternativas': ['El Andahuaylazo',
+                                  'El Baguazo',
+                                  'El Conga',
+                                  'El Tía María',
+                                  'El Espinar'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los programas sociales Beca 18, Pensión 65 y '
+                             'Qali Warma fueron ampliados o creados durante '
+                             'el gobierno de:',
+                 'alternativas': ['Alan García',
                                   'Ollanta Humala',
-                                  'Fernando Belaunde'],
-                 'correcta': 'C'}],
-  'resumen_visual': [{'titulo': 'AL 19.4 DE ODRÍA A VELASCO',
-                      'items': ['El Ochenio de Manuel A. Odría (1948–1956) '
-                                'fue una dictadura militar que impulsó '
-                                'grandes obras públicas y otorgó el voto a '
-                                'la mujer (1955).',
-                                'Primer gobierno de Fernando Belaunde '
-                                '(1963–1968): impulsó Cooperación Popular y '
-                                'fue derrocado por el escándalo de la página '
-                                'once del contrato con la IPC.',
-                                'Gobierno militar de Juan Velasco Alvarado '
-                                '(1968–1975): aplicó la Reforma Agraria '
-                                '(1969), nacionalizó el petróleo y la banca, '
-                                'y reconoció el quechua como lengua oficial.',
-                                'Segunda fase, de Francisco Morales Bermúdez '
-                                '(1975–1980): convocó a la Asamblea '
-                                'Constituyente de 1978, presidida por Víctor '
-                                'Raúl Haya de la Torre.']},
-                     {'titulo': 'AL 19.7 RETORNO A LA DEMOCRACIA',
-                      'items': ['Segundo gobierno de Belaunde (1980–1985): '
-                                'se promulgó la Constitución de 1979 y se '
-                                'inició la violencia de Sendero Luminoso en '
-                                'Chuschi, Ayacucho (1980).',
-                                'Primer gobierno de Alan García (1985–1990): '
-                                'crisis económica con hiperinflación y '
-                                'estatización de la banca.',
-                                'Década del fujimorismo (1990–2000): '
-                                'autogolpe del 5 de abril de 1992, captura '
-                                'de Abimael Guzmán el mismo año, y '
-                                'Constitución de 1993.',
-                                'En 2000 Fujimori renunció por fax desde '
-                                'Japón, tras los vladivideos.']},
-                     {'titulo': 'AL 19.11 SIGLO XXI',
-                      'items': ['Gobierno transitorio de Valentín Paniagua '
-                                '(2000–2001): creó la Comisión de la Verdad '
-                                'y Reconciliación.',
-                                'Alejandro Toledo (2001–2006): impulsó la '
-                                'descentralización y los gobiernos '
-                                'regionales.',
-                                'Segundo gobierno de Alan García (2006–2011) '
-                                'y gobierno de Ollanta Humala '
-                                '(2011–2016).']}],
+                                  'Alejandro Toledo',
+                                  'Valentín Paniagua',
+                                  'Alberto Fujimori'],
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'EL OCHENIO DE MANUEL A. ODRÍA (1948-1956) / '
+                                'PRIMER GOBIERNO DE FERNANDO BEL',
+                      'items': ['El 27 de octubre de 1948, el general Manuel '
+                                'A. Odría se pronunció desde Arequipa contra '
+                                'el gobierno de José Luis Bustamante y '
+                                'Rivero, en la «Revolución Restauradora de '
+                                'Arequipa».',
+                                'Odría gobernó bajo el lema político «Salud, '
+                                'Educación y Trabajo».',
+                                'Reconstruyó la ciudad del Cusco, destruida '
+                                'por el terremoto del 21 de mayo de 1950.',
+                                'El 5 de setiembre de 1955 se estableció el '
+                                'sufragio femenino en las elecciones '
+                                'políticas, mediante decreto ley 12391.',
+                                'El gobierno firmó con la petrolera IPC '
+                                '(International Petroleum Company) el Acta '
+                                'de Talara, cuya página once, con '
+                                'privilegios a la empresa, misteriosamente '
+                                'se extravió.',
+                                'Este escándalo, conocido como la «página '
+                                'once», precipitó el golpe de Estado del 3 '
+                                'de octubre de 1968 liderado por el general '
+                                'Juan Velasco Alvarado.',
+                                'Se construyó la carretera «Marginal de la '
+                                'Selva» y el aeropuerto internacional Jorge '
+                                'Chávez.',
+                                'Se emitió la Ley de Cooperativas (15260) y '
+                                'se decretó la gratuidad de la enseñanza en '
+                                'todos los niveles.']},
+                     {'titulo': 'GOBIERNO MILITAR DE JUAN VELASCO ALVARADO '
+                                '(1968-1975) / SEGUNDA FASE MILITA',
+                      'items': ['Velasco asumió como jefe del «Gobierno '
+                                'Revolucionario de las Fuerzas Armadas», '
+                                'dejando de lado la Constitución de 1933 y '
+                                'redactando el «Plan Inca».',
+                                'El 9 de octubre de 1968 estatizó el '
+                                'petróleo, nacionalizando la IPC y llamando '
+                                'a esa fecha el «Día de la Dignidad '
+                                'Nacional».',
+                                'Implementó la Reforma Agraria mediante el '
+                                'Decreto Ley N.º 17716, del 24 de junio de '
+                                '1969, expropiando latifundios.',
+                                'La Reforma Educativa, bajo el lema «Un '
+                                'hombre nuevo para una nueva sociedad», '
+                                'oficializó el quechua.',
+                                'Morales Bermúdez llevó a cabo la '
+                                'contrarreforma con el «Plan Túpac Amaru».',
+                                'Convocó a una Asamblea Constituyente en '
+                                '1978, presidida por Víctor Raúl Haya de la '
+                                'Torre.',
+                                'Esta Asamblea redactó la nueva Constitución '
+                                'de 1979, que derogó la de 1933.',
+                                'Su gobierno restituyó el poder a los '
+                                'civiles, iniciando la transición a la '
+                                'democracia.']},
+                     {'titulo': 'SEGUNDO GOBIERNO DE BELAÚNDE: REGRESO A LA '
+                                'DEMOCRACIA (1980-1985) / PRIMER ',
+                      'items': ['Belaúnde regresó al poder tras vencer en '
+                                'las elecciones de 1980 a Armando Villanueva '
+                                'del Campo.',
+                                'Se produjo el conflicto con Ecuador en la '
+                                'Cordillera del Cóndor (el «falso '
+                                'Paquisha»); las tropas peruanas fueron '
+                                'comandadas por Rafael Hoyos Rubio.',
+                                'Aparecieron los movimientos alzados en '
+                                'armas Sendero Luminoso y el MRTA.',
+                                'Ocurrió la masacre de Uchuraccay, en '
+                                'Ayacucho, donde fueron asesinados varios '
+                                'periodistas.',
+                                'Alan García fue el presidente electo más '
+                                'joven del Perú, con 35 años; representó la '
+                                'primera llegada al poder del APRA desde su '
+                                'fundación en 1924.',
+                                'Se descubrió el reservorio de gas de '
+                                'Camisea, en el Cusco, y petróleo en '
+                                'Ucayali.',
+                                'Promovió la ley de Estatización de la '
+                                'Banca, lo que originó el surgimiento del '
+                                'Movimiento Libertad, liderado por Mario '
+                                'Vargas Llosa.',
+                                'García se negó a pagar más del 10% de la '
+                                'deuda externa, lo que aisló al Perú del '
+                                'crédito financiero internacional.']},
+                     {'titulo': 'PRIMER GOBIERNO DE ALBERTO FUJIMORI '
+                                '(1990-1995) / SEGUNDO Y TERCER GOBIERNO',
+                      'items': ['Fujimori llegó al poder con su movimiento '
+                                'Cambio 90, derrotando en elecciones al '
+                                'novelista Mario Vargas Llosa.',
+                                'Dio un autogolpe de Estado en abril de '
+                                '1992, disolviendo el Congreso.',
+                                'En agosto de 1990 decretó el «fujishock» '
+                                '(paquetazo económico), a través de su '
+                                'premier Juan Carlos Hurtado Miller.',
+                                'Se elaboró una nueva Constitución, '
+                                'neoliberal y reeleccionista, vigente desde '
+                                '1993.',
+                                'En su segundo gobierno, Fujimori derrotó a '
+                                'Javier Pérez de Cuéllar en las elecciones '
+                                'de 1995.',
+                                'Se firmó la paz definitiva con Ecuador en '
+                                '1998, cediendo 1 km² de territorio en '
+                                'Tiwinza.',
+                                'El grupo MRTA tomó la residencia del '
+                                'embajador de Japón; los rehenes fueron '
+                                'liberados por el comando «Chavín de '
+                                'Huántar».',
+                                'En el 2000, Fujimori venció en elecciones '
+                                'fraudulentas a Alejandro Toledo, iniciando '
+                                'su tercer gobierno.']},
+                     {'titulo': 'GOBIERNO TRANSITORIO DE VALENTÍN PANIAGUA '
+                                '(2000-2001) / GOBIERNO DE ALEJAND',
+                      'items': ['Valentín Paniagua asumió la presidencia '
+                                'provisional tras la renuncia de Fujimori y '
+                                'de ambos vicepresidentes.',
+                                'Se dio el contrato de concesión del Lote 88 '
+                                'de Camisea, firmado en diciembre de 2000.',
+                                'Su gobierno inició la investigación de los '
+                                'actos de corrupción de la década '
+                                'fujimorista.',
+                                'Entregó el mando el 28 de julio a Alejandro '
+                                'Toledo, ganador de la segunda vuelta '
+                                'electoral del 2001.',
+                                'En 2003 se presentó el informe final de la '
+                                'Comisión de la Verdad y Reconciliación, '
+                                'responsabilizando al Estado y a la '
+                                'subversión.',
+                                'En 2005 ocurrió el «Andahuaylazo», cuando '
+                                'Antauro Humala y los etnocaceristas tomaron '
+                                'una comisaría.',
+                                'Se capturó a Alberto Fujimori el 7 de '
+                                'noviembre de 2005 en Chile, y se gestionó '
+                                'su extradición.',
+                                'Toledo impulsó el proyecto del gas de '
+                                'Camisea y acuerdos de libre comercio con '
+                                'Estados Unidos.']},
+                     {'titulo': 'SEGUNDO GOBIERNO DE ALAN GARCÍA (2006-2011) '
+                                '/ GOBIERNO DE OLLANTA HUMALA TA',
+                      'items': ['García derrotó en segunda vuelta a Ollanta '
+                                'Humala y se aprobaron TLC con EE.UU., China '
+                                'y la Unión Europea.',
+                                'En 2008 se creó el Ministerio del Medio '
+                                'Ambiente, siendo su primer titular Antonio '
+                                'Brack Egg.',
+                                'Surgió el escándalo de los «Petroaudios» o '
+                                'caso Business (2008), que provocó la caída '
+                                'del gabinete de Jorge del Castillo.',
+                                'Ocurrió «El Baguazo» en 2009, un conflicto '
+                                'social que causó la caída del gabinete de '
+                                'Yehude Simon.',
+                                'Humala, líder del Partido Nacionalista '
+                                'Peruano, derrotó en segunda vuelta a Keiko '
+                                'Fujimori, con el apoyo de Mario Vargas '
+                                'Llosa.',
+                                'Amplió y creó programas sociales como Beca '
+                                '18, Pensión 65 y Qali Warma.',
+                                'Se desarrolló el conflicto minero de Conga, '
+                                'en Cajamarca.',
+                                'Promulgó la ley de consulta previa a los '
+                                'pueblos indígenas.']}],
   'qr_reto': [{'pregunta': 'El primer gobierno de Belaunde fue derrocado por '
                            'el escándalo de:',
                'respuesta': 'La página once'},
