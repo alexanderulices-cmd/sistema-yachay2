@@ -455,8 +455,15 @@ BALOTAS_FILO = [{'num': 1,
                                 'creación del mundo a partir del caos.',
                                 'Cosmología: de kosmos y logos = estudio. '
                                 'Estudia el universo mediante modelos '
-                                'contrastables empírica y '
-                                'experimentalmente.']},
+                                'contrastables empírica y experimentalmente.',
+                                'La diferencia está en que la cosmología '
+                                'explica por conceptos científicos y '
+                                'verificación, y la cosmogonía por relatos y '
+                                'mitos.',
+                                'Dos posturas marcaron la historia: el '
+                                'geocentrismo, respaldado por Ptolomeo y '
+                                'Aristóteles, y el heliocentrismo, por '
+                                'Nicolás Copérnico.']},
                      {'titulo': 'TEORÍA DEL BIG BANG',
                       'items': ['Modelo cosmológico según el cual el '
                                 'universo se originó en una singularidad '
@@ -465,7 +472,10 @@ BALOTAS_FILO = [{'num': 1,
                                 'Hubble descubrió en 1929 que la distancia '
                                 'entre galaxias es cada vez mayor.',
                                 'Ley de Hubble: la velocidad de una galaxia '
-                                'es proporcional a su distancia.']},
+                                'es proporcional a su distancia.',
+                                'Si una fuente de luz se aleja, su espectro '
+                                'se desplaza al rojo; si se acerca, al '
+                                'azul.']},
                      {'titulo': 'ORIGEN Y CONCEPCIONES DE LA FILOSOFÍA',
                       'items': ['Como reflexión racional y sistemática se '
                                 'origina en Grecia, siglos VII–VI a.C.',
@@ -474,7 +484,25 @@ BALOTAS_FILO = [{'num': 1,
                                 'llamó a sí mismo «amante de la sabiduría».',
                                 'Platón decía que el asombro es el origen de '
                                 'la filosofía; Aristóteles, que es la '
-                                'admiración lo que impulsa a filosofar.']},
+                                'admiración lo que impulsa a filosofar.',
+                                'Etimología: philein = amor y sophos = '
+                                'sabiduría.',
+                                'Concepción aristotélica: la filosofía es la '
+                                'ciencia de los primeros principios y las '
+                                'primeras causas; por eso se la llama '
+                                'Metafísica o filosofía primera.',
+                                'Concepción russelliana: nace de dos '
+                                'impulsos, el místico y el científico; es '
+                                'una tierra de nadie entre la ciencia y la '
+                                'religión.',
+                                'Concepción de Rosental: ciencia sobre las '
+                                'leyes universales del ser y del '
+                                'pensamiento; su cuestión fundamental es la '
+                                'relación entre el pensar y el ser.',
+                                'Según Wittgenstein, la filosofía es una '
+                                'actividad orientada hacia el '
+                                'esclarecimiento del lenguaje, indagando si '
+                                'los enunciados tienen sentido.']},
                      {'titulo': 'PROBLEMA FUNDAMENTAL DE LA FILOSOFÍA',
                       'items': ['El problema fundamental de la filosofía es '
                                 'el carácter de la relación entre el ser y '
@@ -485,7 +513,14 @@ BALOTAS_FILO = [{'num': 1,
                                 'es la conciencia.',
                                 'El segundo aspecto responde si el mundo es '
                                 'cognoscible o no, es decir, si la razón '
-                                'humana puede penetrar sus misterios.']},
+                                'humana puede penetrar sus misterios.',
+                                'Los filósofos que consideran que la materia '
+                                'es primaria y la conciencia secundaria se '
+                                'sitúan en el materialismo.',
+                                'Los filósofos que consideran que lo '
+                                'primario es el espíritu y niegan que el '
+                                'mundo sea cognoscible se sitúan en el '
+                                'idealismo.']},
                      {'titulo': 'ACTITUD FILOSÓFICA',
                       'items': ['Es la disposición humana por comprender el '
                                 'porqué y el para qué de las cosas.',
@@ -502,7 +537,21 @@ BALOTAS_FILO = [{'num': 1,
                                 'metodología.',
                                 'La axiología estudia el problema de los '
                                 'valores: su existencia, origen, naturaleza '
-                                'y características.']}]},
+                                'y características.',
+                                'La ética estudia la conducta o '
+                                'comportamiento moral del hombre en '
+                                'sociedad.',
+                                'La lógica estudia los principios, métodos y '
+                                'reglas para distinguir el razonamiento '
+                                'correcto del incorrecto.',
+                                'La ontología es el estudio del ser de las '
+                                'cosas, del ser en tanto ser.',
+                                'La estética trata de lo bello y los '
+                                'diferentes modos de aprehensión de '
+                                'realidades bellas.',
+                                'La antropología filosófica estudia la '
+                                'esencia del hombre, su significado y la '
+                                'finalidad de su existencia.']}]},
  {'num': 2,
   'titulo': 'Historia de la filosofía: edad antigua',
   'secciones': [{'titulo': '2.1 LOS PRESOCRÁTICOS',
@@ -858,7 +907,22 @@ BALOTAS_FILO = [{'num': 1,
                                 'Pitágoras de Samos fundó en Crotona una '
                                 'escuela místico-filosófica basada en la '
                                 'doctrina de la metempsicosis, la '
-                                'transmigración de las almas.']},
+                                'transmigración de las almas.',
+                                'Para Pitágoras, el arjé son los números: '
+                                '«las cosas son números y los números son '
+                                'cosas». El número 10 era el más valorado, '
+                                'representado en la tetraktys.',
+                                'Parménides de Elea, con quien se inicia la '
+                                'Metafísica, sostuvo la afirmación '
+                                'ontológica: «el ser es», negando la '
+                                'posibilidad del cambio.',
+                                'Para Parménides, admitir el cambio o '
+                                'devenir es admitir el no ser; formuló, '
+                                'aunque implícitamente, el Principio de '
+                                'Identidad.',
+                                'Demócrito de Abdera: todo está compuesto '
+                                'por átomos, partículas indivisibles, según '
+                                'la teoría heredada de su maestro Leucipo.']},
                      {'titulo': 'SOFISTAS Y SÓCRATES',
                       'items': ['Los sofistas enseñaban retórica a cambio de '
                                 'dinero y defendían el relativismo.',
@@ -1726,7 +1790,16 @@ BALOTAS_FILO = [{'num': 1,
                                 '(interpretación antropomórfica), de la '
                                 'caverna (prejuicios personales), del foro '
                                 '(mal uso del lenguaje) y del teatro '
-                                '(aceptación acrítica de autoridades).']},
+                                '(aceptación acrítica de autoridades).',
+                                'René Descartes, padre de la filosofía '
+                                'moderna, fundó el racionalismo. Su método '
+                                'parte de la duda metódica.',
+                                'Su principio fundamental es «pienso, luego '
+                                'existo» (cogito ergo sum).',
+                                'Descartes distinguió tres sustancias: la '
+                                'res extensa (sustancia corporal), la res '
+                                'cogitans (sustancia espiritual o '
+                                'pensamiento), y la res necesaria (Dios).']},
                      {'titulo': 'THOMAS HOBBES Y EL CONTRATO SOCIAL',
                       'items': ['Tomás Hobbes, filósofo inglés, sostuvo que '
                                 'las leyes que rigen al hombre son las '
@@ -1736,7 +1809,13 @@ BALOTAS_FILO = [{'num': 1,
                                 'temor.',
                                 'Su célebre frase «el hombre es un lobo para '
                                 'el hombre» describe el estado de «guerra de '
-                                'todos contra todos».']},
+                                'todos contra todos».',
+                                'Para superar ese estado, los hombres deben '
+                                'establecer un «contrato social», '
+                                'transfiriendo sus derechos a un soberano '
+                                'absoluto.',
+                                'Su obra más conocida, donde expone esta '
+                                'teoría, es el «Leviatán».']},
                      {'titulo': 'KANT Y HEGEL',
                       'items': ['Immanuel Kant: realizó la síntesis entre '
                                 'racionalismo y empirismo, llamada '
@@ -1747,7 +1826,10 @@ BALOTAS_FILO = [{'num': 1,
                                 'incognoscible.',
                                 'En ética formuló el imperativo categórico: '
                                 'obra de tal modo que tu acción pueda '
-                                'convertirse en ley universal.']},
+                                'convertirse en ley universal.',
+                                'Hegel: desarrolló el método dialéctico, con '
+                                'tres momentos: tesis, antítesis y síntesis. '
+                                'Su sistema es idealista.']},
                      {'titulo': 'FRIEDRICH NIETZSCHE',
                       'items': ['Friedrich Nietzsche es considerado el '
                                 'filósofo más importante del voluntarismo '
@@ -1758,7 +1840,16 @@ BALOTAS_FILO = [{'num': 1,
                                 'Distinguió dos tipos de moral: la moral del '
                                 'amo, que exalta la fuerza y la nobleza, y '
                                 'la moral del esclavo, que exalta la '
-                                'compasión y la resignación.']},
+                                'compasión y la resignación.',
+                                'Para Nietzsche, la moral del esclavo es la '
+                                'moral de los cristianos, que predican el '
+                                'amor al prójimo y la renuncia a la vida.',
+                                'Proclamó la «muerte de Dios»: solo tras '
+                                'ella surgirá un nuevo hombre que acepte la '
+                                'vida y el eterno retorno.',
+                                'Planteó el ideal del superhombre, que '
+                                'acepta la muerte de Dios y vive fiel a la '
+                                'tierra, sin buscar mundos trascendentes.']},
                      {'titulo': 'MARX Y EL MATERIALISMO',
                       'items': ['Carlos Marx: invirtió la dialéctica de '
                                 'Hegel y creó el materialismo dialéctico e '
@@ -1779,8 +1870,18 @@ BALOTAS_FILO = [{'num': 1,
                                 'dejó heces, manchada por la guerra civil.',
                                 'Según González Prada, la ignorancia y el '
                                 'espíritu de servidumbre determinaron la '
-                                'derrota del Perú en la Guerra del '
-                                'Pacífico.']},
+                                'derrota del Perú en la Guerra del Pacífico.',
+                                'Fue antirreligioso, anarquista y anti '
+                                'hispanista; consideró al Estado un '
+                                'instrumento de los poderosos para perpetuar '
+                                'la servidumbre.',
+                                'Sostuvo que el Perú verdadero y profundo es '
+                                'el que pertenece a los indígenas, y culpó a '
+                                'la oligarquía de la crisis nacional.',
+                                'Su obra principal, «Páginas Libres», '
+                                'influyó profundamente en Abraham '
+                                'Valdelomar, Haya de la Torre y '
+                                'Mariátegui.']},
                      {'titulo': 'FILOSOFÍA EN EL PERÚ',
                       'items': ['José Carlos Mariátegui: autor de «7 ensayos '
                                 'de interpretación de la realidad peruana». '
@@ -2768,7 +2869,10 @@ BALOTAS_FILO = [{'num': 1,
                                 'duda en algunos campos.',
                                 'Criticismo: posición intermedia sostenida '
                                 'por Kant; el conocimiento es posible pero '
-                                'con límites.']},
+                                'con límites.',
+                                'El agnosticismo, sostenido también por '
+                                'Kant, admite la imposibilidad de conocer la '
+                                '«cosa en sí».']},
                      {'titulo': 'ORIGEN DEL CONOCIMIENTO',
                       'items': ['Racionalismo: el origen del conocimiento es '
                                 'la razón; su método es la deducción. '
@@ -3600,7 +3704,10 @@ BALOTAS_FILO = [{'num': 1,
                                 'independientemente del sujeto; se '
                                 'descubren, no se crean.',
                                 'Relacionismo: el valor surge de la relación '
-                                'entre el sujeto y el objeto.']},
+                                'entre el sujeto y el objeto.',
+                                'Socioculturalismo: los valores son producto '
+                                'de la sociedad y la cultura, y varían '
+                                'históricamente.']},
                      {'titulo': 'LA ÉTICA Y LA MORAL',
                       'items': ['La ética es la disciplina filosófica que '
                                 'reflexiona sobre la moral; es teórica.',
@@ -3622,7 +3729,35 @@ BALOTAS_FILO = [{'num': 1,
                                 'A diferencia de Aristipo de Cirene, que '
                                 'solo consideraba los placeres sensibles, '
                                 'Epicuro defendía un cálculo racional y '
-                                'prudente de los placeres.']},
+                                'prudente de los placeres.',
+                                'El eudemonismo de Aristóteles (384-322 '
+                                'a.C.) pregona la felicidad como meta '
+                                'suprema de toda la actividad moral del '
+                                'hombre.',
+                                'Para Aristóteles, la virtud es el '
+                                'equilibrio entre dos extremos, la ley del '
+                                'término medio: entre temeridad y cobardía '
+                                'está la valentía.',
+                                'San Agustín y, sobre todo, Santo Tomás de '
+                                'Aquino, situaron la contemplación de Dios '
+                                'como el bien y felicidad suprema del hombre '
+                                'cristiano.',
+                                'El utilitarismo de Jeremy Bentham y John '
+                                'Stuart Mill sostiene que una acción es '
+                                'moral si es útil, es decir, si produce '
+                                'felicidad.',
+                                'El utilitarismo defiende la utilidad '
+                                'pública: la mayor felicidad para el mayor '
+                                'número de personas, no el beneficio '
+                                'individual.',
+                                'El formalismo de Immanuel Kant sostiene que '
+                                'la moral no debe dar normas concretas, sino '
+                                'establecer la forma que toda norma moral '
+                                'debe tener.',
+                                'Para Kant, la norma moral se expresa '
+                                'mediante imperativos categóricos '
+                                '(incondicionados), a diferencia de los '
+                                'imperativos hipotéticos.']},
                      {'titulo': 'LA PERSONA MORAL Y LA SANCIÓN',
                       'items': ['La persona es el sujeto con conciencia de '
                                 'sus actos, capaz de crear valores y '
@@ -3633,7 +3768,13 @@ BALOTAS_FILO = [{'num': 1,
                                 'infantes.',
                                 'Las características de la persona moral '
                                 'son: conciencia moral, libertad moral y '
-                                'responsabilidad moral.']}]},
+                                'responsabilidad moral.',
+                                'La sanción moral es el castigo interno, '
+                                'subjetivo, que recibe la persona por una '
+                                'acción negativa: el remordimiento.',
+                                'La sanción jurídica es la pena impuesta por '
+                                'el Estado a quien viola una ley, regulada '
+                                'por los tribunales.']}]},
  {'num': 10,
   'titulo': 'Lógica, lenguaje y pensamiento',
   'secciones': [{'titulo': '10.1 DEFINICIÓN DE LÓGICA',
@@ -4005,7 +4146,19 @@ BALOTAS_FILO = [{'num': 1,
                                 'todas las cosas» (homo mensura).',
                                 'Sócrates descubrió el concepto de la '
                                 'definición y de la inducción mediante la '
-                                'mayéutica.']},
+                                'mayéutica.',
+                                'Platón es considerado el creador del '
+                                'Principio de no Contradicción.',
+                                'Boecio, filósofo ecléctico, tradujo al '
+                                'latín obras de Aristóteles y creó el Cuadro '
+                                'Tradicional de Oposición.',
+                                'En la lógica moderna, Wilhelm Leibniz '
+                                'intentó construir un Lenguaje Universal '
+                                '(Característica Universalis).',
+                                'George Boole es considerado el fundador de '
+                                'la lógica simbólica; publicó en 1854 '
+                                '«Investigación sobre las leyes del '
+                                'pensamiento».']},
                      {'titulo': 'RAMAS DE LA LÓGICA',
                       'items': ['La lógica formal estudia los actos del '
                                 'pensar (concepto, juicio, razonamiento y '
@@ -4302,7 +4455,11 @@ BALOTAS_FILO = [{'num': 1,
                                 'circunstancial.',
                                 'Ad ignorantiam: afirmar que algo es '
                                 'verdadero porque no se ha demostrado su '
-                                'falsedad.']},
+                                'falsedad.',
+                                'Ad báculum: apelación a la fuerza o a la '
+                                'amenaza. «La fuerza hace el derecho».',
+                                'Ad verecundiam: apelación a una autoridad '
+                                'fuera de su ámbito de especialidad.']},
                      {'titulo': 'FALACIAS DE AMBIGÜEDAD',
                       'items': ['Aparecen cuando el razonamiento contiene '
                                 'palabras o frases ambiguas.',
@@ -4641,7 +4798,11 @@ BALOTAS_FILO = [{'num': 1,
                                 'Ejemplo de SHP: «Si es viernes, nos vamos '
                                 'de paseo. Si nos vamos de paseo, estamos '
                                 'felices. Por lo tanto, si es viernes, '
-                                'estamos felices».']}]},
+                                'estamos felices».',
+                                'La Transitividad Simétrica (TS) es la '
+                                'transitividad de bicondicionales, con la '
+                                'misma estructura que el SHP pero con '
+                                'premisas bicondicionales.']}]},
  {'num': 13,
   'titulo': 'Tablas de verdad y razonamientos válidos',
   'secciones': [{'titulo': '13.1 LA TABLA DE VERDAD',

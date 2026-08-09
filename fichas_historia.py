@@ -2023,7 +2023,11 @@ BALOTAS = [{'num': 1,
                                 '2° La capacidad de fabricar objetos, que '
                                 'marcó el paso de los hominoides a los '
                                 'homínidos y se considera el inicio de la '
-                                'cultura.']},
+                                'cultura.',
+                                'La teoría evolucionista fue formulada por '
+                                'Charles Darwin en su libro «El origen de '
+                                'las especies por medio de la selección '
+                                'natural».']},
                      {'titulo': 'LA PREHISTORIA: CONCEPTO',
                       'items': ['El concepto fue propuesto por Jacobo '
                                 'Boucher de Perthes y utilizado por el '
@@ -2041,7 +2045,13 @@ BALOTAS = [{'num': 1,
                                 'recolectores de piedras, preferentemente el '
                                 'sílex.',
                                 'Usaron la técnica osteodontoquerática, con '
-                                'huesos de mandíbula de animales.']},
+                                'huesos de mandíbula de animales.',
+                                'Se organizaron en hordas, clanes y gens; '
+                                'practicaron el incesto y veneraron un '
+                                'antepasado común llamado tótem.',
+                                'Descubrieron el fuego y crearon el arte '
+                                'rupestre: Altamira en España y Lascaux en '
+                                'Francia.']},
                      {'titulo': 'MESOLÍTICO (10 000 – 7000 A.C.)',
                       'items': ['Periodo de transición del Pleistoceno al '
                                 'Holoceno.',
@@ -2056,7 +2066,15 @@ BALOTAS = [{'num': 1,
                                 'agricultura y la ganadería: primera gran '
                                 'revolución agrícola.',
                                 'Iniciaron la alfarería y la textilería con '
-                                'algodón, lana y lino.']},
+                                'algodón, lana y lino.',
+                                'Construyeron viviendas sobre pilotes '
+                                'llamadas palafitos; la primera ciudad '
+                                'prehistórica se halló en el lago Zúrich.',
+                                'Desarrollaron arquitectura funeraria: '
+                                'dólmenes, menhires y crómlech. Destaca '
+                                'Stonehenge en Inglaterra.',
+                                'Surgen la propiedad privada, las clases '
+                                'sociales y el Estado.']},
                      {'titulo': 'LA EDAD DE LOS METALES',
                       'items': ['La Edad de los Metales se caracteriza por '
                                 'el abandono gradual de instrumentos de '
@@ -2066,7 +2084,18 @@ BALOTAS = [{'num': 1,
                                 'Piedra y la Edad de los Metales.',
                                 'El uso del cobre fundido se inició en '
                                 'Çatalhöyük, actual Turquía, hacia el 5000 '
-                                'a.C.']}]},
+                                'a.C.',
+                                'La Edad del Bronce (3000-1500 a.C.) comenzó '
+                                'en Sumeria; el bronce es la aleación de '
+                                'cobre y estaño.',
+                                'El bronce se usó para fabricar armas como '
+                                'espadas y escudos, y utensilios agrícolas '
+                                'como hoces.',
+                                'La Edad del Hierro (1500-18 a.C.) fue '
+                                'iniciada por los hititas de Turquía.',
+                                'El hierro tenía dos ventajas sobre el '
+                                'bronce: mayor abundancia del mineral, y '
+                                'mayor dureza de las armas.']}]},
  {'num': 3,
   'titulo': 'Grandes culturas de la antigüedad',
   'secciones': [{'titulo': '3.1 MESOPOTAMIA — UBICACIÓN',
@@ -2825,6 +2854,9 @@ BALOTAS = [{'num': 1,
                                 'La Baja Mesopotamia, al sur, fue sede de la '
                                 'civilización Caldea, con capital en '
                                 'Babilonia, junto al Éufrates.',
+                                'Pueblos que la habitaron: sumerios, '
+                                'acadios, babilonios, hititas, caldeos, '
+                                'medos y persas.',
                                 'Los sumerios (3000 a.C.) crearon las '
                                 'primeras Ciudades-Estado: Kish, Uruk, Ur y '
                                 'Lagash. Inventaron la escritura cuneiforme '
@@ -2834,7 +2866,17 @@ BALOTAS = [{'num': 1,
                                 'fijaron su capital en Akkad.',
                                 'En el Primer Imperio Babilónico, el rey '
                                 'Hammurabi unificó las ciudades sumerias y '
-                                'estableció su famoso código jurídico.']},
+                                'estableció su famoso código jurídico.',
+                                'En el Imperio Asirio destacó Asurbanipal, '
+                                'quien mandó construir la biblioteca de '
+                                'Nínive.',
+                                'En el Segundo Imperio Babilónico, '
+                                'Nabopolasar fue el artífice de la caída del '
+                                'imperio asirio.',
+                                'Nabucodonosor II forjó la grandeza de '
+                                'Babilonia, conquistó Jerusalén —el '
+                                '«cautiverio babilónico» de los judíos— y '
+                                'mandó construir los jardines colgantes.']},
                      {'titulo': 'MESOPOTAMIA: ORGANIZACIÓN POLÍTICA Y SOCIAL '
                                 '/ MESOPOTAMIA: EXPRESIONES CULT',
                       'items': ['A diferencia de Egipto, Mesopotamia no '
@@ -2859,7 +2901,10 @@ BALOTAS = [{'num': 1,
                                 'Gudea.',
                                 'También destaca la estatua del rey '
                                 'Hammurabi, guerrero y conquistador, célebre '
-                                'por su código moral.']},
+                                'por su código moral.',
+                                'Escritura: la cuneiforme, con signos en '
+                                'forma de cuña. La roca de Behistún fue '
+                                'descifrada por Henry Rawlinson.']},
                      {'titulo': 'EGIPTO — UBICACIÓN / EGIPTO: LOS TRES '
                                 'IMPERIOS',
                       'items': ['Situado al noreste del continente africano, '
@@ -2877,7 +2922,15 @@ BALOTAS = [{'num': 1,
                                 'De esta época datan las tres pirámides de '
                                 'Seneferu, y la Gran Pirámide de Guiza, '
                                 'atribuida a Keops por Heródoto, junto con '
-                                'las de Kefrén y Micerino.']},
+                                'las de Kefrén y Micerino.',
+                                'La capital del Imperio Antiguo se '
+                                'estableció en Menfis.',
+                                'El Imperio Medio (2150-1785 a.C.) reunificó '
+                                'Egipto con capital en Tebas, y sufrió la '
+                                'invasión de los Hicsos.',
+                                'El Imperio Nuevo (1551-1080 a.C.) logró '
+                                'expulsar a los Hicsos; destacaron los '
+                                'faraones Tutmosis III y Ramsés II.']},
                      {'titulo': 'EGIPTO: ORGANIZACIÓN POLÍTICO-SOCIAL / '
                                 'EGIPTO: ARQUITECTURA Y ESCULTURA',
                       'items': ['Egipto fue una monarquía teocrática: el '
@@ -2895,7 +2948,15 @@ BALOTAS = [{'num': 1,
                                 'son los de Karnak y Luxor.',
                                 'Los capiteles florales de las columnas '
                                 'tuvieron motivos palmiformes, lotiformes, '
-                                'papiriformes y atónicas (dios Atón).']},
+                                'papiriformes y atónicas (dios Atón).',
+                                'Los Colosos de Memnón son estatuas '
+                                'gigantescas de faraones sentados, en la '
+                                'entrada de templos.',
+                                'La Esfinge de Gizeh representa el rostro '
+                                'del faraón Kefrén con cuerpo de león.',
+                                'El Escriba Sentado es una escultura de un '
+                                'funcionario dedicado a anotar los ingresos '
+                                'del reino desde la IV dinastía.']},
                      {'titulo': 'EGIPTO: LA ESCRITURA',
                       'items': ['La escritura jeroglífica, la más antigua, '
                                 'formada por imágenes de objetos, se usaba '
@@ -2904,7 +2965,10 @@ BALOTAS = [{'num': 1,
                                 'fue descifrada por el francés Champollion '
                                 'en 1822.',
                                 'La escritura hierática, más sencilla, era '
-                                'empleada por escribas y sacerdotes.']}]},
+                                'empleada por escribas y sacerdotes.',
+                                'La escritura demótica era la escritura '
+                                'popular, más simple, utilizada por el '
+                                'pueblo.']}]},
  {'num': 4,
   'titulo': 'Mundo greco romano',
   'secciones': [{'titulo': '4.1 GRECIA — PROCESO HISTÓRICO',
@@ -3472,7 +3536,11 @@ BALOTAS = [{'num': 1,
                                 'bóveda y la cúpula.',
                                 'Los romanos utilizaron materiales como '
                                 'piedra, ladrillo y hormigón con cal como '
-                                'argamasa.']}]},
+                                'argamasa.',
+                                'Entre las construcciones romanas más '
+                                'representativas están el Coliseo '
+                                '(Anfiteatro de Flavio), el Arco de Tito y '
+                                'el Arco de Trajano.']}]},
  {'num': 5,
   'titulo': 'Primeras culturas andinas',
   'secciones': [{'titulo': '5.1 EL POBLAMIENTO DE AMÉRICA',
@@ -5609,7 +5677,9 @@ BALOTAS = [{'num': 1,
                                 'que un mismo ayllu cultivara tierras en '
                                 'distintas zonas climáticas, como hicieron '
                                 'los lupacas del altiplano con tierras en la '
-                                'costa.']},
+                                'costa.',
+                                'Los andenes tuvieron como finalidad ampliar '
+                                'y proteger la frontera agrícola.']},
                      {'titulo': 'LO ECONÓMICO',
                       'items': ['La base económica fue la agricultura, '
                                 'apoyada en los andenes y en obras de '
@@ -6072,7 +6142,10 @@ BALOTAS = [{'num': 1,
                                 'Economía rural y autosuficiente: el feudo '
                                 'producía casi todo lo que consumía.',
                                 'Sociedad estamental y rígida, con escasa '
-                                'movilidad social.']},
+                                'movilidad social.',
+                                'El poder político quedó fragmentado o '
+                                'descentralizado entre los señores '
+                                'feudales.']},
                      {'titulo': 'ELEMENTOS DEL FEUDALISMO',
                       'items': ['El señor feudal: propietario del feudo, '
                                 'otorgaba protección y tierras.',
@@ -6080,7 +6153,9 @@ BALOTAS = [{'num': 1,
                                 'servicio militar mediante el homenaje.',
                                 'El feudo: extensión de tierra entregada a '
                                 'cambio de servicios; comprendía la reserva '
-                                'señorial y los mansos.']},
+                                'señorial y los mansos.',
+                                'Los siervos de la gleba estaban adscritos a '
+                                'la tierra y no podían abandonarla.']},
                      {'titulo': 'EL SURGIMIENTO DE LA BURGUESÍA',
                       'items': ['El origen de la burguesía se remonta al '
                                 'siglo XII, con villanos o campesinos libres '
@@ -6111,8 +6186,15 @@ BALOTAS = [{'num': 1,
                                 'se debió a la captura de Constantinopla por '
                                 'los turcos, en 1453.',
                                 'Nicolás Maquiavelo, considerado padre de la '
-                                'ciencia política, escribió «El '
-                                'Príncipe».']}]},
+                                'ciencia política, escribió «El Príncipe».',
+                                'Tomás Moro, autor de «Utopía», idealizó una '
+                                'república con propiedad común de los '
+                                'bienes.',
+                                'Leonardo Da Vinci destacó por sus pinturas '
+                                'La Última Cena y la Gioconda, y el dibujo '
+                                'El Hombre de Vitruvio.',
+                                'Miguel Ángel destacó por la escultura de '
+                                'David, Moisés y la Piedad.']}]},
  {'num': 9,
   'titulo': 'Expansión europea',
   'secciones': [{'titulo': '9.1 DESCUBRIMIENTOS GEOGRÁFICOS',
@@ -7269,7 +7351,10 @@ BALOTAS = [{'num': 1,
                                 'Mollinedo y Angulo.',
                                 'El papa Inocencio XII emitió en 1692 el '
                                 'breve pontificio que creó la Universidad de '
-                                'San Antonio Abad del Cusco.']}]},
+                                'San Antonio Abad del Cusco.',
+                                'El primer rector de la Universidad de San '
+                                'Antonio Abad del Cusco fue el Dr. Juan '
+                                'Cárdenas y Céspedes.']}]},
  {'num': 12,
   'titulo': 'El mundo durante el siglo XVIII',
   'secciones': [{'titulo': '12.1 LA ILUSTRACIÓN',

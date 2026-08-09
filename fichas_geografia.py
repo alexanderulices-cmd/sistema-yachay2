@@ -395,7 +395,12 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'de la Geografía.',
                                 'Eratóstenes (276-196 a.C.) calculó la '
                                 'circunferencia terrestre con notable '
-                                'aproximación y elaboró un mapamundi.']},
+                                'aproximación y elaboró un mapamundi.',
+                                'Claudio Ptolomeo (90-168 d.C.) fue el '
+                                'primero en hacer un Atlas Universal.',
+                                'Durante la Edad Media, la Geografía sufrió '
+                                'un retroceso u oscurantismo debido a la '
+                                'concepción teocéntrica.']},
                      {'titulo': 'ETAPAS DEL PENSAMIENTO GEOGRÁFICO',
                       'items': ['La Geografía Antigua comprende desde los '
                                 'tiempos primitivos hasta mediados del siglo '
@@ -408,7 +413,25 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'En la Geografía Moderna, el hombre aparece '
                                 'como un elemento más del paisaje, y la '
                                 'disciplina es considerada una ciencia de '
-                                'síntesis.']},
+                                'síntesis.',
+                                'La Geografía Nueva, Cuantitativa o '
+                                'Teorética se desarrolla desde mediados del '
+                                'siglo XX hasta la actualidad; se fundamenta '
+                                'en el Neopositivismo o Positivismo Lógico.',
+                                'La Geografía Nueva utiliza el método '
+                                'deductivo, el concepto de espacio relativo '
+                                'y herramientas como GPS y sensores remotos.',
+                                'Representantes de la Geografía Nueva: '
+                                'Milton Santos, Fred Kurt Schaefer y William '
+                                'Bunge.',
+                                'Karl Ritter, junto con Alexander von '
+                                'Humboldt, es considerado fundador de la '
+                                'Geografía Moderna o Científica.',
+                                'En la Geografía Antigua destacaron '
+                                'Eratóstenes, quien calculó la '
+                                'circunferencia terrestre, y Claudio '
+                                'Ptolomeo, el primero en elaborar un Atlas '
+                                'Universal.']},
                      {'titulo': 'EL ESPACIO GEOGRÁFICO: OBJETO DE ESTUDIO',
                       'items': ['Para Milton Santos da Almeida, el Espacio '
                                 'Geográfico es el objeto de estudio de la '
@@ -417,7 +440,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 '«es la epidermis del planeta Tierra».',
                                 'Según Milton Santos, el espacio geográfico '
                                 'es «la naturaleza modificada por el hombre '
-                                'a través del trabajo».']},
+                                'a través del trabajo».',
+                                'Elementos naturales del espacio geográfico: '
+                                'flora, fauna, relieve, rocas, minerales, '
+                                'mares, ríos, entre otros no intervenidos '
+                                'por el hombre.',
+                                'Elementos culturales del espacio '
+                                'geográfico: viviendas, ciudades, vías de '
+                                'comunicación, agricultura, minería, '
+                                'industria: creaciones del hombre.']},
                      {'titulo': 'DIVISIÓN DE LA GEOGRAFÍA',
                       'items': ['La Geografía Física estudia los objetos '
                                 'naturales, abióticos y bióticos: '
@@ -429,7 +460,19 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La Hidrogeografía estudia la distribución '
                                 'de las aguas, y se subdivide en '
                                 'Oceanografía (océanos y mares), Fluviología '
-                                '(ríos) y Limnología (lagos).']},
+                                '(ríos) y Limnología (lagos).',
+                                'La Biogeografía se subdivide en '
+                                'Fitogeografía (distribución de las plantas) '
+                                'y Zoogeografía (distribución de los '
+                                'animales).',
+                                'La Geografía Humana estudia las '
+                                'agrupaciones humanas en relación con el '
+                                'medio geográfico, desde el punto de vista '
+                                'social, económico y político.',
+                                'La Geografía Humana comprende: Geografía '
+                                'Política, Geografía Económica, '
+                                'Demogeografía, Geografía Histórica, '
+                                'Geografía Urbana y Geografía Rural.']},
                      {'titulo': 'PRINCIPIOS METODOLÓGICOS DE LA '
                                 'INVESTIGACIÓN GEOGRÁFICA',
                       'items': ['Principio de Localización, Distribución o '
@@ -442,7 +485,14 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Principio de Relación o Conexión (Jean '
                                 'Brunhes): los elementos del espacio '
                                 'geográfico están en íntima '
-                                'interdependencia.']},
+                                'interdependencia.',
+                                'Principio de Comparación (Carlos Ritter y '
+                                'Vidal de la Blache): consiste en comparar '
+                                'los elementos por su semejanza u oposición.',
+                                'Principio de Actividad, Dinamismo o '
+                                'Evolución (Jean Brunhes): los elementos '
+                                'geográficos están en constante '
+                                'transformación.']},
                      {'titulo': 'GEOGRAFÍA APLICADA E IMPORTANCIA',
                       'items': ['La Geografía Aplicada orienta los estudios '
                                 'e investigaciones hacia soluciones '
@@ -906,7 +956,10 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'la hidrósfera, la atmósfera y la litósfera.',
                                 'La entidad biótica del geosistema es la '
                                 'biósfera; la entidad antrópica es la '
-                                'sociósfera o antropósfera.']},
+                                'sociósfera o antropósfera.',
+                                'El geosistema se autodesarrolla y se '
+                                'encuentra en equilibrio dinámico '
+                                'relativo.']},
                      {'titulo': 'EL UNIVERSO Y SU ORIGEN',
                       'items': ['El universo es la totalidad de la materia, '
                                 'la radiación y el espacio-tiempo, que se '
@@ -928,7 +981,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'estrellas.',
                                 'Las estrellas son esferas de gases '
                                 'calientes que producen su propia luz '
-                                'mediante fusión nuclear.']},
+                                'mediante fusión nuclear.',
+                                'Las nebulosas son regiones del medio '
+                                'interestelar donde nacen las estrellas, '
+                                'constituidas principalmente por hidrógeno y '
+                                'helio.',
+                                'El año luz es la distancia que recorre la '
+                                'luz en un año, a 300 000 km por segundo.',
+                                'La luz del Sol tarda 8,3 minutos en llegar '
+                                'a la Tierra.']},
                      {'titulo': 'EL SISTEMA PLANETARIO SOLAR',
                       'items': ['El Sol contiene el 98,85% de la masa total '
                                 'del Sistema Solar y domina su campo '
@@ -938,7 +999,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'planeta enano y cuerpos menores.',
                                 'Los planetas interiores o terrestres son '
                                 'Mercurio, Venus, Tierra y Marte: sólidos, '
-                                'densos y cercanos al Sol.']},
+                                'densos y cercanos al Sol.',
+                                'Los planetas exteriores o jovianos son '
+                                'Júpiter, Saturno, Urano y Neptuno: '
+                                'gaseosos, de mayor tamaño y más lejanos al '
+                                'Sol.',
+                                'Los cinturones de Van Allen son zonas de '
+                                'radiación que rodean la Tierra, formadas '
+                                'por partículas cargadas atrapadas por el '
+                                'campo magnético.']},
                      {'titulo': 'LA GEODESIA Y LAS FORMAS DE LA TIERRA',
                       'items': ['La geodesia es una de las ciencias más '
                                 'antiguas cultivadas por el hombre; estudia '
@@ -950,7 +1019,21 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La forma física o topográfica es la forma '
                                 'real de la Tierra, considerando sus partes '
                                 'salientes y entrantes; es una forma '
-                                'irregular.']},
+                                'irregular.',
+                                'La forma geoide resulta de nivelar la '
+                                'superficie continental con el nivel medio '
+                                'del mar; es una superficie equipotencial de '
+                                'gravedad terrestre.',
+                                'La forma elipsoide de revolución es la '
+                                'forma matemática o geométrica de la Tierra, '
+                                'achatada en los polos y ensanchada en el '
+                                'ecuador.',
+                                'La superficie total de la Tierra es de 510 '
+                                '000 000 km²; la superficie continental es '
+                                'de 149 000 000 km² y la marítima de 361 000 '
+                                '000 km².',
+                                'La densidad media de la Tierra es de 5,518 '
+                                'gr/cm³.']},
                      {'titulo': 'DIMENSIONES Y MOVIMIENTOS DE LA TIERRA',
                       'items': ['La circunferencia ecuatorial de la Tierra '
                                 'mide 40 076 km, y la circunferencia polar '
@@ -960,7 +1043,22 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'km.',
                                 'Los dos principales movimientos de la '
                                 'Tierra son el de rotación y el de '
-                                'traslación.']}]},
+                                'traslación.',
+                                'El movimiento de rotación se realiza '
+                                'alrededor de un eje imaginario, cuyos '
+                                'extremos son los polos, en un día.',
+                                'La rotación terrestre tiene una dirección '
+                                'de W a E, con una velocidad de 1674 km/h en '
+                                'la zona ecuatorial.',
+                                'El tiempo que emplea la Tierra en dar una '
+                                'vuelta completa sobre su eje es de 23 '
+                                'horas, 56 minutos y 4,09 segundos.',
+                                'Entre las consecuencias de la rotación '
+                                'están la sucesión del día y la noche, y la '
+                                'forma achatada de la Tierra.',
+                                'La rotación también genera la desviación de '
+                                'vientos y corrientes marinas, y la '
+                                'presencia de las mareas.']}]},
  {'num': 3,
   'titulo': 'Cartografía y Sistemas de Información Geográfica',
   'secciones': [{'titulo': '3.1 LA CARTOGRAFÍA',
@@ -1354,7 +1452,14 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'acercarse a los polos.',
                                 'La línea del Ecuador es el paralelo 0°, y '
                                 'divide al planeta en hemisferio Norte y '
-                                'hemisferio Sur.']},
+                                'hemisferio Sur.',
+                                'El Trópico de Cáncer se ubica en el '
+                                "hemisferio norte, a una latitud de 23° 27'.",
+                                'El Trópico de Capricornio se ubica en el '
+                                "hemisferio sur, también a 23° 27' de "
+                                'latitud.',
+                                'Los Círculos Polares, Ártico y Antártico, '
+                                "se ubican a 66° 33' de latitud."]},
                      {'titulo': 'SISTEMA DE COORDENADAS UTM',
                       'items': ['El sistema de coordenadas UTM (Universal '
                                 'Transversal de Mercator) se basa en la '
@@ -1375,7 +1480,11 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 '(sin I ni O).',
                                 'El territorio peruano se ubica en las zonas '
                                 'o husos 17, 18 y 19, y en las bandas K, L y '
-                                'M.']},
+                                'M.',
+                                'La Red UTM se utiliza entre los 80° de '
+                                'latitud sur y los 84° de latitud norte; por '
+                                'encima se usa la Red Universal '
+                                'Estereográfica Polar (UPS).']},
                      {'titulo': 'TELEDETECCIÓN, GPS Y HUSOS HORARIOS',
                       'items': ['La teledetección es la técnica que permite '
                                 'obtener información de un objeto o área '
@@ -1396,7 +1505,10 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'separación de 15 grados.',
                                 'La Tierra está dividida en 24 husos '
                                 'horarios, ya que su circunferencia tiene '
-                                '360 grados.']}]},
+                                '360 grados.',
+                                'La convención universal que estableció los '
+                                'husos horarios se realizó en Washington en '
+                                'el año 1884.']}]},
  {'num': 4,
   'titulo': 'Mapas: Lectura e Interpretación',
   'secciones': [{'titulo': '4.1 CONCEPTO Y CLASIFICACIÓN',
@@ -1762,7 +1874,14 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Los mapas se clasifican según el tamaño de '
                                 'la escala y según su función.',
                                 'Según su función, los mapas pueden ser '
-                                'temáticos o generales.']},
+                                'temáticos o generales.',
+                                'Los mapas temáticos representan el '
+                                'territorio mediante símbolos de un aspecto '
+                                'concreto de la realidad, físico o humano.',
+                                'Los mapas generales representan de manera '
+                                'completa pero genérica los elementos de un '
+                                'territorio, como los que aparecen en los '
+                                'atlas.']},
                      {'titulo': 'ELEMENTOS DEL MAPA',
                       'items': ['El título del mapa se ubica en la parte '
                                 'superior y representa el contenido del '
@@ -1773,7 +1892,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'superior.',
                                 'La ubicación de un mapa se realiza mediante '
                                 'la red geográfica de meridianos y '
-                                'paralelos.']},
+                                'paralelos.',
+                                'La leyenda, llamada también signos '
+                                'convencionales, es el lenguaje visual que '
+                                'representa elementos del terreno como '
+                                'carreteras o líneas férreas.',
+                                'La escala indica cuántas veces se ha '
+                                'reducido el terreno real para representarlo '
+                                'en el mapa; por ejemplo, 1:100 000 '
+                                'significa una reducción de 100 000 veces.']},
                      {'titulo': 'LA CARTA GEOGRÁFICA NACIONAL DEL PERÚ',
                       'items': ['La Carta Geográfica Nacional es un gran '
                                 'mapa de nuestro país dividido en 501 hojas '
@@ -1784,7 +1911,13 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Militar.',
                                 'Originalmente se usó el sistema de la '
                                 'plancheta con escala de 1:200 000; hoy se '
-                                'emplean procedimientos modernos.']},
+                                'emplean procedimientos modernos.',
+                                'Cada hoja representa un área de 30 minutos '
+                                'de longitud por 30 minutos de latitud.',
+                                'Una hoja mide 55,4 cm x 54,1 cm, '
+                                'equivalente en el terreno a 55,4 km de '
+                                'largo por 54,1 km de ancho, con un área de '
+                                '2997,1 km².']},
                      {'titulo': 'PARTES DE LA HOJA O MAPA TOPOGRÁFICO',
                       'items': ['Una hoja o mapa topográfico está compuesta '
                                 'de tres partes: cuerpo, información '
@@ -1796,7 +1929,20 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La planimetría es la ubicación del espacio '
                                 'en un plano mediante simbología '
                                 'convencional, representando elementos '
-                                'naturales o culturales.']},
+                                'naturales o culturales.',
+                                'La altimetría está representada por las '
+                                'curvas de nivel, que indican la altitud '
+                                'sobre el nivel del mar.',
+                                'Las curvas de nivel son líneas a intervalos '
+                                'iguales, con un valor determinado de '
+                                'altitud.',
+                                'La información marginal constituye el borde '
+                                'de la carta; incluye nombre y número de la '
+                                'hoja, cuadro de hojas vecinas, coordenadas '
+                                'y escala.',
+                                'Los signos convencionales o leyenda '
+                                'permiten interpretar la simbología de la '
+                                'carta.']},
                      {'titulo': 'CLASES DE ESCALA Y CÁLCULO DE DISTANCIAS',
                       'items': ['Existen dos clases de escala: la escala '
                                 'numérica, expresada como una fracción, y la '
@@ -1806,7 +1952,14 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'terreno real.',
                                 'En un mapa de escala 1:250 000, cada '
                                 'centímetro del mapa equivale a 2,5 km en el '
-                                'terreno real.']},
+                                'terreno real.',
+                                'Para hallar la distancia real a partir del '
+                                'mapa, se aplica una regla de tres simple '
+                                'entre la escala y la medida tomada.',
+                                'Los tres casos típicos de ejercicios con '
+                                'escalas son: hallar la distancia en el '
+                                'terreno real, hallar la distancia en el '
+                                'mapa, y hallar la escala del mapa.']},
                      {'titulo': 'EJEMPLO: HALLANDO LA ESCALA DE UN MAPA',
                       'items': ['Para hallar la escala de un mapa, el número '
                                 '1 siempre se coloca al inicio de la '
@@ -1817,7 +1970,10 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Para hallar la distancia en el mapa a '
                                 'partir de la real, también se aplica una '
                                 'regla de tres, invirtiendo el '
-                                'procedimiento.']}]},
+                                'procedimiento.',
+                                'Las escalas gráficas, expresadas como un '
+                                'segmento graduado, también se pueden '
+                                'convertir a escala numérica.']}]},
  {'num': 5,
   'titulo': 'Relieve Terrestre: Origen y Procesos Dinámicos',
   'secciones': [{'titulo': '5.1 ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO Y '
@@ -2171,7 +2327,13 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'entre 1700° y 1800° C.',
                                 'El manto inferior o pirosfera está '
                                 'conformado por olivinos, peridotita y '
-                                'óxidos de magnesio, hierro y silicio.']},
+                                'óxidos de magnesio, hierro y silicio.',
+                                'El manto está limitado con la corteza por '
+                                'la Discontinuidad de Mohorovicic.',
+                                'La astenósfera es una capa débil, blanda y '
+                                'plástica del manto, ubicada entre 100 y 300 '
+                                'km de profundidad, clave para la Tectónica '
+                                'de Placas.']},
                      {'titulo': 'LA CORTEZA TERRESTRE',
                       'items': ['La corteza externa, llamada granítica o Si '
                                 'Al, es la corteza continental, formada por '
@@ -2224,7 +2386,22 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Pacífica, que abarca la mayor parte del '
                                 'Océano Pacífico.',
                                 'El Perú se ubica sobre la placa '
-                                'Sudamericana.']}]},
+                                'Sudamericana.',
+                                'En el sentido convergente, cuando una placa '
+                                'oceánica choca con una continental, se '
+                                'produce la subducción, originando bordes '
+                                'destructivos.',
+                                'En el sentido divergente, las placas se '
+                                'separan formando dorsales mesoceánicas y '
+                                'bordes constructivos.',
+                                'En el sentido lateral, las placas se '
+                                'desplazan una junto a otra originando '
+                                'fallas transformantes y bordes '
+                                'conservativos.',
+                                'La subducción consiste en el hundimiento de '
+                                'una placa oceánica bajo una placa '
+                                'continental, formando las fosas '
+                                'marinas.']}]},
  {'num': 6,
   'titulo': 'Espacio Geográfico Peruano: Región Andina',
   'secciones': [{'titulo': '6.1 LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
@@ -2548,8 +2725,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La Depresión de Bayovar.',
                                 'El lugar más lluvioso del Perú es Quince '
                                 'Mil.',
-                                'El lugar más caluroso del Perú es '
-                                'Neshuya.']}]},
+                                'El lugar más caluroso del Perú es Neshuya.',
+                                'El lugar más frío del Perú es Imata.',
+                                'La frontera más extensa del Perú es con '
+                                'Brasil.',
+                                'La frontera más corta del Perú es con '
+                                'Chile.',
+                                'El perímetro total del Perú, incluido el '
+                                'litoral, es aproximadamente de 10 156,8 '
+                                'km.']}]},
  {'num': 7,
   'titulo': 'Espacio Geográfico Peruano: Región Amazónica y Costa',
   'secciones': [{'titulo': '7.1 LA REGIÓN AMAZÓNICA',
@@ -2912,7 +3096,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Los cortes fluviales donde un río corta una '
                                 'cadena de montañas se llaman Pongos.',
                                 'El Pongo de Mainique fue formado por el río '
-                                'Urubamba.']}]},
+                                'Urubamba.',
+                                'La selva baja también se llama Omagua o '
+                                'Llanura Amazónica.',
+                                'La selva baja no es afectada por la '
+                                'tectónica andina porque se asienta sobre El '
+                                'antiguo Cratón Brasileño.',
+                                'Los lagos abandonados por los ríos que '
+                                'cambiaron de cauce se llaman Qochas.',
+                                'Las áreas bajas cubiertas de agua todo el '
+                                'año, con palmeras de aguaje, se llaman '
+                                'Tahuampas o aguajales.']}]},
  {'num': 8,
   'titulo': 'Hidrografía del Perú: Ríos y Lagos',
   'secciones': [{'titulo': '8.1 CARACTERÍSTICAS DE LOS RÍOS',
@@ -3215,7 +3409,9 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'El talweg o vaguada es la línea que une los '
                                 'puntos más profundos del canal fluvial.',
                                 'Los ríos afluentes son de menor jerarquía y '
-                                'desembocan en el río principal.']},
+                                'desembocan en el río principal.',
+                                'Los ríos efluentes son los que salen de '
+                                'otro río o de un lago.']},
                      {'titulo': 'LAS TRES VERTIENTES DEL PERÚ',
                       'items': ['La Autoridad Nacional del Agua (ANA) '
                                 'identificó 159 unidades hidrográficas en el '
@@ -3260,7 +3456,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Los ríos que salen de otro río o de un lago '
                                 'se denominan Efluentes.',
                                 'La ANA ha identificado en el Perú un total '
-                                'de unidades hidrográficas de 159.']}]},
+                                'de unidades hidrográficas de 159.',
+                                'La cuenca del Amazonas representa del '
+                                'territorio nacional 74,5%.',
+                                'La cuenca hidrográfica más extensa del '
+                                'Perú, de América y del mundo es la del '
+                                'Amazonas.',
+                                'La cuenca del Titicaca representa del '
+                                'territorio nacional 3,8%.',
+                                'El lago Titicaca es reconocido mundialmente '
+                                'por ser el lago Navegable más alto del '
+                                'mundo.']}]},
  {'num': 9,
   'titulo': 'Hidrografía del Perú: Mar Peruano',
   'secciones': [{'titulo': '9.1 EL MAR PERUANO',
@@ -3624,7 +3830,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Chile.',
                                 'La tesis de las 200 millas se declaró '
                                 'mediante el D.S. N° 781 en el gobierno de '
-                                'José Bustamante y Rivero.']}]},
+                                'José Bustamante y Rivero.',
+                                'La tesis de las 200 millas se proclamó en '
+                                'el año 1947.',
+                                'La región norte del mar peruano se extiende '
+                                'desde la Península de Illescas hasta Boca '
+                                'de Capones.',
+                                'El color del mar en la región norte se debe '
+                                'principalmente a La descarga de los ríos.',
+                                'La temperatura promedio del mar en la '
+                                'región central y sur es de 18°C.']}]},
  {'num': 10,
   'titulo': 'Atmósfera y Cambio Climático',
   'secciones': [{'titulo': '10.1 LA ATMÓSFERA Y SU COMPOSICIÓN',
@@ -3947,7 +4162,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La altitud promedio de la tropósfera es de '
                                 '12,5 km.',
                                 'En la tropósfera, la temperatura disminuye '
-                                '0,6°C cada 100 m.']}]},
+                                '0,6°C cada 100 m.',
+                                'El fenómeno de disminución de temperatura '
+                                'con la altitud en la tropósfera se llama '
+                                'Gradiente Térmico Vertical.',
+                                'La capa de ozono se ubica dentro de la '
+                                'Estratósfera.',
+                                'La capa de ozono se ubica entre los 24 y 30 '
+                                'km.',
+                                'La función principal de la capa de ozono es '
+                                'Impedir el paso de los rayos '
+                                'ultravioleta.']}]},
  {'num': 11,
   'titulo': 'Recursos Naturales, Conservación e Impacto Ambiental',
   'secciones': [{'titulo': '11.1 CONCEPTO Y CLASIFICACIÓN',
@@ -4251,7 +4476,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'natural, este se convierte en Recurso '
                                 'económico.',
                                 'Entre las aves guaneras del mar peruano '
-                                'figuran el guanay, piquero y Alcatraz.']}]},
+                                'figuran el guanay, piquero y Alcatraz.',
+                                'El hierro se explota principalmente en la '
+                                'localidad de Marcona.',
+                                'Los fosfatos como fertilizante se explotan '
+                                'en Bayóvar, Piura.',
+                                'Entre los minerales de la región andina '
+                                'figuran el cobre, plomo, zinc, oro y Plata.',
+                                'La vicuña, el cóndor y la chinchilla son '
+                                'fauna representativa de La región '
+                                'andina.']}]},
  {'num': 12,
   'titulo': 'Riesgo de Desastres en el Perú',
   'secciones': [{'titulo': '12.1 EL SINAGERD',
@@ -4580,7 +4814,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'intensamente la vida cotidiana de una '
                                 'comunidad.',
                                 'El riesgo se calcula mediante la fórmula '
-                                'Amenaza × Vulnerabilidad.']}]},
+                                'Amenaza × Vulnerabilidad.',
+                                'Para que exista riesgo se requiere la '
+                                'presencia de Amenaza y vulnerabilidad '
+                                'juntas.',
+                                'La amenaza se define como la probabilidad '
+                                'de que ocurra Un fenómeno que pueda poner '
+                                'en peligro a las personas.',
+                                'Las amenazas naturales se originan por La '
+                                'naturaleza misma.',
+                                'La vulnerabilidad depende, entre otros '
+                                'factores, de La ubicación y tipo de '
+                                'vivienda.']}]},
  {'num': 13,
   'titulo': 'Dinámica Poblacional en el Perú',
   'secciones': [{'titulo': '13.1 DEMOGRAFÍA Y DEMOGEOGRAFÍA',
@@ -4906,7 +5151,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'considera nacimientos, muertes y La '
                                 'migración.',
                                 'Según el INEI, la población del Perú al '
-                                '2017 superaba 31 237 385 habitantes.']}]},
+                                '2017 superaba 31 237 385 habitantes.',
+                                'El organismo central y rector del Sistema '
+                                'Estadístico Nacional del Perú es El INEI.',
+                                'El INEI depende directamente de El '
+                                'Presidente del Consejo de Ministros.',
+                                'El antecesor del INEI, creado en 1969, se '
+                                'llamó ONEC.',
+                                'La población peruana se caracteriza por ser '
+                                'Heterogénea, multirracial y '
+                                'multicultural.']}]},
  {'num': 14,
   'titulo': 'Actividades Económicas Extractivas en el Perú',
   'secciones': [{'titulo': '14.1 LA PESCA EN EL MAR PERUANO',
@@ -5241,7 +5495,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La anchoveta sirve de alimento principal '
                                 'para Peces mayores y aves guaneras.',
                                 'El principal puerto pesquero del Perú, '
-                                'según datos de 2018, fue Chimbote.']}]},
+                                'según datos de 2018, fue Chimbote.',
+                                'En la selva, una técnica tradicional de '
+                                'pesca es el uso de Flecha y arpón.',
+                                'El paiche se pesca principalmente en Las '
+                                'cochas amazónicas.',
+                                'El paiche se captura tradicionalmente con '
+                                'Arpón.',
+                                'La pesca de camarón en la costa se realiza '
+                                'en ríos de Arequipa, Lima e Ica.']}]},
  {'num': 15,
   'titulo': 'Actividades Económicas Reproductivas en el Perú',
   'secciones': [{'titulo': '15.1 LA AGRICULTURA EN EL PERÚ',
@@ -5573,7 +5835,18 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'por ser Intensiva, tecnificada y '
                                 'mecanizada.',
                                 'En la costa se pueden obtener anualmente '
-                                'Hasta dos cosechas.']}]},
+                                'Hasta dos cosechas.',
+                                'En la costa predominan los cultivos '
+                                'industriales como la caña de azúcar y El '
+                                'algodón.',
+                                'La agricultura de la costa goza de '
+                                'asistencia Crediticia por bancos y '
+                                'entidades financieras.',
+                                'La agricultura de la región andina se '
+                                'caracteriza por ser Extensiva y '
+                                'tradicional.',
+                                'En la región andina, el cultivo se realiza '
+                                'principalmente en época de Lluvias.']}]},
  {'num': 16,
   'titulo': 'Actividades del Transporte en el Perú',
   'secciones': [{'titulo': '16.1 CARRETERAS LONGITUDINALES DEL PERÚ',
@@ -6323,7 +6596,15 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Cusco se ubica en la provincia de La '
                                 'Convención.',
                                 'El departamento del Cusco limita por el '
-                                'norte con Ucayali.']}]},
+                                'norte con Ucayali.',
+                                'El departamento del Cusco limita por el sur '
+                                'con Arequipa.',
+                                'El departamento del Cusco limita por el '
+                                'este y sureste con Puno.',
+                                'La región andina o sierra representa del '
+                                'territorio cusqueño 53%.',
+                                'La selva alta o faja sub andina representa '
+                                'del territorio del Cusco 28%.']}]},
  {'num': 19,
   'titulo': 'Geografía de América',
   'secciones': [{'titulo': '19.1 GENERALIDADES DEL CONTINENTE',
@@ -6614,7 +6895,17 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La altitud aproximada del Aconcagua es de 6 '
                                 '960 m.',
                                 'América está dividida políticamente en un '
-                                'número de países igual a 35.']}]},
+                                'número de países igual a 35.',
+                                'América del Sur se extiende, por el sur, '
+                                'hasta La isla Diego Ramírez, Cabo de '
+                                'Hornos.',
+                                'El Macizo Brasileño se caracteriza por '
+                                'presentar un relieve de Meseta, de escasa '
+                                'elevación.',
+                                'América del Sur posee del agua dulce del '
+                                'planeta aproximadamente 26%.',
+                                'El río más grande del planeta se ubica en '
+                                'Sudamérica.']}]},
  {'num': 20,
   'titulo': 'Geografía de Europa, Asia, África, Antártida y Oceanía',
   'secciones': [{'titulo': '20.1 EUROPA',

@@ -400,7 +400,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Derecho Subjetivo es el conjunto de '
                                 'prerrogativas, facultades y potestades que '
                                 'tiene una persona, como el derecho a la '
-                                'vida, a la libertad o a la propiedad.']},
+                                'vida, a la libertad o a la propiedad.',
+                                'Elementos del derecho subjetivo: el sujeto '
+                                'activo (titular del derecho), el sujeto '
+                                'pasivo (sobre quien recae el deber) y el '
+                                'objeto del derecho.']},
                      {'titulo': 'FUENTES DEL DERECHO',
                       'items': ['Las fuentes del Derecho son los '
                                 'procedimientos por los que se produce '
@@ -425,7 +429,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'cuestión determinada.',
                                 'La doctrina son los estudios especializados '
                                 'del derecho; carece de fuerza legal '
-                                'obligatoria.']},
+                                'obligatoria.',
+                                'Según el artículo 139 de la Constitución '
+                                'vigente, los principios generales del '
+                                'derecho tienen fuerza de ley.']},
                      {'titulo': 'LA LEY: CONCEPTO Y CARACTERÍSTICAS',
                       'items': ['La Ley es toda norma jurídica emanada del '
                                 'poder público, destinada a regular la '
@@ -445,7 +452,9 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'derogada.',
                                 'Es irretroactiva: regula hechos posteriores '
                                 'a su sanción, no rige sobre conductas '
-                                'anteriores.']},
+                                'anteriores.',
+                                'Es coercitiva: su incumplimiento implica la '
+                                'imposición de una pena o castigo.']},
                      {'titulo': 'LA MORAL Y SUS RELACIONES CON EL DERECHO',
                       'items': ['La Moral es la forma de conducta que la '
                                 'convivencia fija entre los hombres; '
@@ -812,7 +821,12 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'todas partes está encadenado».',
                                 'Cuando la libertad se ejerce sin '
                                 'responsabilidad por los propios actos, se '
-                                'habla de libertinaje.']}]},
+                                'habla de libertinaje.',
+                                'La igualdad es una equivalencia o '
+                                'conformidad en la calidad, cantidad o forma '
+                                'de dos o más elementos.',
+                                'La igualdad se asocia con otras palabras '
+                                'como la justicia y la solidaridad.']}]},
  {'num': 3,
   'titulo': 'Persona y Sociedad',
   'secciones': [{'titulo': '3.1 LA PERSONA: ENFOQUE CONSTITUCIONAL Y LEGAL',
@@ -1137,7 +1151,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'probar cuál de dos personas murió primero, '
                                 'se las reputa muertas al mismo tiempo, sin '
                                 'transmisión de derechos hereditarios entre '
-                                'ellas.']},
+                                'ellas.',
+                                'Si dos personas perecen en un peligro '
+                                'común, se presume que la muerte fue '
+                                'simultánea, salvo prueba de que fue '
+                                'sucesiva.',
+                                'La declaración de muerte presunta procede '
+                                'cuando hay certeza de muerte sin que el '
+                                'cadáver se encuentre o se pueda reconocer.',
+                                'Entre los efectos de la declaración de '
+                                'muerte presunta están: poner fin a la '
+                                'persona humana, disolver el matrimonio del '
+                                'desaparecido y abrir la sucesión.']},
                      {'titulo': 'EXISTENCIA Y CAPACIDAD DE LA PERSONA',
                       'items': ['La existencia de la persona natural '
                                 'comienza con la concepción y culmina con la '
@@ -1551,7 +1576,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'cívicos y culturales.',
                                 'El artículo 4 de la Constitución peruana '
                                 'reconoce a la familia como un instituto '
-                                'natural y fundamental de la sociedad.']},
+                                'natural y fundamental de la sociedad.',
+                                'El artículo 16 de la Declaración Universal '
+                                'de los Derechos Humanos reconoce el derecho '
+                                'de hombres y mujeres a casarse y fundar una '
+                                'familia.']},
                      {'titulo': 'PARENTESCO: GRADOS Y LÍNEAS',
                       'items': ['El tronco es la persona a quien reconocen '
                                 'como ascendiente común las personas de un '
@@ -1570,7 +1599,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El parentesco espiritual se establece con '
                                 'motivo de un sacramento como el bautismo, '
                                 'la confirmación o el matrimonio, entre '
-                                'padrinos y ahijados.']},
+                                'padrinos y ahijados.',
+                                'La adopción, regulada en el artículo 238 '
+                                'del Código Civil, otorga al adoptado los '
+                                'mismos derechos y obligaciones que un hijo '
+                                'matrimonial.']},
                      {'titulo': 'INSTITUCIONES DE AMPARO FAMILIAR: LA PATRIA '
                                 'POTESTAD',
                       'items': ['Etimológicamente, «patria potestad» '
@@ -1615,7 +1648,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'a falta de las demás, para niños huérfanos '
                                 'o abandonados.',
                                 'La curatela protege a la persona y bienes '
-                                'del mayor de edad incapacitado.']}]},
+                                'del mayor de edad incapacitado.',
+                                'Quien ejerce la curatela se llama curador; '
+                                'el adulto que la recibe se llama curado.',
+                                'Los apoyos son formas de asistencia '
+                                'libremente elegidas por una persona mayor '
+                                'de edad para facilitar el ejercicio de sus '
+                                'derechos.']}]},
  {'num': 5,
   'titulo': 'Nación',
   'secciones': [{'titulo': '5.1 CONCEPTO Y ELEMENTOS',
@@ -2149,7 +2188,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Anthony D. Smith define la nación como una '
                                 'comunidad humana con nombre propio, '
                                 'asociada a un territorio nacional, con '
-                                'mitos comunes de antepasados.']},
+                                'mitos comunes de antepasados.',
+                                'Los elementos esenciales de la nación son '
+                                'la tradición histórica y la conciencia '
+                                'nacional.',
+                                'Los elementos secundarios de la nación son '
+                                'el territorio, la raza, la religión, el '
+                                'idioma y la unidad política.']},
                      {'titulo': 'NACIONALIDAD: ADQUISICIÓN Y RENUNCIA',
                       'items': ['La nacionalidad es una capacidad especial '
                                 'que define derechos y obligaciones '
@@ -2163,8 +2208,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'También son peruanos por nacimiento los '
                                 'nacidos en el exterior de padre o madre '
                                 'peruanos, inscritos en el registro '
-                                'correspondiente durante su minoría de '
-                                'edad.']},
+                                'correspondiente durante su minoría de edad.',
+                                'Se adquiere la nacionalidad peruana también '
+                                'por naturalización o por opción, siempre '
+                                'que se tenga residencia en el Perú.',
+                                'La Ley N° 26574, Ley de Nacionalidad, '
+                                'regula en su Capítulo IV la doble '
+                                'nacionalidad.',
+                                'Según el artículo 9 de la Ley de '
+                                'Nacionalidad, los peruanos de nacimiento '
+                                'que adoptan otra nacionalidad no pierden la '
+                                'suya, salvo renuncia expresa.']},
                      {'titulo': 'IDENTIDAD NACIONAL Y LA PERUANIDAD',
                       'items': ['La identidad nacional es el sentimiento '
                                 'subjetivo del individuo de pertenecer a una '
@@ -2174,7 +2228,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'La peruanidad es el sentimiento de '
                                 'identidad y unidad profunda que vincula a '
                                 'los pueblos del Perú con sus tradiciones y '
-                                'la fe en su futuro.']},
+                                'la fe en su futuro.',
+                                'Entre los aspectos que fundamentan la '
+                                'peruanidad figura la etapa de cultura '
+                                'prehispánica, que incluye Caral y las '
+                                'culturas Chavín, Paracas y Nazca.']},
                      {'titulo': 'SISTEMA DE DEFENSA NACIONAL',
                       'items': ['El Sistema de Defensa Nacional garantiza la '
                                 'seguridad integral del Estado; lo preside y '
@@ -2186,7 +2244,12 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Las Fuerzas Armadas (Ejército, Marina de '
                                 'Guerra y Fuerza Aérea) garantizan la '
                                 'independencia, soberanía e integridad '
-                                'territorial.']},
+                                'territorial.',
+                                'La Policía Nacional tiene como finalidad '
+                                'garantizar y restablecer el orden interno.',
+                                'El Presidente de la República es el Jefe '
+                                'Supremo de las Fuerzas Armadas y de la '
+                                'Policía Nacional.']},
                      {'titulo': 'LOS SÍMBOLOS PATRIOS: LA BANDERA',
                       'items': ['La vexilología es el estudio de las '
                                 'banderas; quien se dedica a ella es el '
@@ -2196,7 +2259,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'bandera, el escudo y el himno nacional.',
                                 'La primera bandera republicana fue creada '
                                 'por José de San Martín el 21 de octubre de '
-                                '1820.']},
+                                '1820.',
+                                'La bandera definitiva fue establecida por '
+                                'el Congreso Constituyente, bajo Simón '
+                                'Bolívar, el 25 de febrero de 1825.',
+                                'Según Abraham Valdelomar, San Martín se '
+                                'inspiró en los colores de las pariguanas, '
+                                'flamencos de alas rojas y pecho blanco.',
+                                'El color rojo de la bandera simboliza la '
+                                'sangre de los héroes; el color blanco '
+                                'representa la pureza y la paz.']},
                      {'titulo': 'EL ESCUDO Y EL HIMNO NACIONAL',
                       'items': ['El Escudo Nacional se estableció el 25 de '
                                 'febrero de 1825, mediante ley promulgada '
@@ -2206,7 +2278,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'vegetal), y la cornucopia (reino mineral).',
                                 'La letra del Himno Nacional es de José de '
                                 'la Torre Ugarte, y la música de José '
-                                'Bernardo Alcedo.']},
+                                'Bernardo Alcedo.',
+                                'La Ley del 15 de abril de 1822 reconoció el '
+                                'Himno Nacional del Perú, compuesto de seis '
+                                'estrofas.',
+                                'Actualmente solo se cantan la primera y '
+                                'sexta estrofa del himno, según Resolución '
+                                'Ministerial de 2010.',
+                                'La escarapela, de color blanco y encarnado, '
+                                'es un símbolo patrio no oficial pero de uso '
+                                'arraigado.']},
                      {'titulo': 'PATRIMONIO CULTURAL Y NATURAL',
                       'items': ['Según la Convención de la UNESCO de 1972, '
                                 'el patrimonio cultural se compone de '
@@ -2218,7 +2299,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Ministerio de Cultura es el principal '
                                 'organismo encargado de la defensa, '
                                 'preservación y restauración de los bienes '
-                                'culturales del país.']}]},
+                                'culturales del país.',
+                                'La Biblioteca Nacional del Perú conduce las '
+                                'acciones de defensa y conservación del '
+                                'patrimonio documental-bibliográfico de la '
+                                'Nación.',
+                                'El Archivo General de la Nación se encarga '
+                                'del acopio y protección del patrimonio '
+                                'documental, y fue creado en 1861.',
+                                'El patrimonio natural está constituido por '
+                                'los animales, plantas y territorios con '
+                                'valor excepcional desde el punto de vista '
+                                'estético, científico o ambiental.']}]},
  {'num': 6,
   'titulo': 'El Estado',
   'secciones': [{'titulo': '6.1 CONCEPTO Y ELEMENTOS',
@@ -2623,7 +2715,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'territorial.',
                                 'La organización jurídica es el esquema '
                                 'legal del Estado, integrado por la '
-                                'Constitución, leyes y decretos.']},
+                                'Constitución, leyes y decretos.',
+                                'La soberanía interna es la supremacía sobre '
+                                'los demás poderes sociales del territorio; '
+                                'la soberanía externa permite relacionarse '
+                                'con otros Estados como iguales.']},
                      {'titulo': 'FORMAS DE ESTADO SEGÚN EL PROCESO HISTÓRICO',
                       'items': ['El Estado Constitucional surgió en '
                                 'Inglaterra a mediados del siglo XVII, para '
@@ -2663,7 +2759,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'de la aristocracia) y demagogia '
                                 '(deformación de la democracia).',
                                 'La tiranía ocurre cuando el único '
-                                'gobernante abusa del poder.']},
+                                'gobernante abusa del poder.',
+                                'La oligarquía ocurre cuando el grupo '
+                                'gobernante atiende sus propios intereses en '
+                                'vez del bien común.',
+                                'La demagogia ocurre cuando el gobernante '
+                                'halaga al pueblo con regalos para '
+                                'convertirlo en una masa servil.']},
                      {'titulo': 'OTRAS FORMAS DE GOBIERNO',
                       'items': ['El gobierno de jure, o de derecho, es el '
                                 'que está de acuerdo con la Constitución.',
@@ -3215,7 +3317,18 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'adaptándolos.',
                                 'Las ideológicas están cargadas de un '
                                 'programa ideológico; las utilitarias tienen '
-                                'carácter neutral.']},
+                                'carácter neutral.',
+                                'Según la clasificación ontológica de '
+                                'Loewenstein, la Constitución normativa es '
+                                'efectivamente vivida por gobernantes y '
+                                'gobernados.',
+                                'La Constitución nominal, según Loewenstein, '
+                                'no logra concordancia entre las normas y la '
+                                'realidad social y económica.',
+                                'La Constitución semántica, según '
+                                'Loewenstein, sirve para estabilizar y '
+                                'eternizar la intervención de quienes '
+                                'dominan el poder.']},
                      {'titulo': 'LA JERARQUÍA NORMATIVA (PIRÁMIDE DE KELSEN)',
                       'items': ['El conjunto de normas legales vigentes se '
                                 'organiza jerárquicamente en forma de '
@@ -3234,7 +3347,20 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Los tratados son acuerdos que el Perú '
                                 'celebra con otros Estados; el Presidente de '
                                 'la República está facultado para '
-                                'celebrarlos.']}]},
+                                'celebrarlos.',
+                                'Las leyes orgánicas instauran el marco '
+                                'normativo de instituciones del Estado; '
+                                'requieren mayoría calificada del Congreso.',
+                                'Las leyes ordinarias regulan aspectos '
+                                'generales o específicos, dictadas por el '
+                                'Congreso.',
+                                'El Decreto de Urgencia lo dicta el '
+                                'Presidente y lo aprueba el Consejo de '
+                                'Ministros; tiene fuerza de ley solo en '
+                                'materia económica y financiera.',
+                                'El Congreso de la República es unicameral y '
+                                'está integrado por 130 congresistas '
+                                'elegidos directamente.']}]},
  {'num': 8,
   'titulo': 'Derechos Civiles y Políticos',
   'secciones': [{'titulo': '8.1 EL PACTO INTERNACIONAL DE DERECHOS CIVILES Y '
@@ -3664,7 +3790,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El PIDCP entró en vigor el 23 de marzo de '
                                 '1976, y ha sido ratificado por 167 Estados.',
                                 'El PIDCP consta de 6 partes, 53 artículos y '
-                                'dos protocolos facultativos.']},
+                                'dos protocolos facultativos.',
+                                'El Primer Protocolo Facultativo regula los '
+                                'mecanismos por los que las personas pueden '
+                                'iniciar denuncias contra los Estados.',
+                                'El Segundo Protocolo Facultativo está '
+                                'destinado a la abolición de la pena de '
+                                'muerte.']},
                      {'titulo': 'CONCEPTO DE DERECHOS CIVILES',
                       'items': ['Los derechos civiles son reconocidos por '
                                 'todos los ciudadanos y por la ley, dentro '
@@ -3676,7 +3808,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'John Locke sostuvo que los derechos '
                                 'naturales a la vida, la libertad y la '
                                 'propiedad debían convertirse en derechos '
-                                'civiles protegidos por el Estado.']},
+                                'civiles protegidos por el Estado.',
+                                'El derecho a la vida es considerado el '
+                                'primero de todos los derechos, pues es '
+                                'generador de cualquier otro derecho '
+                                'posible.',
+                                'El derecho a la integridad física y '
+                                'psicológica protege a la persona de '
+                                'mutilaciones, torturas y tratos crueles e '
+                                'inhumanos.',
+                                'El derecho a la identidad comprende el '
+                                'derecho a tener un nombre y a un documento '
+                                'que permita la identificación de la '
+                                'persona.']},
                      {'titulo': 'CONCEPTO DE DERECHOS POLÍTICOS',
                       'items': ['Los derechos políticos son los reconocidos '
                                 'por la Constitución y las leyes, que '
@@ -3708,7 +3852,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'La iniciativa en la formación de leyes '
                                 'requiere firmas de no menos del 0,3% del '
                                 'electorado; el Congreso tiene 120 días para '
-                                'dictaminarla.']},
+                                'dictaminarla.',
+                                'El referéndum permite pronunciarse sobre la '
+                                'reforma de la Constitución, la aprobación o '
+                                'desaprobación de leyes.',
+                                'El referéndum puede ser solicitado por no '
+                                'menos del 10% del electorado nacional.',
+                                'El resultado del referéndum requiere la '
+                                'mitad más uno de votos favorables, y ser '
+                                'aprobado por no menos del 30% del total de '
+                                'votantes.',
+                                'Una norma aprobada por referéndum no puede '
+                                'modificarse dentro de los dos años '
+                                'siguientes, salvo nuevo referéndum.']},
                      {'titulo': 'DERECHOS DE CONTROL DE LOS CIUDADANOS',
                       'items': ['La revocatoria es el derecho de la '
                                 'ciudadanía para destituir de sus cargos a '
@@ -3718,8 +3874,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'y último año de mandato, salvo el caso de '
                                 'magistrados.',
                                 'Para solicitar la revocatoria, la solicitud '
-                                'no requiere ser probada, solo '
-                                'fundamentada.']}]},
+                                'no requiere ser probada, solo fundamentada.',
+                                'Se requiere la firma de al menos el 25% de '
+                                'los electores de una autoridad, con un '
+                                'máximo de 400 000 firmas.',
+                                'Para revocar a una autoridad se requiere la '
+                                'mitad más uno de votos, y que haya asistido '
+                                'al menos el 50% de los electores hábiles.',
+                                'Si la revocatoria no procede, no se admite '
+                                'una nueva petición hasta después de dos '
+                                'años.',
+                                'Tras la revocatoria, asume el cargo quien '
+                                'alcanzó el siguiente lugar en votos de la '
+                                'misma lista.']}]},
  {'num': 9,
   'titulo': 'Derechos Económicos, Sociales y Culturales',
   'secciones': [{'titulo': '9.1 CONCEPTO Y FUNDAMENTO',
@@ -4674,7 +4841,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'gobierno y entidad representativa de la '
                                 'Nación.',
                                 'Según el artículo 91 de la Constitución, el '
-                                'Poder Legislativo reside en el Congreso.']},
+                                'Poder Legislativo reside en el Congreso.',
+                                'El Poder Legislativo y el Congreso son '
+                                'categorías conceptuales distintas: existen '
+                                'otras instituciones autónomas que también '
+                                'ejercen función legislativa.']},
                      {'titulo': 'OTRAS INSTITUCIONES CON FACULTAD '
                                 'LEGISLATIVA',
                       'items': ['El Presidente de la República puede expedir '
@@ -4683,7 +4854,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'En regímenes de facto, se gobierna mediante '
                                 'Decretos Ley.',
                                 'Los Gobiernos Regionales expiden normas con '
-                                'rango de ley llamadas normas generales.']},
+                                'rango de ley llamadas normas generales.',
+                                'Los Gobiernos Locales expiden normas con '
+                                'rango de ley llamadas Ordenanzas '
+                                'Municipales.']},
                      {'titulo': 'LA FUNCIÓN LEGISLATIVA Y SUS FASES',
                       'items': ['El artículo 102 de la Constitución '
                                 'establece que dar leyes es atribución del '
@@ -4693,7 +4867,20 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'ley.',
                                 'La «iniciativa popular» en el Perú requiere '
                                 'representar el 0,3% de la población '
-                                'electoral.']},
+                                'electoral.',
+                                'La fase constitutiva corresponde a la '
+                                'deliberación y aprobación de la ley por el '
+                                'Congreso.',
+                                'Según el artículo 105, todo proyecto de ley '
+                                'debe ser previamente dictaminado por una '
+                                'comisión.',
+                                'Las leyes ordinarias se aprueban por '
+                                'mayoría simple; las leyes orgánicas '
+                                'requieren el voto de más de la mitad del '
+                                'número legal de congresistas.',
+                                'La promulgación es el acto por el cual el '
+                                'Presidente de la República rubrica la ley y '
+                                'ordena su publicación.']},
                      {'titulo': 'LA FUNCIÓN REPRESENTATIVA Y COMPOSICIÓN DEL '
                                 'CONGRESO',
                       'items': ['Mediante la función representativa, los '
@@ -4704,7 +4891,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'directo, por un periodo de 5 años.',
                                 'Los congresistas no pueden ser reelegidos '
                                 'de manera inmediata para un nuevo periodo '
-                                'en el mismo cargo.']},
+                                'en el mismo cargo.',
+                                'El Congreso peruano consta de cámara única, '
+                                'es decir, es unicameral.',
+                                'Solo la Constitución de 1826 reconoció un '
+                                'parlamento tricameral, con tribunos, '
+                                'censores y senadores.',
+                                'Una ventaja del sistema unicameral es la '
+                                'celeridad en la aprobación de normas; una '
+                                'desventaja es la fácil sumisión al Poder '
+                                'Ejecutivo.']},
                      {'titulo': 'ÓRGANOS DEL PODER LEGISLATIVO',
                       'items': ['El Pleno del Congreso es la máxima asamblea '
                                 'deliberativa, integrada por todos los '
@@ -4714,7 +4910,14 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'compuesta por el Presidente y tres '
                                 'Vicepresidentes.',
                                 'Las Comisiones Ordinarias se encargan del '
-                                'estudio y dictamen de asuntos ordinarios.']},
+                                'estudio y dictamen de asuntos ordinarios.',
+                                'La Comisión Permanente se instala dentro de '
+                                'los 15 días útiles posteriores a la '
+                                'instalación del periodo de sesiones, y no '
+                                'excede el 25% de congresistas.',
+                                'Los Grupos Parlamentarios son conjuntos de '
+                                'congresistas que comparten ideas o '
+                                'intereses afines.']},
                      {'titulo': 'ATRIBUCIONES DEL CONGRESO Y FUNCIÓN DEL '
                                 'CARGO',
                       'items': ['El Congreso tiene, además de la '
@@ -4726,7 +4929,20 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'En la formación de la orientación política '
                                 'general, el Congreso aprueba tratados '
                                 'internacionales y declara la guerra y la '
-                                'paz.']}]},
+                                'paz.',
+                                'En la gestión financiera, el Congreso '
+                                'aprueba el Presupuesto de la República y la '
+                                'Cuenta General.',
+                                'El Congreso designa a los magistrados del '
+                                'Tribunal Constitucional, al Defensor del '
+                                'Pueblo, y a directores del BCR.',
+                                'La función de congresista es de tiempo '
+                                'completo; le está prohibido ejercer otra '
+                                'profesión durante las horas de '
+                                'funcionamiento.',
+                                'El mandato del congresista es incompatible '
+                                'con otra función pública, excepto la de '
+                                'Ministro de Estado.']}]},
  {'num': 11,
   'titulo': 'El Poder Ejecutivo',
   'secciones': [{'titulo': '11.1 CONCEPTO Y ORGANIZACIÓN',
@@ -5246,8 +5462,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'de la administración del Estado y de la '
                                 'ejecución de las leyes.',
                                 'Integran el Poder Ejecutivo el Presidente '
-                                'de la República y el Consejo de '
-                                'Ministros.']},
+                                'de la República y el Consejo de Ministros.',
+                                'En el sistema presidencial, los poderes '
+                                'Ejecutivo, Legislativo y Judicial son '
+                                'autónomos e independientes entre sí.']},
                      {'titulo': 'ELECCIÓN DEL PRESIDENTE',
                       'items': ['Para ser presidente se requiere ser peruano '
                                 'de nacimiento, tener 35 años de edad como '
@@ -5258,7 +5476,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'inmediata.',
                                 'Para ganar en primera vuelta se requiere '
                                 'obtener la mayoría absoluta, sin computar '
-                                'votos nulos ni en blanco.']},
+                                'votos nulos ni en blanco.',
+                                'Si ningún candidato logra la mayoría '
+                                'absoluta, se realiza una segunda elección '
+                                'entre los dos candidatos con mayor '
+                                'votación.',
+                                'Según el artículo 116 de la Constitución, '
+                                'el Presidente jura y asume el cargo ante el '
+                                'Congreso el 28 de julio del año de la '
+                                'elección.']},
                      {'titulo': 'ATRIBUCIONES DEL PRESIDENTE',
                       'items': ['Entre las atribuciones del Presidente están '
                                 'cumplir y hacer cumplir la Constitución, '
@@ -5270,7 +5496,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Presidente dirige mensajes al Congreso, '
                                 'obligatoriamente en forma personal y por '
                                 'escrito, al instalarse la primera '
-                                'legislatura ordinaria anual.']},
+                                'legislatura ordinaria anual.',
+                                'El Presidente tiene la potestad de '
+                                'reglamentar las leyes sin transgredirlas, '
+                                'dictando decretos y resoluciones.',
+                                'El Presidente dirige la política exterior y '
+                                'las relaciones internacionales, y celebra y '
+                                'ratifica tratados.']},
                      {'titulo': 'VACANCIA Y SUSPENSIÓN DEL PRESIDENTE',
                       'items': ['La Presidencia vaca por muerte, incapacidad '
                                 'moral o física declarada por el Congreso, '
@@ -5280,7 +5512,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'permiso del Congreso o no regresa a tiempo.',
                                 'El ejercicio de la Presidencia se suspende '
                                 'por incapacidad temporal o por estar '
-                                'sometido a proceso judicial.']},
+                                'sometido a proceso judicial.',
+                                'Según el artículo 117, el Presidente solo '
+                                'puede ser acusado durante su periodo por '
+                                'traición a la patria o por impedir '
+                                'elecciones.',
+                                'Por impedimento del Presidente, asume el '
+                                'Primer Vicepresidente; en su defecto, el '
+                                'Segundo; en defecto de ambos, el Presidente '
+                                'del Congreso.']},
                      {'titulo': 'EL CONSEJO DE MINISTROS',
                       'items': ['El Consejo de Ministros es el organismo del '
                                 'Poder Ejecutivo constituido por la reunión '
@@ -5290,7 +5530,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El Consejo está conformado por los '
                                 'ministros y el Presidente del Consejo de '
                                 'Ministros, o premier, quien puede tener '
-                                'cartera o no.']},
+                                'cartera o no.',
+                                'Para ser ministro se requiere ser peruano '
+                                'de nacimiento, ciudadano en ejercicio, y '
+                                'tener 25 años como mínimo.',
+                                'Actualmente existen 18 ministerios en el '
+                                'Perú.',
+                                'Entre las atribuciones del Consejo de '
+                                'Ministros está aprobar los proyectos de ley '
+                                'que el Presidente somete al Congreso.']},
                      {'titulo': 'INTERPELACIÓN Y DISOLUCIÓN DEL CONGRESO',
                       'items': ['La interpelación es la facultad de los '
                                 'congresistas de requerir a los ministros '
@@ -5301,7 +5549,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'un voto de confianza o un voto de censura.',
                                 'Toda moción de censura debe ser presentada '
                                 'por no menos del 25% del número legal de '
-                                'congresistas.']},
+                                'congresistas.',
+                                'La censura requiere el voto de más de la '
+                                'mitad del número legal de miembros del '
+                                'Congreso.',
+                                'El Presidente puede disolver el Congreso si '
+                                'este ha censurado o negado su confianza a '
+                                'dos Consejos de Ministros.',
+                                'Las nuevas elecciones tras la disolución se '
+                                'realizan dentro de los cuatro meses; no '
+                                'puede disolverse en el último año de '
+                                'mandato ni en estado de sitio.']},
                      {'titulo': 'REGÍMENES DE EXCEPCIÓN',
                       'items': ['El artículo 137 de la Constitución '
                                 'establece dos regímenes de excepción: '
@@ -5311,7 +5569,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Consejo de Ministros.',
                                 'El hábeas corpus y el amparo no se '
                                 'suspenden durante los regímenes de '
-                                'excepción.']}]},
+                                'excepción.',
+                                'El estado de emergencia se declara por '
+                                'perturbación de la paz, catástrofe, o '
+                                'graves circunstancias; dura hasta 60 días.',
+                                'Durante el estado de emergencia asumen el '
+                                'control las Fuerzas Armadas, según disponga '
+                                'el Presidente.',
+                                'El estado de sitio se declara por invasión, '
+                                'guerra exterior o guerra civil; dura hasta '
+                                '45 días.']}]},
  {'num': 12,
   'titulo': 'Poder Judicial',
   'secciones': [{'titulo': '12.1 CONCEPTO Y AUTONOMÍA',
@@ -5704,7 +5971,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'judicial previo.',
                                 'En caso de duda o conflicto entre leyes '
                                 'penales, se aplica la ley más favorable al '
-                                'procesado.']}]},
+                                'procesado.',
+                                'El principio de no ser condenado en '
+                                'ausencia.',
+                                'Está prohibido revivir procesos fenecidos '
+                                'con resolución ejecutoriada; la amnistía y '
+                                'el indulto producen efectos de cosa '
+                                'juzgada.',
+                                'El derecho de defensa no puede ser negado '
+                                'en ningún estado del proceso.']}]},
  {'num': 13,
   'titulo': 'Organismos Constitucionales Autónomos',
   'secciones': [{'titulo': '13.1 CONCEPTO Y RELACIÓN',
@@ -6246,7 +6521,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Los miembros del Tribunal Constitucional '
                                 'son elegidos por el Congreso con el voto '
                                 'favorable de los dos tercios del número '
-                                'legal de sus miembros.']},
+                                'legal de sus miembros.',
+                                'No pueden ser elegidos magistrados del '
+                                'Tribunal Constitucional los jueces o '
+                                'fiscales que no han dejado el cargo con un '
+                                'año de anticipación.']},
                      {'titulo': 'EL MINISTERIO PÚBLICO',
                       'items': ['El Ministerio Público es el órgano '
                                 'persecutor del delito, y es presidido por '
@@ -6257,7 +6536,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'dos años más.',
                                 'Según el artículo 159, el Ministerio '
                                 'Público conduce desde su inicio la '
-                                'investigación del delito.']},
+                                'investigación del delito.',
+                                'La Policía Nacional está obligada a cumplir '
+                                'los mandatos del Ministerio Público en el '
+                                'ámbito de su función.']},
                      {'titulo': 'LA JUNTA NACIONAL DE JUSTICIA',
                       'items': ['La Junta Nacional de Justicia sustituyó al '
                                 'Consejo Nacional de la Magistratura, '
@@ -6267,7 +6549,14 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'fiscales, salvo los de elección popular.',
                                 'Para ser miembro se requiere ser peruano de '
                                 'nacimiento, abogado, y tener entre 45 y 75 '
-                                'años de edad.']},
+                                'años de edad.',
+                                'La Junta está conformada por siete miembros '
+                                'titulares, seleccionados por concurso '
+                                'público, por un periodo de cinco años, sin '
+                                'reelección.',
+                                'Entre sus funciones está nombrar jueces y '
+                                'fiscales, y ratificar a jueces y fiscales '
+                                'cada siete años.']},
                      {'titulo': 'LA DEFENSORÍA DEL PUEBLO',
                       'items': ['La Defensoría del Pueblo tiene su origen en '
                                 'Suecia; en el Perú se incorporó con la '
@@ -6276,7 +6565,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'removido por el Congreso con el voto de los '
                                 'dos tercios de su número legal.',
                                 'Para ser Defensor del Pueblo se requiere '
-                                'tener 35 años de edad y ser abogado.']},
+                                'tener 35 años de edad y ser abogado.',
+                                'El cargo de Defensor del Pueblo dura cinco '
+                                'años.',
+                                'Corresponde a la Defensoría defender los '
+                                'derechos constitucionales y supervisar el '
+                                'cumplimiento de deberes de la '
+                                'administración estatal.']},
                      {'titulo': 'BCR, SBS Y CONTRALORÍA',
                       'items': ['La finalidad del Banco Central de Reserva '
                                 'es preservar la estabilidad monetaria.',
@@ -6286,7 +6581,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El BCR está prohibido de conceder '
                                 'financiamiento al erario, salvo compra en '
                                 'el mercado secundario de valores del '
-                                'Tesoro.']},
+                                'Tesoro.',
+                                'La Superintendencia de Banca, Seguros y AFP '
+                                '(SBS) supervisa a las empresas del ámbito '
+                                'financiero y de seguros.',
+                                'El Superintendente de la SBS es designado '
+                                'por el Poder Ejecutivo y ratificado por el '
+                                'Congreso.',
+                                'La Contraloría General de la República es '
+                                'el órgano superior del Sistema Nacional de '
+                                'Control.']},
                      {'titulo': 'EL SISTEMA ELECTORAL: JNE, ONPE, RENIEC',
                       'items': ['El sistema electoral es tricéfalo: JNE, '
                                 'ONPE y RENIEC, que actúan con autonomía y '
@@ -6296,7 +6600,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 '45 y 70 años, elegidos por cuatro años.',
                                 'El JNE fiscaliza la legalidad del sufragio '
                                 'y de los procesos electorales, y proclama a '
-                                'los candidatos elegidos.']}]},
+                                'los candidatos elegidos.',
+                                'El Pleno del JNE está compuesto por cinco '
+                                'miembros, elegidos por la Corte Suprema, la '
+                                'Junta de Fiscales, y los colegios de '
+                                'abogados.',
+                                'El Jefe de la ONPE (Oficina Nacional de '
+                                'Procesos Electorales) es nombrado por la '
+                                'Junta Nacional de Justicia por cuatro años.',
+                                'A la ONPE le corresponde organizar todos '
+                                'los procesos electorales y el diseño de la '
+                                'cédula de sufragio.']}]},
  {'num': 14,
   'titulo': 'Régimen Económico',
   'secciones': [{'titulo': '14.1 CONCEPTO',
@@ -6779,7 +7093,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'social.',
                                 'La economía social de mercado combate la '
                                 'formación de carteles y la concentración de '
-                                'poder económico.']},
+                                'poder económico.',
+                                'El mercado funciona de manera óptima cuando '
+                                'el Estado establece normas claras sin '
+                                'intervenir de manera permanente.',
+                                'La práctica de la economía social de '
+                                'mercado se refuerza por los principios de '
+                                'solidaridad y subsidiaridad.',
+                                'El principio de subsidiaridad establece que '
+                                'lo que el individuo puede hacer por propia '
+                                'iniciativa no debe hacerlo el Estado.']},
                      {'titulo': 'LIBERTADES ECONÓMICAS',
                       'items': ['El artículo 58 de la Constitución establece '
                                 'que la iniciativa privada es libre, '
@@ -6789,7 +7112,20 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'con el texto de 1823.',
                                 'La libertad de empresa comprende la '
                                 'facultad de emprender, crear, organizar, '
-                                'gestionar, competir y cerrar una empresa.']},
+                                'gestionar, competir y cerrar una empresa.',
+                                'La libertad de comercio es la capacidad de '
+                                'mediar entre oferta y demanda para obtener '
+                                'un beneficio económico.',
+                                'Según el artículo 59, el ejercicio de la '
+                                'libertad de comercio no debe ser lesivo a '
+                                'la moral, la salud o la seguridad pública.',
+                                'La libertad de industria es la facultad de '
+                                'realizar operaciones destinadas a la '
+                                'obtención o transformación de productos '
+                                'naturales.',
+                                'El artículo 65 de la Constitución establece '
+                                'un deber especial de protección a los '
+                                'consumidores y usuarios.']},
                      {'titulo': 'EL TRIBUTO Y SUS CLASES',
                       'items': ['El tributo es el concepto fundamental del '
                                 'Derecho Tributario; el impuesto, la tasa y '
@@ -6799,7 +7135,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'capacidad contributiva.',
                                 'La recaudación de impuestos es controlada '
                                 'por el Tesoro Público del Ministerio de '
-                                'Economía y Finanzas, mediante caja única.']},
+                                'Economía y Finanzas, mediante caja única.',
+                                'La tasa tiene como hecho gravado un '
+                                'servicio público individualizado; su '
+                                'cuantía no debe exceder el gasto del '
+                                'servicio.',
+                                'La contribución es el tributo cuya '
+                                'obligación tiene como hecho generador '
+                                'beneficios derivados de obras públicas o '
+                                'actividades estatales.']},
                      {'titulo': 'PRINCIPIOS DE LA POTESTAD TRIBUTARIA',
                       'items': ['El artículo 74 de la Constitución establece '
                                 'que los tributos se crean, modifican o '
@@ -6809,7 +7153,19 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'modificar y suprimir contribuciones y tasas '
                                 'dentro de su jurisdicción.',
                                 'Ningún tributo puede tener efecto '
-                                'confiscatorio.']}]},
+                                'confiscatorio.',
+                                'Los decretos de urgencia no pueden contener '
+                                'materia tributaria.',
+                                'El principio de reserva de la ley establece '
+                                'que solo por ley se puede determinar al '
+                                'contribuyente y fijar el monto del tributo.',
+                                'El principio de legalidad complementa la '
+                                'reserva de ley: el uso del instrumento '
+                                'legal permitido por su respectivo titular.',
+                                'El principio de igualdad tributaria '
+                                'establece que situaciones iguales deben ser '
+                                'tratadas igualmente y las desiguales, '
+                                'desigualmente.']}]},
  {'num': 15,
   'titulo': 'Descentralización, Gobiernos Regionales y Gobiernos Locales',
   'secciones': [{'titulo': '15.1 CONCEPTO DE DESCENTRALIZACIÓN',
@@ -7268,7 +7624,9 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'internos o de interés público.',
                                 'Los decretos regionales establecen normas '
                                 'reglamentarias; son aprobados por la '
-                                'presidencia regional.']},
+                                'presidencia regional.',
+                                'Las resoluciones regionales norman asuntos '
+                                'de carácter administrativo.']},
                      {'titulo': 'LOS GOBIERNOS LOCALES',
                       'items': ['Los Gobiernos Locales conforman el tercer '
                                 'nivel de gobierno del Estado, elegidos por '
@@ -7287,7 +7645,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'normativas y fiscalizadoras.',
                                 'La Alcaldía es el órgano ejecutivo; el '
                                 'alcalde es el representante legal de la '
-                                'municipalidad.']}]},
+                                'municipalidad.',
+                                'El Consejo de Coordinación Local y las '
+                                'Juntas de Delegados Vecinales son '
+                                'mecanismos de participación ciudadana '
+                                'municipal.']}]},
  {'num': 16,
   'titulo': 'Derechos Humanos',
   'secciones': [{'titulo': '16.1 CONCEPTO',
@@ -7816,7 +8178,16 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Son imprescriptibles: no se pierden por el '
                                 'transcurso del tiempo.',
                                 'Son indivisibles: no puede hablarse de '
-                                'división, todos deben ser respetados.']},
+                                'división, todos deben ser respetados.',
+                                'Son inviolables: nadie puede atentar contra '
+                                'ellos; ni las leyes ni las políticas pueden '
+                                'ser contrarias a estos derechos.',
+                                'Son irreversibles: todo derecho reconocido '
+                                'queda integrado de forma irrevocable a esta '
+                                'categoría.',
+                                'Son indisolubles: forman un conjunto '
+                                'inseparable, con igual grado de '
+                                'importancia.']},
                      {'titulo': 'DIMENSIONES DE LOS DERECHOS HUMANOS',
                       'items': ['Los derechos humanos pueden '
                                 'conceptualizarse desde cuatro dimensiones: '
@@ -7825,7 +8196,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'derechos humanos tienen un pasado, presente '
                                 'y futuro.',
                                 'La dimensión ética se fundamenta en valores '
-                                'como la dignidad humana y la libertad.']},
+                                'como la dignidad humana y la libertad.',
+                                'La dimensión política refiere a que los '
+                                'derechos fueron proclamados por la ONU para '
+                                'proteger a los seres humanos.',
+                                'La dimensión jurídica refiere a que los '
+                                'derechos aparecen en la Constitución como '
+                                'normas de obligatorio cumplimiento.']},
                      {'titulo': 'EVOLUCIÓN: EL PRIMER MOMENTO O '
                                 'JURIDIFICACIÓN',
                       'items': ['La evolución de los derechos humanos '
@@ -7835,7 +8212,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'de los Derechos, se dio en Inglaterra en el '
                                 'año 1215.',
                                 'La Ley de Habeas Corpus fue dictada en '
-                                'Inglaterra en 1679.']},
+                                'Inglaterra en 1679.',
+                                'El Acta de Independencia de Estados Unidos '
+                                'data de 1776, y la Declaración de los '
+                                'Derechos del Hombre y del Ciudadano, de '
+                                'Francia, de 1789.']},
                      {'titulo': 'SEGUNDO MOMENTO: LA UNIVERSALIZACIÓN',
                       'items': ['El segundo momento en la evolución de los '
                                 'derechos humanos es la universalización.',
@@ -7845,7 +8226,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'discriminación.',
                                 'Este momento se consolida con la Carta de '
                                 'San Francisco de 1945 y la Declaración '
-                                'Universal de los Derechos Humanos.']},
+                                'Universal de los Derechos Humanos.',
+                                'La Declaración Universal fue aprobada en la '
+                                'III Asamblea General de las Naciones '
+                                'Unidas, el 10 de diciembre de 1948.']},
                      {'titulo': 'CLASIFICACIÓN POR GENERACIONES',
                       'items': ['La división de los derechos humanos en tres '
                                 'generaciones fue propuesta en 1979 por el '
@@ -7856,7 +8240,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'como individuo con libertad y autonomía.',
                                 'Los derechos de primera generación también '
                                 'se llaman derechos civiles y políticos; el '
-                                'más importante es el derecho a la vida.']},
+                                'más importante es el derecho a la vida.',
+                                'El Perú ratificó el Pacto Internacional de '
+                                'Derechos Civiles y Políticos por Decreto '
+                                'Ley N° 22128, el 23 de marzo de 1976.',
+                                'Los derechos de segunda generación se '
+                                'establecieron desde fines del siglo XIX '
+                                'hasta mediados del XX; son derechos '
+                                'económicos, sociales y culturales.',
+                                'Los derechos de segunda generación situaron '
+                                'al Estado Liberal en un Estado Social de '
+                                'Derecho.']},
                      {'titulo': 'INSTRUMENTOS JURÍDICOS SUPRANACIONALES',
                       'items': ['La Carta Internacional de los Derechos '
                                 'Humanos agrupa la Carta de la ONU (1945), '
@@ -7867,7 +8261,12 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'la Convención contra la Tortura (1984).',
                                 'La Declaración Universal de los Derechos '
                                 'Humanos fue encargada a un comité de '
-                                'redacción integrado por ocho expertos.']}]},
+                                'redacción integrado por ocho expertos.',
+                                'La Declaración Universal fue aprobada por '
+                                'la Asamblea General de la ONU el 10 de '
+                                'diciembre de 1948.',
+                                'La Declaración Universal consta de un '
+                                'preámbulo y 30 artículos.']}]},
  {'num': 17,
   'titulo': 'Garantías Constitucionales',
   'secciones': [{'titulo': '17.1 CONCEPTO Y ANTECEDENTES',
@@ -8295,7 +8694,12 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'En el Perú, la institucionalidad de las '
                                 'garantías se inicia con la Constitución de '
                                 '1920, que distinguió garantías nacionales, '
-                                'individuales y sociales.']},
+                                'individuales y sociales.',
+                                'Según García Toma, las Garantías '
+                                'Constitucionales son el conjunto de '
+                                'declaraciones, medios y recursos que '
+                                'aseguran el disfrute de los derechos '
+                                'públicos y privados.']},
                      {'titulo': 'LAS SEIS GARANTÍAS EN LA CONSTITUCIÓN DE '
                                 '1993',
                       'items': ['El artículo 200 de la Constitución de 1993 '
@@ -8303,8 +8707,9 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'La Constitución de 1920 reconoció el Habeas '
                                 'Corpus; la de 1933 sumó la Acción Popular.',
                                 'La Constitución de 1979 sumó la Acción de '
-                                'Amparo y la Acción de '
-                                'Inconstitucionalidad.']},
+                                'Amparo y la Acción de Inconstitucionalidad.',
+                                'La Constitución de 1993 sumó el Habeas Data '
+                                'y la Acción de Cumplimiento.']},
                      {'titulo': 'LA ACCIÓN DE HABEAS CORPUS',
                       'items': ['La expresión «habeas corpus», de origen '
                                 'latino, significa literalmente «que traigas '
@@ -8312,8 +8717,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'El antecedente del habeas corpus es la ley '
                                 'inglesa de 1679.',
                                 'En el Perú, el habeas corpus fue regulado '
-                                'por primera vez en la Constitución de '
-                                '1920.']},
+                                'por primera vez en la Constitución de 1920.',
+                                'El habeas corpus protege la libertad '
+                                'individual y la seguridad personal, y '
+                                'derechos constitucionales conexos.',
+                                'El habeas corpus se presenta ante el Juez '
+                                'especializado en lo Penal, o ante el Juez '
+                                'de Paz Letrado si no lo hay.',
+                                'El Tribunal Constitucional es, de forma '
+                                'extraordinaria, la última y definitiva '
+                                'instancia para resolver las resoluciones '
+                                'denegatorias del habeas corpus.']},
                      {'titulo': 'LA ACCIÓN DE AMPARO',
                       'items': ['La Acción de Amparo fue introducida por '
                                 'primera vez en la Constitución de 1979, '
@@ -8323,7 +8737,14 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'por hábeas corpus y hábeas data.',
                                 'El Amparo tiene por objeto reponer las '
                                 'cosas al estado anterior a la violación de '
-                                'un derecho.']},
+                                'un derecho.',
+                                'La demanda de Amparo se presenta ante el '
+                                'Juez especializado en lo civil.',
+                                'El plazo para presentar el Amparo es de 60 '
+                                'días desde la vulneración, y 30 días en '
+                                'sentencias judiciales.',
+                                'El Amparo requiere formalismo: se presenta '
+                                'por escrito con autorización de abogado.']},
                      {'titulo': 'LA ACCIÓN DE HÁBEAS DATA',
                       'items': ['El Hábeas Data fue introducido por la '
                                 'Constitución de 1993, para proteger frente '
@@ -8334,7 +8755,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'familiar.',
                                 'El plazo para presentar el Hábeas Data es '
                                 'de 60 días hábiles después de la respuesta '
-                                'denegatoria.']},
+                                'denegatoria.',
+                                'El Hábeas Data no procede sobre información '
+                                'de Defensa Nacional, secreto bancario, y '
+                                'telecomunicaciones.']},
                      {'titulo': 'LA ACCIÓN DE INCONSTITUCIONALIDAD',
                       'items': ['La Acción de Inconstitucionalidad se crea '
                                 'con la Constitución de 1979; procede contra '
@@ -8344,7 +8768,15 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Tribunal Constitucional.',
                                 'Están facultados para interponerla, entre '
                                 'otros, el Presidente, el Fiscal de la '
-                                'Nación, y el 25% de congresistas.']},
+                                'Nación, y el 25% de congresistas.',
+                                'También puede interponerla un grupo de 5000 '
+                                'ciudadanos con firmas comprobadas por el '
+                                'JNE.',
+                                'El plazo para interponerla es de 6 años '
+                                'desde su publicación, y 6 meses para '
+                                'tratados internacionales.',
+                                'Se requiere el voto a favor de 5 '
+                                'magistrados del Tribunal Constitucional.']},
                      {'titulo': 'LA ACCIÓN POPULAR Y DE CUMPLIMIENTO',
                       'items': ['La Acción Popular se originó en la justicia '
                                 'romana; se introdujo por primera vez en la '
@@ -8353,7 +8785,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'rango de decretos y resoluciones, y es '
                                 'competencia exclusiva del Poder Judicial.',
                                 'El plazo para la Acción Popular es de 5 '
-                                'años desde su publicación.']}]},
+                                'años desde su publicación.',
+                                'La Acción de Cumplimiento fue creada por la '
+                                'Constitución de 1993, para hacer cumplir '
+                                'normas legales o actos administrativos.',
+                                'El plazo para la Acción de Cumplimiento es '
+                                'de 60 días después de no cumplirse el '
+                                'mandato.']}]},
  {'num': 18,
   'titulo': 'Sistemas de Protección de los Derechos Humanos',
   'secciones': [{'titulo': '18.1 ANTECEDENTES: LA SOCIEDAD DE NACIONES',
@@ -8754,7 +9192,11 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'la Declaración de las Naciones Unidas.',
                                 'La Carta de creación de las Naciones Unidas '
                                 'fue firmada el 26 de junio de 1945 por 50 '
-                                'países.']},
+                                'países.',
+                                'Las Naciones Unidas empezaron a existir '
+                                'oficialmente el 24 de octubre de 1945, día '
+                                'que se celebra como el Día de las Naciones '
+                                'Unidas.']},
                      {'titulo': 'ORGANIZACIÓN Y FINES DE LA ONU',
                       'items': ['La ONU tiene actualmente 193 Estados '
                                 'Miembros.',
@@ -8762,7 +9204,17 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'Nueva York, y tiene sedes secundarias en '
                                 'Ginebra, Viena y Nairobi.',
                                 'Los idiomas oficiales de la ONU son inglés, '
-                                'chino, francés, ruso, español y árabe.']},
+                                'chino, francés, ruso, español y árabe.',
+                                'La ONU está compuesta por seis órganos '
+                                'principales: Asamblea General, Secretario '
+                                'General, Consejo de Seguridad, Consejo '
+                                'Económico y Social, Consejo de '
+                                'Administración Fiduciaria y la Corte '
+                                'Internacional de Justicia.',
+                                'Entre los fines de la ONU están preservar '
+                                'la paz mundial, defender los derechos '
+                                'humanos y promover el desarrollo '
+                                'sostenible.']},
                      {'titulo': 'EL SISTEMA INTERAMERICANO (SIDH)',
                       'items': ['El Sistema Interamericano de Protección de '
                                 'los Derechos Humanos (SIDH) opera en el '
@@ -8773,7 +9225,10 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'antes que la Declaración Universal.',
                                 'La Convención Americana de Derechos Humanos '
                                 'se aprobó el 22 de noviembre de 1969, '
-                                'entrando en vigencia en 1978.']},
+                                'entrando en vigencia en 1978.',
+                                'El SIDH está constituido por dos '
+                                'organismos: la Comisión Interamericana y la '
+                                'Corte Interamericana de Derechos Humanos.']},
                      {'titulo': 'LA COMISIÓN INTERAMERICANA DE DERECHOS '
                                 'HUMANOS (CIDH)',
                       'items': ['La CIDH se originó de la Declaración de '
@@ -8782,7 +9237,14 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'En 1965 se adoptó el Protocolo de Buenos '
                                 'Aires, estableciendo a la CIDH como órgano '
                                 'principal de la OEA.',
-                                'La sede de la CIDH está en Washington DC.']},
+                                'La sede de la CIDH está en Washington DC.',
+                                'La Comisión está compuesta por siete '
+                                'miembros, elegidos por un periodo de cuatro '
+                                'años, reelegibles una sola vez.',
+                                'Entre sus funciones está formular '
+                                'recomendaciones a los gobiernos y presentar '
+                                'un informe anual ante la Asamblea '
+                                'General.']},
                      {'titulo': 'LA CORTE INTERAMERICANA Y LA CORTE DE LA '
                                 'HAYA',
                       'items': ['La Corte Interamericana de Derechos Humanos '
@@ -8795,4 +9257,13 @@ BALOTAS_CIVICA = [{'num': 1,
                                 'La Corte Interamericana cumple una función '
                                 'jurisdiccional (sobre casos sometidos) y '
                                 'una función consultiva (interpretación de '
-                                'normas).']}]}]
+                                'normas).',
+                                'La Corte Internacional de Justicia (Corte '
+                                'de La Haya) es el principal órgano judicial '
+                                'de la ONU.',
+                                'La Corte de La Haya tiene su sede en el '
+                                'Palacio de la Paz, en La Haya (Países '
+                                'Bajos).',
+                                'La Corte de La Haya decide controversias '
+                                'jurídicas entre Estados, y tiene quince '
+                                'magistrados.']}]}]

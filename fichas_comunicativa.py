@@ -544,7 +544,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'y la decodificación del receptor.',
                                 'La fase fisiológica se refiere al '
                                 'funcionamiento del aparato fonador y de la '
-                                'audición.']},
+                                'audición.',
+                                'La fase física abarca el desplazamiento del '
+                                'mensaje a través de canales naturales o '
+                                'artificiales.']},
                      {'titulo': 'ELEMENTOS DE LA COMUNICACIÓN',
                       'items': ['El emisor o hablante es quien codifica el '
                                 'mensaje mentalmente y lo transmite a su '
@@ -554,7 +557,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'emisor quiso comunicar.',
                                 'El canal es el medio físico a través del '
                                 'cual se transporta el mensaje, como el aire '
-                                'o internet.']},
+                                'o internet.',
+                                'El código es el sistema de signos '
+                                'convencionales que emisor y receptor '
+                                'conocen para construir el mensaje.',
+                                'El mensaje es la información o contenido '
+                                'que el emisor quiere dar a conocer al '
+                                'receptor.',
+                                'El referente es el conjunto de objetos o '
+                                'fenómenos de la realidad a los que se hace '
+                                'mención en el acto comunicativo.']},
                      {'titulo': 'CLASES DE COMUNICACIÓN POR EL CÓDIGO',
                       'items': ['La comunicación lingüística utiliza el '
                                 'idioma para codificar el mensaje, de forma '
@@ -564,7 +576,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'efímera.',
                                 'La comunicación escrita se desarrolla de '
                                 'manera asincrónica y requiere planificación '
-                                'previa del texto.']},
+                                'previa del texto.',
+                                'La comunicación no lingüística utiliza '
+                                'cualquier medio ajeno a la palabra oral o '
+                                'escrita.',
+                                'La kinésica estudia los movimientos '
+                                'corporales, posturas y gestos.',
+                                'La proxémica estudia las relaciones de '
+                                'proximidad o alejamiento entre los '
+                                'interlocutores.']},
                      {'titulo': 'CLASES DE COMUNICACIÓN POR LA RELACIÓN '
                                 'EMISOR-RECEPTOR',
                       'items': ['La comunicación intrapersonal se produce en '
@@ -574,7 +594,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'cuando interactúan dos personas.',
                                 'La comunicación grupal se da cuando un '
                                 'conjunto de personas transfiere mensajes en '
-                                'busca de objetivos comunes.']},
+                                'busca de objetivos comunes.',
+                                'La comunicación pública es la interacción '
+                                'entre ciudadanos y medios de comunicación '
+                                'masivos.']},
                      {'titulo': 'FUNCIONES DE LA COMUNICACIÓN',
                       'items': ['La función social permite al comunicador '
                                 'interactuar apropiadamente según las '
@@ -586,7 +609,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La función lingüística está ligada al '
                                 'estilo del lenguaje usado en el mensaje: '
                                 'formal, informal, especializado, culto, '
-                                'estándar, etc.']},
+                                'estándar, etc.',
+                                'La función organizativa ordena a las '
+                                'personas por puestos, estratos y '
+                                'jerarquías, generando normas, roles y '
+                                'funciones.',
+                                'La función cultural transmite hábitos, '
+                                'costumbres, valores y creencias que '
+                                'conforman la cultura de un grupo.']},
                      {'titulo': 'NATURALEZA DE LA COMUNICACIÓN',
                       'items': ['El carácter integrador implica que la '
                                 'comunicación se integra con personas que '
@@ -597,7 +627,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'comunicarse entre sí y logran entenderse.',
                                 'El carácter dinámico implica que la '
                                 'comunicación fluye de forma continua, en '
-                                'cambio constante.']},
+                                'cambio constante.',
+                                'El carácter recíproco implica que, por '
+                                'medio de la comunicación, los hombres '
+                                'ejercen una influencia mutua.']},
                      {'titulo': 'FACTORES QUE INFLUYEN EN LA COMUNICACIÓN',
                       'items': ['El nivel de conocimiento es la cantidad y '
                                 'calidad de información que se tiene acerca '
@@ -607,8 +640,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'permite hablar y escribir con claridad.',
                                 'Las actitudes son los comportamientos, '
                                 'motivaciones y reacciones que adoptamos, '
-                                'como el interés, el nerviosismo o la '
-                                'duda.']},
+                                'como el interés, el nerviosismo o la duda.',
+                                'El contexto sociocultural considera el '
+                                'sistema social o los estratos sociales en '
+                                'que se da el intercambio de información.']},
                      {'titulo': 'EL RUIDO Y LA REDUNDANCIA',
                       'items': ['El ruido es el factor de degradación que '
                                 'distorsiona la calidad del mensaje o '
@@ -619,7 +654,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'semántico.',
                                 'El ruido físico ocurre en el ambiente, como '
                                 'interferencias en el canal: distorsiones '
-                                'sonoras, baja señal de internet.']}]},
+                                'sonoras, baja señal de internet.',
+                                'El ruido fisiológico surge por defectos '
+                                'orgánicos de los interlocutores, como '
+                                'alteraciones visuales y auditivas.',
+                                'El ruido psicológico se produce en el '
+                                'interior del individuo: emociones, miedo, '
+                                'ansiedad.',
+                                'El ruido semántico ocurre cuando el '
+                                'receptor interpreta las palabras del emisor '
+                                'de manera distinta a la intención '
+                                'original.']}]},
  {'num': 2,
   'titulo': 'El Lenguaje',
   'secciones': [{'titulo': '2.1 CONCEPTO',
@@ -1209,12 +1254,23 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Según Sapir, el lenguaje es un método '
                                 'exclusivamente humano y no instintivo de '
                                 'comunicar ideas, emociones y deseos.',
+                                'Según Pinker, el lenguaje es una capacidad '
+                                'innata del Homo sapiens, un mecanismo '
+                                'biológico moldeado por la evolución.',
+                                'Según Noam Chomsky, el lenguaje es una '
+                                'facultad innata del ser humano regida por '
+                                'una gramática universal.',
                                 'El lenguaje es universal, porque todos los '
                                 'seres humanos lo utilizan en su '
                                 'interrelación.',
                                 'El lenguaje es multiforme, porque se '
                                 'manifiesta de muchas maneras: oral, '
-                                'escrita, gestual, musical.']},
+                                'escrita, gestual, musical.',
+                                'El lenguaje es convencional, porque no es '
+                                'producto individual sino resultado de un '
+                                'acuerdo comunitario.',
+                                'El lenguaje es sistémico, porque funciona '
+                                'de acuerdo a ciertas normas o reglas.']},
                      {'titulo': 'FUNCIONES DEL LENGUAJE / PLANOS DEL '
                                 'LENGUAJE: LENGUA Y HABLA',
                       'items': ['La función expresiva o emotiva está '
@@ -1223,12 +1279,21 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La función apelativa o conativa está '
                                 'centrada en el receptor; busca que el '
                                 'oyente actúe mediante órdenes o ruegos.',
+                                'La función representativa o referencial '
+                                'está centrada en el contenido y se '
+                                'encuentra en textos informativos.',
+                                'La función metalingüística se usa cuando el '
+                                'código sirve para referirse al código '
+                                'mismo.',
                                 'Según Ferdinand de Saussure, el lenguaje '
                                 'tiene dos planos interdependientes: lengua '
                                 'y habla.',
                                 'La lengua es de carácter social: un sistema '
                                 'de signos lingüísticos convencionales que '
-                                'usa una comunidad.']},
+                                'usa una comunidad.',
+                                'El habla es de carácter individual: el uso '
+                                'personal de la lengua, realizado mediante '
+                                'los órganos de fonación.']},
                      {'titulo': 'EL DIALECTO (VARIACIÓN DIATÓPICA) / EL '
                                 'SOCIOLECTO (VARIACIÓN DIASTRÁTICA)',
                       'items': ['El dialecto es la variación de una lengua '
@@ -1238,6 +1303,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'cuando cambia el vocabulario de una región '
                                 'a otra: «casaca» (Perú) y «chamarra» '
                                 '(México).',
+                                'La variación dialectal semántica ocurre '
+                                'cuando una misma palabra tiene significados '
+                                'distintos: «mona» significa mujer bonita en '
+                                'Venezuela y hembra del mono en Perú.',
+                                'La variación dialectal morfológica se da en '
+                                'la forma y estructura de las palabras: '
+                                '«ratico» (Venezuela) frente a «ratito» '
+                                '(Perú).',
                                 'El sociolecto es la variación de una lengua '
                                 'a nivel social, ubicada en el eje vertical.',
                                 'El sociolecto se subdivide en tres niveles: '
@@ -1254,7 +1327,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'lengua de un aprendiz.',
                                 'Según Alberto Escobar, el interlecto es un '
                                 'dialecto social ubicado especialmente en '
-                                'áreas rurales y urbano-marginales.']},
+                                'áreas rurales y urbano-marginales.',
+                                'Un rasgo fonético del interlecto es la '
+                                'neutralización de las vocales i-e, o-u, '
+                                'como en «oniversidad» o «siñor».',
+                                'Un rasgo gramatical del interlecto es la '
+                                'omisión del artículo, como en «pásame '
+                                'libro».']},
                      {'titulo': 'EL SIGNO: TIPOS / EL SIGNO LINGÜÍSTICO Y '
                                 'SUS PLANOS',
                       'items': ['El signo es la representación de algo que, '
@@ -1263,20 +1342,32 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los signos naturales guardan relación '
                                 'física de causa-efecto o proximidad con el '
                                 'objeto; también se llaman indicios.',
+                                'Ejemplos de indicio: la fiebre es síntoma '
+                                'de infección; el humo es indicio de fuego; '
+                                'las nubes negras, indicio de lluvia.',
+                                'Los signos artificiales se dividen en ícono '
+                                'y símbolo.',
                                 'El signo lingüístico es una entidad '
                                 'psíquica de dos caras: concepto e imagen '
                                 'acústica, asociadas de forma indisoluble.',
                                 'El significado es el concepto o idea '
                                 'abstracta que el hablante extrae de la '
-                                'realidad.']},
+                                'realidad.',
+                                'El significante es la imagen acústica o '
+                                'huella psíquica del sonido.']},
                      {'titulo': 'CARACTERÍSTICAS DEL SIGNO LINGÜÍSTICO',
                       'items': ['El signo lingüístico es arbitrario: la '
                                 'relación entre significado y significante '
                                 'es convencional, no responde a ningún '
                                 'motivo.',
                                 'El signo lingüístico es lineal: los fonemas '
-                                'se desenvuelven uno tras otro en el '
-                                'tiempo.']}]},
+                                'se desenvuelven uno tras otro en el tiempo.',
+                                'El signo lingüístico es inmutable: no '
+                                'cambia de un momento a otro por decisión de '
+                                'un hablante, en el eje sincrónico.',
+                                'El signo lingüístico es mutable: la '
+                                'relación entre significado y significante '
+                                'cambia a través del tiempo.']}]},
  {'num': 3,
   'titulo': 'Fonología y Fonética',
   'secciones': [{'titulo': '3.1 CONCEPTO DE FONOLOGÍA Y FONÉTICA',
@@ -1914,7 +2005,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '].',
                                 'Los fonemas son unidades de estudio de la '
                                 'Fonología; los fonos son unidades de '
-                                'estudio de la Fonética.']},
+                                'estudio de la Fonética.',
+                                'Un par mínimo, como /beso/ y /peso/, '
+                                'permite identificar fonemas distintos por '
+                                'el cambio de significado.']},
                      {'titulo': 'EL FONEMA Y LOS RASGOS DISTINTIVOS',
                       'items': ['El fonema es el segmento fonológico que no '
                                 'puede descomponerse en unidades menores y '
@@ -1924,7 +2018,12 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'modificación produce un contraste '
                                 'significativo.',
                                 'El fonema /p/ tiene los rasgos distintivos '
-                                'bilabial, oclusivo, sordo y oral.']},
+                                'bilabial, oclusivo, sordo y oral.',
+                                'El fonema /b/ tiene los rasgos distintivos '
+                                'bilabial, oclusivo, sonoro y oral.',
+                                '«Peso» y «beso» se diferencian por un único '
+                                'rasgo distintivo: el valor de la '
+                                'sonoridad.']},
                      {'titulo': 'FONEMAS VOCÁLICOS Y SU CLASIFICACIÓN',
                       'items': ['El español tiene 24 fonemas segmentales: 5 '
                                 'son vocálicos y 19 consonánticos.',
@@ -1934,7 +2033,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '/i/, /o/, /u/.',
                                 'Por el grado de abertura de la boca: '
                                 'vocales cerradas (/i/, /u/), semiabiertas '
-                                '(/e/, /o/), y vocal abierta (/a/).']},
+                                '(/e/, /o/), y vocal abierta (/a/).',
+                                'Por la posición de la lengua: vocales '
+                                'anteriores o palatales (/e/, /i/), vocal '
+                                'central (/a/), y vocales posteriores o '
+                                'velares (/o/, /u/).',
+                                'Por el grado de sonoridad: vocales agudas '
+                                '(/e/, /i/), vocal media (/a/), y vocales '
+                                'graves (/o/, /u/).',
+                                'Por la vibración de las cuerdas vocales, '
+                                'todas las vocales del español son sonoras; '
+                                'no existen vocales sordas.']},
                      {'titulo': 'FONEMAS CONSONÁNTICOS: PUNTO DE '
                                 'ARTICULACIÓN',
                       'items': ['En los fonemas consonánticos se produce una '
@@ -1946,7 +2055,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'intervienen ambos labios.',
                                 'Es labiodental el fonema /f/, donde el '
                                 'labio inferior se dirige hacia los dientes '
-                                'incisivos superiores.']},
+                                'incisivos superiores.',
+                                'Son dentales los fonemas /t/, /d/, donde el '
+                                'ápice de la lengua toca los dientes '
+                                'incisivos superiores.',
+                                'Es interdental el fonema /z/, donde el '
+                                'ápice de la lengua se ubica entre los '
+                                'dientes.',
+                                'Son alveolares los fonemas /s/, /n/, /l/, '
+                                '/r/, /rr/, donde el ápice de la lengua se '
+                                'dirige hacia los alvéolos.']},
                      {'titulo': 'FONEMAS CONSONÁNTICOS: MODO DE ARTICULACIÓN',
                       'items': ['Por el modo de articulación: son oclusivos '
                                 'los fonemas /p/, /b/, /d/, /k/, /g/, /t/, '
@@ -1957,7 +2075,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'rozando las paredes del canal.',
                                 'Es africado el fonema /ch/, que resulta de '
                                 'la combinación de la oclusiva con la '
-                                'fricativa.']},
+                                'fricativa.',
+                                'Son laterales los fonemas /l/, /ll/, donde '
+                                'el aire sale por los lados de la lengua.',
+                                'Son nasales los fonemas /m/, /n/, /ñ/, '
+                                'donde el aire sale por la cavidad nasal y '
+                                'la cavidad oral.',
+                                'Son vibrantes los fonemas /rr/, /r/, donde '
+                                'el órgano activo vibra obstruyendo y '
+                                'abriendo el paso del aire.']},
                      {'titulo': 'ELEMENTOS SEGMENTALES Y SUPRASEGMENTALES',
                       'items': ['Los elementos segmentales constituyen la '
                                 'cadena hablada, definidos según criterios '
@@ -2387,7 +2513,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La sílaba se agrupa en torno al segmento de '
                                 'máxima sonoridad, que constituye su núcleo.',
                                 'En español, el núcleo silábico es siempre '
-                                'vocálico.']},
+                                'vocálico.',
+                                'En la palabra «pan», la vocal /a/ '
+                                'constituye el pico de sonoridad, y las '
+                                'consonantes /p/ y /n/ son los márgenes '
+                                'consonánticos.']},
                      {'titulo': 'CONSTITUYENTES SILÁBICOS',
                       'items': ['El núcleo es la cumbre o centro de la '
                                 'sílaba, constituido por una sola vocal.',
@@ -2396,7 +2526,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'posición explosiva.',
                                 'La coda es el margen silábico posterior, de '
                                 'naturaleza consonántica, en posición '
-                                'implosiva.']},
+                                'implosiva.',
+                                'La rima silábica está constituida por el '
+                                'núcleo y la coda, o solo por el núcleo.']},
                      {'titulo': 'EL SILABEO O DIVISIÓN SILÁBICA',
                       'items': ['El silabeo consiste en pronunciar o '
                                 'escribir en forma separada las sílabas de '
@@ -2406,7 +2538,12 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'pa-to.',
                                 'Los grupos tautosilábicos como pr, br, tr, '
                                 'cr, pl, bl, cl son inseparables y forman '
-                                'sílaba con la vocal siguiente.']},
+                                'sílaba con la vocal siguiente.',
+                                'Cuando una sílaba termina en consonante y '
+                                'la siguiente comienza en otra consonante, '
+                                'se separan entre ambas: as-ma.',
+                                'No existe en español frontera silábica en '
+                                'la secuencia consonante-vocal.']},
                      {'titulo': 'GRUPOS TAUTOSILÁBICOS Y DIPTONGOS',
                       'items': ['Los grupos tautosilábicos ocurren cuando '
                                 'dos elementos contiguos pertenecen a la '
@@ -2416,7 +2553,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'vocales que forman una sola sílaba.',
                                 'El diptongo creciente combina una vocal '
                                 'cerrada y una abierta, o dos vocales '
-                                'cerradas diferentes; ejemplo: pues.']},
+                                'cerradas diferentes; ejemplo: pues.',
+                                'El diptongo decreciente combina una vocal '
+                                'abierta y una cerrada; ejemplo: aire.']},
                      {'titulo': 'EL TRIPTONGO',
                       'items': ['El triptongo está constituido por dos '
                                 'vocales cerradas (débiles) y una abierta '
@@ -2433,7 +2572,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'separan para formar dos sílabas.',
                                 'Cuando hay dos vocales fuertes (abiertas) '
                                 'juntas, siempre se produce hiato; ejemplo: '
-                                'pe-ón.']},
+                                'pe-ón.',
+                                'Cuando hay una vocal débil (cerrada) tónica '
+                                'junto a una fuerte, se deshace el diptongo '
+                                'y se forma un hiato; ejemplo: dí-a.']},
                      {'titulo': 'PRINCIPIOS DE ORDENACIÓN DE LOS SEGMENTOS',
                       'items': ['Los sonidos dentro de la sílaba se '
                                 'organizan según la escala universal de '
@@ -2933,7 +3075,17 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'con tilde sobre su sílaba tónica.',
                                 'El acento prosódico diferencia en la '
                                 'pronunciación una sílaba determinada, '
-                                'contrastándola con el resto.']},
+                                'contrastándola con el resto.',
+                                'La función contrastiva del acento permite '
+                                'diferenciar unidades acentuadas de '
+                                'inacentuadas.',
+                                'La función distintiva permite diferenciar '
+                                'el significado de palabras que solo se '
+                                'distinguen por la tonicidad, como «médico» '
+                                'y «medicó».',
+                                'La función culminativa permite percibir los '
+                                'grupos acentuales que componen el '
+                                'discurso.']},
                      {'titulo': 'REGLAS SEGÚN LA POSICIÓN DEL ACENTO',
                       'items': ['Las palabras monosilábicas nunca se '
                                 'acentúan gráficamente, salvo en los casos '
@@ -2941,7 +3093,19 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Las palabras agudas u oxítonas tienen la '
                                 'sílaba tónica en la última posición.',
                                 'Las palabras agudas llevan tilde cuando '
-                                'terminan en n, s o vocal.']},
+                                'terminan en n, s o vocal.',
+                                'Las palabras llanas o graves, paroxítonas, '
+                                'tienen la sílaba tónica en la penúltima '
+                                'posición.',
+                                'Las palabras llanas llevan tilde cuando '
+                                'terminan en consonante distinta de n, s o '
+                                'vocal.',
+                                'Las palabras esdrújulas o proparoxítonas '
+                                'tienen la sílaba tónica en la antepenúltima '
+                                'posición, y todas llevan tilde.',
+                                'Las palabras sobresdrújulas tienen la '
+                                'sílaba tónica anterior a la antepenúltima; '
+                                'son compuestas y todas llevan tilde.']},
                      {'titulo': 'ACENTUACIÓN DE SECUENCIAS VOCÁLICAS',
                       'items': ['Las palabras con diptongo se acentúan '
                                 'gráficamente según las reglas generales de '
@@ -2953,7 +3117,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Las palabras con triptongo también siguen '
                                 'las reglas generales; cuando deben '
                                 'tildarse, la tilde va siempre sobre la '
-                                'vocal abierta: apreciáis, cambiéis.']},
+                                'vocal abierta: apreciáis, cambiéis.',
+                                'Las palabras con hiato siempre llevan tilde '
+                                'en la vocal cerrada, sin importar las '
+                                'reglas generales; ejemplo: sabías, actúe, '
+                                'oído.',
+                                'Estas palabras con hiato de vocal cerrada '
+                                'tónica llevan tilde aunque sean llanas '
+                                'terminadas en n, s o vocal, o agudas '
+                                'terminadas en consonante distinta de n o s: '
+                                'raíz, oír, baúl, maíz.',
+                                'Las palabras con hiato de dos vocales '
+                                'abiertas (fuertes) se someten a las reglas '
+                                'generales de acentuación: Jaén, traerás, '
+                                'peleó.']},
                      {'titulo': 'TILDE DIACRÍTICA EN MONOSÍLABOS',
                       'items': ['La tilde diacrítica es la excepción a la '
                                 'regla de los monosílabos; distingue '
@@ -2961,7 +3138,21 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Tú es pronombre personal (tú eres); tu sin '
                                 'tilde es adjetivo posesivo (tu casa).',
                                 'Él es pronombre personal (él es tímido); el '
-                                'sin tilde es artículo determinante.']},
+                                'sin tilde es artículo determinante.',
+                                'Mí es pronombre personal (para mí); mi sin '
+                                'tilde es adjetivo posesivo o nota musical.',
+                                'Sí es adverbio de afirmación o pronombre '
+                                '(volvió en sí); si sin tilde es conjunción '
+                                'condicional.',
+                                'Té es sustantivo, la infusión; te sin tilde '
+                                'es pronombre personal.',
+                                'Dé es forma del verbo dar; de sin tilde es '
+                                'preposición.',
+                                'Sé es forma del verbo ser o saber; se sin '
+                                'tilde es pronombre personal.',
+                                'Más es cuantificador; mas sin tilde es '
+                                'conjunción adversativa equivalente a '
+                                '«pero».']},
                      {'titulo': 'TILDE DIACRÍTICA EN INTERROGATIVOS Y '
                                 'EXCLAMATIVOS',
                       'items': ['Las palabras qué, cuál, quién, cómo, cuán, '
@@ -2973,7 +3164,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'cuándo...?',
                                 'Existen interrogativas y exclamativas '
                                 'indirectas que también llevan tilde: '
-                                '«Preguntó qué tenía que hacer».']},
+                                '«Preguntó qué tenía que hacer».',
+                                'Estas palabras se escriben sin tilde cuando '
+                                'funcionan como relativos, conjunciones o '
+                                'preposiciones: «las flores que trajiste».']},
                      {'titulo': 'TILDE EN SOLO, DEMOSTRATIVOS Y AUN/AÚN',
                       'items': ['La palabra solo no lleva tilde, ya sea como '
                                 'adverbio (equivalente a «solamente») o como '
@@ -2983,7 +3177,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'como pronombres o como determinantes.',
                                 'Aún, con tilde, puede sustituirse por '
                                 '«todavía»: con valor temporal o '
-                                'ponderativo-intensivo.']}]},
+                                'ponderativo-intensivo.',
+                                'Aun, sin tilde, tiene valor '
+                                'inclusivo-ponderativo (equivale a '
+                                '«incluso», «hasta») o valor concesivo '
+                                '(equivale a «aunque»).']}]},
  {'num': 6,
   'titulo': 'Uso de las Letras Mayúsculas y Minúsculas',
   'secciones': [{'titulo': '6.1 CONSIDERACIONES BÁSICAS',
@@ -3396,7 +3594,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'pág. o Sr.',
                                 'Los nombres latinos de especies, como Homo '
                                 'sapiens, se escriben con mayúscula inicial '
-                                'y en cursiva.']},
+                                'y en cursiva.',
+                                'La palabra Dios se escribe con mayúscula '
+                                'cuando se usa sin artículo como nombre '
+                                'propio del ser supremo monoteísta.']},
                      {'titulo': 'CASOS ESPECIALES DE MAYÚSCULA INICIAL',
                       'items': ['Si los dígrafos ch, ll, gu o qu aparecen al '
                                 'inicio de una palabra con mayúscula, solo '
@@ -3407,8 +3608,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'forma minúscula.',
                                 'La antonomasia es el fenómeno por el cual '
                                 'un nombre común reemplaza a un nombre '
-                                'propio, como «el Salvador» por '
-                                'Jesucristo.']},
+                                'propio, como «el Salvador» por Jesucristo.',
+                                'La personificación atribuye rasgos humanos '
+                                'a conceptos abstractos, como en «la Muerte '
+                                'se presentó».']},
                      {'titulo': 'LA MAYÚSCULA CONDICIONADA POR LA PUNTUACIÓN',
                       'items': ['Se escribe con mayúscula la primera palabra '
                                 'de un escrito y la que va después de un '
@@ -3418,7 +3621,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'cierran un enunciado.',
                                 'Si los puntos suspensivos no cierran el '
                                 'enunciado, la palabra siguiente se escribe '
-                                'con minúscula.']},
+                                'con minúscula.',
+                                'Después de dos puntos se escribe mayúscula '
+                                'cuando estos anuncian el inicio de una '
+                                'unidad independiente, como en el saludo de '
+                                'una carta.']},
                      {'titulo': 'USO DE LAS MINÚSCULAS',
                       'items': ['Se escriben con minúscula los nombres de '
                                 'los días de la semana, las estaciones del '
@@ -3427,7 +3634,29 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'musicales: do, re, mi, fa, sol, la, si.',
                                 'Se escriben con minúscula los nombres de '
                                 'vientos, salvo que estén personificados en '
-                                'poemas o relatos mitológicos.']},
+                                'poemas o relatos mitológicos.',
+                                'Se escribe con minúscula dios, precedido de '
+                                'determinante, cuando se refiere de modo '
+                                'genérico al ser supremo o a divinidades '
+                                'politeístas.',
+                                'Se escriben con minúscula los nombres de '
+                                'religiones (budismo, cristianismo) y los '
+                                'gentilicios (peruano, cusqueño).',
+                                'Se escriben con minúscula los tratamientos '
+                                '(usted, don, fray, san), salvo que se '
+                                'abrevien: Ud., Sr., D.',
+                                'Se escriben con minúscula los títulos, '
+                                'cargos y nombres de dignidad: rey, papa, '
+                                'presidente, alcalde.',
+                                'Se escriben con minúscula los sustantivos '
+                                'que designan profesiones, y los nombres de '
+                                'las lenguas.',
+                                'Se escriben con minúscula los nombres de '
+                                'hemisferios, líneas imaginarias y polos '
+                                'geográficos: el hemisferio sur, el ecuador.',
+                                'Se escriben con minúscula los nombres de '
+                                'elementos químicos y unidades de medida: '
+                                'oxígeno, mercurio, metro.']},
                      {'titulo': 'ACRÓNIMOS: SIGLAS QUE SE VUELVEN PALABRAS',
                       'items': ['El acrónimo es una sigla cuya grafía '
                                 'permite leerla secuencialmente (no '
@@ -3437,7 +3666,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Mercosur, Unicef.',
                                 'Cuando el acrónimo se convierte en nombre '
                                 'común, se escribe enteramente en '
-                                'minúsculas: ovni, láser, radar, uci.']}]},
+                                'minúsculas: ovni, láser, radar, uci.',
+                                'Las siglas que deben deletrearse al leerse '
+                                'mantienen siempre su escritura en '
+                                'mayúsculas: FBI, DDT.',
+                                'Las expresiones desarrolladas de siglas '
+                                'llevan mayúscula si nombran una institución '
+                                '(Banco Central Europeo), y minúscula si son '
+                                'expresiones comunes (documento nacional de '
+                                'identidad).']}]},
  {'num': 7,
   'titulo': 'Signos de Puntuación',
   'secciones': [{'titulo': '7.1 CONCEPTO Y FUNCIONES',
@@ -4116,13 +4353,25 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Una función de los signos de puntuación es '
                                 'indicar los límites de las unidades '
                                 'discursivas.',
+                                'Otra función es indicar la modalidad de los '
+                                'enunciados: enunciativa, interrogativa o '
+                                'exclamativa.',
+                                'Otra función es indicar la omisión de una '
+                                'parte del enunciado, como en «A quien '
+                                'madruga…».',
                                 'El punto se usa en las abreviaturas, como '
                                 '«Sra.» o «pág.».',
                                 'El punto se usa también en fechas y horas, '
                                 'como 22.02.22.',
                                 'Nunca se escribe punto al final de títulos '
                                 'y subtítulos de libros, artículos u obras '
-                                'de arte.']},
+                                'de arte.',
+                                'Tampoco se escribe punto después de los '
+                                'nombres de autor en portadas o firmas de '
+                                'documentos.',
+                                'Tampoco se usa punto en dedicatorias, ni en '
+                                'eslóganes, ni en direcciones '
+                                'electrónicas.']},
                      {'titulo': 'LA COMA / LOS DOS PUNTOS',
                       'items': ['La coma incidental se usa para intercalar '
                                 'información aclaratoria dentro del '
@@ -4140,7 +4389,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 "'Tengo deberes sagrados que cumplir...'».",
                                 'Los dos puntos yuxtapuestos indican '
                                 'causa-efecto: «Se ha quedado sin trabajo: '
-                                'no podrá ir de vacaciones».']},
+                                'no podrá ir de vacaciones».',
+                                'Los dos puntos yuxtapuestos también indican '
+                                'conclusión o resumen: «El arbitraje fue '
+                                'injusto...: al final se perdió el partido».',
+                                'Los dos puntos se usan tras conectores '
+                                'discursivos como «ahora bien», «dicho de '
+                                'otro modo», «a saber».',
+                                'Los dos puntos se usan tras vocativos '
+                                'formales en cartas: «Estimado amigo:», '
+                                '«Distinguidos colegas:».']},
                      {'titulo': 'LOS PUNTOS SUSPENSIVOS / EL PARÉNTESIS',
                       'items': ['Los puntos suspensivos indican suspensión u '
                                 'omisión del discurso: «El caso es que si '
@@ -4153,6 +4411,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'de una parte del texto por sobrentendida, '
                                 'como en refranes: «Más sabe el diablo por '
                                 'viejo que…».',
+                                'Los puntos suspensivos permiten insinuar, '
+                                'evitando su reproducción, expresiones '
+                                'malsonantes.',
+                                'Los puntos suspensivos se emplean al final '
+                                'de enumeraciones en lugar de etcétera: '
+                                '«Puedes leer, ver televisión, oír música…».',
+                                'Entre corchetes o paréntesis, los puntos '
+                                'suspensivos indican la supresión de una '
+                                'parte de una cita textual.',
                                 'El paréntesis se usa para aislar incisos: '
                                 '«Las asambleas (la primera y última) se '
                                 'celebran en el salón de actos».',
@@ -4162,7 +4429,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'murió Cervantes».',
                                 'El paréntesis encierra acotaciones de '
                                 'personajes en obras teatrales: «JORGE. '
-                                '(Golpeando con el bastón)».']},
+                                '(Golpeando con el bastón)».',
+                                'El paréntesis, junto con puntos '
+                                'suspensivos, indica la omisión de parte de '
+                                'una cita textual: (…).']},
                      {'titulo': 'LAS COMILLAS / LA RAYA',
                       'items': ['Las comillas se usan en citas textuales y '
                                 "reproducción de pensamientos: «'Sobreviven "
@@ -4176,6 +4446,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'metalingüísticos, para mencionar una '
                                 "palabra como tal: «La palabra 'cándida' "
                                 'lleva tilde por ser esdrújula».',
+                                'Las comillas encierran expresiones '
+                                'denominativas, como títulos de artículos: '
+                                "«Su artículo 'Importancia del lenguaje...' "
+                                'se publicó en El Comercio».',
+                                'Las comillas suelen encerrar apodos y alias '
+                                'intercalados entre nombre y apellido: '
+                                "«Ernesto 'Che' Guevara».",
                                 'La raya se usa para separar incisos: «Para '
                                 'él la fidelidad —cualidad que valoraba por '
                                 'encima de cualquier otra— era algo '
@@ -4186,7 +4463,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 "refuercen los controles'».",
                                 'La raya se usa en diálogos, marcando la '
                                 'intervención de cada personaje: «—¿Cómo se '
-                                'llama Ud.? —Paco.»']},
+                                'llama Ud.? —Paco.»',
+                                'La raya se usa en enumeraciones en forma de '
+                                'lista, como viñeta: «Las funciones del '
+                                'lenguaje son: — expresiva, — fática, — '
+                                'conativa...».',
+                                'La raya puede encerrar incisos dentro de '
+                                'otros incisos: «(la bibliografía existente '
+                                '—incluso en español— es bastante '
+                                'extensa)».']},
                      {'titulo': 'INTERROGACIÓN Y EXCLAMACIÓN',
                       'items': ['Los signos de interrogación y exclamación '
                                 'se usan en interrogaciones y exclamaciones '
@@ -4197,7 +4482,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Las oraciones exclamativas pueden estar '
                                 'formadas por interjecciones (¡Ay!), '
                                 'onomatopeyas (¡Chist!) o vocativos '
-                                '(¡Niños!).']}]},
+                                '(¡Niños!).',
+                                'El signo de apertura (¿ o ¡) se coloca '
+                                'donde comienza la pregunta o exclamación, '
+                                'no necesariamente al inicio de la oración: '
+                                '«Martha, ¿sabes ya cuándo vendrás?»',
+                                'Estos signos se usan en enunciados '
+                                'aseverativos que preceden a apéndices '
+                                'confirmativos: «El martes es su onomástico, '
+                                '¿no?»',
+                                'Si concurren varias preguntas o '
+                                'exclamaciones breves y consecutivas, cada '
+                                'una se escribe con su propio signo de '
+                                'apertura y cierre: «¿Quién era? ¿De dónde '
+                                'vino?»']}]},
  {'num': 8,
   'titulo': 'El Sustantivo',
   'secciones': [{'titulo': '8.1 CRITERIOS PARA DEFINIR EL SUSTANTIVO',
@@ -4754,7 +5052,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'su cuaderno».',
                                 'El sustantivo puede funcionar como núcleo '
                                 'de la aposición, como en «Ricardo Palma, el '
-                                'bibliotecario mendigo».']},
+                                'bibliotecario mendigo».',
+                                'El sustantivo puede funcionar como núcleo '
+                                'del complemento agente, en oraciones de voz '
+                                'pasiva.']},
                      {'titulo': 'SUSTANTIVOS PROPIOS Y COMUNES / OTRAS '
                                 'CLASIFICACIONES DEL SUSTANTIVO',
                       'items': ['Los sustantivos propios nombran a los seres '
@@ -4772,7 +5073,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'café».',
                                 'Los sustantivos concretos nombran seres '
                                 'percibidos por los sentidos, con existencia '
-                                'independiente.']},
+                                'independiente.',
+                                'Los sustantivos abstractos nombran seres '
+                                'conocidos mediante un proceso mental de '
+                                'abstracción.',
+                                'Los sustantivos individuales nombran a un '
+                                'solo ser; los sustantivos colectivos '
+                                'designan, en singular, un conjunto de '
+                                'seres.']},
                      {'titulo': 'TIPOS DE GÉNERO DEL SUSTANTIVO (I) / TIPOS '
                                 'DE GÉNERO DEL SUSTANTIVO (II)',
                       'items': ['Los sustantivos heterónimos expresan la '
@@ -4787,6 +5095,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'personas son -esa (alcalde/alcaldesa), -isa '
                                 '(profeta/profetisa), -triz (actor/actriz) y '
                                 '-ina (héroe/heroína).',
+                                'Los sustantivos comunes en cuanto al género '
+                                'pueden ser masculino o femenino sin cambiar '
+                                'de forma; el género se marca en la '
+                                'concordancia: el/la artista, el/la '
+                                'estudiante.',
                                 'Muchos sustantivos de persona con masculino '
                                 'en -o, que designan profesiones, presentan '
                                 'el femenino en -a: abogado/abogada, '
@@ -4799,7 +5112,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'género son de terminación invariable y '
                                 'pueden usarse como masculino o femenino sin '
                                 'cambiar de significado: el/la mar, el/la '
-                                'azúcar.']},
+                                'azúcar.',
+                                'Los sustantivos polisémicos y homónimos se '
+                                'diferencian en significado y género: el '
+                                'capital (dinero) / la capital (ciudad); el '
+                                'cólera (enfermedad) / la cólera (ira).']},
                      {'titulo': 'LOS SUSTANTIVOS EPICENOS / REGLAS GENERALES '
                                 'DEL PLURAL',
                       'items': ['Los sustantivos epicenos tienen un único '
@@ -4822,7 +5139,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'o bisturís, tabúes o tabús.',
                                 'Los nombres acabados en las consonantes L, '
                                 'N, R, D, Z, J hacen el plural en -es: '
-                                'cónsules, leones, paredes, peces.']},
+                                'cónsules, leones, paredes, peces.',
+                                'Los nombres terminados en -S, -X que son '
+                                'agudos o monosílabos hacen el plural en -es '
+                                '(autobuses); los llanos o esdrújulos '
+                                'permanecen invariables: la dosis, las '
+                                'tesis, los lunes.',
+                                'A los nombres terminados en -Y se añade '
+                                '-es: bueyes, leyes, reyes.']},
                      {'titulo': 'EL PLURAL DE LOS COMPUESTOS',
                       'items': ['Los compuestos que forman una sola palabra '
                                 'pluralizan solo el segundo elemento: '
@@ -4835,7 +5159,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los sustantivos macho y hembra no se '
                                 'pluralizan cuando modifican a otro '
                                 'sustantivo: las panteras macho, las '
-                                'avestruces hembra.']}]},
+                                'avestruces hembra.',
+                                'En compuestos de dos adjetivos, unidos o '
+                                'separados por guion, se pluraliza solo el '
+                                'segundo: conversaciones '
+                                'árabe-israelíes.']}]},
  {'num': 9,
   'titulo': 'El Pronombre',
   'secciones': [{'titulo': '9.1 CRITERIOS PARA DEFINIR EL PRONOMBRE',
@@ -5231,7 +5559,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'porque no señala cualidades o '
                                 'características del sustantivo.',
                                 'El pronombre es una palabra no descriptiva, '
-                                'porque señala al ser sin conceptuarlo.']},
+                                'porque señala al ser sin conceptuarlo.',
+                                'El pronombre tiene significación ocasional: '
+                                'fuera de contexto, palabras como «ella» o '
+                                '«tú» carecen de significado fijo.',
+                                'Cuando el pronombre se carga de significado '
+                                'dentro de un contexto, adquiere un valor '
+                                'referencial.',
+                                'Según el criterio morfológico, el pronombre '
+                                'es una palabra variable que expresa género, '
+                                'número y persona.']},
                      {'titulo': 'CASOS DEL PRONOMBRE PERSONAL',
                       'items': ['El caso nominativo o recto corresponde a '
                                 'pronombres como «yo», «tú», «él», que '
@@ -5241,7 +5578,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '«lo», «la».',
                                 'El caso dativo, de complemento indirecto, '
                                 'corresponde a pronombres como «me», «te», '
-                                '«le», «les».']},
+                                '«le», «les».',
+                                'El caso preposicional corresponde a '
+                                'pronombres como «mí», «ti», «él», usados '
+                                'después de una preposición.']},
                      {'titulo': 'PRONOMBRES ÁTONOS O CLÍTICOS',
                       'items': ['Los pronombres átonos son: me, se, te, le, '
                                 'les, la, las, lo, los, nos, os.',
@@ -5259,7 +5599,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Cerca del hablante (1ª persona): este, '
                                 'esta, estos, estas, esto.',
                                 'Cerca del oyente (2ª persona): ese, esa, '
-                                'esos, esas, eso.']},
+                                'esos, esas, eso.',
+                                'Lejos de ambos (3ª persona): aquel, '
+                                'aquella, aquellos, aquellas, aquello.']},
                      {'titulo': 'PRONOMBRES POSESIVOS',
                       'items': ['Los pronombres posesivos indican posesión o '
                                 'pertenencia, nombrando al objeto a través '
@@ -5267,7 +5609,8 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'De 1ª persona: mío, mía, míos, mías, '
                                 'nuestro, nuestra.',
                                 'De 2ª persona: tuyo, tuya, tuyos, tuyas, '
-                                'vuestro, vuestra.']},
+                                'vuestro, vuestra.',
+                                'De 3ª persona: suyo, suya, suyos, suyas.']},
                      {'titulo': 'PRONOMBRES INDEFINIDOS Y NUMERALES',
                       'items': ['Los pronombres indefinidos son '
                                 'cuantificadores que dan una referencia vaga '
@@ -5277,7 +5620,15 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'orden, repetición, división o distribución '
                                 'de los seres.',
                                 'Los numerales cardinales indican cantidad '
-                                'exacta: «Entregó doce para la familia».']},
+                                'exacta: «Entregó doce para la familia».',
+                                'Los numerales ordinales expresan el lugar '
+                                'que ocupa una unidad en una serie: «Los '
+                                'últimos siempre ganan».',
+                                'Los numerales múltiplos indican '
+                                'multiplicación o repetición: «Ganarás el '
+                                'doble; mañana, el triple».',
+                                'Los numerales partitivos indican la parte o '
+                                'fracción de un ser: «Comí solo la mitad».']},
                      {'titulo': 'PRONOMBRES RELATIVOS, INTERROGATIVOS Y '
                                 'EXCLAMATIVOS',
                       'items': ['Los pronombres relativos encabezan una '
@@ -5728,12 +6079,24 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Según el criterio morfológico, el adjetivo '
                                 'es una palabra variable con morfemas de '
                                 'género y número.',
+                                'Según el criterio sintáctico, la función '
+                                'principal del adjetivo es modificar '
+                                'directamente al sustantivo, como M.D.',
+                                'El adjetivo también puede funcionar como '
+                                'núcleo del predicativo o del atributo del '
+                                'verbo copulativo.',
                                 'Los adjetivos calificativos expresan '
                                 'cualidades o estados del sustantivo al cual '
                                 'modifican.',
                                 'El adjetivo especificativo o restrictivo '
                                 'precisa de qué sustantivo se trata y puede '
-                                'restringir su extensión.']},
+                                'restringir su extensión.',
+                                'El adjetivo explicativo o no restrictivo '
+                                'aparece entre pausas, va antepuesto y no '
+                                'tiene carga excluyente.',
+                                'El adjetivo epíteto señala una cualidad '
+                                'propia del sustantivo; antepuesto tiene '
+                                'propósito poético.']},
                      {'titulo': 'ADJETIVOS GENTILICIOS / TIPOS DE ADJETIVO '
                                 'CALIFICATIVO',
                       'items': ['Los adjetivos gentilicios califican al '
@@ -5742,6 +6105,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El sufijo -eño/-eña forma gentilicios como '
                                 '«limeña»; el sufijo -ense forma gentilicios '
                                 'como «bonaerense».',
+                                'El sufijo -és/-esa forma gentilicios como '
+                                '«cordobés»; el sufijo -ano/-ana forma '
+                                'gentilicios como «italiana».',
                                 'El adjetivo calificativo especificativo o '
                                 'restrictivo precisa de qué sustantivo se '
                                 'trata, restringiendo su extensión: «gatos '
@@ -5749,7 +6115,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El adjetivo calificativo explicativo o no '
                                 'restrictivo aparece entre pausas, va '
                                 'antepuesto y no tiene carga excluyente: «El '
-                                'misterioso gato sufrió una quemadura».']},
+                                'misterioso gato sufrió una quemadura».',
+                                'El adjetivo calificativo epíteto señala una '
+                                'cualidad propia e inherente del sustantivo: '
+                                '«blanca nieve», «roja sangre», «verde '
+                                'hierba».']},
                      {'titulo': 'GRADO POSITIVO Y COMPARATIVO / SUPERLATIVO '
                                 'ABSOLUTO PERIFRÁSTICO Y SINTÉTIC',
                       'items': ['El grado positivo expresa una cualidad '
@@ -5764,7 +6134,16 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El superlativo absoluto perifrástico '
                                 'modifica el adjetivo con adverbios como '
                                 'muy, sumamente, extremadamente: «Mi hermana '
-                                'es muy hermosa».']},
+                                'es muy hermosa».',
+                                'El superlativo absoluto sintético tiene dos '
+                                'formas según la terminación del adjetivo.',
+                                '1ª forma: si el adjetivo termina en -re o '
+                                '-ro, se añade el sufijo -érrimo(a): pobre → '
+                                'paupérrimo, libre → libérrimo.',
+                                '2ª forma: si el adjetivo tiene otra '
+                                'terminación, se añade el sufijo -ísimo(a): '
+                                'bueno → bonísimo, fuerte → fortísimo, sabio '
+                                '→ sapientísimo.']},
                      {'titulo': 'SUPERLATIVO RELATIVO Y FORMAS IRREGULARES / '
                                 'ADJETIVOS DETERMINATIVOS: DEMOS',
                       'items': ['El superlativo relativo maximiza o minimiza '
@@ -5788,12 +6167,23 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'exactos.',
                                 'Los cardinales expresan cantidad exacta: '
                                 'cinco delincuentes, tres soles.',
+                                'Los ordinales expresan orden o sucesión: '
+                                'segundo nivel, sexto grado.',
+                                'Los múltiplos indican multiplicación o '
+                                'repetición: doble baile, triple vacuna.',
+                                'Los partitivos indican fracción de la '
+                                'unidad, acompañados del sustantivo «parte» '
+                                'salvo medio, mitad y tercio.',
                                 'El apócope es la supresión de sonidos al '
                                 'final de ciertas palabras.',
                                 'Los adjetivos apócope pierden la -o final '
                                 'cuando van delante de un sustantivo '
                                 'masculino singular; en femenino quedan '
-                                'intactos.']}]},
+                                'intactos.',
+                                'Ejemplos de apócope: grande→gran chico; '
+                                'bueno→un buen amigo; primero→el primer '
+                                'hijo; alguno→algún consejo; ninguno→ningún '
+                                'alumno.']}]},
  {'num': 11,
   'titulo': 'El Artículo y el Adverbio',
   'secciones': [{'titulo': '11.1 CRITERIOS DEL ARTÍCULO',
@@ -6180,7 +6570,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El artículo siempre precede al sustantivo.',
                                 'Según el criterio morfológico, el artículo '
                                 'es una palabra variable que concuerda en '
-                                'género y número con el sustantivo.']},
+                                'género y número con el sustantivo.',
+                                'Según el criterio sintáctico, el artículo '
+                                'funciona como modificador directo y como '
+                                'sustantivador universal.']},
                      {'titulo': 'CLASIFICACIÓN DEL ARTÍCULO',
                       'items': ['El artículo determinado, o definido, hace '
                                 'referencia a un sustantivo conocido: el, '
@@ -6200,7 +6593,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'contracción al; la preposición «de» más '
                                 '«el» forma la contracción del.',
                                 'Las contracciones se usan solo ante '
-                                'sustantivos comunes.']},
+                                'sustantivos comunes.',
+                                'Si el artículo forma parte de un topónimo, '
+                                'como «El Salvador», no procede la '
+                                'contracción.']},
                      {'titulo': 'FUNCIONES Y VALORES DEL ARTÍCULO',
                       'items': ['El artículo determinado actúa como '
                                 'presentador del sustantivo, dando mayor '
@@ -6211,7 +6607,18 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '«Eres un candidato del pueblo».',
                                 'El artículo funciona como desambiguador de '
                                 'género y número: el oyente/la oyente; la '
-                                'caries/las caries.']},
+                                'caries/las caries.',
+                                'Cuando dos adjetivos modifican a un '
+                                'sustantivo, el artículo debe preceder solo '
+                                'al primer adjetivo: «El débil y triste '
+                                'mendigo...».',
+                                'El uso del artículo es opcional en algunos '
+                                'países: Perú/El Perú; no acepta artículo '
+                                'Bolivia, Chile, Colombia.',
+                                'Por razones de eufonía, los sustantivos '
+                                'femeninos que empiezan con «a» o «ha» '
+                                'tónicas se anteponen del artículo «el» en '
+                                'singular: el águila, el agua, el arma.']},
                      {'titulo': 'EL ADVERBIO',
                       'items': ['El adverbio es una palabra invariable que '
                                 'modifica al verbo, al adjetivo o a otro '
@@ -6229,7 +6636,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'todavía, ahora.',
                                 'Los adverbios de modo indican manera o '
                                 'procedimiento: bien, mal, despacio, aprisa, '
-                                'así.']},
+                                'así.',
+                                'Los adverbios de cantidad indican grado o '
+                                'porción: poco, mucho, tanto, demasiado, '
+                                'casi, bastante.',
+                                'Los adverbios terminados en -mente son en '
+                                'su mayoría adverbios de modo, formados por '
+                                'un adjetivo más el sufijo -mente: '
+                                'rápidamente, felizmente.']},
                      {'titulo': 'CLASES DE ADVERBIOS (II)',
                       'items': ['Los adverbios de orden indican sucesión: '
                                 'primeramente, seguidamente, finalmente.',
@@ -6237,8 +6651,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'certeza: sí, ciertamente, seguramente, '
                                 'efectivamente.',
                                 'Los adverbios de negación indican objeción '
-                                'o contradicción: no, nunca, jamás, '
-                                'tampoco.']},
+                                'o contradicción: no, nunca, jamás, tampoco.',
+                                'Los adverbios de duda indican '
+                                'incertidumbre: quizás, tal vez, acaso, a lo '
+                                'mejor.']},
                      {'titulo': 'USOS CORRECTOS DEL ADVERBIO',
                       'items': ['Es incorrecto decir «Lo encontré abajo de '
                                 'la mesa»; lo correcto es «Lo encontré '
@@ -6697,6 +7113,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'Los verbos reflexivos tienen una acción que '
                                 'se refleja sobre el mismo sujeto; se '
                                 'comprueban con el refuerzo «mismo».',
+                                'Los verbos cuasireflexivos usan los '
+                                'pronombres me, te, se como énfasis, sin '
+                                'representar transitividad, y no aceptan el '
+                                'refuerzo «mismo».',
+                                'Los verbos recíprocos tienen sujeto plural '
+                                'con acción mutua entre ellos, y aceptan el '
+                                'refuerzo «mutuamente».',
                                 'Los verbos impersonales son aquellos cuyo '
                                 'sujeto se desconoce o no se precisa con '
                                 'exactitud.',
@@ -6717,6 +7140,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El accidente tiempo indica la época en que '
                                 'se realiza la acción: pasado, presente o '
                                 'futuro.',
+                                'El tiempo simple expresa la acción con una '
+                                'sola palabra; el tiempo compuesto usa el '
+                                'auxiliar haber más el participio: «ha '
+                                'viajado».',
                                 'El aspecto señala si la acción está '
                                 'concluida o en proceso: imperfectivo '
                                 '(cantaba, no concluida), perfectivo (he '
@@ -6726,7 +7153,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 '«Manuel escribe poemas».',
                                 'El modo subjuntivo expresa la acción de '
                                 'manera subjetiva, como deseo o duda: '
-                                '«Queremos que Manuel escriba poemas».']},
+                                '«Queremos que Manuel escriba poemas».',
+                                'El modo imperativo expresa la acción como '
+                                'orden o ruego, dirigida a la segunda '
+                                'persona: «Estudien con esmero, jóvenes».',
+                                'La voz indica si el sujeto es activo '
+                                '(realiza la acción) o pasivo (la recibe): '
+                                '«El profesor asesora» (activa) / «Los '
+                                'alumnos son asesorados» (pasiva).']},
                      {'titulo': 'VERBOS AUXILIARES / LOS VERBOIDES: '
                                 'INFINITIVO Y GERUNDIO',
                       'items': ['Los verbos auxiliares auxilian a los '
@@ -6738,6 +7172,8 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El auxiliar haber sirve para formar los '
                                 'tiempos compuestos: «Lilia ha bailado con '
                                 'Fredy».',
+                                'El auxiliar estar actúa como auxiliar de un '
+                                'gerundio: «Estoy amando apasionadamente».',
                                 'Los verboides son formas no personales del '
                                 'verbo, porque no están conjugados en '
                                 'ninguna persona.',
@@ -6745,7 +7181,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'verbo, cumple función de núcleo del sujeto '
                                 'y termina en -ar, -er, -ir.',
                                 'El infinitivo simple carece de verbo '
-                                'auxiliar: «El amar es maravilloso».']},
+                                'auxiliar: «El amar es maravilloso».',
+                                'El infinitivo compuesto se forma con haber '
+                                'más el participio: «El haber vivido contigo '
+                                'fue fascinante».',
+                                'El gerundio es la forma adverbial del '
+                                'verbo, funciona como circunstancial.',
+                                'El gerundio simple termina en -ando o '
+                                '-iendo: «Ella vive amando».']},
                      {'titulo': 'LOS VERBOIDES: EL PARTICIPIO',
                       'items': ['El participio es la forma adjetiva y '
                                 'sustantiva del verbo, expresa acción '
@@ -6756,7 +7199,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El participio pasivo irregular termina en '
                                 '-cho, -to, -so, -jo, -vo: cliente '
                                 'satisfecho, documento escrito, libro '
-                                'impreso.']}]},
+                                'impreso.',
+                                'El participio activo termina en -ante, '
+                                '-iente, -ente, -ador, -edor, -idor, y '
+                                'funciona como sustantivo o adjetivo: el '
+                                'oyente, el gobernador.']}]},
  {'num': 13,
   'titulo': 'Conectores Lógico-Semánticos: La Preposición',
   'secciones': [{'titulo': '13.1 CRITERIOS DE LA PREPOSICIÓN',
@@ -7144,14 +7591,22 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'carece de morfemas.',
                                 'Según el criterio sintáctico, la '
                                 'preposición funciona como conectivo o nexo '
-                                'subordinante.']},
+                                'subordinante.',
+                                'En el predicado, las preposiciones por y de '
+                                'encabezan al agente, solo en voz pasiva.']},
                      {'titulo': 'USOS DE ALGUNAS PREPOSICIONES',
                       'items': ['La preposición «a» puede indicar dirección, '
                                 'lugar, tiempo o modo.',
                                 'La preposición «ante» significa «delante» o '
                                 '«en presencia de».',
                                 'La preposición «bajo» puede indicar '
-                                'situación inferior o subordinación.']},
+                                'situación inferior o subordinación.',
+                                'La preposición «con» puede indicar '
+                                'compañía, unión, medio o contenido.',
+                                'La preposición «contra» indica oposición o '
+                                'ubicación.',
+                                'La preposición «de» puede indicar posesión, '
+                                'origen, material o tema.']},
                      {'titulo': 'LOCUCIONES PREPOSITIVAS',
                       'items': ['Las locuciones prepositivas son '
                                 'agrupaciones de palabras que adquieren en '
@@ -7180,7 +7635,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'empieza con i.',
                                 'Las conjunciones disyuntivas (o, u, o bien) '
                                 'tienen valor de alternativa; se usa u antes '
-                                'de palabra que empieza con o.']},
+                                'de palabra que empieza con o.',
+                                'Las conjunciones adversativas (pero, sino, '
+                                'aunque) señalan enunciados contrapuestos; '
+                                'pero indica restricción y sino expresa '
+                                'incompatibilidad.']},
                      {'titulo': 'CONJUNCIONES SUBORDINANTES (I)',
                       'items': ['Las conjunciones subordinantes enlazan dos '
                                 'elementos de distinta jerarquía.',
@@ -7189,7 +7648,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'porque quiero aprobar».',
                                 'Las condicionales (si, siempre que) '
                                 'establecen que una proposición es condición '
-                                'de otra: «Si no estudias, no aprobarás».']},
+                                'de otra: «Si no estudias, no aprobarás».',
+                                'Las concesivas (aunque, si bien, a pesar '
+                                'de) introducen un inconveniente que no '
+                                'impide la acción: «Aunque estudie, no '
+                                'aprobaré».']},
                      {'titulo': 'CONJUNCIONES SUBORDINANTES (II)',
                       'items': ['Las comparativas (como, que) denotan '
                                 'comparación: «No es tan listo como dicen».',
@@ -7199,8 +7662,11 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'podía salir».',
                                 'Las finales (para que, a fin de que) '
                                 'indican finalidad o propósito: «Toca el '
-                                'piano para que vean lo bien que lo '
-                                'haces».']}]},
+                                'piano para que vean lo bien que lo haces».',
+                                'Las ilativas (luego, conque, en '
+                                'consecuencia) introducen una oración como '
+                                'consecuencia de la anterior: «Pienso, luego '
+                                'existo».']}]},
  {'num': 14,
   'titulo': 'La Sintaxis y la Oración Gramatical',
   'secciones': [{'titulo': '14.1 CONCEPTO DE SINTAXIS Y SINTAGMA',
@@ -7649,12 +8115,20 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La sintaxis estudia las relaciones entre '
                                 'los elementos de una frase y las funciones '
                                 'que desempeña cada palabra.',
+                                'La unidad básica de la sintaxis es el '
+                                'sintagma.',
+                                'El sintagma es una unidad sintáctica '
+                                'formada por una o más palabras dotadas de '
+                                'sentido y valor funcional.',
                                 'El sintagma nominal (SN), o frase nominal, '
                                 'está formado por un sustantivo u otra '
                                 'categoría sustantivada que constituye su '
                                 'núcleo.',
                                 'El núcleo del sintagma nominal siempre es '
-                                'un sustantivo o palabra sustantivada.']},
+                                'un sustantivo o palabra sustantivada.',
+                                'Los modificadores del sintagma nominal '
+                                'dependen del núcleo y giran alrededor de '
+                                'él.']},
                      {'titulo': 'MODIFICADORES DEL SINTAGMA NOMINAL / EL '
                                 'SINTAGMA VERBAL Y SU NÚCLEO',
                       'items': ['El modificador directo (MD) se une al '
@@ -7663,6 +8137,12 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'El modificador indirecto (MI) se une al '
                                 'núcleo mediante preposiciones o '
                                 'conjunciones comparativas.',
+                                'La aposición (AP) tiene el mismo valor que '
+                                'el núcleo y puede conmutarse con él.',
+                                'La aposición explicativa se separa por '
+                                'comas y es sinónima del núcleo, como en '
+                                '«Pachacútec, el constructor de Machu '
+                                'Picchu».',
                                 'El sintagma verbal (SV), o predicado, tiene '
                                 'como núcleo a un verbo que concuerda con el '
                                 'núcleo del sujeto.',
@@ -7678,13 +8158,26 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'se beneficia o perjudica con la acción; se '
                                 'encabeza con «a» o «para»: «El docente le '
                                 'compró libros».',
+                                'El complemento circunstancial (CC) '
+                                'complementa el verbo con matices de lugar, '
+                                'tiempo, modo, causa, compañía o finalidad.',
+                                'El complemento agente (CAg) se encabeza con '
+                                'la preposición «por»; aparece en oraciones '
+                                'en voz pasiva: «Los muros fueron '
+                                'intervenidos por un equipo».',
                                 'El predicativo (PVO) complementa a un verbo '
                                 'no copulativo, expresando cualidad o estado '
                                 'del sujeto o del CD: «El niño se despertó '
                                 'atemorizado».',
                                 'El atributo complementa a un verbo '
                                 'copulativo o semicopulativo: «El mes de '
-                                'febrero es lluvioso».']},
+                                'febrero es lluvioso».',
+                                'El atributo es sustituible por el pronombre '
+                                'invariable «lo»; el predicativo no lo es.',
+                                'El predicado nominal tiene como núcleo un '
+                                'sustantivo, adjetivo o adverbio; el '
+                                'predicado verbal tiene como núcleo un verbo '
+                                'conjugado.']},
                      {'titulo': 'CONCEPTO Y CARACTERÍSTICAS DE LA ORACIÓN / '
                                 'ORACIONES UNIMEMBRES Y BIMEMBRES',
                       'items': ['La oración es la unidad de predicación que '
@@ -7698,7 +8191,12 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'ni predicado, pero tienen sentido completo.',
                                 'Las unimembres sin verbo o contextuales '
                                 'adquieren valor oracional en un contexto: '
-                                '«¡Hola!», «Buenos días».']},
+                                '«¡Hola!», «Buenos días».',
+                                'Las unimembres con verbos impersonales '
+                                'carecen de sujeto: «Amaneció nublado», «Hay '
+                                'muchos alumnos».',
+                                'Las oraciones bimembres poseen sujeto y '
+                                'predicado, expreso o tácito.']},
                      {'titulo': 'ORACIONES SIMPLES Y COMPUESTAS / ORACIONES '
                                 'SEGÚN LA ACTITUD DEL HABLANTE (I',
                       'items': ['Las oraciones simples presentan un solo '
@@ -7710,7 +8208,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'afirman o niegan hechos de forma objetiva: '
                                 '«Hoy hace frío».',
                                 'Las oraciones desiderativas manifiestan un '
-                                'deseo: «Ojalá lleguen pronto».']},
+                                'deseo: «Ojalá lleguen pronto».',
+                                'Las oraciones dubitativas expresan duda o '
+                                'probabilidad: «Tal vez tengas razón».']},
                      {'titulo': 'ORACIONES SEGÚN LA ACTITUD DEL HABLANTE '
                                 '(II)',
                       'items': ['Las oraciones interrogativas expresan una '
@@ -7718,7 +8218,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'nombre?»',
                                 'Las oraciones imperativas o exhortativas '
                                 'presentan un mandato u orden, con modo '
-                                'imperativo: «Abre la ventana».']}]},
+                                'imperativo: «Abre la ventana».',
+                                'Las oraciones exclamativas expresan '
+                                'emociones, con signos de exclamación: «¡Qué '
+                                'susto pasamos!»']}]},
  {'num': 15,
   'titulo': 'El Texto y la Lectura',
   'secciones': [{'titulo': '15.1 CONCEPTO DEL TEXTO',
@@ -8095,7 +8598,10 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'forma, que tiene como base al párrafo.',
                                 'El texto tiene un carácter comunicativo, un '
                                 'carácter pragmático y un carácter '
-                                'estructurado.']},
+                                'estructurado.',
+                                'El texto es la secuencia lingüística con '
+                                'sentido pleno que un hablante quiere '
+                                'comunicar.']},
                      {'titulo': 'ESTRUCTURA INTERNA DEL TEXTO',
                       'items': ['La idea principal es la tesis o '
                                 'planteamiento central que el autor '
@@ -8105,7 +8611,9 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'explicándola.',
                                 'El tema es todo aquello de lo que se habla '
                                 'en el texto, el asunto descrito y '
-                                'desarrollado.']},
+                                'desarrollado.',
+                                'El título es una frase breve que sintetiza '
+                                'la idea central del texto.']},
                      {'titulo': 'CLASES DE TEXTO POR SU FORMA',
                       'items': ['El texto narrativo presenta una sucesión de '
                                 'acciones en el tiempo, para contar hechos '
@@ -8125,7 +8633,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'monografías, tesis o artículos científicos.',
                                 'El texto filosófico contiene reflexiones '
                                 'sobre las causas y fines primeros de la '
-                                'existencia humana.']},
+                                'existencia humana.',
+                                'El texto humanístico contiene ideas sobre '
+                                'la actividad humana, sin el rigor de la '
+                                'ciencia ni la profundidad filosófica.',
+                                'El texto literario constituye obras donde '
+                                'prima la belleza del lenguaje: novelas, '
+                                'cuentos, poemas.']},
                      {'titulo': 'CLASES DE TEXTO POR SU ESTRUCTURA',
                       'items': ['El texto analizante presenta la idea '
                                 'principal al inicio del párrafo, explicada '
@@ -8134,7 +8648,12 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'principal al final del párrafo, como '
                                 'síntesis de lo anterior.',
                                 'El texto centrado presenta la idea '
-                                'principal al medio del párrafo.']},
+                                'principal al medio del párrafo.',
+                                'El texto encuadrado presenta la idea '
+                                'principal al inicio y al final del párrafo.',
+                                'El texto paralelo no presenta idea '
+                                'principal ni secundarias; todas las ideas '
+                                'tienen igual importancia.']},
                      {'titulo': 'CONCEPTO DE LECTURA Y NIVEL LITERAL',
                       'items': ['La lectura es la actividad mental de '
                                 'percepción, comprensión y reacción que '
@@ -8546,8 +9065,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'significados entre términos comprendidos en '
                                 'un mismo campo semántico.',
                                 'Los sinónimos pertenecen a la misma clase '
-                                'gramatical y poseen significados '
-                                'parecidos.']},
+                                'gramatical y poseen significados parecidos.',
+                                'Los sinónimos absolutos o directos tienen '
+                                'el mismo significado sin importar el '
+                                'contexto, como «casa» y «vivienda».',
+                                'Los sinónimos relativos o indirectos '
+                                'cambian de sentido según el contexto de la '
+                                'oración.']},
                      {'titulo': 'LA ANTONIMIA',
                       'items': ['Los antónimos son palabras de la misma '
                                 'categoría gramatical que expresan '
@@ -8588,7 +9112,14 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'mueble.',
                                 'La cohiponimia relaciona hipónimos de un '
                                 'mismo hiperónimo: lechuga y zanahoria son '
-                                'cohipónimos de hortaliza.']},
+                                'cohipónimos de hortaliza.',
+                                'La holonimia establece la relación '
+                                'todo-parte: árbol es holónimo de rama.',
+                                'La meronimia establece la relación '
+                                'parte-todo: pedal es merónimo de bicicleta.',
+                                'La comeronimia relaciona merónimos de un '
+                                'mismo holónimo: raíz, tallo y hojas son '
+                                'comerónimos de árbol.']},
                      {'titulo': 'ANALOGÍAS: CONCEPTO Y SIMÉTRICAS',
                       'items': ['La analogía es la semejanza de relación que '
                                 'existe entre dos pares de palabras: una '
@@ -8599,7 +9130,13 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'sí.',
                                 'Las analogías de sinonimia relacionan '
                                 'términos de significado semejante: sereno : '
-                                'ecuánime.']},
+                                'ecuánime.',
+                                'Las analogías de complementariedad vinculan '
+                                'objetos que se requieren mutuamente: violín '
+                                ': arco.',
+                                'Las analogías cogenéricas tienen como '
+                                'atributo esencial la pertenencia a la misma '
+                                'clase o categoría: oro : plata (metales).']},
                      {'titulo': 'ANALOGÍAS ASIMÉTRICAS Y '
                                 'DENOTACIÓN/CONNOTACIÓN',
                       'items': ['Las analogías asimétricas exigen respetar '
@@ -8611,4 +9148,8 @@ COMUNICATIVA_TEMAS = [{'num': 1,
                                 'La denotación es la relación objetiva entre '
                                 'significante y referente; es el significado '
                                 'universal de una palabra, usado en textos '
-                                'técnicos y científicos.']}]}]
+                                'técnicos y científicos.',
+                                'La connotación es el doble sentido o '
+                                'sentido figurado atribuido a las palabras; '
+                                'es subjetiva y propia del lenguaje '
+                                'literario: «Esa señorita es un bombón».']}]}]

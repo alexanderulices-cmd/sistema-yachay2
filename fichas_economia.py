@@ -650,7 +650,9 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'la amistad.',
                                 'El cuarto nivel corresponde a las '
                                 'necesidades de estima, como el prestigio y '
-                                'el reconocimiento.']},
+                                'el reconocimiento.',
+                                'El quinto y último nivel corresponde a las '
+                                'necesidades de autorrealización.']},
                      {'titulo': 'LEYES DE LAS NECESIDADES',
                       'items': ['La ley de la infinidad de las necesidades '
                                 'establece que el ser humano tiene múltiples '
@@ -1078,7 +1080,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'energía solar.',
                                 'Los bienes económicos requieren de la '
                                 'intervención del ser humano para extraerlos '
-                                'o transformarlos.']},
+                                'o transformarlos.',
+                                'Los bienes económicos son escasos, lo que '
+                                'les genera valor de cambio.',
+                                'Los bienes económicos son útiles porque '
+                                'poseen valor de uso, y son susceptibles de '
+                                'ser transados o vendidos.']},
                      {'titulo': 'CLASIFICACIÓN DE LOS BIENES ECONÓMICOS',
                       'items': ['Por su naturaleza, los bienes pueden ser '
                                 'materiales o tangibles, y inmateriales o '
@@ -1088,7 +1095,15 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'finales están listos para el consumo.',
                                 'Los bienes intermedios también se llaman '
                                 'presatisfacientes; los bienes finales se '
-                                'llaman satisfacientes.']},
+                                'llaman satisfacientes.',
+                                'Por su duración, los bienes fungibles se '
+                                'utilizan una sola vez, como los alimentos.',
+                                'Los bienes infungibles se utilizan varias '
+                                'veces y no se agotan en su primer uso, como '
+                                'los vestidos.',
+                                'Según el Código Civil peruano de 1984, los '
+                                'bienes se clasifican en muebles e '
+                                'inmuebles.']},
                      {'titulo': 'BIENES PÚBLICOS',
                       'items': ['Un bien público es aquel cuyo consumo es '
                                 'indivisible y puede ser compartido por '
@@ -1097,8 +1112,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'marginal nulo por cada usuario adicional, '
                                 'como la defensa nacional.',
                                 'Los bienes públicos impuros tienen consumo '
-                                'parcialmente rival, como las vías '
-                                'públicas.']},
+                                'parcialmente rival, como las vías públicas.',
+                                'Los bienes públicos se caracterizan por '
+                                'consumirse conjuntamente, sin poder excluir '
+                                'a nadie, y sin rivalidad.']},
                      {'titulo': 'LOS SERVICIOS: CONCEPTO Y CARACTERÍSTICAS',
                       'items': ['Los servicios son actividades económicas '
                                 'que satisfacen directamente necesidades de '
@@ -1108,7 +1125,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'trabajo que crea bienes materiales.',
                                 'Los servicios son inmateriales o '
                                 'intangibles: no pueden percibirse '
-                                'materialmente.']},
+                                'materialmente.',
+                                'Los servicios se consumen al mismo tiempo '
+                                'que se producen, por lo que no pueden '
+                                'acumularse ni ahorrarse.',
+                                'La prestación de un servicio requiere del '
+                                'uso de bienes necesarios para realizarla.']},
                      {'titulo': 'CLASIFICACIÓN DE LOS SERVICIOS',
                       'items': ['Según quién los brinda, los servicios '
                                 'pueden ser privados, administrados por la '
@@ -1616,7 +1638,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'sobre elementos como las materias primas.',
                                 'La circulación es la fase donde la '
                                 'producción se traslada hacia los mercados '
-                                'para su intercambio.']},
+                                'para su intercambio.',
+                                'La distribución reparte la riqueza generada '
+                                'entre los factores productivos: el '
+                                'trabajador recibe salario, el empresario '
+                                'ganancias, el Estado impuestos.',
+                                'El consumo es la utilización del producto '
+                                'social para satisfacer las necesidades '
+                                'mediante el uso de bienes y servicios.',
+                                'La inversión es la utilización del ahorro '
+                                'para financiar un nuevo proceso productivo '
+                                'mediante bienes de capital.']},
                      {'titulo': 'LOS SECTORES PRODUCTIVOS',
                       'items': ['El sector primario o agropecuario obtiene '
                                 'el producto directamente de los recursos '
@@ -1626,7 +1658,13 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'no incluye la minería.',
                                 'El sector secundario o industrial comprende '
                                 'la extracción y transformación industrial '
-                                'de materias primas.']},
+                                'de materias primas.',
+                                'El sector secundario se divide en el '
+                                'subsector extractivo (minero y petrolífero) '
+                                'y el de transformación.',
+                                'El sector terciario o de servicios incluye '
+                                'el comercio, la banca, el transporte y las '
+                                'comunicaciones.']},
                      {'titulo': 'LA PRODUCCIÓN Y LOS FACTORES PRODUCTIVOS',
                       'items': ['La producción es la primera fase del '
                                 'proceso económico, donde se combinan '
@@ -1637,15 +1675,23 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'agregando valor, mediante trabajo y '
                                 'capital.',
                                 'Los factores productivos básicos o clásicos '
-                                'son naturaleza, trabajo, capital y '
-                                'empresa.']},
+                                'son naturaleza, trabajo, capital y empresa.',
+                                'Los factores productivos modernos incluyen '
+                                'al Estado como regulador y estabilizador.']},
                      {'titulo': 'RETRIBUCIÓN DE LOS FACTORES PRODUCTIVOS',
                       'items': ['El factor naturaleza recibe como '
                                 'retribución la renta.',
                                 'El factor trabajo recibe como retribución '
                                 'el salario.',
                                 'El factor capital recibe como retribución '
-                                'el interés.']},
+                                'el interés.',
+                                'El factor empresa recibe como retribución '
+                                'la ganancia o utilidad.',
+                                'El factor Estado recibe como retribución '
+                                'los impuestos o tributación.',
+                                'La empresa es considerada el factor '
+                                'productivo organizador, que reúne y combina '
+                                'a los demás factores.']},
                      {'titulo': 'LA FUNCIÓN DE PRODUCCIÓN',
                       'items': ['La función de producción es una relación '
                                 'técnica que expresa los máximos niveles de '
@@ -1656,7 +1702,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'unidades físicas, no monetarias.',
                                 'Los factores productivos fijos no se pueden '
                                 'modificar en el corto plazo, como fábricas '
-                                'y maquinaria.']},
+                                'y maquinaria.',
+                                'Los factores productivos variables sí se '
+                                'pueden modificar en el corto plazo, como '
+                                'materias primas e insumos.']},
                      {'titulo': 'PRODUCTIVIDAD',
                       'items': ['La productividad mide cuántos bienes y '
                                 'servicios se producen por cada factor '
@@ -1666,7 +1715,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'recurso.',
                                 'A menor cantidad de recursos necesarios '
                                 'para producir lo mismo, mayor es la '
-                                'productividad.']},
+                                'productividad.',
+                                'La productividad media se obtiene '
+                                'dividiendo la producción total entre el '
+                                'total de unidades del factor utilizado.']},
                      {'titulo': 'COMPETITIVIDAD',
                       'items': ['La competitividad es la capacidad de una '
                                 'empresa de desarrollar y mantener ventajas '
@@ -1676,7 +1728,13 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'carecen sus competidores.',
                                 'Según Michael Porter, la ventaja '
                                 'competitiva se relaciona con el valor que '
-                                'una empresa crea para sus compradores.']}]},
+                                'una empresa crea para sus compradores.',
+                                'La competitividad interna busca la mayor '
+                                'eficiencia posible de los recursos propios '
+                                'de la organización.',
+                                'La competitividad externa busca ventajas '
+                                'competitivas en el contexto del mercado, '
+                                'evaluando factores como la innovación.']}]},
  {'num': 5,
   'titulo': 'Trabajo',
   'secciones': [{'titulo': '5.1 CONCEPTO',
@@ -2089,7 +2147,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Edwards Deming.',
                                 'En la etapa de Planificar, se identifican '
                                 'las actividades susceptibles de mejora y se '
-                                'fijan los objetivos.']},
+                                'fijan los objetivos.',
+                                'En la etapa de Hacer, se ejecutan los '
+                                'cambios necesarios, aplicando de '
+                                'preferencia una prueba piloto.',
+                                'En la etapa de Verificar, se comprueba el '
+                                'buen funcionamiento de la mejora '
+                                'implementada.',
+                                'En la etapa de Actuar, se estudian los '
+                                'resultados y se decide implantar la mejora '
+                                'en forma definitiva o descartarla.']},
                      {'titulo': 'DIVISIÓN DEL TRABAJO',
                       'items': ['La división del trabajo es la '
                                 'especialización del trabajo cooperativo en '
@@ -2099,7 +2166,14 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'productividad.',
                                 'La división social del trabajo ocurre '
                                 'cuando los seres humanos se dedican a '
-                                'actividades especializadas diversas.']},
+                                'actividades especializadas diversas.',
+                                'La división interna del trabajo ocurre '
+                                'cuando cada trabajador se dedica a una '
+                                'parte de un trabajo complejo, propio de la '
+                                'gran industria.',
+                                'La división internacional del trabajo es la '
+                                'especialización de los países según su '
+                                'eficiencia productiva.']},
                      {'titulo': 'CARACTERÍSTICAS DEL TRABAJO',
                       'items': ['El trabajo requiere liderazgo, la figura de '
                                 'quien dirige a los trabajadores hacia los '
@@ -2108,7 +2182,14 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'compromiso que estimula el cumplimiento de '
                                 'las obligaciones.',
                                 'El trabajo implica un esfuerzo del '
-                                'organismo, sea físico o intelectual.']},
+                                'organismo, sea físico o intelectual.',
+                                'El trabajo tiene un fin económico, '
+                                'orientado a la producción de bienes y '
+                                'servicios; en esto se diferencia del '
+                                'deporte.',
+                                'El trabajo dignifica al hombre, otorgándole '
+                                'la estimación y el respeto de sus '
+                                'semejantes.']},
                      {'titulo': 'MODALIDADES DE LA DIVISIÓN DEL TRABAJO',
                       'items': ['La división social del trabajo surge cuando '
                                 'los seres humanos se dedican a actividades '
@@ -2127,7 +2208,11 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'de jornal, del término jornada.',
                                 'El término «salario» proviene del vocablo '
                                 'latino «salarium», que significa «pago de '
-                                'sal».']},
+                                'sal».',
+                                'En la antigua Roma, la sal era un bien '
+                                'escaso usado como antiséptico, y se pagaba '
+                                'a los legionarios que custodiaban la «Vía '
+                                'Salaria».']},
                      {'titulo': 'FORMAS DE REMUNERACIÓN',
                       'items': ['El jornal es la retribución que recibe el '
                                 'obrero por cada jornada laboral, pagada por '
@@ -2859,7 +2944,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'agricultura condicionada por el clima.',
                                 'Su dotación es limitada, es decir, escasa, '
                                 'por lo que su explotación requiere '
-                                'racionamiento.']},
+                                'racionamiento.',
+                                'El propietario de la naturaleza como factor '
+                                'productivo recibe una retribución llamada '
+                                'renta.']},
                      {'titulo': 'ASPECTOS DE LA NATURALEZA',
                       'items': ['El medio geográfico, o medio ambiente, '
                                 'comprende el territorio y el clima.',
@@ -2878,7 +2966,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Las materias primas son elementos que la '
                                 'naturaleza ofrece y que sirven de base para '
                                 'elaborar bienes, tras ser extraídos y '
-                                'transformados.']}]},
+                                'transformados.',
+                                'Las materias primas provienen de tres '
+                                'fuentes: de origen animal, de origen '
+                                'vegetal y de origen mineral.']}]},
  {'num': 8,
   'titulo': 'Empresa',
   'secciones': [{'titulo': '8.1 CONCEPTO',
@@ -3318,7 +3409,9 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'mercado.',
                                 'La empresa tiene un fin lucrativo: el '
                                 'empresario busca maximizar ganancias '
-                                'minimizando costos.']},
+                                'minimizando costos.',
+                                'La empresa asume una responsabilidad '
+                                'económica y social ante la sociedad.']},
                      {'titulo': 'CLASIFICACIÓN SEGÚN EL PROPIETARIO',
                       'items': ['Las empresas privadas están constituidas '
                                 'por el aporte de personas o instituciones '
@@ -3329,7 +3422,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'servicios a la colectividad.',
                                 'Las empresas mixtas reciben capital en '
                                 'parte del Estado y en parte de '
-                                'instituciones privadas.']},
+                                'instituciones privadas.',
+                                'Para ser mixta, el Estado debe tener un '
+                                'mínimo de 20% de las acciones y poder de '
+                                'decisión.']},
                      {'titulo': 'CLASIFICACIÓN SEGÚN EL ASPECTO JURÍDICO',
                       'items': ['Las empresas individuales no tienen socios; '
                                 'el propietario es el único que aporta el '
@@ -3359,7 +3455,21 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'lucrativos.',
                                 'En la Sociedad Colectiva, los socios '
                                 'responden de forma ilimitada y solidaria '
-                                'por las deudas sociales.']}]},
+                                'por las deudas sociales.',
+                                'En la Sociedad Comercial de Responsabilidad '
+                                'Limitada (S.R.L.), participan entre 2 y 20 '
+                                'socios, llamados participacionistas.',
+                                'En la S.R.L., la responsabilidad de los '
+                                'socios está limitada al monto aportado al '
+                                'capital social.',
+                                'La Sociedad Anónima (S.A.) tiene su capital '
+                                'representado por acciones nominativas.',
+                                'En la Sociedad Anónima, los socios se '
+                                'llaman accionistas, y ninguno responde con '
+                                'su patrimonio personal por las deudas.',
+                                'La Junta General de Accionistas es el '
+                                'órgano máximo y soberano de la Sociedad '
+                                'Anónima.']}]},
  {'num': 9,
   'titulo': 'Demanda',
   'secciones': [{'titulo': '9.1 CONCEPTO',
@@ -3744,7 +3854,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'consumidor en el mercado.',
                                 'Para que exista demanda deben estar '
                                 'presentes siempre el deseo y la capacidad '
-                                'de compra.']},
+                                'de compra.',
+                                'Quien desea un bien pero no tiene capacidad '
+                                'adquisitiva es consumidor con necesidades, '
+                                'pero no es demandante.']},
                      {'titulo': 'EL PRECIO DEL PRODUCTO',
                       'items': ['El precio del producto es el factor más '
                                 'importante para demandar un bien.',
@@ -3759,7 +3872,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'produce un aumento en la demanda de otro, '
                                 'se dice que ambos bienes son sustitutos.',
                                 'Los bienes complementarios se consumen a la '
-                                'vez, como los autos y la gasolina.']},
+                                'vez, como los autos y la gasolina.',
+                                'Cuando dos bienes son complementarios, la '
+                                'disminución del precio de uno genera un '
+                                'aumento en la demanda del otro.']},
                      {'titulo': 'INGRESO, RIQUEZA Y OTROS FACTORES',
                       'items': ['El ingreso es la suma de sueldos, '
                                 'utilidades, intereses y rentas que recibe '
@@ -3768,7 +3884,15 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'pertenencias de una familia, descontadas '
                                 'sus deudas.',
                                 'Los bienes cuya demanda aumenta cuando sube '
-                                'el ingreso se llaman bienes normales.']},
+                                'el ingreso se llaman bienes normales.',
+                                'Los bienes cuya demanda baja cuando el '
+                                'ingreso aumenta se llaman bienes '
+                                'inferiores.',
+                                'Los gustos y preferencias son un aspecto '
+                                'subjetivo que varía según edad, sexo y '
+                                'moda.',
+                                'La demanda actual también depende de los '
+                                'precios futuros esperados de un bien.']},
                      {'titulo': 'ELASTICIDAD PRECIO DE LA DEMANDA',
                       'items': ['La elasticidad precio de la demanda mide el '
                                 'grado de sensibilidad de la cantidad '
@@ -3778,7 +3902,9 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'variación porcentual del precio.',
                                 'El signo de la elasticidad precio siempre '
                                 'es negativo, porque la demanda tiene '
-                                'pendiente negativa.']},
+                                'pendiente negativa.',
+                                'Con fines prácticos, se prefiere utilizar '
+                                'el valor absoluto de la elasticidad.']},
                      {'titulo': 'TIPOS DE ELASTICIDAD PRECIO',
                       'items': ['La demanda perfectamente elástica tiene un '
                                 'valor de elasticidad infinito; el bien '
@@ -3788,7 +3914,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'reacciona más que proporcionalmente.',
                                 'La demanda unitaria tiene valor absoluto '
                                 'igual a 1: la cantidad varía en el mismo '
-                                'porcentaje que el precio.']}]},
+                                'porcentaje que el precio.',
+                                'La demanda relativamente inelástica tiene '
+                                'valor absoluto menor a 1: la cantidad '
+                                'reacciona menos que proporcionalmente.']}]},
  {'num': 10,
   'titulo': 'Oferta',
   'secciones': [{'titulo': '10.1 CONCEPTO',
@@ -4179,7 +4308,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'demanda.',
                                 'Cuando el precio está por debajo del '
                                 'equilibrio, se genera escasez, con presión '
-                                'al alza sobre el precio.']}]},
+                                'al alza sobre el precio.',
+                                'Cuando el precio está por encima del '
+                                'equilibrio, se genera abundancia o '
+                                'sobreproducción, con presión a la baja.']}]},
  {'num': 11,
   'titulo': 'Mercado',
   'secciones': [{'titulo': '11.1 CONCEPTO Y COMPONENTES',
@@ -4837,7 +4969,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'bienes; en el Perú es el nuevo sol.',
                                 'La función de depósito de valor permite '
                                 'conservar poder adquisitivo para '
-                                'necesidades futuras, generando el ahorro.']},
+                                'necesidades futuras, generando el ahorro.',
+                                'La función de patrón de pagos diferidos '
+                                'permite realizar pagos a futuro, como en '
+                                'las compras al crédito.']},
                      {'titulo': 'CARACTERÍSTICAS DEL DINERO',
                       'items': ['El poder adquisitivo es la capacidad de '
                                 'compra que tiene el dinero.',
@@ -4845,7 +4980,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'mantenga su poder adquisitivo en el tiempo; '
                                 'la inflación le hace perder estabilidad.',
                                 'La divisibilidad exige que la unidad '
-                                'monetaria tenga múltiplos y submúltiplos.']},
+                                'monetaria tenga múltiplos y submúltiplos.',
+                                'La homogeneidad exige que billetes de igual '
+                                'denominación tengan las mismas '
+                                'características, para evitar la '
+                                'falsificación.',
+                                'La durabilidad exige que el dinero esté '
+                                'hecho de material resistente.',
+                                'La elasticidad es la facilidad de la '
+                                'autoridad monetaria, el BCR, para aumentar '
+                                'o disminuir la cantidad de dinero.']},
                      {'titulo': 'VALORES DEL DINERO',
                       'items': ['El valor intrínseco es el valor que tiene '
                                 'el dinero por sí mismo, y se subdivide en '
@@ -4854,7 +4998,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'fabricación del dinero.',
                                 'El valor nominal o legal es el establecido '
                                 'por la autoridad monetaria e impreso en la '
-                                'moneda.']},
+                                'moneda.',
+                                'El valor extrínseco es el valor de cambio '
+                                'del dinero, su capacidad de compra en el '
+                                'mercado.']},
                      {'titulo': 'CLASES DE DINERO',
                       'items': ['Según su naturaleza, el dinero puede ser '
                                 'metálico o de papel.',
@@ -4868,7 +5015,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Una caída generalizada y continua de '
                                 'precios se llama deflación.',
                                 'La inflación se mide por la variación del '
-                                'Índice de Precios al Consumidor (IPC).']},
+                                'Índice de Precios al Consumidor (IPC).',
+                                'El IPC mide el nivel de variación mensual '
+                                'de los precios de la canasta familiar.',
+                                'La tasa de inflación es el cambio '
+                                'porcentual del nivel de precios en un '
+                                'periodo, generalmente un mes.']},
                      {'titulo': 'CLASES DE INFLACIÓN',
                       'items': ['La inflación moderada tiene precios que '
                                 'suben entre 0% y 10% anual, con tasa de un '
@@ -5341,7 +5493,13 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'empresa emisora.',
                                 'La Superintendencia del Mercado de Valores '
                                 '(SMV) promueve y reglamenta el mercado de '
-                                'valores en el Perú.']},
+                                'valores en el Perú.',
+                                'Los bancos de inversión asesoran a la '
+                                'empresa emisora e intermedian entre esta y '
+                                'los inversionistas.',
+                                'La Bolsa de Valores es una asociación civil '
+                                'sin fines de lucro que facilita la '
+                                'negociación de valores mobiliarios.']},
                      {'titulo': 'CLASIFICACIÓN DE LOS BANCOS',
                       'items': ['La banca privada, o banca múltiple, está '
                                 'autorizada a realizar operaciones activas, '
@@ -5352,7 +5510,18 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El Banco de Crédito del Perú cuenta con '
                                 'participación mayoritaria de capitales '
                                 'nacionales; su principal accionista es el '
-                                'Grupo Romero.']},
+                                'Grupo Romero.',
+                                'La banca privada extranjera tiene '
+                                'participación de inversionistas '
+                                'extranjeros; algunas son solo sucursales '
+                                'con casa matriz en Estados Unidos y Europa.',
+                                'La banca estatal peruana está formada por '
+                                'el Banco de la Nación y el Banco Central de '
+                                'Reserva del Perú.',
+                                'El Banco de la Nación es el agente '
+                                'financiero del Estado, encargado de las '
+                                'actividades financieras del sector '
+                                'público.']},
                      {'titulo': 'LA EMPRESA BANCARIA',
                       'items': ['El banco es una empresa que actúa como '
                                 'intermediario indirecto en el mercado '
@@ -5372,7 +5541,11 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'cheques.',
                                 'El depósito a plazo o a término implica '
                                 'dejar el dinero por un tiempo determinado, '
-                                'sin poder retirarlo antes.']},
+                                'sin poder retirarlo antes.',
+                                'El depósito de CTS (Compensación por Tiempo '
+                                'de Servicios) es un fondo obligatorio del '
+                                'empleador que sirve como seguro de '
+                                'desempleo.']},
                      {'titulo': 'OPERACIONES BANCARIAS: ACTIVAS',
                       'items': ['Las operaciones activas son aquellas en las '
                                 'que el banco otorga crédito: préstamos, '
@@ -5804,7 +5977,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'rendimiento, mayor riesgo.',
                                 'Un inversor conservador tiende a invertir '
                                 'en productos de bajo riesgo, como títulos '
-                                'de renta fija o depósitos a plazo.']}]},
+                                'de renta fija o depósitos a plazo.',
+                                'La liquidez de una inversión es la rapidez '
+                                'con que se puede recuperar el dinero '
+                                'invertido.']}]},
  {'num': 15,
   'titulo': 'Sector Público y Presupuesto Nacional',
   'secciones': [{'titulo': '15.1 CONCEPTO DE SECTOR PÚBLICO',
@@ -6226,7 +6402,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'y Local.',
                                 'La finalidad del sector público es buscar '
                                 'el bienestar general de todos los '
-                                'ciudadanos.']},
+                                'ciudadanos.',
+                                'El Estado cuenta con las finanzas públicas '
+                                'como conjunto de instrumentos '
+                                'técnico-económicos-sociales.']},
                      {'titulo': 'FUNCIONES DEL ESTADO',
                       'items': ['Las tres funciones clásicas del Estado son: '
                                 'redistribución de la renta, estabilización '
@@ -6247,7 +6426,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'finales producidos en un país en un periodo '
                                 'determinado.',
                                 'El PBI también se conoce como Producto '
-                                'Geográfico Bruto.']},
+                                'Geográfico Bruto.',
+                                'El PBI se valora a precios de mercado '
+                                'vigentes en el año de referencia.',
+                                'El PBI cuantifica la producción de los '
+                                'residentes del país, sean nacionales o '
+                                'extranjeros.']},
                      {'titulo': 'PBI NOMINAL Y PBI REAL',
                       'items': ['El PBI nominal mide el valor de la '
                                 'producción usando los precios del mismo año '
@@ -6265,7 +6449,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El proceso presupuestario peruano tiene '
                                 'cinco fases: programación, formulación, '
                                 'aprobación, ejecución, y control y '
-                                'evaluación.']},
+                                'evaluación.',
+                                'En la programación, la Dirección Nacional '
+                                'de Presupuesto Público del MEF estima '
+                                'ingresos y prevé gastos.',
+                                'En la aprobación, el anteproyecto va al '
+                                'Congreso hasta el 30 de agosto, y la Ley de '
+                                'Presupuesto debe aprobarse hasta el 30 de '
+                                'noviembre.',
+                                'En el control y evaluación, la Contraloría '
+                                'supervisa la legalidad, y el Congreso '
+                                'fiscaliza la ejecución.']},
                      {'titulo': 'PRINCIPIOS PRESUPUESTARIOS',
                       'items': ['Equilibrio presupuestal: los ingresos '
                                 'previstos y los egresos programados deben '
@@ -6273,7 +6467,16 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Claridad: el presupuesto debe ser de fácil '
                                 'comprensión para congresistas y ciudadanos.',
                                 'Exactitud: debe elaborarse con exactitud y '
-                                'sinceridad, sin falsear las previsiones.']},
+                                'sinceridad, sin falsear las previsiones.',
+                                'Universalidad: debe contener el total de '
+                                'ingresos y gastos de todas las entidades '
+                                'del Estado.',
+                                'Exclusividad: debe ser discutido y aprobado '
+                                'por el Poder Legislativo antes de su '
+                                'ejecución.',
+                                'Publicidad: debe publicarse en el diario '
+                                'oficial «El Peruano» para que la población '
+                                'acceda a la información.']},
                      {'titulo': 'ESTRUCTURA DEL PRESUPUESTO',
                       'items': ['El presupuesto se elabora bajo el principio '
                                 'contable de la partida doble: contiene '
@@ -6967,6 +7170,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Un país recurre al comercio exterior porque '
                                 'no posee suficientes recursos naturales, '
                                 'mano de obra calificada o tecnología.',
+                                'En el Perú, el organismo rector de la '
+                                'política económica comercial externa es el '
+                                'Ministerio de Economía y Finanzas.',
+                                'El sector externo está supeditado a '
+                                'instituciones supranacionales como la '
+                                'Organización Mundial de Comercio (OMC).',
                                 'Los mercantilistas postulaban que un país '
                                 'debía exportar todo lo posible e importar '
                                 'solo lo necesario, recibiendo metales '
@@ -6974,7 +7183,14 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La teoría de la ventaja absoluta fue '
                                 'planteada por Adam Smith: un país debe '
                                 'especializarse en el bien que produce con '
-                                'menor costo.']},
+                                'menor costo.',
+                                'La teoría de la ventaja comparativa fue '
+                                'planteada por David Ricardo, discípulo de '
+                                'Smith, 37 años después.',
+                                'Según la ventaja comparativa, un país debe '
+                                'especializarse en lo que es relativamente '
+                                'más productivo, según su costo de '
+                                'oportunidad.']},
                      {'titulo': 'FORMAS DE COMERCIO INTERNACIONAL / '
                                 'ELEMENTOS DEL COMERCIO INTERNACIONAL',
                       'items': ['Las exportaciones son la venta de bienes y '
@@ -6987,21 +7203,38 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Las reservas internacionales son recursos, '
                                 'en oro y divisas, que un país usa para '
                                 'pagar la deuda externa y realizar '
-                                'intercambios comerciales.']},
+                                'intercambios comerciales.',
+                                'Los Derechos Especiales de Giro (DEG) son '
+                                'un activo de reserva creado por el FMI en '
+                                '1969, asignado a países miembros desde '
+                                '1970.']},
                      {'titulo': 'EL TIPO DE CAMBIO / LA BALANZA DE PAGOS',
                       'items': ['El tipo de cambio es el precio de una '
                                 'moneda expresado en términos de otra.',
                                 'Los sistemas de tipo de cambio, o regímenes '
                                 'cambiarios, definen cómo se determina el '
                                 'precio de la moneda extranjera.',
+                                'El tipo de cambio fijo lo determina el '
+                                'Banco Central por tiempo indefinido; si es '
+                                'menor al equilibrio, disminuyen las '
+                                'reservas.',
+                                'El tipo de cambio flexible se subdivide en '
+                                'flotación limpia y flotación sucia o '
+                                'administrada.',
                                 'La balanza de pagos es el registro contable '
                                 'de todas las transacciones económicas y '
                                 'financieras de un país con el resto del '
                                 'mundo.',
                                 'La Balanza en Cuenta Corriente (BCC) '
                                 'registra todas las transacciones de valores '
-                                'económicos, salvo los recursos '
-                                'financieros.']},
+                                'económicos, salvo los recursos financieros.',
+                                'Si la BCC es negativa, salen más divisas de '
+                                'las que ingresan, y el país necesita '
+                                'financiar el déficit.',
+                                'La Balanza Comercial (BC) registra el '
+                                'intercambio de bienes: exportaciones (X), '
+                                'que generan ingreso de divisas, e '
+                                'importaciones (M), que generan salida.']},
                      {'titulo': 'LA CUENTA FINANCIERA / FINANCIAMIENTO '
                                 'EXCEPCIONAL Y DEUDA EXTERNA',
                       'items': ['La Cuenta Financiera (CF) registra el '
@@ -7009,12 +7242,26 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'inversiones productivas o especulativas.',
                                 'La CF se divide en Sector Privado, Sector '
                                 'Público y Capitales de Corto Plazo.',
+                                'Los capitales de corto plazo entran o salen '
+                                'del país en periodos menores a un año; se '
+                                'les llama capitales golondrinos o '
+                                'volátiles.',
+                                'La fórmula de la Cuenta Financiera es: CF = '
+                                'SPr + SPu + CCP.',
                                 'El financiamiento excepcional, o cuenta de '
                                 'ajuste, registra préstamos del exterior, '
                                 'atrasos en pagos y condonación de deuda.',
                                 'La deuda externa es el conjunto de '
                                 'obligaciones que tiene un país con '
-                                'acreedores que residen en el extranjero.']},
+                                'acreedores que residen en el extranjero.',
+                                'La deuda externa se compone de deuda '
+                                'pública (contraída por el Estado) y deuda '
+                                'privada (contraída por empresas y '
+                                'familias).',
+                                'Entre las causas de endeudamiento externo '
+                                'están las inversiones en infraestructura, '
+                                'las catástrofes naturales y la mala '
+                                'administración.']},
                      {'titulo': 'CLASES DE DEUDA Y CARACTERÍSTICAS / '
                                 'ORGANISMOS MULTILATERALES',
                       'items': ['La deuda interna es la porción de la deuda '
@@ -7023,13 +7270,26 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La deuda externa tiene acreedores '
                                 'extranjeros; posibilita fondos sin '
                                 'menoscabo del ahorro nacional.',
+                                'Los principales prestamistas de la deuda '
+                                'externa son la banca comercial privada.',
+                                'La finalidad de la deuda externa es '
+                                'estabilizar economías en crisis e impulsar '
+                                'su crecimiento, aunque con efectos '
+                                'negativos para la población.',
                                 'El Fondo Monetario Internacional (FMI), '
                                 'fundado en 1945, fomenta la cooperación '
                                 'monetaria y la estabilidad financiera.',
                                 'El Banco Interamericano de Desarrollo '
                                 '(BID), creado en 1959 con sede en '
                                 'Washington, financia proyectos de '
-                                'desarrollo en América Latina.']},
+                                'desarrollo en América Latina.',
+                                'El Banco Mundial es una entidad '
+                                'especializada de la ONU, integrada por el '
+                                'BIRF, la AIF, la CFI, el OMGI y el CIADI.',
+                                'El BIRF (Banco Internacional de '
+                                'Reconstrucción y Fomento), creado en 1945, '
+                                'busca reducir la pobreza en países en '
+                                'desarrollo.']},
                      {'titulo': 'BLOQUES ECONÓMICOS / TRATADOS DE LIBRE '
                                 'COMERCIO',
                       'items': ['Un bloque económico es un conjunto de '
@@ -7039,13 +7299,27 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La Unión Europea (UE) es una asociación '
                                 'económica y política formada por 28 países, '
                                 'con moneda única y capital en Bruselas.',
+                                'El MERCOSUR (Mercado Común del Sur) fue '
+                                'instituido inicialmente por Argentina, '
+                                'Brasil, Paraguay y Uruguay.',
+                                'La Comunidad Andina (CAN) se originó del '
+                                'Acuerdo de Cartagena, firmado en 1969; sus '
+                                'países miembros son Bolivia, Colombia, '
+                                'Ecuador y Perú.',
                                 'Un Tratado de Libre Comercio (TLC) es un '
                                 'acuerdo comercial vinculante entre dos o '
                                 'más países, con preferencias arancelarias '
                                 'mutuas.',
                                 'Los TLC tienen plazo indefinido: permanecen '
                                 'vigentes a lo largo del tiempo, con '
-                                'carácter de perpetuidad.']},
+                                'carácter de perpetuidad.',
+                                'Entre los objetivos de un TLC están '
+                                'eliminar barreras arancelarias, promover la '
+                                'competencia justa y proteger la propiedad '
+                                'intelectual.',
+                                'Para el Perú, los TLC buscan ampliar el '
+                                'mercado de las empresas peruanas, dado el '
+                                'reducido tamaño del mercado local.']},
                      {'titulo': 'LA GLOBALIZACIÓN',
                       'items': ['La globalización es el aumento continuo de '
                                 'la interconexión entre naciones en el plano '
@@ -7053,7 +7327,13 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El término se usa desde los años ochenta, '
                                 'cuando los adelantos tecnológicos '
                                 'aceleraron las transacciones '
-                                'internacionales.']}]},
+                                'internacionales.',
+                                'El capital comercial se usa en la '
+                                'comercialización de bienes y servicios en '
+                                'el mercado mundial para obtener ganancias.',
+                                'El capital productivo se invierte en la '
+                                'compra de factores de producción para '
+                                'fabricar bienes y servicios.']}]},
  {'num': 17,
   'titulo': 'Crisis y Ciclos Económicos',
   'secciones': [{'titulo': '17.1 CONCEPTO DEL CICLO ECONÓMICO',
@@ -7549,7 +7829,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'ingresos.',
                                 'El auge recupera todos los sectores '
                                 'económicos, con optimismo hasta llegar a un '
-                                'grado de inestabilidad.']},
+                                'grado de inestabilidad.',
+                                'La recesión inicia con la inestabilidad del '
+                                'auge: se frenan las inversiones y sube el '
+                                'desempleo.']},
                      {'titulo': 'CONCEPTO Y CARACTERÍSTICAS DE LA CRISIS',
                       'items': ['La crisis económica es la alteración o '
                                 'perturbación del proceso económico durante '
@@ -7559,7 +7842,15 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'sector monetario (crédito, reservas).',
                                 'La periodicidad de la crisis implica que se '
                                 'presenta cada cierto tiempo, con cierta '
-                                'regularidad.']},
+                                'regularidad.',
+                                'En la economía peruana, las crisis se han '
+                                'presentado cada 8 a 10 años.',
+                                'La crisis tiene tendencia a propagarse: se '
+                                'inicia en un sector y afecta a otros por '
+                                'efecto dominó.',
+                                'Las crisis tienen distinta intensidad: los '
+                                'países desarrollados suelen superarlas con '
+                                'mayor rapidez.']},
                      {'titulo': 'SÍNTOMAS Y CAUSAS DE LA CRISIS',
                       'items': ['El síntoma más alarmante y preciso de la '
                                 'crisis es el incremento de los precios.',
@@ -7568,7 +7859,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'el mercado.',
                                 'La subproducción es la escasez de bienes y '
                                 'servicios, asociada a economías de bajo '
-                                'desarrollo.']},
+                                'desarrollo.',
+                                'El subconsumo ocurre cuando hay mucha gente '
+                                'sin capacidad adquisitiva, agravando el '
+                                'exceso de bienes.']},
                      {'titulo': 'TIPOS Y EJEMPLOS DE CRISIS ECONÓMICAS',
                       'items': ['La crisis de oferta ocurre cuando hay '
                                 'problemas en la oferta y no se puede cubrir '
@@ -7578,8 +7872,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'generando estancamiento del mercado.',
                                 'La crisis energética ocurre cuando el alto '
                                 'precio de la energía se traslada a los '
-                                'productos de consumo, generando '
-                                'inflación.']},
+                                'productos de consumo, generando inflación.',
+                                'La crisis financiera ocurre cuando hay '
+                                'falta de confianza en el sector financiero '
+                                'y se desploma el valor en la bolsa.',
+                                'La crisis cambiaria ocurre cuando un país '
+                                'no puede defender el valor de su moneda, '
+                                'produciéndose una devaluación.',
+                                'La crisis de 1929, llamada «Gran '
+                                'Depresión», fue una crisis financiera '
+                                'causada por la caída de la bolsa de Estados '
+                                'Unidos.']},
                      {'titulo': 'LA POLÍTICA ECONÓMICA',
                       'items': ['La política económica es el conjunto de '
                                 'medidas que adopta un Gobierno para '
@@ -7603,7 +7906,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Una política monetaria expansiva '
                                 '(reactivadora) aumenta la oferta monetaria, '
                                 'reduce la tasa de interés y posibilita '
-                                'mayor inversión.']},
+                                'mayor inversión.',
+                                'Una política monetaria contractiva '
+                                '(recesiva) se orienta a controlar la '
+                                'inflación y estabilizar la economía.',
+                                'La formulación de la política monetaria en '
+                                'el Perú está a cargo del Banco Central de '
+                                'Reserva (BCRP).',
+                                'La política fiscal administra los ingresos, '
+                                'gastos y financiamiento del sector público, '
+                                'mediante el manejo del Presupuesto '
+                                'Público.']},
                      {'titulo': 'INSTRUMENTOS DE LA POLÍTICA MONETARIA',
                       'items': ['Las Operaciones de Mercado Abierto son la '
                                 'compra y venta de activos financieros para '
@@ -8011,6 +8324,9 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El crecimiento económico implica un '
                                 'incremento significativo de los ingresos, o '
                                 'renta per cápita.',
+                                'La fórmula más eficaz para medir el '
+                                'bienestar de un pueblo es el IDH (Índice de '
+                                'Desarrollo Humano).',
                                 'El país con desarrollo económico utiliza '
                                 'sus recursos potenciales, con muy poco '
                                 'capital ocioso.',
@@ -8019,7 +8335,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'fundamentos.',
                                 'El desarrollo económico requiere conciencia '
                                 'medioambiental, sin agotar los recursos '
-                                'naturales.']},
+                                'naturales.',
+                                'El desarrollo económico requiere orden '
+                                'social: instituciones públicas '
+                                'confiables.']},
                      {'titulo': 'EL ÍNDICE DE DESARROLLO HUMANO (IDH) / '
                                 'CRECIMIENTO ECONÓMICO',
                       'items': ['El IDH fue creado por el Programa de las '
@@ -8072,7 +8391,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'protección del medioambiente.',
                                 'También incluye la recuperación de '
                                 'ecosistemas, el uso de tecnologías limpias, '
-                                'y el aumento de la calidad de vida.']},
+                                'y el aumento de la calidad de vida.',
+                                'La autosuficiencia regional es la capacidad '
+                                'de una comunidad de cuidar los recursos '
+                                'naturales de su propia área.']},
                      {'titulo': 'LA ECONOMÍA CIRCULAR',
                       'items': ['La economía circular busca mejorar la '
                                 'eficiencia en el uso de los recursos, '
@@ -8082,4 +8404,11 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'los productos, reduciendo el consumo de '
                                 'materias primas, agua y energía.',
                                 'Se opone al modelo lineal actual, basado en '
-                                '«comprar, usar y tirar».']}]}]
+                                '«comprar, usar y tirar».',
+                                'Entre sus beneficios están el '
+                                'aprovechamiento de recursos, la reducción '
+                                'de residuos y gases contaminantes, y el '
+                                'ahorro empresarial.',
+                                'Según el Parlamento Europeo, la economía '
+                                'circular podría generar cerca de 580 000 '
+                                'empleos en toda la Unión Europea.']}]}]
