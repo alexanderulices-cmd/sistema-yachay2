@@ -1897,6 +1897,7 @@ class BaseDatos:
                         'tipo_persona': 'docente' if _snap_doc else 'alumno',
                         'hora_entrada': reg.get('entrada', ''),
                         'hora_salida': reg.get('salida', ''),
+                        'tardanza': reg.get('tardanza', ''),
                         'hora_entrada_tarde': reg.get('entrada_tarde', ''),
                         'hora_salida_tarde': reg.get('salida_tarde', ''),
                         'grado': grado, 'nivel': nivel,

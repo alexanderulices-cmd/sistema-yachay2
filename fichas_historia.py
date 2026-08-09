@@ -266,6 +266,27 @@ def _banda_titulo(story, tema, subtitulo, est, ancho, con_claves=False):
     story.append(Spacer(1, 6))
 
 
+_LOGO_MARCA_AGUA_CACHE = None
+
+
+def _logo_marca_agua_reader():
+    """Carga el logo de marca de agua UNA sola vez y lo reutiliza en
+    todas las paginas del PDF, en vez de incrustarlo de nuevo por cada
+    pagina (eso multiplicaba el peso del PDF por el numero de paginas)."""
+    global _LOGO_MARCA_AGUA_CACHE
+    if _LOGO_MARCA_AGUA_CACHE is None:
+        import os
+        from reportlab.lib.utils import ImageReader
+        if os.path.exists(LOGO_MARCA_AGUA):
+            try:
+                _LOGO_MARCA_AGUA_CACHE = ImageReader(LOGO_MARCA_AGUA)
+            except Exception:
+                _LOGO_MARCA_AGUA_CACHE = False
+        else:
+            _LOGO_MARCA_AGUA_CACHE = False
+    return _LOGO_MARCA_AGUA_CACHE
+
+
 def _pie(canvas, doc):
     from reportlab.lib.units import cm
     import os
@@ -274,11 +295,12 @@ def _pie(canvas, doc):
     canvas.saveState()
 
     # Marca de agua tenue centrada en la hoja
-    if os.path.exists(LOGO_MARCA_AGUA):
+    _logo_reader = _logo_marca_agua_reader()
+    if _logo_reader:
         try:
             lado = 14 * cm
             canvas.drawImage(
-                LOGO_MARCA_AGUA,
+                _logo_reader,
                 (doc.pagesize[0] - lado) / 2, (doc.pagesize[1] - lado) / 2,
                 width=lado, height=lado, mask="auto",
                 preserveAspectRatio=True)

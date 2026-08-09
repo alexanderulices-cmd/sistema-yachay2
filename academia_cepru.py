@@ -20,21 +20,22 @@ from fichas_historia import (generar_ficha_texto, generar_banco_preguntas,
                              contar_espacios, LETRAS, _PATRON)
 
 
-def _nombre_archivo(area_pie, tema, tipo, version):
-    """Arma un nombre de archivo legible para las descargas:
-    Academia_Yachay_<Curso>_Tema<N>_<TituloDelTema>_<Ficha|Examen>_<Version>.pdf
-    en vez del anterior 'ficha_ceh_1_alumno.pdf'."""
-    import unicodedata, re
+_NOMBRES_CORTOS_CURSO = {
+    "ceh": "Historia", "cef": "Filosofia", "ceg": "Geografia",
+    "cec": "Civica", "cecc": "Comunicativa", "cee": "Economia",
+    "cebi": "Biologia",
+}
 
-    def slug(s):
-        s = ''.join(c for c in unicodedata.normalize('NFD', str(s))
-                    if unicodedata.category(c) != 'Mn')
-        s = re.sub(r'[^A-Za-z0-9]+', '_', s).strip('_')
-        return s
 
-    curso = slug(area_pie)
-    titulo = slug(tema['titulo'])[:40].rstrip('_')
-    return f"Academia_Yachay_{curso}_Tema{tema['num']}_{titulo}_{tipo}_{version}.pdf"
+def _nombre_archivo(pfx, tema, tipo, version):
+    """Arma un nombre de archivo corto y sistematizado para las descargas:
+    Yachay_<Curso>_T<N>_<Ficha|Banco>_<A|D>.pdf
+    en vez del nombre largo anterior que incluia el titulo completo del
+    tema y no se entendia bien en pantallas de celular."""
+    curso = _NOMBRES_CORTOS_CURSO.get(pfx, pfx.capitalize())
+    tipo_corto = "Ficha" if tipo == "Ficha" else "Banco"
+    version_corta = "A" if version == "Alumno" else "D"
+    return f"Yachay_{curso}_T{tema['num']}_{tipo_corto}_{version_corta}.pdf"
 
 # ---------------------------------------------------------------
 # Registro de áreas disponibles. Cada entrada: (nombre para mostrar,
@@ -123,6 +124,43 @@ except ImportError:
 PENDIENTES = ["🔢 Aritmética"]
 
 
+def _generar_zip_curso(balotas, area_pie, pfx, grado_txt, profesor_txt,
+                       con_claves):
+    """Genera un ZIP en memoria con la ficha y el banco de preguntas de
+    TODOS los temas de un curso, listo para subir a una carpeta."""
+    import zipfile, io as _io
+
+    buf = _io.BytesIO()
+    version = "Docente" if con_claves else "Alumno"
+    _, tamano_defecto = list(TAMANOS_EXAMEN.items())[0]  # 20 preguntas
+
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for tema in balotas:
+            try:
+                ficha_pdf = generar_ficha_texto(
+                    tema, con_claves, grado_txt,
+                    area=area_pie, profesor=profesor_txt)
+                nombre_ficha = _nombre_archivo(pfx, tema, "Ficha", version)
+                zf.writestr(nombre_ficha, ficha_pdf)
+            except Exception:
+                pass
+            try:
+                cantidad = min(tamano_defecto, len(tema["preguntas"]))
+                muestra = muestrear(tema["preguntas"], cantidad, semilla=0)
+                preg = balancear(muestra)
+                tema_b = {**tema, "preguntas": preg}
+                banco_pdf = generar_banco_preguntas(
+                    tema_b, con_claves, grado_txt,
+                    area=area_pie, profesor=profesor_txt)
+                nombre_banco = _nombre_archivo(pfx, tema, "Banco", version)
+                zf.writestr(nombre_banco, banco_pdf)
+            except Exception:
+                pass
+
+    buf.seek(0)
+    return buf.getvalue()
+
+
 def tab_academia_cepru(config=None):
     st.subheader("🎓 Academia CEPRU — Fichas y bancos de preguntas")
     st.caption("Todas las áreas de la academia preuniversitaria en un "
@@ -177,7 +215,47 @@ def _render_curso(balotas, area_pie, pfx):
             "Profesor (aparece en el pie y en el QR del examen):",
             value="Prof. Alexander Córdova", key=f"{pfx}_prof")
 
-    st.markdown("##### Descargar")
+    st.markdown("##### Descargar TODO el curso de una vez")
+    st.caption(
+        "Genera un único archivo ZIP con la ficha y el banco de "
+        "preguntas de **todos los temas** de este curso, listo para "
+        "subir a una carpeta. Usa un examen de 20 preguntas por tema "
+        "para que el ZIP no sea demasiado pesado."
+    )
+    zc1, zc2 = st.columns(2)
+    with zc1:
+        if st.button("📦 ZIP completo — Alumnos", key=f"{pfx}_zip_alu",
+                     use_container_width=True):
+            with st.spinner(f"Generando {len(balotas)} temas × 2 documentos…"):
+                zip_bytes = _generar_zip_curso(
+                    balotas, area_pie, pfx, grado_txt, profesor_txt,
+                    con_claves=False)
+            st.session_state[f"{pfx}_zip_alu_bytes"] = zip_bytes
+        if st.session_state.get(f"{pfx}_zip_alu_bytes"):
+            st.download_button(
+                "⬇️ Descargar ZIP — Alumnos",
+                data=st.session_state[f"{pfx}_zip_alu_bytes"],
+                file_name=f"Yachay_{_NOMBRES_CORTOS_CURSO.get(pfx, pfx)}_TODO_Alumnos.zip",
+                mime="application/zip", use_container_width=True,
+                type="primary", key=f"{pfx}_zip_alu_dl")
+    with zc2:
+        if st.button("📦 ZIP completo — Docentes (con claves)",
+                     key=f"{pfx}_zip_doc", use_container_width=True):
+            with st.spinner(f"Generando {len(balotas)} temas × 2 documentos…"):
+                zip_bytes = _generar_zip_curso(
+                    balotas, area_pie, pfx, grado_txt, profesor_txt,
+                    con_claves=True)
+            st.session_state[f"{pfx}_zip_doc_bytes"] = zip_bytes
+        if st.session_state.get(f"{pfx}_zip_doc_bytes"):
+            st.download_button(
+                "⬇️ Descargar ZIP — Docentes",
+                data=st.session_state[f"{pfx}_zip_doc_bytes"],
+                file_name=f"Yachay_{_NOMBRES_CORTOS_CURSO.get(pfx, pfx)}_TODO_Docentes.zip",
+                mime="application/zip", use_container_width=True,
+                type="primary", key=f"{pfx}_zip_doc_dl")
+
+    st.markdown("---")
+    st.markdown("##### O descarga un tema a la vez")
     d1, d2 = st.columns(2)
     with d1:
         st.markdown("**Ficha de texto para completar**")
@@ -186,14 +264,14 @@ def _render_curso(balotas, area_pie, pfx):
                 "📄 Versión del alumno",
                 data=generar_ficha_texto(tema, False, grado_txt,
                                          area=area_pie, profesor=profesor_txt),
-                file_name=_nombre_archivo(area_pie, tema, "Ficha", "Alumno"),
+                file_name=_nombre_archivo(pfx, tema, "Ficha", "Alumno"),
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_fa")
             st.download_button(
                 "🔑 Versión del docente (con claves)",
                 data=generar_ficha_texto(tema, True, grado_txt,
                                          area=area_pie, profesor=profesor_txt),
-                file_name=_nombre_archivo(area_pie, tema, "Ficha", "Docente_Claves"),
+                file_name=_nombre_archivo(pfx, tema, "Ficha", "Docente"),
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_fd")
         except Exception as e:
@@ -232,14 +310,14 @@ def _render_curso(balotas, area_pie, pfx):
                 "📝 Examen para el alumno",
                 data=generar_banco_preguntas(tema_b, False, grado_txt,
                                              area=area_pie, profesor=profesor_txt),
-                file_name=_nombre_archivo(area_pie, tema, "Examen", "Alumno"),
+                file_name=_nombre_archivo(pfx, tema, "Banco", "Alumno"),
                 mime="application/pdf", use_container_width=True,
                 type="primary", key=f"{pfx}_pa")
             st.download_button(
                 "🔑 Con claves para el docente",
                 data=generar_banco_preguntas(tema_b, True, grado_txt,
                                              area=area_pie, profesor=profesor_txt),
-                file_name=_nombre_archivo(area_pie, tema, "Examen", "Docente_Claves"),
+                file_name=_nombre_archivo(pfx, tema, "Banco", "Docente"),
                 mime="application/pdf", use_container_width=True,
                 key=f"{pfx}_pd")
         except Exception as e:

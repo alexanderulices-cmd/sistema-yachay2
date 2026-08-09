@@ -36,7 +36,8 @@ COLUMNAS = {
     'usuarios': ['username', 'password_hash', 'nombre', 'rol',
                   'grado_asignado', 'nivel_asignado', 'dni'],
     'asistencias': ['fecha', 'dni', 'nombre', 'tipo_persona',
-                     'hora_entrada', 'hora_salida', 'grado', 'nivel'],
+                     'hora_entrada', 'hora_salida', 'grado', 'nivel',
+                     'tardanza', 'hora_entrada_tarde', 'hora_salida_tarde'],
     'resultados': ['eval_id', 'eval_titulo', 'fecha', 'docente',
                     'estudiante', 'dni', 'grado',
                     'area', 'num_preguntas', 'claves',
@@ -375,9 +376,20 @@ class GoogleSync:
 
             for i, row in enumerate(all_data):
                 if row.get('fecha') == fecha and str(row.get('dni')) == str(dni):
-                    # Ya existe, actualizar hora_salida
+                    # Ya existe el registro del dia: actualizar SOLO las
+                    # columnas que traen un valor nuevo no vacio, sin pisar
+                    # las demas. Antes solo se actualizaba hora_salida,
+                    # lo que perdia tardanza/entrada_tarde/salida_tarde
+                    # cuando llegaban en una sincronizacion posterior.
                     row_num = i + 2  # +2 por encabezado y base-1
-                    ws.update_cell(row_num, 6, datos.get('hora_salida', ''))
+                    campos_actualizables = ('hora_entrada', 'hora_salida',
+                                             'tardanza', 'hora_entrada_tarde',
+                                             'hora_salida_tarde')
+                    for campo in campos_actualizables:
+                        valor = datos.get(campo, '')
+                        if valor:
+                            col_num = COLUMNAS['asistencias'].index(campo) + 1
+                            ws.update_cell(row_num, col_num, valor)
                     return 'salida'
 
             # No existe, crear nuevo
