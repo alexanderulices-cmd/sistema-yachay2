@@ -162,52 +162,52 @@ GEOGRAFIA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Etimológicamente, la palabra Geografía '
                              'proviene del griego «Geo» y «Graphía», que '
                              'significan:',
-                 'alternativas': ['Mundo y espacio',
+                 'alternativas': ['Suelo y medición',
                                   'Tierra y ciencia',
                                   'Espacio y estudio',
-                                  'Suelo y medición',
+                                  'Mundo y espacio',
                                   'Tierra y descripción'],
                  'correcta': 'E'},
                 {'pregunta': 'Los geógrafos que iniciaron, en la Época '
                              'Moderna, una nueva era de la Geografía fueron:',
-                 'alternativas': ['Von Humboldt y Carlos Ritter',
+                 'alternativas': ['Eratóstenes y Ptolomeo',
+                                  'Vidal de la Blache y Schaefer',
                                   'Ratzel y Brunhes',
-                                  'Eratóstenes y Ptolomeo',
-                                  'Milton Santos y Bunge',
-                                  'Vidal de la Blache y Schaefer'],
-                 'correcta': 'A'},
+                                  'Von Humboldt y Carlos Ritter',
+                                  'Milton Santos y Bunge'],
+                 'correcta': 'D'},
                 {'pregunta': 'El geógrafo que calculó la circunferencia '
                              'terrestre con notable aproximación y elaboró '
                              'un mapamundi fue:',
-                 'alternativas': ['Claudio Ptolomeo',
-                                  'Eratóstenes',
+                 'alternativas': ['Carlos Ritter',
+                                  'Claudio Ptolomeo',
                                   'Jean Brunhes',
-                                  'Carlos Ritter',
-                                  'Federico Ratzel'],
-                 'correcta': 'B'},
+                                  'Federico Ratzel',
+                                  'Eratóstenes'],
+                 'correcta': 'E'},
                 {'pregunta': 'El primero en elaborar un Atlas Universal fue:',
                  'alternativas': ['Vidal de la Blache',
                                   'Von Humboldt',
-                                  'Milton Santos',
                                   'Eratóstenes',
-                                  'Claudio Ptolomeo'],
-                 'correcta': 'E'},
+                                  'Claudio Ptolomeo',
+                                  'Milton Santos'],
+                 'correcta': 'D'},
                 {'pregunta': 'La etapa del pensamiento geográfico que va '
                              'desde los tiempos primitivos hasta mediados '
                              'del siglo XIX, de carácter empírico y '
                              'rutinario, es la Geografía:',
-                 'alternativas': ['Cuantitativa',
-                                  'Científica',
-                                  'Antigua',
+                 'alternativas': ['Antigua',
+                                  'Nueva',
+                                  'Cuantitativa',
                                   'Teorética',
-                                  'Nueva'],
-                 'correcta': 'C'},
+                                  'Científica'],
+                 'correcta': 'A'},
                 {'pregunta': 'La Geografía Moderna o Científica se '
                              'fundamenta en la filosofía del:',
-                 'alternativas': ['Estructuralismo',
+                 'alternativas': ['Neopositivismo',
                                   'Positivismo',
-                                  'Neopositivismo',
                                   'Empirismo',
+                                  'Estructuralismo',
                                   'Racionalismo'],
                  'correcta': 'B'},
                 {'pregunta': 'La corriente que se fundamenta en el '
@@ -215,76 +215,76 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                              'el método deductivo es la Geografía:',
                  'alternativas': ['Descriptiva',
                                   'Nueva, Cuantitativa o Teorética',
-                                  'Antigua',
                                   'Moderna',
+                                  'Antigua',
                                   'Regional clásica'],
                  'correcta': 'B'},
                 {'pregunta': 'Según Milton Santos da Almeida, el espacio '
                              'geográfico es:',
-                 'alternativas': ['El marco físico de toda acción humana',
-                                  'La naturaleza modificada por el hombre a '
+                 'alternativas': ['La naturaleza modificada por el hombre a '
                                   'través del trabajo',
-                                  'La epidermis del planeta Tierra',
+                                  'La suma de climas y relieves',
+                                  'El marco físico de toda acción humana',
                                   'El territorio de un Estado',
-                                  'La suma de climas y relieves'],
-                 'correcta': 'B'},
+                                  'La epidermis del planeta Tierra'],
+                 'correcta': 'A'},
                 {'pregunta': 'La flora, la fauna y la diversidad de relieves '
                              'son elementos del espacio geográfico de tipo:',
-                 'alternativas': ['Económicos',
-                                  'Políticos',
-                                  'Naturales',
+                 'alternativas': ['Sociales',
+                                  'Económicos',
                                   'Culturales',
-                                  'Sociales'],
-                 'correcta': 'C'},
+                                  'Naturales',
+                                  'Políticos'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las viviendas, ciudades y vías de comunicación '
                              'son elementos del espacio geográfico de tipo:',
-                 'alternativas': ['Culturales',
-                                  'Naturales',
-                                  'Abióticos',
+                 'alternativas': ['Naturales',
+                                  'Culturales',
                                   'Climáticos',
-                                  'Bióticos'],
-                 'correcta': 'A'},
+                                  'Bióticos',
+                                  'Abióticos'],
+                 'correcta': 'B'},
                 {'pregunta': 'La rama de la Geografía Física que estudia el '
                              'origen, evolución y formas del relieve es la:',
                  'alternativas': ['Climatología',
-                                  'Hidrogeografía',
                                   'Geomorfología',
+                                  'Hidrogeografía',
                                   'Edafología',
                                   'Biogeografía'],
-                 'correcta': 'C'},
+                 'correcta': 'B'},
                 {'pregunta': 'Dentro de la Hidrogeografía, el estudio de los '
                              'ríos corresponde a la:',
-                 'alternativas': ['Oceanografía',
-                                  'Edafología',
-                                  'Fluviología',
+                 'alternativas': ['Edafología',
+                                  'Limnología',
                                   'Fitogeografía',
-                                  'Limnología'],
-                 'correcta': 'C'},
+                                  'Fluviología',
+                                  'Oceanografía'],
+                 'correcta': 'D'},
                 {'pregunta': 'Dentro de la Biogeografía, el estudio de la '
                              'distribución de los animales corresponde a la:',
-                 'alternativas': ['Zoogeografía',
-                                  'Fitogeografía',
-                                  'Demogeografía',
+                 'alternativas': ['Demogeografía',
+                                  'Zoogeografía',
                                   'Limnología',
-                                  'Oceanografía'],
-                 'correcta': 'A'},
+                                  'Oceanografía',
+                                  'Fitogeografía'],
+                 'correcta': 'B'},
                 {'pregunta': 'La rama de la Geografía Humana que estudia la '
                              'distribución de la población en la superficie '
                              'terrestre es la:',
-                 'alternativas': ['Geografía Urbana',
+                 'alternativas': ['Geografía Histórica',
+                                  'Geografía Rural',
                                   'Demogeografía',
-                                  'Geografía Histórica',
-                                  'Geografía Política',
-                                  'Geografía Rural'],
-                 'correcta': 'B'},
+                                  'Geografía Urbana',
+                                  'Geografía Política'],
+                 'correcta': 'C'},
                 {'pregunta': 'El principio metodológico según el cual todo '
                              'elemento del espacio geográfico debe ser '
                              'ubicado en mapas y cartas geográficas, '
                              'formulado por Federico Ratzel, es el de:',
-                 'alternativas': ['Comparación',
+                 'alternativas': ['Relación o Conexión',
                                   'Localización, Distribución o Extensión',
+                                  'Comparación',
                                   'Actividad o Dinamismo',
-                                  'Relación o Conexión',
                                   'Causalidad'],
                  'correcta': 'B'},
                 {'pregunta': 'El principio de Causalidad o Explicación, que '
@@ -292,100 +292,100 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                              'por sus causas y consecuencias, fue formulado '
                              'por:',
                  'alternativas': ['Vidal de la Blache',
-                                  'Carlos Ritter',
+                                  'Alejandro Von Humboldt',
                                   'Federico Ratzel',
                                   'Jean Brunhes',
-                                  'Alejandro Von Humboldt'],
-                 'correcta': 'E'},
+                                  'Carlos Ritter'],
+                 'correcta': 'B'},
                 {'pregunta': 'El principio que establece que los elementos '
                              'del espacio geográfico están en íntima '
                              'interdependencia, formulado por Jean Brunhes, '
                              'es el de:',
-                 'alternativas': ['Causalidad',
-                                  'Relación o Conexión',
+                 'alternativas': ['Comparación',
                                   'Localización',
                                   'Actividad',
-                                  'Comparación'],
-                 'correcta': 'B'},
+                                  'Causalidad',
+                                  'Relación o Conexión'],
+                 'correcta': 'E'},
                 {'pregunta': 'El principio de Comparación, también llamado '
                              'de Coordinación, Universalización o Analogía, '
                              'fue formulado por:',
-                 'alternativas': ['Federico Ratzel y Jean Brunhes',
-                                  'Carlos Ritter y Vidal de la Blache',
+                 'alternativas': ['Von Humboldt y Ptolomeo',
                                   'Schaefer y Bunge',
-                                  'Von Humboldt y Ptolomeo',
-                                  'Eratóstenes y Milton Santos'],
-                 'correcta': 'B'},
+                                  'Eratóstenes y Milton Santos',
+                                  'Federico Ratzel y Jean Brunhes',
+                                  'Carlos Ritter y Vidal de la Blache'],
+                 'correcta': 'E'},
                 {'pregunta': 'Que los elementos del espacio geográfico deban '
                              'estudiarse en su constante y perpetua '
                              'transformación corresponde al principio de:',
-                 'alternativas': ['Localización',
-                                  'Relación',
-                                  'Causalidad',
+                 'alternativas': ['Relación',
+                                  'Actividad, Dinamismo o Evolución',
                                   'Comparación',
-                                  'Actividad, Dinamismo o Evolución'],
-                 'correcta': 'E'},
+                                  'Causalidad',
+                                  'Localización'],
+                 'correcta': 'B'},
                 {'pregunta': 'Herramientas propias de la Geografía Aplicada '
                              'para la gestión del territorio son:',
                  'alternativas': ['La cartografía digital, los SIG y la '
                                   'teledetección',
-                                  'Los censos poblacionales',
                                   'Únicamente encuestas de campo',
-                                  'Solo mapas físicos en papel',
-                                  'Los tratados internacionales'],
+                                  'Los censos poblacionales',
+                                  'Los tratados internacionales',
+                                  'Solo mapas físicos en papel'],
                  'correcta': 'A'},
                 {'pregunta': 'Junto con Alexander von Humboldt, el geógrafo '
                              'considerado fundador de la Geografía Moderna '
                              'es:',
-                 'alternativas': ['Milton Santos',
+                 'alternativas': ['Fred Schaefer',
                                   'Karl Ritter',
-                                  'Fred Schaefer',
+                                  'Eratóstenes',
                                   'William Bunge',
-                                  'Eratóstenes'],
+                                  'Milton Santos'],
                  'correcta': 'B'},
                 {'pregunta': 'En la Geografía Antigua, el geógrafo que '
                              'calculó la circunferencia terrestre con '
                              'notable aproximación fue:',
-                 'alternativas': ['Claudio Ptolomeo',
-                                  'Eratóstenes',
+                 'alternativas': ['Estrabón',
                                   'Alexander von Humboldt',
-                                  'Karl Ritter',
-                                  'Estrabón'],
-                 'correcta': 'B'},
+                                  'Claudio Ptolomeo',
+                                  'Eratóstenes',
+                                  'Karl Ritter'],
+                 'correcta': 'D'},
                 {'pregunta': 'La ciencia que se encarga de estudiar la '
                              'distribución de plantas y animales en el '
                              'espacio geográfico es la: (I CEPRU 2024)',
-                 'alternativas': ['Edafología',
-                                  'Biogeografía',
+                 'alternativas': ['Demogeografía',
+                                  'Biología',
                                   'Hidrogeografía',
-                                  'Demogeografía',
-                                  'Biología'],
-                 'correcta': 'B'},
+                                  'Edafología',
+                                  'Biogeografía'],
+                 'correcta': 'E'},
                 {'pregunta': 'El origen, estructura y clases de suelos es '
                              'estudiado por la: (Primera Oportunidad UNSAAC '
                              '2021)',
                  'alternativas': ['Geomorfología',
                                   'Edafología',
+                                  'Fisiografía',
                                   'Geología',
-                                  'Limnología',
-                                  'Fisiografía'],
+                                  'Limnología'],
                  'correcta': 'B'},
                 {'pregunta': 'El objeto de estudio de la Ciencia geográfica '
                              'es el: (Primera Oportunidad UNSAAC 2023)',
-                 'alternativas': ['Geosistema del universo',
+                 'alternativas': ['Ecosistema del hombre',
+                                  'Geosistema del universo',
                                   'Fenómeno global de la Tierra',
-                                  'Espacio geográfico',
                                   'Espacio terrestre',
-                                  'Ecosistema del hombre'],
-                 'correcta': 'C'},
+                                  'Espacio geográfico'],
+                 'correcta': 'E'},
                 {'pregunta': 'El principio de Dinamismo se le atribuye a: '
                              '(Primera Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Federico Ratzel',
-                                  'A. Von Humboldt',
-                                  'Jean Brunhes',
+                 'alternativas': ['Jean Brunhes',
+                                  'Karl Ritter',
                                   'P. Vidal de la Blache',
-                                  'Karl Ritter'],
-                 'correcta': 'C'}],
+                                  'Federico Ratzel',
+                                  'A. Von Humboldt'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'LA GEOGRAFÍA: ETIMOLOGÍA Y EVOLUCIÓN',
                       'items': ['El término Geografía proviene de dos voces '
                                 'griegas: Geo = Tierra y Graphía = '
@@ -631,222 +631,222 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Neptuno}', '13', '4°']]}],
   'preguntas': [{'pregunta': 'El geosistema está compuesto por entidades '
                              'bióticas, abióticas y:',
-                 'alternativas': ['Estelares',
-                                  'Galácticas',
+                 'alternativas': ['Solares',
+                                  'Estelares',
                                   'Cósmicas',
-                                  'Antrópicas',
-                                  'Solares'],
-                 'correcta': 'D'},
+                                  'Galácticas',
+                                  'Antrópicas'],
+                 'correcta': 'E'},
                 {'pregunta': 'La litósfera, la atmósfera y la hidrósfera son '
                              'entidades:',
                  'alternativas': ['Estelares',
-                                  'Abióticas',
                                   'Cósmicas',
                                   'Antrópicas',
+                                  'Abióticas',
                                   'Bióticas'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'La biósfera es una entidad del geosistema de '
                              'tipo:',
-                 'alternativas': ['Abiótica',
-                                  'Cósmica',
-                                  'Antrópica',
+                 'alternativas': ['Biótica',
                                   'Solar',
-                                  'Biótica'],
-                 'correcta': 'E'},
+                                  'Antrópica',
+                                  'Abiótica',
+                                  'Cósmica'],
+                 'correcta': 'A'},
                 {'pregunta': 'La teoría del Big-Bang fue planteada '
                              'originalmente por:',
-                 'alternativas': ['Edwin Hubble',
-                                  'George Gamow',
+                 'alternativas': ['George Lemaître',
                                   'Albert Einstein',
-                                  'George Lemaître',
-                                  'Isaac Newton'],
-                 'correcta': 'D'},
+                                  'Isaac Newton',
+                                  'Edwin Hubble',
+                                  'George Gamow'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el Big-Bang, el universo se originó hace '
                              'aproximadamente:',
                  'alternativas': ['500 millones de años',
                                   '15 000 millones de años',
-                                  '5 000 millones de años',
                                   '1 000 millones de años',
+                                  '5 000 millones de años',
                                   '100 000 millones de años'],
                  'correcta': 'B'},
                 {'pregunta': 'Las aglomeraciones de millones de estrellas se '
                              'denominan:',
-                 'alternativas': ['Galaxias',
-                                  'Cúmulos',
+                 'alternativas': ['Meteoritos',
+                                  'Galaxias',
                                   'Cometas',
                                   'Nebulosas',
-                                  'Meteoritos'],
-                 'correcta': 'A'},
+                                  'Cúmulos'],
+                 'correcta': 'B'},
                 {'pregunta': 'El diámetro medio de la Vía Láctea es de '
                              'aproximadamente:',
-                 'alternativas': ['1 000 000 años luz',
-                                  '100 000 años luz',
+                 'alternativas': ['10 000 años luz',
+                                  '1 000 000 años luz',
                                   '1 000 años luz',
-                                  '10 000 años luz',
+                                  '100 000 años luz',
                                   '500 000 años luz'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Las estrellas producen su propia luz mediante:',
-                 'alternativas': ['Radiación cósmica',
-                                  'Combustión química',
+                 'alternativas': ['Reflexión solar',
                                   'Fisión atómica',
+                                  'Combustión química',
                                   'Fusión nuclear',
-                                  'Reflexión solar'],
+                                  'Radiación cósmica'],
                  'correcta': 'D'},
                 {'pregunta': 'Las regiones interestelares donde nacen las '
                              'estrellas se llaman:',
-                 'alternativas': ['Nebulosas',
+                 'alternativas': ['Asteroides',
                                   'Cometas',
-                                  'Asteroides',
                                   'Cúmulos',
+                                  'Nebulosas',
                                   'Galaxias'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'El año luz es una unidad de:',
-                 'alternativas': ['Temperatura',
-                                  'Tiempo',
+                 'alternativas': ['Masa',
+                                  'Velocidad',
                                   'Distancia',
-                                  'Masa',
-                                  'Velocidad'],
+                                  'Tiempo',
+                                  'Temperatura'],
                  'correcta': 'C'},
                 {'pregunta': 'La luz del Sol tarda en llegar a la Tierra '
                              'aproximadamente:',
                  'alternativas': ['1 minuto',
+                                  '8,3 segundos',
                                   '1 hora',
                                   '8,3 minutos',
-                                  '8,3 segundos',
                                   '8,3 horas'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'El Sol contiene de la masa total del Sistema '
                              'Solar aproximadamente:',
-                 'alternativas': ['50%', '10%', '25%', '98,85%', '75%'],
-                 'correcta': 'D'},
+                 'alternativas': ['75%', '98,85%', '10%', '50%', '25%'],
+                 'correcta': 'B'},
                 {'pregunta': 'La Unión Astronómica Internacional definió las '
                              'tres categorías de cuerpos del Sistema Solar '
                              'en el año:',
-                 'alternativas': ['2006', '2020', '1980', '2015', '1990'],
-                 'correcta': 'A'},
+                 'alternativas': ['2015', '2006', '2020', '1980', '1990'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los planetas interiores o terrestres son:',
-                 'alternativas': ['Júpiter, Saturno, Urano y Neptuno',
+                 'alternativas': ['Solo la Tierra y Marte',
                                   'Ceres y Plutón',
                                   'Solo Mercurio y Venus',
                                   'Mercurio, Venus, Tierra y Marte',
-                                  'Solo la Tierra y Marte'],
+                                  'Júpiter, Saturno, Urano y Neptuno'],
                  'correcta': 'D'},
                 {'pregunta': 'Los planetas exteriores o jovianos se '
                              'caracterizan por ser:',
-                 'alternativas': ['Cercanos al Sol',
-                                  'Sin satélites',
+                 'alternativas': ['Sin satélites',
+                                  'De alta densidad',
+                                  'Cercanos al Sol',
                                   'Sólidos y pequeños',
-                                  'Gaseosos y de mayor tamaño',
-                                  'De alta densidad'],
-                 'correcta': 'D'},
+                                  'Gaseosos y de mayor tamaño'],
+                 'correcta': 'E'},
                 {'pregunta': 'El planeta con mayor número de satélites entre '
                              'los mostrados es:',
-                 'alternativas': ['Urano',
+                 'alternativas': ['Júpiter',
                                   'Marte',
+                                  'Saturno',
+                                  'Neptuno',
+                                  'Urano'],
+                 'correcta': 'A'},
+                {'pregunta': 'El planeta de mayor diámetro del Sistema Solar '
+                             'es:',
+                 'alternativas': ['Tierra',
+                                  'Urano',
                                   'Júpiter',
                                   'Saturno',
                                   'Neptuno'],
                  'correcta': 'C'},
-                {'pregunta': 'El planeta de mayor diámetro del Sistema Solar '
-                             'es:',
-                 'alternativas': ['Urano',
-                                  'Tierra',
-                                  'Saturno',
-                                  'Júpiter',
-                                  'Neptuno'],
-                 'correcta': 'D'},
                 {'pregunta': 'Plutón es clasificado actualmente como:',
-                 'alternativas': ['Cometa',
-                                  'Planeta enano',
-                                  'Satélite',
+                 'alternativas': ['Planeta exterior',
                                   'Planeta interior',
-                                  'Planeta exterior'],
-                 'correcta': 'B'},
+                                  'Planeta enano',
+                                  'Cometa',
+                                  'Satélite'],
+                 'correcta': 'C'},
                 {'pregunta': 'El geosistema se caracteriza por estar en:',
                  'alternativas': ['Estado sólido fijo',
                                   'Colapso permanente',
+                                  'Equilibrio estático total',
                                   'Equilibrio dinámico relativo',
-                                  'Expansión sin cambios',
-                                  'Equilibrio estático total'],
-                 'correcta': 'C'},
+                                  'Expansión sin cambios'],
+                 'correcta': 'D'},
                 {'pregunta': 'La entidad antrópica del geosistema '
                              'corresponde a:',
-                 'alternativas': ['Los seres vivos no humanos',
+                 'alternativas': ['Las rocas',
+                                  'El aire',
+                                  'Los seres vivos no humanos',
                                   'La sociedad humana',
-                                  'Las rocas',
-                                  'Los océanos',
-                                  'El aire'],
-                 'correcta': 'B'},
+                                  'Los océanos'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las zonas de radiación que rodean la Tierra, '
                              'formadas por partículas cargadas atrapadas por '
                              'el campo magnético, se llaman:',
-                 'alternativas': ['Ionosfera',
-                                  'Cinturones de Van Allen',
+                 'alternativas': ['Cinturones de Van Allen',
+                                  'Termosfera',
                                   'Magnetosfera exclusiva',
-                                  'Exosfera',
-                                  'Termosfera'],
-                 'correcta': 'B'},
+                                  'Ionosfera',
+                                  'Exosfera'],
+                 'correcta': 'A'},
                 {'pregunta': 'Una consecuencia del movimiento de rotación '
                              'terrestre es: (II CEPRU 2024)',
-                 'alternativas': ['Desviación de los vientos y las '
-                                  'corrientes marinas',
+                 'alternativas': ['Zonas climáticas y día artificial',
                                   'Puntos cardinales y las zonas térmicas',
                                   'Día artificial y achatamiento polar',
-                                  'Zonas climáticas y día artificial',
                                   'Presencia de mareas y las estaciones del '
-                                  'año'],
+                                  'año',
+                                  'Desviación de los vientos y las '
+                                  'corrientes marinas'],
                  'correcta': 'C'},
                 {'pregunta': 'Marque una consecuencia del movimiento de '
                              'rotación de la Tierra: (II CEPRU 2022)',
-                 'alternativas': ['Día artificial',
-                                  'Estaciones del año',
-                                  'Achatamiento polar',
+                 'alternativas': ['Estaciones del año',
                                   'Zonas climáticas',
                                   'Desigual distribución de los rayos del '
-                                  'sol'],
-                 'correcta': 'A'},
+                                  'sol',
+                                  'Día artificial',
+                                  'Achatamiento polar'],
+                 'correcta': 'D'},
                 {'pregunta': 'La ciudad «X» está ubicada a 75° de longitud. '
                              '¿Cuántas horas de diferencia existe con el '
                              'meridiano de Greenwich? (II CEPRU 2022)',
-                 'alternativas': ['10 horas',
-                                  '5 horas',
-                                  '4 horas',
+                 'alternativas': ['4 horas',
                                   '6 horas',
-                                  '7 horas'],
-                 'correcta': 'B'},
+                                  '5 horas',
+                                  '7 horas',
+                                  '10 horas'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las entidades del Geosistema a escala Global '
                              'son: (Primera Oportunidad UNSAAC 2025)',
-                 'alternativas': ['Antrópicas, fitogeográficas y bióticas',
-                                  'Abióticas, bióticas y antrópicas',
-                                  'Hidrosfera, sociósfera y zoogeografía',
+                 'alternativas': ['Hidrosfera, sociósfera y zoogeografía',
+                                  'Antrópicas, fitogeográficas y bióticas',
                                   'Bióticas, litosfera y heliomasa',
-                                  'Abióticas, naturales y culturales'],
-                 'correcta': 'B'},
+                                  'Abióticas, naturales y culturales',
+                                  'Abióticas, bióticas y antrópicas'],
+                 'correcta': 'E'},
                 {'pregunta': 'La Longitud es: (Primera Oportunidad UNSAAC '
                              '2025)',
                  'alternativas': ['Distancia angular de un punto de la '
-                                  'superficie terrestre a la línea '
-                                  'ecuatorial',
-                                  'Distancia angular de un punto de la '
                                   'superficie terrestre hacia el círculo '
                                   'polar ártico',
                                   'Distancia angular de un punto de la '
                                   'superficie terrestre al meridiano base de '
                                   'Greenwich',
                                   'Distancia angular de un punto de la '
+                                  'superficie terrestre a la línea '
+                                  'ecuatorial',
+                                  'Distancia angular de un punto de la '
                                   'superficie terrestre al meridiano de '
                                   'referencia del Perú',
                                   'Sistema de referencia basado en paralelos '
                                   'y meridianos'],
-                 'correcta': 'C'},
+                 'correcta': 'B'},
                 {'pregunta': 'El cuarto y séptimo planeta en la órbita solar '
                              'corresponden a: (Primera Oportunidad UNSAAC '
                              '2021)',
-                 'alternativas': ['Venus y Neptuno',
+                 'alternativas': ['Ceres y Eris',
                                   'Tierra y Saturno',
                                   'Marte y Urano',
-                                  'Ceres y Eris',
-                                  'Júpiter y Neptuno'],
+                                  'Júpiter y Neptuno',
+                                  'Venus y Neptuno'],
                  'correcta': 'C'},
                 {'pregunta': 'Si en la ciudad «X» (28°30\'40" N, 75°29\'10" '
                              'W) son las 14:29 horas del 11 de diciembre, la '
@@ -854,99 +854,99 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                              '135°10\'50" E) es: (Primera Oportunidad UNSAAC '
                              '2021)',
                  'alternativas': ['04:29 horas del 12 de diciembre',
-                                  '16:29 horas del 12 de diciembre',
                                   '03:29 horas del 11 de diciembre',
+                                  '05:29 horas del 12 de diciembre',
                                   '05:29 horas del 11 de diciembre',
-                                  '05:29 horas del 12 de diciembre'],
+                                  '16:29 horas del 12 de diciembre'],
                  'correcta': 'A'},
                 {'pregunta': 'El paralelo del trópico de Cáncer, ubicado en '
                              'el hemisferio norte, se encuentra situado a '
                              'una latitud de: (Primera Oportunidad UNSAAC '
                              '2023)',
-                 'alternativas': ["25° 30'",
-                                  "28° 25'",
+                 'alternativas': ["66° 33'",
                                   "63° 27'",
-                                  "66° 33'",
-                                  "23° 27'"],
-                 'correcta': 'E'},
+                                  "25° 30'",
+                                  "23° 27'",
+                                  "28° 25'"],
+                 'correcta': 'D'},
                 {'pregunta': 'Una característica que corresponde a un '
                              'planeta interior o terrestre del Sistema '
                              'Planetario Solar es: (Primera Oportunidad '
                              'UNSAAC 2020)',
-                 'alternativas': ['Son más fríos y lejanos al Sol',
+                 'alternativas': ['Se les denomina planetas jovianos',
                                   'Poseen menor masa y volumen',
-                                  'Se les denomina planetas jovianos',
                                   'Tienen mayor cantidad de satélites',
-                                  'Son más gaseosos'],
+                                  'Son más gaseosos',
+                                  'Son más fríos y lejanos al Sol'],
                  'correcta': 'B'},
                 {'pregunta': "Cuando en el Cusco son las 9 h 37', ¿qué hora "
                              'será en Roma (10° E)? (Primera Oportunidad '
                              'UNSAAC 2020)',
-                 'alternativas': ["13 h 25'",
-                                  "14 h 27'",
-                                  "15 h 37'",
+                 'alternativas': ["15 h 37'",
+                                  "13 h 25'",
+                                  "03 h 39'",
                                   "03 h 27'",
-                                  "03 h 39'"],
-                 'correcta': 'C'},
+                                  "14 h 27'"],
+                 'correcta': 'A'},
                 {'pregunta': 'La ciencia que estudia y determina la forma y '
                              'dimensiones de la Tierra y su campo de '
                              'gravedad se llama:',
-                 'alternativas': ['Cartografía',
-                                  'Geodesia',
+                 'alternativas': ['Astronomía',
                                   'Topografía',
                                   'Geomorfología',
-                                  'Astronomía'],
-                 'correcta': 'B'},
+                                  'Geodesia',
+                                  'Cartografía'],
+                 'correcta': 'D'},
                 {'pregunta': 'La edad de la Tierra, calculada mediante '
                              'isótopos radiactivos, se estima en:',
-                 'alternativas': ['4600 millones de años',
-                                  '2300 millones de años',
+                 'alternativas': ['2300 millones de años',
                                   '6000 millones de años',
-                                  '1000 millones de años',
-                                  '10000 millones de años'],
-                 'correcta': 'A'},
+                                  '4600 millones de años',
+                                  '10000 millones de años',
+                                  '1000 millones de años'],
+                 'correcta': 'C'},
                 {'pregunta': 'La forma real de la Tierra, considerando sus '
                              'partes salientes y entrantes tal como es, se '
                              'llama forma:',
-                 'alternativas': ['Geoide',
+                 'alternativas': ['Esférica',
+                                  'Geoide',
                                   'Física o topográfica',
                                   'Elipsoide de revolución',
-                                  'Esférica',
                                   'Achatada'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La forma de la Tierra que resulta de nivelar '
                              'la superficie continental con el nivel medio '
                              'del mar se llama forma:',
                  'alternativas': ['Física',
                                   'Elipsoide de revolución',
-                                  'Geoide',
+                                  'Esférica',
                                   'Topográfica',
-                                  'Esférica'],
-                 'correcta': 'C'},
+                                  'Geoide'],
+                 'correcta': 'E'},
                 {'pregunta': 'La forma matemática o geométrica de la Tierra, '
                              'achatada en los polos y ensanchada en el '
                              'ecuador, se llama:',
-                 'alternativas': ['Geoide',
+                 'alternativas': ['Forma topográfica',
+                                  'Geoide',
                                   'Elipsoide de revolución',
                                   'Forma física',
-                                  'Forma topográfica',
                                   'Esfera perfecta'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La superficie total de la Tierra es '
                              'aproximadamente de:',
-                 'alternativas': ['361 000 000 km²',
-                                  '510 000 000 km²',
-                                  '149 000 000 km²',
+                 'alternativas': ['149 000 000 km²',
                                   '200 000 000 km²',
-                                  '700 000 000 km²'],
-                 'correcta': 'B'},
+                                  '361 000 000 km²',
+                                  '700 000 000 km²',
+                                  '510 000 000 km²'],
+                 'correcta': 'E'},
                 {'pregunta': 'La densidad media de la Tierra es de:',
-                 'alternativas': ['1 gr/cm³',
-                                  '5,518 gr/cm³',
-                                  '10 gr/cm³',
+                 'alternativas': ['5,518 gr/cm³',
+                                  '1 gr/cm³',
                                   '3,2 gr/cm³',
-                                  '8,9 gr/cm³'],
-                 'correcta': 'B'}],
+                                  '8,9 gr/cm³',
+                                  '10 gr/cm³'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'EL GEOSISTEMA',
                       'items': ['El geosistema, o planeta Tierra considerado '
                                 'como unidad, es el conjunto de entidades '
@@ -1168,155 +1168,155 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                  'alternativas': ['Medir el tiempo',
                                   'Calcular distancias astronómicas',
                                   'Estudiar el clima',
-                                  'Expresar gráficamente mediante mapas',
-                                  'Clasificar rocas'],
-                 'correcta': 'D'},
+                                  'Clasificar rocas',
+                                  'Expresar gráficamente mediante mapas'],
+                 'correcta': 'E'},
                 {'pregunta': 'El padre de la cartografía moderna fue:',
-                 'alternativas': ['Claudio Ptolomeo',
+                 'alternativas': ['Gerardus Mercator',
                                   'Eratóstenes',
-                                  'Alexander von Humboldt',
+                                  'Claudio Ptolomeo',
                                   'Abraham Ortelius',
-                                  'Gerardus Mercator'],
+                                  'Alexander von Humboldt'],
                  'correcta': 'D'},
                 {'pregunta': 'Las proyecciones cartográficas sirven para '
                              'transferir información desde la superficie '
                              'esférica hacia:',
-                 'alternativas': ['Un plano o mapa',
-                                  'Un globo terráqueo',
-                                  'Un cilindro únicamente',
+                 'alternativas': ['Un globo terráqueo',
+                                  'Una fotografía satelital',
                                   'Un modelo digital',
-                                  'Una fotografía satelital'],
-                 'correcta': 'A'},
+                                  'Un cilindro únicamente',
+                                  'Un plano o mapa'],
+                 'correcta': 'E'},
                 {'pregunta': 'La proyección cilíndrica más utilizada en '
                              'cartografía es la de:',
-                 'alternativas': ['Ptolomeo',
-                                  'Gauss',
+                 'alternativas': ['Gauss',
+                                  'Ptolomeo',
+                                  'Ortelius',
                                   'Humboldt',
-                                  'Mercator',
-                                  'Ortelius'],
-                 'correcta': 'D'},
+                                  'Mercator'],
+                 'correcta': 'E'},
                 {'pregunta': 'El principal inconveniente de la proyección '
                              'cilíndrica es que deforma:',
                  'alternativas': ['El centro del mapa',
                                   'Las áreas próximas a los polos',
-                                  'Las líneas rectas',
                                   'El Ecuador',
+                                  'Las líneas rectas',
                                   'Los continentes pequeños'],
                  'correcta': 'B'},
                 {'pregunta': 'La proyección adecuada para representar un '
                              'solo país o región es la:',
-                 'alternativas': ['Universal',
-                                  'Mercator',
+                 'alternativas': ['Mercator',
+                                  'Cenital pura',
                                   'Cónica',
-                                  'Cilíndrica',
-                                  'Cenital pura'],
+                                  'Universal',
+                                  'Cilíndrica'],
                  'correcta': 'C'},
                 {'pregunta': 'La proyección que da lugar a un mapa circular '
                              'es la:',
-                 'alternativas': ['Cilíndrica',
-                                  'Cónica',
+                 'alternativas': ['Cónica',
                                   'Poliédrica',
                                   'De Mercator',
+                                  'Cilíndrica',
                                   'Cenital o azimutal'],
                  'correcta': 'E'},
                 {'pregunta': 'Los círculos máximos dividen a la Tierra en:',
-                 'alternativas': ['Dos partes iguales',
-                                  'Cuatro partes desiguales',
+                 'alternativas': ['Ocho sectores',
+                                  'Dos partes iguales',
                                   'Tres partes iguales',
                                   'Ninguna división real',
-                                  'Ocho sectores'],
-                 'correcta': 'A'},
+                                  'Cuatro partes desiguales'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los meridianos son semicírculos que van de:',
-                 'alternativas': ['Ecuador a ecuador',
-                                  'Centro a superficie',
+                 'alternativas': ['Polo a polo',
                                   'Este a oeste',
-                                  'Polo a polo',
-                                  'Trópico a trópico'],
-                 'correcta': 'D'},
+                                  'Centro a superficie',
+                                  'Trópico a trópico',
+                                  'Ecuador a ecuador'],
+                 'correcta': 'A'},
                 {'pregunta': 'El meridiano base internacional pasa por el '
                              'observatorio de:',
-                 'alternativas': ['Madrid',
+                 'alternativas': ['Roma',
                                   'Greenwich',
+                                  'París',
                                   'Washington',
-                                  'Roma',
-                                  'París'],
+                                  'Madrid'],
                  'correcta': 'B'},
                 {'pregunta': 'El meridiano de Greenwich y su opuesto dividen '
                              'la Tierra en los hemisferios:',
-                 'alternativas': ['Superior e inferior',
+                 'alternativas': ['Occidental y Oriental',
                                   'Interno y externo',
-                                  'Norte y Sur',
+                                  'Superior e inferior',
                                   'Tropical y polar',
-                                  'Occidental y Oriental'],
-                 'correcta': 'E'},
+                                  'Norte y Sur'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los paralelos son líneas imaginarias con '
                              'orientación:',
-                 'alternativas': ['Norte-Sur',
-                                  'Radial',
+                 'alternativas': ['Vertical',
                                   'Este-Oeste',
-                                  'Vertical',
+                                  'Norte-Sur',
+                                  'Radial',
                                   'Diagonal'],
-                 'correcta': 'C'},
-                {'pregunta': 'La línea del Ecuador corresponde al paralelo:',
-                 'alternativas': ['90°', '0°', '180°', "23°27'", '45°'],
                  'correcta': 'B'},
+                {'pregunta': 'La línea del Ecuador corresponde al paralelo:',
+                 'alternativas': ['45°', "23°27'", '90°', '180°', '0°'],
+                 'correcta': 'E'},
                 {'pregunta': 'El Ecuador divide a la Tierra en los '
                              'hemisferios:',
-                 'alternativas': ['Tropical y templado',
+                 'alternativas': ['Este y polar',
+                                  'Norte y Sur',
                                   'Anterior y posterior',
                                   'Occidental y Oriental',
-                                  'Norte y Sur',
-                                  'Este y polar'],
-                 'correcta': 'D'},
+                                  'Tropical y templado'],
+                 'correcta': 'B'},
                 {'pregunta': 'El Trópico de Cáncer se ubica en el hemisferio '
                              'norte, a una latitud de:',
-                 'alternativas': ['0°', "66°33'", '45°', '90°', "23°27'"],
-                 'correcta': 'E'},
+                 'alternativas': ["23°27'", '90°', "66°33'", '45°', '0°'],
+                 'correcta': 'A'},
                 {'pregunta': 'El Trópico de Capricornio se ubica en el '
                              'hemisferio:',
-                 'alternativas': ['Occidental',
+                 'alternativas': ['Norte',
                                   'Sur',
-                                  'Oriental',
                                   'Ecuatorial',
-                                  'Norte'],
+                                  'Oriental',
+                                  'Occidental'],
                  'correcta': 'B'},
                 {'pregunta': 'Los Círculos Polares se ubican a una latitud '
                              'de:',
-                 'alternativas': ["23°27'",
-                                  "0°00'",
+                 'alternativas': ["45°00'",
+                                  "66°33'",
                                   "90°00'",
-                                  "45°00'",
-                                  "66°33'"],
-                 'correcta': 'E'},
+                                  "23°27'",
+                                  "0°00'"],
+                 'correcta': 'B'},
                 {'pregunta': 'Los meridianos alcanzan su mayor separación '
                              'al:',
-                 'alternativas': ['Unirse en el centro',
+                 'alternativas': ['Cruzar los trópicos',
                                   'Separarse en los círculos polares',
-                                  'Atravesar el Ecuador',
-                                  'Cruzar los trópicos',
-                                  'Cruzar los polos'],
-                 'correcta': 'C'},
+                                  'Cruzar los polos',
+                                  'Unirse en el centro',
+                                  'Atravesar el Ecuador'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los meridianos convergen (se unen) en:',
                  'alternativas': ['El Ecuador',
-                                  'Los trópicos',
                                   'Los polos',
                                   'Los círculos polares',
-                                  'El centro de la Tierra'],
-                 'correcta': 'C'},
+                                  'El centro de la Tierra',
+                                  'Los trópicos'],
+                 'correcta': 'B'},
                 {'pregunta': 'Las formas que se usan para transferir la '
                              'esfera terrestre a un mapa se llaman '
                              'superficies:',
-                 'alternativas': ['Planas únicamente',
+                 'alternativas': ['Desarrollables, como conos y cilindros',
+                                  'Planas únicamente',
                                   'Triangulares',
-                                  'Esféricas puras',
-                                  'Desarrollables, como conos y cilindros',
-                                  'Curvas irregulares'],
-                 'correcta': 'D'},
+                                  'Curvas irregulares',
+                                  'Esféricas puras'],
+                 'correcta': 'A'},
                 {'pregunta': 'En la hoja de la Carta Geográfica Nacional, la '
                              'planimetría y altimetría forman parte de: (II '
                              'CEPRU 2025)',
-                 'alternativas': ['El sistema de coordenadas',
-                                  'La escala de la hoja',
+                 'alternativas': ['La escala de la hoja',
+                                  'El sistema de coordenadas',
                                   'El cuerpo de la hoja',
                                   'La información marginal',
                                   'Los signos convencionales'],
@@ -1324,86 +1324,86 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                 {'pregunta': 'Según las Coordenadas Universal Transversal de '
                              'Mercator (UTM), la Tierra está dividida en: '
                              '(II CEPRU 2024)',
-                 'alternativas': ['60 zonas y 20 bandas',
-                                  '24 zonas y 20 bandas',
-                                  '60 bandas y 20 zonas',
+                 'alternativas': ['60 husos y 20 bandas',
+                                  '60 zonas y 20 bandas',
                                   '60 zonas y 19 bandas',
-                                  '60 husos y 20 bandas'],
-                 'correcta': 'A'},
+                                  '60 bandas y 20 zonas',
+                                  '24 zonas y 20 bandas'],
+                 'correcta': 'B'},
                 {'pregunta': 'La carta geográfica nacional del territorio '
                              'peruano se encuentra dividida en: (II CEPRU '
                              '2024)',
-                 'alternativas': ['305 hojas',
-                                  '501 hojas',
-                                  '505 hojas',
+                 'alternativas': ['505 hojas',
                                   '201 hojas',
+                                  '305 hojas',
+                                  '501 hojas',
                                   '101 hojas'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'La escala de la carta nacional del Perú es: (I '
                              'CEPRU 2023)',
-                 'alternativas': ['1:50 000',
-                                  '1:1 000 000',
-                                  '1:100 000',
+                 'alternativas': ['1:200 000',
                                   '1:10 000 000',
-                                  '1:200 000'],
-                 'correcta': 'C'},
+                                  '1:50 000',
+                                  '1:1 000 000',
+                                  '1:100 000'],
+                 'correcta': 'E'},
                 {'pregunta': 'La Carta Geográfica Nacional es un gran mapa '
                              'de nuestro país dividido en 501 mapas: (I '
                              'CEPRU 2024)',
-                 'alternativas': ['Hidrográficos',
+                 'alternativas': ['Topográficos',
+                                  'Hidrográficos',
+                                  'Económicos',
                                   'Geográficos',
-                                  'Geológicos',
-                                  'Topográficos',
-                                  'Económicos'],
-                 'correcta': 'D'},
+                                  'Geológicos'],
+                 'correcta': 'A'},
                 {'pregunta': 'Respecto al sistema de coordenadas UTM, el '
                              'territorio peruano se encuentra entre las '
                              'zonas: (Primera Oportunidad UNSAAC 2024)',
                  'alternativas': ['54, 56 y 57',
-                                  '14, 15 y 17',
-                                  '17, 18 y 19',
                                   '20, 21 y 22',
-                                  '45, 46 y 47'],
+                                  '17, 18 y 19',
+                                  '45, 46 y 47',
+                                  '14, 15 y 17'],
                  'correcta': 'C'},
                 {'pregunta': 'El sistema de coordenadas UTM se basa en la '
                              'proyección cartográfica transversa de:',
-                 'alternativas': ['Robinson',
+                 'alternativas': ['Cónica',
+                                  'Robinson',
                                   'Mercator',
                                   'Peters',
-                                  'Azimutal',
-                                  'Cónica'],
-                 'correcta': 'B'},
+                                  'Azimutal'],
+                 'correcta': 'C'},
                 {'pregunta': 'A diferencia de las coordenadas geográficas '
                              '(longitud/latitud), las magnitudes del sistema '
                              'UTM se expresan en:',
-                 'alternativas': ['Grados sexagesimales',
-                                  'Metros',
+                 'alternativas': ['Kilómetros cuadrados',
+                                  'Grados sexagesimales',
                                   'Millas náuticas',
-                                  'Radianes',
-                                  'Kilómetros cuadrados'],
-                 'correcta': 'B'},
+                                  'Metros',
+                                  'Radianes'],
+                 'correcta': 'D'},
                 {'pregunta': 'El sistema UTM fue desarrollado por el Cuerpo '
                              'de Ingenieros del Ejército de Estados Unidos '
                              'en la década de:',
-                 'alternativas': ['1920', '1940', '1960', '1980', '1900'],
-                 'correcta': 'B'},
+                 'alternativas': ['1920', '1980', '1960', '1900', '1940'],
+                 'correcta': 'E'},
                 {'pregunta': 'La Tierra está dividida, según el sistema UTM, '
                              'en un número de zonas o husos igual a:',
-                 'alternativas': ['24', '60', '20', '180', '360'],
-                 'correcta': 'B'},
+                 'alternativas': ['60', '360', '20', '180', '24'],
+                 'correcta': 'A'},
                 {'pregunta': 'La Tierra está dividida, según el sistema UTM, '
                              'en un número de bandas igual a:',
-                 'alternativas': ['60', '20', '24', '12', '30'],
-                 'correcta': 'B'},
+                 'alternativas': ['20', '12', '60', '24', '30'],
+                 'correcta': 'A'},
                 {'pregunta': 'Por encima de los 80° de latitud sur y 84° de '
                              'latitud norte, en vez de la Red UTM, se '
                              'utiliza la Red Universal:',
-                 'alternativas': ['Geográfica Polar',
-                                  'Estereográfica Polar (UPS)',
-                                  'Cónica Polar',
+                 'alternativas': ['Azimutal Ecuatorial',
                                   'Cilíndrica Polar',
-                                  'Azimutal Ecuatorial'],
-                 'correcta': 'B'}],
+                                  'Cónica Polar',
+                                  'Geográfica Polar',
+                                  'Estereográfica Polar (UPS)'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'LA CARTOGRAFÍA',
                       'items': ['La cartografía es la ciencia y arte de '
                                 'expresar gráficamente, por medio de mapas, '
@@ -1631,242 +1631,242 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                           'Distribución de actividades económicas']]}],
   'preguntas': [{'pregunta': 'Un mapa es una representación de la superficie '
                              'curva de la Tierra sobre una superficie:',
-                 'alternativas': ['Esférica',
-                                  'Cónica',
+                 'alternativas': ['Cilíndrica',
+                                  'Plana',
                                   'Irregular',
-                                  'Cilíndrica',
-                                  'Plana'],
-                 'correcta': 'E'},
+                                  'Esférica',
+                                  'Cónica'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los mapas se clasifican, según su función, en '
                              'generales y:',
-                 'alternativas': ['Temáticos',
+                 'alternativas': ['Políticos',
+                                  'Satelitales',
                                   'Digitales',
                                   'Físicos',
-                                  'Políticos',
-                                  'Satelitales'],
-                 'correcta': 'A'},
+                                  'Temáticos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los mapas que representan el territorio por '
                              'medio de símbolos de un aspecto concreto son '
                              'los:',
                  'alternativas': ['Temáticos',
-                                  'Catastrales',
+                                  'Topográficos',
                                   'Náuticos',
                                   'Generales',
-                                  'Topográficos'],
+                                  'Catastrales'],
                  'correcta': 'A'},
                 {'pregunta': 'Un mapa con escala 1:50 000 corresponde a una '
                              'escala:',
                  'alternativas': ['Intermedia',
-                                  'Grande',
                                   'Muy grande',
+                                  'Grande',
                                   'Muy pequeña',
                                   'Pequeña'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Los mapas de continentes y del mundo '
                              'corresponden a una escala:',
-                 'alternativas': ['Grande',
+                 'alternativas': ['Muy grande',
                                   'Muy pequeña',
-                                  'Pequeña',
+                                  'Grande',
                                   'Intermedia',
-                                  'Muy grande'],
+                                  'Pequeña'],
                  'correcta': 'B'},
                 {'pregunta': 'Un plano de una vivienda corresponde a una '
                              'escala:',
                  'alternativas': ['Muy pequeña',
                                   'Pequeña',
+                                  'Intermedia',
                                   'Muy grande',
-                                  'Grande estándar',
-                                  'Intermedia'],
-                 'correcta': 'C'},
+                                  'Grande estándar'],
+                 'correcta': 'D'},
                 {'pregunta': 'El elemento del mapa que se ubica en la parte '
                              'superior e indica el contenido es:',
-                 'alternativas': ['El título',
+                 'alternativas': ['La red geográfica',
+                                  'El título',
                                   'La escala',
-                                  'La red geográfica',
-                                  'La leyenda',
-                                  'La orientación'],
-                 'correcta': 'A'},
+                                  'La orientación',
+                                  'La leyenda'],
+                 'correcta': 'B'},
                 {'pregunta': 'En un mapa correctamente orientado, el Norte '
                              'corresponde a la parte:',
-                 'alternativas': ['Inferior',
-                                  'Derecha',
+                 'alternativas': ['Derecha',
+                                  'Inferior',
                                   'Superior',
                                   'Central',
                                   'Izquierda'],
                  'correcta': 'C'},
                 {'pregunta': 'La ubicación de un mapa se determina mediante:',
-                 'alternativas': ['Los colores usados',
-                                  'El título',
-                                  'La red de meridianos y paralelos',
+                 'alternativas': ['La red de meridianos y paralelos',
+                                  'Los colores usados',
                                   'El tamaño del papel',
+                                  'El título',
                                   'La leyenda únicamente'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'Los signos convencionales de un mapa '
                              'constituyen:',
-                 'alternativas': ['La leyenda',
-                                  'El marco',
+                 'alternativas': ['El marco',
+                                  'El título',
+                                  'La leyenda',
                                   'La escala',
-                                  'La orientación',
-                                  'El título'],
-                 'correcta': 'A'},
+                                  'La orientación'],
+                 'correcta': 'C'},
                 {'pregunta': 'Una escala de 1:100 000 significa que el '
                              'terreno real fue reducido:',
-                 'alternativas': ['10 veces',
-                                  '100 000 veces',
-                                  '1000 veces',
+                 'alternativas': ['100 000 veces',
                                   '1 000 000 veces',
-                                  '100 veces'],
-                 'correcta': 'B'},
+                                  '10 veces',
+                                  '100 veces',
+                                  '1000 veces'],
+                 'correcta': 'A'},
                 {'pregunta': 'Un mapa climático indica la distribución de:',
                  'alternativas': ['Los diversos tipos de clima',
-                                  'Fronteras políticas',
-                                  'Especies vegetales',
                                   'Ríos y lagos',
+                                  'Especies vegetales',
+                                  'Fronteras políticas',
                                   'Actividades económicas'],
                  'correcta': 'A'},
                 {'pregunta': 'Un mapa hidrográfico indica principalmente:',
-                 'alternativas': ['Fronteras administrativas',
+                 'alternativas': ['Tipos de clima',
+                                  'Actividades agrícolas',
                                   'Densidad poblacional',
-                                  'Tipos de clima',
-                                  'La distribución de ríos y lagos',
-                                  'Actividades agrícolas'],
-                 'correcta': 'D'},
+                                  'Fronteras administrativas',
+                                  'La distribución de ríos y lagos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Un mapa político indica:',
                  'alternativas': ['Fronteras políticas y límites '
                                   'administrativos',
                                   'Recursos minerales',
+                                  'Distribución de lenguas',
                                   'Tipos de suelo',
-                                  'Tipos de vegetación',
-                                  'Distribución de lenguas'],
+                                  'Tipos de vegetación'],
                  'correcta': 'A'},
                 {'pregunta': 'Un mapa económico indica la distribución '
                              'territorial de:',
-                 'alternativas': ['Los climas',
+                 'alternativas': ['Los acontecimientos históricos',
+                                  'Los climas',
                                   'Las actividades económicas',
                                   'Las fronteras',
-                                  'Las lenguas habladas',
-                                  'Los acontecimientos históricos'],
-                 'correcta': 'B'},
+                                  'Las lenguas habladas'],
+                 'correcta': 'C'},
                 {'pregunta': 'Un mapa lingüístico corresponde a un mapa '
                              'temático de tipo:',
-                 'alternativas': ['Físico',
+                 'alternativas': ['Geológico',
                                   'Hidrográfico',
                                   'Climático',
-                                  'Geológico',
+                                  'Físico',
                                   'Humano'],
                  'correcta': 'E'},
                 {'pregunta': 'Un mapa geológico indica:',
-                 'alternativas': ['La densidad de población',
+                 'alternativas': ['Las fronteras políticas',
                                   'La composición de las rocas de la corteza '
                                   'terrestre',
                                   'La distribución de lenguas',
                                   'Las actividades económicas',
-                                  'Las fronteras políticas'],
+                                  'La densidad de población'],
                  'correcta': 'B'},
                 {'pregunta': 'Los mapas generales suelen aparecer en:',
                  'alternativas': ['Solo periódicos',
-                                  'Solo documentos legales',
+                                  'Solo revistas científicas',
                                   'Los atlas',
                                   'Solo internet',
-                                  'Solo revistas científicas'],
+                                  'Solo documentos legales'],
                  'correcta': 'C'},
                 {'pregunta': 'Un mapa de provincias y departamentos '
                              'corresponde a una escala:',
-                 'alternativas': ['Muy grande',
+                 'alternativas': ['Nula',
+                                  'Muy grande',
                                   'Pequeña extrema',
                                   'Intermedia',
-                                  'Nula',
                                   'Muy pequeña'],
-                 'correcta': 'C'},
+                 'correcta': 'D'},
                 {'pregunta': 'La ventaja principal del mapa frente a la '
                              'esfera terrestre es:',
-                 'alternativas': ['Eliminar toda deformación',
+                 'alternativas': ['Representar en tres dimensiones',
                                   'Facilidad de manejo y representación '
                                   'ampliada de áreas pequeñas',
                                   'Mayor exactitud absoluta',
-                                  'Representar en tres dimensiones',
-                                  'No requerir escala'],
+                                  'No requerir escala',
+                                  'Eliminar toda deformación'],
                  'correcta': 'B'},
                 {'pregunta': 'La escala que emplea segmentos gráficos para '
                              'indicar la proporción entre la distancia y su '
                              'medida en el mapa es la: (II CEPRU 2022)',
                  'alternativas': ['Escala numérica',
                                   'Escala natural',
+                                  'Escala de ampliación',
                                   'Escala gráfica',
-                                  'Escala de reducción',
-                                  'Escala de ampliación'],
-                 'correcta': 'C'},
+                                  'Escala de reducción'],
+                 'correcta': 'D'},
                 {'pregunta': 'La proyección cartográfica que se emplea para '
                              'graficar zonas de alta latitud es: (Primera '
                              'Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Mercator',
+                 'alternativas': ['Rectangular',
                                   'Cónica',
-                                  'Escalar',
-                                  'Rectangular',
-                                  'Azimutal'],
-                 'correcta': 'E'},
+                                  'Mercator',
+                                  'Azimutal',
+                                  'Escalar'],
+                 'correcta': 'D'},
                 {'pregunta': 'La Carta Geográfica Nacional del Perú es un '
                              'gran mapa dividido en un número de hojas igual '
                              'a:',
-                 'alternativas': ['305', '501', '201', '101', '601'],
+                 'alternativas': ['305', '501', '601', '201', '101'],
                  'correcta': 'B'},
                 {'pregunta': 'La Carta Geográfica Nacional del Perú se ha '
                              'levantado a una escala de:',
-                 'alternativas': ['1:50 000',
-                                  '1:100 000',
-                                  '1:200 000',
+                 'alternativas': ['1:100 000',
                                   '1:1 000 000',
-                                  '1:10 000'],
-                 'correcta': 'B'},
+                                  '1:10 000',
+                                  '1:50 000',
+                                  '1:200 000'],
+                 'correcta': 'A'},
                 {'pregunta': 'El trabajo de la Carta Geográfica Nacional fue '
                              'iniciado por el:',
                  'alternativas': ['Instituto Nacional de Estadística',
-                                  'Instituto Geográfico Militar',
-                                  'Ministerio de Defensa',
+                                  'Servicio Nacional de Meteorología',
                                   'Instituto Geofísico del Perú',
-                                  'Servicio Nacional de Meteorología'],
-                 'correcta': 'B'},
+                                  'Ministerio de Defensa',
+                                  'Instituto Geográfico Militar'],
+                 'correcta': 'E'},
                 {'pregunta': 'Cada hoja de la Carta Geográfica Nacional '
                              'representa un área de longitud y latitud de:',
-                 'alternativas': ['15 minutos',
-                                  '30 minutos',
+                 'alternativas': ['45 minutos',
+                                  '20 minutos',
+                                  '15 minutos',
                                   '60 minutos',
-                                  '45 minutos',
-                                  '20 minutos'],
-                 'correcta': 'B'},
+                                  '30 minutos'],
+                 'correcta': 'E'},
                 {'pregunta': 'Una hoja o mapa topográfico está compuesta de '
                              'tres partes: cuerpo, signos convencionales y:',
-                 'alternativas': ['Escala numérica',
-                                  'Información marginal',
+                 'alternativas': ['Curvas de nivel',
                                   'Coordenadas UTM',
-                                  'Curvas de nivel',
-                                  'Red geográfica'],
-                 'correcta': 'B'},
+                                  'Red geográfica',
+                                  'Escala numérica',
+                                  'Información marginal'],
+                 'correcta': 'E'},
                 {'pregunta': 'En la hoja de la Carta Geográfica Nacional, la '
                              'planimetría y la altimetría forman parte de:',
-                 'alternativas': ['El sistema de coordenadas',
-                                  'La escala de la hoja',
+                 'alternativas': ['La escala de la hoja',
                                   'El cuerpo de la hoja',
+                                  'Los signos convencionales',
                                   'La información marginal',
-                                  'Los signos convencionales'],
-                 'correcta': 'C'},
+                                  'El sistema de coordenadas'],
+                 'correcta': 'B'},
                 {'pregunta': 'La ubicación del espacio en un plano mediante '
                              'simbología convencional, representando '
                              'elementos naturales o culturales, se llama:',
-                 'alternativas': ['Altimetría',
-                                  'Planimetría',
-                                  'Isoyeta',
+                 'alternativas': ['Planimetría',
                                   'Curva de nivel',
-                                  'Leyenda'],
-                 'correcta': 'B'},
+                                  'Leyenda',
+                                  'Altimetría',
+                                  'Isoyeta'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las curvas de nivel, que indican la altitud '
                              'sobre el nivel del mar, forman parte de la:',
-                 'alternativas': ['Planimetría',
-                                  'Altimetría',
-                                  'Leyenda',
+                 'alternativas': ['Escala',
                                   'Información marginal',
-                                  'Escala'],
-                 'correcta': 'B'}],
+                                  'Planimetría',
+                                  'Altimetría',
+                                  'Leyenda'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
                       'items': ['Un mapa es una representación, total o '
                                 'parcial, de la superficie curva de la '
@@ -2056,7 +2056,60 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            '{transformantes} y bordes conservativos.',
                            'La subducción consiste en el hundimiento de una '
                            'placa {oceánica} bajo una placa continental, '
-                           'formando las {fosas} marinas.']}],
+                           'formando las {fosas} marinas.']},
+                {'titulo': '5.5 METEORIZACIÓN Y EROSIÓN',
+                 'items': ['La {meteorización}, o intemperismo, es el '
+                           'proceso de destrucción de las rocas y minerales '
+                           'que forman la {corteza}.',
+                           'La meteorización {mecánica} o física rompe las '
+                           'rocas progresivamente en fragmentos, sin cambios '
+                           'en su composición {química}; intervienen cambios '
+                           'de temperatura, heladas y sales.',
+                           'La meteorización {química} origina cambios en la '
+                           'forma y estructura química de las rocas; el agua '
+                           'es el principal {agente}.',
+                           'La {erosión} es el desgaste de suelos y rocas de '
+                           'la superficie terrestre, cuyos materiales son '
+                           'arrancados y transportados por agentes erosivos.',
+                           'Los principales agentes erosivos son los {ríos}, '
+                           'glaciares, vientos, mares y el hombre.']},
+                {'titulo': '5.6 RELIEVES SALIENTES Y ENTRANTES',
+                 'items': ['Las {cordilleras} son montañas alineadas de '
+                           'altitud variable entre 5000 y 6000 msnm; pueden '
+                           'tener glaciares si superan los {5500} msnm.',
+                           'Las {abras} o pasos son las partes más bajas '
+                           'entre dos montañas; tienen importancia para las '
+                           '{vías} de comunicación.',
+                           'Las {serranías residuales} son alineamientos de '
+                           'montañas erosionadas entre 4000 y 4500 m de '
+                           'altitud.',
+                           'Los {valles} son depresiones entre dos '
+                           'elevaciones, con base amplia, aprovechados para '
+                           'la agricultura; son centros {demográficos}.',
+                           'Los {cañones} son depresiones estrechas y '
+                           'profundas, con paredes verticales, que no '
+                           'favorecen la actividad {agrícola}: Cañón del '
+                           'Colca, Cañón del Apurímac.',
+                           'Las {quebradas} son pequeñas depresiones '
+                           'alargadas y angostas, recorridas por arroyos y '
+                           'ríos {tributarios}.',
+                           'Los {pongos} son cortes fluviales profundos en '
+                           'las cordilleras: Pongo de {Mainique}, Retama, '
+                           'Manseriche.']},
+                {'titulo': '5.7 RELIEVES PLANOS Y DEPOSICIONALES',
+                 'items': ['Las {llanuras} son extensas superficies planas '
+                           'poco accidentadas a poca altitud: llanura del '
+                           '{Amazonas}.',
+                           'Las {mesetas} son superficies planas a grandes '
+                           'altitudes, entre 3000 y 4000 m, limitadas por '
+                           'una {depresión}: Meseta de Junín.',
+                           'Los {altiplanos} son extensas superficies '
+                           'rodeadas por cadenas de montañas: Altiplano del '
+                           '{Titicaca}.',
+                           'El {cono aluvial} o cono de deyección son '
+                           'materiales depositados por corrientes fluviales '
+                           'tras las precipitaciones; también incluyen '
+                           'derrames {volcánicos} y morrenas.']}],
   'cuadros': [{'titulo': '5.1 ESTRUCTURA INTERNA DE LA TIERRA',
                'encabezados': ['Capa', '% del volumen', 'Espesor'],
                'filas': [['{Corteza}', '1%', '5 a 70 km'],
@@ -2064,252 +2117,365 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Núcleo}', '16%', '3450 km']]}],
   'preguntas': [{'pregunta': 'El núcleo terrestre está formado '
                              'principalmente por:',
-                 'alternativas': ['Carbono e hidrógeno',
+                 'alternativas': ['Magnesio y oxígeno',
                                   'Potasio y sodio',
+                                  'Carbono e hidrógeno',
                                   'Silicio y aluminio',
-                                  'Níquel y hierro',
-                                  'Magnesio y oxígeno'],
-                 'correcta': 'D'},
+                                  'Níquel y hierro'],
+                 'correcta': 'E'},
                 {'pregunta': 'La discontinuidad que limita el núcleo externo '
                              'del núcleo interno es la de:',
-                 'alternativas': ['Mohorovicic',
+                 'alternativas': ['Conrad',
+                                  'Lehman',
                                   'Repetti',
                                   'Gutemberg',
-                                  'Lehman',
-                                  'Conrad'],
-                 'correcta': 'D'},
+                                  'Mohorovicic'],
+                 'correcta': 'B'},
                 {'pregunta': 'El núcleo está limitado con el manto por la '
                              'discontinuidad de:',
-                 'alternativas': ['Conrad',
-                                  'Mohorovicic',
-                                  'Lehman',
+                 'alternativas': ['Lehman',
+                                  'Repetti',
+                                  'Conrad',
                                   'Wiechert Gutemberg',
-                                  'Repetti'],
+                                  'Mohorovicic'],
                  'correcta': 'D'},
                 {'pregunta': 'El manto externo y el manto interno están '
                              'separados por la discontinuidad de:',
-                 'alternativas': ['Mohorovicic',
+                 'alternativas': ['Lehman',
                                   'Gutemberg',
-                                  'Lehman',
+                                  'Mohorovicic',
                                   'Conrad',
                                   'Repetti'],
                  'correcta': 'E'},
                 {'pregunta': 'El manto está limitado con la corteza '
                              'terrestre por la discontinuidad de:',
-                 'alternativas': ['Lehman',
-                                  'Conrad',
+                 'alternativas': ['Gutemberg',
+                                  'Lehman',
                                   'Repetti',
-                                  'Gutemberg',
-                                  'Mohorovicic'],
-                 'correcta': 'E'},
+                                  'Mohorovicic',
+                                  'Conrad'],
+                 'correcta': 'D'},
                 {'pregunta': 'La astenósfera es una capa ubicada en:',
-                 'alternativas': ['La parte superior del manto',
-                                  'El núcleo externo',
-                                  'El núcleo interno',
+                 'alternativas': ['El núcleo interno',
                                   'La corteza oceánica',
-                                  'La corteza continental'],
-                 'correcta': 'A'},
+                                  'El núcleo externo',
+                                  'La corteza continental',
+                                  'La parte superior del manto'],
+                 'correcta': 'E'},
                 {'pregunta': 'La astenósfera es clave para explicar la '
                              'teoría de:',
-                 'alternativas': ['La formación de galaxias',
+                 'alternativas': ['El ciclo del agua',
                                   'La formación del universo',
+                                  'La formación de galaxias',
                                   'El Big Bang',
-                                  'El ciclo del agua',
                                   'La Tectónica de Placas'],
                  'correcta': 'E'},
                 {'pregunta': 'La corteza continental o granítica se compone '
                              'principalmente de:',
-                 'alternativas': ['Carbono y oxígeno',
-                                  'Silicio y magnesio',
-                                  'Silicio y aluminio',
+                 'alternativas': ['Silicio y aluminio',
+                                  'Hierro y níquel',
                                   'Potasio y calcio',
-                                  'Hierro y níquel'],
-                 'correcta': 'C'},
+                                  'Silicio y magnesio',
+                                  'Carbono y oxígeno'],
+                 'correcta': 'A'},
                 {'pregunta': 'La corteza oceánica o basáltica se compone '
                              'principalmente de:',
                  'alternativas': ['Oxígeno y carbono',
-                                  'Hierro y níquel',
-                                  'Calcio y sodio',
                                   'Silicio y magnesio',
-                                  'Silicio y aluminio'],
-                 'correcta': 'D'},
+                                  'Calcio y sodio',
+                                  'Silicio y aluminio',
+                                  'Hierro y níquel'],
+                 'correcta': 'B'},
                 {'pregunta': 'La corteza externa y la corteza interna están '
                              'separadas por la discontinuidad de:',
-                 'alternativas': ['Lehman',
+                 'alternativas': ['Gutemberg',
+                                  'Mohorovicic',
                                   'Repetti',
                                   'Conrad',
-                                  'Mohorovicic',
-                                  'Gutemberg'],
-                 'correcta': 'C'},
+                                  'Lehman'],
+                 'correcta': 'D'},
                 {'pregunta': 'El relieve terrestre se define como el '
                              'conjunto de:',
-                 'alternativas': ['Irregularidades o geoformas de la '
+                 'alternativas': ['Climas del planeta',
+                                  'Irregularidades o geoformas de la '
                                   'superficie',
-                                  'Climas del planeta',
+                                  'Capas de la atmósfera',
                                   'Corrientes marinas',
-                                  'Zonas sísmicas únicamente',
-                                  'Capas de la atmósfera'],
-                 'correcta': 'A'},
+                                  'Zonas sísmicas únicamente'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los procesos que actúan del interior hacia la '
                              'superficie terrestre se llaman:',
                  'alternativas': ['Meteorización',
-                                  'Erosión eólica',
-                                  'Geodinámica interna',
                                   'Geodinámica externa',
-                                  'Sedimentación'],
-                 'correcta': 'C'},
+                                  'Sedimentación',
+                                  'Geodinámica interna',
+                                  'Erosión eólica'],
+                 'correcta': 'D'},
                 {'pregunta': 'La geodinámica interna es considerada una '
                              'fuerza:',
-                 'alternativas': ['Sin efecto en el relieve',
-                                  'Destructora del relieve',
-                                  'Solo erosiva',
+                 'alternativas': ['Solo erosiva',
+                                  'Exclusivamente marina',
+                                  'Sin efecto en el relieve',
                                   'Constructora del relieve',
-                                  'Exclusivamente marina'],
+                                  'Destructora del relieve'],
                  'correcta': 'D'},
                 {'pregunta': 'Los movimientos orogénicos originan '
                              'principalmente:',
-                 'alternativas': ['Plegamientos y fallas',
+                 'alternativas': ['Glaciación',
                                   'Erosión costera',
                                   'Formación de dunas',
-                                  'Glaciación',
+                                  'Plegamientos y fallas',
                                   'Sedimentación fluvial'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los movimientos orogénicos se caracterizan por '
                              'ser:',
-                 'alternativas': ['Laterales, compresivos y lentos',
+                 'alternativas': ['Aleatorios',
                                   'Verticales y rápidos',
                                   'Explosivos',
-                                  'Aleatorios',
+                                  'Laterales, compresivos y lentos',
                                   'Solo horizontales rápidos'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los movimientos epirogénicos también se '
                              'conocen como:',
-                 'alternativas': ['Erosión interna',
+                 'alternativas': ['Vulcanismo puro',
+                                  'Sismicidad superficial',
+                                  'Erosión interna',
                                   'Tectónica horizontal',
-                                  'Tectónica vertical',
-                                  'Vulcanismo puro',
-                                  'Sismicidad superficial'],
-                 'correcta': 'C'},
+                                  'Tectónica vertical'],
+                 'correcta': 'E'},
                 {'pregunta': 'El origen de los movimientos epirogénicos se '
                              'encuentra en:',
                  'alternativas': ['Las corrientes marinas',
-                                  'La erosión eólica',
+                                  'La isostasia',
                                   'El vulcanismo',
-                                  'La meteorización química',
-                                  'La isostasia'],
-                 'correcta': 'E'},
+                                  'La erosión eólica',
+                                  'La meteorización química'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los movimientos epirogénicos afectan grandes '
                              'extensiones sin:',
                  'alternativas': ['Elevar el terreno',
                                   'Deformar la estructura geológica de las '
                                   'rocas',
-                                  'Hundir el terreno',
+                                  'Modificar la altitud',
                                   'Generar continentes',
-                                  'Modificar la altitud'],
+                                  'Hundir el terreno'],
                  'correcta': 'B'},
                 {'pregunta': 'La geodinámica interna comprende movimientos '
                              'orogénicos, epirogénicos y:',
-                 'alternativas': ['Meteorización física',
-                                  'Vulcanismo',
-                                  'Glaciarismo',
+                 'alternativas': ['Vulcanismo',
                                   'Sedimentación eólica',
+                                  'Glaciarismo',
+                                  'Meteorización física',
                                   'Erosión fluvial'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'El manto representa aproximadamente qué '
                              'porcentaje del volumen terrestre:',
-                 'alternativas': ['16%', '83%', '1%', '25%', '50%'],
+                 'alternativas': ['50%', '83%', '25%', '1%', '16%'],
                  'correcta': 'B'},
                 {'pregunta': 'La segunda cordillera con mayor superficie '
                              'glaciar en el Perú es: (II CEPRU 2025)',
-                 'alternativas': ['Huatapallana',
-                                  'Vilcanota',
-                                  'Ampato',
+                 'alternativas': ['Vilcanota',
+                                  'Vilcabamba',
                                   'Huayhuash',
-                                  'Vilcabamba'],
-                 'correcta': 'B'},
+                                  'Ampato',
+                                  'Huatapallana'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las placas tectónicas en sentido convergente '
                              'originan bordes: (II CEPRU 2024)',
-                 'alternativas': ['Constructivos',
-                                  'Conservativos',
+                 'alternativas': ['Moderados',
+                                  'Convencionales',
+                                  'Constructivos',
                                   'Destructivos',
-                                  'Moderados',
-                                  'Convencionales'],
-                 'correcta': 'C'},
+                                  'Conservativos'],
+                 'correcta': 'D'},
                 {'pregunta': 'En un glaciar, la parte donde se produce la '
                              'pérdida de masa de hielo se llama: (II CEPRU '
                              '2024)',
-                 'alternativas': ['Zona de acumulación',
-                                  'Morrenas glaciares',
+                 'alternativas': ['Morrenas glaciares',
+                                  'Zona de acumulación',
+                                  'Área de compactación',
                                   'Línea de equilibrio',
-                                  'Zona de ablación',
-                                  'Área de compactación'],
-                 'correcta': 'D'},
+                                  'Zona de ablación'],
+                 'correcta': 'E'},
                 {'pregunta': 'Es la discontinuidad entre el núcleo interno y '
                              'el núcleo externo: (II CEPRU 2022)',
-                 'alternativas': ['Conrad',
-                                  'W. Gutenberg',
-                                  'Mohorovicic',
+                 'alternativas': ['W. Gutenberg',
+                                  'Repetti',
                                   'Lehman',
-                                  'Repetti'],
-                 'correcta': 'D'},
+                                  'Conrad',
+                                  'Mohorovicic'],
+                 'correcta': 'C'},
                 {'pregunta': 'Ciencia que estudia el origen, evolución y '
                              'formas de relieve: (I CEPRU 2023)',
                  'alternativas': ['Geodesia',
-                                  'Geomorfología',
                                   'Geosistema',
                                   'Edafología',
+                                  'Geomorfología',
                                   'Fitogeografía'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Las placas tectónicas se mueven en tres '
                              'direcciones: (I CEPRU 2024)',
-                 'alternativas': ['Lateral - convergente - divergente',
-                                  'Lateral - horizontal - convergente',
+                 'alternativas': ['Divergente - vertical - lineal',
                                   'Divergente - colateral - convergente',
-                                  'Convergente - lineal - paralelo',
-                                  'Divergente - vertical - lineal'],
-                 'correcta': 'A'},
+                                  'Lateral - convergente - divergente',
+                                  'Lateral - horizontal - convergente',
+                                  'Convergente - lineal - paralelo'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las partes de un volcán son: (I CEPRU 2024)',
-                 'alternativas': ['Cono, cráter y magma',
-                                  'Chimenea, cono y cráter',
-                                  'Cámara magmática, cono y lava',
+                 'alternativas': ['Lava, cráter y chimenea',
                                   'Cráter, chimenea y cámara magmática',
-                                  'Lava, cráter y chimenea'],
-                 'correcta': 'B'},
+                                  'Cámara magmática, cono y lava',
+                                  'Cono, cráter y magma',
+                                  'Chimenea, cono y cráter'],
+                 'correcta': 'E'},
                 {'pregunta': 'El intemperismo y la erosión son procesos que '
                              'forman el relieve terrestre, originados por la '
                              'energía: (Primera Oportunidad UNSAAC 2021)',
                  'alternativas': ['De meteoritos',
-                                  'Volcánica',
-                                  'De la luna',
                                   'Interna de la Tierra',
-                                  'Solar'],
-                 'correcta': 'E'},
+                                  'Solar',
+                                  'De la luna',
+                                  'Volcánica'],
+                 'correcta': 'C'},
                 {'pregunta': 'Las placas tectónicas en su sentido divergente '
                              'se caracterizan por ser: (Primera Oportunidad '
                              'UNSAAC 2023)',
-                 'alternativas': ['Constructivas',
-                                  'Destructivas',
+                 'alternativas': ['Destructivas',
                                   'Laterales',
-                                  'Conservativas',
-                                  'Compresivas'],
-                 'correcta': 'A'},
+                                  'Constructivas',
+                                  'Compresivas',
+                                  'Conservativas'],
+                 'correcta': 'C'},
                 {'pregunta': 'La discontinuidad más próxima al centro de la '
                              'Tierra es: (Primera Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Repetti',
+                 'alternativas': ['Mohorovicic',
+                                  'Lehman',
                                   'Gutenberg',
-                                  'Conrad',
-                                  'Mohorovicic',
-                                  'Lehman'],
-                 'correcta': 'E'},
+                                  'Repetti',
+                                  'Conrad'],
+                 'correcta': 'B'},
                 {'pregunta': 'Es considerado el nevado más alto de la zona '
                              'tropical del mundo: (Primera Oportunidad '
                              'UNSAAC 2020)',
                  'alternativas': ['Misti',
-                                  'Barroso',
                                   'Salkantay',
-                                  'Huascarán',
-                                  'Alpamayo'],
-                 'correcta': 'D'}],
+                                  'Barroso',
+                                  'Alpamayo',
+                                  'Huascarán'],
+                 'correcta': 'E'},
+                {'pregunta': 'El proceso de destrucción de las rocas y '
+                             'minerales que forman la corteza terrestre se '
+                             'llama:',
+                 'alternativas': ['Diastrofismo',
+                                  'Sedimentación',
+                                  'Erosión',
+                                  'Orogénesis',
+                                  'Meteorización o intemperismo'],
+                 'correcta': 'E'},
+                {'pregunta': 'La meteorización que rompe las rocas '
+                             'progresivamente en fragmentos, sin cambios en '
+                             'su composición química, se llama '
+                             'meteorización:',
+                 'alternativas': ['Biológica',
+                                  'Mecánica o física',
+                                  'Orgánica',
+                                  'Cristalina',
+                                  'Química'],
+                 'correcta': 'B'},
+                {'pregunta': 'La meteorización que origina cambios en la '
+                             'forma y estructura química de las rocas se '
+                             'llama meteorización:',
+                 'alternativas': ['Térmica',
+                                  'Física',
+                                  'Mecánica',
+                                  'Química',
+                                  'Eólica'],
+                 'correcta': 'D'},
+                {'pregunta': 'El desgaste de suelos y rocas de la superficie '
+                             'terrestre, cuyos materiales son arrancados y '
+                             'transportados por agentes erosivos, se llama:',
+                 'alternativas': ['Orogénesis',
+                                  'Sedimentación',
+                                  'Diastrofismo',
+                                  'Meteorización',
+                                  'Erosión'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las montañas alineadas de altitud variable '
+                             'entre 5000 y 6000 msnm se llaman:',
+                 'alternativas': ['Llanuras',
+                                  'Altiplanos',
+                                  'Serranías residuales',
+                                  'Cordilleras',
+                                  'Mesetas'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las partes más bajas entre dos montañas, '
+                             'importantes para las vías de comunicación, se '
+                             'llaman:',
+                 'alternativas': ['Pongos',
+                                  'Abras o pasos',
+                                  'Cañones',
+                                  'Quebradas',
+                                  'Valles'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los alineamientos de montañas erosionadas '
+                             'entre 4000 y 4500 m de altitud se llaman:',
+                 'alternativas': ['Altiplanos',
+                                  'Serranías residuales',
+                                  'Mesetas',
+                                  'Abras',
+                                  'Cordilleras'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las depresiones entre dos elevaciones, de base '
+                             'amplia, aprovechadas para la agricultura y '
+                             'consideradas centros demográficos, se llaman:',
+                 'alternativas': ['Valles',
+                                  'Mesetas',
+                                  'Quebradas',
+                                  'Cañones',
+                                  'Pongos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las depresiones estrechas y profundas, con '
+                             'paredes verticales, que no favorecen la '
+                             'actividad agrícola, se llaman:',
+                 'alternativas': ['Mesetas',
+                                  'Altiplanos',
+                                  'Llanuras',
+                                  'Cañones',
+                                  'Valles'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los cortes fluviales profundos en las '
+                             'cordilleras, como el de Mainique, se llaman:',
+                 'alternativas': ['Pongos',
+                                  'Cañones',
+                                  'Valles',
+                                  'Abras',
+                                  'Quebradas'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las superficies planas a grandes altitudes, '
+                             'entre 3000 y 4000 m, limitadas por una '
+                             'depresión, se llaman:',
+                 'alternativas': ['Mesetas',
+                                  'Altiplanos',
+                                  'Cordilleras',
+                                  'Llanuras',
+                                  'Valles'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las extensas superficies rodeadas por cadenas '
+                             'de montañas, como el del Titicaca, se llaman:',
+                 'alternativas': ['Altiplanos',
+                                  'Serranías',
+                                  'Llanuras',
+                                  'Mesetas',
+                                  'Valles'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los materiales depositados por corrientes '
+                             'fluviales tras las precipitaciones se llaman:',
+                 'alternativas': ['Deltas exclusivos',
+                                  'Cono aluvial o de deyección',
+                                  'Derrames volcánicos exclusivos',
+                                  'Meandros',
+                                  'Morrenas exclusivas'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'ESTRUCTURA INTERNA DE LA TIERRA: EL NÚCLEO '
                                 'Y EL MANTO',
                       'items': ['El núcleo alcanza temperaturas entre 4000° '
@@ -2327,13 +2493,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'entre 1700° y 1800° C.',
                                 'El manto inferior o pirosfera está '
                                 'conformado por olivinos, peridotita y '
-                                'óxidos de magnesio, hierro y silicio.',
-                                'El manto está limitado con la corteza por '
-                                'la Discontinuidad de Mohorovicic.',
-                                'La astenósfera es una capa débil, blanda y '
-                                'plástica del manto, ubicada entre 100 y 300 '
-                                'km de profundidad, clave para la Tectónica '
-                                'de Placas.']},
+                                'óxidos de magnesio, hierro y silicio.']},
                      {'titulo': 'LA CORTEZA TERRESTRE',
                       'items': ['La corteza externa, llamada granítica o Si '
                                 'Al, es la corteza continental, formada por '
@@ -2386,22 +2546,64 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Pacífica, que abarca la mayor parte del '
                                 'Océano Pacífico.',
                                 'El Perú se ubica sobre la placa '
-                                'Sudamericana.',
-                                'En el sentido convergente, cuando una placa '
-                                'oceánica choca con una continental, se '
-                                'produce la subducción, originando bordes '
-                                'destructivos.',
-                                'En el sentido divergente, las placas se '
-                                'separan formando dorsales mesoceánicas y '
-                                'bordes constructivos.',
-                                'En el sentido lateral, las placas se '
-                                'desplazan una junto a otra originando '
-                                'fallas transformantes y bordes '
-                                'conservativos.',
-                                'La subducción consiste en el hundimiento de '
-                                'una placa oceánica bajo una placa '
-                                'continental, formando las fosas '
-                                'marinas.']}]},
+                                'Sudamericana.']},
+                     {'titulo': 'METEORIZACIÓN Y EROSIÓN',
+                      'items': ['La meteorización, o intemperismo, es el '
+                                'proceso de destrucción de las rocas y '
+                                'minerales que forman la corteza.',
+                                'La meteorización mecánica o física rompe '
+                                'las rocas progresivamente en fragmentos, '
+                                'sin cambios en su composición química; '
+                                'intervienen cambios de temperatura, heladas '
+                                'y sales.',
+                                'La meteorización química origina cambios en '
+                                'la forma y estructura química de las rocas; '
+                                'el agua es el principal agente.',
+                                'La erosión es el desgaste de suelos y rocas '
+                                'de la superficie terrestre, cuyos '
+                                'materiales son arrancados y transportados '
+                                'por agentes erosivos.',
+                                'Los principales agentes erosivos son los '
+                                'ríos, glaciares, vientos, mares y el '
+                                'hombre.']},
+                     {'titulo': 'RELIEVES SALIENTES Y ENTRANTES',
+                      'items': ['Las cordilleras son montañas alineadas de '
+                                'altitud variable entre 5000 y 6000 msnm; '
+                                'pueden tener glaciares si superan los 5500 '
+                                'msnm.',
+                                'Las abras o pasos son las partes más bajas '
+                                'entre dos montañas; tienen importancia para '
+                                'las vías de comunicación.',
+                                'Las serranías residuales son alineamientos '
+                                'de montañas erosionadas entre 4000 y 4500 m '
+                                'de altitud.',
+                                'Los valles son depresiones entre dos '
+                                'elevaciones, con base amplia, aprovechados '
+                                'para la agricultura; son centros '
+                                'demográficos.',
+                                'Los cañones son depresiones estrechas y '
+                                'profundas, con paredes verticales, que no '
+                                'favorecen la actividad agrícola: Cañón del '
+                                'Colca, Cañón del Apurímac.',
+                                'Las quebradas son pequeñas depresiones '
+                                'alargadas y angostas, recorridas por '
+                                'arroyos y ríos tributarios.']},
+                     {'titulo': 'RELIEVES PLANOS Y DEPOSICIONALES',
+                      'items': ['Las llanuras son extensas superficies '
+                                'planas poco accidentadas a poca altitud: '
+                                'llanura del Amazonas.',
+                                'Las mesetas son superficies planas a '
+                                'grandes altitudes, entre 3000 y 4000 m, '
+                                'limitadas por una depresión: Meseta de '
+                                'Junín.',
+                                'Los altiplanos son extensas superficies '
+                                'rodeadas por cadenas de montañas: Altiplano '
+                                'del Titicaca.',
+                                'El cono aluvial o cono de deyección son '
+                                'materiales depositados por corrientes '
+                                'fluviales tras las precipitaciones; también '
+                                'incluyen derrames volcánicos y '
+                                'morrenas.']}]},
  {'num': 6,
   'titulo': 'Espacio Geográfico Peruano: Región Andina',
   'secciones': [{'titulo': '6.1 LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
@@ -2450,42 +2652,67 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'continental del Perú.',
                            'La región {Andina} representa el 30,2% del área '
                            'continental del Perú.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El territorio peruano se ubica en la zona '
-                           '{Tórrida}.',
-                           'El Perú es considerado el país de América del '
-                           'Sur con extensión {La tercera mayor}.',
-                           'El punto más alto del Perú es el nevado '
-                           '{Huascarán}.',
-                           'El punto más bajo del territorio peruano es {La '
-                           'Depresión de Bayovar}.',
-                           'El lugar más lluvioso del Perú es {Quince Mil}.',
-                           'El lugar más caluroso del Perú es {Neshuya}.',
-                           'El lugar más frío del Perú es {Imata}.',
-                           'La frontera más extensa del Perú es con '
-                           '{Brasil}.',
-                           'La frontera más corta del Perú es con {Chile}.',
-                           'El perímetro total del Perú, incluido el '
-                           'litoral, es aproximadamente de {10 156,8 km}.',
-                           'Por el sur, el Perú limita con {Chile}.',
-                           'Por el este, el Perú limita con {Bolivia y '
-                           'Brasil}.',
-                           'El punto extremo norte del Perú se relaciona con '
-                           'el río {Putumayo}.',
-                           'El punto extremo sur del Perú se ubica en '
-                           '{Tacna}.',
-                           'El punto extremo este del Perú limita con '
-                           '{Bolivia}.',
-                           'La región Costa representa del área continental '
-                           'peruana {12,5%}.',
-                           'La región Andina representa del área continental '
-                           'peruana {30,2%}.',
-                           'El litoral peruano se extiende desde Boca de '
-                           'Capones hasta {El hito La Concordia}.',
-                           'La longitud del litoral peruano es '
-                           'aproximadamente de {3 080 km}.',
-                           'El ancho del territorio peruano, de este a '
-                           'oeste, es de aproximadamente {1 640 km}.']}],
+                {'titulo': '6.5 SECTORES DE LOS ANDES PERUANOS',
+                 'items': ['Los Andes Peruanos se dividen tradicionalmente '
+                           'en {tres} sectores, separados por los nudos o '
+                           'divisorias fluviales de {Pasco} y Vilcanota.',
+                           'Los {Andes del Norte} presentan Cordillera '
+                           'Occidental, Central y {Oriental}.',
+                           'Los {Andes del Centro} presentan Cordillera '
+                           'Occidental, Central y {Oriental}.',
+                           'Los {Andes del Sur} presentan Cordillera '
+                           'Occidental y {Oriental} (sin Central).',
+                           'El {nudo de Pasco} separa los Andes del Norte de '
+                           'los Andes del Centro; el {nudo de Vilcanota} '
+                           'separa los Andes del Centro de los del Sur.']},
+                {'titulo': '6.6 DATOS SUPERLATIVOS DE LA REGIÓN ANDINA',
+                 'items': ['Los Andes constituyen la cordillera más {larga} '
+                           'del mundo, con {7240} km.',
+                           'La {Cordillera Blanca} es la cordillera más alta '
+                           'de la zona tropical.',
+                           'El nevado más alto de la zona tropical es el '
+                           '{Huascarán}, con 6746 m.',
+                           'El volcán más alto del Perú es el {Coropuna}, en '
+                           'Arequipa, con 6426 m; el volcán más hermoso es '
+                           'el {Misti}.',
+                           'El cañón más profundo del mundo es el '
+                           '{Cotahuasi}, en Arequipa, con 3535 m de '
+                           'profundidad.',
+                           'El pongo más largo es el de {Manseriche}; el '
+                           'paso o abra más bajo es {Porculla}, en Piura.',
+                           'El paso o abra más alto es {Anticona}; los '
+                           'volcanes activos del Perú son el {Sabancaya} y '
+                           'el Ubinas.']},
+                {'titulo': '6.7 LOS GLACIARES: CONCEPTO Y PARTES',
+                 'items': ['Los {glaciares} son masas de hielo que se forman '
+                           'en las partes altas de las montañas y casquetes '
+                           'polares, por acumulación, compactación y '
+                           '{recristalización} de la nieve.',
+                           'La {zona de acumulación} se ubica en la parte '
+                           'alta del glaciar, donde la nieve se transforma '
+                           'en {neviza} y luego en hielo.',
+                           'La {zona de ablación} se ubica en la parte baja '
+                           'del glaciar; es la zona donde el hielo se '
+                           '{derrite}.',
+                           'La {línea de equilibrio} separa la zona de '
+                           'acumulación de la zona de ablación.',
+                           'Los materiales transportados y depositados por '
+                           'el glaciar (rocas, lodo) se llaman {morrenas}.']},
+                {'titulo': '6.8 EL GLACIAR QELCCAYA Y RANKING DE GLACIARES',
+                 'items': ['El glaciar {Qelccaya} se ubica en la cordillera '
+                           'de Vilcanota, entre Canchis (Cusco) y Melgar '
+                           '(Puno); es el glaciar más extenso de la zona '
+                           '{tropical} del mundo.',
+                           'El glaciar Qelccaya tiene 18 km de largo, 2,5 km '
+                           'de ancho, una superficie de {44} km² y una capa '
+                           'de hielo de más de 200 m de espesor.',
+                           'Las cordilleras con mayor superficie glaciar del '
+                           'Perú son: {Blanca} (448 km²), Vilcanota (255 '
+                           'km²), Vilcabamba (101 km²), Huayhuash (53 km²) y '
+                           '{Ampato} (50 km²).',
+                           'Entre las importancias de los glaciares están '
+                           'constituir reservas de {agua dulce} y mantener '
+                           'el balance hídrico de las cuencas.']}],
   'cuadros': [{'titulo': '6.3 FRONTERAS DEL PERÚ',
                'encabezados': ['País', 'Longitud'],
                'filas': [['{Ecuador}', '1528,5 km'],
@@ -2494,180 +2721,318 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['Bolivia', '1047,1 km'],
                          ['{Chile}', '169,1 km']]}],
   'preguntas': [{'pregunta': 'El territorio peruano se ubica en la zona:',
-                 'alternativas': ['Templada',
+                 'alternativas': ['Glacial',
                                   'Subtropical',
                                   'Tórrida',
-                                  'Glacial',
+                                  'Templada',
                                   'Polar'],
                  'correcta': 'C'},
                 {'pregunta': 'El Perú es considerado el país de América del '
                              'Sur con extensión:',
                  'alternativas': ['La mayor',
-                                  'La tercera mayor',
                                   'La segunda menor',
-                                  'La cuarta mayor',
-                                  'La menor'],
-                 'correcta': 'B'},
+                                  'La menor',
+                                  'La tercera mayor',
+                                  'La cuarta mayor'],
+                 'correcta': 'D'},
                 {'pregunta': 'El punto más alto del Perú es el nevado:',
-                 'alternativas': ['Huascarán',
-                                  'Alpamayo',
-                                  'Ausangate',
+                 'alternativas': ['Ausangate',
+                                  'Huascarán',
+                                  'Coropuna',
                                   'Salkantay',
-                                  'Coropuna'],
-                 'correcta': 'A'},
-                {'pregunta': 'El punto más bajo del territorio peruano es:',
-                 'alternativas': ['El valle del Colca',
-                                  'La Depresión de Bayovar',
-                                  'El desierto de Sechura',
-                                  'La fosa de Tacna',
-                                  'El lago Titicaca'],
+                                  'Alpamayo'],
                  'correcta': 'B'},
+                {'pregunta': 'El punto más bajo del territorio peruano es:',
+                 'alternativas': ['La fosa de Tacna',
+                                  'El desierto de Sechura',
+                                  'La Depresión de Bayovar',
+                                  'El valle del Colca',
+                                  'El lago Titicaca'],
+                 'correcta': 'C'},
                 {'pregunta': 'El lugar más lluvioso del Perú es:',
-                 'alternativas': ['Moyobamba',
+                 'alternativas': ['Tarapoto',
                                   'Quince Mil',
-                                  'Chachapoyas',
-                                  'Tarapoto',
-                                  'Iquitos'],
+                                  'Iquitos',
+                                  'Moyobamba',
+                                  'Chachapoyas'],
                  'correcta': 'B'},
                 {'pregunta': 'El lugar más caluroso del Perú es:',
-                 'alternativas': ['Piura',
-                                  'Sechura',
+                 'alternativas': ['Jaén',
                                   'Neshuya',
+                                  'Sechura',
                                   'Tumbes',
-                                  'Jaén'],
-                 'correcta': 'C'},
+                                  'Piura'],
+                 'correcta': 'B'},
                 {'pregunta': 'El lugar más frío del Perú es:',
-                 'alternativas': ['Cusco',
-                                  'Puno',
-                                  'El Misti',
+                 'alternativas': ['Imata',
                                   'Juliaca',
-                                  'Imata'],
-                 'correcta': 'E'},
-                {'pregunta': 'La frontera más extensa del Perú es con:',
-                 'alternativas': ['Brasil',
-                                  'Ecuador',
-                                  'Colombia',
-                                  'Chile',
-                                  'Bolivia'],
+                                  'El Misti',
+                                  'Puno',
+                                  'Cusco'],
                  'correcta': 'A'},
-                {'pregunta': 'La frontera más corta del Perú es con:',
-                 'alternativas': ['Colombia',
+                {'pregunta': 'La frontera más extensa del Perú es con:',
+                 'alternativas': ['Chile',
+                                  'Bolivia',
+                                  'Colombia',
                                   'Ecuador',
+                                  'Brasil'],
+                 'correcta': 'E'},
+                {'pregunta': 'La frontera más corta del Perú es con:',
+                 'alternativas': ['Chile',
                                   'Bolivia',
                                   'Brasil',
-                                  'Chile'],
-                 'correcta': 'E'},
+                                  'Ecuador',
+                                  'Colombia'],
+                 'correcta': 'A'},
                 {'pregunta': 'El perímetro total del Perú, incluido el '
                              'litoral, es aproximadamente de:',
                  'alternativas': ['15 000 km',
-                                  '20 000 km',
-                                  '10 156,8 km',
                                   '1 000 km',
-                                  '5 000 km'],
-                 'correcta': 'C'},
+                                  '5 000 km',
+                                  '20 000 km',
+                                  '10 156,8 km'],
+                 'correcta': 'E'},
                 {'pregunta': 'Por el sur, el Perú limita con:',
-                 'alternativas': ['Ecuador',
+                 'alternativas': ['Chile',
+                                  'Ecuador',
                                   'Brasil',
-                                  'Bolivia',
-                                  'Chile',
-                                  'Colombia'],
-                 'correcta': 'D'},
+                                  'Colombia',
+                                  'Bolivia'],
+                 'correcta': 'A'},
                 {'pregunta': 'Por el este, el Perú limita con:',
-                 'alternativas': ['Chile y Bolivia',
-                                  'Ecuador y Colombia',
-                                  'Bolivia y Brasil',
+                 'alternativas': ['Bolivia y Brasil',
+                                  'Solo Brasil',
+                                  'Chile y Bolivia',
                                   'Solo Bolivia',
-                                  'Solo Brasil'],
-                 'correcta': 'C'},
+                                  'Ecuador y Colombia'],
+                 'correcta': 'A'},
                 {'pregunta': 'El punto extremo norte del Perú se relaciona '
                              'con el río:',
-                 'alternativas': ['Madre de Dios',
-                                  'Marañón',
-                                  'Ucayali',
+                 'alternativas': ['Marañón',
                                   'Amazonas',
-                                  'Putumayo'],
-                 'correcta': 'E'},
+                                  'Madre de Dios',
+                                  'Putumayo',
+                                  'Ucayali'],
+                 'correcta': 'D'},
                 {'pregunta': 'El punto extremo sur del Perú se ubica en:',
-                 'alternativas': ['Puno',
+                 'alternativas': ['Arequipa',
                                   'Tacna',
-                                  'Arequipa',
+                                  'Moquegua',
                                   'Ica',
-                                  'Moquegua'],
+                                  'Puno'],
                  'correcta': 'B'},
                 {'pregunta': 'El punto extremo este del Perú limita con:',
-                 'alternativas': ['Colombia',
+                 'alternativas': ['Chile',
                                   'Bolivia',
+                                  'Brasil únicamente',
                                   'Ecuador',
-                                  'Chile',
-                                  'Brasil únicamente'],
+                                  'Colombia'],
                  'correcta': 'B'},
                 {'pregunta': 'La región Costa representa del área '
                              'continental peruana:',
-                 'alternativas': ['30,2%', '20%', '50%', '12,5%', '5%'],
-                 'correcta': 'D'},
+                 'alternativas': ['12,5%', '50%', '5%', '30,2%', '20%'],
+                 'correcta': 'A'},
                 {'pregunta': 'La región Andina representa del área '
                              'continental peruana:',
-                 'alternativas': ['60%', '10%', '30,2%', '12,5%', '45%'],
-                 'correcta': 'C'},
+                 'alternativas': ['12,5%', '30,2%', '45%', '10%', '60%'],
+                 'correcta': 'B'},
                 {'pregunta': 'El litoral peruano se extiende desde Boca de '
                              'Capones hasta:',
-                 'alternativas': ['Paracas',
-                                  'Ilo',
+                 'alternativas': ['Ilo',
+                                  'El hito La Concordia',
+                                  'Paracas',
                                   'Tumbes',
-                                  'Tacna',
-                                  'El hito La Concordia'],
-                 'correcta': 'E'},
+                                  'Tacna'],
+                 'correcta': 'B'},
                 {'pregunta': 'La longitud del litoral peruano es '
                              'aproximadamente de:',
                  'alternativas': ['10 000 km',
-                                  '5 000 km',
                                   '1 000 km',
                                   '500 km',
-                                  '3 080 km'],
-                 'correcta': 'E'},
+                                  '3 080 km',
+                                  '5 000 km'],
+                 'correcta': 'D'},
                 {'pregunta': 'El ancho del territorio peruano, de este a '
                              'oeste, es de aproximadamente:',
                  'alternativas': ['3 000 km',
-                                  '500 km',
+                                  '2 135 km',
                                   '800 km',
-                                  '1 640 km',
-                                  '2 135 km'],
-                 'correcta': 'D'},
+                                  '500 km',
+                                  '1 640 km'],
+                 'correcta': 'E'},
                 {'pregunta': 'Son características morfológicas de la región '
                              'andina: (I CEPRU 2024)',
                  'alternativas': ['Pampas, manantes y valles transversales',
-                                  'Altiplanos, desiertos y acantilados',
-                                  'Valles interandinos, mesetas y altiplanos',
+                                  'Mesetas, ríos y picos',
                                   'Andenes, quebradas y lagos',
-                                  'Mesetas, ríos y picos'],
-                 'correcta': 'C'},
+                                  'Valles interandinos, mesetas y altiplanos',
+                                  'Altiplanos, desiertos y acantilados'],
+                 'correcta': 'D'},
                 {'pregunta': 'El piso altitudinal que se desarrolla por '
                              'encima de los 4600 m.s.n.m., con temperatura '
                              'media anual menor a 3°C, es: (II CEPRU 2022)',
-                 'alternativas': ["Rit'i",
-                                  'Puna baja',
+                 'alternativas': ['Qheswa',
                                   'Puna alta',
-                                  'Qheswa',
-                                  'Yunka'],
-                 'correcta': 'A'},
+                                  'Yunka',
+                                  "Rit'i",
+                                  'Puna baja'],
+                 'correcta': 'D'},
                 {'pregunta': 'Es una característica de la vertiente o '
                              'llamada oriental de la Región Andina: (Primera '
                              'Oportunidad UNSAAC 2024)',
-                 'alternativas': ['Escasa precipitación',
+                 'alternativas': ['Árido',
+                                  'Abundante vegetación',
                                   'Ríos de corto recorrido',
-                                  'Árido',
-                                  'Escasa vegetación',
-                                  'Abundante vegetación'],
-                 'correcta': 'E'},
+                                  'Escasa precipitación',
+                                  'Escasa vegetación'],
+                 'correcta': 'B'},
                 {'pregunta': 'La ciudad de Yauri, ubicada a 3915 m.s.n.m., '
                              'pertenece al piso climático: (Primera '
                              'Oportunidad UNSAAC 2021)',
-                 'alternativas': ['Qheswa baja',
-                                  'Qheswa alta',
+                 'alternativas': ['Puna alta',
+                                  'Qheswa baja',
                                   'Puna baja',
-                                  'Transición',
-                                  'Puna alta'],
-                 'correcta': 'C'}],
+                                  'Qheswa alta',
+                                  'Transición'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los Andes Peruanos se dividen tradicionalmente '
+                             'en un número de sectores igual a:',
+                 'alternativas': ['Dos', 'Seis', 'Cinco', 'Tres', 'Cuatro'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los sectores de los Andes Peruanos están '
+                             'separados por los nudos o divisorias fluviales '
+                             'de Vilcanota y:',
+                 'alternativas': ['Anticona',
+                                  'Porculla',
+                                  'Pasco',
+                                  'Huaytapallana',
+                                  'Apurímac'],
+                 'correcta': 'C'},
+                {'pregunta': 'A diferencia de los Andes del Norte y del '
+                             'Centro, los Andes del Sur presentan únicamente '
+                             'Cordillera Occidental y:',
+                 'alternativas': ['Central',
+                                  'Marginal',
+                                  'Interior',
+                                  'Costera',
+                                  'Oriental'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los Andes constituyen la cordillera más larga '
+                             'del mundo, con una longitud aproximada de:',
+                 'alternativas': ['6500 km',
+                                  '5000 km',
+                                  '3000 km',
+                                  '9000 km',
+                                  '7240 km'],
+                 'correcta': 'E'},
+                {'pregunta': 'La cordillera más alta de la zona tropical es '
+                             'la:',
+                 'alternativas': ['Vilcanota',
+                                  'Huayhuash',
+                                  'Vilcabamba',
+                                  'Carabaya',
+                                  'Blanca'],
+                 'correcta': 'E'},
+                {'pregunta': 'El nevado más alto de la zona tropical del '
+                             'mundo es el:',
+                 'alternativas': ['Salkantay',
+                                  'Ampato',
+                                  'Huascarán',
+                                  'Misti',
+                                  'Coropuna'],
+                 'correcta': 'C'},
+                {'pregunta': 'El volcán más alto del Perú, ubicado en '
+                             'Arequipa, es el:',
+                 'alternativas': ['Misti',
+                                  'Ubinas',
+                                  'Coropuna',
+                                  'Sabancaya',
+                                  'Ampato'],
+                 'correcta': 'C'},
+                {'pregunta': 'El cañón más profundo del mundo, ubicado en '
+                             'Arequipa, es el:',
+                 'alternativas': ['Pato',
+                                  'Machupicchu',
+                                  'Colca',
+                                  'Apurímac',
+                                  'Cotahuasi'],
+                 'correcta': 'E'},
+                {'pregunta': 'El pongo más largo del Perú es el de:',
+                 'alternativas': ['Manseriche',
+                                  'Aguirre',
+                                  'Mainique',
+                                  'Boquerón del Padre Abad',
+                                  'Retama'],
+                 'correcta': 'A'},
+                {'pregunta': 'El paso o abra más bajo del Perú, ubicado en '
+                             'Piura, es:',
+                 'alternativas': ['Crucero Alto',
+                                  'Ticlio',
+                                  'Porculla',
+                                  'Anticona',
+                                  'La Raya'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las masas de hielo que se forman en las partes '
+                             'altas de las montañas por acumulación y '
+                             'recristalización de la nieve se llaman:',
+                 'alternativas': ['Casquetes',
+                                  'Glaciares',
+                                  'Nevados',
+                                  'Neviza',
+                                  'Morrenas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La parte de un glaciar ubicada en la zona '
+                             'alta, donde la nieve se transforma en neviza y '
+                             'luego en hielo, se llama zona de:',
+                 'alternativas': ['Acumulación',
+                                  'Ablación',
+                                  'Fusión',
+                                  'Compactación',
+                                  'Equilibrio'],
+                 'correcta': 'A'},
+                {'pregunta': 'La parte de un glaciar ubicada en la zona '
+                             'baja, donde el hielo se derrite, se llama zona '
+                             'de:',
+                 'alternativas': ['Neviza',
+                                  'Equilibrio',
+                                  'Acumulación',
+                                  'Ablación',
+                                  'Compactación'],
+                 'correcta': 'D'},
+                {'pregunta': 'La línea que separa la zona de acumulación de '
+                             'la zona de ablación de un glaciar se llama '
+                             'línea de:',
+                 'alternativas': ['Nieve',
+                                  'Compactación',
+                                  'Equilibrio',
+                                  'Deshielo',
+                                  'Fusión'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los materiales transportados y depositados por '
+                             'un glaciar (rocas, lodo) se llaman:',
+                 'alternativas': ['Aluviones',
+                                  'Neviza',
+                                  'Conos',
+                                  'Morrenas',
+                                  'Sedimentos fluviales'],
+                 'correcta': 'D'},
+                {'pregunta': 'El glaciar más extenso de toda la zona '
+                             'tropical del mundo, ubicado entre Cusco y '
+                             'Puno, es el:',
+                 'alternativas': ['Coropuna',
+                                  'Salkantay',
+                                  'Ausangate',
+                                  'Ampay',
+                                  'Qelccaya'],
+                 'correcta': 'E'},
+                {'pregunta': 'La cordillera con mayor superficie glaciar del '
+                             'Perú es la:',
+                 'alternativas': ['Vilcabamba',
+                                  'Blanca',
+                                  'Ampato',
+                                  'Vilcanota',
+                                  'Huayhuash'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y DIMENSIONES DEL PERÚ',
                       'items': ['El territorio peruano se ubica en la parte '
                                 'occidental y central de Sudamérica, en la '
@@ -2714,26 +3079,71 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'área continental del Perú.',
                                 'La región Andina representa el 30,2% del '
                                 'área continental del Perú.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El territorio peruano se ubica en la zona '
-                                'Tórrida.',
-                                'El Perú es considerado el país de América '
-                                'del Sur con extensión La tercera mayor.',
-                                'El punto más alto del Perú es el nevado '
-                                'Huascarán.',
-                                'El punto más bajo del territorio peruano es '
-                                'La Depresión de Bayovar.',
-                                'El lugar más lluvioso del Perú es Quince '
-                                'Mil.',
-                                'El lugar más caluroso del Perú es Neshuya.',
-                                'El lugar más frío del Perú es Imata.',
-                                'La frontera más extensa del Perú es con '
-                                'Brasil.',
-                                'La frontera más corta del Perú es con '
-                                'Chile.',
-                                'El perímetro total del Perú, incluido el '
-                                'litoral, es aproximadamente de 10 156,8 '
-                                'km.']}]},
+                     {'titulo': 'SECTORES DE LOS ANDES PERUANOS',
+                      'items': ['Los Andes Peruanos se dividen '
+                                'tradicionalmente en tres sectores, '
+                                'separados por los nudos o divisorias '
+                                'fluviales de Pasco y Vilcanota.',
+                                'Los Andes del Norte presentan Cordillera '
+                                'Occidental, Central y Oriental.',
+                                'Los Andes del Centro presentan Cordillera '
+                                'Occidental, Central y Oriental.',
+                                'Los Andes del Sur presentan Cordillera '
+                                'Occidental y Oriental (sin Central).',
+                                'El nudo de Pasco separa los Andes del Norte '
+                                'de los Andes del Centro; el nudo de '
+                                'Vilcanota separa los Andes del Centro de '
+                                'los del Sur.']},
+                     {'titulo': 'DATOS SUPERLATIVOS DE LA REGIÓN ANDINA',
+                      'items': ['Los Andes constituyen la cordillera más '
+                                'larga del mundo, con 7240 km.',
+                                'La Cordillera Blanca es la cordillera más '
+                                'alta de la zona tropical.',
+                                'El nevado más alto de la zona tropical es '
+                                'el Huascarán, con 6746 m.',
+                                'El volcán más alto del Perú es el Coropuna, '
+                                'en Arequipa, con 6426 m; el volcán más '
+                                'hermoso es el Misti.',
+                                'El cañón más profundo del mundo es el '
+                                'Cotahuasi, en Arequipa, con 3535 m de '
+                                'profundidad.',
+                                'El pongo más largo es el de Manseriche; el '
+                                'paso o abra más bajo es Porculla, en '
+                                'Piura.']},
+                     {'titulo': 'LOS GLACIARES: CONCEPTO Y PARTES',
+                      'items': ['Los glaciares son masas de hielo que se '
+                                'forman en las partes altas de las montañas '
+                                'y casquetes polares, por acumulación, '
+                                'compactación y recristalización de la '
+                                'nieve.',
+                                'La zona de acumulación se ubica en la parte '
+                                'alta del glaciar, donde la nieve se '
+                                'transforma en neviza y luego en hielo.',
+                                'La zona de ablación se ubica en la parte '
+                                'baja del glaciar; es la zona donde el hielo '
+                                'se derrite.',
+                                'La línea de equilibrio separa la zona de '
+                                'acumulación de la zona de ablación.',
+                                'Los materiales transportados y depositados '
+                                'por el glaciar (rocas, lodo) se llaman '
+                                'morrenas.']},
+                     {'titulo': 'EL GLACIAR QELCCAYA Y RANKING DE GLACIARES',
+                      'items': ['El glaciar Qelccaya se ubica en la '
+                                'cordillera de Vilcanota, entre Canchis '
+                                '(Cusco) y Melgar (Puno); es el glaciar más '
+                                'extenso de la zona tropical del mundo.',
+                                'El glaciar Qelccaya tiene 18 km de largo, '
+                                '2,5 km de ancho, una superficie de 44 km² y '
+                                'una capa de hielo de más de 200 m de '
+                                'espesor.',
+                                'Las cordilleras con mayor superficie '
+                                'glaciar del Perú son: Blanca (448 km²), '
+                                'Vilcanota (255 km²), Vilcabamba (101 km²), '
+                                'Huayhuash (53 km²) y Ampato (50 km²).',
+                                'Entre las importancias de los glaciares '
+                                'están constituir reservas de agua dulce y '
+                                'mantener el balance hídrico de las '
+                                'cuencas.']}]},
  {'num': 7,
   'titulo': 'Espacio Geográfico Peruano: Región Amazónica y Costa',
   'secciones': [{'titulo': '7.1 LA REGIÓN AMAZÓNICA',
@@ -2788,49 +3198,46 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'Entre la cadena costanera y las vertientes '
                            'andinas se desarrolla la plataforma costanera '
                            'desértica, con planicies llamadas {pampas}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La región geográfica más extensa del Perú es {La '
-                           'Amazónica o Selva}.',
-                           'La región amazónica representa del territorio '
-                           'nacional aproximadamente {57,3%}.',
-                           'La selva alta también se conoce como {Rupa Rupa '
-                           'o Ceja de Selva}.',
-                           'El relieve de la selva alta está afectado por '
-                           '{La Tectónica Andina}.',
-                           'Los cortes fluviales donde un río corta una '
-                           'cadena de montañas se llaman {Pongos}.',
-                           'El Pongo de Mainique fue formado por el río '
-                           '{Urubamba}.',
-                           'La selva baja también se llama {Omagua o Llanura '
-                           'Amazónica}.',
-                           'La selva baja no es afectada por la tectónica '
-                           'andina porque se asienta sobre {El antiguo '
-                           'Cratón Brasileño}.',
-                           'Los lagos abandonados por los ríos que cambiaron '
-                           'de cauce se llaman {Qochas}.',
-                           'Las áreas bajas cubiertas de agua todo el año, '
-                           'con palmeras de aguaje, se llaman {Tahuampas o '
-                           'aguajales}.',
-                           'Las áreas que solo se inundan en las crecidas de '
-                           'los ríos se llaman {Restingas}.',
-                           'Las ciudades de la selva baja se han edificado '
-                           'principalmente en {Los altos}.',
-                           'La región Costa representa del territorio '
-                           'nacional aproximadamente {12,5%}.',
-                           'La región Costa se extiende desde el nivel del '
-                           'mar hasta una altitud de {1000 m}.',
-                           'La Costa Sur o Meridional se extiende entre la '
-                           'frontera con Chile y {La península de Paracas}.',
-                           'La Cadena Costanera alcanza su mayor altitud en '
-                           '{El cerro Criterión, Ica}.',
-                           'Las planicies de origen aluvial en la costa sur '
-                           'se llaman {Pampas}.',
-                           'Los valles de Jaén y Bagua se ubican en la '
-                           'subregión de {Selva alta}.',
-                           'El valle de Chanchamayo pertenece al '
-                           'departamento de {Junín}.',
-                           'El Boquerón del Padre Abad fue formado por el '
-                           'río {Yuracyacu}.']}],
+                {'titulo': '7.5 FORMAS DE RELIEVE DE LA COSTA',
+                 'items': ['Las {estribaciones andinas} son pequeñas cadenas '
+                           'de montañas desprendidas de la Cordillera '
+                           'Occidental; algunas forman {acantilados} al '
+                           'llegar al mar.',
+                           'La {Cordillera Costanera} es una cadena '
+                           'montañosa de hasta 1000 m de altitud que se '
+                           'extiende de forma discontinua a lo largo de la '
+                           '{costa}; sus testimonios actuales son las islas.',
+                           'Los {valles} de la costa son transversales y '
+                           'jóvenes, formados por ríos que descienden de la '
+                           'Cordillera Occidental: Piura y Chira (Piura), '
+                           'Rímac y Chillón (Lima).',
+                           'Las {pampas} son áreas interfluviales entre los '
+                           'valles, formadas por depósitos aluviales; tienen '
+                           'suelos excelentes para la {agricultura}: Pampa '
+                           'de Olmos, Cañete.',
+                           'Los {desiertos} son áreas de gran extensión '
+                           'cubiertas de arena, con ausencia de vegetación y '
+                           'precipitaciones: {Sechura} en Piura, Ica en '
+                           'Ica.']},
+                {'titulo': '7.6 EL LITORAL PERUANO',
+                 'items': ['El {litoral} es la faja longitudinal o zona de '
+                           'contacto entre el mar y la costa, entre el nivel '
+                           'de {pleamar} y bajamar.',
+                           'Las {penínsulas} son porciones de tierra que '
+                           'ingresan al mar, unidas al continente por un '
+                           '{istmo}: Paracas (Ica), Illescas (Piura).',
+                           'Las {puntas} son porciones de tierra estrechas '
+                           'que ingresan al mar: La Punta en el {Callao}, '
+                           'Lobos en Arequipa.',
+                           'Los {cabos} son porciones de tierra abultadas o '
+                           'redondeadas que avanzan hacia el mar: Cabo '
+                           '{Blanco} en Piura.',
+                           'Las {bahías} son entrantes de mar en el '
+                           'continente: Paita (Piura), Chimbote (Áncash), '
+                           '{Paracas} (Ica).',
+                           'Las {islas} son porciones de tierra en medio del '
+                           'mar; albergan aves guaneras: San Lorenzo, '
+                           'Ballestas, {Pachacámac}.']}],
   'cuadros': [{'titulo': '7.2 PONGOS DE LA SELVA ALTA',
                'encabezados': ['Pongo', 'Río', 'Departamento'],
                'filas': [['{Manseriche}', 'Marañón', '{Amazonas}'],
@@ -2838,16 +3245,16 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Aguirre}', 'Huallaga', 'San Martín'],
                          ['Del {Tambo}', 'Tambo', 'Junín']]}],
   'preguntas': [{'pregunta': 'La región geográfica más extensa del Perú es:',
-                 'alternativas': ['La Andina',
-                                  'La Costa',
-                                  'Ninguna en particular',
+                 'alternativas': ['La Amazónica o Selva',
                                   'El litoral',
-                                  'La Amazónica o Selva'],
-                 'correcta': 'E'},
+                                  'La Andina',
+                                  'Ninguna en particular',
+                                  'La Costa'],
+                 'correcta': 'A'},
                 {'pregunta': 'La región amazónica representa del territorio '
                              'nacional aproximadamente:',
-                 'alternativas': ['30,2%', '12,5%', '90%', '57,3%', '10%'],
-                 'correcta': 'D'},
+                 'alternativas': ['10%', '12,5%', '57,3%', '90%', '30,2%'],
+                 'correcta': 'C'},
                 {'pregunta': 'La selva alta también se conoce como:',
                  'alternativas': ['Omagua',
                                   'Rupa Rupa o Ceja de Selva',
@@ -2856,178 +3263,264 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                   'Selva Baja'],
                  'correcta': 'B'},
                 {'pregunta': 'El relieve de la selva alta está afectado por:',
-                 'alternativas': ['La sedimentación marina',
+                 'alternativas': ['El clima ecuatorial',
+                                  'Solo la erosión eólica',
                                   'El Cratón Brasileño',
                                   'La Tectónica Andina',
-                                  'Solo la erosión eólica',
-                                  'El clima ecuatorial'],
-                 'correcta': 'C'},
+                                  'La sedimentación marina'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los cortes fluviales donde un río corta una '
                              'cadena de montañas se llaman:',
-                 'alternativas': ['Pongos',
+                 'alternativas': ['Restingas',
+                                  'Tahuampas',
                                   'Altos',
-                                  'Restingas',
                                   'Qochas',
-                                  'Tahuampas'],
-                 'correcta': 'A'},
+                                  'Pongos'],
+                 'correcta': 'E'},
                 {'pregunta': 'El Pongo de Mainique fue formado por el río:',
                  'alternativas': ['Inambari',
                                   'Tambo',
-                                  'Huallaga',
                                   'Urubamba',
+                                  'Huallaga',
                                   'Marañón'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'La selva baja también se llama:',
-                 'alternativas': ['Ceja de Selva',
-                                  'Cordillera Oriental',
+                 'alternativas': ['Cordillera Oriental',
+                                  'Omagua o Llanura Amazónica',
                                   'Faja Sub Andina',
-                                  'Rupa Rupa',
-                                  'Omagua o Llanura Amazónica'],
-                 'correcta': 'E'},
+                                  'Ceja de Selva',
+                                  'Rupa Rupa'],
+                 'correcta': 'B'},
                 {'pregunta': 'La selva baja no es afectada por la tectónica '
                              'andina porque se asienta sobre:',
-                 'alternativas': ['La cadena costanera',
-                                  'Los Andes centrales',
+                 'alternativas': ['Los Andes centrales',
+                                  'La Cordillera Oriental',
                                   'El antiguo Cratón Brasileño',
-                                  'La plataforma costanera',
-                                  'La Cordillera Oriental'],
+                                  'La cadena costanera',
+                                  'La plataforma costanera'],
                  'correcta': 'C'},
                 {'pregunta': 'Los lagos abandonados por los ríos que '
                              'cambiaron de cauce se llaman:',
-                 'alternativas': ['Altos',
+                 'alternativas': ['Filos',
                                   'Restingas',
+                                  'Altos',
                                   'Tahuampas',
-                                  'Qochas',
-                                  'Filos'],
-                 'correcta': 'D'},
+                                  'Qochas'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las áreas bajas cubiertas de agua todo el año, '
                              'con palmeras de aguaje, se llaman:',
-                 'alternativas': ['Qochas',
-                                  'Tahuampas o aguajales',
-                                  'Altos',
+                 'alternativas': ['Filos',
                                   'Restingas',
-                                  'Filos'],
-                 'correcta': 'B'},
+                                  'Qochas',
+                                  'Altos',
+                                  'Tahuampas o aguajales'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las áreas que solo se inundan en las crecidas '
                              'de los ríos se llaman:',
-                 'alternativas': ['Qochas',
+                 'alternativas': ['Altos',
+                                  'Qochas',
                                   'Filos',
-                                  'Tahuampas',
                                   'Restingas',
-                                  'Altos'],
+                                  'Tahuampas'],
                  'correcta': 'D'},
                 {'pregunta': 'Las ciudades de la selva baja se han edificado '
                              'principalmente en:',
-                 'alternativas': ['Las restingas',
+                 'alternativas': ['Las qochas',
+                                  'Las tahuampas',
+                                  'Las restingas',
                                   'Los filos',
-                                  'Los altos',
-                                  'Las qochas',
-                                  'Las tahuampas'],
-                 'correcta': 'C'},
+                                  'Los altos'],
+                 'correcta': 'E'},
                 {'pregunta': 'La región Costa representa del territorio '
                              'nacional aproximadamente:',
-                 'alternativas': ['70%', '30,2%', '57,3%', '12,5%', '5%'],
-                 'correcta': 'D'},
+                 'alternativas': ['57,3%', '30,2%', '12,5%', '5%', '70%'],
+                 'correcta': 'C'},
                 {'pregunta': 'La región Costa se extiende desde el nivel del '
                              'mar hasta una altitud de:',
-                 'alternativas': ['1500 m',
-                                  '300 m',
-                                  '500 m',
+                 'alternativas': ['2000 m',
                                   '1000 m',
-                                  '2000 m'],
-                 'correcta': 'D'},
+                                  '300 m',
+                                  '1500 m',
+                                  '500 m'],
+                 'correcta': 'B'},
                 {'pregunta': 'La Costa Sur o Meridional se extiende entre la '
                              'frontera con Chile y:',
-                 'alternativas': ['Trujillo',
+                 'alternativas': ['Tumbes',
+                                  'Trujillo',
+                                  'Lima',
                                   'La península de Paracas',
-                                  'Chiclayo',
-                                  'Tumbes',
-                                  'Lima'],
-                 'correcta': 'B'},
+                                  'Chiclayo'],
+                 'correcta': 'D'},
                 {'pregunta': 'La Cadena Costanera alcanza su mayor altitud '
                              'en:',
-                 'alternativas': ['Arequipa',
-                                  'Tacna',
+                 'alternativas': ['El cerro Criterión, Ica',
+                                  'Piura',
                                   'Lima',
-                                  'El cerro Criterión, Ica',
-                                  'Piura'],
-                 'correcta': 'D'},
+                                  'Arequipa',
+                                  'Tacna'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las planicies de origen aluvial en la costa '
                              'sur se llaman:',
-                 'alternativas': ['Pampas',
+                 'alternativas': ['Tahuampas',
+                                  'Restingas',
                                   'Tablazos',
-                                  'Tahuampas',
-                                  'Aguajales',
-                                  'Restingas'],
-                 'correcta': 'A'},
+                                  'Pampas',
+                                  'Aguajales'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los valles de Jaén y Bagua se ubican en la '
                              'subregión de:',
-                 'alternativas': ['Sierra central',
+                 'alternativas': ['Selva baja',
                                   'Selva alta',
-                                  'Selva baja',
+                                  'Costa norte',
                                   'Costa sur',
-                                  'Costa norte'],
+                                  'Sierra central'],
                  'correcta': 'B'},
                 {'pregunta': 'El valle de Chanchamayo pertenece al '
                              'departamento de:',
-                 'alternativas': ['Puno',
+                 'alternativas': ['San Martín',
                                   'Cusco',
+                                  'Puno',
                                   'Junín',
-                                  'Huánuco',
-                                  'San Martín'],
-                 'correcta': 'C'},
+                                  'Huánuco'],
+                 'correcta': 'D'},
                 {'pregunta': 'El Boquerón del Padre Abad fue formado por el '
                              'río:',
-                 'alternativas': ['Marañón',
-                                  'Yuracyacu',
-                                  'Huallaga',
+                 'alternativas': ['Tambo',
+                                  'Marañón',
                                   'Urubamba',
-                                  'Tambo'],
-                 'correcta': 'B'},
+                                  'Huallaga',
+                                  'Yuracyacu'],
+                 'correcta': 'E'},
                 {'pregunta': 'El desierto de Sechura se localiza en el '
                              'departamento de: (II CEPRU 2025)',
+                 'alternativas': ['Lambayeque',
+                                  'Moquegua',
+                                  'Piura',
+                                  'Ica',
+                                  'Áncash'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los bosques de algarrobos y vegetación de '
+                             'monte ribereño pertenecen a la: (II CEPRU '
+                             '2024)',
+                 'alternativas': ['Sierra sur',
+                                  'Selva norte',
+                                  'Costa sur',
+                                  'Costa central',
+                                  'Costa norte'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la costa peruana, los espacios o áreas '
+                             'interfluviales emplazadas entre los valles se '
+                             'llaman: (II CEPRU 2022)',
+                 'alternativas': ['Pampas',
+                                  'Tablazos',
+                                  'Lomas',
+                                  'Desiertos',
+                                  'Depresiones'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los valles de Tocache y Chanchamayo se '
+                             'encuentran, respectivamente, en los '
+                             'departamentos de: (Primera Oportunidad UNSAAC '
+                             '2025)',
+                 'alternativas': ['San Martín - Junín',
+                                  'Puno - Ucayali',
+                                  'Amazonas - La Libertad',
+                                  'Loreto - Pasco',
+                                  'Junín - Cajamarca'],
+                 'correcta': 'A'},
+                {'pregunta': 'La depresión más importante de la costa '
+                             'peruana es: (Primera Oportunidad UNSAAC 2020)',
+                 'alternativas': ['Otuma',
+                                  'Pariñas',
+                                  'Chilca',
+                                  'Bayóvar',
+                                  'Chivay'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las pequeñas cadenas de montañas desprendidas '
+                             'de la Cordillera Occidental, que algunas veces '
+                             'forman acantilados al llegar al mar, se '
+                             'llaman:',
+                 'alternativas': ['Cabos',
+                                  'Pampas costeras',
+                                  'Estribaciones andinas',
+                                  'Cordillera Costanera',
+                                  'Valles transversales'],
+                 'correcta': 'C'},
+                {'pregunta': 'La cadena montañosa de hasta 1000 m de altitud '
+                             'que se extiende de forma discontinua a lo '
+                             'largo de la costa peruana se llama:',
+                 'alternativas': ['Cordillera Occidental',
+                                  'Meseta costera',
+                                  'Cordillera Costanera',
+                                  'Estribaciones andinas',
+                                  'Cadena litoral'],
+                 'correcta': 'C'},
+                {'pregunta': 'Los valles de la costa peruana se caracterizan '
+                             'por ser transversales y:',
+                 'alternativas': ['Endorreicos',
+                                  'Antiguos',
+                                  'Jóvenes',
+                                  'Glaciares',
+                                  'Longitudinales'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las áreas interfluviales entre los valles de '
+                             'la costa, con suelos excelentes para la '
+                             'agricultura, se llaman:',
+                 'alternativas': ['Pampas',
+                                  'Tablazos',
+                                  'Desiertos',
+                                  'Cabos',
+                                  'Estribaciones'],
+                 'correcta': 'A'},
+                {'pregunta': 'El desierto de Sechura se localiza en el '
+                             'departamento de:',
                  'alternativas': ['Lambayeque',
                                   'Moquegua',
                                   'Áncash',
                                   'Piura',
                                   'Ica'],
                  'correcta': 'D'},
-                {'pregunta': 'Los bosques de algarrobos y vegetación de '
-                             'monte ribereño pertenecen a la: (II CEPRU '
-                             '2024)',
-                 'alternativas': ['Costa sur',
-                                  'Sierra sur',
-                                  'Costa central',
-                                  'Costa norte',
-                                  'Selva norte'],
-                 'correcta': 'D'},
-                {'pregunta': 'En la costa peruana, los espacios o áreas '
-                             'interfluviales emplazadas entre los valles se '
-                             'llaman: (II CEPRU 2022)',
-                 'alternativas': ['Tablazos',
-                                  'Desiertos',
-                                  'Depresiones',
-                                  'Lomas',
-                                  'Pampas'],
+                {'pregunta': 'La faja longitudinal o zona de contacto entre '
+                             'el mar y la costa, entre el nivel de pleamar y '
+                             'bajamar, se llama:',
+                 'alternativas': ['Litoral',
+                                  'Plataforma continental',
+                                  'Estuario',
+                                  'Zócalo continental',
+                                  'Delta'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las porciones de tierra que ingresan al mar y '
+                             'se unen al continente por un istmo se llaman:',
+                 'alternativas': ['Penínsulas',
+                                  'Puntas',
+                                  'Cabos',
+                                  'Islas',
+                                  'Bahías'],
+                 'correcta': 'A'},
+                {'pregunta': 'Las porciones de tierra estrechas que ingresan '
+                             'al mar, como La Punta en el Callao, se llaman:',
+                 'alternativas': ['Cabos',
+                                  'Golfos',
+                                  'Puntas',
+                                  'Bahías',
+                                  'Penínsulas'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las porciones de tierra abultadas o '
+                             'redondeadas que avanzan hacia el mar, como el '
+                             'Cabo Blanco en Piura, se llaman:',
+                 'alternativas': ['Islas',
+                                  'Puntas',
+                                  'Penínsulas',
+                                  'Bahías',
+                                  'Cabos'],
                  'correcta': 'E'},
-                {'pregunta': 'Los valles de Tocache y Chanchamayo se '
-                             'encuentran, respectivamente, en los '
-                             'departamentos de: (Primera Oportunidad UNSAAC '
-                             '2025)',
-                 'alternativas': ['Loreto - Pasco',
-                                  'San Martín - Junín',
-                                  'Amazonas - La Libertad',
-                                  'Junín - Cajamarca',
-                                  'Puno - Ucayali'],
-                 'correcta': 'B'},
-                {'pregunta': 'La depresión más importante de la costa '
-                             'peruana es: (Primera Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Bayóvar',
-                                  'Chilca',
-                                  'Chivay',
-                                  'Otuma',
-                                  'Pariñas'],
-                 'correcta': 'A'}],
+                {'pregunta': 'Los entrantes de mar en el continente, como '
+                             'Paracas en Ica, se llaman:',
+                 'alternativas': ['Puntas',
+                                  'Cabos',
+                                  'Estrechos',
+                                  'Bahías',
+                                  'Penínsulas'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA REGIÓN AMAZÓNICA',
                       'items': ['La región amazónica o selva es la región '
                                 'geográfica más extensa del Perú, '
@@ -3084,29 +3577,47 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'andinas se desarrolla la plataforma '
                                 'costanera desértica, con planicies llamadas '
                                 'pampas.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['La región geográfica más extensa del Perú '
-                                'es La Amazónica o Selva.',
-                                'La región amazónica representa del '
-                                'territorio nacional aproximadamente 57,3%.',
-                                'La selva alta también se conoce como Rupa '
-                                'Rupa o Ceja de Selva.',
-                                'El relieve de la selva alta está afectado '
-                                'por La Tectónica Andina.',
-                                'Los cortes fluviales donde un río corta una '
-                                'cadena de montañas se llaman Pongos.',
-                                'El Pongo de Mainique fue formado por el río '
-                                'Urubamba.',
-                                'La selva baja también se llama Omagua o '
-                                'Llanura Amazónica.',
-                                'La selva baja no es afectada por la '
-                                'tectónica andina porque se asienta sobre El '
-                                'antiguo Cratón Brasileño.',
-                                'Los lagos abandonados por los ríos que '
-                                'cambiaron de cauce se llaman Qochas.',
-                                'Las áreas bajas cubiertas de agua todo el '
-                                'año, con palmeras de aguaje, se llaman '
-                                'Tahuampas o aguajales.']}]},
+                     {'titulo': 'FORMAS DE RELIEVE DE LA COSTA',
+                      'items': ['Las estribaciones andinas son pequeñas '
+                                'cadenas de montañas desprendidas de la '
+                                'Cordillera Occidental; algunas forman '
+                                'acantilados al llegar al mar.',
+                                'La Cordillera Costanera es una cadena '
+                                'montañosa de hasta 1000 m de altitud que se '
+                                'extiende de forma discontinua a lo largo de '
+                                'la costa; sus testimonios actuales son las '
+                                'islas.',
+                                'Los valles de la costa son transversales y '
+                                'jóvenes, formados por ríos que descienden '
+                                'de la Cordillera Occidental: Piura y Chira '
+                                '(Piura), Rímac y Chillón (Lima).',
+                                'Las pampas son áreas interfluviales entre '
+                                'los valles, formadas por depósitos '
+                                'aluviales; tienen suelos excelentes para la '
+                                'agricultura: Pampa de Olmos, Cañete.',
+                                'Los desiertos son áreas de gran extensión '
+                                'cubiertas de arena, con ausencia de '
+                                'vegetación y precipitaciones: Sechura en '
+                                'Piura, Ica en Ica.']},
+                     {'titulo': 'EL LITORAL PERUANO',
+                      'items': ['El litoral es la faja longitudinal o zona '
+                                'de contacto entre el mar y la costa, entre '
+                                'el nivel de pleamar y bajamar.',
+                                'Las penínsulas son porciones de tierra que '
+                                'ingresan al mar, unidas al continente por '
+                                'un istmo: Paracas (Ica), Illescas (Piura).',
+                                'Las puntas son porciones de tierra '
+                                'estrechas que ingresan al mar: La Punta en '
+                                'el Callao, Lobos en Arequipa.',
+                                'Los cabos son porciones de tierra abultadas '
+                                'o redondeadas que avanzan hacia el mar: '
+                                'Cabo Blanco en Piura.',
+                                'Las bahías son entrantes de mar en el '
+                                'continente: Paita (Piura), Chimbote '
+                                '(Áncash), Paracas (Ica).',
+                                'Las islas son porciones de tierra en medio '
+                                'del mar; albergan aves guaneras: San '
+                                'Lorenzo, Ballestas, Pachacámac.']}]},
  {'num': 8,
   'titulo': 'Hidrografía del Perú: Ríos y Lagos',
   'secciones': [{'titulo': '8.1 CARACTERÍSTICAS DE LOS RÍOS',
@@ -3155,46 +3666,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                  'items': ['El río más extenso del Perú es el {Ucayali}, con '
                            '1771 km.',
                            'El segundo río más extenso del Perú es el '
-                           '{Marañón}, con 1414 km.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El volumen de agua que transporta un río se '
-                           'denomina {Caudal}.',
-                           'Cuando un río arrastra la mínima cantidad de '
-                           'agua, se le llama {Estiaje}.',
-                           'El canal o lecho por donde se desplazan las '
-                           'aguas del río se llama {Cauce}.',
-                           'La línea que une los puntos más profundos del '
-                           'canal fluvial es {El talweg o vaguada}.',
-                           'Los ríos que salen de otro río o de un lago se '
-                           'denominan {Efluentes}.',
-                           'La ANA ha identificado en el Perú un total de '
-                           'unidades hidrográficas de {159}.',
-                           'La cuenca del Amazonas representa del territorio '
-                           'nacional {74,5%}.',
-                           'La cuenca hidrográfica más extensa del Perú, de '
-                           'América y del mundo es la del {Amazonas}.',
-                           'La cuenca del Titicaca representa del territorio '
-                           'nacional {3,8%}.',
-                           'El lago Titicaca es reconocido mundialmente por '
-                           'ser el lago {Navegable más alto del mundo}.',
-                           'El lago Titicaca se ubica a una altitud '
-                           'aproximada de {3 810 m}.',
-                           'El origen geológico del lago Titicaca es '
-                           '{Tectónico}.',
-                           'El lago Titicaca se divide en dos sectores '
-                           'separados por el Estrecho de {Tiquina}.',
-                           'El sector del Titicaca correspondiente al Perú '
-                           'se llama lago Mayor o {Chucuito}.',
-                           'El único río efluente del lago Titicaca es el '
-                           'río {Desaguadero}.',
-                           'El río Desaguadero desemboca finalmente en el '
-                           'lago {Poopó}.',
-                           'El río más extenso del Perú es el {Ucayali}.',
-                           'El segundo río más extenso del Perú es el '
-                           '{Marañón}.',
-                           'El río Ramis, principal afluente del Titicaca, '
-                           'tiene una longitud de {304 km}.',
-                           'El río Rímac nace en el nevado de {Tíclio}.']}],
+                           '{Marañón}, con 1414 km.']}],
   'cuadros': [{'titulo': '8.4 LOS RÍOS MÁS EXTENSOS DEL PERÚ',
                'encabezados': ['Río', 'Longitud'],
                'filas': [['{Ucayali}', '1771 km'],
@@ -3204,195 +3676,195 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['Huallaga', '1138 km']]}],
   'preguntas': [{'pregunta': 'El volumen de agua que transporta un río se '
                              'denomina:',
-                 'alternativas': ['Curso',
-                                  'Talweg',
+                 'alternativas': ['Caudal',
+                                  'Curso',
                                   'Cauce',
-                                  'Régimen',
-                                  'Caudal'],
-                 'correcta': 'E'},
+                                  'Talweg',
+                                  'Régimen'],
+                 'correcta': 'A'},
                 {'pregunta': 'Cuando un río arrastra la mínima cantidad de '
                              'agua, se le llama:',
-                 'alternativas': ['Crecida',
-                                  'Torrente',
+                 'alternativas': ['Estiaje',
+                                  'Crecida',
+                                  'Afluente',
                                   'Cauce',
-                                  'Estiaje',
-                                  'Afluente'],
-                 'correcta': 'D'},
+                                  'Torrente'],
+                 'correcta': 'A'},
                 {'pregunta': 'El canal o lecho por donde se desplazan las '
                              'aguas del río se llama:',
-                 'alternativas': ['Talweg',
-                                  'Régimen',
-                                  'Vertiente',
+                 'alternativas': ['Régimen',
+                                  'Talweg',
+                                  'Cauce',
                                   'Curso',
-                                  'Cauce'],
-                 'correcta': 'E'},
+                                  'Vertiente'],
+                 'correcta': 'C'},
                 {'pregunta': 'La línea que une los puntos más profundos del '
                              'canal fluvial es:',
                  'alternativas': ['El talweg o vaguada',
-                                  'El cauce',
-                                  'El curso',
                                   'La cuenca',
-                                  'El régimen'],
+                                  'El régimen',
+                                  'El curso',
+                                  'El cauce'],
                  'correcta': 'A'},
                 {'pregunta': 'Los ríos que salen de otro río o de un lago se '
                              'denominan:',
                  'alternativas': ['Torrentosos',
-                                  'Efluentes',
-                                  'Confluentes',
+                                  'Afluentes',
                                   'Principales',
-                                  'Afluentes'],
-                 'correcta': 'B'},
+                                  'Efluentes',
+                                  'Confluentes'],
+                 'correcta': 'D'},
                 {'pregunta': 'La ANA ha identificado en el Perú un total de '
                              'unidades hidrográficas de:',
-                 'alternativas': ['99', '159', '59', '359', '259'],
-                 'correcta': 'B'},
+                 'alternativas': ['99', '59', '259', '359', '159'],
+                 'correcta': 'E'},
                 {'pregunta': 'La cuenca del Amazonas representa del '
                              'territorio nacional:',
-                 'alternativas': ['3,8%', '12,5%', '74,5%', '57,3%', '30,2%'],
-                 'correcta': 'C'},
+                 'alternativas': ['12,5%', '74,5%', '3,8%', '57,3%', '30,2%'],
+                 'correcta': 'B'},
                 {'pregunta': 'La cuenca hidrográfica más extensa del Perú, '
                              'de América y del mundo es la del:',
-                 'alternativas': ['Marañón',
-                                  'Ucayali',
-                                  'Amazonas',
+                 'alternativas': ['Amazonas',
                                   'Titicaca',
+                                  'Marañón',
+                                  'Ucayali',
                                   'Pacífico'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'La cuenca del Titicaca representa del '
                              'territorio nacional:',
-                 'alternativas': ['12,5%', '57,3%', '30,2%', '3,8%', '74,5%'],
-                 'correcta': 'D'},
+                 'alternativas': ['57,3%', '3,8%', '30,2%', '12,5%', '74,5%'],
+                 'correcta': 'B'},
                 {'pregunta': 'El lago Titicaca es reconocido mundialmente '
                              'por ser el lago:',
                  'alternativas': ['Más extenso de Sudamérica',
+                                  'Más frío del planeta',
                                   'Con más islas del mundo',
-                                  'Navegable más alto del mundo',
                                   'Más profundo del mundo',
-                                  'Más frío del planeta'],
-                 'correcta': 'C'},
+                                  'Navegable más alto del mundo'],
+                 'correcta': 'E'},
                 {'pregunta': 'El lago Titicaca se ubica a una altitud '
                              'aproximada de:',
-                 'alternativas': ['1 800 m',
-                                  '2 500 m',
+                 'alternativas': ['3 810 m',
                                   '5 000 m',
-                                  '3 810 m',
-                                  '4 500 m'],
-                 'correcta': 'D'},
+                                  '4 500 m',
+                                  '1 800 m',
+                                  '2 500 m'],
+                 'correcta': 'A'},
                 {'pregunta': 'El origen geológico del lago Titicaca es:',
                  'alternativas': ['Kárstico',
+                                  'Tectónico',
                                   'Eólico',
                                   'Volcánico',
-                                  'Glaciar exclusivamente',
-                                  'Tectónico'],
-                 'correcta': 'E'},
+                                  'Glaciar exclusivamente'],
+                 'correcta': 'B'},
                 {'pregunta': 'El lago Titicaca se divide en dos sectores '
                              'separados por el Estrecho de:',
-                 'alternativas': ['Panamá',
-                                  'Bering',
+                 'alternativas': ['Bering',
+                                  'Panamá',
                                   'Tiquina',
-                                  'Magallanes',
-                                  'Gibraltar'],
+                                  'Gibraltar',
+                                  'Magallanes'],
                  'correcta': 'C'},
                 {'pregunta': 'El sector del Titicaca correspondiente al Perú '
                              'se llama lago Mayor o:',
-                 'alternativas': ['Huiñaymarca',
-                                  'Taraco',
-                                  'Poopó',
+                 'alternativas': ['Uros',
                                   'Chucuito',
-                                  'Uros'],
-                 'correcta': 'D'},
+                                  'Huiñaymarca',
+                                  'Taraco',
+                                  'Poopó'],
+                 'correcta': 'B'},
                 {'pregunta': 'El único río efluente del lago Titicaca es el '
                              'río:',
                  'alternativas': ['Ilave',
                                   'Suchez',
-                                  'Ramis',
                                   'Coata',
-                                  'Desaguadero'],
-                 'correcta': 'E'},
+                                  'Desaguadero',
+                                  'Ramis'],
+                 'correcta': 'D'},
                 {'pregunta': 'El río Desaguadero desemboca finalmente en el '
                              'lago:',
                  'alternativas': ['Titicaca',
-                                  'Parinacochas',
                                   'Junín',
                                   'Poopó',
+                                  'Parinacochas',
                                   'Chinchaycocha'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'El río más extenso del Perú es el:',
-                 'alternativas': ['Amazonas',
-                                  'Huallaga',
+                 'alternativas': ['Ucayali',
                                   'Mantaro',
                                   'Marañón',
-                                  'Ucayali'],
-                 'correcta': 'E'},
+                                  'Amazonas',
+                                  'Huallaga'],
+                 'correcta': 'A'},
                 {'pregunta': 'El segundo río más extenso del Perú es el:',
-                 'alternativas': ['Vilcanota',
-                                  'Ucayali',
+                 'alternativas': ['Ucayali',
+                                  'Yavarí',
+                                  'Vilcanota',
                                   'Putumayo',
-                                  'Marañón',
-                                  'Yavarí'],
-                 'correcta': 'D'},
+                                  'Marañón'],
+                 'correcta': 'E'},
                 {'pregunta': 'El río Ramis, principal afluente del Titicaca, '
                              'tiene una longitud de:',
                  'alternativas': ['180 km',
-                                  '304 km',
-                                  '500 km',
                                   '163 km',
+                                  '500 km',
+                                  '304 km',
                                   '250 km'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'El río Rímac nace en el nevado de:',
-                 'alternativas': ['Huascarán',
-                                  'Tíclio',
-                                  'Coropuna',
+                 'alternativas': ['Coropuna',
                                   'Salkantay',
-                                  'Ausangate'],
-                 'correcta': 'B'},
+                                  'Huascarán',
+                                  'Ausangate',
+                                  'Tíclio'],
+                 'correcta': 'E'},
                 {'pregunta': 'La confluencia de los ríos Apurímac y Mantaro '
                              'forman el río: (II CEPRU 2025)',
-                 'alternativas': ['Tambo',
-                                  'Ucayali',
-                                  'Huallaga',
+                 'alternativas': ['Perené',
                                   'Ene',
-                                  'Perené'],
-                 'correcta': 'D'},
+                                  'Huallaga',
+                                  'Tambo',
+                                  'Ucayali'],
+                 'correcta': 'B'},
                 {'pregunta': 'En la llanura amazónica, las Qochas o lagos de '
                              'media luna son originados por la dinámica: '
                              '(Primera Oportunidad UNSAAC 2021)',
-                 'alternativas': ['Forestal',
-                                  'Fluvial',
-                                  'Faunística',
+                 'alternativas': ['Faunística',
+                                  'Mareomotriz',
                                   'Eólica',
-                                  'Mareomotriz'],
-                 'correcta': 'B'},
+                                  'Fluvial',
+                                  'Forestal'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los ríos cuyas nacientes y recorrido se '
                              'encuentran en la vertiente occidental de los '
                              'Andes peruanos, de régimen irregular y con '
                              'dirección de este a oeste, corresponden a la '
                              'región hidrográfica del: (Primera Oportunidad '
                              'UNSAAC 2021)',
-                 'alternativas': ['Ucayali',
+                 'alternativas': ['Pacífico',
+                                  'Ucayali',
                                   'Alto Madre de Dios',
                                   'Titicaca',
-                                  'Pacífico',
                                   'Amazonas'],
-                 'correcta': 'D'},
+                 'correcta': 'A'},
                 {'pregunta': 'El río de la cuenca del Pacífico que erosiona '
                              'el Cañón del Pato es el río: (Primera '
                              'Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Rímac',
+                 'alternativas': ['Tumbes',
+                                  'Rímac',
                                   'Virú',
-                                  'Tumbes',
-                                  'Santa',
-                                  'Chira'],
-                 'correcta': 'D'},
+                                  'Chira',
+                                  'Santa'],
+                 'correcta': 'E'},
                 {'pregunta': 'El río Amazonas se forma en la localidad de '
                              'Nauta a partir de la confluencia de los ríos: '
                              '(Primera Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Tambo y Urubamba',
-                                  'Palcazu y Piches',
-                                  'Mantaro y Apurímac',
+                 'alternativas': ['Ene y Perené',
                                   'Marañón y Ucayali',
-                                  'Ene y Perené'],
-                 'correcta': 'D'}],
+                                  'Palcazu y Piches',
+                                  'Tambo y Urubamba',
+                                  'Mantaro y Apurímac'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CARACTERÍSTICAS DE LOS RÍOS',
                       'items': ['El curso de un río es la distancia entre su '
                                 'origen y desembocadura, y comprende tres '
@@ -3443,30 +3915,7 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                       'items': ['El río más extenso del Perú es el Ucayali, '
                                 'con 1771 km.',
                                 'El segundo río más extenso del Perú es el '
-                                'Marañón, con 1414 km.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El volumen de agua que transporta un río se '
-                                'denomina Caudal.',
-                                'Cuando un río arrastra la mínima cantidad '
-                                'de agua, se le llama Estiaje.',
-                                'El canal o lecho por donde se desplazan las '
-                                'aguas del río se llama Cauce.',
-                                'La línea que une los puntos más profundos '
-                                'del canal fluvial es El talweg o vaguada.',
-                                'Los ríos que salen de otro río o de un lago '
-                                'se denominan Efluentes.',
-                                'La ANA ha identificado en el Perú un total '
-                                'de unidades hidrográficas de 159.',
-                                'La cuenca del Amazonas representa del '
-                                'territorio nacional 74,5%.',
-                                'La cuenca hidrográfica más extensa del '
-                                'Perú, de América y del mundo es la del '
-                                'Amazonas.',
-                                'La cuenca del Titicaca representa del '
-                                'territorio nacional 3,8%.',
-                                'El lago Titicaca es reconocido mundialmente '
-                                'por ser el lago Navegable más alto del '
-                                'mundo.']}]},
+                                'Marañón, con 1414 km.']}]},
  {'num': 9,
   'titulo': 'Hidrografía del Perú: Mar Peruano',
   'secciones': [{'titulo': '9.1 EL MAR PERUANO',
@@ -3515,49 +3964,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'subducción de la Placa de {Nasca}.',
                            'La Dorsal de {Nasca} es una cordillera submarina '
                            'volcánica ubicada a 150 km de la costa de Ica.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El mar peruano se extiende, en distancia, hasta '
-                           '{200 millas}.',
-                           'La extensión del mar peruano representa del '
-                           'territorio peruano aproximadamente {90%}.',
-                           'Tras el fallo de la Corte de La Haya, el Perú '
-                           'obtuvo adicionalmente {50 284 km²}.',
-                           'El mar peruano se distingue de otros por la '
-                           'presencia de {La Corriente Peruana y la frialdad '
-                           'de sus aguas}.',
-                           'La doctrina de las 200 millas fue proclamada por '
-                           'Perú junto con Ecuador y {Chile}.',
-                           'La tesis de las 200 millas se declaró mediante '
-                           'el D.S. N° 781 en el gobierno de {José '
-                           'Bustamante y Rivero}.',
-                           'La tesis de las 200 millas se proclamó en el año '
-                           '{1947}.',
-                           'La región norte del mar peruano se extiende '
-                           'desde la Península de Illescas hasta {Boca de '
-                           'Capones}.',
-                           'El color del mar en la región norte se debe '
-                           'principalmente a {La descarga de los ríos}.',
-                           'La temperatura promedio del mar en la región '
-                           'central y sur es de {18°C}.',
-                           'El color verdoso del mar en la región central y '
-                           'sur se debe a {El plancton y las algas}.',
-                           'El fenómeno del afloramiento consiste en {El '
-                           'ascenso de aguas frías hacia la superficie}.',
-                           'La plataforma o zócalo continental llega hasta '
-                           'la isóbata de {200 m}.',
-                           'El talud continental se extiende entre las '
-                           'isóbatas de {200 a 5000 m}.',
-                           'Las fosas marinas se producen por {La subducción '
-                           'de la Placa de Nasca}.',
-                           'La Dorsal de Nasca es {Una cordillera submarina '
-                           'volcánica}.',
-                           'La Dorsal de Nasca se ubica aproximadamente a '
-                           'qué distancia de la costa de Ica {150 km}.',
-                           'El fundamento geológico de la Tesis de las 200 '
-                           'millas se refiere a {La continuidad del zócalo '
-                           'continental}.',
-                           'La salinidad del mar en la región norte es de '
-                           'aproximadamente {34 gr/l}.']}],
+                {'titulo': '9.5 AGUAS SUBTERRÁNEAS',
+                 'items': ['Las {aguas subterráneas} se encuentran debajo de '
+                           'la superficie, infiltradas a través de rocas '
+                           '{permeables}.',
+                           'El agua que se acumula en el subsuelo, al '
+                           'encontrar una roca {impermeable}, se conoce como '
+                           '{acuífero}.',
+                           'La profundidad a la que se encuentra el agua '
+                           'subterránea al hacer un agujero en el suelo se '
+                           'llama {nivel freático}.',
+                           'El agua subterránea representa unas {veinte} '
+                           'veces más que el total de las aguas '
+                           'superficiales de la Tierra.',
+                           'Del total del agua dulce terrestre, el {21}% es '
+                           'agua subterránea.',
+                           'Las aguas subterráneas son importantes para el '
+                           'sostenimiento de {ríos}, lagos, humedales y '
+                           'otros ecosistemas.']}],
   'cuadros': [{'titulo': '9.4 RELIEVE SUBMARINO DEL MAR PERUANO',
                'encabezados': ['Elemento', 'Profundidad'],
                'filas': [['{Zócalo} continental', 'Hasta 200 m'],
@@ -3566,204 +3990,245 @@ GEOGRAFIA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'El mar peruano se extiende, en distancia, '
                              'hasta:',
                  'alternativas': ['150 millas',
-                                  '300 millas',
                                   '200 millas',
                                   '100 millas',
+                                  '300 millas',
                                   '50 millas'],
-                 'correcta': 'C'},
+                 'correcta': 'B'},
                 {'pregunta': 'La extensión del mar peruano representa del '
                              'territorio peruano aproximadamente:',
-                 'alternativas': ['70%', '50%', '30%', '20%', '90%'],
+                 'alternativas': ['20%', '30%', '50%', '70%', '90%'],
                  'correcta': 'E'},
                 {'pregunta': 'Tras el fallo de la Corte de La Haya, el Perú '
                              'obtuvo adicionalmente:',
-                 'alternativas': ['500 km²',
+                 'alternativas': ['50 284 km²',
                                   '200 000 km²',
                                   '100 000 km²',
-                                  '50 284 km²',
+                                  '500 km²',
                                   '10 000 km²'],
-                 'correcta': 'D'},
+                 'correcta': 'A'},
                 {'pregunta': 'El mar peruano se distingue de otros por la '
                              'presencia de:',
-                 'alternativas': ['Aguas cálidas todo el año',
-                                  'Ausencia de peces',
-                                  'Aguas dulces',
+                 'alternativas': ['Ausencia de peces',
                                   'La Corriente Peruana y la frialdad de sus '
                                   'aguas',
-                                  'Escasa vida marina'],
-                 'correcta': 'D'},
+                                  'Escasa vida marina',
+                                  'Aguas dulces',
+                                  'Aguas cálidas todo el año'],
+                 'correcta': 'B'},
                 {'pregunta': 'La doctrina de las 200 millas fue proclamada '
                              'por Perú junto con Ecuador y:',
-                 'alternativas': ['Bolivia',
+                 'alternativas': ['Colombia',
                                   'Chile',
-                                  'Argentina',
                                   'Brasil',
-                                  'Colombia'],
+                                  'Argentina',
+                                  'Bolivia'],
                  'correcta': 'B'},
                 {'pregunta': 'La tesis de las 200 millas se declaró mediante '
                              'el D.S. N° 781 en el gobierno de:',
-                 'alternativas': ['José Bustamante y Rivero',
-                                  'Alberto Fujimori',
-                                  'Alan García',
+                 'alternativas': ['Manuel A. Odría',
                                   'Fernando Belaunde',
-                                  'Manuel A. Odría'],
-                 'correcta': 'A'},
+                                  'José Bustamante y Rivero',
+                                  'Alan García',
+                                  'Alberto Fujimori'],
+                 'correcta': 'C'},
                 {'pregunta': 'La tesis de las 200 millas se proclamó en el '
                              'año:',
-                 'alternativas': ['1947', '1993', '1980', '1960', '1930'],
-                 'correcta': 'A'},
+                 'alternativas': ['1980', '1993', '1960', '1930', '1947'],
+                 'correcta': 'E'},
                 {'pregunta': 'Entre los fundamentos de la Tesis de las 200 '
                              'millas NO figura el fundamento:',
-                 'alternativas': ['Geológico',
-                                  'Económico',
-                                  'Estratégico',
+                 'alternativas': ['Biológico',
                                   'Religioso',
-                                  'Biológico'],
-                 'correcta': 'D'},
+                                  'Económico',
+                                  'Geológico',
+                                  'Estratégico'],
+                 'correcta': 'B'},
                 {'pregunta': 'La región norte del mar peruano se extiende '
                              'desde la Península de Illescas hasta:',
-                 'alternativas': ['Paracas',
-                                  'Ica',
-                                  'Trujillo',
+                 'alternativas': ['Tacna',
                                   'Boca de Capones',
-                                  'Tacna'],
-                 'correcta': 'D'},
+                                  'Paracas',
+                                  'Trujillo',
+                                  'Ica'],
+                 'correcta': 'B'},
                 {'pregunta': 'El color del mar en la región norte se debe '
                              'principalmente a:',
                  'alternativas': ['El afloramiento',
+                                  'El plancton',
                                   'La sal',
-                                  'La descarga de los ríos',
                                   'Las algas',
-                                  'El plancton'],
-                 'correcta': 'C'},
+                                  'La descarga de los ríos'],
+                 'correcta': 'E'},
                 {'pregunta': 'La temperatura promedio del mar en la región '
                              'central y sur es de:',
-                 'alternativas': ['5°C', '10°C', '25°C', '30°C', '18°C'],
-                 'correcta': 'E'},
+                 'alternativas': ['25°C', '10°C', '30°C', '18°C', '5°C'],
+                 'correcta': 'D'},
                 {'pregunta': 'El color verdoso del mar en la región central '
                              'y sur se debe a:',
-                 'alternativas': ['El plancton y las algas',
-                                  'La temperatura',
+                 'alternativas': ['La arena',
                                   'Los sedimentos fluviales',
-                                  'La arena',
-                                  'Las corrientes cálidas'],
-                 'correcta': 'A'},
+                                  'La temperatura',
+                                  'Las corrientes cálidas',
+                                  'El plancton y las algas'],
+                 'correcta': 'E'},
                 {'pregunta': 'El fenómeno del afloramiento consiste en:',
-                 'alternativas': ['El derretimiento de glaciares',
-                                  'La formación de olas',
-                                  'El ascenso de aguas frías hacia la '
-                                  'superficie',
+                 'alternativas': ['La formación de olas',
+                                  'El derretimiento de glaciares',
+                                  'La evaporación del mar',
                                   'El hundimiento de aguas cálidas',
-                                  'La evaporación del mar'],
-                 'correcta': 'C'},
+                                  'El ascenso de aguas frías hacia la '
+                                  'superficie'],
+                 'correcta': 'E'},
                 {'pregunta': 'La plataforma o zócalo continental llega hasta '
                              'la isóbata de:',
-                 'alternativas': ['500 m',
-                                  '1000 m',
+                 'alternativas': ['200 m',
                                   '50 m',
-                                  '200 m',
-                                  '100 m'],
-                 'correcta': 'D'},
+                                  '1000 m',
+                                  '100 m',
+                                  '500 m'],
+                 'correcta': 'A'},
                 {'pregunta': 'El talud continental se extiende entre las '
                              'isóbatas de:',
-                 'alternativas': ['0 a 100 m',
-                                  '5000 a 10000 m',
-                                  '500 a 1000 m',
+                 'alternativas': ['0 a 50 m',
                                   '200 a 5000 m',
-                                  '0 a 50 m'],
-                 'correcta': 'D'},
+                                  '0 a 100 m',
+                                  '5000 a 10000 m',
+                                  '500 a 1000 m'],
+                 'correcta': 'B'},
                 {'pregunta': 'Las fosas marinas se producen por:',
-                 'alternativas': ['La erosión eólica',
-                                  'Las corrientes marinas',
+                 'alternativas': ['El afloramiento',
                                   'La subducción de la Placa de Nasca',
+                                  'La erosión eólica',
                                   'La sedimentación fluvial',
-                                  'El afloramiento'],
-                 'correcta': 'C'},
+                                  'Las corrientes marinas'],
+                 'correcta': 'B'},
                 {'pregunta': 'La Dorsal de Nasca es:',
-                 'alternativas': ['Un golfo',
-                                  'Una bahía',
+                 'alternativas': ['Una península',
                                   'Una fosa marina',
+                                  'Un golfo',
                                   'Una cordillera submarina volcánica',
-                                  'Una península'],
+                                  'Una bahía'],
                  'correcta': 'D'},
                 {'pregunta': 'La Dorsal de Nasca se ubica aproximadamente a '
                              'qué distancia de la costa de Ica:',
                  'alternativas': ['500 km',
-                                  '50 km',
                                   '10 km',
                                   '300 km',
-                                  '150 km'],
-                 'correcta': 'E'},
+                                  '150 km',
+                                  '50 km'],
+                 'correcta': 'D'},
                 {'pregunta': 'El fundamento geológico de la Tesis de las 200 '
                              'millas se refiere a:',
-                 'alternativas': ['La seguridad nacional',
-                                  'El turismo',
-                                  'El comercio marítimo',
+                 'alternativas': ['La continuidad del zócalo continental',
                                   'La riqueza pesquera',
-                                  'La continuidad del zócalo continental'],
-                 'correcta': 'E'},
+                                  'La seguridad nacional',
+                                  'El turismo',
+                                  'El comercio marítimo'],
+                 'correcta': 'A'},
                 {'pregunta': 'La salinidad del mar en la región norte es de '
                              'aproximadamente:',
-                 'alternativas': ['20 gr/l',
-                                  '34 gr/l',
+                 'alternativas': ['45 gr/l',
                                   '40 gr/l',
-                                  '45 gr/l',
-                                  '30 gr/l'],
-                 'correcta': 'B'},
+                                  '30 gr/l',
+                                  '20 gr/l',
+                                  '34 gr/l'],
+                 'correcta': 'E'},
                 {'pregunta': 'La alteración del fenómeno de afloramiento y '
                              'la desaparición de la capa de inversión '
                              'térmica son consecuencias de: (II CEPRU 2025)',
-                 'alternativas': ['Las olas y mareas',
-                                  'El fenómeno de El Niño',
-                                  'La corriente de Humboldt',
+                 'alternativas': ['La corriente de Humboldt',
+                                  'Las olas y mareas',
                                   'La circumpolar Antártica',
-                                  'El fenómeno de La Niña'],
-                 'correcta': 'B'},
+                                  'El fenómeno de La Niña',
+                                  'El fenómeno de El Niño'],
+                 'correcta': 'E'},
                 {'pregunta': 'Un impacto negativo de la actividad pesquera '
                              'es: (II CEPRU 2024)',
-                 'alternativas': ['Incremento de la economía',
-                                  'Desarrollo sostenible',
-                                  'La pesca selectiva',
+                 'alternativas': ['La pesca de arrastre',
                                   'La pesca controlada',
-                                  'La pesca de arrastre'],
-                 'correcta': 'E'},
+                                  'La pesca selectiva',
+                                  'Incremento de la economía',
+                                  'Desarrollo sostenible'],
+                 'correcta': 'A'},
                 {'pregunta': 'El fundamento de la tesis de las 200 millas '
                              'marinas, que consiste en la continuidad del '
                              'zócalo continental, es de carácter: (II CEPRU '
                              '2022)',
                  'alternativas': ['Geográfico',
-                                  'Jurídico',
-                                  'Geológico',
                                   'Biológico',
-                                  'Económico'],
-                 'correcta': 'C'},
+                                  'Económico',
+                                  'Jurídico',
+                                  'Geológico'],
+                 'correcta': 'E'},
                 {'pregunta': 'La corriente peruana circula con una '
                              'dirección: (I CEPRU 2024)',
-                 'alternativas': ['NW a SE',
-                                  'SW a NE',
-                                  'NW a SW',
+                 'alternativas': ['NE a SE',
+                                  'NW a SE',
                                   'SE a NW',
-                                  'NE a SE'],
-                 'correcta': 'D'},
+                                  'SW a NE',
+                                  'NW a SW'],
+                 'correcta': 'C'},
                 {'pregunta': 'La ausencia de la inversión térmica y la '
                              'alteración del fenómeno de afloramiento '
                              'costero son consecuencias del fenómeno de: (II '
                              'CEPRU 2022)',
-                 'alternativas': ['La corriente ecuatorial del sur',
-                                  'El aguaje o pintor',
+                 'alternativas': ['La Niña',
+                                  'La corriente circumpolar antártica',
                                   'El Niño',
-                                  'La Niña',
-                                  'La corriente circumpolar antártica'],
+                                  'El aguaje o pintor',
+                                  'La corriente ecuatorial del sur'],
                  'correcta': 'C'},
                 {'pregunta': 'Uno de los fundamentos de la Tesis de las 200 '
                              'Millas Marítimas es: (Primera Oportunidad '
                              'UNSAAC 2025)',
-                 'alternativas': ['La presencia de riqueza ictiológica',
-                                  'La presencia de fauna tropical',
+                 'alternativas': ['El enfriamiento del mar',
                                   'El dominio marítimo y terrestre',
                                   'La seguridad territorial',
-                                  'El enfriamiento del mar'],
-                 'correcta': 'A'}],
+                                  'La presencia de riqueza ictiológica',
+                                  'La presencia de fauna tropical'],
+                 'correcta': 'D'},
+                {'pregunta': 'Las aguas que se encuentran debajo de la '
+                             'superficie, infiltradas a través de rocas '
+                             'permeables, se llaman aguas:',
+                 'alternativas': ['Marinas',
+                                  'Superficiales',
+                                  'Glaciares',
+                                  'Pluviales exclusivas',
+                                  'Subterráneas'],
+                 'correcta': 'E'},
+                {'pregunta': 'El agua que se acumula en el subsuelo, al '
+                             'encontrar una roca impermeable, se conoce '
+                             'como:',
+                 'alternativas': ['Manantial',
+                                  'Nivel freático',
+                                  'Napa superficial',
+                                  'Acuífero',
+                                  'Vertiente'],
+                 'correcta': 'D'},
+                {'pregunta': 'La profundidad a la que se encuentra el agua '
+                             'subterránea al hacer un agujero en el suelo se '
+                             'llama:',
+                 'alternativas': ['Nivel freático',
+                                  'Napa profunda',
+                                  'Estrato acuoso',
+                                  'Acuífero',
+                                  'Vertiente hídrica'],
+                 'correcta': 'A'},
+                {'pregunta': 'El agua subterránea representa, respecto al '
+                             'total de las aguas superficiales de la Tierra, '
+                             'aproximadamente:',
+                 'alternativas': ['La mitad',
+                                  'Veinte veces más',
+                                  'Diez veces menos',
+                                  'Una cantidad similar',
+                                  'El doble'],
+                 'correcta': 'B'},
+                {'pregunta': 'Del total del agua dulce terrestre, el '
+                             'porcentaje que corresponde a agua subterránea '
+                             'es aproximadamente:',
+                 'alternativas': ['50%', '5%', '90%', '75%', '21%'],
+                 'correcta': 'E'}],
   'resumen_visual': [{'titulo': 'EL MAR PERUANO',
                       'items': ['El mar peruano se extiende desde la línea '
                                 'de Concordia hasta la Boca de Capones, y '
@@ -3815,31 +4280,24 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La Dorsal de Nasca es una cordillera '
                                 'submarina volcánica ubicada a 150 km de la '
                                 'costa de Ica.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El mar peruano se extiende, en distancia, '
-                                'hasta 200 millas.',
-                                'La extensión del mar peruano representa del '
-                                'territorio peruano aproximadamente 90%.',
-                                'Tras el fallo de la Corte de La Haya, el '
-                                'Perú obtuvo adicionalmente 50 284 km².',
-                                'El mar peruano se distingue de otros por la '
-                                'presencia de La Corriente Peruana y la '
-                                'frialdad de sus aguas.',
-                                'La doctrina de las 200 millas fue '
-                                'proclamada por Perú junto con Ecuador y '
-                                'Chile.',
-                                'La tesis de las 200 millas se declaró '
-                                'mediante el D.S. N° 781 en el gobierno de '
-                                'José Bustamante y Rivero.',
-                                'La tesis de las 200 millas se proclamó en '
-                                'el año 1947.',
-                                'La región norte del mar peruano se extiende '
-                                'desde la Península de Illescas hasta Boca '
-                                'de Capones.',
-                                'El color del mar en la región norte se debe '
-                                'principalmente a La descarga de los ríos.',
-                                'La temperatura promedio del mar en la '
-                                'región central y sur es de 18°C.']}]},
+                     {'titulo': 'AGUAS SUBTERRÁNEAS',
+                      'items': ['Las aguas subterráneas se encuentran debajo '
+                                'de la superficie, infiltradas a través de '
+                                'rocas permeables.',
+                                'El agua que se acumula en el subsuelo, al '
+                                'encontrar una roca impermeable, se conoce '
+                                'como acuífero.',
+                                'La profundidad a la que se encuentra el '
+                                'agua subterránea al hacer un agujero en el '
+                                'suelo se llama nivel freático.',
+                                'El agua subterránea representa unas veinte '
+                                'veces más que el total de las aguas '
+                                'superficiales de la Tierra.',
+                                'Del total del agua dulce terrestre, el 21% '
+                                'es agua subterránea.',
+                                'Las aguas subterráneas son importantes para '
+                                'el sostenimiento de ríos, lagos, humedales '
+                                'y otros ecosistemas.']}]},
  {'num': 10,
   'titulo': 'Atmósfera y Cambio Climático',
   'secciones': [{'titulo': '10.1 LA ATMÓSFERA Y SU COMPOSICIÓN',
@@ -3879,84 +4337,122 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'En la termósfera, los elementos se encuentran '
                            '{ionizados}, y allí se producen las auroras '
                            'polares.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La atmósfera nos protege principalmente de {Los '
-                           'rayos ultravioleta y meteoritos}.',
-                           'El gas más abundante de la atmósfera es '
-                           '{Nitrógeno}.',
-                           'El segundo gas más abundante de la atmósfera es '
-                           '{Oxígeno}.',
-                           'La capa inferior de la atmósfera, donde ocurren '
-                           'los fenómenos meteorológicos, es {La '
-                           'tropósfera}.',
-                           'La altitud promedio de la tropósfera es de {12,5 '
-                           'km}.',
-                           'En la tropósfera, la temperatura disminuye 0,6°C '
-                           'cada {100 m}.',
-                           'El fenómeno de disminución de temperatura con la '
-                           'altitud en la tropósfera se llama {Gradiente '
-                           'Térmico Vertical}.',
-                           'La capa de ozono se ubica dentro de la '
-                           '{Estratósfera}.',
-                           'La capa de ozono se ubica entre los {24 y 30 '
-                           'km}.',
-                           'La función principal de la capa de ozono es '
-                           '{Impedir el paso de los rayos ultravioleta}.',
-                           'En la estratósfera, la temperatura {Aumenta '
-                           'progresivamente}.',
-                           'La mesósfera se extiende entre {50 y 90 km}.',
-                           'En la mesósfera, la temperatura puede llegar '
-                           'hasta {-110°C}.',
-                           'La termósfera o ionósfera se localiza entre {90 '
-                           'y 500 km}.',
-                           'En la termósfera, la temperatura puede llegar '
-                           'hasta {800°C a 1500°C}.',
-                           'Las auroras polares se producen en {La '
-                           'termósfera}.',
-                           'Los elementos de la termósfera se encuentran '
-                           '{Ionizados o electrizados}.',
-                           'Entre los gases de efecto invernadero figura '
-                           'principalmente {El CO2}.',
-                           'Sin la atmósfera, el paisaje terrestre sería '
-                           'similar al de {La Luna}.',
-                           'El límite final de la tropósfera se llama '
-                           '{Tropopausa}.']}],
+                {'titulo': '10.5 EL TIEMPO Y EL CLIMA',
+                 'items': ['El {tiempo meteorológico} es el estado de la '
+                           'atmósfera en un momento y lugar determinados; es '
+                           '{instantáneo}, cambiante e irrepetible.',
+                           'El {clima} es el estado medio de las condiciones '
+                           'atmosféricas de un lugar a lo largo de un {año}; '
+                           'es la sucesión frecuente de tipos de tiempo.',
+                           'La {radiación solar} es la fuente principal de '
+                           'energía que dinamiza la atmósfera; se propaga a '
+                           '{300 000} km/seg.',
+                           'La radiación solar se mide con el {actinómetro} '
+                           'y se registra con el actinógrafo; el '
+                           '{heliógrafo} registra las horas de brillo '
+                           'solar.']},
+                {'titulo': '10.6 ELEMENTOS DEL CLIMA',
+                 'items': ['La {temperatura} es el grado de calor o frío '
+                           'sensible en la atmósfera; se mide con el '
+                           '{termómetro} y se registra con el termógrafo.',
+                           'La {presión atmosférica} es el peso que ejerce '
+                           'el aire sobre la superficie terrestre; a nivel '
+                           'del mar es de {1013,25} mb.',
+                           'Los {vientos} son corrientes de aire originadas '
+                           'por diferencia de presiones; su velocidad se '
+                           'mide con el {anemómetro} y su dirección con la '
+                           'veleta.',
+                           'La {humedad relativa} es la cantidad de vapor de '
+                           'agua que podría retener la atmósfera a una '
+                           'temperatura dada; se mide con el {higrómetro} o '
+                           'psicrómetro.',
+                           'La {precipitación} es la caída de aguas '
+                           'meteóricas por efecto de la gravedad; se mide '
+                           'con el {pluviómetro} y se registra con el '
+                           'pluviógrafo, en milímetros.']},
+                {'titulo': '10.7 FACTORES DEL CLIMA',
+                 'items': ['Los {factores del clima} son las características '
+                           'propias y fijas de un lugar que alteran el '
+                           'comportamiento de los elementos climáticos.',
+                           'La {latitud} determina que a bajas latitudes '
+                           'correspondan climas cálidos y húmedos, y a altas '
+                           'latitudes climas {fríos} y secos.',
+                           'La {altitud} determina que a menor altitud '
+                           'correspondan climas cálidos, y a grandes '
+                           'altitudes climas {fríos} y secos.',
+                           'La {oceanidad y continentalidad} determina que '
+                           'las zonas cercanas a masas de agua tengan climas '
+                           'más {frescos} y suaves.',
+                           'Las {corrientes marinas} cálidas determinan '
+                           'climas cálidos y lluviosos; las corrientes '
+                           '{frías} determinan climas fríos y secos.']},
+                {'titulo': '10.8 FACTORES CONDICIONANTES DEL CLIMA PERUANO',
+                 'items': ['El Perú es considerado la {síntesis climática} '
+                           'del mundo, por tener la mayor parte de los '
+                           'climas existentes.',
+                           'La {Corriente Peruana} o de Humboldt es fría y '
+                           'determina la sequedad del clima {subtropical '
+                           'árido} de la costa central y sur.',
+                           'La {Corriente de El Niño} determina el clima '
+                           'semitropical, cálido y húmedo, de la {costa '
+                           'norte} del Perú.',
+                           'El {Anticiclón del Pacífico Sur} es una masa de '
+                           'aire de alta presión que gira en sentido '
+                           '{antihorario}, provocando tiempo estable y '
+                           'ausencia de precipitaciones.',
+                           'El Anticiclón del Pacífico Sur, junto con la '
+                           'Corriente Peruana, determina el clima {árido} de '
+                           'la costa.']}],
   'cuadros': [{'titulo': '10.2-10.4 CAPAS DE LA ATMÓSFERA',
                'encabezados': ['Capa', 'Altitud'],
                'filas': [['{Tropósfera}', 'Hasta 12,5 km'],
                          ['{Estratósfera}', '12,5 a 50 km'],
                          ['{Mesósfera}', '50 a 90 km'],
-                         ['{Termósfera}', '90 a 500 km']]}],
+                         ['{Termósfera}', '90 a 500 km']]},
+              {'titulo': 'INSTRUMENTOS DE MEDICIÓN DE LOS ELEMENTOS DEL '
+                         'CLIMA',
+               'despues_de': '10.6 ELEMENTOS DEL CLIMA',
+               'encabezados': ['Elemento', 'Instrumento', 'Unidad de medida'],
+               'filas': [['Temperatura', '{Termómetro}', '°C / °F'],
+                         ['Presión atmosférica', '{Barómetro}', 'mm Hg / mb'],
+                         ['Viento (velocidad)', '{Anemómetro}', 'm/s, km/h'],
+                         ['Viento (dirección)', '{Veleta}', 'Rumbos'],
+                         ['Humedad',
+                          '{Higrómetro} / Psicrómetro',
+                          'Porcentaje (%)'],
+                         ['Precipitación',
+                          '{Pluviómetro}',
+                          'Milímetros (mm)']]}],
   'preguntas': [{'pregunta': 'La atmósfera nos protege principalmente de:',
-                 'alternativas': ['La erosión',
-                                  'La lluvia ácida',
+                 'alternativas': ['Los sismos',
                                   'Los rayos ultravioleta y meteoritos',
                                   'Las mareas',
-                                  'Los sismos'],
-                 'correcta': 'C'},
+                                  'La lluvia ácida',
+                                  'La erosión'],
+                 'correcta': 'B'},
                 {'pregunta': 'El gas más abundante de la atmósfera es:',
-                 'alternativas': ['Ozono',
-                                  'Oxígeno',
-                                  'Argón',
-                                  'Dióxido de carbono',
-                                  'Nitrógeno'],
-                 'correcta': 'E'},
-                {'pregunta': 'El segundo gas más abundante de la atmósfera '
-                             'es:',
-                 'alternativas': ['Neón',
-                                  'Oxígeno',
-                                  'Helio',
+                 'alternativas': ['Dióxido de carbono',
                                   'Nitrógeno',
+                                  'Oxígeno',
+                                  'Ozono',
                                   'Argón'],
                  'correcta': 'B'},
+                {'pregunta': 'El segundo gas más abundante de la atmósfera '
+                             'es:',
+                 'alternativas': ['Helio',
+                                  'Argón',
+                                  'Oxígeno',
+                                  'Nitrógeno',
+                                  'Neón'],
+                 'correcta': 'C'},
                 {'pregunta': 'La capa inferior de la atmósfera, donde '
                              'ocurren los fenómenos meteorológicos, es:',
-                 'alternativas': ['La tropósfera',
+                 'alternativas': ['La estratósfera',
                                   'La mesósfera',
+                                  'La tropósfera',
                                   'La ionósfera',
-                                  'La estratósfera',
                                   'La termósfera'],
-                 'correcta': 'A'},
+                 'correcta': 'C'},
                 {'pregunta': 'La altitud promedio de la tropósfera es de:',
                  'alternativas': ['12,5 km',
                                   '100 km',
@@ -3966,150 +4462,279 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                  'correcta': 'A'},
                 {'pregunta': 'En la tropósfera, la temperatura disminuye '
                              '0,6°C cada:',
-                 'alternativas': ['100 m', '500 m', '10 m', '1000 m', '50 m'],
-                 'correcta': 'A'},
+                 'alternativas': ['500 m', '1000 m', '10 m', '100 m', '50 m'],
+                 'correcta': 'D'},
                 {'pregunta': 'El fenómeno de disminución de temperatura con '
                              'la altitud en la tropósfera se llama:',
-                 'alternativas': ['Efecto invernadero',
-                                  'Corriente de chorro',
+                 'alternativas': ['Capa de ozono',
                                   'Inversión térmica',
-                                  'Gradiente Térmico Vertical',
-                                  'Capa de ozono'],
-                 'correcta': 'D'},
+                                  'Efecto invernadero',
+                                  'Corriente de chorro',
+                                  'Gradiente Térmico Vertical'],
+                 'correcta': 'E'},
                 {'pregunta': 'La capa de ozono se ubica dentro de la:',
-                 'alternativas': ['Estratósfera',
+                 'alternativas': ['Tropósfera',
                                   'Exósfera',
                                   'Termósfera',
-                                  'Tropósfera',
-                                  'Mesósfera'],
-                 'correcta': 'A'},
-                {'pregunta': 'La capa de ozono se ubica entre los:',
-                 'alternativas': ['90 y 500 km',
-                                  '50 y 90 km',
-                                  '0 y 10 km',
-                                  '10 y 20 km',
-                                  '24 y 30 km'],
+                                  'Mesósfera',
+                                  'Estratósfera'],
                  'correcta': 'E'},
+                {'pregunta': 'La capa de ozono se ubica entre los:',
+                 'alternativas': ['0 y 10 km',
+                                  '90 y 500 km',
+                                  '50 y 90 km',
+                                  '24 y 30 km',
+                                  '10 y 20 km'],
+                 'correcta': 'D'},
                 {'pregunta': 'La función principal de la capa de ozono es:',
-                 'alternativas': ['Formar nubes',
-                                  'Impedir el paso de los rayos ultravioleta',
+                 'alternativas': ['Regular la humedad',
+                                  'Formar nubes',
                                   'Producir lluvia',
-                                  'Regular la humedad',
-                                  'Generar viento'],
-                 'correcta': 'B'},
+                                  'Generar viento',
+                                  'Impedir el paso de los rayos '
+                                  'ultravioleta'],
+                 'correcta': 'E'},
                 {'pregunta': 'En la estratósfera, la temperatura:',
-                 'alternativas': ['Se mantiene igual',
+                 'alternativas': ['Baja a cero',
                                   'Fluctúa sin patrón',
                                   'Disminuye constantemente',
                                   'Aumenta progresivamente',
-                                  'Baja a cero'],
+                                  'Se mantiene igual'],
                  'correcta': 'D'},
                 {'pregunta': 'La mesósfera se extiende entre:',
                  'alternativas': ['0 y 12,5 km',
                                   '500 y 1000 km',
-                                  '90 y 500 km',
                                   '50 y 90 km',
+                                  '90 y 500 km',
                                   '12,5 y 50 km'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'En la mesósfera, la temperatura puede llegar '
                              'hasta:',
-                 'alternativas': ['-110°C', '-50°C', '50°C', '0°C', '100°C'],
-                 'correcta': 'A'},
+                 'alternativas': ['-50°C', '50°C', '100°C', '0°C', '-110°C'],
+                 'correcta': 'E'},
                 {'pregunta': 'La termósfera o ionósfera se localiza entre:',
                  'alternativas': ['90 y 500 km',
                                   '12,5 y 50 km',
-                                  '50 y 90 km',
                                   '500 y 1000 km',
-                                  '0 y 12,5 km'],
+                                  '0 y 12,5 km',
+                                  '50 y 90 km'],
                  'correcta': 'A'},
                 {'pregunta': 'En la termósfera, la temperatura puede llegar '
                              'hasta:',
-                 'alternativas': ['300°C',
-                                  '0°C',
-                                  '800°C a 1500°C',
+                 'alternativas': ['0°C',
                                   '-100°C',
-                                  '100°C'],
-                 'correcta': 'C'},
+                                  '100°C',
+                                  '300°C',
+                                  '800°C a 1500°C'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las auroras polares se producen en:',
-                 'alternativas': ['La capa de ozono',
-                                  'La tropósfera',
+                 'alternativas': ['La tropósfera',
                                   'La termósfera',
+                                  'La estratósfera',
                                   'La mesósfera',
-                                  'La estratósfera'],
-                 'correcta': 'C'},
+                                  'La capa de ozono'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los elementos de la termósfera se encuentran:',
-                 'alternativas': ['Sólidos',
-                                  'Inertes',
+                 'alternativas': ['Ionizados o electrizados',
+                                  'Sólidos',
                                   'Congelados',
                                   'Líquidos',
-                                  'Ionizados o electrizados'],
-                 'correcta': 'E'},
+                                  'Inertes'],
+                 'correcta': 'A'},
                 {'pregunta': 'Entre los gases de efecto invernadero figura '
                              'principalmente:',
-                 'alternativas': ['El nitrógeno',
+                 'alternativas': ['El helio',
                                   'El CO2',
+                                  'El argón',
                                   'El neón',
-                                  'El helio',
-                                  'El argón'],
+                                  'El nitrógeno'],
                  'correcta': 'B'},
                 {'pregunta': 'Sin la atmósfera, el paisaje terrestre sería '
                              'similar al de:',
-                 'alternativas': ['Saturno',
+                 'alternativas': ['La Luna',
                                   'Júpiter',
-                                  'La Luna',
-                                  'Marte',
-                                  'Venus'],
-                 'correcta': 'C'},
+                                  'Saturno',
+                                  'Venus',
+                                  'Marte'],
+                 'correcta': 'A'},
                 {'pregunta': 'El límite final de la tropósfera se llama:',
-                 'alternativas': ['Mesopausa',
-                                  'Ionopausa',
-                                  'Tropopausa',
+                 'alternativas': ['Tropopausa',
                                   'Termopausa',
+                                  'Mesopausa',
+                                  'Ionopausa',
                                   'Estratopausa'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'La mayor cantidad de climas en el Perú está '
                              'determinada por el factor: (II CEPRU 2025)',
-                 'alternativas': ['Corrientes marinas',
-                                  'Vegetación',
+                 'alternativas': ['Latitud',
                                   'Altitud',
                                   'Anticiclón del Pacífico Sur',
-                                  'Latitud'],
-                 'correcta': 'C'},
+                                  'Corrientes marinas',
+                                  'Vegetación'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los registros de los fenómenos meteorológicos '
                              'sirven para pronosticar: (I CEPRU 2025)',
-                 'alternativas': ['Cambio climático',
-                                  'Variabilidad climática',
+                 'alternativas': ['Calentamiento global',
                                   'Tiempo meteorológico',
+                                  'Cambio climático',
                                   'Tiempo cronológico',
-                                  'Calentamiento global'],
-                 'correcta': 'C'},
+                                  'Variabilidad climática'],
+                 'correcta': 'B'},
                 {'pregunta': 'Las auroras polares se producen en la capa '
                              'atmosférica de la: (Primera Oportunidad UNSAAC '
                              '2025)',
-                 'alternativas': ['Estratosfera',
-                                  'Ionosfera',
-                                  'Mesosfera',
+                 'alternativas': ['Ionosfera',
                                   'Troposfera',
+                                  'Mesosfera',
+                                  'Estratosfera',
                                   'Termosfera exclusiva'],
-                 'correcta': 'B'},
+                 'correcta': 'A'},
                 {'pregunta': 'Corresponde a la Tropósfera: (Primera '
                              'Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Se producen los fenómenos meteorológicos',
-                                  'Tiene una subcapa llamada Ozonósfera',
+                 'alternativas': ['Tiene una subcapa llamada Ozonósfera',
                                   'Es una zona de radiación cósmica',
                                   'Alcanza hasta la termopausa',
+                                  'Se producen los fenómenos meteorológicos',
                                   'Existen los cinturones de radiación de '
                                   'Van Allen'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'El instrumento que mide la intensidad de los '
                              'vientos es el: (Primera Oportunidad UNSAAC '
                              '2020)',
-                 'alternativas': ['Veleta',
-                                  'Termómetro',
+                 'alternativas': ['Termómetro',
+                                  'Pluviómetro',
                                   'Barómetro',
+                                  'Anemómetro',
+                                  'Veleta'],
+                 'correcta': 'D'},
+                {'pregunta': 'El estado de la atmósfera en un momento y '
+                             'lugar determinados, instantáneo y cambiante, '
+                             'se llama:',
+                 'alternativas': ['Estación',
+                                  'Microclima',
+                                  'Clima',
+                                  'Bioclima',
+                                  'Tiempo meteorológico'],
+                 'correcta': 'E'},
+                {'pregunta': 'El estado medio de las condiciones '
+                             'atmosféricas de un lugar a lo largo de un año '
+                             'se llama:',
+                 'alternativas': ['Régimen',
+                                  'Estación',
+                                  'Tiempo meteorológico',
+                                  'Clima',
+                                  'Meteoro'],
+                 'correcta': 'D'},
+                {'pregunta': 'La radiación solar, fuente principal de '
+                             'energía que dinamiza la atmósfera, se mide con '
+                             'el:',
+                 'alternativas': ['Termómetro',
+                                  'Barómetro',
+                                  'Actinómetro',
                                   'Pluviómetro',
                                   'Anemómetro'],
-                 'correcta': 'E'}],
+                 'correcta': 'C'},
+                {'pregunta': 'El grado de calor o frío sensible en la '
+                             'atmósfera se llama:',
+                 'alternativas': ['Presión atmosférica',
+                                  'Temperatura',
+                                  'Precipitación',
+                                  'Insolación',
+                                  'Humedad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El peso o fuerza que ejerce el aire sobre la '
+                             'superficie terrestre se llama:',
+                 'alternativas': ['Temperatura',
+                                  'Presión atmosférica',
+                                  'Humedad',
+                                  'Viento',
+                                  'Precipitación'],
+                 'correcta': 'B'},
+                {'pregunta': 'El instrumento que mide la velocidad de los '
+                             'vientos es el:',
+                 'alternativas': ['Higrómetro',
+                                  'Anemómetro',
+                                  'Veleta',
+                                  'Barómetro',
+                                  'Pluviómetro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El instrumento que mide la dirección de los '
+                             'vientos es la:',
+                 'alternativas': ['Termómetro',
+                                  'Veleta',
+                                  'Anemómetro',
+                                  'Higrómetro',
+                                  'Barómetro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El instrumento que mide la humedad relativa de '
+                             'la atmósfera es el:',
+                 'alternativas': ['Anemómetro',
+                                  'Termómetro',
+                                  'Higrómetro o psicrómetro',
+                                  'Barómetro',
+                                  'Pluviómetro'],
+                 'correcta': 'C'},
+                {'pregunta': 'El instrumento que mide la precipitación, en '
+                             'milímetros, es el:',
+                 'alternativas': ['Anemómetro',
+                                  'Barómetro',
+                                  'Termómetro',
+                                  'Higrómetro',
+                                  'Pluviómetro'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las características propias y fijas de un '
+                             'lugar que alteran el comportamiento de los '
+                             'elementos climáticos se llaman:',
+                 'alternativas': ['Fenómenos climáticos',
+                                  'Meteoros',
+                                  'Elementos del clima',
+                                  'Variables atmosféricas',
+                                  'Factores del clima'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según climatólogos, el Perú es considerado la '
+                             'síntesis climática del mundo porque:',
+                 'alternativas': ['Tiene solo dos tipos de clima',
+                                  'Tiene un clima uniforme en todo el '
+                                  'territorio',
+                                  'Tiene la mayor parte de los climas '
+                                  'existentes en el mundo',
+                                  'No tiene variación climática',
+                                  'Solo tiene climas tropicales'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Corriente Peruana o de Humboldt, de aguas '
+                             'frías, determina el clima subtropical árido de '
+                             'la costa:',
+                 'alternativas': ['Insular',
+                                  'Central y sur',
+                                  'Andina',
+                                  'Amazónica',
+                                  'Norte'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Corriente de El Niño determina el clima '
+                             'semitropical, cálido y húmedo, de la costa:',
+                 'alternativas': ['Norte',
+                                  'Amazónica',
+                                  'Insular',
+                                  'Andina',
+                                  'Central y sur'],
+                 'correcta': 'A'},
+                {'pregunta': 'El Anticiclón del Pacífico Sur es una masa de '
+                             'aire de:',
+                 'alternativas': ['Baja presión',
+                                  'Presión neutra',
+                                  'Alta presión',
+                                  'Presión mínima',
+                                  'Presión variable'],
+                 'correcta': 'C'},
+                {'pregunta': 'El Anticiclón del Pacífico Sur, junto con la '
+                             'Corriente Peruana, determina el clima de la '
+                             'costa de tipo:',
+                 'alternativas': ['Húmedo y lluvioso',
+                                  'Tropical',
+                                  'Polar',
+                                  'Árido',
+                                  'Templado húmedo'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA ATMÓSFERA Y SU COMPOSICIÓN',
                       'items': ['La atmósfera regula las temperaturas '
                                 'extremas y nos protege de los rayos '
@@ -4149,30 +4774,77 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'En la termósfera, los elementos se '
                                 'encuentran ionizados, y allí se producen '
                                 'las auroras polares.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['La atmósfera nos protege principalmente de '
-                                'Los rayos ultravioleta y meteoritos.',
-                                'El gas más abundante de la atmósfera es '
-                                'Nitrógeno.',
-                                'El segundo gas más abundante de la '
-                                'atmósfera es Oxígeno.',
-                                'La capa inferior de la atmósfera, donde '
-                                'ocurren los fenómenos meteorológicos, es La '
-                                'tropósfera.',
-                                'La altitud promedio de la tropósfera es de '
-                                '12,5 km.',
-                                'En la tropósfera, la temperatura disminuye '
-                                '0,6°C cada 100 m.',
-                                'El fenómeno de disminución de temperatura '
-                                'con la altitud en la tropósfera se llama '
-                                'Gradiente Térmico Vertical.',
-                                'La capa de ozono se ubica dentro de la '
-                                'Estratósfera.',
-                                'La capa de ozono se ubica entre los 24 y 30 '
-                                'km.',
-                                'La función principal de la capa de ozono es '
-                                'Impedir el paso de los rayos '
-                                'ultravioleta.']}]},
+                     {'titulo': 'EL TIEMPO Y EL CLIMA',
+                      'items': ['El tiempo meteorológico es el estado de la '
+                                'atmósfera en un momento y lugar '
+                                'determinados; es instantáneo, cambiante e '
+                                'irrepetible.',
+                                'El clima es el estado medio de las '
+                                'condiciones atmosféricas de un lugar a lo '
+                                'largo de un año; es la sucesión frecuente '
+                                'de tipos de tiempo.',
+                                'La radiación solar es la fuente principal '
+                                'de energía que dinamiza la atmósfera; se '
+                                'propaga a 300 000 km/seg.',
+                                'La radiación solar se mide con el '
+                                'actinómetro y se registra con el '
+                                'actinógrafo; el heliógrafo registra las '
+                                'horas de brillo solar.']},
+                     {'titulo': 'ELEMENTOS DEL CLIMA',
+                      'items': ['La temperatura es el grado de calor o frío '
+                                'sensible en la atmósfera; se mide con el '
+                                'termómetro y se registra con el termógrafo.',
+                                'La presión atmosférica es el peso que '
+                                'ejerce el aire sobre la superficie '
+                                'terrestre; a nivel del mar es de 1013,25 '
+                                'mb.',
+                                'Los vientos son corrientes de aire '
+                                'originadas por diferencia de presiones; su '
+                                'velocidad se mide con el anemómetro y su '
+                                'dirección con la veleta.',
+                                'La humedad relativa es la cantidad de vapor '
+                                'de agua que podría retener la atmósfera a '
+                                'una temperatura dada; se mide con el '
+                                'higrómetro o psicrómetro.',
+                                'La precipitación es la caída de aguas '
+                                'meteóricas por efecto de la gravedad; se '
+                                'mide con el pluviómetro y se registra con '
+                                'el pluviógrafo, en milímetros.']},
+                     {'titulo': 'FACTORES DEL CLIMA',
+                      'items': ['Los factores del clima son las '
+                                'características propias y fijas de un lugar '
+                                'que alteran el comportamiento de los '
+                                'elementos climáticos.',
+                                'La latitud determina que a bajas latitudes '
+                                'correspondan climas cálidos y húmedos, y a '
+                                'altas latitudes climas fríos y secos.',
+                                'La altitud determina que a menor altitud '
+                                'correspondan climas cálidos, y a grandes '
+                                'altitudes climas fríos y secos.',
+                                'La oceanidad y continentalidad determina '
+                                'que las zonas cercanas a masas de agua '
+                                'tengan climas más frescos y suaves.',
+                                'Las corrientes marinas cálidas determinan '
+                                'climas cálidos y lluviosos; las corrientes '
+                                'frías determinan climas fríos y secos.']},
+                     {'titulo': 'FACTORES CONDICIONANTES DEL CLIMA PERUANO',
+                      'items': ['El Perú es considerado la síntesis '
+                                'climática del mundo, por tener la mayor '
+                                'parte de los climas existentes.',
+                                'La Corriente Peruana o de Humboldt es fría '
+                                'y determina la sequedad del clima '
+                                'subtropical árido de la costa central y '
+                                'sur.',
+                                'La Corriente de El Niño determina el clima '
+                                'semitropical, cálido y húmedo, de la costa '
+                                'norte del Perú.',
+                                'El Anticiclón del Pacífico Sur es una masa '
+                                'de aire de alta presión que gira en sentido '
+                                'antihorario, provocando tiempo estable y '
+                                'ausencia de precipitaciones.',
+                                'El Anticiclón del Pacífico Sur, junto con '
+                                'la Corriente Peruana, determina el clima '
+                                'árido de la costa.']}]},
  {'num': 11,
   'titulo': 'Recursos Naturales, Conservación e Impacto Ambiental',
   'secciones': [{'titulo': '11.1 CONCEPTO Y CLASIFICACIÓN',
@@ -4218,47 +4890,56 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'Perú es {Cutervo}, en Cajamarca.',
                            'El parque nacional más extenso del Perú es el '
                            '{Manu}, entre Cusco y Madre de Dios.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['Los recursos naturales son elementos que {Ofrece '
-                           'la naturaleza espontáneamente}.',
-                           'Los recursos que se agotan con el '
-                           'aprovechamiento del hombre son los {No '
-                           'renovables}.',
-                           'El petróleo y el gas son recursos naturales {No '
-                           'renovables}.',
-                           'El agua, el aire y el suelo son recursos '
-                           'naturales {Renovables}.',
-                           'Cuando el hombre aprovecha un recurso natural, '
-                           'este se convierte en {Recurso económico}.',
-                           'Entre las aves guaneras del mar peruano figuran '
-                           'el guanay, piquero y {Alcatraz}.',
-                           'El hierro se explota principalmente en la '
-                           'localidad de {Marcona}.',
-                           'Los fosfatos como fertilizante se explotan en '
-                           '{Bayóvar, Piura}.',
-                           'Entre los minerales de la región andina figuran '
-                           'el cobre, plomo, zinc, oro y {Plata}.',
-                           'La vicuña, el cóndor y la chinchilla son fauna '
-                           'representativa de {La región andina}.',
-                           'De la selva se obtiene, entre otros recursos, '
-                           'oro {Aluvial}.',
-                           'El SERNANP está adscrito al Ministerio de '
-                           '{Ambiente}.',
-                           'El SERNANP fue creado mediante el Decreto '
-                           'Legislativo {1013}.',
-                           'El SERNANP fue creado en el año {2008}.',
-                           'Las Áreas Naturales Protegidas representan del '
-                           'territorio nacional {15,41%}.',
-                           'En los Parques Nacionales solo se permite {El '
-                           'turismo e investigación científica}.',
-                           'El parque nacional más pequeño y antiguo del '
-                           'Perú es {Cutervo}.',
-                           'El parque nacional más extenso del Perú es '
-                           '{Manu}.',
-                           'El parque nacional Manu se ubica entre Cusco y '
-                           '{Madre de Dios}.',
-                           'El Parque Nacional Huascarán se ubica en el '
-                           'departamento de {Áncash}.']}],
+                {'titulo': '11.4 EXPLOSIÓN DEMOGRÁFICA',
+                 'items': ['La {explosión demográfica} es un aumento súbito '
+                           'de la cantidad de habitantes en una determinada '
+                           'región, que satura los {servicios públicos}.',
+                           'La explosión demográfica genera crecimiento de '
+                           'los {cinturones de pobreza}, en las periferias '
+                           'de las ciudades.',
+                           'El mundo cuenta actualmente con unos {7450} '
+                           'millones de habitantes; alcanzará los 9700 '
+                           'millones en el {2050}.',
+                           'Según la ONU, en pocos años la {India} superará '
+                           'a China como el país más poblado del mundo.']},
+                {'titulo': '11.5 DETERIORO DE LA CAPA DE OZONO: AGENTES',
+                 'items': ['El {ozono} (O₃) es una molécula de tres átomos '
+                           'de oxígeno, que absorbe los rayos {ultravioleta} '
+                           'del Sol.',
+                           'Los {clorofluorocarburos} (CFC) son compuestos '
+                           'de cloro, flúor y carbono, usados como '
+                           'refrigerantes y disolventes.',
+                           'Los {halones}, compuestos de bromo, flúor y '
+                           'carbono, se usan en extintores; su Br es más '
+                           'efectivo destruyendo el ozono que el {cloro}.',
+                           'El {bromuro de metilo} es un pesticida que, por '
+                           'su contenido de bromo, daña la capa de ozono.']},
+                {'titulo': '11.6 EFECTO INVERNADERO Y CALENTAMIENTO GLOBAL',
+                 'items': ['Sin la presencia del CO₂ ni del vapor de agua, '
+                           'la temperatura media de la Tierra sería del '
+                           'orden de {18} °C bajo cero.',
+                           'El {calentamiento global} es el aumento de la '
+                           'temperatura media de los océanos y la atmósfera, '
+                           'causado por emisiones que realzan el efecto '
+                           'invernadero.',
+                           'De 1880 al 2012, la temperatura media global ha '
+                           'aumentado en {0,85} °C; el nivel del mar ha '
+                           'subido 19 cm entre 1901 y 2010.']},
+                {'titulo': '11.7 CAMBIO CLIMÁTICO Y VARIABILIDAD CLIMÁTICA',
+                 'items': ['El {cambio climático} es la variación global del '
+                           'clima, resultado de cambios en periodos de '
+                           'cientos, miles o millones de {años}; sus causas '
+                           'pueden ser naturales o {antropogénicas}.',
+                           'La {variabilidad climática} es la variación de '
+                           'los parámetros climáticos en cortos lapsos de '
+                           'tiempo: días, semanas o algunos {meses}.',
+                           'La {adaptación al cambio climático} son las '
+                           'iniciativas para reducir la vulnerabilidad de la '
+                           'sociedad ante los efectos del cambio climático, '
+                           'según el {IPCC}.',
+                           'La {pobreza}, más que cualquier otro factor, '
+                           'determina la vulnerabilidad frente al cambio '
+                           'climático.']}],
   'cuadros': [{'titulo': '11.1 TIPOS DE RECURSOS NATURALES',
                'encabezados': ['Tipo', 'Se agotan', 'Ejemplos'],
                'filas': [['{No renovables}',
@@ -4268,156 +4949,274 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                           '{No}',
                           'Agua, aire, suelo, flora, fauna']]}],
   'preguntas': [{'pregunta': 'Los recursos naturales son elementos que:',
-                 'alternativas': ['Crea el hombre artificialmente',
+                 'alternativas': ['Ofrece la naturaleza espontáneamente',
+                                  'Crea el hombre artificialmente',
+                                  'Provienen únicamente del mar',
                                   'Son producidos por la industria',
-                                  'Ofrece la naturaleza espontáneamente',
-                                  'Solo existen en la costa',
-                                  'Provienen únicamente del mar'],
-                 'correcta': 'C'},
+                                  'Solo existen en la costa'],
+                 'correcta': 'A'},
                 {'pregunta': 'Los recursos que se agotan con el '
                              'aprovechamiento del hombre son los:',
-                 'alternativas': ['Renovables',
-                                  'Marinos',
+                 'alternativas': ['Marinos',
                                   'No renovables',
                                   'Forestales',
-                                  'Hídricos'],
-                 'correcta': 'C'},
+                                  'Hídricos',
+                                  'Renovables'],
+                 'correcta': 'B'},
                 {'pregunta': 'El petróleo y el gas son recursos naturales:',
                  'alternativas': ['No renovables',
+                                  'Renovables',
                                   'Ilimitados',
                                   'Inagotables',
-                                  'Renovables',
                                   'Reciclables'],
                  'correcta': 'A'},
                 {'pregunta': 'El agua, el aire y el suelo son recursos '
                              'naturales:',
-                 'alternativas': ['Artificiales',
+                 'alternativas': ['Renovables',
+                                  'Artificiales',
+                                  'Prohibidos',
                                   'Escasos',
-                                  'No renovables',
-                                  'Renovables',
-                                  'Prohibidos'],
-                 'correcta': 'D'},
+                                  'No renovables'],
+                 'correcta': 'A'},
                 {'pregunta': 'Cuando el hombre aprovecha un recurso natural, '
                              'este se convierte en:',
-                 'alternativas': ['Bien público exclusivo',
+                 'alternativas': ['Recurso económico',
+                                  'Recurso prohibido',
                                   'Elemento sin valor',
                                   'Patrimonio intangible',
-                                  'Recurso prohibido',
-                                  'Recurso económico'],
-                 'correcta': 'E'},
+                                  'Bien público exclusivo'],
+                 'correcta': 'A'},
                 {'pregunta': 'Entre las aves guaneras del mar peruano '
                              'figuran el guanay, piquero y:',
-                 'alternativas': ['Cóndor',
-                                  'Gaviota andina',
-                                  'Águila',
+                 'alternativas': ['Alcatraz',
+                                  'Cóndor',
                                   'Zorzal',
-                                  'Alcatraz'],
-                 'correcta': 'E'},
+                                  'Águila',
+                                  'Gaviota andina'],
+                 'correcta': 'A'},
                 {'pregunta': 'El hierro se explota principalmente en la '
                              'localidad de:',
-                 'alternativas': ['Toquepala',
-                                  'Bayóvar',
-                                  'Marcona',
-                                  'Cerro de Pasco',
-                                  'Cajamarca'],
-                 'correcta': 'C'},
-                {'pregunta': 'Los fosfatos como fertilizante se explotan en:',
                  'alternativas': ['Marcona',
-                                  'Arequipa',
+                                  'Bayóvar',
+                                  'Cerro de Pasco',
+                                  'Cajamarca',
+                                  'Toquepala'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los fosfatos como fertilizante se explotan en:',
+                 'alternativas': ['Bayóvar, Piura',
                                   'Puno',
                                   'Cusco',
-                                  'Bayóvar, Piura'],
-                 'correcta': 'E'},
+                                  'Marcona',
+                                  'Arequipa'],
+                 'correcta': 'A'},
                 {'pregunta': 'Entre los minerales de la región andina '
                              'figuran el cobre, plomo, zinc, oro y:',
-                 'alternativas': ['Sal',
+                 'alternativas': ['Plata',
                                   'Petróleo',
                                   'Gas natural',
                                   'Carbón vegetal',
-                                  'Plata'],
-                 'correcta': 'E'},
+                                  'Sal'],
+                 'correcta': 'A'},
                 {'pregunta': 'La vicuña, el cóndor y la chinchilla son fauna '
                              'representativa de:',
-                 'alternativas': ['La región andina',
-                                  'La selva alta',
+                 'alternativas': ['La selva alta',
                                   'La selva baja',
-                                  'El mar peruano',
-                                  'La costa'],
-                 'correcta': 'A'},
+                                  'La región andina',
+                                  'La costa',
+                                  'El mar peruano'],
+                 'correcta': 'C'},
                 {'pregunta': 'De la selva se obtiene, entre otros recursos, '
                              'oro:',
-                 'alternativas': ['Importado',
-                                  'Sintético',
+                 'alternativas': ['En vetas superficiales',
                                   'Aluvial',
+                                  'Importado',
                                   'Solo en laboratorio',
-                                  'En vetas superficiales'],
-                 'correcta': 'C'},
+                                  'Sintético'],
+                 'correcta': 'B'},
                 {'pregunta': 'El SERNANP está adscrito al Ministerio de:',
-                 'alternativas': ['Ambiente',
-                                  'Energía y Minas',
-                                  'Educación',
+                 'alternativas': ['Cultura',
                                   'Agricultura',
-                                  'Cultura'],
-                 'correcta': 'A'},
+                                  'Educación',
+                                  'Energía y Minas',
+                                  'Ambiente'],
+                 'correcta': 'E'},
                 {'pregunta': 'El SERNANP fue creado mediante el Decreto '
                              'Legislativo:',
-                 'alternativas': ['997', '1090', '1013', '850', '713'],
+                 'alternativas': ['997', '850', '1013', '713', '1090'],
                  'correcta': 'C'},
                 {'pregunta': 'El SERNANP fue creado en el año:',
-                 'alternativas': ['1998', '2008', '1990', '2020', '2015'],
-                 'correcta': 'B'},
+                 'alternativas': ['2008', '2015', '2020', '1990', '1998'],
+                 'correcta': 'A'},
                 {'pregunta': 'Las Áreas Naturales Protegidas representan del '
                              'territorio nacional:',
-                 'alternativas': ['2%', '50%', '30%', '15,41%', '5%'],
+                 'alternativas': ['30%', '5%', '50%', '15,41%', '2%'],
                  'correcta': 'D'},
                 {'pregunta': 'En los Parques Nacionales solo se permite:',
-                 'alternativas': ['El turismo e investigación científica',
+                 'alternativas': ['La tala de árboles',
                                   'La caza deportiva',
-                                  'La ganadería extensiva',
                                   'La minería y agricultura',
-                                  'La tala de árboles'],
-                 'correcta': 'A'},
+                                  'El turismo e investigación científica',
+                                  'La ganadería extensiva'],
+                 'correcta': 'D'},
                 {'pregunta': 'El parque nacional más pequeño y antiguo del '
                              'Perú es:',
-                 'alternativas': ['Huascarán',
-                                  'Bahuaja Sonene',
-                                  'Manu',
-                                  'Cutervo',
-                                  'Tingo María'],
-                 'correcta': 'D'},
-                {'pregunta': 'El parque nacional más extenso del Perú es:',
                  'alternativas': ['Cutervo',
                                   'Huascarán',
-                                  'Cerros de Amotape',
+                                  'Bahuaja Sonene',
+                                  'Manu',
+                                  'Tingo María'],
+                 'correcta': 'A'},
+                {'pregunta': 'El parque nacional más extenso del Perú es:',
+                 'alternativas': ['Cerros de Amotape',
                                   'Río Abiseo',
+                                  'Cutervo',
+                                  'Huascarán',
                                   'Manu'],
                  'correcta': 'E'},
                 {'pregunta': 'El parque nacional Manu se ubica entre Cusco '
                              'y:',
-                 'alternativas': ['Apurímac',
+                 'alternativas': ['Arequipa',
+                                  'Apurímac',
                                   'Madre de Dios',
-                                  'Arequipa',
-                                  'Ayacucho',
-                                  'Puno'],
-                 'correcta': 'B'},
+                                  'Puno',
+                                  'Ayacucho'],
+                 'correcta': 'C'},
                 {'pregunta': 'El Parque Nacional Huascarán se ubica en el '
                              'departamento de:',
-                 'alternativas': ['Puno',
-                                  'Cusco',
-                                  'Cajamarca',
+                 'alternativas': ['Cusco',
                                   'Áncash',
+                                  'Puno',
+                                  'Cajamarca',
                                   'Lima'],
-                 'correcta': 'D'},
+                 'correcta': 'B'},
                 {'pregunta': 'Satisfacer las necesidades del presente sin '
                              'comprometer los recursos de las futuras '
                              'generaciones corresponde al concepto de: (II '
                              'CEPRU 2022)',
-                 'alternativas': ['Contaminación ambiental',
-                                  'Desastre ecológico',
-                                  'Riesgo de desastre',
+                 'alternativas': ['Riesgo de desastre',
+                                  'Impacto ambiental',
                                   'Desarrollo sostenible',
-                                  'Impacto ambiental'],
-                 'correcta': 'D'}],
+                                  'Contaminación ambiental',
+                                  'Desastre ecológico'],
+                 'correcta': 'C'},
+                {'pregunta': 'El aumento súbito de la cantidad de habitantes '
+                             'en una determinada región, que satura los '
+                             'servicios públicos, se llama:',
+                 'alternativas': ['Urbanización',
+                                  'Colonización',
+                                  'Densificación',
+                                  'Migración masiva',
+                                  'Explosión demográfica'],
+                 'correcta': 'E'},
+                {'pregunta': 'La explosión demográfica genera crecimiento de '
+                             'los cinturones de:',
+                 'alternativas': ['Riqueza',
+                                  'Comercio',
+                                  'Educación',
+                                  'Industria',
+                                  'Pobreza'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según proyecciones de la ONU, la población '
+                             'mundial alcanzará los 9700 millones de '
+                             'habitantes en el año:',
+                 'alternativas': ['2200', '2030', '2100', '2025', '2050'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según la ONU, en las próximas décadas, el país '
+                             'que superará a China como el más poblado del '
+                             'mundo será:',
+                 'alternativas': ['Nigeria',
+                                  'Estados Unidos',
+                                  'Pakistán',
+                                  'La India',
+                                  'Indonesia'],
+                 'correcta': 'D'},
+                {'pregunta': 'El ozono, molécula formada de tres átomos de '
+                             'oxígeno, tiene la función principal de '
+                             'absorber los rayos:',
+                 'alternativas': ['Ultravioleta',
+                                  'X',
+                                  'Cósmicos',
+                                  'Gamma',
+                                  'Infrarrojos'],
+                 'correcta': 'A'},
+                {'pregunta': 'Los compuestos formados por cloro, flúor y '
+                             'carbono, usados como refrigerantes y '
+                             'disolventes, que deterioran la capa de ozono, '
+                             'se llaman:',
+                 'alternativas': ['Óxidos de nitrógeno',
+                                  'Halones',
+                                  'Bromuro de metilo',
+                                  'Clorofluorocarburos (CFC)',
+                                  'Tetracloruro de carbono'],
+                 'correcta': 'D'},
+                {'pregunta': 'Los compuestos de bromo, flúor y carbono '
+                             'usados en extintores, cuyo bromo es muy '
+                             'efectivo destruyendo el ozono, se llaman:',
+                 'alternativas': ['HCFC',
+                                  'Bromuro de metilo',
+                                  'Halones',
+                                  'CFC',
+                                  'Tetracloruro de carbono'],
+                 'correcta': 'C'},
+                {'pregunta': 'Sin la presencia del CO₂ ni del vapor de agua '
+                             'en la atmósfera, la temperatura media de la '
+                             'Tierra sería del orden de:',
+                 'alternativas': ['18°C bajo cero',
+                                  '0°C',
+                                  '10°C',
+                                  '5°C',
+                                  '50°C bajo cero'],
+                 'correcta': 'A'},
+                {'pregunta': 'El aumento de la temperatura media de los '
+                             'océanos y la atmósfera de la Tierra, causado '
+                             'por emisiones que realzan el efecto '
+                             'invernadero, se llama:',
+                 'alternativas': ['Cambio climático exclusivamente',
+                                  'Calentamiento global',
+                                  'Adaptación climática',
+                                  'Efecto invernadero natural',
+                                  'Variabilidad climática'],
+                 'correcta': 'B'},
+                {'pregunta': 'De 1880 al 2012, la temperatura media global '
+                             'de la Tierra ha aumentado aproximadamente en:',
+                 'alternativas': ['2°C', '5°C', '1,5°C', '3°C', '0,85°C'],
+                 'correcta': 'E'},
+                {'pregunta': 'La variación global del clima de la Tierra, '
+                             'resultado de cambios en periodos de cientos, '
+                             'miles o millones de años, se llama:',
+                 'alternativas': ['Variabilidad climática',
+                                  'Efecto invernadero',
+                                  'Calentamiento local',
+                                  'Microclima',
+                                  'Cambio climático'],
+                 'correcta': 'E'},
+                {'pregunta': 'La variación de los parámetros climáticos en '
+                             'cortos lapsos de tiempo, como días, semanas o '
+                             'meses, se llama:',
+                 'alternativas': ['Adaptación climática',
+                                  'Efecto invernadero',
+                                  'Cambio climático',
+                                  'Calentamiento global',
+                                  'Variabilidad climática'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las iniciativas y medidas encaminadas a '
+                             'reducir la vulnerabilidad de la sociedad ante '
+                             'los efectos del cambio climático se llaman:',
+                 'alternativas': ['Reforestación exclusiva',
+                                  'Prevención exclusiva',
+                                  'Mitigación exclusiva',
+                                  'Resiliencia exclusiva',
+                                  'Adaptación al cambio climático'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según el texto, el factor que más que '
+                             'cualquier otro determina la vulnerabilidad '
+                             'frente al cambio climático es:',
+                 'alternativas': ['La pobreza',
+                                  'La ubicación geográfica exclusiva',
+                                  'La edad',
+                                  'El género exclusivo',
+                                  'La educación'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CONCEPTO Y CLASIFICACIÓN',
                       'items': ['Los recursos naturales son elementos que la '
                                 'naturaleza ofrece espontáneamente para '
@@ -4462,30 +5261,63 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'del Perú es Cutervo, en Cajamarca.',
                                 'El parque nacional más extenso del Perú es '
                                 'el Manu, entre Cusco y Madre de Dios.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['Los recursos naturales son elementos que '
-                                'Ofrece la naturaleza espontáneamente.',
-                                'Los recursos que se agotan con el '
-                                'aprovechamiento del hombre son los No '
-                                'renovables.',
-                                'El petróleo y el gas son recursos naturales '
-                                'No renovables.',
-                                'El agua, el aire y el suelo son recursos '
-                                'naturales Renovables.',
-                                'Cuando el hombre aprovecha un recurso '
-                                'natural, este se convierte en Recurso '
-                                'económico.',
-                                'Entre las aves guaneras del mar peruano '
-                                'figuran el guanay, piquero y Alcatraz.',
-                                'El hierro se explota principalmente en la '
-                                'localidad de Marcona.',
-                                'Los fosfatos como fertilizante se explotan '
-                                'en Bayóvar, Piura.',
-                                'Entre los minerales de la región andina '
-                                'figuran el cobre, plomo, zinc, oro y Plata.',
-                                'La vicuña, el cóndor y la chinchilla son '
-                                'fauna representativa de La región '
-                                'andina.']}]},
+                     {'titulo': 'EXPLOSIÓN DEMOGRÁFICA',
+                      'items': ['La explosión demográfica es un aumento '
+                                'súbito de la cantidad de habitantes en una '
+                                'determinada región, que satura los '
+                                'servicios públicos.',
+                                'La explosión demográfica genera crecimiento '
+                                'de los cinturones de pobreza, en las '
+                                'periferias de las ciudades.',
+                                'El mundo cuenta actualmente con unos 7450 '
+                                'millones de habitantes; alcanzará los 9700 '
+                                'millones en el 2050.',
+                                'Según la ONU, en pocos años la India '
+                                'superará a China como el país más poblado '
+                                'del mundo.']},
+                     {'titulo': 'DETERIORO DE LA CAPA DE OZONO: AGENTES',
+                      'items': ['El ozono (O₃) es una molécula de tres '
+                                'átomos de oxígeno, que absorbe los rayos '
+                                'ultravioleta del Sol.',
+                                'Los clorofluorocarburos (CFC) son '
+                                'compuestos de cloro, flúor y carbono, '
+                                'usados como refrigerantes y disolventes.',
+                                'Los halones, compuestos de bromo, flúor y '
+                                'carbono, se usan en extintores; su Br es '
+                                'más efectivo destruyendo el ozono que el '
+                                'cloro.',
+                                'El bromuro de metilo es un pesticida que, '
+                                'por su contenido de bromo, daña la capa de '
+                                'ozono.']},
+                     {'titulo': 'EFECTO INVERNADERO Y CALENTAMIENTO GLOBAL',
+                      'items': ['Sin la presencia del CO₂ ni del vapor de '
+                                'agua, la temperatura media de la Tierra '
+                                'sería del orden de 18 °C bajo cero.',
+                                'El calentamiento global es el aumento de la '
+                                'temperatura media de los océanos y la '
+                                'atmósfera, causado por emisiones que '
+                                'realzan el efecto invernadero.',
+                                'De 1880 al 2012, la temperatura media '
+                                'global ha aumentado en 0,85 °C; el nivel '
+                                'del mar ha subido 19 cm entre 1901 y '
+                                '2010.']},
+                     {'titulo': 'CAMBIO CLIMÁTICO Y VARIABILIDAD CLIMÁTICA',
+                      'items': ['El cambio climático es la variación global '
+                                'del clima, resultado de cambios en periodos '
+                                'de cientos, miles o millones de años; sus '
+                                'causas pueden ser naturales o '
+                                'antropogénicas.',
+                                'La variabilidad climática es la variación '
+                                'de los parámetros climáticos en cortos '
+                                'lapsos de tiempo: días, semanas o algunos '
+                                'meses.',
+                                'La adaptación al cambio climático son las '
+                                'iniciativas para reducir la vulnerabilidad '
+                                'de la sociedad ante los efectos del cambio '
+                                'climático, según el IPCC.',
+                                'La pobreza, más que cualquier otro factor, '
+                                'determina la vulnerabilidad frente al '
+                                'cambio climático.']}]},
  {'num': 12,
   'titulo': 'Riesgo de Desastres en el Perú',
   'secciones': [{'titulo': '12.1 EL SINAGERD',
@@ -4525,56 +5357,111 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'La {vulnerabilidad} depende, entre otros '
                            'factores, de la ubicación de la vivienda y la '
                            'organización de la población.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El SINAGERD fue creado mediante la Ley N° '
-                           '{29664}.',
-                           'El SINAGERD se caracteriza por ser un sistema '
-                           '{Interinstitucional, descentralizado y '
-                           'participativo}.',
-                           'La Política Nacional de Gestión del Riesgo de '
-                           'Desastres fue aprobada mediante {El Decreto '
-                           'Supremo N° 111-2012-PCM}.',
-                           'Un fenómeno natural que ocurre en una zona '
-                           'despoblada {No representa necesariamente una '
-                           'amenaza}.',
-                           'Un desastre se produce cuando {Se altera '
-                           'intensamente la vida cotidiana de una '
-                           'comunidad}.',
-                           'El riesgo se calcula mediante la fórmula '
-                           '{Amenaza × Vulnerabilidad}.',
-                           'Para que exista riesgo se requiere la presencia '
-                           'de {Amenaza y vulnerabilidad juntas}.',
-                           'La amenaza se define como la probabilidad de que '
-                           'ocurra {Un fenómeno que pueda poner en peligro a '
-                           'las personas}.',
-                           'Las amenazas naturales se originan por {La '
-                           'naturaleza misma}.',
-                           'La vulnerabilidad depende, entre otros factores, '
-                           'de {La ubicación y tipo de vivienda}.',
-                           'Entre los objetivos de la política nacional de '
-                           'gestión del riesgo figura {Fortalecer la cultura '
-                           'de prevención}.',
-                           'Un terremoto en un área no poblada es un ejemplo '
-                           'de {Fenómeno natural sin amenaza directa}.',
-                           'El riesgo representa la proximidad de {Un daño '
-                           'potencial}.',
-                           'Sin vulnerabilidad, una amenaza {No representa '
-                           'un riesgo por sí sola}.',
-                           'El SINAGERD busca capacitar a los componentes '
-                           'del sistema para {La toma de decisiones}.',
-                           'Los fenómenos naturales pueden ser de orden '
-                           'climatológico, hidrológico o {Geológico}.',
-                           'El SINAGERD tiene un carácter, entre otros, '
-                           'transversal y {Participativo}.',
-                           'El cálculo del riesgo puede incluir el número de '
-                           '{Posibles vidas expuestas y viviendas que pueden '
-                           'perderse}.',
-                           'Una inundación en un lugar deshabitado se '
-                           'considera {Un fenómeno natural, no una amenaza '
-                           'directa}.',
-                           'La gestión del riesgo de desastres busca '
-                           'minimizar los efectos adversos sobre {La '
-                           'población, la economía y el ambiente}.']}],
+                {'titulo': '12.4 MOVIMIENTOS SÍSMICOS: CONCEPTOS BÁSICOS',
+                 'items': ['Los {movimientos sísmicos} son vibraciones de la '
+                           'corteza terrestre; la {sismología} es la rama de '
+                           'la geofísica que los estudia.',
+                           'El {sismógrafo} es el aparato capaz de detectar '
+                           'las vibraciones más leves de la Tierra.',
+                           'El {hipocentro} o foco es el punto en la '
+                           'profundidad de la Tierra desde donde se libera '
+                           'la energía sísmica.',
+                           'El {epicentro} es el punto en la superficie '
+                           'terrestre directamente sobre el hipocentro, '
+                           'donde el movimiento es {mayor}.',
+                           'Una {falla} es una fractura en la corteza '
+                           'terrestre donde las rocas se han desplazado; '
+                           'puede ser {activa} (con desplazamientos en el '
+                           'Cuaternario) o inactiva.']},
+                {'titulo': '12.5 ESCALAS DE MEDICIÓN: RICHTER Y MERCALLI',
+                 'items': ['La escala de {Richter} fue desarrollada por '
+                           'Charles Richter y Beno Gutenberg en {1935}; mide '
+                           'la magnitud o energía sísmica liberada, según el '
+                           'registro sismográfico.',
+                           'El mayor sismo registrado, en {Valdivia}, Chile '
+                           '(1960), alcanzó una magnitud de {9,5}.',
+                           'La escala de {Mercalli}, creada en 1902 por '
+                           'Giuseppe Mercalli, mide la {intensidad}: el '
+                           'efecto o daño producido en un lugar determinado.',
+                           'La escala de Mercalli no se basa en registros '
+                           'sismográficos sino en {entrevistas}, registros '
+                           'históricos y noticias; se expresa en números '
+                           '{romanos}.']},
+                {'titulo': '12.6 VULCANISMO Y TSUNAMIS',
+                 'items': ['Las {erupciones volcánicas} son el '
+                           'desplazamiento violento de lava o magma desde el '
+                           'manto hacia el exterior.',
+                           'Un {tsunami} o maremoto son olas enormes '
+                           'originadas generalmente por un movimiento '
+                           'sísmico submarino; pueden desplazarse a '
+                           '{500}-1000 km/h.',
+                           'Los tsunamis ocurren sobre todo en el {océano '
+                           'Pacífico}, propiciados por fallas de subducción '
+                           'como la de las placas de Nazca y Sudamericana.',
+                           'El tsunami de {1960} viajó desde Chile hasta '
+                           'Hawái en 15 horas y a Japón en 22 horas.']},
+                {'titulo': '12.7 PELIGROS DE GEODINÁMICA EXTERNA',
+                 'items': ['El {deslizamiento} de tierras es el '
+                           'desplazamiento de masa de tierra en una '
+                           'pendiente, súbito o lento, por inestabilidad de '
+                           'un {talud}.',
+                           'El {derrumbe} es la caída o desmoronamiento de '
+                           'una estructura natural o artificial que se ha '
+                           'desprendido de su lugar de origen.',
+                           'El {aluvión} es un flujo de gran volumen de '
+                           'hielo, nieve, agua y lodo a gran velocidad, '
+                           'generalmente tras intensas {lluvias} o deshielo.',
+                           'El {alud} o avalancha es una gran masa de nieve '
+                           'que se desplaza ladera abajo, con velocidad '
+                           'entre {50} y 300 km/h.',
+                           'El {golpe de agua} o Loclla (en quechua), mal '
+                           'llamado «huayco», es el desprendimiento de lodo '
+                           'y rocas por saturación de agua en el suelo.']},
+                {'titulo': '12.8 PELIGROS HIDROMETEOROLÓGICOS',
+                 'items': ['La {sequía} es la deficiencia de humedad en la '
+                           'atmósfera por precipitaciones irregulares o '
+                           'insuficientes.',
+                           'La {helada} es el excesivo descenso de la '
+                           'temperatura, causando daño a plantas y animales.',
+                           'Las {tormentas} son fenómenos atmosféricos '
+                           'producidos por descargas {eléctricas} en la '
+                           'atmósfera.',
+                           'Los {huracanes} son vientos que sobrepasan los '
+                           '24 km/h por la interacción de aire caliente y '
+                           'húmedo del océano con aire {frío}.',
+                           'La {inundación} es la invasión lenta o violenta '
+                           'de aguas de río, lagunas o lagos, por fuertes '
+                           'precipitaciones o ruptura de embalses.']},
+                {'titulo': '12.9 PELIGROS DE ORIGEN BIOLÓGICO Y TECNOLÓGICO',
+                 'items': ['Una {plaga} es una situación en la que un animal '
+                           'produce daños económicos a intereses de las '
+                           'personas.',
+                           'Una {epidemia} es el aumento extraordinario del '
+                           'número de casos de una enfermedad infecciosa ya '
+                           'existente en una región.',
+                           'Un {incendio} es una ocurrencia de fuego no '
+                           'controlada que puede afectar estructuras y seres '
+                           'vivos.']},
+                {'titulo': '12.10 INDECI Y DEFENSA CIVIL',
+                 'items': ['El {INDECI} (Instituto Nacional de Defensa '
+                           'Civil) es un organismo público ejecutor que '
+                           'conforma el {SINAGERD}.',
+                           'El INDECI es responsable de coordinar la '
+                           'Política y el Plan Nacional de Gestión del '
+                           'Riesgo de Desastres, en preparación, {respuesta} '
+                           'y rehabilitación.',
+                           'La {Defensa Civil} es el conjunto de medidas '
+                           'permanentes destinadas a prevenir, reducir '
+                           'riesgos y reparar daños causados por desastres.',
+                           'El {Comité de Defensa Civil Regional} es '
+                           'presidido por el Presidente del Gobierno '
+                           'Regional.',
+                           'El {Comité de Defensa Civil Provincial} es '
+                           'presidido por el Alcalde Provincial; el '
+                           'Distrital, por el Alcalde {Distrital}.',
+                           'El {brigadista} es la persona entre 16 y 40 años '
+                           'que, de forma voluntaria, conforma la Brigada de '
+                           'Defensa Civil.']}],
   'cuadros': [{'titulo': '12.2 FÓRMULA DEL RIESGO',
                'encabezados': ['Elemento', 'Definición'],
                'filas': [['{Riesgo}', '{Amenaza} × Vulnerabilidad'],
@@ -4583,147 +5470,146 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Vulnerabilidad}',
                           'Susceptibilidad de sufrir {daño}']]}],
   'preguntas': [{'pregunta': 'El SINAGERD fue creado mediante la Ley N°:',
-                 'alternativas': ['27444',
-                                  '29338',
+                 'alternativas': ['28044',
                                   '29664',
-                                  '28044',
-                                  '30220'],
-                 'correcta': 'C'},
+                                  '30220',
+                                  '29338',
+                                  '27444'],
+                 'correcta': 'B'},
                 {'pregunta': 'El SINAGERD se caracteriza por ser un sistema:',
                  'alternativas': ['Solo consultivo',
+                                  'Exclusivamente militar',
                                   'Interinstitucional, descentralizado y '
                                   'participativo',
-                                  'Exclusivamente militar',
                                   'Centralizado y vertical',
                                   'Sin participación ciudadana'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La Política Nacional de Gestión del Riesgo de '
                              'Desastres fue aprobada mediante:',
-                 'alternativas': ['Un decreto legislativo',
+                 'alternativas': ['Una ordenanza municipal',
                                   'Una resolución ministerial',
                                   'Una ley del Congreso',
                                   'El Decreto Supremo N° 111-2012-PCM',
-                                  'Una ordenanza municipal'],
+                                  'Un decreto legislativo'],
                  'correcta': 'D'},
                 {'pregunta': 'Un fenómeno natural que ocurre en una zona '
                              'despoblada:',
                  'alternativas': ['Se clasifica como vulnerabilidad',
-                                  'Siempre es un desastre',
                                   'No representa necesariamente una amenaza',
+                                  'Siempre es un desastre',
                                   'Requiere evacuación inmediata',
                                   'Es automáticamente un riesgo alto'],
-                 'correcta': 'C'},
+                 'correcta': 'B'},
                 {'pregunta': 'Un desastre se produce cuando:',
-                 'alternativas': ['Ocurre un fenómeno en zona despoblada',
-                                  'No hay ningún efecto adverso',
-                                  'Solo hay pérdidas económicas menores',
-                                  'El fenómeno es predecible',
+                 'alternativas': ['El fenómeno es predecible',
+                                  'Ocurre un fenómeno en zona despoblada',
                                   'Se altera intensamente la vida cotidiana '
-                                  'de una comunidad'],
-                 'correcta': 'E'},
+                                  'de una comunidad',
+                                  'Solo hay pérdidas económicas menores',
+                                  'No hay ningún efecto adverso'],
+                 'correcta': 'C'},
                 {'pregunta': 'El riesgo se calcula mediante la fórmula:',
-                 'alternativas': ['Amenaza − Vulnerabilidad',
-                                  'Amenaza + Vulnerabilidad',
+                 'alternativas': ['Amenaza × Vulnerabilidad',
                                   'Vulnerabilidad ÷ Amenaza',
                                   'Amenaza ÷ Vulnerabilidad',
-                                  'Amenaza × Vulnerabilidad'],
-                 'correcta': 'E'},
+                                  'Amenaza + Vulnerabilidad',
+                                  'Amenaza − Vulnerabilidad'],
+                 'correcta': 'A'},
                 {'pregunta': 'Para que exista riesgo se requiere la '
                              'presencia de:',
-                 'alternativas': ['Solo fenómenos naturales extremos',
-                                  'Solo la amenaza',
-                                  'Solo la vulnerabilidad',
+                 'alternativas': ['Amenaza y vulnerabilidad juntas',
                                   'Ningún factor en particular',
-                                  'Amenaza y vulnerabilidad juntas'],
-                 'correcta': 'E'},
+                                  'Solo fenómenos naturales extremos',
+                                  'Solo la vulnerabilidad',
+                                  'Solo la amenaza'],
+                 'correcta': 'A'},
                 {'pregunta': 'La amenaza se define como la probabilidad de '
                              'que ocurra:',
-                 'alternativas': ['Un desastre ya consumado',
+                 'alternativas': ['Una política pública',
                                   'Una vulnerabilidad social',
+                                  'Un desastre ya consumado',
+                                  'Un cambio climático',
                                   'Un fenómeno que pueda poner en peligro a '
-                                  'las personas',
-                                  'Una política pública',
-                                  'Un cambio climático'],
-                 'correcta': 'C'},
+                                  'las personas'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las amenazas naturales se originan por:',
-                 'alternativas': ['El comercio internacional',
-                                  'La naturaleza misma',
-                                  'Decisiones políticas',
+                 'alternativas': ['Decisiones políticas',
                                   'Fallas de infraestructura',
-                                  'Acción humana exclusivamente'],
-                 'correcta': 'B'},
+                                  'La naturaleza misma',
+                                  'Acción humana exclusivamente',
+                                  'El comercio internacional'],
+                 'correcta': 'C'},
                 {'pregunta': 'La vulnerabilidad depende, entre otros '
                              'factores, de:',
-                 'alternativas': ['La ubicación y tipo de vivienda',
+                 'alternativas': ['Solo el clima',
                                   'Solo la economía nacional',
-                                  'Solo el idioma',
                                   'Solo la edad de la población',
-                                  'Solo el clima'],
-                 'correcta': 'A'},
+                                  'Solo el idioma',
+                                  'La ubicación y tipo de vivienda'],
+                 'correcta': 'E'},
                 {'pregunta': 'Entre los objetivos de la política nacional de '
                              'gestión del riesgo figura:',
-                 'alternativas': ['Eliminar los fenómenos naturales',
-                                  'Aumentar la vulnerabilidad',
-                                  'Fortalecer la cultura de prevención',
+                 'alternativas': ['Aumentar la vulnerabilidad',
                                   'Evitar toda construcción',
-                                  'Prohibir la habitación en zonas de '
-                                  'riesgo'],
-                 'correcta': 'C'},
+                                  'Eliminar los fenómenos naturales',
+                                  'Prohibir la habitación en zonas de riesgo',
+                                  'Fortalecer la cultura de prevención'],
+                 'correcta': 'E'},
                 {'pregunta': 'Un terremoto en un área no poblada es un '
                              'ejemplo de:',
-                 'alternativas': ['Riesgo alto',
-                                  'Catástrofe social',
+                 'alternativas': ['Catástrofe social',
                                   'Desastre',
+                                  'Vulnerabilidad extrema',
                                   'Fenómeno natural sin amenaza directa',
-                                  'Vulnerabilidad extrema'],
+                                  'Riesgo alto'],
                  'correcta': 'D'},
                 {'pregunta': 'El riesgo representa la proximidad de:',
-                 'alternativas': ['Una política pública exitosa',
-                                  'Una mejora económica',
-                                  'Un daño potencial',
+                 'alternativas': ['Un daño potencial',
+                                  'Una política pública exitosa',
                                   'Un fenómeno inexistente',
+                                  'Una mejora económica',
                                   'Un evento positivo'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'Sin vulnerabilidad, una amenaza:',
-                 'alternativas': ['Es imposible de medir',
+                 'alternativas': ['No representa un riesgo por sí sola',
                                   'Aumenta exponencialmente',
+                                  'Genera un desastre igual',
                                   'Se convierte en catástrofe automática',
-                                  'No representa un riesgo por sí sola',
-                                  'Genera un desastre igual'],
-                 'correcta': 'D'},
+                                  'Es imposible de medir'],
+                 'correcta': 'A'},
                 {'pregunta': 'El SINAGERD busca capacitar a los componentes '
                              'del sistema para:',
-                 'alternativas': ['Evitar toda capacitación',
-                                  'Eliminar la participación privada',
+                 'alternativas': ['Eliminar la participación privada',
                                   'La toma de decisiones',
                                   'Centralizar el poder',
-                                  'Reducir el presupuesto público'],
-                 'correcta': 'C'},
+                                  'Reducir el presupuesto público',
+                                  'Evitar toda capacitación'],
+                 'correcta': 'B'},
                 {'pregunta': 'Los fenómenos naturales pueden ser de orden '
                              'climatológico, hidrológico o:',
                  'alternativas': ['Educativo',
-                                  'Comercial',
-                                  'Cultural',
+                                  'Geológico',
                                   'Económico',
-                                  'Geológico'],
-                 'correcta': 'E'},
+                                  'Cultural',
+                                  'Comercial'],
+                 'correcta': 'B'},
                 {'pregunta': 'El SINAGERD tiene un carácter, entre otros, '
                              'transversal y:',
-                 'alternativas': ['Exclusivo',
+                 'alternativas': ['Temporal',
                                   'Unipersonal',
-                                  'Temporal',
                                   'Participativo',
+                                  'Exclusivo',
                                   'Cerrado'],
-                 'correcta': 'D'},
+                 'correcta': 'C'},
                 {'pregunta': 'El cálculo del riesgo puede incluir el número '
                              'de:',
-                 'alternativas': ['Solo turistas en la zona',
-                                  'Solo empresas afectadas',
+                 'alternativas': ['Solo vehículos en circulación',
                                   'Posibles vidas expuestas y viviendas que '
                                   'pueden perderse',
-                                  'Solo vehículos en circulación',
-                                  'Solo funcionarios públicos'],
-                 'correcta': 'C'},
+                                  'Solo empresas afectadas',
+                                  'Solo funcionarios públicos',
+                                  'Solo turistas en la zona'],
+                 'correcta': 'B'},
                 {'pregunta': 'Una inundación en un lugar deshabitado se '
                              'considera:',
                  'alternativas': ['Un fenómeno natural, no una amenaza '
@@ -4744,21 +5630,172 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                 {'pregunta': 'El brote de una enfermedad infectocontagiosa '
                              'que aparece en forma masiva en una región se '
                              'denomina: (II CEPRU 2025)',
-                 'alternativas': ['Calamidad',
-                                  'Plaga',
-                                  'Epidemia',
+                 'alternativas': ['Pandemia',
                                   'Endemia',
-                                  'Pandemia'],
+                                  'Epidemia',
+                                  'Calamidad',
+                                  'Plaga'],
                  'correcta': 'C'},
                 {'pregunta': 'La autoridad que preside el Comité de Defensa '
                              'Civil Regional es: (II CEPRU 2024)',
-                 'alternativas': ['Consejo Regional',
-                                  'Alcalde Provincial',
-                                  'Gobernador Regional',
+                 'alternativas': ['Alcalde Provincial',
                                   'Teniente Alcalde',
-                                  'Concejo Municipal'],
-                 'correcta': 'C'}],
-  'resumen_visual': [{'titulo': 'EL SINAGERD',
+                                  'Concejo Municipal',
+                                  'Gobernador Regional',
+                                  'Consejo Regional'],
+                 'correcta': 'D'},
+                {'pregunta': 'El punto en la profundidad de la Tierra desde '
+                             'donde se libera la energía en un movimiento '
+                             'sísmico se llama:',
+                 'alternativas': ['Talweg',
+                                  'Hipocentro o foco',
+                                  'Epicentro',
+                                  'Sismógrafo',
+                                  'Falla'],
+                 'correcta': 'B'},
+                {'pregunta': 'El punto en la superficie terrestre '
+                             'directamente sobre el hipocentro, donde el '
+                             'movimiento sísmico es mayor, se llama:',
+                 'alternativas': ['Epicentro',
+                                  'Terremoto',
+                                  'Falla activa',
+                                  'Talweg',
+                                  'Hipocentro'],
+                 'correcta': 'A'},
+                {'pregunta': 'Una fractura en la corteza terrestre donde las '
+                             'rocas se han desplazado, con actividad durante '
+                             'el Cuaternario, se llama falla:',
+                 'alternativas': ['Tectónica exclusiva',
+                                  'Sísmica exclusiva',
+                                  'Activa',
+                                  'Geológica exclusiva',
+                                  'Inactiva'],
+                 'correcta': 'C'},
+                {'pregunta': 'La escala que mide la magnitud o energía '
+                             'sísmica liberada, desarrollada por Charles '
+                             'Richter en 1935, se llama escala de:',
+                 'alternativas': ['Richter',
+                                  'Mercalli',
+                                  'Beaufort',
+                                  'Saffir-Simpson',
+                                  'Fujita'],
+                 'correcta': 'A'},
+                {'pregunta': 'La escala que mide la intensidad de un sismo, '
+                             'es decir el efecto o daño producido en un '
+                             'lugar, creada por Giuseppe Mercalli en 1902, '
+                             'se llama escala de:',
+                 'alternativas': ['Richter',
+                                  'Beaufort',
+                                  'Mercalli',
+                                  'Fujita',
+                                  'Saffir-Simpson'],
+                 'correcta': 'C'},
+                {'pregunta': 'A diferencia de la escala de Richter, la '
+                             'escala de Mercalli se expresa en:',
+                 'alternativas': ['Números decimales',
+                                  'Porcentajes',
+                                  'Letras',
+                                  'Números romanos',
+                                  'Fracciones'],
+                 'correcta': 'D'},
+                {'pregunta': 'Un maremoto u ola enorme originada '
+                             'generalmente por un movimiento sísmico '
+                             'submarino se llama:',
+                 'alternativas': ['Corriente marina',
+                                  'Oleaje',
+                                  'Resaca',
+                                  'Tsunami',
+                                  'Marejada'],
+                 'correcta': 'D'},
+                {'pregunta': 'El desprendimiento de lodo, rocas y todo lo '
+                             'que encuentra a su paso, mal llamado «huayco», '
+                             'se denomina correctamente, en quechua:',
+                 'alternativas': ['Aluvión',
+                                  'Deslizamiento',
+                                  'Derrumbe',
+                                  'Golpe de agua o Loclla',
+                                  'Alud'],
+                 'correcta': 'D'},
+                {'pregunta': 'El flujo de gran volumen de hielo, nieve, agua '
+                             'y lodo que se desplaza a gran velocidad tras '
+                             'intensas lluvias o deshielo se llama:',
+                 'alternativas': ['Sequía',
+                                  'Derrumbe',
+                                  'Deslizamiento',
+                                  'Alud',
+                                  'Aluvión'],
+                 'correcta': 'E'},
+                {'pregunta': 'La gran masa de nieve que se desplaza ladera '
+                             'abajo, también llamada avalancha, se llama:',
+                 'alternativas': ['Deslizamiento',
+                                  'Aluvión',
+                                  'Golpe de agua',
+                                  'Alud',
+                                  'Derrumbe'],
+                 'correcta': 'D'},
+                {'pregunta': 'La deficiencia de humedad en la atmósfera por '
+                             'precipitaciones irregulares o insuficientes se '
+                             'llama:',
+                 'alternativas': ['Tormenta',
+                                  'Inundación',
+                                  'Helada',
+                                  'Granizada',
+                                  'Sequía'],
+                 'correcta': 'E'},
+                {'pregunta': 'El excesivo descenso de la temperatura que '
+                             'causa daño a plantas y animales se llama:',
+                 'alternativas': ['Huracán',
+                                  'Sequía',
+                                  'Helada',
+                                  'Tornado',
+                                  'Granizada'],
+                 'correcta': 'C'},
+                {'pregunta': 'Una situación en la que un animal produce '
+                             'daños económicos a intereses de las personas '
+                             'se llama:',
+                 'alternativas': ['Plaga',
+                                  'Endemia',
+                                  'Pandemia',
+                                  'Epidemia',
+                                  'Incendio'],
+                 'correcta': 'A'},
+                {'pregunta': 'El aumento extraordinario del número de casos '
+                             'de una enfermedad infecciosa ya existente en '
+                             'una región se llama:',
+                 'alternativas': ['Brote controlado',
+                                  'Pandemia exclusiva',
+                                  'Plaga',
+                                  'Endemia exclusiva',
+                                  'Epidemia'],
+                 'correcta': 'E'},
+                {'pregunta': 'El organismo público ejecutor que conforma el '
+                             'SINAGERD, responsable de la Política Nacional '
+                             'de Gestión del Riesgo de Desastres, se llama:',
+                 'alternativas': ['Cruz Roja',
+                                  'SINADECI exclusivamente',
+                                  'Bomberos',
+                                  'Defensa Civil exclusivamente',
+                                  'INDECI'],
+                 'correcta': 'E'},
+                {'pregunta': 'El conjunto de medidas permanentes destinadas '
+                             'a prevenir, reducir riesgos y reparar daños '
+                             'causados por desastres se llama:',
+                 'alternativas': ['Gestión de Riesgos exclusiva',
+                                  'SINAGERD exclusivamente',
+                                  'COEN',
+                                  'Defensa Civil',
+                                  'INDECI exclusivamente'],
+                 'correcta': 'D'},
+                {'pregunta': 'El Comité de Defensa Civil Regional es '
+                             'presidido por el:',
+                 'alternativas': ['Presidente del Gobierno Regional',
+                                  'Prefecto',
+                                  'Alcalde Distrital',
+                                  'Alcalde Provincial',
+                                  'Congresista Regional'],
+                 'correcta': 'A'}],
+  'resumen_visual': [{'titulo': 'EL SINAGERD / CONCEPTOS BÁSICOS: FENÓMENO, '
+                                'DESASTRE Y RIESGO',
                       'items': ['El Sistema Nacional de Gestión del Riesgo '
                                 'de Desastres, SINAGERD, fue creado por la '
                                 'Ley N° 29664.',
@@ -4771,11 +5808,8 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'obligatorio cumplimiento por el Decreto '
                                 'Supremo N° 111-2012-PCM.',
                                 'Entre los objetivos de la política nacional '
-                                'figura fortalecer la cultura de '
-                                'prevención.']},
-                     {'titulo': 'CONCEPTOS BÁSICOS: FENÓMENO, DESASTRE Y '
-                                'RIESGO',
-                      'items': ['Un fenómeno natural es una manifestación '
+                                'figura fortalecer la cultura de prevención.',
+                                'Un fenómeno natural es una manifestación '
                                 'espontánea de la naturaleza que no '
                                 'necesariamente representa una amenaza para '
                                 'el hombre.',
@@ -4787,7 +5821,8 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'multiplicada por vulnerabilidad.',
                                 'No puede haber riesgo sin amenaza y tampoco '
                                 'sin vulnerabilidad.']},
-                     {'titulo': 'AMENAZA Y VULNERABILIDAD',
+                     {'titulo': 'AMENAZA Y VULNERABILIDAD / MOVIMIENTOS '
+                                'SÍSMICOS: CONCEPTOS BÁSICOS',
                       'items': ['La amenaza es la probabilidad de que ocurra '
                                 'un fenómeno natural o causado por el hombre '
                                 'que puede poner en peligro a un grupo de '
@@ -4797,35 +5832,120 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'movimientos sísmicos.',
                                 'La vulnerabilidad depende, entre otros '
                                 'factores, de la ubicación de la vivienda y '
-                                'la organización de la población.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El SINAGERD fue creado mediante la Ley N° '
-                                '29664.',
-                                'El SINAGERD se caracteriza por ser un '
-                                'sistema Interinstitucional, descentralizado '
-                                'y participativo.',
-                                'La Política Nacional de Gestión del Riesgo '
-                                'de Desastres fue aprobada mediante El '
-                                'Decreto Supremo N° 111-2012-PCM.',
-                                'Un fenómeno natural que ocurre en una zona '
-                                'despoblada No representa necesariamente una '
-                                'amenaza.',
-                                'Un desastre se produce cuando Se altera '
-                                'intensamente la vida cotidiana de una '
-                                'comunidad.',
-                                'El riesgo se calcula mediante la fórmula '
-                                'Amenaza × Vulnerabilidad.',
-                                'Para que exista riesgo se requiere la '
-                                'presencia de Amenaza y vulnerabilidad '
-                                'juntas.',
-                                'La amenaza se define como la probabilidad '
-                                'de que ocurra Un fenómeno que pueda poner '
-                                'en peligro a las personas.',
-                                'Las amenazas naturales se originan por La '
-                                'naturaleza misma.',
-                                'La vulnerabilidad depende, entre otros '
-                                'factores, de La ubicación y tipo de '
-                                'vivienda.']}]},
+                                'la organización de la población.',
+                                'Los movimientos sísmicos son vibraciones de '
+                                'la corteza terrestre; la sismología es la '
+                                'rama de la geofísica que los estudia.',
+                                'El sismógrafo es el aparato capaz de '
+                                'detectar las vibraciones más leves de la '
+                                'Tierra.',
+                                'El hipocentro o foco es el punto en la '
+                                'profundidad de la Tierra desde donde se '
+                                'libera la energía sísmica.',
+                                'El epicentro es el punto en la superficie '
+                                'terrestre directamente sobre el hipocentro, '
+                                'donde el movimiento es mayor.',
+                                'Una falla es una fractura en la corteza '
+                                'terrestre donde las rocas se han '
+                                'desplazado; puede ser activa (con '
+                                'desplazamientos en el Cuaternario) o '
+                                'inactiva.']},
+                     {'titulo': 'ESCALAS DE MEDICIÓN: RICHTER Y MERCALLI / '
+                                'VULCANISMO Y TSUNAMIS',
+                      'items': ['La escala de Richter fue desarrollada por '
+                                'Charles Richter y Beno Gutenberg en 1935; '
+                                'mide la magnitud o energía sísmica '
+                                'liberada, según el registro sismográfico.',
+                                'El mayor sismo registrado, en Valdivia, '
+                                'Chile (1960), alcanzó una magnitud de 9,5.',
+                                'La escala de Mercalli, creada en 1902 por '
+                                'Giuseppe Mercalli, mide la intensidad: el '
+                                'efecto o daño producido en un lugar '
+                                'determinado.',
+                                'La escala de Mercalli no se basa en '
+                                'registros sismográficos sino en '
+                                'entrevistas, registros históricos y '
+                                'noticias; se expresa en números romanos.',
+                                'Las erupciones volcánicas son el '
+                                'desplazamiento violento de lava o magma '
+                                'desde el manto hacia el exterior.',
+                                'Un tsunami o maremoto son olas enormes '
+                                'originadas generalmente por un movimiento '
+                                'sísmico submarino; pueden desplazarse a '
+                                '500-1000 km/h.',
+                                'Los tsunamis ocurren sobre todo en el '
+                                'océano Pacífico, propiciados por fallas de '
+                                'subducción como la de las placas de Nazca y '
+                                'Sudamericana.',
+                                'El tsunami de 1960 viajó desde Chile hasta '
+                                'Hawái en 15 horas y a Japón en 22 horas.']},
+                     {'titulo': 'PELIGROS DE GEODINÁMICA EXTERNA / PELIGROS '
+                                'HIDROMETEOROLÓGICOS',
+                      'items': ['El deslizamiento de tierras es el '
+                                'desplazamiento de masa de tierra en una '
+                                'pendiente, súbito o lento, por '
+                                'inestabilidad de un talud.',
+                                'El derrumbe es la caída o desmoronamiento '
+                                'de una estructura natural o artificial que '
+                                'se ha desprendido de su lugar de origen.',
+                                'El aluvión es un flujo de gran volumen de '
+                                'hielo, nieve, agua y lodo a gran velocidad, '
+                                'generalmente tras intensas lluvias o '
+                                'deshielo.',
+                                'El alud o avalancha es una gran masa de '
+                                'nieve que se desplaza ladera abajo, con '
+                                'velocidad entre 50 y 300 km/h.',
+                                'El golpe de agua o Loclla (en quechua), mal '
+                                'llamado «huayco», es el desprendimiento de '
+                                'lodo y rocas por saturación de agua en el '
+                                'suelo.',
+                                'La sequía es la deficiencia de humedad en '
+                                'la atmósfera por precipitaciones '
+                                'irregulares o insuficientes.',
+                                'La helada es el excesivo descenso de la '
+                                'temperatura, causando daño a plantas y '
+                                'animales.',
+                                'Las tormentas son fenómenos atmosféricos '
+                                'producidos por descargas eléctricas en la '
+                                'atmósfera.',
+                                'Los huracanes son vientos que sobrepasan '
+                                'los 24 km/h por la interacción de aire '
+                                'caliente y húmedo del océano con aire frío.',
+                                'La inundación es la invasión lenta o '
+                                'violenta de aguas de río, lagunas o lagos, '
+                                'por fuertes precipitaciones o ruptura de '
+                                'embalses.']},
+                     {'titulo': 'PELIGROS DE ORIGEN BIOLÓGICO Y TECNOLÓGICO '
+                                '/ INDECI Y DEFENSA CIVIL',
+                      'items': ['Una plaga es una situación en la que un '
+                                'animal produce daños económicos a intereses '
+                                'de las personas.',
+                                'Una epidemia es el aumento extraordinario '
+                                'del número de casos de una enfermedad '
+                                'infecciosa ya existente en una región.',
+                                'Un incendio es una ocurrencia de fuego no '
+                                'controlada que puede afectar estructuras y '
+                                'seres vivos.',
+                                'El INDECI (Instituto Nacional de Defensa '
+                                'Civil) es un organismo público ejecutor que '
+                                'conforma el SINAGERD.',
+                                'El INDECI es responsable de coordinar la '
+                                'Política y el Plan Nacional de Gestión del '
+                                'Riesgo de Desastres, en preparación, '
+                                'respuesta y rehabilitación.',
+                                'La Defensa Civil es el conjunto de medidas '
+                                'permanentes destinadas a prevenir, reducir '
+                                'riesgos y reparar daños causados por '
+                                'desastres.',
+                                'El Comité de Defensa Civil Regional es '
+                                'presidido por el Presidente del Gobierno '
+                                'Regional.',
+                                'El Comité de Defensa Civil Provincial es '
+                                'presidido por el Alcalde Provincial; el '
+                                'Distrital, por el Alcalde Distrital.',
+                                'El brigadista es la persona entre 16 y 40 '
+                                'años que, de forma voluntaria, conforma la '
+                                'Brigada de Defensa Civil.']}]},
  {'num': 13,
   'titulo': 'Dinámica Poblacional en el Perú',
   'secciones': [{'titulo': '13.1 DEMOGRAFÍA Y DEMOGEOGRAFÍA',
@@ -4868,50 +5988,39 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'La {población relativa} o densidad de población '
                            'es el número de habitantes por km² de área '
                            'territorial.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La disciplina que estudia la distribución de la '
-                           'población en un área geográfica es {La '
-                           'demogeografía}.',
-                           'La demografía estudia estadísticamente la '
-                           'estructura y dinámica de {Las poblaciones '
-                           'humanas}.',
-                           'La tasa de natalidad en el Perú es '
-                           'aproximadamente de {23,3‰}.',
-                           'La tasa de mortalidad en el Perú es '
-                           'aproximadamente de {6,2‰}.',
-                           'La tasa de crecimiento poblacional considera '
-                           'nacimientos, muertes y {La migración}.',
-                           'Según el INEI, la población del Perú al 2017 '
-                           'superaba {31 237 385 habitantes}.',
-                           'El organismo central y rector del Sistema '
-                           'Estadístico Nacional del Perú es {El INEI}.',
-                           'El INEI depende directamente de {El Presidente '
-                           'del Consejo de Ministros}.',
-                           'El antecesor del INEI, creado en 1969, se llamó '
-                           '{ONEC}.',
-                           'La población peruana se caracteriza por ser '
-                           '{Heterogénea, multirracial y multicultural}.',
-                           'La población peruana se concentra mayormente en '
-                           '{La costa y zonas urbanas}.',
-                           'La población nominal es {El número total de '
-                           'habitantes censados}.',
-                           'La población que no se halla físicamente durante '
-                           'el censo se llama {Población omitida}.',
-                           'La población absoluta es {La cantidad total de '
-                           'habitantes de una unidad geográfica}.',
-                           'La densidad de población también se llama '
-                           '{Población relativa}.',
-                           'La fórmula de la población relativa es '
-                           '{Población absoluta entre extensión '
-                           'territorial}.',
-                           'Según el censo de 1940, la población del Perú '
-                           'era de {7 023 111}.',
-                           'Según el censo de 2007, la población del Perú '
-                           'era de {28 220 764}.',
-                           'La densidad poblacional del Perú en 2017 era '
-                           'aproximadamente de {24,3 hab/km²}.',
-                           'La esperanza de vida en el Perú, según el censo '
-                           'de 2007, fue de {71,2 años}.']}],
+                {'titulo': '13.5 ESTRUCTURA DE LA POBLACIÓN',
+                 'items': ['La {estructura demográfica} de una población es '
+                           'su distribución por {edad} y sexo.',
+                           'Esta distribución se representa en un gráfico de '
+                           'barras horizontales llamado {pirámide '
+                           'poblacional}.',
+                           'La pirámide poblacional peruana actual muestra '
+                           'una base más {reducida} que en 1940, reflejando '
+                           'menor natalidad y mayor población en edad '
+                           '{activa}.',
+                           'Según el Censo {2017}, en el Perú se censaron '
+                           '3145 personas centenarias (100 años o más): 994 '
+                           'hombres y {2151} mujeres.']},
+                {'titulo': '13.6 LA MIGRACIÓN: CAUSAS',
+                 'items': ['La {migración} es el desplazamiento de la '
+                           'población de un lugar de origen a un lugar de '
+                           '{residencia}; incluye migración interna y '
+                           'externa.',
+                           'Entre las causas de la migración peruana están '
+                           'las {catástrofes naturales}, el {centralismo}, y '
+                           'la violencia social del terrorismo.',
+                           'Otras causas son los bajos ingresos de los '
+                           'agricultores de la {sierra}, y el poder de '
+                           'atracción de las ciudades por su {desarrollo}.']},
+                {'titulo': '13.7 CONSECUENCIAS NEGATIVAS DE LA MIGRACIÓN',
+                 'items': ['Entre las consecuencias negativas de la '
+                           'migración peruana están el {despoblamiento} del '
+                           'campo y el abandono de la agricultura.',
+                           'También genera el {crecimiento desordenado} de '
+                           'las ciudades y la desocupación de la población '
+                           'urbana.',
+                           'Provoca problemas sociales en las ciudades como '
+                           '{delincuencia}, drogadicción y alcoholismo.']}],
   'cuadros': [{'titulo': '13.2 POBLACIÓN DEL PERÚ POR CENSOS',
                'encabezados': ['Año', 'Población', 'Densidad hab/km²'],
                'filas': [['{1940}', '7 023 111', '5,5'],
@@ -4921,179 +6030,226 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{2017}', '31 237 385', '24,3']]}],
   'preguntas': [{'pregunta': 'La disciplina que estudia la distribución de '
                              'la población en un área geográfica es:',
-                 'alternativas': ['La cartografía',
-                                  'La demogeografía',
+                 'alternativas': ['La demogeografía',
                                   'La demografía',
-                                  'La geopolítica',
-                                  'La estadística'],
-                 'correcta': 'B'},
+                                  'La cartografía',
+                                  'La estadística',
+                                  'La geopolítica'],
+                 'correcta': 'A'},
                 {'pregunta': 'La demografía estudia estadísticamente la '
                              'estructura y dinámica de:',
                  'alternativas': ['Las poblaciones humanas',
-                                  'El relieve terrestre',
-                                  'Las corrientes marinas',
                                   'Los climas',
-                                  'Los ecosistemas'],
+                                  'Los ecosistemas',
+                                  'Las corrientes marinas',
+                                  'El relieve terrestre'],
                  'correcta': 'A'},
                 {'pregunta': 'La tasa de natalidad en el Perú es '
                              'aproximadamente de:',
-                 'alternativas': ['6,2‰', '10‰', '1‰', '50‰', '23,3‰'],
-                 'correcta': 'E'},
+                 'alternativas': ['6,2‰', '23,3‰', '10‰', '50‰', '1‰'],
+                 'correcta': 'B'},
                 {'pregunta': 'La tasa de mortalidad en el Perú es '
                              'aproximadamente de:',
-                 'alternativas': ['23,3‰', '6,2‰', '30‰', '15‰', '2‰'],
-                 'correcta': 'B'},
+                 'alternativas': ['30‰', '15‰', '23,3‰', '6,2‰', '2‰'],
+                 'correcta': 'D'},
                 {'pregunta': 'La tasa de crecimiento poblacional considera '
                              'nacimientos, muertes y:',
-                 'alternativas': ['La economía',
-                                  'El idioma',
+                 'alternativas': ['La migración',
                                   'La religión',
-                                  'La migración',
-                                  'El clima'],
-                 'correcta': 'D'},
+                                  'La economía',
+                                  'El clima',
+                                  'El idioma'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el INEI, la población del Perú al 2017 '
                              'superaba:',
-                 'alternativas': ['40 millones',
-                                  '31 237 385 habitantes',
-                                  '20 millones',
+                 'alternativas': ['20 millones',
+                                  '10 millones',
                                   '50 millones',
-                                  '10 millones'],
-                 'correcta': 'B'},
+                                  '40 millones',
+                                  '31 237 385 habitantes'],
+                 'correcta': 'E'},
                 {'pregunta': 'El organismo central y rector del Sistema '
                              'Estadístico Nacional del Perú es:',
-                 'alternativas': ['El INEI',
-                                  'El MINEDU',
+                 'alternativas': ['El MINEDU',
                                   'El MEF',
+                                  'El INEI',
                                   'La SUNAT',
                                   'El BCRP'],
-                 'correcta': 'A'},
+                 'correcta': 'C'},
                 {'pregunta': 'El INEI depende directamente de:',
-                 'alternativas': ['La Presidencia de la República '
+                 'alternativas': ['El Congreso',
+                                  'La Presidencia de la República '
                                   'directamente',
                                   'El Poder Judicial',
-                                  'El Ministerio de Economía',
-                                  'El Congreso',
-                                  'El Presidente del Consejo de Ministros'],
-                 'correcta': 'E'},
+                                  'El Presidente del Consejo de Ministros',
+                                  'El Ministerio de Economía'],
+                 'correcta': 'D'},
                 {'pregunta': 'El antecesor del INEI, creado en 1969, se '
                              'llamó:',
-                 'alternativas': ['INE', 'ONEC', 'SUNAT', 'MEF', 'BCRP'],
-                 'correcta': 'B'},
+                 'alternativas': ['ONEC', 'INE', 'BCRP', 'MEF', 'SUNAT'],
+                 'correcta': 'A'},
                 {'pregunta': 'La población peruana se caracteriza por ser:',
-                 'alternativas': ['Exclusivamente andina',
-                                  'Sin diversidad lingüística',
+                 'alternativas': ['Sin diversidad lingüística',
                                   'Heterogénea, multirracial y multicultural',
+                                  'Homogénea y monocultural',
                                   'Solo urbana',
-                                  'Homogénea y monocultural'],
-                 'correcta': 'C'},
+                                  'Exclusivamente andina'],
+                 'correcta': 'B'},
                 {'pregunta': 'La población peruana se concentra mayormente '
                              'en:',
-                 'alternativas': ['Zonas fronterizas',
-                                  'La costa y zonas urbanas',
-                                  'La sierra',
+                 'alternativas': ['La sierra',
                                   'Zonas rurales exclusivamente',
-                                  'La selva'],
-                 'correcta': 'B'},
-                {'pregunta': 'La población nominal es:',
-                 'alternativas': ['La estimada por proyección',
-                                  'La población futura',
-                                  'Solo la población urbana',
-                                  'El número total de habitantes censados',
-                                  'Solo la población rural'],
+                                  'La selva',
+                                  'La costa y zonas urbanas',
+                                  'Zonas fronterizas'],
                  'correcta': 'D'},
+                {'pregunta': 'La población nominal es:',
+                 'alternativas': ['La población futura',
+                                  'Solo la población urbana',
+                                  'La estimada por proyección',
+                                  'Solo la población rural',
+                                  'El número total de habitantes censados'],
+                 'correcta': 'E'},
                 {'pregunta': 'La población que no se halla físicamente '
                              'durante el censo se llama:',
-                 'alternativas': ['Población nominal',
-                                  'Población omitida',
+                 'alternativas': ['Población relativa',
                                   'Población absoluta',
-                                  'Población relativa',
-                                  'Población flotante'],
-                 'correcta': 'B'},
+                                  'Población omitida',
+                                  'Población flotante',
+                                  'Población nominal'],
+                 'correcta': 'C'},
                 {'pregunta': 'La población absoluta es:',
-                 'alternativas': ['Un promedio estimado',
-                                  'Solo la tasa de crecimiento',
+                 'alternativas': ['Solo la tasa de crecimiento',
+                                  'Solo un porcentaje',
+                                  'Solo la densidad',
                                   'La cantidad total de habitantes de una '
                                   'unidad geográfica',
-                                  'Solo la densidad',
-                                  'Solo un porcentaje'],
-                 'correcta': 'C'},
+                                  'Un promedio estimado'],
+                 'correcta': 'D'},
                 {'pregunta': 'La densidad de población también se llama:',
                  'alternativas': ['Población relativa',
-                                  'Población flotante',
-                                  'Población omitida',
                                   'Población nominal',
-                                  'Población censada'],
+                                  'Población omitida',
+                                  'Población censada',
+                                  'Población flotante'],
                  'correcta': 'A'},
                 {'pregunta': 'La fórmula de la población relativa es:',
                  'alternativas': ['Tasa de natalidad menos mortalidad',
+                                  'Población nominal más omitida',
                                   'Población absoluta entre extensión '
                                   'territorial',
-                                  'Población nominal más omitida',
-                                  'Extensión territorial entre población '
-                                  'absoluta',
                                   'Población absoluta × extensión '
-                                  'territorial'],
-                 'correcta': 'B'},
+                                  'territorial',
+                                  'Extensión territorial entre población '
+                                  'absoluta'],
+                 'correcta': 'C'},
                 {'pregunta': 'Según el censo de 1940, la población del Perú '
                              'era de:',
-                 'alternativas': ['7 023 111',
-                                  '28 220 764',
-                                  '22 639 443',
+                 'alternativas': ['22 639 443',
+                                  '7 023 111',
                                   '14 121 564',
-                                  '10 420 357'],
-                 'correcta': 'A'},
+                                  '10 420 357',
+                                  '28 220 764'],
+                 'correcta': 'B'},
                 {'pregunta': 'Según el censo de 2007, la población del Perú '
                              'era de:',
-                 'alternativas': ['14 121 564',
-                                  '28 220 764',
-                                  '17 762 231',
+                 'alternativas': ['17 762 231',
+                                  '22 639 443',
                                   '31 237 385',
-                                  '22 639 443'],
-                 'correcta': 'B'},
+                                  '14 121 564',
+                                  '28 220 764'],
+                 'correcta': 'E'},
                 {'pregunta': 'La densidad poblacional del Perú en 2017 era '
                              'aproximadamente de:',
-                 'alternativas': ['50 hab/km²',
-                                  '5 hab/km²',
+                 'alternativas': ['5 hab/km²',
                                   '100 hab/km²',
+                                  '50 hab/km²',
                                   '24,3 hab/km²',
                                   '10 hab/km²'],
                  'correcta': 'D'},
                 {'pregunta': 'La esperanza de vida en el Perú, según el '
                              'censo de 2007, fue de:',
-                 'alternativas': ['80 años',
+                 'alternativas': ['35,6 años',
+                                  '80 años',
                                   '55 años',
                                   '65 años',
-                                  '35,6 años',
                                   '71,2 años'],
                  'correcta': 'E'},
                 {'pregunta': 'La ciencia que estudia estadísticamente la '
                              'estructura y la dinámica de las poblaciones '
                              'humanas es: (I CEPRU 2024)',
-                 'alternativas': ['Edafología',
+                 'alternativas': ['Geomorfología',
                                   'Demogeografía',
-                                  'Geomorfología',
                                   'Geodesia',
+                                  'Edafología',
                                   'Demografía'],
                  'correcta': 'E'},
                 {'pregunta': 'Considerando los periodos censales entre 1940 '
                              'y 2017, la región natural que presenta '
                              'tendencia negativa en su crecimiento '
                              'poblacional es la: (II CEPRU 2022)',
-                 'alternativas': ['Faja subandina',
+                 'alternativas': ['Selva',
+                                  'Costa',
                                   'Vertiente occidental',
                                   'Sierra',
-                                  'Costa',
-                                  'Selva'],
-                 'correcta': 'C'},
+                                  'Faja subandina'],
+                 'correcta': 'D'},
                 {'pregunta': 'Según el censo del 2017, la región natural con '
                              'mayor tendencia al crecimiento poblacional es: '
                              '(Primera Oportunidad UNSAAC 2025)',
-                 'alternativas': ['El Norte',
+                 'alternativas': ['El Sur',
                                   'La Sierra',
-                                  'La Costa',
-                                  'El Sur',
-                                  'La Selva'],
-                 'correcta': 'C'}],
+                                  'El Norte',
+                                  'La Selva',
+                                  'La Costa'],
+                 'correcta': 'E'},
+                {'pregunta': 'La distribución de una población por edad y '
+                             'sexo se llama:',
+                 'alternativas': ['Estructura demográfica',
+                                  'Tasa de natalidad',
+                                  'Densidad poblacional',
+                                  'Migración',
+                                  'Esperanza de vida'],
+                 'correcta': 'A'},
+                {'pregunta': 'La estructura demográfica de una población se '
+                             'representa en un gráfico de barras '
+                             'horizontales llamado:',
+                 'alternativas': ['Curva de Lorenz',
+                                  'Histograma de natalidad',
+                                  'Gráfico de dispersión',
+                                  'Mapa de calor',
+                                  'Pirámide poblacional'],
+                 'correcta': 'E'},
+                {'pregunta': 'Según el Censo 2017, el número de personas '
+                             'centenarias (100 años o más) censadas en el '
+                             'Perú fue de:',
+                 'alternativas': ['2000', '1000', '3145', '10000', '5000'],
+                 'correcta': 'C'},
+                {'pregunta': 'El desplazamiento de la población de un lugar '
+                             'de origen a un lugar de residencia se llama:',
+                 'alternativas': ['Natalidad',
+                                  'Mortalidad',
+                                  'Densidad poblacional',
+                                  'Fecundidad',
+                                  'Migración'],
+                 'correcta': 'E'},
+                {'pregunta': 'Entre las causas de la migración peruana está '
+                             'el centralismo, que favorece el desarrollo de:',
+                 'alternativas': ['Algunas ciudades',
+                                  'Solo las zonas rurales',
+                                  'Todas las regiones por igual',
+                                  'Solo la selva',
+                                  'Solo la sierra'],
+                 'correcta': 'A'},
+                {'pregunta': 'Entre las consecuencias negativas de la '
+                             'migración peruana está el despoblamiento del '
+                             'campo y el abandono de la:',
+                 'alternativas': ['Agricultura',
+                                  'Minería',
+                                  'Pesca',
+                                  'Ganadería exclusiva',
+                                  'Industria'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'DEMOGRAFÍA Y DEMOGEOGRAFÍA',
                       'items': ['La demogeografía pertenece a la geografía '
                                 'humana y estudia la distribución de la '
@@ -5136,31 +6292,42 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La población relativa o densidad de '
                                 'población es el número de habitantes por '
                                 'km² de área territorial.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['La disciplina que estudia la distribución '
-                                'de la población en un área geográfica es La '
-                                'demogeografía.',
-                                'La demografía estudia estadísticamente la '
-                                'estructura y dinámica de Las poblaciones '
-                                'humanas.',
-                                'La tasa de natalidad en el Perú es '
-                                'aproximadamente de 23,3‰.',
-                                'La tasa de mortalidad en el Perú es '
-                                'aproximadamente de 6,2‰.',
-                                'La tasa de crecimiento poblacional '
-                                'considera nacimientos, muertes y La '
-                                'migración.',
-                                'Según el INEI, la población del Perú al '
-                                '2017 superaba 31 237 385 habitantes.',
-                                'El organismo central y rector del Sistema '
-                                'Estadístico Nacional del Perú es El INEI.',
-                                'El INEI depende directamente de El '
-                                'Presidente del Consejo de Ministros.',
-                                'El antecesor del INEI, creado en 1969, se '
-                                'llamó ONEC.',
-                                'La población peruana se caracteriza por ser '
-                                'Heterogénea, multirracial y '
-                                'multicultural.']}]},
+                     {'titulo': 'ESTRUCTURA DE LA POBLACIÓN',
+                      'items': ['La estructura demográfica de una población '
+                                'es su distribución por edad y sexo.',
+                                'Esta distribución se representa en un '
+                                'gráfico de barras horizontales llamado '
+                                'pirámide poblacional.',
+                                'La pirámide poblacional peruana actual '
+                                'muestra una base más reducida que en 1940, '
+                                'reflejando menor natalidad y mayor '
+                                'población en edad activa.',
+                                'Según el Censo 2017, en el Perú se censaron '
+                                '3145 personas centenarias (100 años o más): '
+                                '994 hombres y 2151 mujeres.']},
+                     {'titulo': 'LA MIGRACIÓN: CAUSAS',
+                      'items': ['La migración es el desplazamiento de la '
+                                'población de un lugar de origen a un lugar '
+                                'de residencia; incluye migración interna y '
+                                'externa.',
+                                'Entre las causas de la migración peruana '
+                                'están las catástrofes naturales, el '
+                                'centralismo, y la violencia social del '
+                                'terrorismo.',
+                                'Otras causas son los bajos ingresos de los '
+                                'agricultores de la sierra, y el poder de '
+                                'atracción de las ciudades por su '
+                                'desarrollo.']},
+                     {'titulo': 'CONSECUENCIAS NEGATIVAS DE LA MIGRACIÓN',
+                      'items': ['Entre las consecuencias negativas de la '
+                                'migración peruana están el despoblamiento '
+                                'del campo y el abandono de la agricultura.',
+                                'También genera el crecimiento desordenado '
+                                'de las ciudades y la desocupación de la '
+                                'población urbana.',
+                                'Provoca problemas sociales en las ciudades '
+                                'como delincuencia, drogadicción y '
+                                'alcoholismo.']}]},
  {'num': 14,
   'titulo': 'Actividades Económicas Extractivas en el Perú',
   'secciones': [{'titulo': '14.1 LA PESCA EN EL MAR PERUANO',
@@ -5198,52 +6365,68 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'El exceso de pesca reduce la existencia de '
                            'especies y afecta la estructura de los '
                            '{ecosistemas} marinos.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La pesca es una actividad económica de tipo '
-                           '{Extractiva}.',
-                           'Entre los factores de la riqueza ictiológica del '
-                           'mar peruano figura {La frialdad de las aguas por '
-                           'la Corriente Peruana}.',
-                           'La especie más importante de la pesca marina '
-                           'peruana es {La anchoveta}.',
-                           'De la anchoveta se extrae principalmente {Harina '
-                           'y aceite de pescado}.',
-                           'La anchoveta sirve de alimento principal para '
-                           '{Peces mayores y aves guaneras}.',
-                           'El principal puerto pesquero del Perú, según '
-                           'datos de 2018, fue {Chimbote}.',
-                           'En la selva, una técnica tradicional de pesca es '
-                           'el uso de {Flecha y arpón}.',
-                           'El paiche se pesca principalmente en {Las cochas '
-                           'amazónicas}.',
-                           'El paiche se captura tradicionalmente con '
-                           '{Arpón}.',
-                           'La pesca de camarón en la costa se realiza en '
-                           'ríos de Arequipa, Lima e {Ica}.',
-                           'En la región andina, la pesca se practica '
-                           'principalmente en el lago {Titicaca}.',
-                           'La principal especie de pesca en la región '
-                           'andina es {La trucha}.',
-                           'Los departamentos productores de trucha son '
-                           'Puno, Huancavelica y {Junín}.',
-                           'Los impactos en la biodiversidad pesquera '
-                           'provienen de la sobrepesca, la captura '
-                           'incidental y {La degradación del hábitat}.',
-                           'El exceso de pesca causa principalmente '
-                           '{Reducción de la existencia de especies}.',
-                           'La amplitud del zócalo continental favorece la '
-                           'riqueza ictiológica porque facilita {La '
-                           'penetración de rayos solares}.',
-                           'El fenómeno del afloramiento influye en la pesca '
-                           'porque {Produce la frialdad característica del '
-                           'mar peruano}.',
-                           'El zúngaro es una especie de pesca '
-                           'característica de {La selva}.',
-                           'El plancton constituye alimento fundamental para '
-                           '{Los peces del mar peruano}.',
-                           'La pesca deportiva en la región andina se '
-                           'realiza principalmente con {Anzuelos, redes y '
-                           'balsas}.']}],
+                {'titulo': '14.5 LA MINERÍA EN EL PERÚ: CLASIFICACIÓN',
+                 'items': ['La {gran minería} opera en más de 2000 '
+                           'hectáreas, con más de {5000} TM/día de volumen.',
+                           'La {mediana minería} opera en más de 2000 '
+                           'hectáreas, con hasta 5000 TM/día; la {pequeña '
+                           'minería}, hasta 2000 hectáreas y 300 TM/día.',
+                           'La {minería artesanal} opera hasta 1000 '
+                           'hectáreas, con hasta {25} TM/día.',
+                           'Al 2023, Arequipa es el principal productor de '
+                           '{cobre}; La Libertad, de {oro}; y Pasco, de '
+                           'plata y plomo.']},
+                {'titulo': '14.6 GRANDES CENTROS MINEROS DEL PERÚ',
+                 'items': ['{Toquepala}, en Tacna, fue el centro minero más '
+                           'grande del Perú hasta 1977; se extrae {cobre} a '
+                           'tajo abierto.',
+                           '{Yanacocha}, en Cajamarca, produce {oro}.',
+                           '{Antamina}, en Áncash, constituye la mayor '
+                           'reserva minera; transporta cobre y zinc por un '
+                           'mineroducto de {320} km.',
+                           '{Marcona}, en Ica, es el único centro minero que '
+                           'produce {hierro}.',
+                           '{Las Bambas}, en Apurímac (desde 2016), explota '
+                           'cobre a tajo abierto.',
+                           'La {refinería de La Oroya}, en Junín, procesa '
+                           '{11} minerales distintos.']},
+                {'titulo': '14.7 EL PETRÓLEO: ZONAS DE PRODUCCIÓN',
+                 'items': ['El {petróleo}, llamado «oro negro», es un '
+                           'mineral energético formado a partir de '
+                           'microorganismos marinos enterrados hace millones '
+                           'de años.',
+                           'Los principales yacimientos petrolíferos se '
+                           'localizan en la {costa norte} (Piura) y en la '
+                           '{selva} peruana.',
+                           'En la costa norte (Piura), los principales '
+                           'yacimientos son La Brea, Pariñas y {Talara}; '
+                           'trabaja la empresa {Petrobras}.',
+                           'La {Refinería de Talara} es la más antigua, con '
+                           'capacidad de 67 000 barriles diarios; procesa '
+                           'petróleo {nacional}.',
+                           'La {Refinería de La Pampilla}, en Ventanilla, es '
+                           'la más moderna y amplia, con 110 000 barriles '
+                           'diarios; procesa petróleo {importado}.']},
+                {'titulo': '14.8 EL GAS NATURAL',
+                 'items': ['El {gas natural} es un hidrocarburo gaseoso cuyo '
+                           'origen está relacionado con el del {petróleo}.',
+                           'Al 2023, el principal departamento productor de '
+                           'gas natural es {Cusco}, con 94,8%; el segundo es '
+                           '{Piura}, con 3,7%; el tercero es Ucayali, con '
+                           '1,5%.']},
+                {'titulo': '14.9 IMPACTO AMBIENTAL DE LA MINERÍA',
+                 'items': ['Por cada gramo de oro producido, queda una '
+                           '{tonelada} de tierra con cianuro, arsénico y '
+                           'otros metales pesados.',
+                           'La contaminación del aire por la minería se '
+                           'manifiesta a través de polvos y gases, siendo el '
+                           'más significativo el {dióxido de azufre}.',
+                           'En la salud, la contaminación minera afecta el '
+                           'aparato respiratorio, causando neumoconiosis y '
+                           '{cáncer} de pulmón.',
+                           'La minería ilegal en {Madre de Dios} ha '
+                           'destruido una extensión de bosques equivalente a '
+                           '41 mil canchas de fútbol.']}],
   'cuadros': [{'titulo': '14.1 PRINCIPALES PUERTOS PESQUEROS (2018)',
                'encabezados': ['Orden', 'Puerto'],
                'filas': [['1°', '{Chimbote}'],
@@ -5252,198 +6435,318 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['4°', '{Paita}'],
                          ['5°', 'Callao']]}],
   'preguntas': [{'pregunta': 'La pesca es una actividad económica de tipo:',
-                 'alternativas': ['Comercial únicamente',
-                                  'Extractiva',
-                                  'Reproductiva',
+                 'alternativas': ['Financiera',
                                   'Industrial exclusiva',
-                                  'Financiera'],
-                 'correcta': 'B'},
+                                  'Reproductiva',
+                                  'Comercial únicamente',
+                                  'Extractiva'],
+                 'correcta': 'E'},
                 {'pregunta': 'Entre los factores de la riqueza ictiológica '
                              'del mar peruano figura:',
-                 'alternativas': ['La ausencia de zócalo continental',
+                 'alternativas': ['El agua cálida',
+                                  'La ausencia de zócalo continental',
                                   'La frialdad de las aguas por la Corriente '
                                   'Peruana',
                                   'El agua dulce',
-                                  'El agua cálida',
                                   'La escasez de plancton'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'La especie más importante de la pesca marina '
                              'peruana es:',
-                 'alternativas': ['El jurel',
-                                  'La anchoveta',
-                                  'El bonito',
+                 'alternativas': ['El atún',
+                                  'El jurel',
                                   'La caballa',
-                                  'El atún'],
-                 'correcta': 'B'},
+                                  'La anchoveta',
+                                  'El bonito'],
+                 'correcta': 'D'},
                 {'pregunta': 'De la anchoveta se extrae principalmente:',
                  'alternativas': ['Conservas de lujo',
-                                  'Perlas',
                                   'Harina y aceite de pescado',
+                                  'Aceite de oliva',
                                   'Sal marina',
-                                  'Aceite de oliva'],
-                 'correcta': 'C'},
+                                  'Perlas'],
+                 'correcta': 'B'},
                 {'pregunta': 'La anchoveta sirve de alimento principal para:',
-                 'alternativas': ['Solo el ser humano',
-                                  'Solo aves terrestres',
-                                  'Peces mayores y aves guaneras',
+                 'alternativas': ['Solo aves terrestres',
                                   'Solo mamíferos marinos',
-                                  'Ningún otro organismo'],
-                 'correcta': 'C'},
+                                  'Ningún otro organismo',
+                                  'Solo el ser humano',
+                                  'Peces mayores y aves guaneras'],
+                 'correcta': 'E'},
                 {'pregunta': 'El principal puerto pesquero del Perú, según '
                              'datos de 2018, fue:',
-                 'alternativas': ['Callao',
-                                  'Paita',
+                 'alternativas': ['Paita',
                                   'Chancay',
-                                  'Pisco',
-                                  'Chimbote'],
-                 'correcta': 'E'},
+                                  'Chimbote',
+                                  'Callao',
+                                  'Pisco'],
+                 'correcta': 'C'},
                 {'pregunta': 'En la selva, una técnica tradicional de pesca '
                              'es el uso de:',
-                 'alternativas': ['Flecha y arpón',
+                 'alternativas': ['Redes industriales',
+                                  'Flecha y arpón',
                                   'Trampas eléctricas',
-                                  'Redes industriales',
                                   'Barcos factoría',
                                   'Sonar'],
-                 'correcta': 'A'},
+                 'correcta': 'B'},
                 {'pregunta': 'El paiche se pesca principalmente en:',
-                 'alternativas': ['Lagunas andinas',
+                 'alternativas': ['Las cochas amazónicas',
+                                  'Ríos de la costa',
+                                  'Lagunas andinas',
                                   'El mar peruano',
-                                  'El lago Titicaca',
-                                  'Las cochas amazónicas',
-                                  'Ríos de la costa'],
-                 'correcta': 'D'},
-                {'pregunta': 'El paiche se captura tradicionalmente con:',
-                 'alternativas': ['Arpón',
-                                  'Redes de arrastre',
-                                  'Trampas de metal',
-                                  'Explosivos',
-                                  'Anzuelo eléctrico'],
+                                  'El lago Titicaca'],
                  'correcta': 'A'},
+                {'pregunta': 'El paiche se captura tradicionalmente con:',
+                 'alternativas': ['Explosivos',
+                                  'Redes de arrastre',
+                                  'Arpón',
+                                  'Anzuelo eléctrico',
+                                  'Trampas de metal'],
+                 'correcta': 'C'},
                 {'pregunta': 'La pesca de camarón en la costa se realiza en '
                              'ríos de Arequipa, Lima e:',
-                 'alternativas': ['Tacna',
+                 'alternativas': ['Ica',
+                                  'Tacna',
+                                  'Piura',
                                   'Tumbes',
-                                  'Moquegua',
-                                  'Ica',
-                                  'Piura'],
-                 'correcta': 'D'},
+                                  'Moquegua'],
+                 'correcta': 'A'},
                 {'pregunta': 'En la región andina, la pesca se practica '
                              'principalmente en el lago:',
-                 'alternativas': ['Sausacocha',
-                                  'Junín',
+                 'alternativas': ['Junín',
                                   'Chinchaycocha',
-                                  'Titicaca',
-                                  'Parinacochas'],
-                 'correcta': 'D'},
+                                  'Parinacochas',
+                                  'Sausacocha',
+                                  'Titicaca'],
+                 'correcta': 'E'},
                 {'pregunta': 'La principal especie de pesca en la región '
                              'andina es:',
-                 'alternativas': ['La trucha',
-                                  'El camarón',
-                                  'El atún',
+                 'alternativas': ['El atún',
+                                  'El paiche',
                                   'La anchoveta',
-                                  'El paiche'],
-                 'correcta': 'A'},
+                                  'La trucha',
+                                  'El camarón'],
+                 'correcta': 'D'},
                 {'pregunta': 'Los departamentos productores de trucha son '
                              'Puno, Huancavelica y:',
-                 'alternativas': ['Cusco',
-                                  'Junín',
+                 'alternativas': ['Arequipa',
+                                  'Cusco',
                                   'Tacna',
-                                  'Arequipa',
+                                  'Junín',
                                   'Ayacucho'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Los impactos en la biodiversidad pesquera '
                              'provienen de la sobrepesca, la captura '
                              'incidental y:',
-                 'alternativas': ['El turismo',
+                 'alternativas': ['La degradación del hábitat',
                                   'El comercio justo',
+                                  'El turismo',
                                   'La acuicultura',
-                                  'La degradación del hábitat',
                                   'La pesca artesanal exclusivamente'],
-                 'correcta': 'D'},
+                 'correcta': 'A'},
                 {'pregunta': 'El exceso de pesca causa principalmente:',
-                 'alternativas': ['Ningún efecto negativo',
-                                  'Reducción de la existencia de especies',
-                                  'Mejora del ecosistema',
+                 'alternativas': ['Reducción de la existencia de especies',
+                                  'Ningún efecto negativo',
+                                  'Aumento de especies',
                                   'Incremento de la biodiversidad',
-                                  'Aumento de especies'],
-                 'correcta': 'B'},
+                                  'Mejora del ecosistema'],
+                 'correcta': 'A'},
                 {'pregunta': 'La amplitud del zócalo continental favorece la '
                              'riqueza ictiológica porque facilita:',
-                 'alternativas': ['La formación de olas',
+                 'alternativas': ['La salinidad extrema',
                                   'El afloramiento volcánico',
-                                  'La salinidad extrema',
-                                  'El enfriamiento del agua',
-                                  'La penetración de rayos solares'],
-                 'correcta': 'E'},
+                                  'La penetración de rayos solares',
+                                  'La formación de olas',
+                                  'El enfriamiento del agua'],
+                 'correcta': 'C'},
                 {'pregunta': 'El fenómeno del afloramiento influye en la '
                              'pesca porque:',
                  'alternativas': ['Genera tsunamis',
                                   'Reduce el oxígeno del agua',
-                                  'Elimina el plancton',
                                   'Produce la frialdad característica del '
                                   'mar peruano',
-                                  'Calienta el agua superficial'],
-                 'correcta': 'D'},
+                                  'Calienta el agua superficial',
+                                  'Elimina el plancton'],
+                 'correcta': 'C'},
                 {'pregunta': 'El zúngaro es una especie de pesca '
                              'característica de:',
-                 'alternativas': ['El lago Titicaca',
+                 'alternativas': ['El mar peruano',
+                                  'Los Andes centrales',
                                   'La costa sur',
-                                  'La selva',
-                                  'El mar peruano',
-                                  'Los Andes centrales'],
-                 'correcta': 'C'},
+                                  'El lago Titicaca',
+                                  'La selva'],
+                 'correcta': 'E'},
                 {'pregunta': 'El plancton constituye alimento fundamental '
                              'para:',
-                 'alternativas': ['Solo el hombre',
+                 'alternativas': ['Los peces del mar peruano',
+                                  'Solo las aves',
+                                  'Solo el hombre',
                                   'Solo los mamíferos marinos',
-                                  'Ningún organismo marino',
-                                  'Los peces del mar peruano',
-                                  'Solo las aves'],
-                 'correcta': 'D'},
+                                  'Ningún organismo marino'],
+                 'correcta': 'A'},
                 {'pregunta': 'La pesca deportiva en la región andina se '
                              'realiza principalmente con:',
-                 'alternativas': ['Barcos factoría',
-                                  'Trampas eléctricas',
+                 'alternativas': ['Trampas eléctricas',
                                   'Anzuelos, redes y balsas',
+                                  'Explosivos',
                                   'Redes industriales',
-                                  'Explosivos'],
-                 'correcta': 'C'},
+                                  'Barcos factoría'],
+                 'correcta': 'B'},
                 {'pregunta': 'El segundo departamento productor de gas en el '
                              'Perú es: (II CEPRU 2025)',
-                 'alternativas': ['Junín',
-                                  'Loreto',
-                                  'Madre de Dios',
+                 'alternativas': ['Ucayali',
+                                  'Junín',
                                   'Piura',
-                                  'Ucayali'],
-                 'correcta': 'E'},
+                                  'Loreto',
+                                  'Madre de Dios'],
+                 'correcta': 'C'},
                 {'pregunta': 'La refinería de La Oroya se ubica en el '
                              'departamento de: (II CEPRU 2022)',
-                 'alternativas': ['Ayacucho',
-                                  'Cajamarca',
-                                  'Junín',
+                 'alternativas': ['Junín',
                                   'Moquegua',
+                                  'Cajamarca',
+                                  'Ayacucho',
                                   'Lima'],
-                 'correcta': 'C'},
+                 'correcta': 'A'},
                 {'pregunta': 'El principal productor de maíz amiláceo en el '
                              'territorio peruano es el departamento de: (II '
                              'CEPRU 2022)',
-                 'alternativas': ['Arequipa',
-                                  'Puno',
-                                  'Pasco',
+                 'alternativas': ['Pasco',
+                                  'Lima',
                                   'Cajamarca',
-                                  'Lima'],
-                 'correcta': 'D'},
+                                  'Arequipa',
+                                  'Puno'],
+                 'correcta': 'C'},
                 {'pregunta': 'El uso continuo del suelo y el predominio de '
                              'herramientas mecanizadas es una característica '
                              'de la agricultura denominada: (Primera '
                              'Oportunidad UNSAAC 2025)',
                  'alternativas': ['Tradicional',
-                                  'Intensiva',
-                                  'Extensiva',
                                   'Experimental',
-                                  'Migratoria'],
-                 'correcta': 'B'}],
-  'resumen_visual': [{'titulo': 'LA PESCA EN EL MAR PERUANO',
+                                  'Intensiva',
+                                  'Migratoria',
+                                  'Extensiva'],
+                 'correcta': 'C'},
+                {'pregunta': 'La clasificación minera que opera en más de '
+                             '2000 hectáreas, con más de 5000 TM/día, se '
+                             'llama:',
+                 'alternativas': ['Minería artesanal',
+                                  'Minería informal',
+                                  'Gran minería',
+                                  'Pequeña minería',
+                                  'Mediana minería'],
+                 'correcta': 'C'},
+                {'pregunta': 'La minería que opera hasta 1000 hectáreas, con '
+                             'hasta 25 TM/día, se llama minería:',
+                 'alternativas': ['Gran minería',
+                                  'Pequeña',
+                                  'Mediana',
+                                  'Industrial',
+                                  'Artesanal'],
+                 'correcta': 'E'},
+                {'pregunta': 'El centro minero que fue el más grande del '
+                             'Perú hasta 1977, ubicado en Tacna, donde se '
+                             'extrae cobre a tajo abierto, es:',
+                 'alternativas': ['Cerro Verde',
+                                  'Toquepala',
+                                  'Cuajone',
+                                  'Las Bambas',
+                                  'Antamina'],
+                 'correcta': 'B'},
+                {'pregunta': 'El centro minero de Yanacocha, en Cajamarca, '
+                             'produce principalmente:',
+                 'alternativas': ['Hierro', 'Oro', 'Plata', 'Zinc', 'Cobre'],
+                 'correcta': 'B'},
+                {'pregunta': 'El centro minero que constituye la mayor '
+                             'reserva minera del Perú, ubicado en Áncash, '
+                             'que transporta cobre y zinc por un '
+                             'mineroducto, es:',
+                 'alternativas': ['Antamina',
+                                  'Marcona',
+                                  'Toquepala',
+                                  'Cerro de Pasco',
+                                  'Cobriza'],
+                 'correcta': 'A'},
+                {'pregunta': 'El único centro minero del Perú que produce '
+                             'hierro, ubicado en Ica, es:',
+                 'alternativas': ['Yanacocha',
+                                  'Cerro Verde',
+                                  'Marcona',
+                                  'Antamina',
+                                  'Cobriza'],
+                 'correcta': 'C'},
+                {'pregunta': 'La refinería de La Oroya, en el departamento '
+                             'de Junín, procesa un número de minerales igual '
+                             'a:',
+                 'alternativas': ['3', '20', '11', '1', '5'],
+                 'correcta': 'C'},
+                {'pregunta': 'El petróleo, llamado «oro negro», se formó a '
+                             'partir de:',
+                 'alternativas': ['Rocas volcánicas',
+                                  'Minerales metálicos',
+                                  'Sedimentos glaciares',
+                                  'Cenizas volcánicas',
+                                  'Microorganismos marinos enterrados hace '
+                                  'millones de años'],
+                 'correcta': 'E'},
+                {'pregunta': 'Los principales yacimientos petrolíferos del '
+                             'Perú se localizan en la costa norte y en la:',
+                 'alternativas': ['Selva peruana',
+                                  'Zona insular',
+                                  'Región del Titicaca',
+                                  'Costa sur',
+                                  'Región andina'],
+                 'correcta': 'A'},
+                {'pregunta': 'La refinería de petróleo más antigua del Perú, '
+                             'con capacidad de 67 000 barriles diarios, es '
+                             'la de:',
+                 'alternativas': ['Pucallpa',
+                                  'Talara',
+                                  'La Pampilla',
+                                  'Iquitos',
+                                  'Conchán'],
+                 'correcta': 'B'},
+                {'pregunta': 'La refinería de petróleo más moderna y amplia '
+                             'del Perú, ubicada en Ventanilla, es la de:',
+                 'alternativas': ['Shiviyacu',
+                                  'Talara',
+                                  'La Pampilla',
+                                  'El Milagro',
+                                  'Conchán'],
+                 'correcta': 'C'},
+                {'pregunta': 'Al 2023, el principal departamento productor '
+                             'de gas natural del Perú es:',
+                 'alternativas': ['Loreto',
+                                  'Piura',
+                                  'Ucayali',
+                                  'Puno',
+                                  'Cusco'],
+                 'correcta': 'E'},
+                {'pregunta': 'Al 2023, el segundo departamento productor de '
+                             'gas natural del Perú, con 3,7%, es:',
+                 'alternativas': ['Ucayali',
+                                  'Madre de Dios',
+                                  'Piura',
+                                  'Loreto',
+                                  'Cusco'],
+                 'correcta': 'C'},
+                {'pregunta': 'El contaminante gaseoso más significativo '
+                             'producido por la actividad minera se llama:',
+                 'alternativas': ['Dióxido de carbono',
+                                  'Monóxido de carbono',
+                                  'Metano',
+                                  'Dióxido de azufre',
+                                  'Ozono'],
+                 'correcta': 'D'},
+                {'pregunta': 'Por cada gramo de oro producido en la minería, '
+                             'queda una tonelada de tierra contaminada con:',
+                 'alternativas': ['Solo polvo',
+                                  'Solo residuos orgánicos',
+                                  'Cianuro, arsénico y metales pesados',
+                                  'Solo agua',
+                                  'Solo tierra estéril'],
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'LA PESCA EN EL MAR PERUANO / PESCA EN LA '
+                                'SELVA Y EN LA COSTA',
                       'items': ['La pesca es una actividad económica '
                                 'extractiva que consiste en el '
                                 'aprovechamiento de los recursos '
@@ -5457,9 +6760,8 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La anchoveta es el alimento principal de '
                                 'peces mayores y de las aves guaneras.',
                                 'Según datos al 2018, el principal puerto '
-                                'pesquero del Perú es Chimbote.']},
-                     {'titulo': 'PESCA EN LA SELVA Y EN LA COSTA',
-                      'items': ['En la selva se pesca con técnicas '
+                                'pesquero del Perú es Chimbote.',
+                                'En la selva se pesca con técnicas '
                                 'tradicionales como redes de cortina, flecha '
                                 'y arpón.',
                                 'El paiche es la principal especie de pesca '
@@ -5467,43 +6769,87 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'arpón.',
                                 'En la costa, la pesca de camarón se realiza '
                                 'en ríos de Arequipa, Lima e Ica.']},
-                     {'titulo': 'PESCA EN LA REGIÓN ANDINA',
+                     {'titulo': 'PESCA EN LA REGIÓN ANDINA / IMPACTO '
+                                'AMBIENTAL DE LA PESCA',
                       'items': ['En la región andina se pesca principalmente '
                                 'en el lago Titicaca, con fines deportivos y '
                                 'alimenticios.',
                                 'La principal especie de pesca andina es la '
                                 'trucha, producida sobre todo en Puno, '
-                                'Huancavelica y Junín.']},
-                     {'titulo': 'IMPACTO AMBIENTAL DE LA PESCA',
-                      'items': ['Los impactos en la biodiversidad pesquera '
+                                'Huancavelica y Junín.',
+                                'Los impactos en la biodiversidad pesquera '
                                 'provienen de la sobrepesca, la captura '
                                 'incidental y la degradación del hábitat.',
                                 'El exceso de pesca reduce la existencia de '
                                 'especies y afecta la estructura de los '
                                 'ecosistemas marinos.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['La pesca es una actividad económica de tipo '
-                                'Extractiva.',
-                                'Entre los factores de la riqueza '
-                                'ictiológica del mar peruano figura La '
-                                'frialdad de las aguas por la Corriente '
-                                'Peruana.',
-                                'La especie más importante de la pesca '
-                                'marina peruana es La anchoveta.',
-                                'De la anchoveta se extrae principalmente '
-                                'Harina y aceite de pescado.',
-                                'La anchoveta sirve de alimento principal '
-                                'para Peces mayores y aves guaneras.',
-                                'El principal puerto pesquero del Perú, '
-                                'según datos de 2018, fue Chimbote.',
-                                'En la selva, una técnica tradicional de '
-                                'pesca es el uso de Flecha y arpón.',
-                                'El paiche se pesca principalmente en Las '
-                                'cochas amazónicas.',
-                                'El paiche se captura tradicionalmente con '
-                                'Arpón.',
-                                'La pesca de camarón en la costa se realiza '
-                                'en ríos de Arequipa, Lima e Ica.']}]},
+                     {'titulo': 'LA MINERÍA EN EL PERÚ: CLASIFICACIÓN / '
+                                'GRANDES CENTROS MINEROS DEL PERÚ',
+                      'items': ['La gran minería opera en más de 2000 '
+                                'hectáreas, con más de 5000 TM/día de '
+                                'volumen.',
+                                'La mediana minería opera en más de 2000 '
+                                'hectáreas, con hasta 5000 TM/día; la '
+                                'pequeña minería, hasta 2000 hectáreas y 300 '
+                                'TM/día.',
+                                'La minería artesanal opera hasta 1000 '
+                                'hectáreas, con hasta 25 TM/día.',
+                                'Al 2023, Arequipa es el principal productor '
+                                'de cobre; La Libertad, de oro; y Pasco, de '
+                                'plata y plomo.',
+                                'Toquepala, en Tacna, fue el centro minero '
+                                'más grande del Perú hasta 1977; se extrae '
+                                'cobre a tajo abierto.',
+                                'Yanacocha, en Cajamarca, produce oro.',
+                                'Antamina, en Áncash, constituye la mayor '
+                                'reserva minera; transporta cobre y zinc por '
+                                'un mineroducto de 320 km.',
+                                'Marcona, en Ica, es el único centro minero '
+                                'que produce hierro.',
+                                'Las Bambas, en Apurímac (desde 2016), '
+                                'explota cobre a tajo abierto.',
+                                'La refinería de La Oroya, en Junín, procesa '
+                                '11 minerales distintos.']},
+                     {'titulo': 'EL PETRÓLEO: ZONAS DE PRODUCCIÓN / EL GAS '
+                                'NATURAL',
+                      'items': ['El petróleo, llamado «oro negro», es un '
+                                'mineral energético formado a partir de '
+                                'microorganismos marinos enterrados hace '
+                                'millones de años.',
+                                'Los principales yacimientos petrolíferos se '
+                                'localizan en la costa norte (Piura) y en la '
+                                'selva peruana.',
+                                'En la costa norte (Piura), los principales '
+                                'yacimientos son La Brea, Pariñas y Talara; '
+                                'trabaja la empresa Petrobras.',
+                                'La Refinería de Talara es la más antigua, '
+                                'con capacidad de 67 000 barriles diarios; '
+                                'procesa petróleo nacional.',
+                                'La Refinería de La Pampilla, en Ventanilla, '
+                                'es la más moderna y amplia, con 110 000 '
+                                'barriles diarios; procesa petróleo '
+                                'importado.',
+                                'El gas natural es un hidrocarburo gaseoso '
+                                'cuyo origen está relacionado con el del '
+                                'petróleo.',
+                                'Al 2023, el principal departamento '
+                                'productor de gas natural es Cusco, con '
+                                '94,8%; el segundo es Piura, con 3,7%; el '
+                                'tercero es Ucayali, con 1,5%.']},
+                     {'titulo': 'IMPACTO AMBIENTAL DE LA MINERÍA',
+                      'items': ['Por cada gramo de oro producido, queda una '
+                                'tonelada de tierra con cianuro, arsénico y '
+                                'otros metales pesados.',
+                                'La contaminación del aire por la minería se '
+                                'manifiesta a través de polvos y gases, '
+                                'siendo el más significativo el dióxido de '
+                                'azufre.',
+                                'En la salud, la contaminación minera afecta '
+                                'el aparato respiratorio, causando '
+                                'neumoconiosis y cáncer de pulmón.',
+                                'La minería ilegal en Madre de Dios ha '
+                                'destruido una extensión de bosques '
+                                'equivalente a 41 mil canchas de fútbol.']}]},
  {'num': 15,
   'titulo': 'Actividades Económicas Reproductivas en el Perú',
   'secciones': [{'titulo': '15.1 LA AGRICULTURA EN EL PERÚ',
@@ -5553,48 +6899,50 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'tabaco.',
                            'En la selva alta existen valles permanentes de '
                            'cultivo como Jaén, Bagua y {Chanchamayo}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['La agricultura es una actividad económica de '
-                           'tipo {Reproductiva}.',
-                           'Los españoles introdujeron al Perú cultivos como '
-                           'el arroz, cebada y {La caña de azúcar}.',
-                           'Según la FAO, el Perú tiene en cultivo '
-                           'aproximadamente {4,4 millones de hectáreas}.',
-                           'El área cultivada representa del territorio '
-                           'nacional peruano aproximadamente {3,5%}.',
-                           'La agricultura de la costa se caracteriza por '
-                           'ser {Intensiva, tecnificada y mecanizada}.',
-                           'En la costa se pueden obtener anualmente {Hasta '
-                           'dos cosechas}.',
-                           'En la costa predominan los cultivos industriales '
-                           'como la caña de azúcar y {El algodón}.',
-                           'La agricultura de la costa goza de asistencia '
-                           '{Crediticia por bancos y entidades financieras}.',
-                           'La agricultura de la región andina se '
-                           'caracteriza por ser {Extensiva y tradicional}.',
-                           'En la región andina, el cultivo se realiza '
-                           'principalmente en época de {Lluvias}.',
-                           'Una herramienta tradicional de la agricultura '
-                           'andina es {La chaquitaclla}.',
-                           'La agricultura andina está orientada '
-                           'principalmente al cultivo de productos de {Baja '
-                           'rentabilidad, como papa, maíz y cebada}.',
-                           'La agricultura de la selva se caracteriza por '
-                           'ser {Migratoria}.',
-                           'La técnica de roce, tumba y quema se practica en '
-                           'la agricultura de {La selva}.',
-                           'Entre los cultivos industriales de la selva '
-                           'figuran la coca, el café y {El tabaco}.',
-                           'La agricultura de la selva está relacionada con '
-                           'la depredación de {El suelo}.',
-                           'En el antiguo Perú se cultivaba, entre otros '
-                           'productos {Papa, quinua y oca}.',
-                           'Las tierras aptas para cultivo en el Perú '
-                           'alcanzan aproximadamente {7,6 millones de '
-                           'hectáreas}.',
-                           'Un factor limitante de la agricultura en la '
-                           'selva es {La limitación en transporte y '
-                           'comercialización}.']}],
+                {'titulo': '15.5 LA GANADERÍA EN EL PERÚ: CONCEPTO Y '
+                           'REGIONES',
+                 'items': ['La {ganadería} es la actividad económica '
+                           'reproductiva que consiste en la crianza, '
+                           'selección y reproducción de animales domésticos, '
+                           'llamados {ganado}.',
+                           'La ganadería de la {costa} es predominantemente '
+                           'intensiva, tecnificada y científica; predomina '
+                           'el ganado vacuno {fino}, aves de corral y '
+                           'porcinos.',
+                           'La ganadería de la {región andina} es '
+                           'predominantemente extensiva y tradicional; se '
+                           'cría ganado {chusco} o criollo de baja '
+                           'productividad.',
+                           'En la región andina predomina la crianza de '
+                           'ganado {ovino}, camélidos y vacuno; se '
+                           'desarrolla en mesetas, punas y valles '
+                           'interandinos.',
+                           'La ganadería de la {selva} es extensiva y de '
+                           'experimentación; predomina el ganado vacuno de '
+                           'raza {Amazonas} (cruce de Cebú con Brown '
+                           'Swiss).']},
+                {'titulo': '15.6 PRINCIPALES DEPARTAMENTOS PRODUCTORES DE '
+                           'GANADO',
+                 'items': ['Al 2022, {Huánuco} es el principal productor de '
+                           'ganado vacuno; {Puno} lidera en ovino, alpaca y '
+                           'llama.',
+                           '{Lima} es el principal productor de ganado '
+                           'porcino y de aves; {Piura} lidera en producción '
+                           'caprina.']},
+                {'titulo': '15.7 IMPACTO AMBIENTAL DE LA GANADERÍA',
+                 'items': ['La ganadería contamina el agua subterránea por '
+                           'los {purines} o residuos fecales de las granjas, '
+                           'aumentando la concentración de {nitratos}.',
+                           'Según la FAO, el sector ganadero genera el {18}% '
+                           'de los gases de efecto invernadero, más que el '
+                           'sector transporte.',
+                           'Los animales, al digerir alimentos, producen '
+                           'grandes cantidades de {metano}, un potente gas '
+                           'de efecto invernadero.',
+                           'La ganadería utiliza el {30}% de la superficie '
+                           'terrestre del planeta; en el Amazonas, el {70}% '
+                           'de los bosques desaparecidos se dedicaron a '
+                           'pastizales.']}],
   'cuadros': [{'titulo': '15. LA AGRICULTURA POR REGIÓN',
                'encabezados': ['Región', 'Tipo', 'Rendimiento'],
                'filas': [['{Costa}', 'Intensiva y {mecanizada}', 'Alto'],
@@ -5602,177 +6950,264 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Selva}', '{Migratoria}', 'Decreciente']]}],
   'preguntas': [{'pregunta': 'La agricultura es una actividad económica de '
                              'tipo:',
-                 'alternativas': ['Financiera',
-                                  'Informal',
+                 'alternativas': ['Informal',
                                   'Terciaria exclusiva',
                                   'Reproductiva',
-                                  'Extractiva'],
-                 'correcta': 'D'},
+                                  'Extractiva',
+                                  'Financiera'],
+                 'correcta': 'C'},
                 {'pregunta': 'Los españoles introdujeron al Perú cultivos '
                              'como el arroz, cebada y:',
                  'alternativas': ['El tarwi',
-                                  'La papa',
                                   'El olluco',
+                                  'La papa',
                                   'La quinua',
                                   'La caña de azúcar'],
                  'correcta': 'E'},
                 {'pregunta': 'Según la FAO, el Perú tiene en cultivo '
                              'aproximadamente:',
-                 'alternativas': ['20 millones de hectáreas',
+                 'alternativas': ['10 millones de hectáreas',
                                   '500 mil hectáreas',
+                                  '1 millón de hectáreas',
                                   '4,4 millones de hectáreas',
-                                  '10 millones de hectáreas',
-                                  '1 millón de hectáreas'],
-                 'correcta': 'C'},
+                                  '20 millones de hectáreas'],
+                 'correcta': 'D'},
                 {'pregunta': 'El área cultivada representa del territorio '
                              'nacional peruano aproximadamente:',
-                 'alternativas': ['50%', '20%', '1%', '3,5%', '10%'],
+                 'alternativas': ['50%', '20%', '10%', '3,5%', '1%'],
                  'correcta': 'D'},
                 {'pregunta': 'La agricultura de la costa se caracteriza por '
                              'ser:',
-                 'alternativas': ['Intensiva, tecnificada y mecanizada',
+                 'alternativas': ['Migratoria',
+                                  'Intensiva, tecnificada y mecanizada',
+                                  'De subsistencia exclusiva',
                                   'Sin uso de maquinaria',
-                                  'Migratoria',
-                                  'Extensiva y tradicional',
-                                  'De subsistencia exclusiva'],
-                 'correcta': 'A'},
+                                  'Extensiva y tradicional'],
+                 'correcta': 'B'},
                 {'pregunta': 'En la costa se pueden obtener anualmente:',
-                 'alternativas': ['Hasta dos cosechas',
+                 'alternativas': ['Cosechas cada dos años',
                                   'Una cosecha',
-                                  'Cosechas cada dos años',
-                                  'Tres cosechas mínimo',
-                                  'Ninguna cosecha regular'],
-                 'correcta': 'A'},
+                                  'Ninguna cosecha regular',
+                                  'Hasta dos cosechas',
+                                  'Tres cosechas mínimo'],
+                 'correcta': 'D'},
                 {'pregunta': 'En la costa predominan los cultivos '
                              'industriales como la caña de azúcar y:',
-                 'alternativas': ['La papa',
-                                  'El algodón',
+                 'alternativas': ['La cañihua',
+                                  'La papa',
                                   'El olluco',
-                                  'La quinua',
-                                  'La cañihua'],
-                 'correcta': 'B'},
+                                  'El algodón',
+                                  'La quinua'],
+                 'correcta': 'D'},
                 {'pregunta': 'La agricultura de la costa goza de asistencia:',
                  'alternativas': ['Solo comunal',
                                   'Internacional exclusiva',
                                   'Religiosa',
-                                  'Militar',
                                   'Crediticia por bancos y entidades '
-                                  'financieras'],
-                 'correcta': 'E'},
+                                  'financieras',
+                                  'Militar'],
+                 'correcta': 'D'},
                 {'pregunta': 'La agricultura de la región andina se '
                              'caracteriza por ser:',
-                 'alternativas': ['Extensiva y tradicional',
+                 'alternativas': ['Industrial',
+                                  'Intensiva y mecanizada',
+                                  'Extensiva y tradicional',
                                   'De exportación masiva',
-                                  'Industrial',
-                                  'Altamente tecnificada',
-                                  'Intensiva y mecanizada'],
-                 'correcta': 'A'},
+                                  'Altamente tecnificada'],
+                 'correcta': 'C'},
                 {'pregunta': 'En la región andina, el cultivo se realiza '
                              'principalmente en época de:',
-                 'alternativas': ['Sequía',
-                                  'Helada',
-                                  'Granizo',
+                 'alternativas': ['Granizo',
                                   'Lluvias',
-                                  'Neblina'],
-                 'correcta': 'D'},
+                                  'Neblina',
+                                  'Helada',
+                                  'Sequía'],
+                 'correcta': 'B'},
                 {'pregunta': 'Una herramienta tradicional de la agricultura '
                              'andina es:',
-                 'alternativas': ['La bomba hidráulica',
+                 'alternativas': ['La fumigadora',
+                                  'La bomba hidráulica',
                                   'La chaquitaclla',
-                                  'El tractor',
-                                  'La fumigadora',
-                                  'La avioneta agrícola'],
-                 'correcta': 'B'},
+                                  'La avioneta agrícola',
+                                  'El tractor'],
+                 'correcta': 'C'},
                 {'pregunta': 'La agricultura andina está orientada '
                              'principalmente al cultivo de productos de:',
-                 'alternativas': ['Solo productos tropicales',
-                                  'Baja rentabilidad, como papa, maíz y '
-                                  'cebada',
+                 'alternativas': ['Alta rentabilidad para exportación',
                                   'Solo productos industriales',
                                   'Solo flores ornamentales',
-                                  'Alta rentabilidad para exportación'],
-                 'correcta': 'B'},
+                                  'Baja rentabilidad, como papa, maíz y '
+                                  'cebada',
+                                  'Solo productos tropicales'],
+                 'correcta': 'D'},
                 {'pregunta': 'La agricultura de la selva se caracteriza por '
                              'ser:',
-                 'alternativas': ['Sin degradación de suelos',
-                                  'Intensiva y mecanizada',
-                                  'Exportadora exclusiva',
+                 'alternativas': ['Intensiva y mecanizada',
+                                  'Altamente tecnificada',
                                   'Migratoria',
-                                  'Altamente tecnificada'],
-                 'correcta': 'D'},
+                                  'Sin degradación de suelos',
+                                  'Exportadora exclusiva'],
+                 'correcta': 'C'},
                 {'pregunta': 'La técnica de roce, tumba y quema se practica '
                              'en la agricultura de:',
-                 'alternativas': ['La región andina alta',
+                 'alternativas': ['Las lomas costeras',
                                   'El litoral',
-                                  'La selva',
-                                  'Las lomas costeras',
-                                  'La costa'],
-                 'correcta': 'C'},
+                                  'La costa',
+                                  'La región andina alta',
+                                  'La selva'],
+                 'correcta': 'E'},
                 {'pregunta': 'Entre los cultivos industriales de la selva '
                              'figuran la coca, el café y:',
                  'alternativas': ['La cebada',
-                                  'El tabaco',
-                                  'El olluco',
+                                  'El trigo',
                                   'La papa',
-                                  'El trigo'],
-                 'correcta': 'B'},
+                                  'El olluco',
+                                  'El tabaco'],
+                 'correcta': 'E'},
                 {'pregunta': 'En la selva alta existen valles permanentes de '
                              'cultivo como Jaén, Bagua y:',
-                 'alternativas': ['Tacna',
+                 'alternativas': ['Arequipa',
                                   'Ica',
+                                  'Tacna',
                                   'Piura',
-                                  'Chanchamayo',
-                                  'Arequipa'],
-                 'correcta': 'D'},
+                                  'Chanchamayo'],
+                 'correcta': 'E'},
                 {'pregunta': 'La agricultura de la selva está relacionada '
                              'con la depredación de:',
-                 'alternativas': ['El suelo',
-                                  'El agua',
-                                  'El aire',
+                 'alternativas': ['El aire',
+                                  'El suelo',
+                                  'El mar',
                                   'Los minerales',
-                                  'El mar'],
-                 'correcta': 'A'},
+                                  'El agua'],
+                 'correcta': 'B'},
                 {'pregunta': 'En el antiguo Perú se cultivaba, entre otros '
                              'productos:',
                  'alternativas': ['Trigo y cebada',
-                                  'Papa, quinua y oca',
                                   'Algodón egipcio',
                                   'Café y tabaco',
-                                  'Arroz y caña de azúcar'],
-                 'correcta': 'B'},
+                                  'Arroz y caña de azúcar',
+                                  'Papa, quinua y oca'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las tierras aptas para cultivo en el Perú '
                              'alcanzan aproximadamente:',
-                 'alternativas': ['7,6 millones de hectáreas',
-                                  '15 millones de hectáreas',
+                 'alternativas': ['1 millón de hectáreas',
                                   '20 millones de hectáreas',
-                                  '500 mil hectáreas',
-                                  '1 millón de hectáreas'],
-                 'correcta': 'A'},
+                                  '7,6 millones de hectáreas',
+                                  '15 millones de hectáreas',
+                                  '500 mil hectáreas'],
+                 'correcta': 'C'},
                 {'pregunta': 'Un factor limitante de la agricultura en la '
                              'selva es:',
-                 'alternativas': ['La sobreproducción',
-                                  'El exceso de crédito bancario',
-                                  'El exceso de tecnología',
-                                  'El exceso de maquinaria',
+                 'alternativas': ['El exceso de crédito bancario',
                                   'La limitación en transporte y '
-                                  'comercialización'],
-                 'correcta': 'E'},
+                                  'comercialización',
+                                  'El exceso de tecnología',
+                                  'La sobreproducción',
+                                  'El exceso de maquinaria'],
+                 'correcta': 'B'},
                 {'pregunta': 'Una característica de la ganadería de la selva '
                              'es: (I CEPRU 2024)',
-                 'alternativas': ['Extensiva y migratoria',
-                                  'Intensiva y migratoria',
+                 'alternativas': ['Extensiva y experimental',
                                   'Intensiva y experimental',
-                                  'Extensiva y experimental',
+                                  'Extensiva y migratoria',
+                                  'Intensiva y migratoria',
                                   'Intensiva y extensiva'],
-                 'correcta': 'A'},
+                 'correcta': 'C'},
                 {'pregunta': 'La especie exótica de mayor reproducción '
                              'acuícola en la región andina corresponde a la: '
                              '(Primera Oportunidad UNSAAC 2025)',
-                 'alternativas': ['Palometa',
-                                  'Ractacara',
+                 'alternativas': ['Gamitana',
+                                  'Palometa',
                                   'Llambina',
-                                  'Trucha',
-                                  'Gamitana'],
+                                  'Ractacara',
+                                  'Trucha'],
+                 'correcta': 'E'},
+                {'pregunta': 'La actividad económica reproductiva que '
+                             'consiste en la crianza, selección y '
+                             'reproducción de animales domésticos se llama:',
+                 'alternativas': ['Pesca',
+                                  'Agricultura',
+                                  'Silvicultura',
+                                  'Ganadería',
+                                  'Apicultura'],
+                 'correcta': 'D'},
+                {'pregunta': 'La ganadería de la costa peruana se '
+                             'caracteriza por ser predominantemente:',
+                 'alternativas': ['Nómada',
+                                  'De subsistencia',
+                                  'Intensiva y tecnificada',
+                                  'Migratoria',
+                                  'Extensiva y tradicional'],
+                 'correcta': 'C'},
+                {'pregunta': 'El ganado de baja productividad, criado de '
+                             'forma extensiva y tradicional en la región '
+                             'andina, se llama ganado:',
+                 'alternativas': ['Amazonas',
+                                  'Fino',
+                                  'Brown Swiss',
+                                  'Cebú',
+                                  'Chusco o criollo'],
+                 'correcta': 'E'},
+                {'pregunta': 'En la región andina predomina la crianza de '
+                             'ganado ovino, vacuno y:',
+                 'alternativas': ['Porcino',
+                                  'Equino exclusivo',
+                                  'Camélidos',
+                                  'Aves de corral',
+                                  'Caprino exclusivo'],
+                 'correcta': 'C'},
+                {'pregunta': 'La raza de ganado vacuno desarrollada en la '
+                             'selva peruana, cruce de Cebú hembra con Brown '
+                             'Swiss, se llama raza:',
+                 'alternativas': ['Holstein',
+                                  'Angus',
+                                  'Chusca',
+                                  'Amazonas',
+                                  'Criolla'],
+                 'correcta': 'D'},
+                {'pregunta': 'Al 2022, el principal departamento productor '
+                             'de ganado vacuno del Perú es:',
+                 'alternativas': ['Lima',
+                                  'Huánuco',
+                                  'Cusco',
+                                  'Puno',
+                                  'Cajamarca'],
+                 'correcta': 'B'},
+                {'pregunta': 'Al 2022, el principal departamento productor '
+                             'de ganado ovino, alpaca y llama del Perú es:',
+                 'alternativas': ['Apurímac',
+                                  'Arequipa',
+                                  'Puno',
+                                  'Huancavelica',
+                                  'Cusco'],
+                 'correcta': 'C'},
+                {'pregunta': 'La ganadería contamina el agua subterránea '
+                             'principalmente por los purines o residuos '
+                             'fecales, que aumentan la concentración de:',
+                 'alternativas': ['Carbonatos',
+                                  'Fosfatos',
+                                  'Nitratos',
+                                  'Sulfatos',
+                                  'Cloruros'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según la FAO, el porcentaje de gases de efecto '
+                             'invernadero generado por el sector ganadero, '
+                             'mayor que el del transporte, es:',
+                 'alternativas': ['30%', '10%', '25%', '18%', '5%'],
+                 'correcta': 'D'},
+                {'pregunta': 'Al digerir alimentos, los animales de '
+                             'ganadería producen grandes cantidades de un '
+                             'potente gas de efecto invernadero llamado:',
+                 'alternativas': ['Monóxido de carbono',
+                                  'Óxido nitroso',
+                                  'Ozono',
+                                  'Dióxido de carbono',
+                                  'Metano'],
+                 'correcta': 'E'},
+                {'pregunta': 'La ganadería utiliza aproximadamente qué '
+                             'porcentaje de la superficie terrestre del '
+                             'planeta:',
+                 'alternativas': ['10%', '70%', '50%', '30%', '90%'],
                  'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'LA AGRICULTURA EN EL PERÚ',
                       'items': ['La agricultura es la actividad económica '
@@ -5822,31 +7257,52 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'En la selva alta existen valles permanentes '
                                 'de cultivo como Jaén, Bagua y '
                                 'Chanchamayo.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['La agricultura es una actividad económica '
-                                'de tipo Reproductiva.',
-                                'Los españoles introdujeron al Perú cultivos '
-                                'como el arroz, cebada y La caña de azúcar.',
-                                'Según la FAO, el Perú tiene en cultivo '
-                                'aproximadamente 4,4 millones de hectáreas.',
-                                'El área cultivada representa del territorio '
-                                'nacional peruano aproximadamente 3,5%.',
-                                'La agricultura de la costa se caracteriza '
-                                'por ser Intensiva, tecnificada y '
-                                'mecanizada.',
-                                'En la costa se pueden obtener anualmente '
-                                'Hasta dos cosechas.',
-                                'En la costa predominan los cultivos '
-                                'industriales como la caña de azúcar y El '
-                                'algodón.',
-                                'La agricultura de la costa goza de '
-                                'asistencia Crediticia por bancos y '
-                                'entidades financieras.',
-                                'La agricultura de la región andina se '
-                                'caracteriza por ser Extensiva y '
-                                'tradicional.',
-                                'En la región andina, el cultivo se realiza '
-                                'principalmente en época de Lluvias.']}]},
+                     {'titulo': 'LA GANADERÍA EN EL PERÚ: CONCEPTO Y '
+                                'REGIONES',
+                      'items': ['La ganadería es la actividad económica '
+                                'reproductiva que consiste en la crianza, '
+                                'selección y reproducción de animales '
+                                'domésticos, llamados ganado.',
+                                'La ganadería de la costa es '
+                                'predominantemente intensiva, tecnificada y '
+                                'científica; predomina el ganado vacuno '
+                                'fino, aves de corral y porcinos.',
+                                'La ganadería de la región andina es '
+                                'predominantemente extensiva y tradicional; '
+                                'se cría ganado chusco o criollo de baja '
+                                'productividad.',
+                                'En la región andina predomina la crianza de '
+                                'ganado ovino, camélidos y vacuno; se '
+                                'desarrolla en mesetas, punas y valles '
+                                'interandinos.',
+                                'La ganadería de la selva es extensiva y de '
+                                'experimentación; predomina el ganado vacuno '
+                                'de raza Amazonas (cruce de Cebú con Brown '
+                                'Swiss).']},
+                     {'titulo': 'PRINCIPALES DEPARTAMENTOS PRODUCTORES DE '
+                                'GANADO',
+                      'items': ['Al 2022, Huánuco es el principal productor '
+                                'de ganado vacuno; Puno lidera en ovino, '
+                                'alpaca y llama.',
+                                'Lima es el principal productor de ganado '
+                                'porcino y de aves; Piura lidera en '
+                                'producción caprina.']},
+                     {'titulo': 'IMPACTO AMBIENTAL DE LA GANADERÍA',
+                      'items': ['La ganadería contamina el agua subterránea '
+                                'por los purines o residuos fecales de las '
+                                'granjas, aumentando la concentración de '
+                                'nitratos.',
+                                'Según la FAO, el sector ganadero genera el '
+                                '18% de los gases de efecto invernadero, más '
+                                'que el sector transporte.',
+                                'Los animales, al digerir alimentos, '
+                                'producen grandes cantidades de metano, un '
+                                'potente gas de efecto invernadero.',
+                                'La ganadería utiliza el 30% de la '
+                                'superficie terrestre del planeta; en el '
+                                'Amazonas, el 70% de los bosques '
+                                'desaparecidos se dedicaron a '
+                                'pastizales.']}]},
  {'num': 16,
   'titulo': 'Actividades del Transporte en el Perú',
   'secciones': [{'titulo': '16.1 CARRETERAS LONGITUDINALES DEL PERÚ',
@@ -5882,84 +7338,84 @@ GEOGRAFIA_TEMAS = [{'num': 1,
   'cuadros': [],
   'preguntas': [{'pregunta': 'El Perú cuenta con un número de carreteras '
                              'longitudinales principales igual a:',
-                 'alternativas': ['Tres', 'Seis', 'Cuatro', 'Ocho', 'Diez'],
-                 'correcta': 'B'},
+                 'alternativas': ['Cuatro', 'Ocho', 'Tres', 'Diez', 'Seis'],
+                 'correcta': 'E'},
                 {'pregunta': 'La Carretera Longitudinal de la Costa Sur va '
                              'desde Lima hasta la ciudad de Tacna, en la '
                              'frontera con:',
-                 'alternativas': ['Bolivia',
+                 'alternativas': ['Ecuador',
+                                  'Bolivia',
+                                  'Colombia',
                                   'Chile',
-                                  'Ecuador',
-                                  'Brasil',
-                                  'Colombia'],
-                 'correcta': 'B'},
+                                  'Brasil'],
+                 'correcta': 'D'},
                 {'pregunta': 'La Carretera Longitudinal de la Sierra Sur '
                              'llega hasta Desaguadero, en la frontera con:',
-                 'alternativas': ['Chile',
+                 'alternativas': ['Ecuador',
                                   'Bolivia',
-                                  'Ecuador',
-                                  'Brasil',
-                                  'Colombia'],
-                 'correcta': 'B'},
-                {'pregunta': 'La Carretera Longitudinal de la Selva Norte '
-                             'llega hasta el Puente Internacional La Balsa, '
-                             'en la frontera con:',
-                 'alternativas': ['Bolivia',
-                                  'Ecuador',
                                   'Colombia',
                                   'Brasil',
                                   'Chile'],
                  'correcta': 'B'},
+                {'pregunta': 'La Carretera Longitudinal de la Selva Norte '
+                             'llega hasta el Puente Internacional La Balsa, '
+                             'en la frontera con:',
+                 'alternativas': ['Chile',
+                                  'Brasil',
+                                  'Bolivia',
+                                  'Ecuador',
+                                  'Colombia'],
+                 'correcta': 'D'},
                 {'pregunta': 'El aeropuerto internacional Inca Manco Cápac '
                              'está ubicado en la ciudad de:',
-                 'alternativas': ['Cusco',
-                                  'Juliaca',
-                                  'Puno capital',
+                 'alternativas': ['Tacna',
                                   'Arequipa',
-                                  'Tacna'],
-                 'correcta': 'B'},
+                                  'Cusco',
+                                  'Juliaca',
+                                  'Puno capital'],
+                 'correcta': 'D'},
                 {'pregunta': 'El aeropuerto internacional Francisco Secada '
                              'Vignetta está ubicado en la ciudad de:',
-                 'alternativas': ['Pucallpa',
+                 'alternativas': ['Tarapoto',
+                                  'Tingo María',
                                   'Iquitos',
-                                  'Tarapoto',
                                   'Yurimaguas',
-                                  'Tingo María'],
-                 'correcta': 'B'},
+                                  'Pucallpa'],
+                 'correcta': 'C'},
                 {'pregunta': 'El aeropuerto María Reiche Neuman, llamado así '
                              'en honor a la investigadora de las líneas de '
                              'Nasca, está ubicado en:',
-                 'alternativas': ['Ica capital',
-                                  'Nasca',
-                                  'Pisco',
+                 'alternativas': ['Nasca',
                                   'Chincha',
-                                  'Palpa'],
-                 'correcta': 'B'},
+                                  'Ica capital',
+                                  'Palpa',
+                                  'Pisco'],
+                 'correcta': 'A'},
                 {'pregunta': 'El aeropuerto internacional Padre Aldamiz está '
                              'ubicado en la ciudad de:',
-                 'alternativas': ['Iquitos',
+                 'alternativas': ['Tarapoto',
                                   'Puerto Maldonado',
+                                  'Atalaya',
                                   'Pucallpa',
-                                  'Tarapoto',
-                                  'Atalaya'],
+                                  'Iquitos'],
                  'correcta': 'B'},
                 {'pregunta': 'El aeropuerto internacional más importante del '
                              'Perú después de Jorge Chávez es: (II CEPRU '
                              '2025)',
-                 'alternativas': ['Inca Manco Cápac',
-                                  'Alejandro Velasco Astete',
+                 'alternativas': ['Alfredo Rodríguez Ballón',
                                   'Carlos Martínez de Pinillos',
-                                  'Alfredo Rodríguez Ballón',
-                                  'José Abelardo Quiñones'],
-                 'correcta': 'B'},
+                                  'Alejandro Velasco Astete',
+                                  'José Abelardo Quiñones',
+                                  'Inca Manco Cápac'],
+                 'correcta': 'C'},
                 {'pregunta': 'La carretera más importante del Perú es la: (I '
                              'CEPRU 2024)',
-                 'alternativas': ['De enlace',
-                                  'De penetración',
+                 'alternativas': ['Panamericana',
                                   'Marginal de la selva',
-                                  'Panamericana',
+                                  'De enlace',
+                                  'De penetración',
                                   'Interoceánica'],
-                 'correcta': 'D'}],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'CARRETERAS LONGITUDINALES DEL PERÚ',
                       'items': ['El Perú cuenta con seis carreteras '
                                 'longitudinales principales, que recorren de '
@@ -6029,15 +7485,29 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'La {regionalización} busca la conformación de '
                            'regiones con autonomía administrativa, económica '
                            'y {política}.']},
-                {'titulo': '17.4 PRINCIPALES AEROPUERTOS DEL PERÚ',
-                 'items': ['El aeropuerto internacional {Jorge Chávez}, en '
-                           'Lima, es el principal aeropuerto del Perú.',
-                           'El aeropuerto {Alejandro Velasco Astete} está '
-                           'ubicado en la ciudad del {Cusco}.',
-                           'El aeropuerto {Alfredo Rodríguez Ballón} está '
-                           'ubicado en la ciudad de {Arequipa}.',
-                           'El aeropuerto {José Abelardo Quiñones} está '
-                           'ubicado en la ciudad de {Chiclayo}.']}],
+                {'titulo': '17.4 CATEGORÍAS DE LOS CENTROS POBLADOS',
+                 'items': ['El {caserío} concentra una población de 151 a '
+                           '{1000} habitantes, con viviendas continuas o '
+                           'dispersas.',
+                           'El {pueblo} concentra una población de 1001 a '
+                           '{2500} habitantes, con calles y plaza céntrica; '
+                           'tiene institución educativa primaria completa.',
+                           'La {villa} concentra una población de 2501 a '
+                           '{5000} habitantes, con Plan de Ordenamiento '
+                           'Urbano; tiene primaria completa y 3 grados de '
+                           'secundaria.',
+                           'La {ciudad} concentra una población de 5001 a '
+                           '{500 000} habitantes; se clasifica en menores, '
+                           'intermedias y mayores.',
+                           'La {metrópoli} concentra una población de {500 '
+                           '001} habitantes a más; presenta Plan de '
+                           'Desarrollo Metropolitano.',
+                           'La {comunidad campesina}, según la Ley {24656}, '
+                           'es una organización de interés público integrada '
+                           'por familias ligadas por vínculos ancestrales.',
+                           'Según estudios de la UNMSM, a nivel distrital el '
+                           '{80}% de las capitales tienen la categoría de '
+                           'pueblo.']}],
   'cuadros': [{'titulo': '17.2 DEPARTAMENTOS DESTACADOS DEL PERÚ',
                'encabezados': ['Departamento', 'Capital', 'Área km²'],
                'filas': [['{Loreto}', 'Iquitos', '368 851'],
@@ -6047,207 +7517,236 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Tumbes}', 'Tumbes', '4 669']]}],
   'preguntas': [{'pregunta': 'La geografía política estudia la organización '
                              'política y administrativa de:',
-                 'alternativas': ['Solo los ríos',
-                                  'Solo las ciudades',
+                 'alternativas': ['Solo las ciudades',
+                                  'Solo los ríos',
                                   'Los Estados de la Tierra',
-                                  'Solo el relieve',
-                                  'Solo el clima'],
+                                  'Solo el clima',
+                                  'Solo el relieve'],
                  'correcta': 'C'},
                 {'pregunta': 'El territorio de la República peruana está '
                              'integrado, según el artículo 189, por '
                              'regiones, departamentos, provincias y:',
-                 'alternativas': ['Comunidades',
+                 'alternativas': ['Centros poblados solamente',
+                                  'Comunidades',
+                                  'Anexos',
                                   'Distritos',
-                                  'Centros poblados solamente',
-                                  'Caseríos exclusivamente',
-                                  'Anexos'],
-                 'correcta': 'B'},
+                                  'Caseríos exclusivamente'],
+                 'correcta': 'D'},
                 {'pregunta': 'El Perú está dividido en un número de '
                              'departamentos igual a:',
-                 'alternativas': ['30', '20', '24', '28', '25'],
-                 'correcta': 'C'},
+                 'alternativas': ['20', '28', '25', '24', '30'],
+                 'correcta': 'D'},
                 {'pregunta': 'Además de los departamentos, el Perú tiene una '
                              'provincia constitucional, que es:',
-                 'alternativas': ['Trujillo',
-                                  'Cusco',
-                                  'Arequipa',
+                 'alternativas': ['Cusco',
+                                  'El Callao',
                                   'Lima',
-                                  'El Callao'],
-                 'correcta': 'E'},
+                                  'Arequipa',
+                                  'Trujillo'],
+                 'correcta': 'B'},
                 {'pregunta': 'El número total de distritos del Perú es '
                              'aproximadamente:',
-                 'alternativas': ['1000', '1874', '500', '800', '2500'],
+                 'alternativas': ['1000', '1874', '800', '2500', '500'],
                  'correcta': 'B'},
                 {'pregunta': 'El departamento más extenso del Perú es:',
-                 'alternativas': ['Arequipa',
-                                  'Puno',
+                 'alternativas': ['Puno',
+                                  'Loreto',
                                   'Ucayali',
                                   'Cusco',
-                                  'Loreto'],
-                 'correcta': 'E'},
+                                  'Arequipa'],
+                 'correcta': 'B'},
                 {'pregunta': 'La capital del departamento de Loreto es:',
-                 'alternativas': ['Tarapoto',
+                 'alternativas': ['Iquitos',
+                                  'Yurimaguas',
+                                  'Tarapoto',
                                   'Moyobamba',
-                                  'Iquitos',
-                                  'Pucallpa',
-                                  'Yurimaguas'],
-                 'correcta': 'C'},
+                                  'Pucallpa'],
+                 'correcta': 'A'},
                 {'pregunta': 'El departamento de Cusco tiene una extensión '
                              'aproximada de:',
-                 'alternativas': ['50 000 km²',
-                                  '20 000 km²',
-                                  '35 000 km²',
+                 'alternativas': ['20 000 km²',
+                                  '100 000 km²',
                                   '71 891 km²',
-                                  '100 000 km²'],
-                 'correcta': 'D'},
+                                  '35 000 km²',
+                                  '50 000 km²'],
+                 'correcta': 'C'},
                 {'pregunta': 'El sistema donde el poder emana del gobierno '
                              'central se denomina:',
-                 'alternativas': ['Centralismo',
+                 'alternativas': ['Regionalización',
                                   'Descentralización',
-                                  'Regionalización',
                                   'Federalismo',
+                                  'Centralismo',
                                   'Municipalismo'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'La descentralización está regulada en el '
                              'artículo de la Constitución número:',
-                 'alternativas': ['24', '189', '91', '201', '188'],
-                 'correcta': 'E'},
+                 'alternativas': ['188', '91', '189', '201', '24'],
+                 'correcta': 'A'},
                 {'pregunta': 'Según el artículo 188, la descentralización es '
                              'una forma de organización:',
-                 'alternativas': ['Militar',
+                 'alternativas': ['Democrática',
+                                  'Militar',
+                                  'Monárquica',
                                   'Religiosa',
-                                  'Autoritaria',
-                                  'Democrática',
-                                  'Monárquica'],
-                 'correcta': 'D'},
+                                  'Autoritaria'],
+                 'correcta': 'A'},
                 {'pregunta': 'La descentralización es considerada una '
                              'política permanente de carácter:',
-                 'alternativas': ['Temporal',
-                                  'Obligatorio',
+                 'alternativas': ['Provincial',
                                   'Opcional',
                                   'Regional exclusivo',
-                                  'Provincial'],
-                 'correcta': 'B'},
+                                  'Obligatorio',
+                                  'Temporal'],
+                 'correcta': 'D'},
                 {'pregunta': 'El proceso de descentralización se realiza:',
-                 'alternativas': ['Sin ningún criterio técnico',
+                 'alternativas': ['Por etapas, en forma progresiva y '
+                                  'ordenada',
                                   'De forma inmediata y única',
-                                  'Solo en Lima',
                                   'De manera aleatoria',
-                                  'Por etapas, en forma progresiva y '
-                                  'ordenada'],
-                 'correcta': 'E'},
+                                  'Sin ningún criterio técnico',
+                                  'Solo en Lima'],
+                 'correcta': 'A'},
                 {'pregunta': 'La descentralización implica la transferencia '
                              'de recursos del gobierno nacional hacia:',
-                 'alternativas': ['Los gobiernos regionales y locales',
-                                  'Organismos internacionales',
+                 'alternativas': ['Solo las universidades',
                                   'Solo el sector privado',
-                                  'Solo las universidades',
+                                  'Organismos internacionales',
+                                  'Los gobiernos regionales y locales',
                                   'Solo las Fuerzas Armadas'],
-                 'correcta': 'A'},
+                 'correcta': 'D'},
                 {'pregunta': 'La regionalización busca la conformación de '
                              'regiones con autonomía:',
-                 'alternativas': ['Ninguna autonomía real',
-                                  'Administrativa, económica y política',
-                                  'Solo administrativa',
+                 'alternativas': ['Solo económica',
+                                  'Ninguna autonomía real',
                                   'Solo política',
-                                  'Solo económica'],
-                 'correcta': 'B'},
+                                  'Administrativa, económica y política',
+                                  'Solo administrativa'],
+                 'correcta': 'D'},
                 {'pregunta': 'El objetivo fundamental de la '
                              'descentralización es:',
-                 'alternativas': ['Reducir la participación ciudadana',
-                                  'Aumentar la burocracia central',
-                                  'Concentrar el poder en Lima',
+                 'alternativas': ['Aumentar la burocracia central',
+                                  'Eliminar los gobiernos regionales',
                                   'El desarrollo integral del país',
-                                  'Eliminar los gobiernos regionales'],
-                 'correcta': 'D'},
+                                  'Reducir la participación ciudadana',
+                                  'Concentrar el poder en Lima'],
+                 'correcta': 'C'},
                 {'pregunta': 'La capital del departamento de Arequipa es:',
-                 'alternativas': ['Chivay',
+                 'alternativas': ['Camaná',
+                                  'Chivay',
+                                  'Arequipa',
                                   'Mollendo',
-                                  'Islay',
-                                  'Camaná',
-                                  'Arequipa'],
-                 'correcta': 'E'},
+                                  'Islay'],
+                 'correcta': 'C'},
                 {'pregunta': 'La capital del departamento de Áncash es:',
-                 'alternativas': ['Huaraz',
-                                  'Chimbote',
+                 'alternativas': ['Chimbote',
+                                  'Huaraz',
+                                  'Casma',
                                   'Huarmey',
-                                  'Recuay',
-                                  'Casma'],
-                 'correcta': 'A'},
+                                  'Recuay'],
+                 'correcta': 'B'},
                 {'pregunta': 'El departamento de Tumbes tiene una extensión '
                              'aproximada de:',
                  'alternativas': ['100 000 km²',
-                                  '1 000 km²',
                                   '4 669 km²',
-                                  '15 000 km²',
-                                  '50 000 km²'],
-                 'correcta': 'C'},
+                                  '1 000 km²',
+                                  '50 000 km²',
+                                  '15 000 km²'],
+                 'correcta': 'B'},
                 {'pregunta': 'En la provincia de La Convención, Cusco, se '
                              'crearon recientemente los distritos de Villa '
                              'Virgen, Villa Kintiarina, Incahuasi y:',
-                 'alternativas': ['Calca',
-                                  'Urubamba',
-                                  'Anta',
+                 'alternativas': ['Megantoni',
+                                  'Calca',
                                   'Ollantaytambo',
-                                  'Megantoni'],
-                 'correcta': 'E'},
-                {'pregunta': 'El principal aeropuerto internacional del '
-                             'Perú, ubicado en Lima, es el:',
-                 'alternativas': ['Alejandro Velasco Astete',
-                                  'Jorge Chávez',
-                                  'Alfredo Rodríguez Ballón',
-                                  'José Abelardo Quiñones',
-                                  'Rodríguez Ballón'],
-                 'correcta': 'B'},
-                {'pregunta': 'El aeropuerto Alejandro Velasco Astete está '
-                             'ubicado en la ciudad de:',
-                 'alternativas': ['Arequipa',
-                                  'Cusco',
-                                  'Chiclayo',
-                                  'Piura',
-                                  'Trujillo'],
-                 'correcta': 'B'},
-                {'pregunta': 'El aeropuerto Alfredo Rodríguez Ballón está '
-                             'ubicado en la ciudad de:',
-                 'alternativas': ['Cusco',
-                                  'Arequipa',
-                                  'Tacna',
-                                  'Puno',
-                                  'Chiclayo'],
-                 'correcta': 'B'},
+                                  'Anta',
+                                  'Urubamba'],
+                 'correcta': 'A'},
                 {'pregunta': 'El proceso técnico-geográfico para delimitar '
                              'los distritos, provincias y demás áreas '
                              'geográficas se llama: (II CEPRU 2024)',
-                 'alternativas': ['Ordenamiento territorial',
-                                  'Demarcación territorial',
-                                  'Zonificación ecológica y económica',
+                 'alternativas': ['Regionalización',
                                   'Gestión territorial',
-                                  'Regionalización'],
-                 'correcta': 'B'},
+                                  'Ordenamiento territorial',
+                                  'Zonificación ecológica y económica',
+                                  'Demarcación territorial'],
+                 'correcta': 'E'},
                 {'pregunta': 'Los niveles de estudio de la Zonificación '
                              'Ecológica y Económica (ZEE) son ejecutados en '
                              'tres niveles, estos son: (I CEPRU 2024)',
                  'alternativas': ['Microzonificación, mesozonificación y '
                                   'macrozonificación',
-                                  'Departamental, provincial y distrital',
                                   'Macrozonificación, descentralización y '
                                   'regionalización',
-                                  'Microzonificación, centralismo y '
-                                  'descentralización',
+                                  'Departamental, provincial y distrital',
                                   'Centralismo, descentralización y '
-                                  'regionalización'],
+                                  'regionalización',
+                                  'Microzonificación, centralismo y '
+                                  'descentralización'],
                  'correcta': 'A'},
                 {'pregunta': 'El nivel de estudio de la ZEE que contribuye a '
                              'la elaboración de políticas y planes de '
                              'desarrollo en el ámbito local o distrital, con '
                              'escala 1:25 000, es el nivel de: (II CEPRU '
                              '2022)',
-                 'alternativas': ['Zonificación extra',
-                                  'Microzonificación',
+                 'alternativas': ['Demarcación territorial',
                                   'Mesozonificación',
+                                  'Microzonificación',
                                   'Macrozonificación',
-                                  'Demarcación territorial'],
-                 'correcta': 'B'}],
+                                  'Zonificación extra'],
+                 'correcta': 'C'},
+                {'pregunta': 'El centro poblado que concentra una población '
+                             'de 151 a 1000 habitantes se llama:',
+                 'alternativas': ['Ciudad',
+                                  'Pueblo',
+                                  'Caserío',
+                                  'Metrópoli',
+                                  'Villa'],
+                 'correcta': 'C'},
+                {'pregunta': 'El centro poblado que concentra una población '
+                             'de 1001 a 2500 habitantes, con calles y plaza '
+                             'céntrica, se llama:',
+                 'alternativas': ['Metrópoli',
+                                  'Pueblo',
+                                  'Caserío',
+                                  'Villa',
+                                  'Ciudad'],
+                 'correcta': 'B'},
+                {'pregunta': 'El centro poblado que concentra una población '
+                             'de 2501 a 5000 habitantes, con Plan de '
+                             'Ordenamiento Urbano, se llama:',
+                 'alternativas': ['Villa',
+                                  'Ciudad',
+                                  'Metrópoli',
+                                  'Caserío',
+                                  'Pueblo'],
+                 'correcta': 'A'},
+                {'pregunta': 'El centro poblado con viviendas dispersas y '
+                             'población menor a mil habitantes se denomina:',
+                 'alternativas': ['Ciudadela',
+                                  'Ciudad',
+                                  'Villa',
+                                  'Metrópoli',
+                                  'Caserío'],
+                 'correcta': 'E'},
+                {'pregunta': 'El centro poblado que concentra una población '
+                             'de 500 001 habitantes a más, con Plan de '
+                             'Desarrollo Metropolitano, se llama:',
+                 'alternativas': ['Pueblo',
+                                  'Ciudad intermedia',
+                                  'Metrópoli',
+                                  'Ciudad mayor',
+                                  'Villa'],
+                 'correcta': 'C'},
+                {'pregunta': 'Según la Ley 24656, la organización de interés '
+                             'público integrada por familias ligadas por '
+                             'vínculos ancestrales que controlan un '
+                             'territorio se llama:',
+                 'alternativas': ['Comunidad campesina',
+                                  'Anexo',
+                                  'Junta vecinal',
+                                  'Municipalidad',
+                                  'Cooperativa'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'GEOGRAFÍA POLÍTICA',
                       'items': ['La geografía política estudia la '
                                 'organización política y administrativa de '
@@ -6283,16 +7782,31 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La regionalización busca la conformación de '
                                 'regiones con autonomía administrativa, '
                                 'económica y política.']},
-                     {'titulo': 'PRINCIPALES AEROPUERTOS DEL PERÚ',
-                      'items': ['El aeropuerto internacional Jorge Chávez, '
-                                'en Lima, es el principal aeropuerto del '
-                                'Perú.',
-                                'El aeropuerto Alejandro Velasco Astete está '
-                                'ubicado en la ciudad del Cusco.',
-                                'El aeropuerto Alfredo Rodríguez Ballón está '
-                                'ubicado en la ciudad de Arequipa.',
-                                'El aeropuerto José Abelardo Quiñones está '
-                                'ubicado en la ciudad de Chiclayo.']}]},
+                     {'titulo': 'CATEGORÍAS DE LOS CENTROS POBLADOS',
+                      'items': ['El caserío concentra una población de 151 a '
+                                '1000 habitantes, con viviendas continuas o '
+                                'dispersas.',
+                                'El pueblo concentra una población de 1001 a '
+                                '2500 habitantes, con calles y plaza '
+                                'céntrica; tiene institución educativa '
+                                'primaria completa.',
+                                'La villa concentra una población de 2501 a '
+                                '5000 habitantes, con Plan de Ordenamiento '
+                                'Urbano; tiene primaria completa y 3 grados '
+                                'de secundaria.',
+                                'La ciudad concentra una población de 5001 a '
+                                '500 000 habitantes; se clasifica en '
+                                'menores, intermedias y mayores.',
+                                'La metrópoli concentra una población de 500 '
+                                '001 habitantes a más; presenta Plan de '
+                                'Desarrollo Metropolitano.',
+                                'La comunidad campesina, según la Ley 24656, '
+                                'es una organización de interés público '
+                                'integrada por familias ligadas por vínculos '
+                                'ancestrales.',
+                                'Según estudios de la UNMSM, a nivel '
+                                'distrital el 80% de las capitales tienen la '
+                                'categoría de pueblo.']}]},
  {'num': 18,
   'titulo': 'Espacio Geográfico Físico del Cusco',
   'secciones': [{'titulo': '18.1 LOCALIZACIÓN Y EXTENSIÓN',
@@ -6331,48 +7845,90 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'La provincia del Cusco tiene como capital la '
                            'ciudad del {Cusco}, y su distrito más poblado es '
                            '{San Sebastián}.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['El departamento del Cusco se ubica en la parte '
-                           '{Sur-oriental del Perú}.',
-                           'La superficie del departamento del Cusco '
-                           'representa del territorio nacional {5,6%}.',
-                           'El punto más alto del departamento del Cusco es '
-                           'el nevado {Ausangate}.',
-                           'La altitud del nevado Ausangate es '
-                           'aproximadamente de {6 364 m}.',
-                           'El punto más bajo del departamento del Cusco se '
-                           'ubica en la provincia de {La Convención}.',
-                           'El departamento del Cusco limita por el norte '
-                           'con {Ucayali}.',
-                           'El departamento del Cusco limita por el sur con '
-                           '{Arequipa}.',
-                           'El departamento del Cusco limita por el este y '
-                           'sureste con {Puno}.',
-                           'La región andina o sierra representa del '
-                           'territorio cusqueño {53%}.',
-                           'La selva alta o faja sub andina representa del '
-                           'territorio del Cusco {28%}.',
-                           'La selva baja o llanura representa del '
-                           'territorio cusqueño {19%}.',
-                           'El departamento del Cusco está dividido en un '
-                           'número de provincias igual a {13}.',
-                           'El departamento del Cusco tiene un número de '
-                           'distritos igual a {112}.',
-                           'La provincia más extensa del departamento del '
-                           'Cusco es {La Convención}.',
-                           'La capital de la provincia de La Convención es '
-                           '{Quillabamba}.',
-                           'La provincia de La Convención representa del '
-                           'área departamental del Cusco {41,52%}.',
-                           'La capital de la provincia de Canchis es '
-                           '{Sicuani}.',
-                           'El distrito más poblado de la provincia del '
-                           'Cusco, según el censo 2017, es {San Sebastián}.',
-                           'El departamento del Cusco se caracteriza por ser '
-                           'un espacio geográfico {Diverso en geomorfología, '
-                           'clima, suelo, flora y fauna}.',
-                           'El departamento del Cusco limita por el oeste '
-                           'con {Ayacucho}.']}],
+                {'titulo': '18.5 CORDILLERAS DEL DEPARTAMENTO DEL CUSCO',
+                 'items': ['La cordillera {Vilcabamba} está alineada de SE a '
+                           'NW; su mayor elevación es el nevado {Salkantay} '
+                           '(6271 m).',
+                           'La cordillera {Vilcanota-Urubamba} presenta la '
+                           'mayor cantidad de glaciares de la región; su '
+                           'pico más elevado es el {Ausangate} (6384 m).',
+                           'En la cordillera Vilcanota se ubica el abra '
+                           '{Málaga}, por donde pasa la carretera '
+                           'Cusco-Quillabamba.',
+                           'La cordillera {Paucartambo} está constituida por '
+                           'serranías residuales, entre 3800 y 4500 m; ahí '
+                           'se ubica el abra {Acjanaco}, por la carretera '
+                           'Cusco-Pilcopata.']},
+                {'titulo': '18.6 VALLES DEL DEPARTAMENTO DEL CUSCO',
+                 'items': ['El {valle del Vilcanota-Urubamba} se extiende '
+                           '480 km, desde el abra La Raya (4100 m) hasta el '
+                           'pongo de {Mainique} (450 m).',
+                           'El valle del Vilcanota-Urubamba concentra '
+                           'aproximadamente el {79}% de la población del '
+                           'departamento del Cusco, y el {75}% de sus suelos '
+                           'de cultivo.',
+                           'En el valle del Vilcanota se ubican los restos '
+                           'arqueológicos de {Pisaq}, Ollantaytambo y '
+                           'Machupicchu.',
+                           'El río {Apurímac}, considerado el brazo más '
+                           'extenso del río Amazonas, forma el Cañón del '
+                           'Apurímac en su curso alto y medio.',
+                           'El {valle del Mapacho}, o Yavero, es otra '
+                           'depresión longitudinal importante, de menor '
+                           'amplitud que el valle del Vilcanota.']},
+                {'titulo': '18.7 RIESGO DE DESASTRES EN EL DEPARTAMENTO DEL '
+                           'CUSCO',
+                 'items': ['El riesgo sísmico en el Cusco se debe '
+                           'principalmente a la presencia de {fallas '
+                           'activas} de la edad Cuaternaria.',
+                           'El {sistema de fallas del Cusco} comprende más '
+                           'de 100 km, entre Abancay y Urcos, pasando cerca '
+                           'de la ciudad; incluye las fallas Zurite, '
+                           'Chinchero y {Tambomachay}.',
+                           'El {sistema de fallas del Vilcanota} abarca '
+                           'alrededor de 100 km, conformado por las fallas '
+                           'Pomacanchi, Sangarará y {Langui-Layo}.',
+                           'La {falla Tambomachay} tiene una longitud de 18 '
+                           'km y se ubica a 7 km al norte de la ciudad del '
+                           'Cusco.',
+                           'El riesgo de {deslizamientos} en el Cusco se '
+                           'encuentra principalmente en las quebradas y '
+                           'vertientes del valle del {Watanay}.',
+                           'La quebrada {Saphy} es una de las de mayor '
+                           'peligro por deslizamientos, poniendo en riesgo '
+                           'monumentos como la iglesia de la {Compañía} de '
+                           'Jesús.']},
+                {'titulo': '18.8 CONTAMINACIÓN ATMOSFÉRICA Y ACÚSTICA EN '
+                           'CUSCO',
+                 'items': ['La contaminación atmosférica en Cusco se vincula '
+                           'a la quema de {pastizales}, el parque automotor, '
+                           'y las fábricas de {ladrillos} y tejas.',
+                           'A nivel del departamento del Cusco se han '
+                           'identificado {473} empresas de fábricas de '
+                           'ladrillos y tejas, la mayoría en el valle del '
+                           'río {Watanay}.',
+                           'La {contaminación acústica} en Cusco se debe al '
+                           'tráfico vehicular y a la llegada y salida de '
+                           'aviones del aeropuerto {Alejandro Velasco '
+                           'Astete}.']},
+                {'titulo': '18.9 CONTAMINACIÓN DE LOS RÍOS WATANAY Y '
+                           'VILCANOTA',
+                 'items': ['El río {Watanay} recibe vertidos de aguas '
+                           'servidas de más de {400 000} habitantes de la '
+                           'ciudad del Cusco.',
+                           'La contaminación del río {Vilcanota} proviene '
+                           'principalmente de vertidos urbano-domésticos y '
+                           'residuos {sólidos}; el valle alberga cerca de un '
+                           'millón de habitantes.',
+                           'Entre los efectos de esta contaminación están la '
+                           'disminución de la {fauna acuática} y '
+                           'enfermedades a la piel por contacto directo.']},
+                {'titulo': '18.10 DESECHOS SÓLIDOS EN LA CIUDAD DEL CUSCO',
+                 'items': ['El botadero de {Jaquira}, en Santiago, forma una '
+                           'montaña con más de {1,5} millones de toneladas '
+                           'de desechos.',
+                           'El botadero de Jaquira recibe a diario un '
+                           'promedio de {380} toneladas de desechos.']}],
   'cuadros': [{'titulo': '18.3 REGIONES NATURALES DEL CUSCO',
                'encabezados': ['Región', 'Porcentaje'],
                'filas': [['{Andina} o Sierra', '{53}%'],
@@ -6380,172 +7936,291 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Selva Baja}', '{19}%']]}],
   'preguntas': [{'pregunta': 'El departamento del Cusco se ubica en la '
                              'parte:',
-                 'alternativas': ['Sur-oriental del Perú',
-                                  'Centro-occidental del Perú',
+                 'alternativas': ['Nor-occidental del Perú',
                                   'Litoral del Perú',
                                   'Extremo norte del país',
-                                  'Nor-occidental del Perú'],
-                 'correcta': 'A'},
+                                  'Sur-oriental del Perú',
+                                  'Centro-occidental del Perú'],
+                 'correcta': 'D'},
                 {'pregunta': 'La superficie del departamento del Cusco '
                              'representa del territorio nacional:',
-                 'alternativas': ['20%', '1%', '5,6%', '15%', '10%'],
-                 'correcta': 'C'},
+                 'alternativas': ['1%', '20%', '10%', '15%', '5,6%'],
+                 'correcta': 'E'},
                 {'pregunta': 'El punto más alto del departamento del Cusco '
                              'es el nevado:',
-                 'alternativas': ['Veronica',
-                                  'Huanacaure',
+                 'alternativas': ['Huanacaure',
                                   'Salkantay',
-                                  'Chicón',
-                                  'Ausangate'],
-                 'correcta': 'E'},
+                                  'Veronica',
+                                  'Ausangate',
+                                  'Chicón'],
+                 'correcta': 'D'},
                 {'pregunta': 'La altitud del nevado Ausangate es '
                              'aproximadamente de:',
-                 'alternativas': ['5 000 m',
-                                  '6 364 m',
-                                  '4 500 m',
+                 'alternativas': ['7 000 m',
                                   '5 800 m',
-                                  '7 000 m'],
-                 'correcta': 'B'},
+                                  '4 500 m',
+                                  '6 364 m',
+                                  '5 000 m'],
+                 'correcta': 'D'},
                 {'pregunta': 'El punto más bajo del departamento del Cusco '
                              'se ubica en la provincia de:',
                  'alternativas': ['Quispicanchi',
-                                  'Urubamba',
-                                  'La Convención',
                                   'Paucartambo',
-                                  'Calca'],
-                 'correcta': 'C'},
-                {'pregunta': 'El departamento del Cusco limita por el norte '
-                             'con:',
-                 'alternativas': ['Ayacucho',
-                                  'Arequipa',
-                                  'Apurímac',
-                                  'Puno',
-                                  'Ucayali'],
-                 'correcta': 'E'},
-                {'pregunta': 'El departamento del Cusco limita por el sur '
-                             'con:',
-                 'alternativas': ['Junín',
-                                  'Arequipa',
-                                  'Ayacucho',
-                                  'Ucayali',
-                                  'Madre de Dios'],
-                 'correcta': 'B'},
-                {'pregunta': 'El departamento del Cusco limita por el este y '
-                             'sureste con:',
-                 'alternativas': ['Puno',
-                                  'Ayacucho',
-                                  'Madre de Dios',
-                                  'Apurímac',
-                                  'Junín'],
-                 'correcta': 'A'},
-                {'pregunta': 'La región andina o sierra representa del '
-                             'territorio cusqueño:',
-                 'alternativas': ['19%', '40%', '70%', '28%', '53%'],
-                 'correcta': 'E'},
-                {'pregunta': 'La selva alta o faja sub andina representa del '
-                             'territorio del Cusco:',
-                 'alternativas': ['28%', '10%', '19%', '53%', '5%'],
-                 'correcta': 'A'},
-                {'pregunta': 'La selva baja o llanura representa del '
-                             'territorio cusqueño:',
-                 'alternativas': ['28%', '70%', '19%', '40%', '53%'],
-                 'correcta': 'C'},
-                {'pregunta': 'El departamento del Cusco está dividido en un '
-                             'número de provincias igual a:',
-                 'alternativas': ['10', '13', '15', '8', '20'],
-                 'correcta': 'B'},
-                {'pregunta': 'El departamento del Cusco tiene un número de '
-                             'distritos igual a:',
-                 'alternativas': ['166', '112', '84', '65', '100'],
-                 'correcta': 'B'},
-                {'pregunta': 'La provincia más extensa del departamento del '
-                             'Cusco es:',
-                 'alternativas': ['Calca',
-                                  'Quispicanchi',
+                                  'Calca',
                                   'Urubamba',
-                                  'Cusco',
                                   'La Convención'],
                  'correcta': 'E'},
-                {'pregunta': 'La capital de la provincia de La Convención '
-                             'es:',
-                 'alternativas': ['Calca',
-                                  'Sicuani',
-                                  'Yanaoca',
-                                  'Urubamba',
-                                  'Quillabamba'],
-                 'correcta': 'E'},
-                {'pregunta': 'La provincia de La Convención representa del '
-                             'área departamental del Cusco:',
-                 'alternativas': ['10%', '70%', '20%', '41,52%', '5%'],
-                 'correcta': 'D'},
-                {'pregunta': 'La capital de la provincia de Canchis es:',
-                 'alternativas': ['Sicuani',
-                                  'Anta',
-                                  'Espinar',
-                                  'Yanaoca',
-                                  'Acomayo'],
-                 'correcta': 'A'},
-                {'pregunta': 'El distrito más poblado de la provincia del '
-                             'Cusco, según el censo 2017, es:',
-                 'alternativas': ['Wanchaq',
-                                  'Poroy',
-                                  'San Sebastián',
-                                  'Santiago',
-                                  'Saylla'],
-                 'correcta': 'C'},
-                {'pregunta': 'El departamento del Cusco se caracteriza por '
-                             'ser un espacio geográfico:',
-                 'alternativas': ['Diverso en geomorfología, clima, suelo, '
-                                  'flora y fauna',
-                                  'Homogéneo y uniforme',
-                                  'Exclusivamente amazónico',
-                                  'Solo desértico',
-                                  'Sin variedad de pisos altitudinales'],
-                 'correcta': 'A'},
-                {'pregunta': 'El departamento del Cusco limita por el oeste '
+                {'pregunta': 'El departamento del Cusco limita por el norte '
                              'con:',
-                 'alternativas': ['Puno',
+                 'alternativas': ['Ucayali',
+                                  'Ayacucho',
+                                  'Apurímac',
+                                  'Arequipa',
+                                  'Puno'],
+                 'correcta': 'A'},
+                {'pregunta': 'El departamento del Cusco limita por el sur '
+                             'con:',
+                 'alternativas': ['Ucayali',
+                                  'Madre de Dios',
+                                  'Arequipa',
+                                  'Ayacucho',
+                                  'Junín'],
+                 'correcta': 'C'},
+                {'pregunta': 'El departamento del Cusco limita por el este y '
+                             'sureste con:',
+                 'alternativas': ['Junín',
+                                  'Puno',
                                   'Apurímac',
                                   'Ayacucho',
-                                  'Madre de Dios',
-                                  'Arequipa'],
+                                  'Madre de Dios'],
+                 'correcta': 'B'},
+                {'pregunta': 'La región andina o sierra representa del '
+                             'territorio cusqueño:',
+                 'alternativas': ['40%', '70%', '28%', '53%', '19%'],
+                 'correcta': 'D'},
+                {'pregunta': 'La selva alta o faja sub andina representa del '
+                             'territorio del Cusco:',
+                 'alternativas': ['10%', '19%', '5%', '28%', '53%'],
+                 'correcta': 'D'},
+                {'pregunta': 'La selva baja o llanura representa del '
+                             'territorio cusqueño:',
+                 'alternativas': ['53%', '28%', '40%', '70%', '19%'],
+                 'correcta': 'E'},
+                {'pregunta': 'El departamento del Cusco está dividido en un '
+                             'número de provincias igual a:',
+                 'alternativas': ['20', '15', '8', '10', '13'],
+                 'correcta': 'E'},
+                {'pregunta': 'El departamento del Cusco tiene un número de '
+                             'distritos igual a:',
+                 'alternativas': ['84', '100', '166', '65', '112'],
+                 'correcta': 'E'},
+                {'pregunta': 'La provincia más extensa del departamento del '
+                             'Cusco es:',
+                 'alternativas': ['Quispicanchi',
+                                  'La Convención',
+                                  'Cusco',
+                                  'Urubamba',
+                                  'Calca'],
+                 'correcta': 'B'},
+                {'pregunta': 'La capital de la provincia de La Convención '
+                             'es:',
+                 'alternativas': ['Urubamba',
+                                  'Calca',
+                                  'Quillabamba',
+                                  'Yanaoca',
+                                  'Sicuani'],
                  'correcta': 'C'},
+                {'pregunta': 'La provincia de La Convención representa del '
+                             'área departamental del Cusco:',
+                 'alternativas': ['20%', '10%', '41,52%', '70%', '5%'],
+                 'correcta': 'C'},
+                {'pregunta': 'La capital de la provincia de Canchis es:',
+                 'alternativas': ['Yanaoca',
+                                  'Sicuani',
+                                  'Acomayo',
+                                  'Anta',
+                                  'Espinar'],
+                 'correcta': 'B'},
+                {'pregunta': 'El distrito más poblado de la provincia del '
+                             'Cusco, según el censo 2017, es:',
+                 'alternativas': ['San Sebastián',
+                                  'Poroy',
+                                  'Santiago',
+                                  'Wanchaq',
+                                  'Saylla'],
+                 'correcta': 'A'},
+                {'pregunta': 'El departamento del Cusco se caracteriza por '
+                             'ser un espacio geográfico:',
+                 'alternativas': ['Exclusivamente amazónico',
+                                  'Homogéneo y uniforme',
+                                  'Sin variedad de pisos altitudinales',
+                                  'Diverso en geomorfología, clima, suelo, '
+                                  'flora y fauna',
+                                  'Solo desértico'],
+                 'correcta': 'D'},
+                {'pregunta': 'El departamento del Cusco limita por el oeste '
+                             'con:',
+                 'alternativas': ['Ayacucho',
+                                  'Madre de Dios',
+                                  'Apurímac',
+                                  'Puno',
+                                  'Arequipa'],
+                 'correcta': 'A'},
                 {'pregunta': 'La montaña de origen volcánico que domina la '
                              'ciudad del Cusco es: (II CEPRU 2025)',
-                 'alternativas': ['Araway',
-                                  'Viva el Perú',
-                                  'Pachatusan',
+                 'alternativas': ['Viva el Perú',
                                   'Wanaqauri',
-                                  'Fortaleza'],
+                                  'Pachatusan',
+                                  'Fortaleza',
+                                  'Araway'],
                  'correcta': 'C'},
                 {'pregunta': 'Las capitales de las provincias de '
                              'Quispicanchi, Canchis y Paruro son, '
                              'respectivamente: (II CEPRU 2024)',
-                 'alternativas': ['Urcos, Sicuani y Paruro',
+                 'alternativas': ['Yauri, Sicuani y Paruro',
+                                  'Urcos, Yanaoca y Paruro',
+                                  'Urcos, Sicuani y Paruro',
                                   'Yanaoca, Canchis y Paruro',
-                                  'Yanaoca, Sicuani y Paruro',
-                                  'Yauri, Sicuani y Paruro',
-                                  'Urcos, Yanaoca y Paruro'],
-                 'correcta': 'A'},
+                                  'Yanaoca, Sicuani y Paruro'],
+                 'correcta': 'C'},
                 {'pregunta': 'Constituyen parte de los distritos de la '
                              'Provincia del Cusco: (Primera Oportunidad '
                              'UNSAAC 2025)',
-                 'alternativas': ['Poroy, Huasao y Ccorca',
-                                  'Ccorca, Saylla y Poroy',
-                                  'Saylla, Huasao y Tipón',
+                 'alternativas': ['Wanchaq, Oropesa y Lucre',
                                   'Oropesa, Saylla y Poroy',
-                                  'Wanchaq, Oropesa y Lucre'],
-                 'correcta': 'B'},
+                                  'Saylla, Huasao y Tipón',
+                                  'Ccorca, Saylla y Poroy',
+                                  'Poroy, Huasao y Ccorca'],
+                 'correcta': 'D'},
                 {'pregunta': 'Las ciudades de Yanaoca y Quillabamba son las '
                              'capitales de las provincias de: (Primera '
                              'Oportunidad UNSAAC 2020)',
-                 'alternativas': ['Paruro y La Convención',
+                 'alternativas': ['Canas y La Convención',
                                   'Canas y Urubamba',
-                                  'Canas y La Convención',
-                                  'Calca y La Convención',
-                                  'Acomayo y Anta'],
-                 'correcta': 'C'}],
-  'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y EXTENSIÓN',
+                                  'Acomayo y Anta',
+                                  'Paruro y La Convención',
+                                  'Calca y La Convención'],
+                 'correcta': 'A'},
+                {'pregunta': 'La cordillera del Cusco cuya mayor elevación '
+                             'es el nevado Salkantay (6271 m) es la:',
+                 'alternativas': ['Ausangate',
+                                  'Paucartambo',
+                                  'Vilcabamba',
+                                  'Vilcanota-Urubamba',
+                                  'Carabaya'],
+                 'correcta': 'C'},
+                {'pregunta': 'La cordillera que presenta la mayor cantidad '
+                             'de glaciares del Cusco, con el Ausangate como '
+                             'pico más elevado, es la:',
+                 'alternativas': ['Paucartambo',
+                                  'Vilcabamba',
+                                  'Vilcanota-Urubamba',
+                                  'Vilcanota exclusiva',
+                                  'Salkantay'],
+                 'correcta': 'C'},
+                {'pregunta': 'El abra por donde pasa la carretera '
+                             'Cusco-Quillabamba, en la cordillera Vilcanota, '
+                             'se llama:',
+                 'alternativas': ['La Raya',
+                                  'Málaga',
+                                  'Porculla',
+                                  'Acjanaco',
+                                  'Anticona'],
+                 'correcta': 'B'},
+                {'pregunta': 'El valle del Vilcanota-Urubamba se extiende '
+                             'desde el abra La Raya hasta el:',
+                 'alternativas': ['Pongo de Mainique',
+                                  'Valle del Mapacho',
+                                  'Abra Málaga',
+                                  'Cañón del Apurímac',
+                                  'Cañón del Colca'],
+                 'correcta': 'A'},
+                {'pregunta': 'El valle del Vilcanota-Urubamba concentra '
+                             'aproximadamente qué porcentaje de la población '
+                             'del departamento del Cusco:',
+                 'alternativas': ['95%', '30%', '60%', '79%', '50%'],
+                 'correcta': 'D'},
+                {'pregunta': 'El río considerado el brazo más extenso del '
+                             'río Amazonas, que forma un cañón profundo en '
+                             'su curso alto, es el río:',
+                 'alternativas': ['Urubamba',
+                                  'Mapacho',
+                                  'Vilcanota',
+                                  'Apurímac',
+                                  'Yavero'],
+                 'correcta': 'D'},
+                {'pregunta': 'El riesgo sísmico en el departamento del Cusco '
+                             'se debe principalmente a la presencia de:',
+                 'alternativas': ['Volcanes activos',
+                                  'Fallas activas de la edad Cuaternaria',
+                                  'Erosión marina',
+                                  'Actividad glaciar',
+                                  'Fallas inactivas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema de fallas del Cusco, que comprende '
+                             'más de 100 km entre Abancay y Urcos, incluye '
+                             'la falla:',
+                 'alternativas': ['Sangarará',
+                                  'Zurite exclusiva',
+                                  'Pomacanchi',
+                                  'Tambomachay',
+                                  'Langui-Layo'],
+                 'correcta': 'D'},
+                {'pregunta': 'El riesgo de deslizamientos en la ciudad del '
+                             'Cusco se encuentra principalmente en las '
+                             'quebradas y vertientes del valle del:',
+                 'alternativas': ['Vilcanota',
+                                  'Mapacho',
+                                  'Urubamba',
+                                  'Watanay',
+                                  'Apurímac'],
+                 'correcta': 'D'},
+                {'pregunta': 'La contaminación atmosférica en Cusco se '
+                             'vincula, entre otros factores, a la quema de '
+                             'pastizales y a las fábricas de:',
+                 'alternativas': ['Cerámica exclusiva',
+                                  'Ladrillos y tejas',
+                                  'Papel',
+                                  'Textiles',
+                                  'Muebles'],
+                 'correcta': 'B'},
+                {'pregunta': 'La contaminación acústica en la ciudad del '
+                             'Cusco se debe al tráfico vehicular y a la '
+                             'llegada y salida de aviones del aeropuerto:',
+                 'alternativas': ['Alejandro Velasco Astete',
+                                  'Jorge Chávez',
+                                  'Rodríguez Ballón',
+                                  'Inca Manco Cápac',
+                                  'Velazco Astete Internacional'],
+                 'correcta': 'A'},
+                {'pregunta': 'El río que recibe vertidos de aguas servidas '
+                             'de más de 400 000 habitantes de la ciudad del '
+                             'Cusco es el río:',
+                 'alternativas': ['Apurímac',
+                                  'Mapacho',
+                                  'Watanay',
+                                  'Yavero',
+                                  'Vilcanota'],
+                 'correcta': 'C'},
+                {'pregunta': 'El botadero de basura de la ciudad del Cusco, '
+                             'ubicado en Santiago, que forma una montaña de '
+                             'desechos, se llama:',
+                 'alternativas': ['Ttio',
+                                  'Jaquira',
+                                  'Sacsayhuamán',
+                                  'Molle',
+                                  'Huancaro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El botadero de Jaquira recibe a diario un '
+                             'promedio de desechos de aproximadamente:',
+                 'alternativas': ['50 toneladas',
+                                  '700 toneladas',
+                                  '100 toneladas',
+                                  '380 toneladas',
+                                  '1000 toneladas'],
+                 'correcta': 'D'}],
+  'resumen_visual': [{'titulo': 'LOCALIZACIÓN Y EXTENSIÓN / LÍMITES DEL '
+                                'DEPARTAMENTO',
                       'items': ['El departamento del Cusco se ubica en la '
                                 'parte sur-oriental del Perú, entre la '
                                 'Cordillera de los Andes, la Selva Alta y la '
@@ -6557,24 +8232,23 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'nevado Ausangate, a 6364 m de altitud.',
                                 'El punto más bajo del Cusco se ubica en la '
                                 'provincia de La Convención, a 180 m, en el '
-                                'límite con Ucayali.']},
-                     {'titulo': 'LÍMITES DEL DEPARTAMENTO',
-                      'items': ['El Cusco limita por el norte con Ucayali, '
+                                'límite con Ucayali.',
+                                'El Cusco limita por el norte con Ucayali, '
                                 'por el noroeste con Junín, y por el noreste '
                                 'con Madre de Dios.',
                                 'El Cusco limita por el sur con Arequipa, '
                                 'por el este y sureste con Puno, por el '
                                 'oeste con Ayacucho y por el suroeste con '
                                 'Apurímac.']},
-                     {'titulo': 'REGIONES NATURALES DEL CUSCO',
+                     {'titulo': 'REGIONES NATURALES DEL CUSCO / DIVISIÓN '
+                                'POLÍTICA DEL CUSCO',
                       'items': ['La región Andina o Sierra representa el 53% '
                                 'del territorio del departamento del Cusco.',
                                 'La Selva Alta o Faja Sub Andina representa '
                                 'el 28% del territorio cusqueño.',
                                 'La Selva Baja o llanura representa el 19% '
-                                'del territorio del departamento.']},
-                     {'titulo': 'DIVISIÓN POLÍTICA DEL CUSCO',
-                      'items': ['El departamento del Cusco tiene 13 '
+                                'del territorio del departamento.',
+                                'El departamento del Cusco tiene 13 '
                                 'provincias y 112 distritos.',
                                 'La provincia con mayor extensión '
                                 'territorial del Cusco es La Convención, con '
@@ -6583,28 +8257,91 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'La provincia del Cusco tiene como capital '
                                 'la ciudad del Cusco, y su distrito más '
                                 'poblado es San Sebastián.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['El departamento del Cusco se ubica en la '
-                                'parte Sur-oriental del Perú.',
-                                'La superficie del departamento del Cusco '
-                                'representa del territorio nacional 5,6%.',
-                                'El punto más alto del departamento del '
-                                'Cusco es el nevado Ausangate.',
-                                'La altitud del nevado Ausangate es '
-                                'aproximadamente de 6 364 m.',
-                                'El punto más bajo del departamento del '
-                                'Cusco se ubica en la provincia de La '
-                                'Convención.',
-                                'El departamento del Cusco limita por el '
-                                'norte con Ucayali.',
-                                'El departamento del Cusco limita por el sur '
-                                'con Arequipa.',
-                                'El departamento del Cusco limita por el '
-                                'este y sureste con Puno.',
-                                'La región andina o sierra representa del '
-                                'territorio cusqueño 53%.',
-                                'La selva alta o faja sub andina representa '
-                                'del territorio del Cusco 28%.']}]},
+                     {'titulo': 'CORDILLERAS DEL DEPARTAMENTO DEL CUSCO / '
+                                'VALLES DEL DEPARTAMENTO DEL CUSCO',
+                      'items': ['La cordillera Vilcabamba está alineada de '
+                                'SE a NW; su mayor elevación es el nevado '
+                                'Salkantay (6271 m).',
+                                'La cordillera Vilcanota-Urubamba presenta '
+                                'la mayor cantidad de glaciares de la '
+                                'región; su pico más elevado es el Ausangate '
+                                '(6384 m).',
+                                'En la cordillera Vilcanota se ubica el abra '
+                                'Málaga, por donde pasa la carretera '
+                                'Cusco-Quillabamba.',
+                                'La cordillera Paucartambo está constituida '
+                                'por serranías residuales, entre 3800 y 4500 '
+                                'm; ahí se ubica el abra Acjanaco, por la '
+                                'carretera Cusco-Pilcopata.',
+                                'El valle del Vilcanota-Urubamba se extiende '
+                                '480 km, desde el abra La Raya (4100 m) '
+                                'hasta el pongo de Mainique (450 m).',
+                                'El valle del Vilcanota-Urubamba concentra '
+                                'aproximadamente el 79% de la población del '
+                                'departamento del Cusco, y el 75% de sus '
+                                'suelos de cultivo.',
+                                'En el valle del Vilcanota se ubican los '
+                                'restos arqueológicos de Pisaq, '
+                                'Ollantaytambo y Machupicchu.',
+                                'El río Apurímac, considerado el brazo más '
+                                'extenso del río Amazonas, forma el Cañón '
+                                'del Apurímac en su curso alto y medio.',
+                                'El valle del Mapacho, o Yavero, es otra '
+                                'depresión longitudinal importante, de menor '
+                                'amplitud que el valle del Vilcanota.']},
+                     {'titulo': 'RIESGO DE DESASTRES EN EL DEPARTAMENTO DEL '
+                                'CUSCO / CONTAMINACIÓN ATMOSFÉRIC',
+                      'items': ['El riesgo sísmico en el Cusco se debe '
+                                'principalmente a la presencia de fallas '
+                                'activas de la edad Cuaternaria.',
+                                'El sistema de fallas del Cusco comprende '
+                                'más de 100 km, entre Abancay y Urcos, '
+                                'pasando cerca de la ciudad; incluye las '
+                                'fallas Zurite, Chinchero y Tambomachay.',
+                                'El sistema de fallas del Vilcanota abarca '
+                                'alrededor de 100 km, conformado por las '
+                                'fallas Pomacanchi, Sangarará y Langui-Layo.',
+                                'La falla Tambomachay tiene una longitud de '
+                                '18 km y se ubica a 7 km al norte de la '
+                                'ciudad del Cusco.',
+                                'El riesgo de deslizamientos en el Cusco se '
+                                'encuentra principalmente en las quebradas y '
+                                'vertientes del valle del Watanay.',
+                                'La quebrada Saphy es una de las de mayor '
+                                'peligro por deslizamientos, poniendo en '
+                                'riesgo monumentos como la iglesia de la '
+                                'Compañía de Jesús.',
+                                'La contaminación atmosférica en Cusco se '
+                                'vincula a la quema de pastizales, el parque '
+                                'automotor, y las fábricas de ladrillos y '
+                                'tejas.',
+                                'A nivel del departamento del Cusco se han '
+                                'identificado 473 empresas de fábricas de '
+                                'ladrillos y tejas, la mayoría en el valle '
+                                'del río Watanay.',
+                                'La contaminación acústica en Cusco se debe '
+                                'al tráfico vehicular y a la llegada y '
+                                'salida de aviones del aeropuerto Alejandro '
+                                'Velasco Astete.']},
+                     {'titulo': 'CONTAMINACIÓN DE LOS RÍOS WATANAY Y '
+                                'VILCANOTA / DESECHOS SÓLIDOS EN LA CIUD',
+                      'items': ['El río Watanay recibe vertidos de aguas '
+                                'servidas de más de 400 000 habitantes de la '
+                                'ciudad del Cusco.',
+                                'La contaminación del río Vilcanota proviene '
+                                'principalmente de vertidos '
+                                'urbano-domésticos y residuos sólidos; el '
+                                'valle alberga cerca de un millón de '
+                                'habitantes.',
+                                'Entre los efectos de esta contaminación '
+                                'están la disminución de la fauna acuática y '
+                                'enfermedades a la piel por contacto '
+                                'directo.',
+                                'El botadero de Jaquira, en Santiago, forma '
+                                'una montaña con más de 1,5 millones de '
+                                'toneladas de desechos.',
+                                'El botadero de Jaquira recibe a diario un '
+                                'promedio de 380 toneladas de desechos.']}]},
  {'num': 19,
   'titulo': 'Geografía de América',
   'secciones': [{'titulo': '19.1 GENERALIDADES DEL CONTINENTE',
@@ -6643,42 +8380,46 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                            'La moneda oficial del Perú es el {Nuevo Sol}.',
                            'Bolivia tiene dos capitales: {Sucre}, la capital '
                            'constitucional, y {La Paz}, sede de gobierno.']},
-                {'titulo': 'DATOS COMPLEMENTARIOS',
-                 'items': ['América es el segundo continente por su '
-                           'extensión, después de {Asia}.',
-                           'América comprende tres fracciones unidas por {El '
-                           'Istmo de Panamá}.',
-                           'El sistema orográfico más importante de América '
-                           'del Sur es {La Cordillera de los Andes}.',
-                           'El pico más elevado de América es el Aconcagua, '
-                           'ubicado en {Argentina}.',
-                           'La altitud aproximada del Aconcagua es de {6 960 '
-                           'm}.',
-                           'América está dividida políticamente en un número '
-                           'de países igual a {35}.',
-                           'América del Sur se extiende, por el sur, hasta '
-                           '{La isla Diego Ramírez, Cabo de Hornos}.',
-                           'El Macizo Brasileño se caracteriza por presentar '
-                           'un relieve de {Meseta, de escasa elevación}.',
-                           'América del Sur posee del agua dulce del planeta '
-                           'aproximadamente {26%}.',
-                           'El río más grande del planeta se ubica en '
-                           '{Sudamérica}.',
-                           'La capital de Brasil es {Brasilia}.',
-                           'La moneda de Brasil es el {Real}.',
-                           'La capital de Argentina es {Buenos Aires}.',
-                           'La moneda del Perú es {El Nuevo Sol}.',
-                           'Bolivia tiene como capital constitucional a '
-                           '{Sucre}.',
-                           'La sede de gobierno de Bolivia es {La Paz}.',
-                           'La actividad económica principal de Chile, según '
-                           'la tabla, es {Minería}.',
-                           'La actividad económica principal de Venezuela es '
-                           '{Minería (petróleo)}.',
-                           'La moneda de Colombia es el {Peso}.',
-                           'El río Orinoco y el río Paraná, junto con el '
-                           'Amazonas, se caracterizan por ser {Ríos extensos '
-                           'y caudalosos}.']}],
+                {'titulo': '19.4 AMÉRICA CENTRAL',
+                 'items': ['{América Central} es una estrecha franja de '
+                           'terreno que conecta Norteamérica y América del '
+                           'Sur, rodeada por el mar {Caribe} al este y el '
+                           'océano Pacífico al oeste.',
+                           'El relieve centroamericano es mayormente '
+                           'montañoso y escarpado, con una cadena '
+                           '{volcánica}; en su territorio se construyó el '
+                           'Canal de {Panamá}.',
+                           'Los ríos de América Central son de corto '
+                           'recorrido, desembocando en las vertientes '
+                           '{Pacífico} y Atlántico; el río {Usumacinta} '
+                           'sirve de límite entre México y Guatemala.',
+                           'En el área continental de América Central están '
+                           'Guatemala, El Salvador, Honduras, Nicaragua, '
+                           'Costa Rica, {Belice} y Panamá.',
+                           'En el área insular de América Central están las '
+                           '{Antillas Mayores} (Cuba, República Dominicana, '
+                           'Haití, Jamaica) y las Antillas Menores.']},
+                {'titulo': '19.5 AMÉRICA DEL NORTE',
+                 'items': ['{América del Norte} es la región más extensa de '
+                           'América; se extiende desde el círculo polar '
+                           'Ártico hasta el extremo sur de {México}.',
+                           'Al occidente de América del Norte se ubican las '
+                           'Montañas {Rocosas} o Rocallosas, desde Alaska '
+                           'hasta México.',
+                           'Al oriente de América del Norte se ubican los '
+                           'montes {Apalaches}.',
+                           'La {Gran Llanura Central} de Norteamérica es '
+                           'drenada por los ríos Mississippi, Missouri y sus '
+                           'tributarios como el {Ohio}.',
+                           'La capital de {Canadá} es Ottawa, y su moneda es '
+                           'el dólar canadiense; su principal actividad '
+                           'económica es la industria y la {tala}.',
+                           'La capital de {México} es Ciudad de México, y su '
+                           'moneda es el peso; su principal actividad '
+                           'económica es la minería de petróleo y {plata}.',
+                           'La capital de {Estados Unidos} es Washington, y '
+                           'su moneda es el dólar; su principal actividad '
+                           'económica es la {industria}.']}],
   'cuadros': [{'titulo': '19.3 PAÍSES DE AMÉRICA DEL SUR: CAPITAL Y MONEDA',
                'encabezados': ['País', 'Capital', 'Moneda'],
                'filas': [['{Argentina}', 'Buenos Aires', '{Peso}'],
@@ -6688,163 +8429,247 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                          ['{Venezuela}', 'Caracas', 'Bolívar']]}],
   'preguntas': [{'pregunta': 'América es el segundo continente por su '
                              'extensión, después de:',
-                 'alternativas': ['Europa',
+                 'alternativas': ['África',
                                   'Antártida',
-                                  'África',
+                                  'Europa',
                                   'Oceanía',
                                   'Asia'],
                  'correcta': 'E'},
                 {'pregunta': 'América comprende tres fracciones unidas por:',
-                 'alternativas': ['El Istmo de Panamá',
+                 'alternativas': ['El Estrecho de Bering',
                                   'El Golfo de México',
-                                  'El Canal de Suez',
+                                  'El Istmo de Panamá',
                                   'El Canal de Magallanes',
-                                  'El Estrecho de Bering'],
-                 'correcta': 'A'},
+                                  'El Canal de Suez'],
+                 'correcta': 'C'},
                 {'pregunta': 'El sistema orográfico más importante de '
                              'América del Sur es:',
                  'alternativas': ['La Sierra Madre',
-                                  'La Cordillera de los Andes',
                                   'Los Apalaches',
                                   'El Macizo Brasileño',
+                                  'La Cordillera de los Andes',
                                   'Las Rocosas'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'El pico más elevado de América es el '
                              'Aconcagua, ubicado en:',
-                 'alternativas': ['Chile',
-                                  'Bolivia',
+                 'alternativas': ['Perú',
+                                  'Chile',
                                   'Argentina',
-                                  'Ecuador',
-                                  'Perú'],
+                                  'Bolivia',
+                                  'Ecuador'],
                  'correcta': 'C'},
                 {'pregunta': 'La altitud aproximada del Aconcagua es de:',
-                 'alternativas': ['7 500 m',
+                 'alternativas': ['4 500 m',
                                   '6 000 m',
-                                  '5 000 m',
+                                  '7 500 m',
                                   '6 960 m',
-                                  '4 500 m'],
+                                  '5 000 m'],
                  'correcta': 'D'},
                 {'pregunta': 'América está dividida políticamente en un '
                              'número de países igual a:',
-                 'alternativas': ['20', '35', '50', '25', '45'],
-                 'correcta': 'B'},
+                 'alternativas': ['20', '45', '25', '50', '35'],
+                 'correcta': 'E'},
                 {'pregunta': 'América del Sur se extiende, por el sur, '
                              'hasta:',
                  'alternativas': ['El Macizo Brasileño',
-                                  'La isla Diego Ramírez, Cabo de Hornos',
+                                  'El Istmo de Panamá',
                                   'Punta Gallinas',
                                   'El río Amazonas',
-                                  'El Istmo de Panamá'],
-                 'correcta': 'B'},
+                                  'La isla Diego Ramírez, Cabo de Hornos'],
+                 'correcta': 'E'},
                 {'pregunta': 'El Macizo Brasileño se caracteriza por '
                              'presentar un relieve de:',
-                 'alternativas': ['Meseta, de escasa elevación',
-                                  'Alta montaña',
+                 'alternativas': ['Cordillera nevada',
                                   'Volcanes activos',
-                                  'Cordillera nevada',
-                                  'Fosas profundas'],
-                 'correcta': 'A'},
+                                  'Fosas profundas',
+                                  'Alta montaña',
+                                  'Meseta, de escasa elevación'],
+                 'correcta': 'E'},
                 {'pregunta': 'América del Sur posee del agua dulce del '
                              'planeta aproximadamente:',
-                 'alternativas': ['70%', '5%', '26%', '10%', '50%'],
-                 'correcta': 'C'},
-                {'pregunta': 'El río más grande del planeta se ubica en:',
-                 'alternativas': ['Sudamérica',
-                                  'Asia',
-                                  'Norteamérica',
-                                  'África',
-                                  'Europa'],
+                 'alternativas': ['26%', '5%', '10%', '50%', '70%'],
                  'correcta': 'A'},
+                {'pregunta': 'El río más grande del planeta se ubica en:',
+                 'alternativas': ['África',
+                                  'Europa',
+                                  'Norteamérica',
+                                  'Asia',
+                                  'Sudamérica'],
+                 'correcta': 'E'},
                 {'pregunta': 'La capital de Brasil es:',
-                 'alternativas': ['São Paulo',
+                 'alternativas': ['Belo Horizonte',
                                   'Salvador',
-                                  'Brasilia',
-                                  'Belo Horizonte',
-                                  'Río de Janeiro'],
-                 'correcta': 'C'},
+                                  'Río de Janeiro',
+                                  'São Paulo',
+                                  'Brasilia'],
+                 'correcta': 'E'},
                 {'pregunta': 'La moneda de Brasil es el:',
-                 'alternativas': ['Peso',
+                 'alternativas': ['Bolívar',
                                   'Real',
-                                  'Guaraní',
+                                  'Peso',
                                   'Dólar',
-                                  'Bolívar'],
+                                  'Guaraní'],
                  'correcta': 'B'},
                 {'pregunta': 'La capital de Argentina es:',
-                 'alternativas': ['Mendoza',
-                                  'La Plata',
-                                  'Rosario',
+                 'alternativas': ['La Plata',
                                   'Córdoba',
-                                  'Buenos Aires'],
-                 'correcta': 'E'},
+                                  'Rosario',
+                                  'Buenos Aires',
+                                  'Mendoza'],
+                 'correcta': 'D'},
                 {'pregunta': 'La moneda del Perú es:',
-                 'alternativas': ['El Bolívar',
-                                  'El Dólar',
-                                  'El Nuevo Sol',
+                 'alternativas': ['El Dólar',
+                                  'El Bolívar',
                                   'El Real',
-                                  'El Peso'],
-                 'correcta': 'C'},
+                                  'El Peso',
+                                  'El Nuevo Sol'],
+                 'correcta': 'E'},
                 {'pregunta': 'Bolivia tiene como capital constitucional a:',
-                 'alternativas': ['Cochabamba',
+                 'alternativas': ['La Paz',
                                   'Potosí',
-                                  'La Paz',
+                                  'Santa Cruz',
                                   'Sucre',
-                                  'Santa Cruz'],
+                                  'Cochabamba'],
                  'correcta': 'D'},
                 {'pregunta': 'La sede de gobierno de Bolivia es:',
-                 'alternativas': ['Santa Cruz',
+                 'alternativas': ['Oruro',
+                                  'Santa Cruz',
                                   'Sucre',
-                                  'Cochabamba',
-                                  'Oruro',
-                                  'La Paz'],
-                 'correcta': 'E'},
+                                  'La Paz',
+                                  'Cochabamba'],
+                 'correcta': 'D'},
                 {'pregunta': 'La actividad económica principal de Chile, '
                              'según la tabla, es:',
-                 'alternativas': ['Minería',
-                                  'Pesca exclusiva',
-                                  'Ganadería',
+                 'alternativas': ['Turismo',
                                   'Agricultura',
-                                  'Turismo'],
-                 'correcta': 'A'},
+                                  'Ganadería',
+                                  'Pesca exclusiva',
+                                  'Minería'],
+                 'correcta': 'E'},
                 {'pregunta': 'La actividad económica principal de Venezuela '
                              'es:',
                  'alternativas': ['Turismo',
                                   'Ganadería',
+                                  'Agricultura',
                                   'Pesca',
-                                  'Minería (petróleo)',
-                                  'Agricultura'],
-                 'correcta': 'D'},
+                                  'Minería (petróleo)'],
+                 'correcta': 'E'},
                 {'pregunta': 'La moneda de Colombia es el:',
-                 'alternativas': ['Peso',
-                                  'Real',
+                 'alternativas': ['Bolívar',
                                   'Guaraní',
                                   'Sol',
-                                  'Bolívar'],
-                 'correcta': 'A'},
+                                  'Real',
+                                  'Peso'],
+                 'correcta': 'E'},
                 {'pregunta': 'El río Orinoco y el río Paraná, junto con el '
                              'Amazonas, se caracterizan por ser:',
-                 'alternativas': ['Ríos artificiales',
-                                  'Ríos de agua salada',
-                                  'Ríos cortos y de bajo caudal',
+                 'alternativas': ['Ríos extensos y caudalosos',
                                   'Ríos estacionales secos',
-                                  'Ríos extensos y caudalosos'],
-                 'correcta': 'E'},
+                                  'Ríos cortos y de bajo caudal',
+                                  'Ríos artificiales',
+                                  'Ríos de agua salada'],
+                 'correcta': 'A'},
                 {'pregunta': 'El país con menor extensión territorial de '
                              'América del Norte es: (II CEPRU 2022)',
-                 'alternativas': ['Canadá',
-                                  'Belice',
-                                  'México',
+                 'alternativas': ['México',
                                   'El Salvador',
-                                  'Estados Unidos'],
-                 'correcta': 'B'},
+                                  'Canadá',
+                                  'Estados Unidos',
+                                  'Belice'],
+                 'correcta': 'E'},
                 {'pregunta': 'Las montañas localizadas al oriente de '
                              'Norteamérica son los: (Primera Oportunidad '
                              'UNSAAC 2025)',
-                 'alternativas': ['Montes Atlas',
-                                  'Apalaches',
-                                  'Alpes',
+                 'alternativas': ['Alpes',
                                   'Escandinavos',
-                                  'Urales'],
-                 'correcta': 'B'}],
+                                  'Apalaches',
+                                  'Urales',
+                                  'Montes Atlas'],
+                 'correcta': 'C'},
+                {'pregunta': 'La estrecha franja de terreno que conecta '
+                             'Norteamérica y América del Sur, rodeada por el '
+                             'mar Caribe y el océano Pacífico, se llama:',
+                 'alternativas': ['América del Norte',
+                                  'América Insular',
+                                  'Mesoamérica',
+                                  'América Central',
+                                  'Las Antillas'],
+                 'correcta': 'D'},
+                {'pregunta': 'En el territorio de América Central se '
+                             'construyó una importante obra de ingeniería '
+                             'llamada:',
+                 'alternativas': ['Estrecho de Magallanes',
+                                  'Túnel del Darién',
+                                  'Canal de Suez',
+                                  'Puente de las Américas',
+                                  'Canal de Panamá'],
+                 'correcta': 'E'},
+                {'pregunta': 'El río que sirve de límite fronterizo entre '
+                             'México y Guatemala se llama río:',
+                 'alternativas': ['Yukón',
+                                  'Mackenzie',
+                                  'Usumacinta',
+                                  'Colorado',
+                                  'Grande'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las Antillas Mayores, que forman parte del '
+                             'área insular de América Central, incluyen a '
+                             'Cuba, Jamaica, Haití y:',
+                 'alternativas': ['República Dominicana',
+                                  'Trinidad y Tobago',
+                                  'Granada',
+                                  'Bahamas',
+                                  'Barbados'],
+                 'correcta': 'A'},
+                {'pregunta': 'América del Norte se extiende desde el círculo '
+                             'polar Ártico hasta el extremo sur de:',
+                 'alternativas': ['Estados Unidos',
+                                  'Guatemala',
+                                  'Panamá',
+                                  'Canadá',
+                                  'México'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las montañas ubicadas al occidente de América '
+                             'del Norte, desde Alaska hasta México, se '
+                             'llaman montañas:',
+                 'alternativas': ['Apalaches',
+                                  'Urales',
+                                  'Andes',
+                                  'Alpes',
+                                  'Rocosas o Rocallosas'],
+                 'correcta': 'E'},
+                {'pregunta': 'Las montañas ubicadas al oriente de América '
+                             'del Norte se llaman montes:',
+                 'alternativas': ['Apalaches',
+                                  'Rocosos',
+                                  'Andinos',
+                                  'Cascada',
+                                  'Sierra Madre'],
+                 'correcta': 'A'},
+                {'pregunta': 'La Gran Llanura Central de Norteamérica es '
+                             'drenada principalmente por el río Mississippi '
+                             'y el río:',
+                 'alternativas': ['Yukón',
+                                  'Grande',
+                                  'Mackenzie',
+                                  'Colorado',
+                                  'Missouri'],
+                 'correcta': 'E'},
+                {'pregunta': 'La capital de Canadá es:',
+                 'alternativas': ['Vancouver',
+                                  'Quebec',
+                                  'Montreal',
+                                  'Toronto',
+                                  'Ottawa'],
+                 'correcta': 'E'},
+                {'pregunta': 'La principal actividad económica de México, '
+                             'según su producción minera, es:',
+                 'alternativas': ['Minería de petróleo y plata',
+                                  'Pesca exclusiva',
+                                  'Agricultura exclusiva',
+                                  'Turismo exclusivo',
+                                  'Industria textil'],
+                 'correcta': 'A'}],
   'resumen_visual': [{'titulo': 'GENERALIDADES DEL CONTINENTE',
                       'items': ['América es el segundo continente por su '
                                 'extensión, después de Asia, con cerca de 42 '
@@ -6882,30 +8707,50 @@ GEOGRAFIA_TEMAS = [{'num': 1,
                                 'Bolivia tiene dos capitales: Sucre, la '
                                 'capital constitucional, y La Paz, sede de '
                                 'gobierno.']},
-                     {'titulo': 'DATOS COMPLEMENTARIOS',
-                      'items': ['América es el segundo continente por su '
-                                'extensión, después de Asia.',
-                                'América comprende tres fracciones unidas '
-                                'por El Istmo de Panamá.',
-                                'El sistema orográfico más importante de '
-                                'América del Sur es La Cordillera de los '
-                                'Andes.',
-                                'El pico más elevado de América es el '
-                                'Aconcagua, ubicado en Argentina.',
-                                'La altitud aproximada del Aconcagua es de 6 '
-                                '960 m.',
-                                'América está dividida políticamente en un '
-                                'número de países igual a 35.',
-                                'América del Sur se extiende, por el sur, '
-                                'hasta La isla Diego Ramírez, Cabo de '
-                                'Hornos.',
-                                'El Macizo Brasileño se caracteriza por '
-                                'presentar un relieve de Meseta, de escasa '
-                                'elevación.',
-                                'América del Sur posee del agua dulce del '
-                                'planeta aproximadamente 26%.',
-                                'El río más grande del planeta se ubica en '
-                                'Sudamérica.']}]},
+                     {'titulo': 'AMÉRICA CENTRAL',
+                      'items': ['América Central es una estrecha franja de '
+                                'terreno que conecta Norteamérica y América '
+                                'del Sur, rodeada por el mar Caribe al este '
+                                'y el océano Pacífico al oeste.',
+                                'El relieve centroamericano es mayormente '
+                                'montañoso y escarpado, con una cadena '
+                                'volcánica; en su territorio se construyó el '
+                                'Canal de Panamá.',
+                                'Los ríos de América Central son de corto '
+                                'recorrido, desembocando en las vertientes '
+                                'Pacífico y Atlántico; el río Usumacinta '
+                                'sirve de límite entre México y Guatemala.',
+                                'En el área continental de América Central '
+                                'están Guatemala, El Salvador, Honduras, '
+                                'Nicaragua, Costa Rica, Belice y Panamá.',
+                                'En el área insular de América Central están '
+                                'las Antillas Mayores (Cuba, República '
+                                'Dominicana, Haití, Jamaica) y las Antillas '
+                                'Menores.']},
+                     {'titulo': 'AMÉRICA DEL NORTE',
+                      'items': ['América del Norte es la región más extensa '
+                                'de América; se extiende desde el círculo '
+                                'polar Ártico hasta el extremo sur de '
+                                'México.',
+                                'Al occidente de América del Norte se ubican '
+                                'las Montañas Rocosas o Rocallosas, desde '
+                                'Alaska hasta México.',
+                                'Al oriente de América del Norte se ubican '
+                                'los montes Apalaches.',
+                                'La Gran Llanura Central de Norteamérica es '
+                                'drenada por los ríos Mississippi, Missouri '
+                                'y sus tributarios como el Ohio.',
+                                'La capital de Canadá es Ottawa, y su moneda '
+                                'es el dólar canadiense; su principal '
+                                'actividad económica es la industria y la '
+                                'tala.',
+                                'La capital de México es Ciudad de México, y '
+                                'su moneda es el peso; su principal '
+                                'actividad económica es la minería de '
+                                'petróleo y plata.',
+                                'La capital de Estados Unidos es Washington, '
+                                'y su moneda es el dólar; su principal '
+                                'actividad económica es la industria.']}]},
  {'num': 20,
   'titulo': 'Geografía de Europa, Asia, África, Antártida y Oceanía',
   'secciones': [{'titulo': '20.1 EUROPA',
@@ -6978,110 +8823,110 @@ GEOGRAFIA_TEMAS = [{'num': 1,
   'preguntas': [{'pregunta': 'Morfológicamente, el continente europeo se '
                              'presenta como una península del continente:',
                  'alternativas': ['Africano',
-                                  'Asiático',
-                                  'Americano',
                                   'Antártico',
+                                  'Americano',
+                                  'Asiático',
                                   'Oceánico'],
-                 'correcta': 'B'},
+                 'correcta': 'D'},
                 {'pregunta': 'Europa está dividida políticamente en un '
                              'número de países igual a:',
-                 'alternativas': ['27', '43', '48', '53', '14'],
+                 'alternativas': ['53', '43', '14', '27', '48'],
                  'correcta': 'B'},
                 {'pregunta': 'El río más largo de Europa, que desemboca en '
                              'el mar Caspio, es el río:',
-                 'alternativas': ['Danubio', 'Volga', 'Rin', 'Sena', 'Ebro'],
-                 'correcta': 'B'},
+                 'alternativas': ['Danubio', 'Rin', 'Ebro', 'Sena', 'Volga'],
+                 'correcta': 'E'},
                 {'pregunta': 'El continente más extenso del planeta es:',
-                 'alternativas': ['África',
+                 'alternativas': ['América',
+                                  'África',
                                   'Asia',
-                                  'América',
-                                  'Europa',
-                                  'Oceanía'],
-                 'correcta': 'B'},
+                                  'Oceanía',
+                                  'Europa'],
+                 'correcta': 'C'},
                 {'pregunta': 'El sistema orográfico más importante del '
                              'mundo, ubicado en Asia, cuyo pico más elevado '
                              'es el Everest, se llama:',
-                 'alternativas': ['Los Andes',
-                                  'El Himalaya',
-                                  'El Cáucaso',
+                 'alternativas': ['El Himalaya',
+                                  'Los Andes',
                                   'Los Alpes',
-                                  'El Atlas'],
-                 'correcta': 'B'},
+                                  'El Atlas',
+                                  'El Cáucaso'],
+                 'correcta': 'A'},
                 {'pregunta': 'Asia se conecta con África a través del:',
-                 'alternativas': ['Estrecho de Gibraltar',
+                 'alternativas': ['Canal de Panamá',
                                   'Canal de Suez',
                                   'Estrecho de Bering',
-                                  'Canal de Panamá',
+                                  'Estrecho de Gibraltar',
                                   'Mar Rojo exclusivamente'],
                  'correcta': 'B'},
                 {'pregunta': 'El porcentaje de la superficie de la Antártida '
                              'cubierta de hielo es aproximadamente:',
-                 'alternativas': ['80%', '98%', '50%', '70%', '90%'],
-                 'correcta': 'B'},
+                 'alternativas': ['80%', '50%', '70%', '98%', '90%'],
+                 'correcta': 'D'},
                 {'pregunta': 'El tratado que rige a la Antártida, firmado en '
                              '1959, prohibiendo actividades militares y '
                              'extracción de minerales, se llama:',
-                 'alternativas': ['Tratado de Kioto',
+                 'alternativas': ['Protocolo de Madrid',
+                                  'Convenio de Basilea',
+                                  'Tratado de Kioto',
                                   'Tratado Antártico',
-                                  'Tratado de Montreal',
-                                  'Protocolo de Madrid',
-                                  'Convenio de Basilea'],
-                 'correcta': 'B'},
+                                  'Tratado de Montreal'],
+                 'correcta': 'D'},
                 {'pregunta': 'África es considerada la cuna de la:',
-                 'alternativas': ['Agricultura',
+                 'alternativas': ['Ganadería',
                                   'Raza humana',
                                   'Civilización occidental',
                                   'Escritura',
-                                  'Ganadería'],
+                                  'Agricultura'],
                  'correcta': 'B'},
                 {'pregunta': 'El desierto más grande de la Tierra, ubicado '
                              'en África, es el desierto:',
-                 'alternativas': ['Atacama',
+                 'alternativas': ['Namib',
                                   'Sahara',
-                                  'Gobi',
+                                  'Atacama',
                                   'Kalahari',
-                                  'Namib'],
+                                  'Gobi'],
                  'correcta': 'B'},
                 {'pregunta': 'El río más largo de África es el río:',
-                 'alternativas': ['Congo',
-                                  'Nilo',
+                 'alternativas': ['Senegal',
                                   'Níger',
-                                  'Senegal',
+                                  'Nilo',
+                                  'Congo',
                                   'Zambeze'],
-                 'correcta': 'B'},
+                 'correcta': 'C'},
                 {'pregunta': 'Oceanía es el continente más pequeño de la '
                              'Tierra y se caracteriza por ser eminentemente:',
-                 'alternativas': ['Continental',
+                 'alternativas': ['Montañoso',
                                   'Insular',
-                                  'Desértico',
                                   'Glaciar',
-                                  'Montañoso'],
+                                  'Continental',
+                                  'Desértico'],
                  'correcta': 'B'},
                 {'pregunta': 'Las cuatro áreas geográficas en que se agrupa '
                              'Oceanía son Australasia, Micronesia, Polinesia '
                              'y:',
-                 'alternativas': ['Indonesia',
+                 'alternativas': ['Malasia',
                                   'Melanesia',
-                                  'Malasia',
-                                  'Filipinas',
-                                  'Antillas'],
+                                  'Indonesia',
+                                  'Antillas',
+                                  'Filipinas'],
                  'correcta': 'B'},
                 {'pregunta': 'El país más extenso de Oceanía, con relieve '
                              'llano y numerosos desiertos, es:',
-                 'alternativas': ['Nueva Zelanda',
-                                  'Australia',
-                                  'Papúa Nueva Guinea',
+                 'alternativas': ['Papúa Nueva Guinea',
+                                  'Nueva Zelanda',
                                   'Fiji',
-                                  'Samoa'],
-                 'correcta': 'B'},
+                                  'Samoa',
+                                  'Australia'],
+                 'correcta': 'E'},
                 {'pregunta': 'El continente con la ubicación más austral es: '
                              '(II CEPRU 2025)',
-                 'alternativas': ['América',
-                                  'Asia',
-                                  'Oceanía',
+                 'alternativas': ['Asia',
+                                  'América',
                                   'África',
-                                  'Antártida'],
-                 'correcta': 'E'}],
+                                  'Antártida',
+                                  'Oceanía'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'EUROPA',
                       'items': ['Europa se ubica en el hemisferio norte y '
                                 'morfológicamente es una península del '
