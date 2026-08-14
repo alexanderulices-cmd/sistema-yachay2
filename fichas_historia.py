@@ -41,6 +41,41 @@ def pie_legal(area, profesor="Prof. Alexander Córdova"):
 LOGO_PATH = "logo_academia.png"
 LOGO_MARCA_AGUA = "logo_academia_marca_agua.png"
 
+# Paleta de color por curso: cada área tiene su propio color distintivo,
+# usado en las barras de sección, el título de la balota, y el borde de
+# cada hoja. La búsqueda es por palabra clave (no exige coincidencia
+# exacta), para que funcione igual con o sin emoji en el nombre del área.
+_PALETA_AREAS = {
+    "historia": "#8B3A3A",       # rojo terracota / vino
+    "filosof": "#6B4C9A",        # púrpura
+    "geograf": "#2F7A4F",        # verde bosque
+    "civic": "#1F5C8B",          # azul marino (cívica)
+    "cívic": "#1F5C8B",          # azul marino (cívica, con tilde)
+    "comunicat": "#1E8A8A",      # turquesa / teal
+    "linguist": "#1E8A8A",       # turquesa / teal (alias)
+    "economi": "#B8790F",        # ámbar / dorado
+    "biolog": "#4F8B2A",         # verde hoja
+}
+_COLOR_AREA_DEFECTO = "#12307F"  # azul original, para áreas no reconocidas
+
+
+def _color_area(area):
+    """Devuelve el color hexadecimal distintivo de un área/curso, buscando
+    por palabra clave dentro del nombre (sin exigir coincidencia exacta,
+    ni tildes, para que funcione con o sin emoji y con o sin acentos:
+    '📜 Historia', 'Economía' o 'Economia' resuelven igual)."""
+    import unicodedata
+
+    def _sin_tildes(s):
+        return "".join(c for c in unicodedata.normalize("NFD", s)
+                       if unicodedata.category(c) != "Mn")
+
+    area_normal = _sin_tildes((area or "").lower())
+    for clave, color in _PALETA_AREAS.items():
+        if _sin_tildes(clave) in area_normal:
+            return color
+    return _COLOR_AREA_DEFECTO
+
 _PATRON = re.compile(r"\{([^}]+)\}")
 
 
@@ -208,7 +243,7 @@ def _estilos():
     }
 
 
-def _banda_titulo(story, tema, subtitulo, est, ancho, con_claves=False):
+def _banda_titulo(story, tema, subtitulo, est, ancho, con_claves=False, area=""):
     """Cabecera institucional: logo a un costado, marca y banda de color."""
     from reportlab.platypus import Paragraph, Spacer, Table, TableStyle, Image as RLImage
     from reportlab.lib import colors
@@ -239,7 +274,7 @@ def _banda_titulo(story, tema, subtitulo, est, ancho, con_claves=False):
     else:
         story.extend(_marca)
 
-    acento = colors.HexColor("#B01C22" if con_claves else "#12307F")
+    acento = colors.HexColor(_color_area(area))
     banda = Table([[Paragraph(
         f'<font color="#FFFFFF"><b>BALOTA {tema["num"]} · '
         f'{str(tema["titulo"]).upper()}</b></font>', est["banda"])]],
@@ -289,10 +324,20 @@ def _logo_marca_agua_reader():
 
 def _pie(canvas, doc):
     from reportlab.lib.units import cm
+    from reportlab.lib import colors
     import os
     area = getattr(doc, "area_actual", "Historia")
     profesor = getattr(doc, "profesor_actual", "Prof. Alexander Córdova")
     canvas.saveState()
+
+    # Borde de página del color de la ficha (color del área actual)
+    _color_borde = colors.HexColor(_color_area(area))
+    canvas.setStrokeColor(_color_borde)
+    canvas.setLineWidth(1.3)
+    _margen_borde = 0.5 * cm
+    canvas.rect(_margen_borde, _margen_borde,
+                doc.pagesize[0] - 2 * _margen_borde,
+                doc.pagesize[1] - 2 * _margen_borde)
 
     # Marca de agua tenue centrada en la hoja
     _logo_reader = _logo_marca_agua_reader()
@@ -370,7 +415,7 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                   f"{area.upper()} · Temario CEPRU-UNSAAC · " +
                   ("CLAVES PARA EL DOCENTE" if con_claves
                    else "Ficha de estudio para completar"),
-                  est, ancho_util, con_claves)
+                  est, ancho_util, con_claves, area)
 
     if not con_claves:
         datos = Table([[
@@ -392,11 +437,13 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
     st_.append(NextPageTemplate("resto"))
     st_.append(Spacer(1, 1))
 
+    _color_actual = _color_area(area)
+
     def barra(txt):
         t = Table([[Paragraph(f"<b>{txt}</b>", est["h"])]],
                   colWidths=[col_w - 6])
         t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#12307F")),
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(_color_actual)),
             ("LEFTPADDING", (0, 0), (-1, -1), 6),
             ("TOPPADDING", (0, 0), (-1, -1), 4),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
@@ -476,6 +523,42 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
     for cu in _cuadros_todos:
         if id(cu) not in _cuadros_intercalados:
             _render_cuadro(cu)
+
+    # ------------------------------------------------------------------
+    # QR al final del contenido de la ficha para completar (no en el
+    # resumen visual), para que el estudiante los vea junto a las
+    # preguntas que acaba de completar.
+    # ------------------------------------------------------------------
+    qr_reto = tema.get("qr_reto")
+    qr_dato = tema.get("qr_dato")
+    if qr_reto or qr_dato:
+        from reportlab.platypus import Image as RLImage
+        st_.append(Spacer(1, 10))
+        ancho_qr = 2.3 * cm
+        filas_qr = []
+        if qr_reto:
+            png = _generar_qr_bytes(_texto_qr_reto(tema, qr_reto))
+            img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
+            filas_qr.append([
+                img,
+                Paragraph('<b><font color="#B01C22">Reto Relámpago</font></b><br/>Escanea y autoevalúate', est["cel"]),
+            ])
+        if qr_dato:
+            png = _generar_qr_bytes(_texto_qr_dato(tema, qr_dato))
+            img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
+            filas_qr.append([
+                img,
+                Paragraph('<b><font color="#12307F">Dato Yachay</font></b><br/>Un dato extra para recordar', est["cel"]),
+            ])
+        tabla_qr = Table(filas_qr, colWidths=[ancho_qr + 4, col_w - ancho_qr - 4])
+        tabla_qr.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        st_.append(tabla_qr)
 
     # ------------------------------------------------------------------
     # Página final: resumen visual (cuadro sinóptico), si el tema lo trae.
@@ -575,40 +658,6 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                 ]))
                 st_.append(grid)
                 fila_actual = []
-
-        qr_reto = tema.get("qr_reto")
-        qr_dato = tema.get("qr_dato")
-        if qr_reto or qr_dato:
-            from reportlab.platypus import Image as RLImage
-            st_.append(Spacer(1, 14))
-            celdas_qr = []
-            ancho_qr = 3.2 * cm
-            if qr_reto:
-                png = _generar_qr_bytes(_texto_qr_reto(tema, qr_reto))
-                img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
-                celdas_qr.append([
-                    img,
-                    Paragraph('<b><font color="#B01C22">Reto Relámpago</font></b><br/>Escanea y autoevalúate', est["cel"]),
-                ])
-            if qr_dato:
-                png = _generar_qr_bytes(_texto_qr_dato(tema, qr_dato))
-                img = RLImage(io.BytesIO(png), width=ancho_qr, height=ancho_qr)
-                celdas_qr.append([
-                    img,
-                    Paragraph('<b><font color="#12307F">Dato Yachay</font></b><br/>Un dato extra para recordar', est["cel"]),
-                ])
-            fila_qr = []
-            for img, etiqueta in celdas_qr:
-                fila_qr.append(img)
-                fila_qr.append(etiqueta)
-            tabla_qr = Table([fila_qr],
-                              colWidths=[ancho_qr, 4.5 * cm] * len(celdas_qr))
-            tabla_qr.setStyle(TableStyle([
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-            ]))
-            st_.append(tabla_qr)
 
     doc.build(st_)
     buf.seek(0)
@@ -766,7 +815,7 @@ def generar_banco_preguntas(tema, con_claves=False, grado_txt="",
     _banda_titulo(story, tema,
                   "BANCO DE 20 PREGUNTAS · cinco alternativas · formato "
                   "admisión UNSAAC" + ("  ·  CON CLAVES" if con_claves else ""),
-                  est, ancho_util, con_claves)
+                  est, ancho_util, con_claves, area)
 
     if not con_claves:
         datos = Table([[
