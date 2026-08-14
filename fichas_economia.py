@@ -3438,7 +3438,69 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '{accionistas}, y ninguno responde con su '
                            'patrimonio personal por las deudas.',
                            'La {Junta General de Accionistas} es el órgano '
-                           'máximo y soberano de la Sociedad Anónima.']}],
+                           'máximo y soberano de la Sociedad Anónima.']},
+                {'titulo': '8.7 LA EMPRESA SEGÚN SU TAMAÑO EN EL PERÚ (LEY '
+                           'MYPE)',
+                 'items': ['La Ley N.º {30056} (2013) establece las '
+                           'categorías empresariales según sus niveles de '
+                           '{ventas anuales}.',
+                           'La {microempresa} tiene ventas anuales de hasta '
+                           '150 {UIT}.',
+                           'La {pequeña empresa} tiene ventas anuales '
+                           'superiores a 150 UIT y hasta {1700} UIT.',
+                           'La {mediana empresa} tiene ventas anuales '
+                           'superiores a 1700 UIT y hasta {2300} UIT.',
+                           'La Ley 30056 eliminó el número máximo de '
+                           '{trabajadores} como parámetro para calificar '
+                           'como MYPE.',
+                           'La {UIT} (Unidad Impositiva Tributaria) es un '
+                           'valor de referencia usado en las normas '
+                           '{tributarias}, modificado cada fin de año.']},
+                {'titulo': '8.8 EMPRESAS AUTOGESTIONARIAS Y DE PROPIEDAD '
+                           'SOCIAL',
+                 'items': ['Las {empresas autogestionarias} usan métodos y '
+                           'estrategias para que los participantes se '
+                           'dirijan al logro de objetivos con {autonomía} de '
+                           'gestión.',
+                           'Las {empresas de propiedad social} (E.P.S.) se '
+                           'formaron por iniciativa de los {trabajadores}, '
+                           'sin propiedad individual de los asociados.',
+                           'En las E.P.S., las utilidades se dividen: una '
+                           'parte para los trabajadores y otra se acumula en '
+                           'un {fondo} para inversiones.',
+                           'En el Perú, las empresas de propiedad social se '
+                           'iniciaron durante el gobierno militar del '
+                           'General {Juan Velasco Alvarado}, en los años '
+                           'sesenta.']},
+                {'titulo': '8.9 EMPRESAS COOPERATIVAS: DEFINICIÓN Y '
+                           'CARACTERÍSTICAS',
+                 'items': ['La {sociedad cooperativa} es una organización '
+                           'social basada en la {solidaridad}, esfuerzo '
+                           'propio y ayuda mutua.',
+                           'Principio cooperativo: se reconoce un {voto} por '
+                           'socio, independientemente de sus aportaciones.',
+                           'Característica: la sociedad cooperativa es de '
+                           'capital {variable}, de duración {indefinida}.',
+                           'Característica: se integra con un mínimo de '
+                           '{cinco} socios.']},
+                {'titulo': '8.10 EMPRESAS INFORMALES Y TRANSNACIONALES',
+                 'items': ['Las {empresas informales} están constituidas sin '
+                           'registro ni control del Estado; sus trabajadores '
+                           'son de preferencia {familiares} y no tributan.',
+                           'Las empresas informales en el Perú surgieron '
+                           'durante el gobierno de {Velasco Alvarado}, como '
+                           'efecto de la migración tras la {reforma '
+                           'agraria}.',
+                           'Las migraciones (por reforma agraria y '
+                           'terrorismo) dieron origen a la vivienda '
+                           'informal, comercio informal y empresas '
+                           '{informales}.',
+                           'Las {empresas transnacionales} tienen su sede en '
+                           'un país y realizan actividades en otros, con '
+                           'estrategia común para maximizar {beneficios}.',
+                           'Ejemplo de empresa transnacional: {Shell-Mobil}, '
+                           'que opera en más de 100 países con más de 300 '
+                           'empresas filiales.']}],
   'cuadros': [{'titulo': '8.3 CLASIFICACIÓN DE LA EMPRESA SEGÚN EL '
                          'PROPIETARIO',
                'encabezados': ['Tipo', 'Aportante del capital'],
@@ -3786,8 +3848,108 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Pequeña empresa',
                                   'Gran empresa',
                                   'Micro empresa'],
-                 'correcta': 'D'}],
-  'resumen_visual': [{'titulo': 'CONCEPTO',
+                 'correcta': 'D'},
+                {'pregunta': 'Según la Ley N.º 30056, la microempresa se '
+                             'define por tener ventas anuales de hasta:',
+                 'alternativas': ['100 UIT',
+                                  '150 UIT',
+                                  '500 UIT',
+                                  '1000 UIT',
+                                  '1700 UIT'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según la Ley N.º 30056, la pequeña empresa '
+                             'tiene ventas anuales superiores a 150 UIT y '
+                             'hasta:',
+                 'alternativas': ['500 UIT',
+                                  '1000 UIT',
+                                  '1700 UIT',
+                                  '2300 UIT',
+                                  '3000 UIT'],
+                 'correcta': 'C'},
+                {'pregunta': 'La Ley N.º 30056 eliminó como parámetro para '
+                             'calificar como MYPE el número máximo de:',
+                 'alternativas': ['Ventas anuales',
+                                  'Trabajadores',
+                                  'Activos fijos',
+                                  'Sucursales',
+                                  'Clientes'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Unidad Impositiva Tributaria (UIT) es un '
+                             'valor de referencia usado principalmente para '
+                             'las normas:',
+                 'alternativas': ['Laborales',
+                                  'Tributarias',
+                                  'Ambientales',
+                                  'Comerciales internacionales',
+                                  'Municipales exclusivamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las empresas que usan métodos y estrategias '
+                             'para que sus participantes se dirijan al logro '
+                             'de objetivos con autonomía de gestión se '
+                             'llaman empresas:',
+                 'alternativas': ['Cooperativas',
+                                  'Autogestionarias',
+                                  'Transnacionales',
+                                  'Informales',
+                                  'Societarias'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las empresas de propiedad social (E.P.S.) en '
+                             'el Perú se iniciaron durante el gobierno '
+                             'militar de:',
+                 'alternativas': ['Manuel Odría',
+                                  'Juan Velasco Alvarado',
+                                  'Francisco Morales Bermúdez',
+                                  'Alberto Fujimori',
+                                  'Fernando Belaúnde'],
+                 'correcta': 'B'},
+                {'pregunta': 'Según los principios cooperativos, se reconoce '
+                             'un voto por socio, independientemente de:',
+                 'alternativas': ['Su antigüedad',
+                                  'Sus aportaciones',
+                                  'Su cargo directivo',
+                                  'Su nivel educativo',
+                                  'Su edad'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una sociedad cooperativa, según sus '
+                             'características, se integra con un número '
+                             'mínimo de socios igual a:',
+                 'alternativas': ['Dos', 'Tres', 'Cinco', 'Diez', 'Veinte'],
+                 'correcta': 'C'},
+                {'pregunta': 'Las empresas informales en el Perú surgieron '
+                             'principalmente como efecto de la migración '
+                             'tras la reforma agraria, durante el gobierno '
+                             'de:',
+                 'alternativas': ['Alberto Fujimori',
+                                  'Juan Velasco Alvarado',
+                                  'Alan García',
+                                  'Manuel Odría',
+                                  'Alejandro Toledo'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las características de las empresas '
+                             'informales está que sus trabajadores son de '
+                             'preferencia:',
+                 'alternativas': ['Extranjeros',
+                                  'Familiares',
+                                  'Sindicalizados',
+                                  'Profesionales certificados',
+                                  'Contratados por planilla'],
+                 'correcta': 'B'},
+                {'pregunta': 'Las empresas que tienen su sede en un país y '
+                             'realizan actividades en otros países, con '
+                             'estrategia común para maximizar beneficios, se '
+                             'llaman empresas:',
+                 'alternativas': ['Informales',
+                                  'Transnacionales',
+                                  'Cooperativas',
+                                  'Autogestionarias',
+                                  'De propiedad social'],
+                 'correcta': 'B'},
+                {'pregunta': 'La empresa Shell-Mobil, ejemplo de empresa '
+                             'transnacional, opera en más de 100 países con '
+                             'un número de empresas filiales superior a:',
+                 'alternativas': ['50', '100', '300', '500', '1000'],
+                 'correcta': 'C'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO / CARACTERÍSTICAS GENERALES',
                       'items': ['La empresa es una unidad económica de '
                                 'producción de bienes o prestación de '
                                 'servicios.',
@@ -3796,9 +3958,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'capital.',
                                 'Quien dirige la empresa es el empresario, '
                                 'que busca la maximización de ganancias '
-                                'optimizando el uso de recursos.']},
-                     {'titulo': 'CARACTERÍSTICAS GENERALES',
-                      'items': ['La empresa tiene un fin económico: se '
+                                'optimizando el uso de recursos.',
+                                'La empresa tiene un fin económico: se '
                                 'organiza para generar riqueza mediante la '
                                 'producción.',
                                 'La empresa tiene un fin mercantil: su '
@@ -3809,7 +3970,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'minimizando costos.',
                                 'La empresa asume una responsabilidad '
                                 'económica y social ante la sociedad.']},
-                     {'titulo': 'CLASIFICACIÓN SEGÚN EL PROPIETARIO',
+                     {'titulo': 'CLASIFICACIÓN SEGÚN EL PROPIETARIO / '
+                                'CLASIFICACIÓN SEGÚN EL ASPECTO JURÍDIC',
                       'items': ['Las empresas privadas están constituidas '
                                 'por el aporte de personas o instituciones '
                                 'particulares, con fin de lucro.',
@@ -3822,9 +3984,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'instituciones privadas.',
                                 'Para ser mixta, el Estado debe tener un '
                                 'mínimo de 20% de las acciones y poder de '
-                                'decisión.']},
-                     {'titulo': 'CLASIFICACIÓN SEGÚN EL ASPECTO JURÍDICO',
-                      'items': ['Las empresas individuales no tienen socios; '
+                                'decisión.',
+                                'Las empresas individuales no tienen socios; '
                                 'el propietario es el único que aporta el '
                                 'capital.',
                                 'En la empresa unipersonal, la '
@@ -3832,7 +3993,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'ilimitada: responde con todo su '
                                 'patrimonio.']},
                      {'titulo': 'LA EMPRESA INDIVIDUAL DE RESPONSABILIDAD '
-                                'LIMITADA (EIRL)',
+                                'LIMITADA (EIRL) / EMPRESAS SOCIETA',
                       'items': ['En la EIRL, el propietario único acude al '
                                 'Registro Mercantil, constituyendo una '
                                 'persona jurídica con patrimonio propio.',
@@ -3842,9 +4003,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'personal.',
                                 'En la EIRL, el titular es el órgano máximo; '
                                 'la gerencia administra y representa a la '
-                                'empresa.']},
-                     {'titulo': 'EMPRESAS SOCIETARIAS',
-                      'items': ['La sociedad civil agrupa a personas que '
+                                'empresa.',
+                                'La sociedad civil agrupa a personas que '
                                 'aportan bienes o servicios para ejercer una '
                                 'profesión, como estudios de abogados.',
                                 'Las sociedades mercantiles se forman para '
@@ -3860,13 +4020,71 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'socios está limitada al monto aportado al '
                                 'capital social.',
                                 'La Sociedad Anónima (S.A.) tiene su capital '
-                                'representado por acciones nominativas.',
-                                'En la Sociedad Anónima, los socios se '
-                                'llaman accionistas, y ninguno responde con '
-                                'su patrimonio personal por las deudas.',
-                                'La Junta General de Accionistas es el '
-                                'órgano máximo y soberano de la Sociedad '
-                                'Anónima.']}],
+                                'representado por acciones nominativas.']},
+                     {'titulo': 'LA EMPRESA SEGÚN SU TAMAÑO EN EL PERÚ (LEY '
+                                'MYPE) / EMPRESAS AUTOGESTIONARIA',
+                      'items': ['La Ley N.º 30056 (2013) establece las '
+                                'categorías empresariales según sus niveles '
+                                'de ventas anuales.',
+                                'La microempresa tiene ventas anuales de '
+                                'hasta 150 UIT.',
+                                'La pequeña empresa tiene ventas anuales '
+                                'superiores a 150 UIT y hasta 1700 UIT.',
+                                'La mediana empresa tiene ventas anuales '
+                                'superiores a 1700 UIT y hasta 2300 UIT.',
+                                'La Ley 30056 eliminó el número máximo de '
+                                'trabajadores como parámetro para calificar '
+                                'como MYPE.',
+                                'La UIT (Unidad Impositiva Tributaria) es un '
+                                'valor de referencia usado en las normas '
+                                'tributarias, modificado cada fin de año.',
+                                'Las empresas autogestionarias usan métodos '
+                                'y estrategias para que los participantes se '
+                                'dirijan al logro de objetivos con autonomía '
+                                'de gestión.',
+                                'Las empresas de propiedad social (E.P.S.) '
+                                'se formaron por iniciativa de los '
+                                'trabajadores, sin propiedad individual de '
+                                'los asociados.',
+                                'En las E.P.S., las utilidades se dividen: '
+                                'una parte para los trabajadores y otra se '
+                                'acumula en un fondo para inversiones.',
+                                'En el Perú, las empresas de propiedad '
+                                'social se iniciaron durante el gobierno '
+                                'militar del General Juan Velasco Alvarado, '
+                                'en los años sesenta.']},
+                     {'titulo': 'EMPRESAS COOPERATIVAS: DEFINICIÓN Y '
+                                'CARACTERÍSTICAS / EMPRESAS INFORMALES Y',
+                      'items': ['La sociedad cooperativa es una organización '
+                                'social basada en la solidaridad, esfuerzo '
+                                'propio y ayuda mutua.',
+                                'Principio cooperativo: se reconoce un voto '
+                                'por socio, independientemente de sus '
+                                'aportaciones.',
+                                'Característica: la sociedad cooperativa es '
+                                'de capital variable, de duración '
+                                'indefinida.',
+                                'Característica: se integra con un mínimo de '
+                                'cinco socios.',
+                                'Las empresas informales están constituidas '
+                                'sin registro ni control del Estado; sus '
+                                'trabajadores son de preferencia familiares '
+                                'y no tributan.',
+                                'Las empresas informales en el Perú '
+                                'surgieron durante el gobierno de Velasco '
+                                'Alvarado, como efecto de la migración tras '
+                                'la reforma agraria.',
+                                'Las migraciones (por reforma agraria y '
+                                'terrorismo) dieron origen a la vivienda '
+                                'informal, comercio informal y empresas '
+                                'informales.',
+                                'Las empresas transnacionales tienen su sede '
+                                'en un país y realizan actividades en otros, '
+                                'con estrategia común para maximizar '
+                                'beneficios.',
+                                'Ejemplo de empresa transnacional: '
+                                'Shell-Mobil, que opera en más de 100 países '
+                                'con más de 300 empresas filiales.']}],
   'qr_reto': [{'pregunta': 'La empresa es descrita como el centro del '
                            'proceso productivo en una economía:',
                'respuesta': 'Capitalista'},
@@ -3909,7 +4127,28 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'Cuando dos bienes son complementarios, la '
                            'disminución del precio de uno genera un '
                            '{aumento} en la demanda del otro.']},
-                {'titulo': '9.4 INGRESO, RIQUEZA Y OTROS FACTORES',
+                {'titulo': '9.4 CAMBIO DE LA DEMANDA VS. VARIACIÓN DE LA '
+                           'CANTIDAD DEMANDADA',
+                 'items': ['El {cambio de la demanda} se refiere al '
+                           '{movimiento} o traslado de toda la curva de '
+                           'demanda, originado por el cambio de factores '
+                           'distintos al precio (ingreso, gustos, bienes '
+                           'relacionados).',
+                           'Un incremento del ingreso, por ejemplo, '
+                           '{traslada} la curva de demanda hacia la '
+                           '{derecha}, permitiendo comprar más a cualquier '
+                           'precio.',
+                           'Una disminución de la demanda, como en el caso '
+                           'de los helados en invierno, {traslada} la curva '
+                           'hacia la {izquierda}.',
+                           'La {variación de la cantidad demandada} se '
+                           'refiere a movimientos sobre la {misma} curva de '
+                           'demanda.',
+                           'La variación de la cantidad demandada se da '
+                           'únicamente cuando cambia el {precio} del bien, '
+                           'permaneciendo constantes los demás factores '
+                           '(céteris paribus).']},
+                {'titulo': '9.5 INGRESO, RIQUEZA Y OTROS FACTORES',
                  'items': ['El {ingreso} es la suma de sueldos, utilidades, '
                            'intereses y rentas que recibe una persona en un '
                            'periodo.',
@@ -3924,7 +4163,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'subjetivo que varía según edad, sexo y moda.',
                            'La demanda actual también depende de los precios '
                            '{futuros} esperados de un bien.']},
-                {'titulo': '9.5 ELASTICIDAD PRECIO DE LA DEMANDA',
+                {'titulo': '9.6 ELASTICIDAD PRECIO DE LA DEMANDA',
                  'items': ['La {elasticidad precio} de la demanda mide el '
                            'grado de sensibilidad de la cantidad demandada '
                            'ante variaciones del {precio}.',
@@ -3936,8 +4175,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'negativa.',
                            'Con fines prácticos, se prefiere utilizar el '
                            'valor {absoluto} de la elasticidad.']},
-                {'titulo': '9.6 TIPOS DE ELASTICIDAD PRECIO',
-                 'items': ['La demanda {perfectamente elástica} tiene un '
+                {'titulo': '9.7 TIPOS DE ELASTICIDAD PRECIO',
+                 'items': ['La demanda {perfectamente inelástica} tiene un '
+                           'valor de elasticidad {cero}: las variaciones del '
+                           'precio no modifican en absoluto la cantidad '
+                           'demandada.',
+                           'La demanda {perfectamente elástica} tiene un '
                            'valor de elasticidad {infinito}; el bien tiene '
                            'sustitutos perfectos.',
                            'La demanda {relativamente elástica} tiene valor '
@@ -4253,7 +4496,52 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Inferior',
                                   'Giffen',
                                   'Sustitutorio'],
-                 'correcta': 'C'}],
+                 'correcta': 'C'},
+                {'pregunta': 'El movimiento o traslado de toda la curva de '
+                             'demanda, originado por el cambio de factores '
+                             'distintos al precio, se llama:',
+                 'alternativas': ['Variación de la cantidad demandada',
+                                  'Cambio de la demanda',
+                                  'Elasticidad de la demanda',
+                                  'Ley de la demanda',
+                                  'Equilibrio de mercado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Los movimientos o deslizamientos sobre la '
+                             'misma curva de demanda, que ocurren únicamente '
+                             'cuando cambia el precio del bien, se llaman:',
+                 'alternativas': ['Cambio de la demanda',
+                                  'Variación de la cantidad demandada',
+                                  'Elasticidad cruzada',
+                                  'Desplazamiento de la oferta',
+                                  'Punto de equilibrio'],
+                 'correcta': 'B'},
+                {'pregunta': 'Un incremento del ingreso de los consumidores '
+                             'traslada la curva de demanda hacia la:',
+                 'alternativas': ['Izquierda',
+                                  'Derecha',
+                                  'No se mueve',
+                                  'Hacia abajo',
+                                  'Hacia arriba únicamente'],
+                 'correcta': 'B'},
+                {'pregunta': 'La disminución de la demanda de helados en '
+                             'invierno, debido al cambio de clima, traslada '
+                             'la curva de demanda hacia la:',
+                 'alternativas': ['Derecha',
+                                  'Izquierda',
+                                  'No se mueve',
+                                  'Hacia arriba',
+                                  'Se mantiene constante'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de demanda cuya elasticidad es cero, '
+                             'donde las variaciones del precio no modifican '
+                             'en absoluto la cantidad demandada, se llama '
+                             'demanda:',
+                 'alternativas': ['Perfectamente elástica',
+                                  'Perfectamente inelástica',
+                                  'Unitaria',
+                                  'Relativamente elástica',
+                                  'Relativamente inelástica'],
+                 'correcta': 'B'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La demanda es la cantidad de bienes y '
                                 'servicios que un comprador puede y desea '
@@ -4284,6 +4572,27 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Cuando dos bienes son complementarios, la '
                                 'disminución del precio de uno genera un '
                                 'aumento en la demanda del otro.']},
+                     {'titulo': 'CAMBIO DE LA DEMANDA VS. VARIACIÓN DE LA '
+                                'CANTIDAD DEMANDADA',
+                      'items': ['El cambio de la demanda se refiere al '
+                                'movimiento o traslado de toda la curva de '
+                                'demanda, originado por el cambio de '
+                                'factores distintos al precio (ingreso, '
+                                'gustos, bienes relacionados).',
+                                'Un incremento del ingreso, por ejemplo, '
+                                'traslada la curva de demanda hacia la '
+                                'derecha, permitiendo comprar más a '
+                                'cualquier precio.',
+                                'Una disminución de la demanda, como en el '
+                                'caso de los helados en invierno, traslada '
+                                'la curva hacia la izquierda.',
+                                'La variación de la cantidad demandada se '
+                                'refiere a movimientos sobre la misma curva '
+                                'de demanda.',
+                                'La variación de la cantidad demandada se da '
+                                'únicamente cuando cambia el precio del '
+                                'bien, permaneciendo constantes los demás '
+                                'factores (céteris paribus).']},
                      {'titulo': 'INGRESO, RIQUEZA Y OTROS FACTORES',
                       'items': ['El ingreso es la suma de sueldos, '
                                 'utilidades, intereses y rentas que recibe '
@@ -4314,7 +4623,11 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Con fines prácticos, se prefiere utilizar '
                                 'el valor absoluto de la elasticidad.']},
                      {'titulo': 'TIPOS DE ELASTICIDAD PRECIO',
-                      'items': ['La demanda perfectamente elástica tiene un '
+                      'items': ['La demanda perfectamente inelástica tiene '
+                                'un valor de elasticidad cero: las '
+                                'variaciones del precio no modifican en '
+                                'absoluto la cantidad demandada.',
+                                'La demanda perfectamente elástica tiene un '
                                 'valor de elasticidad infinito; el bien '
                                 'tiene sustitutos perfectos.',
                                 'La demanda relativamente elástica tiene '
@@ -4379,7 +4692,42 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'oferta.',
                            'Las políticas {proteccionistas} elevan aranceles '
                            'y reducen la oferta de bienes importados.']},
-                {'titulo': '10.5 EL EQUILIBRIO DEL MERCADO',
+                {'titulo': '10.5 LA LEY DE LA CANTIDAD OFERTADA',
+                 'items': ['La {ley de la cantidad ofertada} establece que '
+                           'las cantidades ofertadas de un producto varían '
+                           'en relación {directa} a sus precios, céteris '
+                           'paribus.',
+                           'Si el precio de un bien aumenta, su cantidad '
+                           'ofrecida {aumenta}; si el precio disminuye, la '
+                           'cantidad ofertada {disminuye}.',
+                           'La {elasticidad} en la oferta es la propiedad '
+                           'que tiene la oferta para variar cuando cambia el '
+                           'precio de un bien.',
+                           'La {elasticidad precio de la oferta} indica en '
+                           'qué proporción varía la cantidad ofrecida ante '
+                           'una variación proporcional en el {precio}.']},
+                {'titulo': '10.6 TIPOS DE ELASTICIDAD DE LA OFERTA',
+                 'items': ['La oferta {completamente inelástica o rígida} '
+                           'tiene elasticidad {cero}; las variaciones del '
+                           'precio no modifican la cantidad ofertada. '
+                           'Ejemplo: terrenos frente a una playa.',
+                           'La oferta {inelástica} tiene elasticidad menor a '
+                           '{uno}; un cambio grande en el precio varía poco '
+                           'la cantidad. Ejemplo: el costo de habitación de '
+                           'un hotel.',
+                           'La oferta {unitaria} tiene elasticidad igual a '
+                           '{uno}; los cambios en el precio varían la oferta '
+                           'en la misma proporción. Ejemplo: la venta de '
+                           'pescado.',
+                           'La oferta {elástica} tiene elasticidad mayor a '
+                           'uno; un cambio pequeño en el precio varía '
+                           'desproporcionalmente la oferta. Ejemplo: la '
+                           'venta de {libros}.',
+                           'La oferta {completamente elástica} tiene '
+                           'elasticidad {infinita}; los cambios en el precio '
+                           'no varían la oferta. Ejemplo: el precio de la '
+                           'gasolina en el mercado internacional.']},
+                {'titulo': '10.7 EL EQUILIBRIO DEL MERCADO',
                  'items': ['El {equilibrio del mercado} es la situación en '
                            'la que el nivel de producción (oferta) coincide '
                            'con el nivel de {consumo} (demanda).',
@@ -4668,7 +5016,75 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Demanda',
                                   'Consolidación',
                                   'Equilibrio'],
-                 'correcta': 'B'}],
+                 'correcta': 'B'},
+                {'pregunta': 'La ley de la cantidad ofertada establece que '
+                             'las cantidades ofertadas de un producto varían '
+                             'en relación al precio de forma:',
+                 'alternativas': ['Inversa',
+                                  'Directa',
+                                  'Nula',
+                                  'Aleatoria',
+                                  'Inelástica'],
+                 'correcta': 'B'},
+                {'pregunta': 'La propiedad que tiene la oferta para variar '
+                             'cuando cambia el precio de un bien o servicio '
+                             'se llama:',
+                 'alternativas': ['Ley de la oferta',
+                                  'Elasticidad',
+                                  'Equilibrio',
+                                  'Excedente',
+                                  'Escasez'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de oferta cuya elasticidad es cero, '
+                             'donde las variaciones del precio no modifican '
+                             'la cantidad ofertada, como en los terrenos '
+                             'frente a una playa, se llama oferta:',
+                 'alternativas': ['Elástica',
+                                  'Completamente inelástica o rígida',
+                                  'Unitaria',
+                                  'Completamente elástica',
+                                  'Inelástica'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de oferta con elasticidad menor a uno, '
+                             'donde un cambio grande en el precio varía poco '
+                             'la cantidad, como en el costo de habitación de '
+                             'un hotel, se llama oferta:',
+                 'alternativas': ['Elástica',
+                                  'Unitaria',
+                                  'Inelástica',
+                                  'Completamente elástica',
+                                  'Completamente inelástica'],
+                 'correcta': 'C'},
+                {'pregunta': 'El tipo de oferta con elasticidad igual a uno, '
+                             'donde los cambios en el precio varían la '
+                             'oferta en la misma proporción, como en la '
+                             'venta de pescado, se llama oferta:',
+                 'alternativas': ['Inelástica',
+                                  'Unitaria',
+                                  'Elástica',
+                                  'Completamente elástica',
+                                  'Rígida'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de oferta con elasticidad mayor a uno, '
+                             'donde un cambio pequeño en el precio varía '
+                             'desproporcionalmente la oferta, como en la '
+                             'venta de libros, se llama oferta:',
+                 'alternativas': ['Inelástica',
+                                  'Unitaria',
+                                  'Elástica',
+                                  'Rígida',
+                                  'Completamente inelástica'],
+                 'correcta': 'C'},
+                {'pregunta': 'El tipo de oferta con elasticidad infinita, '
+                             'donde los cambios en el precio no varían la '
+                             'oferta, como en el precio internacional de la '
+                             'gasolina, se llama oferta:',
+                 'alternativas': ['Inelástica',
+                                  'Unitaria',
+                                  'Elástica',
+                                  'Completamente elástica',
+                                  'Rígida'],
+                 'correcta': 'D'}],
   'resumen_visual': [{'titulo': 'CONCEPTO',
                       'items': ['La oferta es la cantidad de un bien o '
                                 'servicio que los vendedores-productores '
@@ -4711,6 +5127,43 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Las políticas proteccionistas elevan '
                                 'aranceles y reducen la oferta de bienes '
                                 'importados.']},
+                     {'titulo': 'LA LEY DE LA CANTIDAD OFERTADA',
+                      'items': ['La ley de la cantidad ofertada establece '
+                                'que las cantidades ofertadas de un producto '
+                                'varían en relación directa a sus precios, '
+                                'céteris paribus.',
+                                'Si el precio de un bien aumenta, su '
+                                'cantidad ofrecida aumenta; si el precio '
+                                'disminuye, la cantidad ofertada disminuye.',
+                                'La elasticidad en la oferta es la propiedad '
+                                'que tiene la oferta para variar cuando '
+                                'cambia el precio de un bien.',
+                                'La elasticidad precio de la oferta indica '
+                                'en qué proporción varía la cantidad '
+                                'ofrecida ante una variación proporcional en '
+                                'el precio.']},
+                     {'titulo': 'TIPOS DE ELASTICIDAD DE LA OFERTA',
+                      'items': ['La oferta completamente inelástica o rígida '
+                                'tiene elasticidad cero; las variaciones del '
+                                'precio no modifican la cantidad ofertada. '
+                                'Ejemplo: terrenos frente a una playa.',
+                                'La oferta inelástica tiene elasticidad '
+                                'menor a uno; un cambio grande en el precio '
+                                'varía poco la cantidad. Ejemplo: el costo '
+                                'de habitación de un hotel.',
+                                'La oferta unitaria tiene elasticidad igual '
+                                'a uno; los cambios en el precio varían la '
+                                'oferta en la misma proporción. Ejemplo: la '
+                                'venta de pescado.',
+                                'La oferta elástica tiene elasticidad mayor '
+                                'a uno; un cambio pequeño en el precio varía '
+                                'desproporcionalmente la oferta. Ejemplo: la '
+                                'venta de libros.',
+                                'La oferta completamente elástica tiene '
+                                'elasticidad infinita; los cambios en el '
+                                'precio no varían la oferta. Ejemplo: el '
+                                'precio de la gasolina en el mercado '
+                                'internacional.']},
                      {'titulo': 'EL EQUILIBRIO DEL MERCADO',
                       'items': ['El equilibrio del mercado es la situación '
                                 'en la que el nivel de producción (oferta) '
@@ -4728,10 +5181,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'demanda.',
                                 'Cuando el precio está por debajo del '
                                 'equilibrio, se genera escasez, con presión '
-                                'al alza sobre el precio.',
-                                'Cuando el precio está por encima del '
-                                'equilibrio, se genera abundancia o '
-                                'sobreproducción, con presión a la baja.']}],
+                                'al alza sobre el precio.']}],
   'qr_reto': [{'pregunta': 'La oferta expresa, en esencia, los deseos de '
                            'venta o producción en función de:',
                'respuesta': 'Los distintos precios existentes en el mercado'},
@@ -4781,7 +5231,79 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'fijar {precios}.',
                            'La competencia imperfecta va desde el '
                            '{monopolio} puro hasta el oligopolio y la '
-                           'competencia monopolística.']}],
+                           'competencia monopolística.']},
+                {'titulo': '11.5 LA ESTRUCTURA DE MERCADO: CLASIFICACIÓN',
+                 'items': ['La {estructura de mercado} se refiere a la forma '
+                           'como se comportan sus componentes (ofertantes y '
+                           'demandantes) según su grado de poder para '
+                           'influir en los precios.',
+                           'Las estructuras de mercado se clasifican en '
+                           '{competencia perfecta} y competencia imperfecta.',
+                           'La competencia {imperfecta} se subclasifica en '
+                           'monopolio, oligopolio, competencia '
+                           'monopolística, monopsonio y {oligopsonio}.']},
+                {'titulo': '11.6 COMPETENCIA PERFECTA: CARACTERÍSTICAS',
+                 'items': ['La {competencia perfecta} es una estructura de '
+                           'mercado teórica, que no se da en la realidad, '
+                           'planteada por los economistas {clásicos}.',
+                           'Característica: gran {concurrencia} de '
+                           'vendedores y compradores.',
+                           'Característica: {libre acceso}, sin barreras de '
+                           'ingreso ni salida del mercado.',
+                           'Característica: se transan mercancías '
+                           '{homogéneas}, sin diferencia entre vendedores.',
+                           'Característica: {transparencia} de mercado o '
+                           'información simétrica entre compradores y '
+                           'vendedores.',
+                           'Característica: los agentes son «{precio '
+                           'aceptantes}», sin poder para alterar los '
+                           'precios.']},
+                {'titulo': '11.7 EL MONOPOLIO: CARACTERÍSTICAS Y CAUSAS',
+                 'items': ['Una empresa es {monopolio} si es la única que '
+                           'vende un producto sin sustitutos cercanos.',
+                           'Causa del monopolio: propiedad de un {recurso} '
+                           'clave para la producción por una sola empresa.',
+                           'Causa del monopolio: {regulaciones} del gobierno '
+                           'que conceden el derecho exclusivo de fabricar un '
+                           'producto.',
+                           'Causa del monopolio: un {proceso de producción} '
+                           'que permite a una sola empresa producir a menor '
+                           'costo.',
+                           'Característica: el {monopolista} tiene poder '
+                           'para fijar el precio, y no existen bienes '
+                           'sustitutos.']},
+                {'titulo': '11.8 EL OLIGOPOLIO: CARACTERÍSTICAS',
+                 'items': ['El {oligopolio} se caracteriza por un número '
+                           'reducido de productores, con poder para decidir '
+                           'precio y {cantidad}.',
+                           'El {comportamiento colusivo} es cuando las '
+                           'empresas oligopólicas llegan a un acuerdo para '
+                           'actuar conjuntamente, comportándose como un '
+                           '{monopolio}.',
+                           'El {comportamiento no colusivo} es cuando las '
+                           'empresas oligopólicas compiten entre sí '
+                           'adoptando posiciones estratégicas (Teoría de '
+                           '{Juegos}).',
+                           'En el Perú, el {sistema bancario} es un ejemplo '
+                           'de mercado oligopólico con fuertes barreras de '
+                           'entrada.',
+                           'Las {economías de escala} son una causa del '
+                           'oligopolio: las empresas grandes tienen menor '
+                           'costo por unidad, excluyendo a las pequeñas.']},
+                {'titulo': '11.9 LA COMPETENCIA MONOPOLÍSTICA: '
+                           'CARACTERÍSTICAS',
+                 'items': ['La {competencia monopolística} es la estructura '
+                           'donde concurren varias empresas con mercancías '
+                           'similares pero {diferenciadas}.',
+                           'Característica: {muchos vendedores} compiten por '
+                           'el mismo grupo de clientes.',
+                           'Característica: {diferenciación} del producto; '
+                           'cada empresa produce un bien con al menos una '
+                           'leve diferencia.',
+                           'Característica: {libertad} para entrar y salir '
+                           'del mercado sin restricciones.',
+                           'Ejemplos de competencia monopolística: libros, '
+                           'restaurantes, {ropa}, clases de piano.']}],
   'cuadros': [{'titulo': '11.3 CLASIFICACIÓN DE MERCADOS SEGÚN EL ÁREA '
                          'GEOGRÁFICA',
                'encabezados': ['Tipo', 'Alcance'],
@@ -4979,8 +5501,100 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Mercado',
                                   'Costo',
                                   'Venta'],
-                 'correcta': 'A'}],
-  'resumen_visual': [{'titulo': 'CONCEPTO Y COMPONENTES',
+                 'correcta': 'A'},
+                {'pregunta': 'Las estructuras de mercado se clasifican '
+                             'principalmente en competencia perfecta y:',
+                 'alternativas': ['Monopolio exclusivamente',
+                                  'Competencia imperfecta',
+                                  'Oligopolio exclusivamente',
+                                  'Mercado libre',
+                                  'Mercado regulado'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura de mercado teórica, que no se da '
+                             'en la realidad, planteada por los economistas '
+                             'clásicos, es la:',
+                 'alternativas': ['Competencia imperfecta',
+                                  'Competencia perfecta',
+                                  'Monopolio puro',
+                                  'Oligopolio',
+                                  'Competencia monopolística'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las características de la competencia '
+                             'perfecta está que los agentes son «precio '
+                             'aceptantes», lo que significa que:',
+                 'alternativas': ['Fijan libremente el precio',
+                                  'No tienen poder para alterar el precio',
+                                  'Negocian el precio individualmente',
+                                  'Establecen precios mínimos',
+                                  'Regulan los precios del mercado'],
+                 'correcta': 'B'},
+                {'pregunta': 'Una empresa es considerada monopolio cuando es '
+                             'la única que vende un producto y este:',
+                 'alternativas': ['Tiene muchos sustitutos',
+                                  'No tiene sustitutos cercanos',
+                                  'Es de bajo precio',
+                                  'Se vende al por mayor',
+                                  'Requiere publicidad constante'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las causas del monopolio está que las '
+                             'autoridades concedan a una sola empresa el '
+                             'derecho exclusivo de fabricar un producto, lo '
+                             'cual se denomina:',
+                 'alternativas': ['Recursos del monopolio',
+                                  'Regulaciones del gobierno',
+                                  'Proceso de producción',
+                                  'Economías de escala',
+                                  'Barreras estratégicas'],
+                 'correcta': 'B'},
+                {'pregunta': 'El comportamiento oligopólico en el que las '
+                             'empresas llegan a un acuerdo para actuar '
+                             'conjuntamente, decidiendo precio y cantidad, '
+                             'se llama comportamiento:',
+                 'alternativas': ['No colusivo',
+                                  'Colusivo',
+                                  'Competitivo',
+                                  'Estratégico',
+                                  'Independiente'],
+                 'correcta': 'B'},
+                {'pregunta': 'El comportamiento oligopólico en el que las '
+                             'empresas compiten entre sí adoptando '
+                             'posiciones estratégicas, analizado mediante la '
+                             'Teoría de Juegos, se llama comportamiento:',
+                 'alternativas': ['Colusivo',
+                                  'No colusivo',
+                                  'Cooperativo',
+                                  'Monopólico',
+                                  'Perfecto'],
+                 'correcta': 'B'},
+                {'pregunta': 'En el Perú, un ejemplo típico de mercado '
+                             'oligopólico, con fuertes barreras de entrada, '
+                             'es el:',
+                 'alternativas': ['Mercado de frutas',
+                                  'Sistema bancario',
+                                  'Mercado de artesanías',
+                                  'Comercio ambulatorio',
+                                  'Mercado agrícola'],
+                 'correcta': 'B'},
+                {'pregunta': 'La estructura de mercado donde concurren '
+                             'varias empresas con mercancías similares pero '
+                             'diferenciadas en algunos atributos se llama:',
+                 'alternativas': ['Monopolio',
+                                  'Competencia monopolística',
+                                  'Oligopsonio',
+                                  'Monopsonio',
+                                  'Competencia perfecta'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre los ejemplos típicos de competencia '
+                             'monopolística se encuentran los restaurantes, '
+                             'la ropa y:',
+                 'alternativas': ['El agua potable',
+                                  'Los libros',
+                                  'La electricidad',
+                                  'El sistema bancario',
+                                  'El transporte aéreo internacional'],
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO Y COMPONENTES / CARACTERÍSTICAS '
+                                'DEL MERCADO',
                       'items': ['El mercado es el espacio donde interactúan '
                                 'las unidades económicas en las '
                                 'transacciones de compra y venta, generando '
@@ -4989,9 +5603,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'son la oferta, la demanda, el precio, y el '
                                 'nivel de equilibrio.',
                                 'Para bienes se le llama precio; para '
-                                'servicios se le llama tarifa.']},
-                     {'titulo': 'CARACTERÍSTICAS DEL MERCADO',
-                      'items': ['El mercado no requiere necesariamente la '
+                                'servicios se le llama tarifa.',
+                                'El mercado no requiere necesariamente la '
                                 'presencia física de compradores y '
                                 'vendedores.',
                                 'Todo mercado obedece al comportamiento de '
@@ -4999,7 +5612,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'demanda.',
                                 'Toda transacción económica en un mercado '
                                 'insume un determinado periodo de tiempo.']},
-                     {'titulo': 'CLASIFICACIÓN SEGÚN EL ÁREA GEOGRÁFICA',
+                     {'titulo': 'CLASIFICACIÓN SEGÚN EL ÁREA GEOGRÁFICA / '
+                                'CLASIFICACIÓN SEGÚN EL NÚMERO DE V',
                       'items': ['Los mercados locales abarcan un espacio '
                                 'restringido, como una ciudad o provincia.',
                                 'Los mercados regionales internos abarcan '
@@ -5010,9 +5624,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Los mercados nacionales abarcan todo el '
                                 'espacio geográfico de un país.',
                                 'Los mercados internacionales involucran a '
-                                'varios países, sujetos a la OMC.']},
-                     {'titulo': 'CLASIFICACIÓN SEGÚN EL NÚMERO DE VENDEDORES',
-                      'items': ['El mercado de competencia perfecta se '
+                                'varios países, sujetos a la OMC.',
+                                'El mercado de competencia perfecta se '
                                 'caracteriza por libre ingreso y salida, sin '
                                 'poder de fijación de precios.',
                                 'El mercado de competencia imperfecta tiene '
@@ -5020,7 +5633,86 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'para fijar precios.',
                                 'La competencia imperfecta va desde el '
                                 'monopolio puro hasta el oligopolio y la '
-                                'competencia monopolística.']}],
+                                'competencia monopolística.']},
+                     {'titulo': 'LA ESTRUCTURA DE MERCADO: CLASIFICACIÓN / '
+                                'COMPETENCIA PERFECTA: CARACTERÍST',
+                      'items': ['La estructura de mercado se refiere a la '
+                                'forma como se comportan sus componentes '
+                                '(ofertantes y demandantes) según su grado '
+                                'de poder para influir en los precios.',
+                                'Las estructuras de mercado se clasifican en '
+                                'competencia perfecta y competencia '
+                                'imperfecta.',
+                                'La competencia imperfecta se subclasifica '
+                                'en monopolio, oligopolio, competencia '
+                                'monopolística, monopsonio y oligopsonio.',
+                                'La competencia perfecta es una estructura '
+                                'de mercado teórica, que no se da en la '
+                                'realidad, planteada por los economistas '
+                                'clásicos.',
+                                'Característica: gran concurrencia de '
+                                'vendedores y compradores.',
+                                'Característica: libre acceso, sin barreras '
+                                'de ingreso ni salida del mercado.',
+                                'Característica: se transan mercancías '
+                                'homogéneas, sin diferencia entre '
+                                'vendedores.',
+                                'Característica: transparencia de mercado o '
+                                'información simétrica entre compradores y '
+                                'vendedores.',
+                                'Característica: los agentes son «precio '
+                                'aceptantes», sin poder para alterar los '
+                                'precios.']},
+                     {'titulo': 'EL MONOPOLIO: CARACTERÍSTICAS Y CAUSAS / EL '
+                                'OLIGOPOLIO: CARACTERÍSTICAS',
+                      'items': ['Una empresa es monopolio si es la única que '
+                                'vende un producto sin sustitutos cercanos.',
+                                'Causa del monopolio: propiedad de un '
+                                'recurso clave para la producción por una '
+                                'sola empresa.',
+                                'Causa del monopolio: regulaciones del '
+                                'gobierno que conceden el derecho exclusivo '
+                                'de fabricar un producto.',
+                                'Causa del monopolio: un proceso de '
+                                'producción que permite a una sola empresa '
+                                'producir a menor costo.',
+                                'Característica: el monopolista tiene poder '
+                                'para fijar el precio, y no existen bienes '
+                                'sustitutos.',
+                                'El oligopolio se caracteriza por un número '
+                                'reducido de productores, con poder para '
+                                'decidir precio y cantidad.',
+                                'El comportamiento colusivo es cuando las '
+                                'empresas oligopólicas llegan a un acuerdo '
+                                'para actuar conjuntamente, comportándose '
+                                'como un monopolio.',
+                                'El comportamiento no colusivo es cuando las '
+                                'empresas oligopólicas compiten entre sí '
+                                'adoptando posiciones estratégicas (Teoría '
+                                'de Juegos).',
+                                'En el Perú, el sistema bancario es un '
+                                'ejemplo de mercado oligopólico con fuertes '
+                                'barreras de entrada.',
+                                'Las economías de escala son una causa del '
+                                'oligopolio: las empresas grandes tienen '
+                                'menor costo por unidad, excluyendo a las '
+                                'pequeñas.']},
+                     {'titulo': 'LA COMPETENCIA MONOPOLÍSTICA: '
+                                'CARACTERÍSTICAS',
+                      'items': ['La competencia monopolística es la '
+                                'estructura donde concurren varias empresas '
+                                'con mercancías similares pero '
+                                'diferenciadas.',
+                                'Característica: muchos vendedores compiten '
+                                'por el mismo grupo de clientes.',
+                                'Característica: diferenciación del '
+                                'producto; cada empresa produce un bien con '
+                                'al menos una leve diferencia.',
+                                'Característica: libertad para entrar y '
+                                'salir del mercado sin restricciones.',
+                                'Ejemplos de competencia monopolística: '
+                                'libros, restaurantes, ropa, clases de '
+                                'piano.']}],
   'qr_reto': [{'pregunta': 'En un mercado de competencia imperfecta con '
                            'monopolio, quien fija el precio es:',
                'respuesta': 'El monopolista'},
@@ -5505,7 +6197,24 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'En la intermediación directa se negocian '
                            '{títulos valores}: bonos de renta fija y '
                            'acciones de renta {variable}.']},
-                {'titulo': '13.2 MERCADOS PRIMARIO Y SECUNDARIO',
+                {'titulo': '13.2 EL SISTEMA FINANCIERO EN EL PERÚ',
+                 'items': ['El {Ministerio de Economía y Finanzas} (MEF) es '
+                           'el órgano encargado del diseño de las políticas '
+                           'económicas relacionadas con el dinero.',
+                           'El {BCR} controla las operaciones relacionadas '
+                           'con las colocaciones que hacen las empresas '
+                           'bancarias.',
+                           'La {SBS} fiscaliza y controla las operaciones de '
+                           'colocación y captación de los intermediarios '
+                           'financieros.',
+                           'El sistema financiero peruano comprende el '
+                           '{Subsistema Bancario} y el subsistema {No '
+                           'Bancario} (Cajas Rurales, Cajas Municipales, '
+                           'Cooperativas, COFIDE, entre otros).',
+                           'Las empresas del subsistema bancario operan en '
+                           'el submercado {monetario}; las del no bancario, '
+                           'en el submercado {financiero}.']},
+                {'titulo': '13.3 MERCADOS PRIMARIO Y SECUNDARIO',
                  'items': ['El mercado {primario} es donde se colocan por '
                            'primera vez los valores emitidos, por oferta '
                            'pública o privada.',
@@ -5515,14 +6224,14 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'En el mercado primario intervienen los {bancos '
                            'de inversión}; en el mercado secundario, las '
                            '{sociedades agentes de bolsa}.']},
-                {'titulo': '13.3 VENTAJAS DE LA INTERMEDIACIÓN DIRECTA',
+                {'titulo': '13.4 VENTAJAS DE LA INTERMEDIACIÓN DIRECTA',
                  'items': ['Los {costos} de operación son menores para ambos '
                            'agentes.',
                            'Permite al agente deficitario acceder a grandes '
                            'sumas sin necesidad de {prendar} sus activos.',
                            'Ofrece mayor {variedad} de instrumentos '
                            'financieros al agente deficitario.']},
-                {'titulo': '13.4 INSTRUMENTOS Y PRINCIPALES INSTITUCIONES',
+                {'titulo': '13.5 INSTRUMENTOS Y PRINCIPALES INSTITUCIONES',
                  'items': ['Los instrumentos de renta {fija} son títulos de '
                            'deuda que generan pago fijo de intereses y '
                            'devolución del capital.',
@@ -5538,7 +6247,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'La {Bolsa de Valores} es una asociación civil '
                            'sin fines de lucro que facilita la negociación '
                            'de valores mobiliarios.']},
-                {'titulo': '13.5 CLASIFICACIÓN DE LOS BANCOS',
+                {'titulo': '13.6 CLASIFICACIÓN DE LOS BANCOS',
                  'items': ['La {banca privada}, o banca múltiple, está '
                            'autorizada a realizar operaciones activas, '
                            'pasivas y {neutras} o servicios.',
@@ -5565,7 +6274,29 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El Banco de la Nación fue creado el {27} de '
                            'enero de {1966}, mediante ley aprobada por el '
                            'Congreso.']},
-                {'titulo': '13.6 LA EMPRESA BANCARIA',
+                {'titulo': '13.7 TIPOLOGÍA DE LOS BANCOS SEGÚN SU ACTIVIDAD',
+                 'items': ['La {banca de emisión} o autoridad monetaria '
+                           'emite billetes y monedas, y regula el sistema '
+                           'crediticio; en el Perú es el {Banco Central de '
+                           'Reserva}.',
+                           'La {banca comercial} realiza operaciones de '
+                           'captación y colocación en el corto plazo, '
+                           'otorgando créditos tras deducir el {encaje '
+                           'legal}.',
+                           'El {banco de fomento} promueve una actividad '
+                           'productiva específica; durante el gobierno de '
+                           '{Fujimori} en los 90 se liquidaron varios (Banco '
+                           'Agrario, Banco Minero).',
+                           'El {banco hipotecario} entrega préstamos con '
+                           'garantía de bienes {inmuebles} adquiridos.',
+                           'El {banco de consumo} realiza operaciones de '
+                           'crédito para que las familias accedan a bienes '
+                           'de consumo {duradero}.',
+                           'El {banco de inversión}, también llamado banco '
+                           'de negocios, asesora a empresas o gobiernos en '
+                           'la emisión de {valores} y su colocación en el '
+                           'mercado de capitales.']},
+                {'titulo': '13.8 LA EMPRESA BANCARIA',
                  'items': ['El {banco} es una empresa que actúa como '
                            'intermediario {indirecto} en el mercado '
                            'monetario, captando dinero del público.',
@@ -5574,7 +6305,23 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'mediante préstamos, creando {empleo}.',
                            'Los bancos también apoyan al {BCR} en regular y '
                            'facilitar la moneda en circulación.']},
-                {'titulo': '13.7 OPERACIONES BANCARIAS: PASIVAS',
+                {'titulo': '13.9 FUNCIONES DE LOS BANCOS',
+                 'items': ['La {función social} es la principal función de '
+                           'un banco: apoyar y dinamizar mediante el '
+                           'préstamo un sector retardatario de la economía, '
+                           'creando {empleo}.',
+                           'Los bancos {concentran} los recursos financieros '
+                           'del público superavitario para colocarlo al '
+                           'público {deficitario}.',
+                           'Los bancos otorgan {créditos} y préstamos, y '
+                           'prestan servicios financieros como cobranzas, '
+                           'cartas fianza y {transferencias}.',
+                           'Los bancos apoyan al {BCR} en regular y '
+                           'facilitar la moneda en circulación.',
+                           'Los bancos facilitan los pagos y cobros en '
+                           '{moneda extranjera} para apoyar las operaciones '
+                           'del comercio externo.']},
+                {'titulo': '13.10 OPERACIONES BANCARIAS: PASIVAS',
                  'items': ['Las {operaciones pasivas} son los fondos '
                            'depositados por los clientes, que el banco usa '
                            'para sus operaciones {activas}.',
@@ -5586,7 +6333,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El depósito de {CTS} (Compensación por Tiempo de '
                            'Servicios) es un fondo obligatorio del empleador '
                            'que sirve como seguro de {desempleo}.']},
-                {'titulo': '13.8 OPERACIONES BANCARIAS: ACTIVAS',
+                {'titulo': '13.11 OPERACIONES BANCARIAS: ACTIVAS',
                  'items': ['Las {operaciones activas} son aquellas en las '
                            'que el banco otorga {crédito}: préstamos, '
                            'descuentos, anticipos.',
@@ -5596,7 +6343,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El {sobregiro bancario} ocurre cuando el cliente '
                            'gira cheques sin provisión de fondos suficiente '
                            'en su cuenta.']},
-                {'titulo': '13.9 AGENTES DEL CRÉDITO',
+                {'titulo': '13.12 AGENTES DEL CRÉDITO',
                  'items': ['El {agente acreedor} es quien otorga el crédito '
                            'al contar con superávit de dinero; es el titular '
                            'del derecho a exigir el pago, el sujeto {activo} '
@@ -5610,7 +6357,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'Entre las funciones del crédito está permitir '
                            'elevar los niveles de {producción}, y facilitar '
                            'la formación de {capital}.']},
-                {'titulo': '13.10 ENTIDADES DE REGULACIÓN Y SUPERVISIÓN',
+                {'titulo': '13.13 ENTIDADES DE REGULACIÓN Y SUPERVISIÓN',
                  'items': ['La {SBS} (Superintendencia de Banca, Seguros y '
                            'AFP) es el organismo encargado de la regulación '
                            'y supervisión del Sistema {Financiero}, de '
@@ -5628,8 +6375,14 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'de valores}.',
                            'El {INDECOPI} (Instituto Nacional de Defensa de '
                            'la Competencia) también forma parte de las '
-                           'entidades de regulación del sistema '
-                           'económico.']}],
+                           'entidades de regulación del sistema económico.']},
+                {'titulo': '13.14 MODALIDADES DE CRÉDITO',
+                 'items': ['La {venta al crédito}, o crédito mercantil, se '
+                           'da cuando un agente entrega a otro un bien o '
+                           'servicio para su pago {futuro}.',
+                           'El {préstamo}, o crédito financiero, consiste en '
+                           'la entrega de dinero de un agente con superávit '
+                           'hacia otro con {déficit}.']}],
   'cuadros': [{'titulo': '13.2 MERCADO PRIMARIO FRENTE A SECUNDARIO',
                'encabezados': ['Mercado', 'Función'],
                'filas': [['{Primario}', 'Primera {colocación} de valores'],
@@ -5978,9 +6731,97 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'SUNAT',
                                   'Bolsa de Valores exclusiva',
                                   'INDECOPI'],
+                 'correcta': 'B'},
+                {'pregunta': 'La principal función de un banco, que consiste '
+                             'en apoyar y dinamizar mediante el préstamo un '
+                             'sector retardatario de la economía, es la '
+                             'función:',
+                 'alternativas': ['Económica',
+                                  'Social',
+                                  'Financiera exclusiva',
+                                  'Comercial exclusiva',
+                                  'Estatal'],
+                 'correcta': 'B'},
+                {'pregunta': 'Entre las funciones de los bancos está apoyar '
+                             'al BCR en regular y facilitar la:',
+                 'alternativas': ['Inflación',
+                                  'Moneda en circulación',
+                                  'Tasa de interés exclusiva',
+                                  'Deuda pública',
+                                  'Balanza comercial'],
+                 'correcta': 'B'},
+                {'pregunta': 'El órgano encargado del diseño de las '
+                             'políticas económicas relacionadas con el '
+                             'dinero en el Perú es el:',
+                 'alternativas': ['BCR',
+                                  'Ministerio de Economía y Finanzas (MEF)',
+                                  'SBS',
+                                  'CONASEV',
+                                  'INDECOPI'],
+                 'correcta': 'B'},
+                {'pregunta': 'Dentro del sistema financiero peruano, el '
+                             'organismo que fiscaliza y controla las '
+                             'operaciones de colocación y captación de los '
+                             'intermediarios financieros es la:',
+                 'alternativas': ['BCR', 'SBS', 'MEF', 'CONASEV', 'SUNAT'],
+                 'correcta': 'B'},
+                {'pregunta': 'El sistema financiero peruano comprende el '
+                             'subsistema bancario y el subsistema:',
+                 'alternativas': ['Estatal',
+                                  'No bancario',
+                                  'Internacional',
+                                  'Privado exclusivo',
+                                  'Cooperativo exclusivo'],
+                 'correcta': 'B'},
+                {'pregunta': 'La banca de emisión, también llamada autoridad '
+                             'monetaria, en el Perú está representada por '
+                             'el:',
+                 'alternativas': ['Banco de la Nación',
+                                  'Banco Central de Reserva',
+                                  'Banco Continental',
+                                  'Interbank',
+                                  'Banco de Crédito'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de banco que promueve una actividad '
+                             'productiva específica, del cual varios fueron '
+                             'liquidados durante el gobierno de Fujimori, se '
+                             'llama banco de:',
+                 'alternativas': ['Inversión',
+                                  'Fomento',
+                                  'Consumo',
+                                  'Emisión',
+                                  'Ahorro'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de banco cuya especialidad es entregar '
+                             'préstamos con garantía de bienes inmuebles '
+                             'adquiridos se llama banco:',
+                 'alternativas': ['De fomento',
+                                  'Hipotecario',
+                                  'De inversión',
+                                  'Comercial',
+                                  'De consumo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El tipo de banco que asesora a empresas o '
+                             'gobiernos en la emisión de valores y su '
+                             'colocación en el mercado de capitales se llama '
+                             'banco de:',
+                 'alternativas': ['Consumo',
+                                  'Inversión',
+                                  'Fomento',
+                                  'Ahorro',
+                                  'Emisión'],
+                 'correcta': 'B'},
+                {'pregunta': 'La modalidad de crédito en la que un agente '
+                             'entrega a otro un bien o servicio para su pago '
+                             'futuro se llama:',
+                 'alternativas': ['Préstamo o crédito financiero',
+                                  'Venta al crédito o crédito mercantil',
+                                  'Crédito bancario exclusivo',
+                                  'Financiamiento directo',
+                                  'Depósito a plazo'],
                  'correcta': 'B'}],
-  'resumen_visual': [{'titulo': 'INTERMEDIACIÓN FINANCIERA / MERCADOS '
-                                'PRIMARIO Y SECUNDARIO',
+  'resumen_visual': [{'titulo': 'INTERMEDIACIÓN FINANCIERA / EL SISTEMA '
+                                'FINANCIERO EN EL PERÚ',
                       'items': ['La intermediación financiera es el proceso '
                                 'por el cual se trasladan recursos de los '
                                 'agentes superavitarios hacia los agentes '
@@ -5991,7 +6832,23 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'En la intermediación directa se negocian '
                                 'títulos valores: bonos de renta fija y '
                                 'acciones de renta variable.',
-                                'El mercado primario es donde se colocan por '
+                                'El Ministerio de Economía y Finanzas (MEF) '
+                                'es el órgano encargado del diseño de las '
+                                'políticas económicas relacionadas con el '
+                                'dinero.',
+                                'El BCR controla las operaciones '
+                                'relacionadas con las colocaciones que hacen '
+                                'las empresas bancarias.',
+                                'La SBS fiscaliza y controla las operaciones '
+                                'de colocación y captación de los '
+                                'intermediarios financieros.',
+                                'El sistema financiero peruano comprende el '
+                                'Subsistema Bancario y el subsistema No '
+                                'Bancario (Cajas Rurales, Cajas Municipales, '
+                                'Cooperativas, COFIDE, entre otros).']},
+                     {'titulo': 'MERCADOS PRIMARIO Y SECUNDARIO / VENTAJAS '
+                                'DE LA INTERMEDIACIÓN DIRECTA',
+                      'items': ['El mercado primario es donde se colocan por '
                                 'primera vez los valores emitidos, por '
                                 'oferta pública o privada.',
                                 'El mercado secundario es donde se revenden '
@@ -6000,17 +6857,17 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'En el mercado primario intervienen los '
                                 'bancos de inversión; en el mercado '
                                 'secundario, las sociedades agentes de '
-                                'bolsa.']},
-                     {'titulo': 'VENTAJAS DE LA INTERMEDIACIÓN DIRECTA / '
-                                'INSTRUMENTOS Y PRINCIPALES INSTITUC',
-                      'items': ['Los costos de operación son menores para '
+                                'bolsa.',
+                                'Los costos de operación son menores para '
                                 'ambos agentes.',
                                 'Permite al agente deficitario acceder a '
                                 'grandes sumas sin necesidad de prendar sus '
                                 'activos.',
                                 'Ofrece mayor variedad de instrumentos '
-                                'financieros al agente deficitario.',
-                                'Los instrumentos de renta fija son títulos '
+                                'financieros al agente deficitario.']},
+                     {'titulo': 'INSTRUMENTOS Y PRINCIPALES INSTITUCIONES / '
+                                'CLASIFICACIÓN DE LOS BANCOS',
+                      'items': ['Los instrumentos de renta fija son títulos '
                                 'de deuda que generan pago fijo de intereses '
                                 'y devolución del capital.',
                                 'Los instrumentos de renta variable dan al '
@@ -6022,12 +6879,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Los bancos de inversión asesoran a la '
                                 'empresa emisora e intermedian entre esta y '
                                 'los inversionistas.',
-                                'La Bolsa de Valores es una asociación civil '
-                                'sin fines de lucro que facilita la '
-                                'negociación de valores mobiliarios.']},
-                     {'titulo': 'CLASIFICACIÓN DE LOS BANCOS / LA EMPRESA '
-                                'BANCARIA',
-                      'items': ['La banca privada, o banca múltiple, está '
+                                'La banca privada, o banca múltiple, está '
                                 'autorizada a realizar operaciones activas, '
                                 'pasivas y neutras o servicios.',
                                 'La banca privada nacional está conformada '
@@ -6040,13 +6892,24 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'La banca privada extranjera tiene '
                                 'participación de inversionistas '
                                 'extranjeros; algunas son solo sucursales '
-                                'con casa matriz en Estados Unidos y Europa.',
-                                'La banca estatal peruana está formada por '
-                                'el Banco de la Nación y el Banco Central de '
-                                'Reserva del Perú.',
-                                'El Banco de la Nación es el agente '
-                                'financiero del Estado, encargado de las '
-                                'actividades financieras del sector público.',
+                                'con casa matriz en Estados Unidos y '
+                                'Europa.']},
+                     {'titulo': 'TIPOLOGÍA DE LOS BANCOS SEGÚN SU ACTIVIDAD '
+                                '/ LA EMPRESA BANCARIA',
+                      'items': ['La banca de emisión o autoridad monetaria '
+                                'emite billetes y monedas, y regula el '
+                                'sistema crediticio; en el Perú es el Banco '
+                                'Central de Reserva.',
+                                'La banca comercial realiza operaciones de '
+                                'captación y colocación en el corto plazo, '
+                                'otorgando créditos tras deducir el encaje '
+                                'legal.',
+                                'El banco de fomento promueve una actividad '
+                                'productiva específica; durante el gobierno '
+                                'de Fujimori en los 90 se liquidaron varios '
+                                '(Banco Agrario, Banco Minero).',
+                                'El banco hipotecario entrega préstamos con '
+                                'garantía de bienes inmuebles adquiridos.',
                                 'El banco es una empresa que actúa como '
                                 'intermediario indirecto en el mercado '
                                 'monetario, captando dinero del público.',
@@ -6056,9 +6919,21 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'empleo.',
                                 'Los bancos también apoyan al BCR en regular '
                                 'y facilitar la moneda en circulación.']},
-                     {'titulo': 'OPERACIONES BANCARIAS: PASIVAS / '
-                                'OPERACIONES BANCARIAS: ACTIVAS',
-                      'items': ['Las operaciones pasivas son los fondos '
+                     {'titulo': 'FUNCIONES DE LOS BANCOS / OPERACIONES '
+                                'BANCARIAS: PASIVAS',
+                      'items': ['La función social es la principal función '
+                                'de un banco: apoyar y dinamizar mediante el '
+                                'préstamo un sector retardatario de la '
+                                'economía, creando empleo.',
+                                'Los bancos concentran los recursos '
+                                'financieros del público superavitario para '
+                                'colocarlo al público deficitario.',
+                                'Los bancos otorgan créditos y préstamos, y '
+                                'prestan servicios financieros como '
+                                'cobranzas, cartas fianza y transferencias.',
+                                'Los bancos apoyan al BCR en regular y '
+                                'facilitar la moneda en circulación.',
+                                'Las operaciones pasivas son los fondos '
                                 'depositados por los clientes, que el banco '
                                 'usa para sus operaciones activas.',
                                 'El depósito a la vista, o cuenta corriente, '
@@ -6070,8 +6945,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'El depósito de CTS (Compensación por Tiempo '
                                 'de Servicios) es un fondo obligatorio del '
                                 'empleador que sirve como seguro de '
-                                'desempleo.',
-                                'Las operaciones activas son aquellas en las '
+                                'desempleo.']},
+                     {'titulo': 'OPERACIONES BANCARIAS: ACTIVAS / AGENTES '
+                                'DEL CRÉDITO',
+                      'items': ['Las operaciones activas son aquellas en las '
                                 'que el banco otorga crédito: préstamos, '
                                 'descuentos, anticipos.',
                                 'El préstamo es la operación mediante la '
@@ -6079,10 +6956,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'una tasa de interés activa.',
                                 'El sobregiro bancario ocurre cuando el '
                                 'cliente gira cheques sin provisión de '
-                                'fondos suficiente en su cuenta.']},
-                     {'titulo': 'AGENTES DEL CRÉDITO / ENTIDADES DE '
-                                'REGULACIÓN Y SUPERVISIÓN',
-                      'items': ['El agente acreedor es quien otorga el '
+                                'fondos suficiente en su cuenta.',
+                                'El agente acreedor es quien otorga el '
                                 'crédito al contar con superávit de dinero; '
                                 'es el titular del derecho a exigir el pago, '
                                 'el sujeto activo del crédito.',
@@ -6094,8 +6969,10 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'agente deudor es llamado prestatario.',
                                 'Entre las funciones del crédito está '
                                 'permitir elevar los niveles de producción, '
-                                'y facilitar la formación de capital.',
-                                'La SBS (Superintendencia de Banca, Seguros '
+                                'y facilitar la formación de capital.']},
+                     {'titulo': 'ENTIDADES DE REGULACIÓN Y SUPERVISIÓN / '
+                                'MODALIDADES DE CRÉDITO',
+                      'items': ['La SBS (Superintendencia de Banca, Seguros '
                                 'y AFP) es el organismo encargado de la '
                                 'regulación y supervisión del Sistema '
                                 'Financiero, de Seguros y Privado de '
@@ -6111,10 +6988,12 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 '(SMV) es un organismo descentralizado del '
                                 'MEF, cuya finalidad es impulsar y regular '
                                 'el mercado de valores.',
-                                'El INDECOPI (Instituto Nacional de Defensa '
-                                'de la Competencia) también forma parte de '
-                                'las entidades de regulación del sistema '
-                                'económico.']}],
+                                'La venta al crédito, o crédito mercantil, '
+                                'se da cuando un agente entrega a otro un '
+                                'bien o servicio para su pago futuro.',
+                                'El préstamo, o crédito financiero, consiste '
+                                'en la entrega de dinero de un agente con '
+                                'superávit hacia otro con déficit.']}],
   'qr_reto': [{'pregunta': 'La banca estatal peruana está formada por el '
                            'Banco Central de Reserva y:',
                'respuesta': 'El Banco de la Nación'},
@@ -6608,7 +7487,57 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'El PBI {real} mide las variaciones en la '
                            'producción física entre dos periodos, usando los '
                            'precios de un {año base}.']},
-                {'titulo': '15.5 EL PRESUPUESTO PÚBLICO',
+                {'titulo': '15.5 DEFLACTOR IMPLÍCITO Y PRODUCTO NACIONAL '
+                           'BRUTO',
+                 'items': ['El {DIPBI} (Deflactor Implícito del PBI) es la '
+                           'variación porcentual del nivel de precios de '
+                           'todos los bienes y servicios producidos en la '
+                           'economía.',
+                           'El PBI Real se calcula: PBI Real = PBI {Nominal} '
+                           '/ DIPBI x 100.',
+                           'A diferencia del IPC, el DIPBI mide los precios '
+                           'de un grupo de bienes más {amplio}, y solo '
+                           'considera bienes generados al interior del país.',
+                           'El {Producto Nacional Bruto} (PNB) mide el valor '
+                           'de la producción de bienes y servicios de los '
+                           'factores de propiedad de los {residentes} de un '
+                           'país, dentro o fuera de sus fronteras.',
+                           'Para pasar del PBI al PNB se debe sumar el '
+                           '{Saldo Neto} de Factores Externos (SR): PNB = '
+                           'PBI {+/-} SR.']},
+                {'titulo': '15.6 PRODUCTO NACIONAL NETO E INGRESO NACIONAL',
+                 'items': ['El {Producto Nacional Neto} (PNN) se obtiene '
+                           'restando al PNB el valor de la {depreciación}: '
+                           'PNN = PNB - D.',
+                           'El {PNN a costo de factores} se obtiene restando '
+                           'al PNN los impuestos indirectos y sumando los '
+                           'subsidios: PNNcf = PNN - Ti + {Sd}.',
+                           'El {Ingreso Nacional} (YN) es el total de las '
+                           'remuneraciones de los factores de producción: '
+                           'salarios, beneficios, ingresos independientes, '
+                           'intereses netos y {alquileres}, menos '
+                           'depreciación.',
+                           'La {Renta Nacional} es igual al PNNcf, e igual '
+                           'al Ingreso Nacional a costo de {factores} '
+                           '(YNcf).']},
+                {'titulo': '15.7 INGRESO PERSONAL E INGRESO PERSONAL '
+                           'DISPONIBLE',
+                 'items': ['El {Ingreso Personal} (YP) mide el conjunto de '
+                           'ingresos percibidos durante el año por las '
+                           '{personas naturales}.',
+                           'El Ingreso Personal se calcula restando al '
+                           'Ingreso Nacional los impuestos a las utilidades, '
+                           'utilidades no distribuidas y contribuciones al '
+                           'seguro social, y sumando las {transferencias}.',
+                           'El {Ingreso Personal Disponible} (YPd) mide el '
+                           'valor monetario de los ingresos que pueden ser '
+                           'destinados en su totalidad a gastos de '
+                           '{consumo}.',
+                           'El Ingreso Personal Disponible se calcula: YPd = '
+                           'YP - Impuestos directos personales - '
+                           '{Contribuciones} al sistema de seguridad '
+                           'social.']},
+                {'titulo': '15.8 EL PRESUPUESTO PÚBLICO',
                  'items': ['El {Presupuesto Público} es el principal '
                            'instrumento de planificación {financiera} del '
                            'Estado, aprobado por {Ley}.',
@@ -6628,7 +7557,7 @@ ECONOMIA_TEMAS = [{'num': 1,
                            'En el {control y evaluación}, la Contraloría '
                            'supervisa la legalidad, y el {Congreso} '
                            'fiscaliza la ejecución.']},
-                {'titulo': '15.6 PRINCIPIOS PRESUPUESTARIOS',
+                {'titulo': '15.9 PRINCIPIOS PRESUPUESTARIOS',
                  'items': ['{Equilibrio presupuestal}: los ingresos '
                            'previstos y los egresos programados deben estar '
                            '{igualados}.',
@@ -6645,10 +7574,27 @@ ECONOMIA_TEMAS = [{'num': 1,
                            '{Publicidad}: debe publicarse en el diario '
                            'oficial «{El Peruano}» para que la población '
                            'acceda a la información.']},
-                {'titulo': '15.7 ESTRUCTURA DEL PRESUPUESTO',
-                 'items': ['El presupuesto se elabora bajo el principio '
-                           'contable de la {partida doble}: contiene '
-                           'ingresos fiscales y {egresos} fiscales.']}],
+                {'titulo': '15.10 ESTRUCTURA DEL PRESUPUESTO: INGRESOS Y '
+                           'EGRESOS FISCALES',
+                 'items': ['El Presupuesto Público se elabora bajo el '
+                           'principio contable de la {partida doble}, con '
+                           'dos grandes cuentas: ingresos fiscales y egresos '
+                           '{fiscales}.',
+                           'Los {ingresos fiscales} son los recursos '
+                           'percibidos y administrados por el Estado para '
+                           'financiar los gastos públicos.',
+                           'Los {ingresos corrientes} son recursos que el '
+                           'Estado obtiene de modo regular; incluyen '
+                           'impuestos, {tasas}, contribuciones y multas.',
+                           'Los {ingresos de capital} son recursos que el '
+                           'Estado obtiene de modo eventual, que alteran su '
+                           'situación patrimonial; incluyen venta de '
+                           '{activos} y privatizaciones.',
+                           'Los {egresos fiscales} o gastos son los '
+                           'desembolsos del Estado para cubrir sus '
+                           'actividades; comprenden gastos corrientes, '
+                           'gastos de capital y el servicio de la {deuda} '
+                           'pública.']}],
   'cuadros': [{'titulo': '15.2 LAS TRES FUNCIONES CLÁSICAS DEL ESTADO',
                'encabezados': ['Función', 'Objetivo'],
                'filas': [['{Redistribución} de la renta',
@@ -6974,8 +7920,88 @@ ECONOMIA_TEMAS = [{'num': 1,
                                   'Individuales y colectivos',
                                   'Excluibles y no excluibles',
                                   'Públicos y privados'],
-                 'correcta': 'D'}],
-  'resumen_visual': [{'titulo': 'CONCEPTO DE SECTOR PÚBLICO',
+                 'correcta': 'D'},
+                {'pregunta': 'El indicador que mide la variación porcentual '
+                             'del nivel de precios de todos los bienes y '
+                             'servicios producidos en la economía se llama:',
+                 'alternativas': ['IPC',
+                                  'DIPBI (Deflactor Implícito del PBI)',
+                                  'PNB',
+                                  'YPd',
+                                  'PNN'],
+                 'correcta': 'B'},
+                {'pregunta': 'A diferencia del IPC, el DIPBI solo considera '
+                             'los precios de bienes:',
+                 'alternativas': ['Importados',
+                                  'Generados al interior del país',
+                                  'De consumo básico',
+                                  'De exportación exclusiva',
+                                  'De lujo'],
+                 'correcta': 'B'},
+                {'pregunta': 'El agregado macroeconómico que mide el valor '
+                             'de la producción de los factores de propiedad '
+                             'de los residentes de un país, dentro o fuera '
+                             'de sus fronteras, se llama:',
+                 'alternativas': ['PBI',
+                                  'Producto Nacional Bruto (PNB)',
+                                  'Ingreso Personal',
+                                  'PNN a costo de factores',
+                                  'Renta Nacional'],
+                 'correcta': 'B'},
+                {'pregunta': 'Para pasar del PBI al PNB se debe sumar o '
+                             'restar el:',
+                 'alternativas': ['Deflactor del PBI',
+                                  'Saldo Neto de Factores Externos',
+                                  'Ingreso Personal',
+                                  'La depreciación',
+                                  'Los impuestos indirectos'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Producto Nacional Neto (PNN) se obtiene '
+                             'restando al PNB el valor de:',
+                 'alternativas': ['Los impuestos indirectos',
+                                  'La depreciación',
+                                  'Las transferencias',
+                                  'Los subsidios',
+                                  'El ingreso personal'],
+                 'correcta': 'B'},
+                {'pregunta': 'El Ingreso Nacional (YN) es el total de las '
+                             'remuneraciones de los factores de producción, '
+                             'incluyendo salarios, beneficios e:',
+                 'alternativas': ['Impuestos directos',
+                                  'Intereses netos y alquileres',
+                                  'Subsidios estatales',
+                                  'Aranceles',
+                                  'Depreciaciones acumuladas'],
+                 'correcta': 'B'},
+                {'pregunta': 'La Renta Nacional es igual al PNN a costo de '
+                             'factores, e igual al:',
+                 'alternativas': ['PBI Nominal',
+                                  'Ingreso Nacional a costo de factores '
+                                  '(YNcf)',
+                                  'Ingreso Personal Disponible',
+                                  'DIPBI',
+                                  'PBI Real'],
+                 'correcta': 'B'},
+                {'pregunta': 'El agregado que mide el conjunto de ingresos '
+                             'percibidos durante el año por las personas '
+                             'naturales se llama:',
+                 'alternativas': ['Ingreso Nacional',
+                                  'Ingreso Personal (YP)',
+                                  'Renta Nacional',
+                                  'PNN',
+                                  'PBI per cápita'],
+                 'correcta': 'B'},
+                {'pregunta': 'El agregado que mide el valor monetario de los '
+                             'ingresos que pueden ser destinados en su '
+                             'totalidad a gastos de consumo se llama:',
+                 'alternativas': ['Ingreso Nacional',
+                                  'Ingreso Personal Disponible (YPd)',
+                                  'Renta Nacional',
+                                  'PNN a costo de factores',
+                                  'PBI Real'],
+                 'correcta': 'B'}],
+  'resumen_visual': [{'titulo': 'CONCEPTO DE SECTOR PÚBLICO / FUNCIONES DEL '
+                                'ESTADO',
                       'items': ['El sector público es el sector de la '
                                 'economía conformado por instituciones que '
                                 'actúan a nombre del Estado.',
@@ -6987,9 +8013,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'ciudadanos.',
                                 'El Estado cuenta con las finanzas públicas '
                                 'como conjunto de instrumentos '
-                                'técnico-económicos-sociales.']},
-                     {'titulo': 'FUNCIONES DEL ESTADO',
-                      'items': ['Las tres funciones clásicas del Estado son: '
+                                'técnico-económicos-sociales.',
+                                'Las tres funciones clásicas del Estado son: '
                                 'redistribución de la renta, estabilización '
                                 'de la economía y asignación de recursos.',
                                 'Los instrumentos del Estado para influir en '
@@ -6999,7 +8024,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'Según Musgrave, el Estado tiene además las '
                                 'funciones de promoción del crecimiento y '
                                 'regulación económica.']},
-                     {'titulo': 'CONTABILIDAD NACIONAL Y EL PBI',
+                     {'titulo': 'CONTABILIDAD NACIONAL Y EL PBI / PBI '
+                                'NOMINAL Y PBI REAL',
                       'items': ['La contabilidad nacional, o contabilidad '
                                 'social, describe la medición de las '
                                 'actividades económicas de un país.',
@@ -7013,16 +8039,67 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'vigentes en el año de referencia.',
                                 'El PBI cuantifica la producción de los '
                                 'residentes del país, sean nacionales o '
-                                'extranjeros.']},
-                     {'titulo': 'PBI NOMINAL Y PBI REAL',
-                      'items': ['El PBI nominal mide el valor de la '
+                                'extranjeros.',
+                                'El PBI nominal mide el valor de la '
                                 'producción usando los precios del mismo año '
                                 'que se mide.',
                                 'El PBI real mide las variaciones en la '
                                 'producción física entre dos periodos, '
                                 'usando los precios de un año base.']},
-                     {'titulo': 'EL PRESUPUESTO PÚBLICO',
-                      'items': ['El Presupuesto Público es el principal '
+                     {'titulo': 'DEFLACTOR IMPLÍCITO Y PRODUCTO NACIONAL '
+                                'BRUTO / PRODUCTO NACIONAL NETO E IN',
+                      'items': ['El DIPBI (Deflactor Implícito del PBI) es '
+                                'la variación porcentual del nivel de '
+                                'precios de todos los bienes y servicios '
+                                'producidos en la economía.',
+                                'El PBI Real se calcula: PBI Real = PBI '
+                                'Nominal / DIPBI x 100.',
+                                'A diferencia del IPC, el DIPBI mide los '
+                                'precios de un grupo de bienes más amplio, y '
+                                'solo considera bienes generados al interior '
+                                'del país.',
+                                'El Producto Nacional Bruto (PNB) mide el '
+                                'valor de la producción de bienes y '
+                                'servicios de los factores de propiedad de '
+                                'los residentes de un país, dentro o fuera '
+                                'de sus fronteras.',
+                                'Para pasar del PBI al PNB se debe sumar el '
+                                'Saldo Neto de Factores Externos (SR): PNB = '
+                                'PBI +/- SR.',
+                                'El Producto Nacional Neto (PNN) se obtiene '
+                                'restando al PNB el valor de la '
+                                'depreciación: PNN = PNB - D.',
+                                'El PNN a costo de factores se obtiene '
+                                'restando al PNN los impuestos indirectos y '
+                                'sumando los subsidios: PNNcf = PNN - Ti + '
+                                'Sd.',
+                                'El Ingreso Nacional (YN) es el total de las '
+                                'remuneraciones de los factores de '
+                                'producción: salarios, beneficios, ingresos '
+                                'independientes, intereses netos y '
+                                'alquileres, menos depreciación.',
+                                'La Renta Nacional es igual al PNNcf, e '
+                                'igual al Ingreso Nacional a costo de '
+                                'factores (YNcf).']},
+                     {'titulo': 'INGRESO PERSONAL E INGRESO PERSONAL '
+                                'DISPONIBLE / EL PRESUPUESTO PÚBLICO',
+                      'items': ['El Ingreso Personal (YP) mide el conjunto '
+                                'de ingresos percibidos durante el año por '
+                                'las personas naturales.',
+                                'El Ingreso Personal se calcula restando al '
+                                'Ingreso Nacional los impuestos a las '
+                                'utilidades, utilidades no distribuidas y '
+                                'contribuciones al seguro social, y sumando '
+                                'las transferencias.',
+                                'El Ingreso Personal Disponible (YPd) mide '
+                                'el valor monetario de los ingresos que '
+                                'pueden ser destinados en su totalidad a '
+                                'gastos de consumo.',
+                                'El Ingreso Personal Disponible se calcula: '
+                                'YPd = YP - Impuestos directos personales - '
+                                'Contribuciones al sistema de seguridad '
+                                'social.',
+                                'El Presupuesto Público es el principal '
                                 'instrumento de planificación financiera del '
                                 'Estado, aprobado por Ley.',
                                 'El presupuesto contiene el registro '
@@ -7042,7 +8119,8 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'En el control y evaluación, la Contraloría '
                                 'supervisa la legalidad, y el Congreso '
                                 'fiscaliza la ejecución.']},
-                     {'titulo': 'PRINCIPIOS PRESUPUESTARIOS',
+                     {'titulo': 'PRINCIPIOS PRESUPUESTARIOS / ESTRUCTURA DEL '
+                                'PRESUPUESTO: INGRESOS Y EGRESOS',
                       'items': ['Equilibrio presupuestal: los ingresos '
                                 'previstos y los egresos programados deben '
                                 'estar igualados.',
@@ -7058,11 +8136,26 @@ ECONOMIA_TEMAS = [{'num': 1,
                                 'ejecución.',
                                 'Publicidad: debe publicarse en el diario '
                                 'oficial «El Peruano» para que la población '
-                                'acceda a la información.']},
-                     {'titulo': 'ESTRUCTURA DEL PRESUPUESTO',
-                      'items': ['El presupuesto se elabora bajo el principio '
-                                'contable de la partida doble: contiene '
-                                'ingresos fiscales y egresos fiscales.']}],
+                                'acceda a la información.',
+                                'El Presupuesto Público se elabora bajo el '
+                                'principio contable de la partida doble, con '
+                                'dos grandes cuentas: ingresos fiscales y '
+                                'egresos fiscales.',
+                                'Los ingresos fiscales son los recursos '
+                                'percibidos y administrados por el Estado '
+                                'para financiar los gastos públicos.',
+                                'Los ingresos corrientes son recursos que el '
+                                'Estado obtiene de modo regular; incluyen '
+                                'impuestos, tasas, contribuciones y multas.',
+                                'Los ingresos de capital son recursos que el '
+                                'Estado obtiene de modo eventual, que '
+                                'alteran su situación patrimonial; incluyen '
+                                'venta de activos y privatizaciones.',
+                                'Los egresos fiscales o gastos son los '
+                                'desembolsos del Estado para cubrir sus '
+                                'actividades; comprenden gastos corrientes, '
+                                'gastos de capital y el servicio de la deuda '
+                                'pública.']}],
   'qr_reto': [{'pregunta': 'El sector público está representado por el '
                            'Gobierno en los niveles nacional, regional y:',
                'respuesta': 'Local'},
