@@ -675,7 +675,7 @@ AREAS_CEPRE_UNSAAC = {
     ],
 }
 
-SECCIONES = ["Única", "A", "B"]
+SECCIONES = ["Única", "A", "B", "C", "D"]
 
 TODOS_LOS_GRADOS = []
 for nk, gl in NIVELES_GRADOS.items():
@@ -4355,6 +4355,535 @@ def procesar_examen(image_bytes, num_preguntas):
 # PANTALLA DE LOGIN (Usuario + Contraseña — SEGURO)
 # ================================================================
 
+def tab_portal_estudiante():
+    """Portal del estudiante: Academia Yachay Virtual.
+    Fase 1: login (DNI + PIN) y panel básico con sus datos y grupo.
+    Las fases siguientes (fichas, examenes, progreso, audio) se
+    construyen sobre esta base."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    _PIN_PATH = _Path("portal_estudiantes_pin.json")
+
+    def _cargar_pines():
+        try:
+            if _PIN_PATH.exists():
+                with open(_PIN_PATH, "r", encoding="utf-8") as f:
+                    return _json.load(f)
+        except Exception:
+            pass
+        return {}
+
+    def _guardar_pines(data):
+        try:
+            with open(_PIN_PATH, "w", encoding="utf-8") as f:
+                _json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+    _RESULTADOS_PATH = _Path("portal_estudiantes_resultados.json")
+
+    def _cargar_resultados():
+        try:
+            if _RESULTADOS_PATH.exists():
+                with open(_RESULTADOS_PATH, "r", encoding="utf-8") as f:
+                    return _json.load(f)
+        except Exception:
+            pass
+        return {}
+
+    def _guardar_resultado(dni, registro):
+        resultados = _cargar_resultados()
+        resultados.setdefault(dni, [])
+        resultados[dni].append(registro)
+        try:
+            with open(_RESULTADOS_PATH, "w", encoding="utf-8") as f:
+                _json.dump(resultados, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+    # ══════════════════════════════════════════════════════════════
+    # CSS PORTAL — identidad propia en dorado/ámbar
+    # ══════════════════════════════════════════════════════════════
+    st.markdown("""
+    <style>
+    div[data-testid="stMain"] button,
+    div[data-testid="stVerticalBlock"] button,
+    .stButton > button,
+    div[data-testid="stBaseButton-primary"] > button,
+    div[data-testid="stBaseButton-secondary"] > button {
+        background-color: #B8790F !important;
+        background: linear-gradient(135deg,#B8790F,#D9A441) !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        min-height: 42px !important;
+        box-shadow: 0 3px 10px rgba(184,121,15,0.4) !important;
+    }
+    div[data-testid="stMain"] button p,
+    .stButton > button p {
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ── Botón de salida ────────────────────────────────────────────
+    if st.button("← Volver al inicio", key="portal_est_volver", type="primary"):
+        for k in ['_portal_estudiante', '_portal_est_dni', '_portal_est_datos']:
+            st.session_state.pop(k, None)
+        st.rerun()
+
+    # ── Encabezado ─────────────────────────────────────────────────
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#B8790F 0%,#D9A441 50%,#F0C674 100%);"
+        "border-radius:18px;padding:26px 20px 20px;text-align:center;color:white;"
+        "margin-bottom:20px;box-shadow:0 8px 32px rgba(184,121,15,0.45);'>"
+        "<div style='font-size:2rem;font-weight:900;letter-spacing:1px;'>"
+        "🎓 ACADEMIA YACHAY VIRTUAL</div>"
+        "<div style='font-size:0.95rem;opacity:0.95;margin-top:6px;'>"
+        "Tus fichas, tus exámenes, tu progreso — todo en un solo lugar</div>"
+        "</div>", unsafe_allow_html=True)
+
+    # ════════════════════════════════════════════════════════════
+    # LOGIN
+    # ════════════════════════════════════════════════════════════
+    dni_sesion = st.session_state.get('_portal_est_dni')
+
+    if not dni_sesion:
+        st.markdown("#### 🔐 Ingresa con tu DNI")
+        c1, c2 = st.columns(2)
+        with c1:
+            dni_ingresado = st.text_input("Tu DNI:", key="pe_dni",
+                                          max_chars=8, placeholder="12345678")
+        with c2:
+            pin_ingresado = st.text_input("Tu PIN (4 dígitos):", key="pe_pin",
+                                          max_chars=4, type="password",
+                                          placeholder="••••")
+        st.caption("💡 Si es tu primera vez, tu PIN son los últimos 4 dígitos "
+                   "de tu DNI. Puedes cambiarlo luego dentro del portal.")
+
+        if st.button("🚀 INGRESAR", key="pe_btn_login", type="primary",
+                     use_container_width=True):
+            dni_limpio = dni_ingresado.strip()
+            if not dni_limpio or not pin_ingresado.strip():
+                st.error("Completa tu DNI y tu PIN.")
+            else:
+                matricula = BaseDatos.cargar_matricula()
+                fila = matricula[matricula['DNI'].astype(str).str.strip() == dni_limpio]
+                if fila.empty:
+                    st.error("No encontramos ese DNI en la matrícula. "
+                             "Pide a tu profesor que verifique tu registro.")
+                else:
+                    pines = _cargar_pines()
+                    pin_guardado = pines.get(dni_limpio)
+                    if pin_guardado is None:
+                        # Primera vez: se auto-asignan los ultimos 4 digitos del DNI
+                        pin_guardado = dni_limpio[-4:]
+                        pines[dni_limpio] = pin_guardado
+                        _guardar_pines(pines)
+                    if pin_ingresado.strip() == pin_guardado:
+                        st.session_state['_portal_est_dni'] = dni_limpio
+                        st.session_state['_portal_est_datos'] = fila.iloc[0].to_dict()
+                        st.toast(f"✅ Bienvenido/a, {fila.iloc[0]['Nombre']}")
+                        st.rerun()
+                    else:
+                        st.error("PIN incorrecto.")
+        return
+
+    # ════════════════════════════════════════════════════════════
+    # PANEL DEL ESTUDIANTE (ya con sesión iniciada)
+    # ════════════════════════════════════════════════════════════
+    datos = st.session_state.get('_portal_est_datos', {})
+    nombre = datos.get('Nombre', '')
+    nivel = datos.get('Nivel', '')
+    grado = datos.get('Grado', '')
+    seccion = datos.get('Seccion', '')
+    sexo = datos.get('Sexo', '')
+    avatar = "👦" if sexo == "Masculino" else "👧"
+
+    c_av, c_info = st.columns([1, 4])
+    with c_av:
+        st.markdown(f"<div style='font-size:4rem;text-align:center;'>{avatar}</div>",
+                   unsafe_allow_html=True)
+    with c_info:
+        st.markdown(f"### {nombre}")
+        st.markdown(f"**Nivel:** {nivel}  ·  **Grado:** {grado}  ·  **Grupo:** {seccion}")
+
+    st.markdown("---")
+
+    with st.expander("🔑 Cambiar mi PIN"):
+        nuevo_pin1 = st.text_input("Nuevo PIN (4 dígitos):", key="pe_nuevo_pin1",
+                                   max_chars=4, type="password")
+        nuevo_pin2 = st.text_input("Repite el nuevo PIN:", key="pe_nuevo_pin2",
+                                   max_chars=4, type="password")
+        if st.button("Guardar nuevo PIN", key="pe_btn_cambiar_pin"):
+            if not (nuevo_pin1.isdigit() and len(nuevo_pin1) == 4):
+                st.error("El PIN debe tener exactamente 4 dígitos.")
+            elif nuevo_pin1 != nuevo_pin2:
+                st.error("Los dos PIN no coinciden.")
+            else:
+                pines = _cargar_pines()
+                pines[dni_sesion] = nuevo_pin1
+                _guardar_pines(pines)
+                st.success("✅ PIN actualizado.")
+
+
+    # ════════════════════════════════════════════════════════════
+    # FASE 2: MIS FICHAS DE ESTUDIO
+    # ════════════════════════════════════════════════════════════
+    st.markdown("### 📚 Mis Fichas de Estudio")
+
+    if nivel != "PREUNIVERSITARIO":
+        st.warning("📌 Las fichas virtuales por ahora están disponibles "
+                   "solo para estudiantes de **Preuniversitario (CEPRU)**. "
+                   "Pronto se habilitarán para los demás niveles.")
+        return
+
+    try:
+        from academia_cepru import AREAS_CEPRU
+        from fichas_historia import (generar_ficha_texto, _PATRON,
+                                     _color_area)
+    except ImportError:
+        st.error("No se pudo cargar el material de estudio. "
+                 "Avisa a tu profesor.")
+        return
+
+    nombres_areas = [a["nombre"] for a in AREAS_CEPRU]
+    area_elegida_nombre = st.selectbox("Elige un curso:", nombres_areas,
+                                       key="pe_area_sel")
+    area_info = next(a for a in AREAS_CEPRU if a["nombre"] == area_elegida_nombre)
+    color_curso = _color_area(area_info["area_pie"])
+
+    balotas = area_info["balotas"]
+    opciones_tema = [f"Tema {t['num']}: {t['titulo']}" for t in balotas]
+    tema_elegido_idx = st.selectbox("Elige un tema:", range(len(opciones_tema)),
+                                    format_func=lambda i: opciones_tema[i],
+                                    key="pe_tema_sel")
+    tema = balotas[tema_elegido_idx]
+
+    st.markdown(
+        f"<div style='background:{color_curso};color:white;padding:10px 16px;"
+        f"border-radius:10px;font-weight:700;margin:10px 0;'>"
+        f"{area_info['area_pie']} · Tema {tema['num']}: {tema['titulo']}</div>",
+        unsafe_allow_html=True)
+
+    c_desc, c_ver = st.columns(2)
+    with c_desc:
+        try:
+            pdf_bytes = generar_ficha_texto(tema, False, f"Grupo {seccion}",
+                                            area=area_info["area_pie"])
+            st.download_button(
+                "📄 Descargar ficha para completar (PDF)",
+                data=pdf_bytes,
+                file_name=f"Yachay_{area_info['prefijo']}_T{tema['num']}.pdf",
+                mime="application/pdf", use_container_width=True,
+                type="primary", key="pe_dl_ficha")
+        except Exception as e:
+            st.error(f"No se pudo generar el PDF: {e}")
+    with c_ver:
+        ver_completa = st.toggle("👁️ Ver ficha completa aquí (con respuestas)",
+                                 key="pe_toggle_ver")
+
+    if ver_completa:
+        st.markdown("---")
+        for sec in tema.get("secciones", []):
+            st.markdown(
+                f"<div style='background:{color_curso};color:white;"
+                f"padding:6px 12px;border-radius:6px;font-weight:700;"
+                f"margin:14px 0 8px;'>{sec['titulo']}</div>",
+                unsafe_allow_html=True)
+            for it in sec.get("items", []):
+                texto_completo = _PATRON.sub(
+                    lambda m: f"**{m.group(1)}**", it)
+                st.markdown(f"• {texto_completo}")
+
+    # ════════════════════════════════════════════════════════════
+    # FASE 3: EXAMEN VIRTUAL ALEATORIO
+    # ════════════════════════════════════════════════════════════
+    st.markdown("---")
+    st.markdown("### 📝 Examen Virtual")
+    st.caption("Genera un examen aleatorio del tema que elijas arriba, "
+               "respóndelo aquí mismo y revisa tu resultado al instante.")
+
+    from fichas_historia import muestrear, balancear, LETRAS
+
+    total_preguntas_tema = len(tema.get("preguntas", []))
+    if total_preguntas_tema < 5:
+        st.caption("Este tema todavía no tiene suficientes preguntas "
+                   "para armar un examen.")
+    else:
+        opciones_tamano = [n for n in (20, 40, 60) if n <= total_preguntas_tema]
+        if not opciones_tamano:
+            opciones_tamano = [total_preguntas_tema]
+
+        c_tam, c_gen = st.columns([2, 1])
+        with c_tam:
+            tamano_examen = st.select_slider(
+                "Número de preguntas:", options=opciones_tamano,
+                key="pe_tam_examen")
+        with c_gen:
+            st.markdown("<br/>", unsafe_allow_html=True)
+            generar = st.button("🎲 Generar examen nuevo", key="pe_btn_generar",
+                                use_container_width=True, type="primary")
+
+        clave_examen = f"pe_examen_{area_info['prefijo']}_{tema['num']}"
+
+        if generar:
+            import random as _random
+            semilla = _random.randint(1, 999999)
+            muestra = muestrear(tema["preguntas"], tamano_examen, semilla=semilla)
+            examen = balancear(muestra, semilla=semilla % 5)
+            st.session_state[clave_examen] = {
+                "preguntas": examen, "respuestas": {}, "corregido": False,
+            }
+            st.rerun()
+
+        estado_examen = st.session_state.get(clave_examen)
+
+        if estado_examen:
+            preguntas_examen = estado_examen["preguntas"]
+            st.markdown(f"**Examen de {len(preguntas_examen)} preguntas — "
+                       f"{area_info['area_pie']}, Tema {tema['num']}**")
+
+            for i, p in enumerate(preguntas_examen):
+                st.markdown(f"**{i + 1}.** {p['pregunta']}")
+                opciones_texto = [f"{LETRAS[j]}) {alt}"
+                                  for j, alt in enumerate(p["alternativas"])]
+                clave_resp = f"{clave_examen}_p{i}"
+                respuesta_previa = estado_examen["respuestas"].get(i)
+                idx_previo = (LETRAS.index(respuesta_previa)
+                             if respuesta_previa else None)
+                elegido = st.radio(
+                    f"Pregunta {i + 1}", opciones_texto, index=idx_previo,
+                    key=clave_resp, label_visibility="collapsed")
+                if elegido:
+                    estado_examen["respuestas"][i] = elegido[0]
+                st.markdown("")
+
+            c_corregir, c_reiniciar = st.columns(2)
+            with c_corregir:
+                if st.button("✅ Corregir examen", key="pe_btn_corregir",
+                             use_container_width=True, type="primary"):
+                    estado_examen["corregido"] = True
+                    _aciertos_guardar = sum(
+                        1 for i, p in enumerate(preguntas_examen)
+                        if estado_examen["respuestas"].get(i) == p["correcta"])
+                    _total_guardar = len(preguntas_examen)
+                    if not estado_examen.get("ya_guardado"):
+                        import datetime as _dt_mod
+                        _guardar_resultado(dni_sesion, {
+                            "fecha": _dt_mod.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                            "area": area_info["area_pie"],
+                            "tema_num": tema["num"],
+                            "tema_titulo": tema["titulo"],
+                            "aciertos": _aciertos_guardar,
+                            "total": _total_guardar,
+                            "nota": round(_aciertos_guardar / _total_guardar * 20, 1),
+                        })
+                        estado_examen["ya_guardado"] = True
+                    st.rerun()
+            with c_reiniciar:
+                if st.button("🔄 Empezar de nuevo", key="pe_btn_reiniciar",
+                             use_container_width=True):
+                    st.session_state.pop(clave_examen, None)
+                    st.rerun()
+
+            if estado_examen["corregido"]:
+                st.markdown("---")
+                aciertos = sum(
+                    1 for i, p in enumerate(preguntas_examen)
+                    if estado_examen["respuestas"].get(i) == p["correcta"])
+                total = len(preguntas_examen)
+                nota_20 = round(aciertos / total * 20, 1)
+                pct = round(aciertos / total * 100)
+                color_resultado = "#2F7A4F" if pct >= 60 else "#B8390F"
+                st.markdown(
+                    f"<div style='background:{color_resultado};color:white;"
+                    f"padding:16px;border-radius:12px;text-align:center;"
+                    f"font-size:1.3rem;font-weight:800;'>"
+                    f"Resultado: {aciertos} / {total} correctas "
+                    f"({pct}%) · Nota: {nota_20}/20</div>",
+                    unsafe_allow_html=True)
+
+                with st.expander("Ver detalle de cada pregunta"):
+                    for i, p in enumerate(preguntas_examen):
+                        marcada = estado_examen["respuestas"].get(i)
+                        ok = marcada == p["correcta"]
+                        icono = "✅" if ok else "❌"
+                        st.markdown(f"{icono} **{i + 1}.** {p['pregunta']}")
+                        idx_correcta = LETRAS.index(p["correcta"])
+                        st.markdown(f"   Respuesta correcta: **{p['correcta']}) "
+                                   f"{p['alternativas'][idx_correcta]}**")
+                        if not ok and marcada:
+                            st.markdown(f"   Tu respuesta: {marcada}")
+
+    # ════════════════════════════════════════════════════════════
+    # FASE 5: EXAMEN SEMANAL INTEGRADOR (TODOS LOS CURSOS)
+    # ════════════════════════════════════════════════════════════
+    st.markdown("---")
+    st.markdown("### 🗓️ Examen Semanal Integrador")
+    st.caption("Un solo examen con preguntas mezcladas de los 7 cursos, "
+               "para repasar todo antes del fin de semana.")
+
+    preg_por_curso = st.slider(
+        "Preguntas por curso:", min_value=3, max_value=15, value=5,
+        key="pe_sem_preg_curso")
+    total_estimado = preg_por_curso * len(AREAS_CEPRU)
+    st.caption(f"Esto arma un examen de aproximadamente **{total_estimado} "
+               f"preguntas** ({preg_por_curso} de cada uno de los "
+               f"{len(AREAS_CEPRU)} cursos).")
+
+    if st.button("🎲 Generar examen semanal", key="pe_btn_generar_semanal",
+                 use_container_width=True, type="primary"):
+        import random as _random
+        semilla_sem = _random.randint(1, 999999)
+        preguntas_semanal = []
+        for area_x in AREAS_CEPRU:
+            banco_area = []
+            for tema_x in area_x["balotas"]:
+                for p in tema_x.get("preguntas", []):
+                    banco_area.append({**p, "_curso": area_x["area_pie"]})
+            muestra_area = muestrear(banco_area, preg_por_curso, semilla=semilla_sem)
+            preguntas_semanal.extend(muestra_area)
+        _random.Random(semilla_sem).shuffle(preguntas_semanal)
+        examen_semanal = balancear(preguntas_semanal, semilla=semilla_sem % 5)
+        st.session_state["pe_examen_semanal"] = {
+            "preguntas": examen_semanal, "respuestas": {}, "corregido": False,
+            "ya_guardado": False,
+        }
+        st.rerun()
+
+    estado_semanal = st.session_state.get("pe_examen_semanal")
+
+    if estado_semanal:
+        preguntas_sem = estado_semanal["preguntas"]
+        st.markdown(f"**Examen semanal — {len(preguntas_sem)} preguntas "
+                   f"de {len(AREAS_CEPRU)} cursos**")
+
+        for i, p in enumerate(preguntas_sem):
+            st.markdown(f"**{i + 1}.** *({p.get('_curso', '')})* {p['pregunta']}")
+            opciones_texto = [f"{LETRAS[j]}) {alt}"
+                              for j, alt in enumerate(p["alternativas"])]
+            clave_resp = f"pe_sem_p{i}"
+            respuesta_previa = estado_semanal["respuestas"].get(i)
+            idx_previo = (LETRAS.index(respuesta_previa)
+                         if respuesta_previa else None)
+            elegido = st.radio(
+                f"Pregunta semanal {i + 1}", opciones_texto, index=idx_previo,
+                key=clave_resp, label_visibility="collapsed")
+            if elegido:
+                estado_semanal["respuestas"][i] = elegido[0]
+            st.markdown("")
+
+        c_corr_sem, c_rein_sem = st.columns(2)
+        with c_corr_sem:
+            if st.button("✅ Corregir examen semanal", key="pe_btn_corregir_sem",
+                         use_container_width=True, type="primary"):
+                estado_semanal["corregido"] = True
+                _aciertos_sem = sum(
+                    1 for i, p in enumerate(preguntas_sem)
+                    if estado_semanal["respuestas"].get(i) == p["correcta"])
+                _total_sem = len(preguntas_sem)
+                if not estado_semanal.get("ya_guardado"):
+                    import datetime as _dt_mod
+                    _guardar_resultado(dni_sesion, {
+                        "fecha": _dt_mod.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                        "area": "📅 Examen Semanal (todos los cursos)",
+                        "tema_num": "-", "tema_titulo": "Repaso integrador",
+                        "aciertos": _aciertos_sem, "total": _total_sem,
+                        "nota": round(_aciertos_sem / _total_sem * 20, 1),
+                    })
+                    estado_semanal["ya_guardado"] = True
+                st.rerun()
+        with c_rein_sem:
+            if st.button("🔄 Empezar de nuevo", key="pe_btn_reiniciar_sem",
+                         use_container_width=True):
+                st.session_state.pop("pe_examen_semanal", None)
+                st.rerun()
+
+        if estado_semanal["corregido"]:
+            st.markdown("---")
+            aciertos_f = sum(
+                1 for i, p in enumerate(preguntas_sem)
+                if estado_semanal["respuestas"].get(i) == p["correcta"])
+            total_f = len(preguntas_sem)
+            nota_f = round(aciertos_f / total_f * 20, 1)
+            pct_f = round(aciertos_f / total_f * 100)
+            color_f = "#2F7A4F" if pct_f >= 60 else "#B8390F"
+            st.markdown(
+                f"<div style='background:{color_f};color:white;"
+                f"padding:16px;border-radius:12px;text-align:center;"
+                f"font-size:1.3rem;font-weight:800;'>"
+                f"Resultado semanal: {aciertos_f} / {total_f} correctas "
+                f"({pct_f}%) · Nota: {nota_f}/20</div>",
+                unsafe_allow_html=True)
+
+            with st.expander("Ver detalle de cada pregunta"):
+                for i, p in enumerate(preguntas_sem):
+                    marcada = estado_semanal["respuestas"].get(i)
+                    ok = marcada == p["correcta"]
+                    icono = "✅" if ok else "❌"
+                    st.markdown(f"{icono} **{i + 1}.** *({p.get('_curso','')})* "
+                               f"{p['pregunta']}")
+                    idx_ok = LETRAS.index(p["correcta"])
+                    st.markdown(f"   Respuesta correcta: **{p['correcta']}) "
+                               f"{p['alternativas'][idx_ok]}**")
+                    if not ok and marcada:
+                        st.markdown(f"   Tu respuesta: {marcada}")
+
+
+    # ════════════════════════════════════════════════════════════
+    # FASE 4: MI PROGRESO
+    # ════════════════════════════════════════════════════════════
+    st.markdown("---")
+    st.markdown("### 📊 Mi Progreso")
+
+    resultados_todos = _cargar_resultados()
+    mis_resultados = resultados_todos.get(dni_sesion, [])
+
+    if not mis_resultados:
+        st.caption("Todavía no rendiste ningún examen. "
+                   "Genera uno arriba para empezar a ver tu progreso aquí.")
+    else:
+        import pandas as _pd
+
+        total_examenes = len(mis_resultados)
+        promedio_nota = round(
+            sum(r["nota"] for r in mis_resultados) / total_examenes, 1)
+        mejor_nota = max(r["nota"] for r in mis_resultados)
+
+        c_e1, c_e2, c_e3 = st.columns(3)
+        with c_e1:
+            st.metric("Exámenes rendidos", total_examenes)
+        with c_e2:
+            st.metric("Promedio general", f"{promedio_nota}/20")
+        with c_e3:
+            st.metric("Mejor nota", f"{mejor_nota}/20")
+
+        df_resultados = _pd.DataFrame(mis_resultados)
+        df_resultados = df_resultados.sort_values("fecha")
+
+        st.markdown("**Evolución de tus notas**")
+        _grafico = df_resultados[["fecha", "nota"]].set_index("fecha")
+        st.line_chart(_grafico, height=220)
+
+        st.markdown("**Historial de exámenes**")
+        _tabla = df_resultados[
+            ["fecha", "area", "tema_num", "tema_titulo", "aciertos", "total", "nota"]
+        ].sort_values("fecha", ascending=False).rename(columns={
+            "fecha": "Fecha", "area": "Curso", "tema_num": "Tema",
+            "tema_titulo": "Título del tema", "aciertos": "Aciertos",
+            "total": "Total", "nota": "Nota",
+        })
+        st.dataframe(_tabla, use_container_width=True, hide_index=True)
+
+
 def _portal_padres_familia():
     """Portal público para padres: consulta asistencia y notas de su hijo/a."""
     import json as _json
@@ -5540,6 +6069,24 @@ def pantalla_login():
                      use_container_width=True, key="btn_portal_padres",
                      type="primary"):
             st.session_state['_portal_padres'] = True
+            st.rerun()
+
+        # ── PORTAL DEL ESTUDIANTE (ACADEMIA YACHAY VIRTUAL) ──────
+        st.markdown("---")
+        st.markdown("""
+        <div style='background:linear-gradient(135deg,#B8790F,#D9A441);
+                    border-radius:14px;padding:14px 18px;text-align:center;
+                    color:white;margin-bottom:8px;'>
+            <div style='font-size:1.3rem;font-weight:800;'>🎓 Academia Yachay Virtual</div>
+            <div style='font-size:0.85rem;opacity:0.9;margin-top:4px;'>
+                Ingresa a tus fichas, exámenes y tu progreso
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🚀 INGRESAR AL PORTAL DEL ESTUDIANTE",
+                     use_container_width=True, key="btn_portal_estudiante",
+                     type="primary"):
+            st.session_state['_portal_estudiante'] = True
             st.rerun()
 
         # Libro de reclamaciones
@@ -32647,6 +33194,11 @@ def main():
     # ── Portal Padres de Familia ──────────────────────────────────
     if st.session_state.get('_portal_padres'):
         _portal_padres_familia()
+        st.stop()
+
+    # ── Portal del Estudiante (Academia Yachay Virtual) ────────────
+    if st.session_state.get('_portal_estudiante'):
+        tab_portal_estudiante()
         st.stop()
 
     if st.session_state.rol is None:
