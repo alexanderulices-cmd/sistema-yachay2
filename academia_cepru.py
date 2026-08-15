@@ -161,6 +161,176 @@ def _generar_zip_curso(balotas, area_pie, pfx, grado_txt, profesor_txt,
     return buf.getvalue()
 
 
+def _generar_paquete_admin(area, tipos, grado_txt, profesor_txt,
+                           reportar_progreso=None):
+    """Genera un ZIP con TODO lo que el administrador haya marcado para
+    un curso: fichas en blanco, fichas completas, examenes de 20/40
+    preguntas (alumno y docente), y el banco completo del curso.
+    'reportar_progreso' es una funcion opcional callback(fraccion, texto)
+    para actualizar una barra de progreso en la interfaz."""
+    import zipfile, io as _io
+
+    balotas = area["balotas"]
+    pfx = area["prefijo"]
+    area_pie = area["area_pie"]
+    buf = _io.BytesIO()
+    total_pasos = len(balotas) + (1 if tipos.get("banco_completo") else 0)
+    paso_actual = 0
+
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for tema in balotas:
+            paso_actual += 1
+            if reportar_progreso:
+                reportar_progreso(paso_actual / total_pasos,
+                                  f"{area_pie} · Tema {tema['num']}")
+            if tipos.get("ficha_blanco"):
+                try:
+                    pdf = generar_ficha_texto(tema, False, grado_txt,
+                                              area=area_pie, profesor=profesor_txt)
+                    zf.writestr(_nombre_archivo(pfx, tema, "Ficha", "Alumno"), pdf)
+                except Exception:
+                    pass
+            if tipos.get("ficha_completa"):
+                try:
+                    pdf = generar_ficha_texto(tema, True, grado_txt,
+                                              area=area_pie, profesor=profesor_txt)
+                    zf.writestr(_nombre_archivo(pfx, tema, "Ficha", "Docente"), pdf)
+                except Exception:
+                    pass
+            for tam, etiqueta in [(20, "Ex20"), (40, "Ex40")]:
+                if tipos.get(f"examen{tam}"):
+                    try:
+                        cantidad = min(tam, len(tema["preguntas"]))
+                        muestra = muestrear(tema["preguntas"], cantidad, semilla=tam)
+                        preg = balancear(muestra)
+                        tema_b = {**tema, "preguntas": preg}
+                        curso_corto = _NOMBRES_CORTOS_CURSO.get(pfx, pfx)
+                        pdf_a = generar_banco_preguntas(
+                            tema_b, False, grado_txt, area=area_pie, profesor=profesor_txt)
+                        zf.writestr(
+                            f"Yachay_{curso_corto}_T{tema['num']}_{etiqueta}_A.pdf", pdf_a)
+                        pdf_d = generar_banco_preguntas(
+                            tema_b, True, grado_txt, area=area_pie, profesor=profesor_txt)
+                        zf.writestr(
+                            f"Yachay_{curso_corto}_T{tema['num']}_{etiqueta}_D.pdf", pdf_d)
+                    except Exception:
+                        pass
+
+        if tipos.get("banco_completo"):
+            paso_actual += 1
+            if reportar_progreso:
+                reportar_progreso(paso_actual / total_pasos,
+                                  f"{area_pie} · Banco completo del curso")
+            try:
+                todas_preguntas = []
+                for t in balotas:
+                    todas_preguntas.extend(t["preguntas"])
+                todas_balanceadas = balancear(todas_preguntas)
+                tema_mega = {"num": "TODOS", "titulo": "Banco Completo del Curso",
+                            "preguntas": todas_balanceadas, "secciones": [],
+                            "cuadros": []}
+                curso_corto = _NOMBRES_CORTOS_CURSO.get(pfx, pfx)
+                pdf_a = generar_banco_preguntas(tema_mega, False, grado_txt,
+                                                area=area_pie, profesor=profesor_txt)
+                zf.writestr(f"Yachay_{curso_corto}_BANCO_COMPLETO_A.pdf", pdf_a)
+                pdf_d = generar_banco_preguntas(tema_mega, True, grado_txt,
+                                                area=area_pie, profesor=profesor_txt)
+                zf.writestr(f"Yachay_{curso_corto}_BANCO_COMPLETO_D.pdf", pdf_d)
+            except Exception:
+                pass
+
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def _seccion_descarga_masiva_admin():
+    """Panel para que el administrador descargue en un solo lote todo
+    el material de uno o varios cursos: fichas, exámenes y bancos
+    completos, alumno y docente."""
+    st.markdown("### 🗂️ Descarga Masiva — Administrador")
+    st.caption("Genera un solo ZIP con todo el material que marques, "
+              "de uno o de todos los cursos a la vez.")
+
+    with st.expander("📦 Abrir panel de descarga masiva", expanded=False):
+        nombres_todos = [a["nombre"] for a in AREAS_CEPRU]
+        alcance = st.radio("¿Qué cursos incluir?",
+                           ["Un solo curso", "Todos los cursos (más lento)"],
+                           key="admin_dm_alcance", horizontal=True)
+
+        if alcance == "Un solo curso":
+            sel_curso_dm = st.selectbox("Curso:", nombres_todos, key="admin_dm_curso")
+            cursos_incluir = [a for a in AREAS_CEPRU if a["nombre"] == sel_curso_dm]
+        else:
+            cursos_incluir = AREAS_CEPRU
+            st.warning("⏱️ Con los 7 cursos, esto puede tardar varios minutos "
+                      "según cuánto marques abajo. No cierres la página "
+                      "mientras genera.")
+
+        st.markdown("**¿Qué incluir por cada tema?**")
+        cc1, cc2, cc3 = st.columns(3)
+        with cc1:
+            inc_ficha_blanco = st.checkbox("Ficha para llenar", value=True,
+                                           key="admin_dm_fb")
+            inc_ficha_completa = st.checkbox("Ficha ya llenada (con respuestas)",
+                                             value=True, key="admin_dm_fc")
+        with cc2:
+            inc_ex20 = st.checkbox("Examen de 20 preguntas (alumno + docente)",
+                                   value=True, key="admin_dm_e20")
+            inc_ex40 = st.checkbox("Examen de 40 preguntas (alumno + docente)",
+                                   value=False, key="admin_dm_e40")
+        with cc3:
+            inc_banco = st.checkbox("Banco COMPLETO del curso (todas las "
+                                    "preguntas en un PDF)", value=True,
+                                    key="admin_dm_banco")
+
+        tipos_sel = {
+            "ficha_blanco": inc_ficha_blanco, "ficha_completa": inc_ficha_completa,
+            "examen20": inc_ex20, "examen40": inc_ex40,
+            "banco_completo": inc_banco,
+        }
+
+        c_gr, c_pr = st.columns(2)
+        with c_gr:
+            grado_dm = st.text_input("Grupo (se imprime en las fichas):",
+                                     value="GRUPO CD", key="admin_dm_grado")
+        with c_pr:
+            profesor_dm = st.text_input("Profesor:",
+                                        value="Prof. Alexander Córdova",
+                                        key="admin_dm_profesor")
+
+        if not any(tipos_sel.values()):
+            st.info("Marca al menos una opción arriba para generar el paquete.")
+        elif st.button("🚀 GENERAR PAQUETE MASIVO", type="primary",
+                       use_container_width=True, key="admin_dm_generar"):
+            import zipfile, io as _io_mega
+
+            barra = st.progress(0.0, text="Iniciando…")
+            buf_mega = _io_mega.BytesIO()
+            with zipfile.ZipFile(buf_mega, "w", zipfile.ZIP_DEFLATED) as zf_mega:
+                for idx_curso, area_dm in enumerate(cursos_incluir):
+                    def _callback(frac, texto, idx=idx_curso, n=len(cursos_incluir)):
+                        frac_global = (idx + frac) / n
+                        barra.progress(min(frac_global, 1.0), text=texto)
+
+                    zip_curso_bytes = _generar_paquete_admin(
+                        area_dm, tipos_sel, grado_dm, profesor_dm,
+                        reportar_progreso=_callback)
+                    zf_mega.writestr(
+                        f"{area_dm['prefijo']}_{area_dm['area_pie'].strip()}.zip",
+                        zip_curso_bytes)
+            barra.progress(1.0, text="¡Listo!")
+            buf_mega.seek(0)
+
+            nombre_zip = ("Yachay_TODO_PREU.zip" if alcance != "Un solo curso"
+                         else f"Yachay_{cursos_incluir[0]['prefijo']}_PAQUETE.zip")
+            st.success("✅ Paquete generado. Descárgalo abajo antes de salir "
+                      "de esta página.")
+            st.download_button("⬇️ Descargar paquete completo",
+                              data=buf_mega.getvalue(), file_name=nombre_zip,
+                              mime="application/zip", use_container_width=True,
+                              type="primary", key="admin_dm_descargar")
+
+
 def tab_academia_cepru(config=None):
     st.subheader("🎓 Academia CEPRU — Fichas y bancos de preguntas")
     st.caption("Todas las áreas de la academia preuniversitaria en un "
@@ -172,6 +342,9 @@ def tab_academia_cepru(config=None):
                  "fichas_geografia.py y fichas_civica.py estén en el "
                  "repositorio.")
         return
+
+    _seccion_descarga_masiva_admin()
+    st.markdown("---")
 
     nombres = [a["nombre"] for a in AREAS_CEPRU]
     sel_area = st.selectbox("Área:", nombres, key="cepru_area")

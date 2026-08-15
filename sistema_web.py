@@ -6156,41 +6156,39 @@ def pantalla_login():
         </div>
         """, unsafe_allow_html=True)
 
-        # ── PORTAL PADRES DE FAMILIA ──────────────────────────────
+        # ── PORTAL PADRES + PORTAL ESTUDIANTE (lado a lado, compacto) ──
         st.markdown("---")
-        st.markdown("""
-        <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
-                    border-radius:14px;padding:14px 18px;text-align:center;
-                    color:white;margin-bottom:8px;'>
-            <div style='font-size:1.3rem;font-weight:800;'>👨‍👩‍👧 Portal de Padres de Familia</div>
-            <div style='font-size:0.85rem;opacity:0.9;margin-top:4px;'>
-                Consulta asistencia y calificaciones de tu hijo/a
+        col_padres, col_estudiante = st.columns(2)
+        with col_padres:
+            st.markdown("""
+            <div style='background:linear-gradient(135deg,#0f766e,#0d9488);
+                        border-radius:12px;padding:10px 12px;text-align:center;
+                        color:white;margin-bottom:6px;min-height:64px;'>
+                <div style='font-size:1rem;font-weight:800;'>👨‍👩‍👧 Padres de Familia</div>
+                <div style='font-size:0.75rem;opacity:0.9;margin-top:2px;'>
+                    Asistencia y notas de tu hijo/a
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("📊 CONSULTAR ASISTENCIA Y NOTAS DE MI HIJO/A",
-                     use_container_width=True, key="btn_portal_padres",
-                     type="primary"):
-            st.session_state['_portal_padres'] = True
-            st.rerun()
-
-        # ── PORTAL DEL ESTUDIANTE (ACADEMIA YACHAY VIRTUAL) ──────
-        st.markdown("---")
-        st.markdown("""
-        <div style='background:linear-gradient(135deg,#B8790F,#D9A441);
-                    border-radius:14px;padding:14px 18px;text-align:center;
-                    color:white;margin-bottom:8px;'>
-            <div style='font-size:1.3rem;font-weight:800;'>🎓 Academia Yachay Virtual</div>
-            <div style='font-size:0.85rem;opacity:0.9;margin-top:4px;'>
-                Ingresa a tus fichas, exámenes y tu progreso
+            """, unsafe_allow_html=True)
+            if st.button("📊 INGRESAR", use_container_width=True,
+                        key="btn_portal_padres", type="primary"):
+                st.session_state['_portal_padres'] = True
+                st.rerun()
+        with col_estudiante:
+            st.markdown("""
+            <div style='background:linear-gradient(135deg,#B8790F,#D9A441);
+                        border-radius:12px;padding:10px 12px;text-align:center;
+                        color:white;margin-bottom:6px;min-height:64px;'>
+                <div style='font-size:1rem;font-weight:800;'>🎓 Academia Virtual</div>
+                <div style='font-size:0.75rem;opacity:0.9;margin-top:2px;'>
+                    Tus fichas, exámenes y progreso
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🚀 INGRESAR AL PORTAL DEL ESTUDIANTE",
-                     use_container_width=True, key="btn_portal_estudiante",
-                     type="primary"):
-            st.session_state['_portal_estudiante'] = True
-            st.rerun()
+            """, unsafe_allow_html=True)
+            if st.button("🚀 INGRESAR", use_container_width=True,
+                        key="btn_portal_estudiante", type="primary"):
+                st.session_state['_portal_estudiante'] = True
+                st.rerun()
 
         # Libro de reclamaciones
         st.markdown("---")
@@ -6996,49 +6994,72 @@ def tab_matricula(config):
         if matricula_df.empty:
             st.info("Todavía no hay estudiantes matriculados.")
         else:
-            opciones_alumno = {
-                f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
-                for _, row in matricula_df.iterrows()
-            }
-            alumno_elegido = st.selectbox(
-                "Estudiante:", list(opciones_alumno.keys()),
-                key="mp_alumno_sel")
-            dni_elegido = opciones_alumno[alumno_elegido]
+            c_niv, c_gra = st.columns(2)
+            with c_niv:
+                niveles_disp = ["Todos"] + sorted(
+                    matricula_df["Nivel"].dropna().unique().tolist())
+                nivel_filtro = st.selectbox("Filtrar por nivel:", niveles_disp,
+                                            key="mp_filtro_nivel")
+            with c_gra:
+                df_por_nivel = (matricula_df if nivel_filtro == "Todos"
+                                else matricula_df[matricula_df["Nivel"] == nivel_filtro])
+                grados_disp = ["Todos"] + sorted(
+                    df_por_nivel["Grado"].dropna().unique().tolist())
+                grado_filtro = st.selectbox("Filtrar por grado:", grados_disp,
+                                            key="mp_filtro_grado")
 
-            c1, c2 = st.columns(2)
-            with c1:
-                usuario_nuevo = st.text_input(
-                    "Usuario:", key="mp_usuario",
-                    placeholder="Ej: juan.perez")
-            with c2:
-                password_nueva = st.text_input(
-                    "Contraseña:", key="mp_password",
-                    placeholder="Mínimo 4 caracteres")
+            df_filtrado = matricula_df
+            if nivel_filtro != "Todos":
+                df_filtrado = df_filtrado[df_filtrado["Nivel"] == nivel_filtro]
+            if grado_filtro != "Todos":
+                df_filtrado = df_filtrado[df_filtrado["Grado"] == grado_filtro]
 
-            if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
-                        use_container_width=True, key="mp_btn_crear"):
-                if not usuario_nuevo.strip() or len(password_nueva) < 4:
-                    st.error("Completa un usuario y una contraseña de "
-                            "al menos 4 caracteres.")
-                else:
-                    gs = _gs()
-                    if gs:
-                        import datetime as _dt_mod
-                        ok = gs.guardar_credencial_portal({
-                            'dni': dni_elegido,
-                            'usuario': usuario_nuevo.strip(),
-                            'password': password_nueva,
-                            'activo': 'SI',
-                            'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
-                            'creado_por': st.session_state.get('usuario_actual', ''),
-                        })
-                        if ok:
-                            st.success(f"✅ Acceso creado para {alumno_elegido}. "
-                                      f"Usuario: **{usuario_nuevo.strip()}**")
-                        else:
-                            st.error("No se pudo guardar. Intenta de nuevo.")
+            if df_filtrado.empty:
+                st.warning("Ningún estudiante coincide con ese filtro.")
+            else:
+                opciones_alumno = {
+                    f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
+                    for _, row in df_filtrado.iterrows()
+                }
+                alumno_elegido = st.selectbox(
+                    f"Estudiante ({len(opciones_alumno)} encontrados):",
+                    list(opciones_alumno.keys()), key="mp_alumno_sel")
+                dni_elegido = opciones_alumno[alumno_elegido]
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    usuario_nuevo = st.text_input(
+                        "Usuario:", key="mp_usuario",
+                        placeholder="Ej: juan.perez")
+                with c2:
+                    password_nueva = st.text_input(
+                        "Contraseña:", key="mp_password",
+                        placeholder="Mínimo 4 caracteres")
+
+                if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
+                            use_container_width=True, key="mp_btn_crear"):
+                    if not usuario_nuevo.strip() or len(password_nueva) < 4:
+                        st.error("Completa un usuario y una contraseña de "
+                                "al menos 4 caracteres.")
                     else:
-                        st.error("No hay conexión con Google Sheets en este momento.")
+                        gs = _gs()
+                        if gs:
+                            import datetime as _dt_mod
+                            ok = gs.guardar_credencial_portal({
+                                'dni': dni_elegido,
+                                'usuario': usuario_nuevo.strip(),
+                                'password': password_nueva,
+                                'activo': 'SI',
+                                'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
+                                'creado_por': st.session_state.get('usuario_actual', ''),
+                            })
+                            if ok:
+                                st.success(f"✅ Acceso creado para {alumno_elegido}. "
+                                          f"Usuario: **{usuario_nuevo.strip()}**")
+                            else:
+                                st.error("No se pudo guardar. Intenta de nuevo.")
+                        else:
+                            st.error("No hay conexión con Google Sheets en este momento.")
 
         st.markdown("---")
         st.markdown("#### 📋 Accesos ya creados")
