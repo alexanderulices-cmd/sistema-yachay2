@@ -25,6 +25,8 @@ HOJAS = {
     'config': 'Config',
     'fotos': 'Fotos',
     'historial_eval': 'HistorialEval',
+    'portal_credenciales': 'PortalCredenciales',
+    'portal_resultados': 'PortalResultados',
 }
 
 COLUMNAS = {
@@ -48,6 +50,10 @@ COLUMNAS = {
                      'accion_inmediata', 'compromisos', 'derivacion',
                      'registrado_por'],
     'fotos': ['dni', 'nombre', 'tipo', 'foto_base64', 'fecha'],
+    'portal_credenciales': ['dni', 'usuario', 'password', 'activo',
+                             'fecha_creacion', 'creado_por'],
+    'portal_resultados': ['dni', 'fecha', 'tipo', 'area', 'tema_num',
+                           'tema_titulo', 'aciertos', 'total', 'nota'],
     'historial_eval': ['eval_id', 'fecha', 'docente', 'titulo', 'grado',
                         'areas_json', 'total_alumnos', 'promedio_general'],
     'config': ['clave', 'valor'],
@@ -116,11 +122,25 @@ class GoogleSync:
             st.warning(f"⚠️ Error creando hojas: {str(e)[:80]}")
 
     def _get_hoja(self, key):
-        """Obtener worksheet por clave"""
+        """Obtener worksheet por clave. Si la pestaña todavía no existe
+        en la hoja de cálculo (por ejemplo, una nueva funcionalidad recién
+        agregada), la crea automáticamente con sus encabezados, en vez de
+        fallar silenciosamente y pedirle al usuario que la cree a mano."""
         if not self.conectado:
             return None
+        nombre_hoja = HOJAS[key]
         try:
-            return self.spreadsheet.worksheet(HOJAS[key])
+            return self.spreadsheet.worksheet(nombre_hoja)
+        except Exception:
+            pass
+        try:
+            columnas = COLUMNAS.get(key, [])
+            ws_nueva = self.spreadsheet.add_worksheet(
+                title=nombre_hoja, rows=1000,
+                cols=max(len(columnas), 1))
+            if columnas:
+                ws_nueva.append_row(columnas)
+            return ws_nueva
         except Exception:
             return None
 
@@ -201,6 +221,88 @@ class GoogleSync:
             return usuarios
         except Exception:
             return {}
+
+    def guardar_credencial_portal(self, datos):
+        """Crea o actualiza el usuario/contraseña del Portal Virtual para
+        un estudiante (identificado por DNI). Sigue el mismo patrón de
+        'crear si no existe, actualizar si ya existe' que guardar_asistencia."""
+        ws = self._get_hoja('portal_credenciales')
+        if ws is None:
+            return False
+        try:
+            all_data = ws.get_all_records()
+            dni_buscado = str(datos.get('dni', '')).strip()
+            for i, row in enumerate(all_data):
+                if str(row.get('dni', '')).strip() == dni_buscado:
+                    row_num = i + 2
+                    campos = ['usuario', 'password', 'activo',
+                              'fecha_creacion', 'creado_por']
+                    for campo in campos:
+                        valor = datos.get(campo, '')
+                        if valor != '':
+                            col_num = COLUMNAS['portal_credenciales'].index(campo) + 1
+                            ws.update_cell(row_num, col_num, valor)
+                    return True
+            # No existe: crear fila nueva
+            row = [datos.get(c, '') for c in COLUMNAS['portal_credenciales']]
+            ws.append_row(row)
+            return True
+        except Exception:
+            return False
+
+    def leer_credenciales_portal(self):
+        """Lee todas las credenciales del Portal Virtual → dict {dni: {...}}"""
+        ws = self._get_hoja('portal_credenciales')
+        if ws is None:
+            return {}
+        try:
+            data = ws.get_all_records()
+            credenciales = {}
+            for row in data:
+                dni = str(row.get('dni', '')).strip().replace('.0', '')
+                if not dni:
+                    continue
+                pwd = str(row.get('password', '')).strip()
+                if pwd.endswith('.0'):
+                    pwd = pwd[:-2]
+                credenciales[dni] = {
+                    'usuario': str(row.get('usuario', '')).strip(),
+                    'password': pwd,
+                    'activo': str(row.get('activo', '')).strip().upper() in ('SI', 'TRUE', '1'),
+                }
+            return credenciales
+        except Exception:
+            return {}
+
+    def guardar_resultado_portal(self, datos):
+        """Agrega un resultado de examen del Portal Virtual (ficha o
+        semanal). Es un registro de historial: siempre se agrega, nunca
+        se actualiza uno existente."""
+        ws = self._get_hoja('portal_resultados')
+        if ws is None:
+            return False
+        try:
+            row = [datos.get(c, '') for c in COLUMNAS['portal_resultados']]
+            ws.append_row(row)
+            return True
+        except Exception:
+            return False
+
+    def leer_resultados_portal(self, dni=None):
+        """Lee los resultados del Portal Virtual, opcionalmente filtrados
+        por DNI de un solo estudiante."""
+        ws = self._get_hoja('portal_resultados')
+        if ws is None:
+            return []
+        try:
+            data = ws.get_all_records()
+            if dni:
+                dni_buscado = str(dni).strip()
+                data = [r for r in data
+                       if str(r.get('dni', '')).strip() == dni_buscado]
+            return data
+        except Exception:
+            return []
 
     def leer_asistencias(self, fecha=None, grado=None, mes=None, anio=None):
         """Lee asistencias con filtros opcionales"""

@@ -4363,27 +4363,9 @@ def tab_portal_estudiante():
     import json as _json
     from pathlib import Path as _Path
 
-    _PIN_PATH = _Path("portal_estudiantes_pin.json")
-
-    def _cargar_pines():
-        try:
-            if _PIN_PATH.exists():
-                with open(_PIN_PATH, "r", encoding="utf-8") as f:
-                    return _json.load(f)
-        except Exception:
-            pass
-        return {}
-
-    def _guardar_pines(data):
-        try:
-            with open(_PIN_PATH, "w", encoding="utf-8") as f:
-                _json.dump(data, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
-
     _RESULTADOS_PATH = _Path("portal_estudiantes_resultados.json")
 
-    def _cargar_resultados():
+    def _cargar_resultados_local():
         try:
             if _RESULTADOS_PATH.exists():
                 with open(_RESULTADOS_PATH, "r", encoding="utf-8") as f:
@@ -4392,8 +4374,8 @@ def tab_portal_estudiante():
             pass
         return {}
 
-    def _guardar_resultado(dni, registro):
-        resultados = _cargar_resultados()
+    def _guardar_resultado_local(dni, registro):
+        resultados = _cargar_resultados_local()
         resultados.setdefault(dni, [])
         resultados[dni].append(registro)
         try:
@@ -4401,6 +4383,59 @@ def tab_portal_estudiante():
                 _json.dump(resultados, f, ensure_ascii=False, indent=2)
         except Exception:
             pass
+
+    def _cargar_resultados():
+        """Lee el historial de resultados de UN estudiante desde Google
+        Sheets (fuente de verdad); si no hay conexión, usa el respaldo
+        local para que el portal nunca se quede sin mostrar nada."""
+        gs = _gs()
+        if gs:
+            filas = gs.leer_resultados_portal(dni=dni_sesion)
+            if filas:
+                return {dni_sesion: [
+                    {
+                        "fecha": f.get("fecha", ""), "area": f.get("area", ""),
+                        "tema_num": f.get("tema_num", ""),
+                        "tema_titulo": f.get("tema_titulo", ""),
+                        "aciertos": int(f.get("aciertos", 0) or 0),
+                        "total": int(f.get("total", 0) or 0),
+                        "nota": float(f.get("nota", 0) or 0),
+                    } for f in filas
+                ]}
+        return _cargar_resultados_local()
+
+    def _guardar_resultado(dni, registro):
+        """Guarda un resultado en Google Sheets (permanente); además
+        guarda una copia local como respaldo por si se pierde la
+        conexión momentáneamente."""
+        gs = _gs()
+        guardado_en_gs = False
+        if gs:
+            guardado_en_gs = gs.guardar_resultado_portal({
+                "dni": dni, "fecha": registro["fecha"],
+                "tipo": "semanal" if registro["tema_num"] == "-" else "tema",
+                "area": registro["area"], "tema_num": registro["tema_num"],
+                "tema_titulo": registro["tema_titulo"],
+                "aciertos": registro["aciertos"], "total": registro["total"],
+                "nota": registro["nota"],
+            })
+        if not guardado_en_gs:
+            _guardar_resultado_local(dni, registro)
+
+    # ── YACHAYCITO: personaje motivador del portal ────────────────
+    def _yachaycito_dice(mensaje, color="#B8790F"):
+        st.markdown(
+            f"<div style='display:flex;align-items:center;gap:12px;"
+            f"background:#FFF8EC;border:2px solid {color};border-radius:16px;"
+            f"padding:12px 16px;margin:12px 0;'>"
+            f"<div style='font-size:2.2rem;'>🦉</div>"
+            f"<div style='flex:1;'>"
+            f"<div style='font-weight:800;color:{color};font-size:0.85rem;'>"
+            f"YACHAYCITO DICE:</div>"
+            f"<div style='font-size:0.95rem;color:#4A3410;'>{mensaje}</div>"
+            f"</div></div>", unsafe_allow_html=True)
+
+    import random as _random_yachaycito
 
     # ══════════════════════════════════════════════════════════════
     # CSS PORTAL — identidad propia en dorado/ámbar
@@ -4456,44 +4491,48 @@ def tab_portal_estudiante():
     dni_sesion = st.session_state.get('_portal_est_dni')
 
     if not dni_sesion:
-        st.markdown("#### 🔐 Ingresa con tu DNI")
+        st.markdown("#### 🔐 Ingresa con tu usuario y contraseña")
         c1, c2 = st.columns(2)
         with c1:
-            dni_ingresado = st.text_input("Tu DNI:", key="pe_dni",
-                                          max_chars=8, placeholder="12345678")
+            usuario_ingresado = st.text_input("Tu usuario:", key="pe_usuario",
+                                              placeholder="usuario")
         with c2:
-            pin_ingresado = st.text_input("Tu PIN (4 dígitos):", key="pe_pin",
-                                          max_chars=4, type="password",
-                                          placeholder="••••")
-        st.caption("💡 Si es tu primera vez, tu PIN son los últimos 4 dígitos "
-                   "de tu DNI. Puedes cambiarlo luego dentro del portal.")
+            password_ingresada = st.text_input("Tu contraseña:", key="pe_password",
+                                                type="password",
+                                                placeholder="••••••••")
+        st.caption("💡 Tu profesor te entrega tu usuario y contraseña "
+                   "cuando te habilita el Portal Virtual.")
 
         if st.button("🚀 INGRESAR", key="pe_btn_login", type="primary",
                      use_container_width=True):
-            dni_limpio = dni_ingresado.strip()
-            if not dni_limpio or not pin_ingresado.strip():
-                st.error("Completa tu DNI y tu PIN.")
+            if not usuario_ingresado.strip() or not password_ingresada:
+                st.error("Completa tu usuario y tu contraseña.")
             else:
-                matricula = BaseDatos.cargar_matricula()
-                fila = matricula[matricula['DNI'].astype(str).str.strip() == dni_limpio]
-                if fila.empty:
-                    st.error("No encontramos ese DNI en la matrícula. "
-                             "Pide a tu profesor que verifique tu registro.")
+                gs = _gs()
+                credenciales = gs.leer_credenciales_portal() if gs else {}
+                dni_encontrado = None
+                for dni_c, datos_c in credenciales.items():
+                    if (datos_c['usuario'].lower() == usuario_ingresado.strip().lower()
+                            and datos_c['activo']):
+                        dni_encontrado = dni_c
+                        datos_credencial = datos_c
+                        break
+                if dni_encontrado is None:
+                    st.error("Usuario no encontrado o inactivo. Pide a tu "
+                             "profesor que verifique tu acceso.")
+                elif password_ingresada != datos_credencial['password']:
+                    st.error("Contraseña incorrecta.")
                 else:
-                    pines = _cargar_pines()
-                    pin_guardado = pines.get(dni_limpio)
-                    if pin_guardado is None:
-                        # Primera vez: se auto-asignan los ultimos 4 digitos del DNI
-                        pin_guardado = dni_limpio[-4:]
-                        pines[dni_limpio] = pin_guardado
-                        _guardar_pines(pines)
-                    if pin_ingresado.strip() == pin_guardado:
-                        st.session_state['_portal_est_dni'] = dni_limpio
+                    matricula = BaseDatos.cargar_matricula()
+                    fila = matricula[matricula['DNI'].astype(str).str.strip() == dni_encontrado]
+                    if fila.empty:
+                        st.error("Tu usuario existe pero no encontramos tu "
+                                 "ficha de matrícula. Avisa a tu profesor.")
+                    else:
+                        st.session_state['_portal_est_dni'] = dni_encontrado
                         st.session_state['_portal_est_datos'] = fila.iloc[0].to_dict()
                         st.toast(f"✅ Bienvenido/a, {fila.iloc[0]['Nombre']}")
                         st.rerun()
-                    else:
-                        st.error("PIN incorrecto.")
         return
 
     # ════════════════════════════════════════════════════════════
@@ -4515,23 +4554,18 @@ def tab_portal_estudiante():
         st.markdown(f"### {nombre}")
         st.markdown(f"**Nivel:** {nivel}  ·  **Grado:** {grado}  ·  **Grupo:** {seccion}")
 
-    st.markdown("---")
+    _primer_nombre = nombre.split()[0].title() if nombre else "campeón"
+    _saludos_yachaycito = [
+        f"¡Hola, {_primer_nombre}! Qué bueno verte por aquí de nuevo. 💪 Tú puedes con todo lo que te propongas hoy.",
+        f"¡{_primer_nombre}! Sigue adelante, cada ficha que completas te acerca más a tu meta. ¡Vamos! 🚀",
+        f"¡Bienvenido/a, {_primer_nombre}! Hoy es un buen día para aprender algo nuevo. Confío en ti. 🌟",
+        f"¡{_primer_nombre}, listo/a para avanzar! Recuerda: no se trata de ser perfecto, se trata de no rendirte. 🦉",
+    ]
+    if "_yachaycito_saludo" not in st.session_state:
+        st.session_state["_yachaycito_saludo"] = _random_yachaycito.choice(_saludos_yachaycito)
+    _yachaycito_dice(st.session_state["_yachaycito_saludo"])
 
-    with st.expander("🔑 Cambiar mi PIN"):
-        nuevo_pin1 = st.text_input("Nuevo PIN (4 dígitos):", key="pe_nuevo_pin1",
-                                   max_chars=4, type="password")
-        nuevo_pin2 = st.text_input("Repite el nuevo PIN:", key="pe_nuevo_pin2",
-                                   max_chars=4, type="password")
-        if st.button("Guardar nuevo PIN", key="pe_btn_cambiar_pin"):
-            if not (nuevo_pin1.isdigit() and len(nuevo_pin1) == 4):
-                st.error("El PIN debe tener exactamente 4 dígitos.")
-            elif nuevo_pin1 != nuevo_pin2:
-                st.error("Los dos PIN no coinciden.")
-            else:
-                pines = _cargar_pines()
-                pines[dni_sesion] = nuevo_pin1
-                _guardar_pines(pines)
-                st.success("✅ PIN actualizado.")
+    st.markdown("---")
 
 
     # ════════════════════════════════════════════════════════════
@@ -4622,6 +4656,8 @@ def tab_portal_estudiante():
         if not opciones_tamano:
             opciones_tamano = [total_preguntas_tema]
 
+        _yachaycito_dice("¡Vamos con todo! 💪 Elige cuántas preguntas quieres "
+                         "y pon a prueba lo que ya sabes de este tema.")
         c_tam, c_gen = st.columns([2, 1])
         with c_tam:
             tamano_examen = st.select_slider(
@@ -4710,6 +4746,16 @@ def tab_portal_estudiante():
                     f"Resultado: {aciertos} / {total} correctas "
                     f"({pct}%) · Nota: {nota_20}/20</div>",
                     unsafe_allow_html=True)
+                if pct >= 80:
+                    _yachaycito_dice("¡Excelente trabajo! 🎉 Se nota que estudiaste "
+                                     "bien este tema. ¡Sigue así!")
+                elif pct >= 60:
+                    _yachaycito_dice("¡Bien hecho! 👍 Vas por buen camino. Repasa lo "
+                                     "que fallaste y la próxima será aún mejor.")
+                else:
+                    _yachaycito_dice("No te desanimes 💛 — cada error es una oportunidad "
+                                     "de aprender. Repasa la ficha completa y vuelve a "
+                                     "intentarlo, ¡yo sé que puedes mejorar!")
 
                 with st.expander("Ver detalle de cada pregunta"):
                     for i, p in enumerate(preguntas_examen):
@@ -4823,6 +4869,16 @@ def tab_portal_estudiante():
                 f"Resultado semanal: {aciertos_f} / {total_f} correctas "
                 f"({pct_f}%) · Nota: {nota_f}/20</div>",
                 unsafe_allow_html=True)
+            if pct_f >= 80:
+                _yachaycito_dice("¡Wow, dominaste el repaso de la semana! 🏆 "
+                                 "Se nota tu esfuerzo en todos los cursos.")
+            elif pct_f >= 60:
+                _yachaycito_dice("¡Buen repaso semanal! 👏 Revisa el detalle "
+                                 "para ver en qué curso te conviene reforzar.")
+            else:
+                _yachaycito_dice("Esta semana fue difícil, pero no pasa nada 💛 "
+                                 "Usa el detalle de abajo para ver qué cursos "
+                                 "necesitan más repaso. ¡La próxima semana será mejor!")
 
             with st.expander("Ver detalle de cada pregunta"):
                 for i, p in enumerate(preguntas_sem):
@@ -6559,9 +6615,9 @@ def _gestion_usuarios_admin():
 
 def tab_matricula(config):
     st.header("📝 Matrícula")
-    tab_est, tab_doc, tab_lista, tab_pdf = st.tabs([
+    tab_est, tab_doc, tab_lista, tab_pdf, tab_portal = st.tabs([
         "➕ Registrar Alumno", "DOCENTE Registrar Docente",
-        "📋 Listas", "⬇️ Registros PDF"
+        "📋 Listas", "⬇️ Registros PDF", "🖥️ Portal Virtual"
     ])
 
     with tab_est:
@@ -10971,6 +11027,84 @@ def _seccion_registros_pdf(config):
             )
             st.download_button("⬇️ Descargar", pdf,
                                f"RegAsist_{gp}.pdf", "application/pdf", key="dras")
+
+
+    with tab_portal:
+        st.subheader("🖥️ Registrar acceso al Portal Virtual")
+        st.caption("Crea un usuario y contraseña para que un estudiante "
+                   "ya matriculado pueda entrar a la Academia Yachay "
+                   "Virtual (fichas, exámenes, progreso).")
+
+        matricula_df = BaseDatos.cargar_matricula()
+        if matricula_df.empty:
+            st.info("Todavía no hay estudiantes matriculados.")
+        else:
+            opciones_alumno = {
+                f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
+                for _, row in matricula_df.iterrows()
+            }
+            alumno_elegido = st.selectbox(
+                "Estudiante:", list(opciones_alumno.keys()),
+                key="mp_alumno_sel")
+            dni_elegido = opciones_alumno[alumno_elegido]
+
+            c1, c2 = st.columns(2)
+            with c1:
+                usuario_nuevo = st.text_input(
+                    "Usuario:", key="mp_usuario",
+                    placeholder="Ej: juan.perez")
+            with c2:
+                password_nueva = st.text_input(
+                    "Contraseña:", key="mp_password",
+                    placeholder="Mínimo 4 caracteres")
+
+            if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
+                        use_container_width=True, key="mp_btn_crear"):
+                if not usuario_nuevo.strip() or len(password_nueva) < 4:
+                    st.error("Completa un usuario y una contraseña de "
+                            "al menos 4 caracteres.")
+                else:
+                    gs = _gs()
+                    if gs:
+                        import datetime as _dt_mod
+                        ok = gs.guardar_credencial_portal({
+                            'dni': dni_elegido,
+                            'usuario': usuario_nuevo.strip(),
+                            'password': password_nueva,
+                            'activo': 'SI',
+                            'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
+                            'creado_por': st.session_state.get('usuario_actual', ''),
+                        })
+                        if ok:
+                            st.success(f"✅ Acceso creado para {alumno_elegido}. "
+                                      f"Usuario: **{usuario_nuevo.strip()}**")
+                        else:
+                            st.error("No se pudo guardar. Intenta de nuevo.")
+                    else:
+                        st.error("No hay conexión con Google Sheets en este momento.")
+
+        st.markdown("---")
+        st.markdown("#### 📋 Accesos ya creados")
+        gs = _gs()
+        if gs:
+            credenciales = gs.leer_credenciales_portal()
+            if credenciales:
+                filas_mostrar = []
+                for dni_c, datos_c in credenciales.items():
+                    nombre_c = ""
+                    if not matricula_df.empty:
+                        coincidencia = matricula_df[
+                            matricula_df['DNI'].astype(str).str.strip() == dni_c]
+                        if not coincidencia.empty:
+                            nombre_c = coincidencia.iloc[0]['Nombre']
+                    filas_mostrar.append({
+                        "DNI": dni_c, "Nombre": nombre_c,
+                        "Usuario": datos_c['usuario'],
+                        "Activo": "✅" if datos_c['activo'] else "❌",
+                    })
+                st.dataframe(filas_mostrar, use_container_width=True, hide_index=True)
+            else:
+                st.caption("Todavía no se ha creado ningún acceso.")
 
 
 # ================================================================
