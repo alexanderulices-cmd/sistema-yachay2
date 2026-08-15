@@ -4607,7 +4607,34 @@ def tab_portal_estudiante():
         f"{area_info['area_pie']} · Tema {tema['num']}: {tema['titulo']}</div>",
         unsafe_allow_html=True)
 
-    c_desc, c_ver = st.columns(2)
+    def _texto_plano_tema(tema_x):
+        """Arma el texto plano (sin markdown) de todo el tema, con los
+        espacios en blanco ya rellenos — usado tanto para 'ver completa'
+        como para el audio-libro."""
+        partes = [f"Tema {tema_x['num']}: {tema_x['titulo']}."]
+        for sec in tema_x.get("secciones", []):
+            partes.append(sec["titulo"] + ".")
+            for it in sec.get("items", []):
+                partes.append(_PATRON.sub(lambda m: m.group(1), it))
+        return " ".join(partes)
+
+    @st.cache_data(show_spinner=False, ttl=86400)
+    def _generar_audio_mp3(_texto, _clave_cache):
+        """Genera el audio MP3 de un texto usando gTTS. Se cachea por
+        clave (área+tema) para no regenerar el mismo audio cada vez.
+        Devuelve None si falla (sin conexión, cuota agotada, etc.),
+        para que el portal no se caiga si el audio no está disponible."""
+        try:
+            from gtts import gTTS
+            import io as _io_audio
+            tts = gTTS(text=_texto, lang="es", slow=False)
+            buf = _io_audio.BytesIO()
+            tts.write_to_fp(buf)
+            return buf.getvalue()
+        except Exception:
+            return None
+
+    c_desc, c_ver, c_audio = st.columns(3)
     with c_desc:
         try:
             pdf_bytes = generar_ficha_texto(tema, False, f"Grupo {seccion}",
@@ -4623,6 +4650,26 @@ def tab_portal_estudiante():
     with c_ver:
         ver_completa = st.toggle("👁️ Ver ficha completa aquí (con respuestas)",
                                  key="pe_toggle_ver")
+    with c_audio:
+        pedir_audio = st.button("🔊 Escuchar / descargar audio",
+                                use_container_width=True, key="pe_btn_audio")
+
+    if pedir_audio:
+        clave_audio = f"{area_info['prefijo']}_T{tema['num']}"
+        with st.spinner("🎧 Generando el audio-libro de esta ficha… "
+                        "en temas largos puede tardar hasta un minuto."):
+            texto_para_audio = _texto_plano_tema(tema)
+            audio_bytes = _generar_audio_mp3(texto_para_audio, clave_audio)
+        if audio_bytes:
+            st.audio(audio_bytes, format="audio/mp3")
+            st.download_button(
+                "⬇️ Descargar MP3", data=audio_bytes,
+                file_name=f"Yachay_{clave_audio}_Audio.mp3",
+                mime="audio/mp3", use_container_width=True,
+                key="pe_dl_audio")
+        else:
+            st.error("😕 No se pudo generar el audio en este momento. "
+                     "Intenta de nuevo en unos minutos.")
 
     if ver_completa:
         st.markdown("---")
