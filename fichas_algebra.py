@@ -113,7 +113,7 @@ def generar_ficha_algebra(tema, con_claves=False, grado_txt="",
         st_.append(barra(sec["titulo"]))
         st_.append(Spacer(1, 3))
         for it in sec.get("items", []):
-            texto_renderizado = render_linea(it, con_claves)
+            texto_renderizado = render_linea(it, True)
             st_.append(Paragraph(f"• {texto_renderizado}", est["n"]))
         st_.append(Spacer(1, 6))
 
@@ -147,6 +147,285 @@ def generar_ficha_algebra(tema, con_claves=False, grado_txt="",
 # TEMAS DE ÁLGEBRA (17, según temario oficial CU-575-2024-UNSAAC)
 # ================================================================
 
-BALOTAS_ALGEBRA = [
-    {'num': 1, 'titulo': 'Potenciación', 'secciones': [{'titulo': '1.1 POTENCIACIÓN: DEFINICIÓN', 'items': ['La {potenciación} es la operación que consiste en multiplicar un número llamado base «a» tantas veces como indica otro número llamado exponente «n».', 'La potencia n-ésima de «a» se define: a<super>n</super> = a.a.a...a (n veces), con a ∈ R y n ∈ {Z<super>+</super>}.', '«a» es la {base}; «n» es el {exponente}; «a<super>n</super>» es la {potencia}.']}, {'titulo': '1.2 PROPIEDADES DE LA POTENCIACIÓN (I)', 'items': ['Producto de bases iguales: a<super>m</super> . a<super>n</super> = a<super>{m+n}</super>.', 'Cociente de bases iguales: a<super>m</super> ÷ a<super>n</super> = a<super>{m-n}</super>, con a ≠ 0.', 'Exponente {nulo o cero}: a<super>0</super> = 1, con a ≠ 0.', 'Exponente {negativo}: a<super>-n</super> = 1/a<super>n</super>, con a ≠ 0.', 'Potencia de potencia: (a<super>m</super>)<super>n</super> = a<super>{m.n}</super>.']}, {'titulo': '1.3 PROPIEDADES DE LA POTENCIACIÓN (II)', 'items': ['Potencia de un producto: (a.b)<super>n</super> = a<super>n</super> . {b<super>n</super>}.', 'Potencia de un cociente: (a/b)<super>n</super> = a<super>n</super>/{b<super>n</super>}, con a,b ≠ 0.', 'Exponente negativo de un cociente: (a/b)<super>-n</super> = ({b/a})<super>n</super>, con a,b ≠ 0.', 'Exponente fraccionario: a<super>m/n</super> = {<super>n</super>√(a<super>m</super>)}.']}, {'titulo': '1.4 RADICACIÓN: DEFINICIÓN Y ELEMENTOS', 'items': ['Una {radicación} se define: <super>n</super>√a = b &#8660; b<super>n</super> = a.', '«a» es el {radicando}; «n» es el {índice} del radical (n ∈ N, n ≥ 2); «b» es la raíz n-ésima de «a».']}, {'titulo': '1.5 PROPIEDADES DE LA RADICACIÓN', 'items': ['(<super>n</super>√a)<super>n</super> = {a}, con n ∈ N, n ≥ 2.', '<super>n</super>√(a<super>n</super>) = a si n es {par} (a≥0) o si n es {impar} (cualquier a).', '<super>n</super>√(a.b) = <super>n</super>√a . {<super>n</super>√b}, con n ∈ N.', '<super>n</super>√(a/b) = <super>n</super>√a / {<super>n</super>√b}, con b ≠ 0.', 'Raíz de raíz: <super>m</super>√(<super>n</super>√a) = {<super>m.n</super>√a}, con m,n ∈ N.', '<super>k.n</super>√(b<super>k.m</super>) = <super>n</super>√(b<super>m</super>) = {b<super>m/n</super>}, donde k ∈ N.']}, {'titulo': '1.6 ECUACIONES EXPONENCIALES: DEFINICIÓN Y PROPIEDADES', 'items': ['Las {ecuaciones exponenciales} son aquellas que contienen la incógnita en el exponente, y en otros casos como exponente y base a la vez.', 'Si a<super>x</super> = a<super>y</super>, entonces {x = y}, para todo a ∈ R<super>+</super>-{1}.', 'Si x<super>n</super> = y<super>n</super>, entonces {x = y}, para todo x,y ∈ R<super>+</super>, n ∈ Z<super>+</super>.', 'Si x<super>x</super> = a<super>a</super>, entonces {x = a}, para todo x,a ∈ R<super>+</super>.', 'Si x<super>n</super> = b, entonces {x = <super>n</super>√b}, con x ≥ 0, n ∈ Z<super>+</super>.']}], 'ejercicios': [{'enunciado': 'Al simplificar la expresión Q = (3<super>a+4</super>·9<super>a+2b</super>) / (27<super>a-1</super>·81<super>b+1</super>), se obtiene:', 'alternativas': ['27', '28', '23', '3', '9'], 'correcta': 'A'}, {'enunciado': 'El valor de «k» en la expresión k = (5<super>2n/(n-1)</super> + 35·5<super>2/(n-1)</super>) / <super>n-1</super>√(5<super>n+1</super>); n ≠ 1, es:', 'alternativas': ['10', '5', '12', '7', '2'], 'correcta': 'A'}, {'enunciado': 'Si se cumple que 3<super>n-1</super> = 2<super>2n</super>, el valor de la expresión A = (3<super>n+1</super> + 2<super>2n+1</super>) / (3<super>n</super> + 2<super>2n+3</super>), es:', 'alternativas': ['1', '5', '21', '10', '3'], 'correcta': 'B'}, {'enunciado': 'Si x<super>x</super> = 2, luego el valor de J = x<super>x·(x^x+1)</super>, es:', 'alternativas': ['2', '4', '√2', '1/2', '8'], 'correcta': 'B'}]},
-]
+BALOTAS_ALGEBRA = [{'num': 1,
+  'titulo': 'Potenciación',
+  'secciones': [{'titulo': '1.1 POTENCIACIÓN: DEFINICIÓN',
+                 'items': ['La {potenciación} es la operación que consiste '
+                           'en multiplicar un número llamado base «a» tantas '
+                           'veces como indica otro número llamado exponente '
+                           '«n».',
+                           'La potencia n-ésima de «a» se define: '
+                           'a<super>n</super> = a.a.a...a (n veces), con a ∈ '
+                           'R y n ∈ {Z<super>+</super>}.',
+                           '«a» es la {base}; «n» es el {exponente}; '
+                           '«a<super>n</super>» es la {potencia}.']},
+                {'titulo': '1.2 PROPIEDADES DE LA POTENCIACIÓN (I)',
+                 'items': ['Producto de bases iguales: a<super>m</super> . '
+                           'a<super>n</super> = a<super>{m+n}</super>.',
+                           'Cociente de bases iguales: a<super>m</super> ÷ '
+                           'a<super>n</super> = a<super>{m-n}</super>, con a '
+                           '≠ 0.',
+                           'Exponente {nulo o cero}: a<super>0</super> = 1, '
+                           'con a ≠ 0.',
+                           'Exponente {negativo}: a<super>-n</super> = '
+                           '1/a<super>n</super>, con a ≠ 0.',
+                           'Potencia de potencia: '
+                           '(a<super>m</super>)<super>n</super> = '
+                           'a<super>{m.n}</super>.']},
+                {'titulo': '1.3 PROPIEDADES DE LA POTENCIACIÓN (II)',
+                 'items': ['Potencia de un producto: (a.b)<super>n</super> = '
+                           'a<super>n</super> . {b<super>n</super>}.',
+                           'Potencia de un cociente: (a/b)<super>n</super> = '
+                           'a<super>n</super>/{b<super>n</super>}, con a,b ≠ '
+                           '0.',
+                           'Exponente negativo de un cociente: '
+                           '(a/b)<super>-n</super> = '
+                           '({b/a})<super>n</super>, con a,b ≠ 0.',
+                           'Exponente fraccionario: a<super>m/n</super> = '
+                           '{<super>n</super>√(a<super>m</super>)}.']},
+                {'titulo': '1.4 RADICACIÓN: DEFINICIÓN Y ELEMENTOS',
+                 'items': ['Una {radicación} se define: <super>n</super>√a = '
+                           'b &#8660; b<super>n</super> = a.',
+                           '«a» es el {radicando}; «n» es el {índice} del '
+                           'radical (n ∈ N, n ≥ 2); «b» es la raíz n-ésima '
+                           'de «a».']},
+                {'titulo': '1.5 PROPIEDADES DE LA RADICACIÓN',
+                 'items': ['(<super>n</super>√a)<super>n</super> = {a}, con '
+                           'n ∈ N, n ≥ 2.',
+                           '<super>n</super>√(a<super>n</super>) = a si n es '
+                           '{par} (a≥0) o si n es {impar} (cualquier a).',
+                           '<super>n</super>√(a.b) = <super>n</super>√a . '
+                           '{<super>n</super>√b}, con n ∈ N.',
+                           '<super>n</super>√(a/b) = <super>n</super>√a / '
+                           '{<super>n</super>√b}, con b ≠ 0.',
+                           'Raíz de raíz: '
+                           '<super>m</super>√(<super>n</super>√a) = '
+                           '{<super>m.n</super>√a}, con m,n ∈ N.',
+                           '<super>k.n</super>√(b<super>k.m</super>) = '
+                           '<super>n</super>√(b<super>m</super>) = '
+                           '{b<super>m/n</super>}, donde k ∈ N.']},
+                {'titulo': '1.6 ECUACIONES EXPONENCIALES: DEFINICIÓN Y '
+                           'PROPIEDADES',
+                 'items': ['Las {ecuaciones exponenciales} son aquellas que '
+                           'contienen la incógnita en el exponente, y en '
+                           'otros casos como exponente y base a la vez.',
+                           'Si a<super>x</super> = a<super>y</super>, '
+                           'entonces {x = y}, para todo a ∈ '
+                           'R<super>+</super>-{1}.',
+                           'Si x<super>n</super> = y<super>n</super>, '
+                           'entonces {x = y}, para todo x,y ∈ '
+                           'R<super>+</super>, n ∈ Z<super>+</super>.',
+                           'Si x<super>x</super> = a<super>a</super>, '
+                           'entonces {x = a}, para todo x,a ∈ '
+                           'R<super>+</super>.',
+                           'Si x<super>n</super> = b, entonces {x = '
+                           '<super>n</super>√b}, con x ≥ 0, n ∈ '
+                           'Z<super>+</super>.']}],
+  'ejercicios': [{'enunciado': 'Al simplificar la expresión Q = '
+                               '(3<super>a+4</super>·9<super>a+2b</super>) / '
+                               '(27<super>a-1</super>·81<super>b+1</super>), '
+                               'se obtiene:',
+                  'alternativas': ['27', '28', '23', '3', '9'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El valor de «k» en la expresión k = '
+                               '(5<super>2n/(n-1)</super> + '
+                               '35·5<super>2/(n-1)</super>) / '
+                               '<super>n-1</super>√(5<super>n+1</super>); n '
+                               '≠ 1, es:',
+                  'alternativas': ['10', '5', '12', '7', '2'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Si se cumple que 3<super>n-1</super> = '
+                               '2<super>2n</super>, el valor de la expresión '
+                               'A = (3<super>n+1</super> + '
+                               '2<super>2n+1</super>) / (3<super>n</super> + '
+                               '2<super>2n+3</super>), es:',
+                  'alternativas': ['1', '5', '21', '10', '3'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si x<super>x</super> = 2, luego el valor de '
+                               'J = x<super>x·(x^x+1)</super>, es:',
+                  'alternativas': ['2', '4', '√2', '1/2', '8'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al simplificar la expresión N = '
+                               '(2<super>n+3</super> - 2<super>n+1</super>) '
+                               '/ (2<super>n+2</super> + 2<super>n</super>), '
+                               'se obtiene:',
+                  'alternativas': ['6/5', '5/6', '8/5', '1', '2'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Si 3<super>x</super> = 5, el valor de '
+                               '3<super>2x</super> es:',
+                  'alternativas': ['10', '15', '25', '5', '9'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar √8 · √2, se obtiene:',
+                  'alternativas': ['2', '3', '4', '6', '8'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si x<super>1/2</super> = 3, el valor de «x» '
+                               'es:',
+                  'alternativas': ['3', '6', '9', '1/9', '1/3'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar (2<super>5</super> · '
+                               '2<super>3</super>) / 2<super>6</super>, se '
+                               'obtiene:',
+                  'alternativas': ['2', '4', '8', '16', '1'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si 5<super>x-1</super> = 25, el valor de «x» '
+                               'es:',
+                  'alternativas': ['1', '2', '3', '4', '5'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El valor de <super>3</super>√27 + √16 es:',
+                  'alternativas': ['5', '6', '7', '8', '9'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar '
+                               '(a<super>3</super>)<super>2</super> / '
+                               'a<super>4</super>, con a ≠ 0, se obtiene:',
+                  'alternativas': ['a',
+                                   'a<super>2</super>',
+                                   'a<super>3</super>',
+                                   'a<super>4</super>',
+                                   'a<super>6</super>'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si 2<super>x</super> · 2<super>3</super> = '
+                               '2<super>10</super>, el valor de «x» es:',
+                  'alternativas': ['5', '6', '7', '8', '13'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al resolver √(x+7) = 4, el valor de «x» es:',
+                  'alternativas': ['7', '8', '9', '16', '23'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El valor de √9 + √4 es:',
+                  'alternativas': ['3', '4', '5', '6', '13'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si x,y ∈ R, x,y ≠ 0, el valor de k = '
+                               'x<super>0</super> + y<super>0</super> es:',
+                  'alternativas': ['0', '1', '2', 'x+y', 'xy'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si 2<super>3x</super> = 64, el valor de «x» '
+                               'es:',
+                  'alternativas': ['1', '2', '3', '4', '6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al simplificar √3 · √27, se obtiene:',
+                  'alternativas': ['3', '6', '9', '27', '81'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si a<super>n</super> = 8 y a<super>m</super> '
+                               '= 2, el valor de a<super>n-m</super> es:',
+                  'alternativas': ['2', '4', '6', '10', '16'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El valor de «x» en la ecuación '
+                               '4<super>x</super> = 8<super>2</super> es:',
+                  'alternativas': ['2', '3', '4', '6', '8'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al simplificar '
+                               '(x<super>2</super>)<super>3</super> · x / '
+                               'x<super>6</super>, con x ≠ 0, se obtiene:',
+                  'alternativas': ['1',
+                                   'x',
+                                   'x<super>2</super>',
+                                   'x<super>3</super>',
+                                   'x<super>6</super>'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si 7<super>2x+1</super> = 7<super>9</super>, '
+                               'el valor de «x» es:',
+                  'alternativas': ['2', '3', '4', '5', '9'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El valor de <super>4</super>√16 es:',
+                  'alternativas': ['2', '4', '8', '16', '1'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al simplificar 3<super>5</super> ÷ '
+                               '3<super>2</super>, se obtiene:',
+                  'alternativas': ['3', '9', '27', '81', '243'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si x<super>3</super> = 27, el valor de '
+                               'x<super>2</super> es:',
+                  'alternativas': ['3', '6', '9', '18', '81'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El valor de (0,5)<super>-2</super> es:',
+                  'alternativas': ['0,25', '0,5', '1', '2', '4'],
+                  'correcta': 'E'},
+                 {'enunciado': 'Al simplificar √50 / √2, se obtiene:',
+                  'alternativas': ['2', '5', '10', '25', '100'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si x<super>1/3</super> = 2, el valor de «x» '
+                               'es:',
+                  'alternativas': ['2/3', '2', '4', '6', '8'],
+                  'correcta': 'E'},
+                 {'enunciado': 'El valor de 5<super>0</super> + '
+                               '5<super>1</super> es:',
+                  'alternativas': ['1', '5', '6', '10', '25'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si 3<super>x</super> = 1/9, el valor de «x» '
+                               'es:',
+                  'alternativas': ['-3', '-2', '1/2', '2', '3'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al simplificar '
+                               '(2<super>-1</super>)<super>-3</super>, se '
+                               'obtiene:',
+                  'alternativas': ['1/8', '1/2', '2', '4', '8'],
+                  'correcta': 'E'},
+                 {'enunciado': 'El valor de √(1/4) es:',
+                  'alternativas': ['1/16', '1/4', '1/2', '2', '4'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si x<super>2</super> = 49, el valor positivo '
+                               'de «x» es:',
+                  'alternativas': ['3', '5', '7', '9', '49'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar 10<super>3</super> · '
+                               '10<super>-1</super>, se obtiene:',
+                  'alternativas': ['10', '100', '1000', '0,1', '1'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si <super>3</super>√x = 4, el valor de «x» '
+                               'es:',
+                  'alternativas': ['12', '16', '48', '64', '4/3'],
+                  'correcta': 'D'},
+                 {'enunciado': 'Al simplificar '
+                               '(a<super>2</super>·b<super>3</super>)<super>2</super>, '
+                               'se obtiene:',
+                  'alternativas': ['a<super>2</super>b<super>3</super>',
+                                   'a<super>4</super>b<super>5</super>',
+                                   'a<super>4</super>b<super>6</super>',
+                                   'a<super>4</super>b<super>3</super>',
+                                   'a<super>2</super>b<super>6</super>'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Si 6<super>x</super> = 1, el valor de «x» '
+                               'es:',
+                  'alternativas': ['-1', '0', '1', '6', '1/6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El valor de √64 - √16 es:',
+                  'alternativas': ['2', '3', '4', '6', '8'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar 2<super>4</super> · '
+                               '2<super>-2</super>, se obtiene:',
+                  'alternativas': ['2', '4', '6', '8', '16'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si 9<super>x</super> = 3, el valor de «x» '
+                               'es:',
+                  'alternativas': ['1/3', '1/2', '2', '3', '9'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al simplificar √5 · √5, se obtiene:',
+                  'alternativas': ['5', '10', '25', '√5', '√10'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Si m<super>3</super> = 64, el valor de «m» '
+                               'es:',
+                  'alternativas': ['2', '4', '6', '8', '16'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El valor de 2<super>-3</super> es:',
+                  'alternativas': ['-8', '-6', '1/8', '1/6', '8'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar '
+                               '(3<super>2</super>)<super>0</super>, se '
+                               'obtiene:',
+                  'alternativas': ['0', '1', '3', '6', '9'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Si a<super>5</super> ÷ a<super>2</super> = '
+                               'a<super>k</super>, con a ≠ 0, el valor de '
+                               '«k» es:',
+                  'alternativas': ['1', '2', '3', '7', '10'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El valor de √0,09 es:',
+                  'alternativas': ['0,03', '0,09', '0,3', '0,9', '3'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al simplificar 4<super>1/2</super> · '
+                               '9<super>1/2</super>, se obtiene:',
+                  'alternativas': ['3', '4', '5', '6', '9'],
+                  'correcta': 'D'},
+                 {'enunciado': 'Si x<super>-2</super> = 1/25, el valor '
+                               'positivo de «x» es:',
+                  'alternativas': ['1/5', '5', '10', '25', '125'],
+                  'correcta': 'B'}]}]
