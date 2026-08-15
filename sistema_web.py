@@ -6986,6 +6986,83 @@ def tab_matricula(config):
     with tab_pdf:
         _seccion_registros_pdf(config)
 
+    with tab_portal:
+        st.subheader("🖥️ Registrar acceso al Portal Virtual")
+        st.caption("Crea un usuario y contraseña para que un estudiante "
+                   "ya matriculado pueda entrar a la Academia Yachay "
+                   "Virtual (fichas, exámenes, progreso).")
+
+        matricula_df = BaseDatos.cargar_matricula()
+        if matricula_df.empty:
+            st.info("Todavía no hay estudiantes matriculados.")
+        else:
+            opciones_alumno = {
+                f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
+                for _, row in matricula_df.iterrows()
+            }
+            alumno_elegido = st.selectbox(
+                "Estudiante:", list(opciones_alumno.keys()),
+                key="mp_alumno_sel")
+            dni_elegido = opciones_alumno[alumno_elegido]
+
+            c1, c2 = st.columns(2)
+            with c1:
+                usuario_nuevo = st.text_input(
+                    "Usuario:", key="mp_usuario",
+                    placeholder="Ej: juan.perez")
+            with c2:
+                password_nueva = st.text_input(
+                    "Contraseña:", key="mp_password",
+                    placeholder="Mínimo 4 caracteres")
+
+            if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
+                        use_container_width=True, key="mp_btn_crear"):
+                if not usuario_nuevo.strip() or len(password_nueva) < 4:
+                    st.error("Completa un usuario y una contraseña de "
+                            "al menos 4 caracteres.")
+                else:
+                    gs = _gs()
+                    if gs:
+                        import datetime as _dt_mod
+                        ok = gs.guardar_credencial_portal({
+                            'dni': dni_elegido,
+                            'usuario': usuario_nuevo.strip(),
+                            'password': password_nueva,
+                            'activo': 'SI',
+                            'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
+                            'creado_por': st.session_state.get('usuario_actual', ''),
+                        })
+                        if ok:
+                            st.success(f"✅ Acceso creado para {alumno_elegido}. "
+                                      f"Usuario: **{usuario_nuevo.strip()}**")
+                        else:
+                            st.error("No se pudo guardar. Intenta de nuevo.")
+                    else:
+                        st.error("No hay conexión con Google Sheets en este momento.")
+
+        st.markdown("---")
+        st.markdown("#### 📋 Accesos ya creados")
+        gs = _gs()
+        if gs:
+            credenciales = gs.leer_credenciales_portal()
+            if credenciales:
+                filas_mostrar = []
+                for dni_c, datos_c in credenciales.items():
+                    nombre_c = ""
+                    if not matricula_df.empty:
+                        coincidencia = matricula_df[
+                            matricula_df['DNI'].astype(str).str.strip() == dni_c]
+                        if not coincidencia.empty:
+                            nombre_c = coincidencia.iloc[0]['Nombre']
+                    filas_mostrar.append({
+                        "DNI": dni_c, "Nombre": nombre_c,
+                        "Usuario": datos_c['usuario'],
+                        "Activo": "✅" if datos_c['activo'] else "❌",
+                    })
+                st.dataframe(filas_mostrar, use_container_width=True, hide_index=True)
+            else:
+                st.caption("Todavía no se ha creado ningún acceso.")
+
 
 
 
@@ -11076,82 +11153,6 @@ def _seccion_registros_pdf(config):
                                f"RegAsist_{gp}.pdf", "application/pdf", key="dras")
 
 
-    with tab_portal:
-        st.subheader("🖥️ Registrar acceso al Portal Virtual")
-        st.caption("Crea un usuario y contraseña para que un estudiante "
-                   "ya matriculado pueda entrar a la Academia Yachay "
-                   "Virtual (fichas, exámenes, progreso).")
-
-        matricula_df = BaseDatos.cargar_matricula()
-        if matricula_df.empty:
-            st.info("Todavía no hay estudiantes matriculados.")
-        else:
-            opciones_alumno = {
-                f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
-                for _, row in matricula_df.iterrows()
-            }
-            alumno_elegido = st.selectbox(
-                "Estudiante:", list(opciones_alumno.keys()),
-                key="mp_alumno_sel")
-            dni_elegido = opciones_alumno[alumno_elegido]
-
-            c1, c2 = st.columns(2)
-            with c1:
-                usuario_nuevo = st.text_input(
-                    "Usuario:", key="mp_usuario",
-                    placeholder="Ej: juan.perez")
-            with c2:
-                password_nueva = st.text_input(
-                    "Contraseña:", key="mp_password",
-                    placeholder="Mínimo 4 caracteres")
-
-            if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
-                        use_container_width=True, key="mp_btn_crear"):
-                if not usuario_nuevo.strip() or len(password_nueva) < 4:
-                    st.error("Completa un usuario y una contraseña de "
-                            "al menos 4 caracteres.")
-                else:
-                    gs = _gs()
-                    if gs:
-                        import datetime as _dt_mod
-                        ok = gs.guardar_credencial_portal({
-                            'dni': dni_elegido,
-                            'usuario': usuario_nuevo.strip(),
-                            'password': password_nueva,
-                            'activo': 'SI',
-                            'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
-                            'creado_por': st.session_state.get('usuario_actual', ''),
-                        })
-                        if ok:
-                            st.success(f"✅ Acceso creado para {alumno_elegido}. "
-                                      f"Usuario: **{usuario_nuevo.strip()}**")
-                        else:
-                            st.error("No se pudo guardar. Intenta de nuevo.")
-                    else:
-                        st.error("No hay conexión con Google Sheets en este momento.")
-
-        st.markdown("---")
-        st.markdown("#### 📋 Accesos ya creados")
-        gs = _gs()
-        if gs:
-            credenciales = gs.leer_credenciales_portal()
-            if credenciales:
-                filas_mostrar = []
-                for dni_c, datos_c in credenciales.items():
-                    nombre_c = ""
-                    if not matricula_df.empty:
-                        coincidencia = matricula_df[
-                            matricula_df['DNI'].astype(str).str.strip() == dni_c]
-                        if not coincidencia.empty:
-                            nombre_c = coincidencia.iloc[0]['Nombre']
-                    filas_mostrar.append({
-                        "DNI": dni_c, "Nombre": nombre_c,
-                        "Usuario": datos_c['usuario'],
-                        "Activo": "✅" if datos_c['activo'] else "❌",
-                    })
-                st.dataframe(filas_mostrar, use_container_width=True, hide_index=True)
-            else:
-                st.caption("Todavía no se ha creado ningún acceso.")
 
 
 # ================================================================
