@@ -4596,13 +4596,32 @@ def tab_portal_estudiante():
 
     @st.cache_data(show_spinner=False, ttl=86400)
     def _generar_audio_mp3(_texto, _clave_cache):
-        """Genera el audio MP3 de un texto usando gTTS. Se cachea por
-        clave (área+tema) para no regenerar el mismo audio cada vez.
-        Devuelve None si falla (sin conexión, cuota agotada, etc.),
-        para que el portal no se caiga si el audio no está disponible."""
+        """Genera el audio MP3 de un texto usando una voz neuronal
+        (edge-tts, voz en español de Perú, mucho más natural que una
+        voz robótica clásica). Si por algún motivo no está disponible,
+        cae automáticamente a gTTS como respaldo. Se cachea por clave
+        (área+tema) para no regenerar el mismo audio cada vez. Devuelve
+        None solo si ambas opciones fallan, para que el portal no se
+        caiga si el audio no está disponible."""
+        import io as _io_audio
+        try:
+            import edge_tts
+            import asyncio
+
+            async def _sintetizar():
+                comunicador = edge_tts.Communicate(
+                    _texto, voice="es-PE-CamilaNeural", rate="+0%")
+                trozos = bytearray()
+                async for fragmento in comunicador.stream():
+                    if fragmento["type"] == "audio":
+                        trozos.extend(fragmento["data"])
+                return bytes(trozos)
+
+            return asyncio.run(_sintetizar())
+        except Exception:
+            pass
         try:
             from gtts import gTTS
-            import io as _io_audio
             tts = gTTS(text=_texto, lang="es", slow=False)
             buf = _io_audio.BytesIO()
             tts.write_to_fp(buf)

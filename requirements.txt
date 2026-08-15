@@ -18,3 +18,4 @@ jsonschema==4.26.0
 referencing==0.37.0
 pyarrow==17.0.0
 gtts==2.5.4
+edge-tts==6.1.19
