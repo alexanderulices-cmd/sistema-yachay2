@@ -50,9 +50,9 @@ COLUMNAS = {
                      'accion_inmediata', 'compromisos', 'derivacion',
                      'registrado_por'],
     'fotos': ['dni', 'nombre', 'tipo', 'foto_base64', 'fecha'],
-    'portal_credenciales': ['dni', 'usuario', 'password', 'activo',
-                             'fecha_creacion', 'creado_por'],
-    'portal_resultados': ['dni', 'fecha', 'tipo', 'area', 'tema_num',
+    'portal_credenciales': ['usuario', 'password', 'nombre_completo',
+                             'activo', 'fecha_creacion', 'creado_por'],
+    'portal_resultados': ['usuario', 'fecha', 'tipo', 'area', 'tema_num',
                            'tema_titulo', 'aciertos', 'total', 'nota'],
     'historial_eval': ['eval_id', 'fecha', 'docente', 'titulo', 'grado',
                         'areas_json', 'total_alumnos', 'promedio_general'],
@@ -223,19 +223,20 @@ class GoogleSync:
             return {}
 
     def guardar_credencial_portal(self, datos):
-        """Crea o actualiza el usuario/contraseña del Portal Virtual para
-        un estudiante (identificado por DNI). Sigue el mismo patrón de
-        'crear si no existe, actualizar si ya existe' que guardar_asistencia."""
+        """Crea o actualiza el usuario/contraseña del Portal Virtual. El
+        'usuario' es la clave única (no requiere DNI ni matrícula previa):
+        sigue el mismo patrón de 'crear si no existe, actualizar si ya
+        existe' que guardar_asistencia."""
         ws = self._get_hoja('portal_credenciales')
         if ws is None:
             return False
         try:
             all_data = ws.get_all_records()
-            dni_buscado = str(datos.get('dni', '')).strip()
+            usuario_buscado = str(datos.get('usuario', '')).strip().lower()
             for i, row in enumerate(all_data):
-                if str(row.get('dni', '')).strip() == dni_buscado:
+                if str(row.get('usuario', '')).strip().lower() == usuario_buscado:
                     row_num = i + 2
-                    campos = ['usuario', 'password', 'activo',
+                    campos = ['password', 'nombre_completo', 'activo',
                               'fecha_creacion', 'creado_por']
                     for campo in campos:
                         valor = datos.get(campo, '')
@@ -250,8 +251,15 @@ class GoogleSync:
         except Exception:
             return False
 
+    def usuario_portal_existe(self, usuario):
+        """Verifica si un nombre de usuario del Portal Virtual ya está
+        en uso, para poder sugerir uno distinto al registrar."""
+        credenciales = self.leer_credenciales_portal()
+        return usuario.strip().lower() in credenciales
+
     def leer_credenciales_portal(self):
-        """Lee todas las credenciales del Portal Virtual → dict {dni: {...}}"""
+        """Lee todas las credenciales del Portal Virtual → dict
+        {usuario_en_minusculas: {...}}"""
         ws = self._get_hoja('portal_credenciales')
         if ws is None:
             return {}
@@ -259,15 +267,16 @@ class GoogleSync:
             data = ws.get_all_records()
             credenciales = {}
             for row in data:
-                dni = str(row.get('dni', '')).strip().replace('.0', '')
-                if not dni:
+                usuario = str(row.get('usuario', '')).strip()
+                if not usuario:
                     continue
                 pwd = str(row.get('password', '')).strip()
                 if pwd.endswith('.0'):
                     pwd = pwd[:-2]
-                credenciales[dni] = {
-                    'usuario': str(row.get('usuario', '')).strip(),
+                credenciales[usuario.lower()] = {
+                    'usuario': usuario,
                     'password': pwd,
+                    'nombre_completo': str(row.get('nombre_completo', '')).strip(),
                     'activo': str(row.get('activo', '')).strip().upper() in ('SI', 'TRUE', '1'),
                 }
             return credenciales
@@ -288,18 +297,18 @@ class GoogleSync:
         except Exception:
             return False
 
-    def leer_resultados_portal(self, dni=None):
+    def leer_resultados_portal(self, usuario=None):
         """Lee los resultados del Portal Virtual, opcionalmente filtrados
-        por DNI de un solo estudiante."""
+        por un solo usuario."""
         ws = self._get_hoja('portal_resultados')
         if ws is None:
             return []
         try:
             data = ws.get_all_records()
-            if dni:
-                dni_buscado = str(dni).strip()
+            if usuario:
+                usuario_buscado = str(usuario).strip().lower()
                 data = [r for r in data
-                       if str(r.get('dni', '')).strip() == dni_buscado]
+                       if str(r.get('usuario', '')).strip().lower() == usuario_buscado]
             return data
         except Exception:
             return []

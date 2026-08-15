@@ -4390,9 +4390,9 @@ def tab_portal_estudiante():
         local para que el portal nunca se quede sin mostrar nada."""
         gs = _gs()
         if gs:
-            filas = gs.leer_resultados_portal(dni=dni_sesion)
+            filas = gs.leer_resultados_portal(usuario=usuario_sesion)
             if filas:
-                return {dni_sesion: [
+                return {usuario_sesion: [
                     {
                         "fecha": f.get("fecha", ""), "area": f.get("area", ""),
                         "tema_num": f.get("tema_num", ""),
@@ -4404,7 +4404,7 @@ def tab_portal_estudiante():
                 ]}
         return _cargar_resultados_local()
 
-    def _guardar_resultado(dni, registro):
+    def _guardar_resultado(usuario, registro):
         """Guarda un resultado en Google Sheets (permanente); además
         guarda una copia local como respaldo por si se pierde la
         conexión momentáneamente."""
@@ -4412,7 +4412,7 @@ def tab_portal_estudiante():
         guardado_en_gs = False
         if gs:
             guardado_en_gs = gs.guardar_resultado_portal({
-                "dni": dni, "fecha": registro["fecha"],
+                "usuario": usuario, "fecha": registro["fecha"],
                 "tipo": "semanal" if registro["tema_num"] == "-" else "tema",
                 "area": registro["area"], "tema_num": registro["tema_num"],
                 "tema_titulo": registro["tema_titulo"],
@@ -4420,7 +4420,7 @@ def tab_portal_estudiante():
                 "nota": registro["nota"],
             })
         if not guardado_en_gs:
-            _guardar_resultado_local(dni, registro)
+            _guardar_resultado_local(usuario, registro)
 
     # ── YACHAYCITO: personaje motivador del portal ────────────────
     def _yachaycito_dice(mensaje, color="#B8790F"):
@@ -4470,7 +4470,7 @@ def tab_portal_estudiante():
 
     # ── Botón de salida ────────────────────────────────────────────
     if st.button("← Volver al inicio", key="portal_est_volver", type="primary"):
-        for k in ['_portal_estudiante', '_portal_est_dni', '_portal_est_datos']:
+        for k in ['_portal_estudiante', '_portal_est_usuario', '_portal_est_nombre']:
             st.session_state.pop(k, None)
         st.rerun()
 
@@ -4488,9 +4488,9 @@ def tab_portal_estudiante():
     # ════════════════════════════════════════════════════════════
     # LOGIN
     # ════════════════════════════════════════════════════════════
-    dni_sesion = st.session_state.get('_portal_est_dni')
+    usuario_sesion = st.session_state.get('_portal_est_usuario')
 
-    if not dni_sesion:
+    if not usuario_sesion:
         st.markdown("#### 🔐 Ingresa con tu usuario y contraseña")
         c1, c2 = st.columns(2)
         with c1:
@@ -4510,49 +4510,31 @@ def tab_portal_estudiante():
             else:
                 gs = _gs()
                 credenciales = gs.leer_credenciales_portal() if gs else {}
-                dni_encontrado = None
-                for dni_c, datos_c in credenciales.items():
-                    if (datos_c['usuario'].lower() == usuario_ingresado.strip().lower()
-                            and datos_c['activo']):
-                        dni_encontrado = dni_c
-                        datos_credencial = datos_c
-                        break
-                if dni_encontrado is None:
+                datos_credencial = credenciales.get(usuario_ingresado.strip().lower())
+                if datos_credencial is None or not datos_credencial['activo']:
                     st.error("Usuario no encontrado o inactivo. Pide a tu "
                              "profesor que verifique tu acceso.")
                 elif password_ingresada != datos_credencial['password']:
                     st.error("Contraseña incorrecta.")
                 else:
-                    matricula = BaseDatos.cargar_matricula()
-                    fila = matricula[matricula['DNI'].astype(str).str.strip() == dni_encontrado]
-                    if fila.empty:
-                        st.error("Tu usuario existe pero no encontramos tu "
-                                 "ficha de matrícula. Avisa a tu profesor.")
-                    else:
-                        st.session_state['_portal_est_dni'] = dni_encontrado
-                        st.session_state['_portal_est_datos'] = fila.iloc[0].to_dict()
-                        st.toast(f"✅ Bienvenido/a, {fila.iloc[0]['Nombre']}")
-                        st.rerun()
+                    st.session_state['_portal_est_usuario'] = datos_credencial['usuario']
+                    st.session_state['_portal_est_nombre'] = datos_credencial['nombre_completo']
+                    st.toast(f"✅ Bienvenido/a, {datos_credencial['nombre_completo']}")
+                    st.rerun()
         return
 
     # ════════════════════════════════════════════════════════════
     # PANEL DEL ESTUDIANTE (ya con sesión iniciada)
     # ════════════════════════════════════════════════════════════
-    datos = st.session_state.get('_portal_est_datos', {})
-    nombre = datos.get('Nombre', '')
-    nivel = datos.get('Nivel', '')
-    grado = datos.get('Grado', '')
-    seccion = datos.get('Seccion', '')
-    sexo = datos.get('Sexo', '')
-    avatar = "👦" if sexo == "Masculino" else "👧"
+    nombre = st.session_state.get('_portal_est_nombre', '')
 
     c_av, c_info = st.columns([1, 4])
     with c_av:
-        st.markdown(f"<div style='font-size:4rem;text-align:center;'>{avatar}</div>",
+        st.markdown("<div style='font-size:4rem;text-align:center;'>🎓</div>",
                    unsafe_allow_html=True)
     with c_info:
         st.markdown(f"### {nombre}")
-        st.markdown(f"**Nivel:** {nivel}  ·  **Grado:** {grado}  ·  **Grupo:** {seccion}")
+        st.markdown(f"**Usuario:** {usuario_sesion}")
 
     _primer_nombre = nombre.split()[0].title() if nombre else "campeón"
     _saludos_yachaycito = [
@@ -4572,12 +4554,6 @@ def tab_portal_estudiante():
     # FASE 2: MIS FICHAS DE ESTUDIO
     # ════════════════════════════════════════════════════════════
     st.markdown("### 📚 Mis Fichas de Estudio")
-
-    if nivel != "PREUNIVERSITARIO":
-        st.warning("📌 Las fichas virtuales por ahora están disponibles "
-                   "solo para estudiantes de **Preuniversitario (CEPRU)**. "
-                   "Pronto se habilitarán para los demás niveles.")
-        return
 
     try:
         from academia_cepru import AREAS_CEPRU
@@ -4637,7 +4613,7 @@ def tab_portal_estudiante():
     c_desc, c_ver, c_audio = st.columns(3)
     with c_desc:
         try:
-            pdf_bytes = generar_ficha_texto(tema, False, f"Grupo {seccion}",
+            pdf_bytes = generar_ficha_texto(tema, False, "Academia Virtual",
                                             area=area_info["area_pie"])
             st.download_button(
                 "📄 Descargar ficha para completar (PDF)",
@@ -4760,7 +4736,7 @@ def tab_portal_estudiante():
                     _total_guardar = len(preguntas_examen)
                     if not estado_examen.get("ya_guardado"):
                         import datetime as _dt_mod
-                        _guardar_resultado(dni_sesion, {
+                        _guardar_resultado(usuario_sesion, {
                             "fecha": _dt_mod.datetime.now().strftime("%Y-%m-%d %H:%M"),
                             "area": area_info["area_pie"],
                             "tema_num": tema["num"],
@@ -4885,7 +4861,7 @@ def tab_portal_estudiante():
                 _total_sem = len(preguntas_sem)
                 if not estado_semanal.get("ya_guardado"):
                     import datetime as _dt_mod
-                    _guardar_resultado(dni_sesion, {
+                    _guardar_resultado(usuario_sesion, {
                         "fecha": _dt_mod.datetime.now().strftime("%Y-%m-%d %H:%M"),
                         "area": "📅 Examen Semanal (todos los cursos)",
                         "tema_num": "-", "tema_titulo": "Repaso integrador",
@@ -4948,7 +4924,7 @@ def tab_portal_estudiante():
     st.markdown("### 📊 Mi Progreso")
 
     resultados_todos = _cargar_resultados()
-    mis_resultados = resultados_todos.get(dni_sesion, [])
+    mis_resultados = resultados_todos.get(usuario_sesion, [])
 
     if not mis_resultados:
         st.caption("Todavía no rendiste ningún examen. "
@@ -6990,76 +6966,63 @@ def tab_matricula(config):
                    "ya matriculado pueda entrar a la Academia Yachay "
                    "Virtual (fichas, exámenes, progreso).")
 
-        matricula_df = BaseDatos.cargar_matricula()
-        if matricula_df.empty:
-            st.info("Todavía no hay estudiantes matriculados.")
-        else:
-            c_niv, c_gra = st.columns(2)
-            with c_niv:
-                niveles_disp = ["Todos"] + sorted(
-                    matricula_df["Nivel"].dropna().unique().tolist())
-                nivel_filtro = st.selectbox("Filtrar por nivel:", niveles_disp,
-                                            key="mp_filtro_nivel")
-            with c_gra:
-                df_por_nivel = (matricula_df if nivel_filtro == "Todos"
-                                else matricula_df[matricula_df["Nivel"] == nivel_filtro])
-                grados_disp = ["Todos"] + sorted(
-                    df_por_nivel["Grado"].dropna().unique().tolist())
-                grado_filtro = st.selectbox("Filtrar por grado:", grados_disp,
-                                            key="mp_filtro_grado")
+        st.caption("Registro simple y directo: escribe el nombre del "
+                   "estudiante y créale una contraseña. Tendrá acceso a "
+                   "los 7 cursos automáticamente — no hace falta que "
+                   "esté matriculado en el sistema principal.")
 
-            df_filtrado = matricula_df
-            if nivel_filtro != "Todos":
-                df_filtrado = df_filtrado[df_filtrado["Nivel"] == nivel_filtro]
-            if grado_filtro != "Todos":
-                df_filtrado = df_filtrado[df_filtrado["Grado"] == grado_filtro]
+        c1, c2 = st.columns(2)
+        with c1:
+            nombre_nuevo = st.text_input(
+                "Nombre completo del estudiante:", key="mp_nombre",
+                placeholder="Ej: Juan Pérez García")
+        with c2:
+            password_nueva = st.text_input(
+                "Contraseña:", key="mp_password",
+                placeholder="Mínimo 4 caracteres")
 
-            if df_filtrado.empty:
-                st.warning("Ningún estudiante coincide con ese filtro.")
+        if st.button("✅ CREAR ACCESO AL PORTAL", type="primary",
+                    use_container_width=True, key="mp_btn_crear"):
+            if not nombre_nuevo.strip() or len(password_nueva) < 4:
+                st.error("Completa el nombre y una contraseña de "
+                        "al menos 4 caracteres.")
             else:
-                opciones_alumno = {
-                    f"{row['Nombre']} — DNI {row['DNI']}": row['DNI']
-                    for _, row in df_filtrado.iterrows()
-                }
-                alumno_elegido = st.selectbox(
-                    f"Estudiante ({len(opciones_alumno)} encontrados):",
-                    list(opciones_alumno.keys()), key="mp_alumno_sel")
-                dni_elegido = opciones_alumno[alumno_elegido]
+                gs = _gs()
+                if gs:
+                    import unicodedata as _unicode_mod
+                    import datetime as _dt_mod
 
-                c1, c2 = st.columns(2)
-                with c1:
-                    usuario_nuevo = st.text_input(
-                        "Usuario:", key="mp_usuario",
-                        placeholder="Ej: juan.perez")
-                with c2:
-                    password_nueva = st.text_input(
-                        "Contraseña:", key="mp_password",
-                        placeholder="Mínimo 4 caracteres")
+                    def _sin_tildes_usuario(s):
+                        return "".join(
+                            c for c in _unicode_mod.normalize("NFD", s)
+                            if _unicode_mod.category(c) != "Mn")
 
-                if st.button("✅ CREAR / ACTUALIZAR ACCESO", type="primary",
-                            use_container_width=True, key="mp_btn_crear"):
-                    if not usuario_nuevo.strip() or len(password_nueva) < 4:
-                        st.error("Completa un usuario y una contraseña de "
-                                "al menos 4 caracteres.")
+                    partes_nombre = nombre_nuevo.strip().split()
+                    base_usuario = _sin_tildes_usuario(
+                        ".".join(partes_nombre[:2]).lower())
+                    base_usuario = "".join(
+                        ch for ch in base_usuario if ch.isalnum() or ch == ".")
+                    usuario_final = base_usuario
+                    sufijo = 1
+                    while gs.usuario_portal_existe(usuario_final):
+                        sufijo += 1
+                        usuario_final = f"{base_usuario}{sufijo}"
+
+                    ok = gs.guardar_credencial_portal({
+                        'usuario': usuario_final,
+                        'password': password_nueva,
+                        'nombre_completo': nombre_nuevo.strip(),
+                        'activo': 'SI',
+                        'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
+                        'creado_por': st.session_state.get('usuario_actual', ''),
+                    })
+                    if ok:
+                        st.success(f"✅ Acceso creado para **{nombre_nuevo.strip()}**. "
+                                  f"Su usuario es: **{usuario_final}**")
                     else:
-                        gs = _gs()
-                        if gs:
-                            import datetime as _dt_mod
-                            ok = gs.guardar_credencial_portal({
-                                'dni': dni_elegido,
-                                'usuario': usuario_nuevo.strip(),
-                                'password': password_nueva,
-                                'activo': 'SI',
-                                'fecha_creacion': _dt_mod.datetime.now().strftime("%Y-%m-%d"),
-                                'creado_por': st.session_state.get('usuario_actual', ''),
-                            })
-                            if ok:
-                                st.success(f"✅ Acceso creado para {alumno_elegido}. "
-                                          f"Usuario: **{usuario_nuevo.strip()}**")
-                            else:
-                                st.error("No se pudo guardar. Intenta de nuevo.")
-                        else:
-                            st.error("No hay conexión con Google Sheets en este momento.")
+                        st.error("No se pudo guardar. Intenta de nuevo.")
+                else:
+                    st.error("No hay conexión con Google Sheets en este momento.")
 
         st.markdown("---")
         st.markdown("#### 📋 Accesos ya creados")
@@ -7067,19 +7030,14 @@ def tab_matricula(config):
         if gs:
             credenciales = gs.leer_credenciales_portal()
             if credenciales:
-                filas_mostrar = []
-                for dni_c, datos_c in credenciales.items():
-                    nombre_c = ""
-                    if not matricula_df.empty:
-                        coincidencia = matricula_df[
-                            matricula_df['DNI'].astype(str).str.strip() == dni_c]
-                        if not coincidencia.empty:
-                            nombre_c = coincidencia.iloc[0]['Nombre']
-                    filas_mostrar.append({
-                        "DNI": dni_c, "Nombre": nombre_c,
+                filas_mostrar = [
+                    {
+                        "Nombre": datos_c['nombre_completo'],
                         "Usuario": datos_c['usuario'],
                         "Activo": "✅" if datos_c['activo'] else "❌",
-                    })
+                    }
+                    for datos_c in credenciales.values()
+                ]
                 st.dataframe(filas_mostrar, use_container_width=True, hide_index=True)
             else:
                 st.caption("Todavía no se ha creado ningún acceso.")
