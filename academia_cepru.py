@@ -19,6 +19,11 @@ from fichas_historia import (generar_ficha_texto, generar_banco_preguntas,
                              balancear, muestrear, TAMANOS_EXAMEN,
                              contar_espacios, LETRAS, _PATRON)
 
+try:
+    from fichas_algebra import generar_ficha_algebra
+except ImportError:
+    generar_ficha_algebra = None
+
 
 _NOMBRES_CORTOS_CURSO = {
     "ceh": "Historia", "cef": "Filosofia", "ceg": "Geografia",
@@ -115,6 +120,19 @@ try:
         "nombre": "🧬 Biología", "balotas": _BAL_BIOLOGIA,
         "area_pie": "Biología", "prefijo": "cebi",
         "completo": len(_BAL_BIOLOGIA) >= 16, "total_oficial": 16,
+    })
+except ImportError:
+    pass
+
+try:
+    from fichas_algebra import BALOTAS_ALGEBRA as _BAL_ALGEBRA
+    AREAS_CEPRU.append({
+        "nombre": "📐 Álgebra", "balotas": _BAL_ALGEBRA,
+        "area_pie": "Álgebra", "prefijo": "cea",
+        "completo": len(_BAL_ALGEBRA) >= 17, "total_oficial": 17,
+        # Formato distinto: una sola ficha con teoría + ejercicios,
+        # no ficha+banco separados. _render_curso lo detecta con esto.
+        "combinado": True,
     })
 except ImportError:
     pass
@@ -361,12 +379,20 @@ def tab_academia_cepru(config=None):
         st.caption("Próximamente en esta misma carpeta: " +
                    " · ".join(PENDIENTES))
 
-    _render_curso(area["balotas"], area["area_pie"], area["prefijo"])
+    _render_curso(area["balotas"], area["area_pie"], area["prefijo"],
+                  combinado=area.get("combinado", False))
 
 
-def _render_curso(balotas, area_pie, pfx):
+def _render_curso(balotas, area_pie, pfx, combinado=False):
     """Interfaz de un curso: idéntica para todas las áreas, cambiando
-    solo la fuente de datos y el prefijo de claves de sesión."""
+    solo la fuente de datos y el prefijo de claves de sesión.
+    Los cursos 'combinados' (Álgebra, Aritmética: una sola ficha con
+    teoría + ejercicios, no ficha+banco separados) usan su propia
+    interfaz más simple, _render_curso_combinado."""
+    if combinado:
+        _render_curso_combinado(balotas, area_pie, pfx)
+        return
+
     _usa_tema = area_pie in ("Geografía", "Competencia Comunicativa", "Economía", "Biología")
     opciones = {f"{'Tema' if _usa_tema else 'Balota'} "
                 f"{t['num']} — {t['titulo']}": t for t in balotas}
@@ -507,3 +533,71 @@ def _render_curso(balotas, area_pie, pfx):
             for k, a in enumerate(p["alternativas"]):
                 marca = " ✅" if LETRAS[k] == p["correcta"] else ""
                 st.markdown(f"   {LETRAS[k]}) {a}{marca}")
+
+
+def _render_curso_combinado(balotas, area_pie, pfx):
+    """Interfaz simplificada para cursos de formato 'combinado' (una
+    sola ficha con teoría + ejercicios, como Álgebra y, más adelante,
+    Aritmética). No hay ficha+banco separados ni ZIP masivo todavía
+    (se agrega cuando haya más temas escritos)."""
+    if generar_ficha_algebra is None:
+        st.error("No se pudo cargar el generador de fichas de Álgebra "
+                 "(fichas_algebra.py). Revisa que el archivo esté en "
+                 "el repositorio.")
+        return
+
+    opciones = {f"Tema {t['num']} — {t['titulo']}": t for t in balotas}
+    sel = st.selectbox("Tema:", list(opciones.keys()), key=f"{pfx}_sel")
+    tema = opciones[sel]
+
+    c1, c2 = st.columns(2)
+    c1.metric("Secciones de teoría", len(tema.get("secciones", [])))
+    c2.metric("Ejercicios propuestos", len(tema.get("ejercicios", [])))
+
+    c_g, c_p = st.columns(2)
+    with c_g:
+        grado_txt = st.text_input("Grupo (se imprime en la ficha):",
+                                  placeholder="GRUPO CD", key=f"{pfx}_grado")
+    with c_p:
+        profesor_txt = st.text_input(
+            "Profesor (aparece en el pie de página):",
+            value="Prof. Alexander Córdova", key=f"{pfx}_prof")
+
+    st.markdown("---")
+    st.caption("Esta ficha combina teoría (para completar) y ejercicios "
+              "propuestos en un solo documento de máximo 2 hojas — no "
+              "hay banco de preguntas separado en este curso.")
+
+    d1, d2 = st.columns(2)
+    with d1:
+        try:
+            st.download_button(
+                "📄 Versión del alumno (para completar)",
+                data=generar_ficha_algebra(tema, False, grado_txt,
+                                           area=area_pie, profesor=profesor_txt),
+                file_name=_nombre_archivo(pfx, tema, "Ficha", "Alumno"),
+                mime="application/pdf", use_container_width=True,
+                type="primary", key=f"{pfx}_fa")
+        except Exception as e:
+            st.error(f"No se pudo generar la ficha del alumno: {e}")
+    with d2:
+        try:
+            st.download_button(
+                "🔑 Versión del docente (con respuestas)",
+                data=generar_ficha_algebra(tema, True, grado_txt,
+                                           area=area_pie, profesor=profesor_txt),
+                file_name=_nombre_archivo(pfx, tema, "Ficha", "Docente"),
+                mime="application/pdf", use_container_width=True,
+                key=f"{pfx}_fd")
+        except Exception as e:
+            st.error(f"No se pudo generar la ficha del docente: {e}")
+
+    with st.expander("Ver el contenido de este tema"):
+        for sec in tema.get("secciones", []):
+            st.markdown(f"**{sec['titulo']}**")
+            for it in sec.get("items", []):
+                st.markdown(f"- {it}")
+        if tema.get("ejercicios"):
+            st.markdown("**Ejercicios propuestos:**")
+            for i, ej in enumerate(tema["ejercicios"], start=1):
+                st.markdown(f"{i}. {ej['enunciado']}")
