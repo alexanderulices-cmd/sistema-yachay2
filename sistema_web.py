@@ -34327,18 +34327,29 @@ def tab_musica_eventos(config):
                 for n in nombres:
                     st.caption(f"　🎵 {n}")
 
-    eventos_comunes = ["Día de la Madre", "Día del Padre", "Aniversario del Colegio",
-                       "Navidad", "Día del Logro", "Clausura", "Otro evento"]
+    eventos_base = ["Día de la Madre", "Día del Padre", "Aniversario del Colegio",
+                    "Navidad", "Día del Logro", "Clausura"]
+    todas_las_canciones = gs.leer_canciones()
+    eventos_ya_creados = sorted(set(
+        c.get("evento", "").strip() for c in todas_las_canciones
+        if c.get("evento", "").strip()))
+    eventos_comunes = sorted(set(eventos_base) | set(eventos_ya_creados)) + \
+        ["➕ Crear nueva playlist"]
+
     c_ev, c_nuevo = st.columns([2, 2])
     with c_ev:
-        evento_elegido = st.selectbox("Evento:", eventos_comunes, key="me_evento_sel")
+        evento_elegido = st.selectbox("Playlist:", eventos_comunes, key="me_evento_sel")
     evento_final = evento_elegido
-    if evento_elegido == "Otro evento":
+    if evento_elegido == "➕ Crear nueva playlist":
         with c_nuevo:
-            evento_final = st.text_input("Nombre del evento:", key="me_evento_custom")
+            evento_final = st.text_input(
+                "Nombre de la nueva playlist:", key="me_evento_custom",
+                placeholder="Ej: Fiesta de Promoción")
 
-    if not evento_final or evento_final == "Otro evento":
-        st.info("Escribe el nombre del evento para continuar.")
+    if not evento_final or evento_final == "➕ Crear nueva playlist":
+        st.info("Escribe el nombre de la nueva playlist para continuar. "
+                "Se guarda automáticamente en cuanto le agregues la "
+                "primera canción.")
         return
 
     with st.expander("➕ Agregar una canción a esta playlist"):
@@ -34416,6 +34427,23 @@ def tab_musica_eventos(config):
     if not canciones:
         st.caption("Todavía no hay canciones agregadas a este evento.")
         return
+
+    c_titulo, c_borrar_todo = st.columns([3, 1])
+    with c_borrar_todo:
+        confirmar_borrado = st.checkbox(
+            "Confirmar borrado", key=f"me_confirmar_{evento_final}")
+        if st.button("🗑️ Borrar esta playlist completa",
+                    key=f"me_borrar_todo_{evento_final}",
+                    disabled=not confirmar_borrado,
+                    use_container_width=True):
+            with st.spinner(f"Eliminando las {len(canciones)} canciones "
+                           f"de «{evento_final}»…"):
+                for c in canciones:
+                    fid = c.get("drive_file_id", "")
+                    gs.eliminar_cancion_drive(fid)
+                    gs.eliminar_cancion_metadata(fid)
+            st.toast(f"🗑️ Playlist «{evento_final}» eliminada por completo.")
+            st.rerun()
 
     @st.cache_data(show_spinner=False, ttl=3600)
     def _descargar_cacheado(file_id):
