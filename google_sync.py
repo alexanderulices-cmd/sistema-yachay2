@@ -383,31 +383,37 @@ class GoogleSync:
         """Descarga los bytes de una canción desde Drive por su file_id.
         Devuelve None si falla, para que quien reproduce pueda mostrar
         un mensaje claro en vez de romper la app."""
+        self._ultimo_error_drive = None
         if self._drive is None or not drive_file_id:
             return None
         try:
             import io as _io_drive
             from googleapiclient.http import MediaIoBaseDownload
             buf = _io_drive.BytesIO()
-            solicitud = self._drive.files().get_media(fileId=drive_file_id)
+            solicitud = self._drive.files().get_media(
+                fileId=drive_file_id, supportsAllDrives=True)
             descargador = MediaIoBaseDownload(buf, solicitud)
             listo = False
             while not listo:
                 _, listo = descargador.next_chunk()
             buf.seek(0)
             return buf.read()
-        except Exception:
+        except Exception as e:
+            self._ultimo_error_drive = str(e)
             return None
 
     def eliminar_cancion_drive(self, drive_file_id):
         """Elimina (envía a la papelera) un archivo de audio de Drive."""
+        self._ultimo_error_drive = None
         if self._drive is None or not drive_file_id:
             return False
         try:
             self._drive.files().update(
-                fileId=drive_file_id, body={'trashed': True}).execute()
+                fileId=drive_file_id, body={'trashed': True},
+                supportsAllDrives=True).execute()
             return True
-        except Exception:
+        except Exception as e:
+            self._ultimo_error_drive = str(e)
             return False
 
     def guardar_cancion_metadata(self, datos):
