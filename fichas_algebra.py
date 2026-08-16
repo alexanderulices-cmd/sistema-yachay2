@@ -578,8 +578,10 @@ BALOTAS_ALGEBRA = [{'num': 1,
                                'positivo de «x» es:',
                   'alternativas': ['1/5', '5', '10', '25', '125'],
                   'correcta': 'B'}],
-  'qr_reto': [{'pregunta': '¿Cuánto es a⁰ para a≠0?', 'respuesta': '1'},
-              {'pregunta': '¿Cuánto es 2³ · 2²?', 'respuesta': '32 (2⁵)'},
+  'qr_reto': [{'pregunta': '¿Cuánto es a<super>0</super> para a≠0?',
+               'respuesta': '1'},
+              {'pregunta': '¿Cuánto es 2³ · 2²?',
+               'respuesta': '32 (2<super>5</super>)'},
               {'pregunta': '¿Cuánto es √25?', 'respuesta': '5'}],
   'qr_dato': 'El símbolo del exponente como lo usamos hoy fue introducido '
              'por René Descartes en 1637. Antes, los matemáticos escribían '
@@ -892,7 +894,8 @@ BALOTAS_ALGEBRA = [{'num': 1,
               {'pregunta': '¿Cómo se calcula la suma de coeficientes de '
                            'P(x)?',
                'respuesta': 'Evaluando P(1)'},
-              {'pregunta': '¿Cuál es el grado absoluto del monomio 5x³y⁴?',
+              {'pregunta': '¿Cuál es el grado absoluto del monomio '
+                           '5x³y<super>4</super>?',
                'respuesta': '7'}],
   'qr_dato': 'La palabra «polinomio» viene del griego «poly» (muchos) y del '
              'latín «nomen» (nombre/término) — literalmente, «muchos '
@@ -1416,17 +1419,29 @@ BALOTAS_ALGEBRA = [{'num': 1,
                  {'enunciado': 'El cuarto término del cociente notable '
                                '(x<super>7</super>-y<super>7</super>)/(x-y) '
                                'es:',
-                  'alternativas': ['x²y⁴', 'x³y³', 'x⁴y²', 'x⁵y', 'xy⁵'],
+                  'alternativas': ['x²y<super>4</super>',
+                                   'x³y³',
+                                   'x<super>4</super>y²',
+                                   'x<super>5</super>y',
+                                   'xy<super>5</super>'],
                   'correcta': 'B'},
                  {'enunciado': 'El quinto término del cociente notable '
                                '(x<super>8</super>-y<super>8</super>)/(x-y) '
                                'es:',
-                  'alternativas': ['x²y⁵', 'x³y⁴', 'x⁴y³', 'x⁵y²', 'x⁶y'],
+                  'alternativas': ['x²y<super>5</super>',
+                                   'x³y<super>4</super>',
+                                   'x<super>4</super>y³',
+                                   'x<super>5</super>y²',
+                                   'x<super>6</super>y'],
                   'correcta': 'B'},
                  {'enunciado': 'El último término del cociente notable '
                                '(x<super>6</super>-y<super>6</super>)/(x-y) '
                                'es:',
-                  'alternativas': ['y²', 'y³', 'y⁴', 'y⁵', 'y⁶'],
+                  'alternativas': ['y²',
+                                   'y³',
+                                   'y<super>4</super>',
+                                   'y<super>5</super>',
+                                   'y<super>6</super>'],
                   'correcta': 'D'},
                  {'enunciado': 'El primer término del cociente notable '
                                '(x<super>n</super>-y<super>n</super>)/(x-y), '
@@ -1494,7 +1509,11 @@ BALOTAS_ALGEBRA = [{'num': 1,
                  {'enunciado': 'El sexto término del cociente notable '
                                '(x<super>9</super>-y<super>9</super>)/(x-y) '
                                'es:',
-                  'alternativas': ['x²y⁶', 'x³y⁵', 'x⁴y⁴', 'x⁵y³', 'x⁶y²'],
+                  'alternativas': ['x²y<super>6</super>',
+                                   'x³y<super>5</super>',
+                                   'x<super>4</super>y<super>4</super>',
+                                   'x<super>5</super>y³',
+                                   'x<super>6</super>y²'],
                   'correcta': 'B'},
                  {'enunciado': 'El método para dividir polinomios cuando el '
                                'divisor es de segundo grado o mayor se llama '
@@ -1534,10 +1553,1576 @@ BALOTAS_ALGEBRA = [{'num': 1,
                'respuesta': 'Resto = P(-b/a)'},
               {'pregunta': '¿Cuándo se usa el método de Ruffini?',
                'respuesta': 'Cuando el divisor es de primer grado'},
-              {'pregunta': '¿Cuántos términos tiene (x⁵-y⁵)/(x-y)?',
+              {'pregunta': '¿Cuántos términos tiene '
+                           '(x<super>5</super>-y<super>5</super>)/(x-y)?',
                'respuesta': '5'}],
   'qr_dato': 'El Teorema del Resto también se conoce como "Teorema del '
              'Residuo", y es un caso particular de un principio más general '
              'usado en la división sintética. Paolo Ruffini, matemático '
              'italiano, publicó su método en 1809 — casi 200 años antes de '
-             'que se enseñara en las escuelas de hoy.'}]
+             'que se enseñara en las escuelas de hoy.'},
+ {'num': 5,
+  'titulo': 'Factorización de Polinomios',
+  'secciones': [{'titulo': '5.1 MÉTODO DEL FACTOR COMÚN',
+                 'items': ['<b>Factorizar</b> un polinomio es expresarlo '
+                           'como el producto de dos o más factores.',
+                           'El <b>método del factor común</b> consiste en '
+                           'extraer un factor común (monomio o polinomio) '
+                           'presente en todos los términos.',
+                           'Ejemplo: P(x) = '
+                           '2ax<super>2</super>+4ax<super>2</super>-6ax se '
+                           'factoriza como 2ax(a+2x-3).',
+                           'Cuando no hay un factor común directo, se puede '
+                           '<b>agrupar</b> términos: P(x,y)=ax+by+ay+bx = '
+                           '(x+y)(a+b).']},
+                {'titulo': '5.2 MÉTODO DE LAS IDENTIDADES',
+                 'items': ['El <b>método de las identidades</b> usa las '
+                           'identidades algebraicas (productos notables) '
+                           'para factorizar.',
+                           'Se identifican patrones como diferencia de '
+                           'cuadrados, suma/diferencia de cubos, trinomio '
+                           'cuadrado perfecto, entre otros, y se aplican en '
+                           'sentido inverso.',
+                           'Ejemplo: '
+                           'P(x)=x<super>9</super>-x<super>6</super>-64x<super>3</super>+64, '
+                           'agrupando y factorizando, se descompone en 6 '
+                           'factores primos usando diferencia de cuadrados y '
+                           'suma/diferencia de cubos.']},
+                {'titulo': '5.3.A ASPA SIMPLE',
+                 'items': ['El <b>aspa simple</b> se aplica a polinomios de '
+                           'la forma '
+                           'Ax<super>2n</super>+Bx<super>n</super>+C.',
+                           'Se descomponen los extremos (A y C) en dos '
+                           'factores cada uno, se multiplican en aspa '
+                           '(cruzado), y la suma debe dar el término central '
+                           'B.',
+                           'Ejemplo: P(x)=6x<super>2</super>-5x-21 se '
+                           'descompone como (2x+3)(3x-7); verificando: '
+                           '(2x)(-7)+(3x)(3)=-14x+9x=-5x. ✓']},
+                {'titulo': '5.3.B ASPA DOBLE',
+                 'items': ['El <b>aspa doble</b> se aplica a polinomios de '
+                           'la forma '
+                           'Ax<super>2m</super>+Bx<super>m</super>y<super>n</super>+Cy<super>2n</super>+Dx<super>m</super>+Ey<super>n</super>+F.',
+                           'Se ordena el polinomio en su forma general '
+                           '(completando con ceros si falta algún término).',
+                           'Se forma un aspa simple con los 3 primeros '
+                           'términos, luego con los términos 3°-5°-6°, y '
+                           'finalmente con 1°-4°-6°, verificando cada paso.',
+                           'Los factores finales son las <b>sumas '
+                           'horizontales</b> de cada fila del aspa.']},
+                {'titulo': '5.3.C ASPA DOBLE ESPECIAL',
+                 'items': ['El <b>aspa doble especial</b> se aplica a '
+                           'polinomios de la forma '
+                           'Ax<super>4n</super>+Bx<super>3n</super>+Cx<super>2n</super>+Dx<super>n</super>+E.',
+                           'Se descomponen convenientemente los extremos, se '
+                           'multiplica en aspa y se suman los resultados.',
+                           'Se compara con el término central: lo que sobra '
+                           'o falta se descompone en las partes centrales de '
+                           'los dos nuevos factores.']},
+                {'titulo': '5.4.A MÉTODO DE EVALUACIÓN: DIVISORES BINOMIOS',
+                 'items': ['El <b>método de evaluación</b> (o de los '
+                           'divisores binomios) factoriza polinomios de una '
+                           'variable que admiten factores de primer grado '
+                           '(ax+b).',
+                           'Los <b>ceros de un polinomio</b> son los valores '
+                           'que hacen que su valor numérico sea cero.',
+                           'Si el coeficiente principal es 1, los '
+                           '<b>posibles ceros racionales</b> (P.C.R.) son '
+                           'los divisores del término independiente, con '
+                           'doble signo (±).',
+                           'Si el coeficiente principal no es 1: P.C.R. = '
+                           '(Divisores del Término Independiente) / '
+                           '(Divisores del Coeficiente Principal).']},
+                {'titulo': '5.4.B PROCEDIMIENTO Y EJEMPLO RESUELTO',
+                 'items': ['Si un polinomio P(x) se anula para x=a (es '
+                           'decir, P(a)=0), entonces (x-a) es un <b>factor '
+                           'primo</b> del polinomio.',
+                           'Los factores se determinan aplicando el método '
+                           'de <b>Ruffini</b> tantas veces como ceros tenga '
+                           'el polinomio.',
+                           'Ejemplo: P(x) = '
+                           'x<super>4</super>+x<super>3</super>-7x<super>2</super>-x+6, '
+                           'con posibles ceros ±1,±2,±3,±6.',
+                           'Comprobando: P(1)=0, P(-1)=0, P(2)=0, P(-3)=0, '
+                           'entonces P(x) = (x-1)(x+1)(x-2)(x+3).']}],
+  'ejercicios': [{'enunciado': 'Al factorizar x<super>2</super>-5x+6, uno de '
+                               'sus factores es (x-2). El otro factor es:',
+                  'alternativas': ['x+2', 'x-1', 'x-3', 'x+3', 'x-6'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-x-6, se '
+                               'obtiene:',
+                  'alternativas': ['(x-2)(x+3)',
+                                   '(x-3)(x+2)',
+                                   '(x-6)(x+1)',
+                                   '(x-1)(x+6)',
+                                   '(x-3)(x-2)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>2</super>+7x+12, se '
+                               'obtiene:',
+                  'alternativas': ['(x+2)(x+6)',
+                                   '(x+1)(x+12)',
+                                   '(x+3)(x+4)',
+                                   '(x-3)(x-4)',
+                                   '(x+6)(x+2)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-9, se '
+                               'obtiene:',
+                  'alternativas': ['(x-3)(x+3)',
+                                   '(x-9)(x+1)',
+                                   '(x-1)(x+9)',
+                                   '(x+3)²',
+                                   '(x-3)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar '
+                               'x<super>3</super>-6x<super>2</super>+11x-6, '
+                               'se obtiene:',
+                  'alternativas': ['(x-1)(x-2)(x-3)',
+                                   '(x+1)(x+2)(x+3)',
+                                   '(x-1)(x-2)(x+3)',
+                                   '(x-6)(x-1)(x+1)',
+                                   '(x-2)(x-3)(x+1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>3</super>-1, se '
+                               'obtiene:',
+                  'alternativas': ['(x-1)(x+1)',
+                                   '(x-1)(x²+x+1)',
+                                   '(x-1)(x²-x+1)',
+                                   '(x-1)³',
+                                   '(x-1)(x²+1)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>3</super>+1, se '
+                               'obtiene:',
+                  'alternativas': ['(x+1)(x²-x+1)',
+                                   '(x+1)(x²+x+1)',
+                                   '(x+1)(x²-1)',
+                                   '(x+1)³',
+                                   '(x+1)(x²+1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-4, se '
+                               'obtiene:',
+                  'alternativas': ['(x-4)(x+1)',
+                                   '(x-1)(x+4)',
+                                   '(x-2)(x+2)',
+                                   '(x+2)²',
+                                   '(x-2)²'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al factorizar x<super>2</super>+2x-15, se '
+                               'obtiene:',
+                  'alternativas': ['(x+3)(x-5)',
+                                   '(x-3)(x+5)',
+                                   '(x+5)(x+3)',
+                                   '(x-5)(x-3)',
+                                   '(x+1)(x-15)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-10x+21, se '
+                               'obtiene:',
+                  'alternativas': ['(x-7)(x-3)',
+                                   '(x+7)(x+3)',
+                                   '(x-1)(x-21)',
+                                   '(x-21)(x+1)',
+                                   '(x-7)(x+3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>+5x+6, se '
+                               'obtiene:',
+                  'alternativas': ['(x+1)(x+6)',
+                                   '(x+2)(x+3)',
+                                   '(x-2)(x-3)',
+                                   '(x+6)(x-1)',
+                                   '(x+2)(x-3)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-6x+8, se '
+                               'obtiene:',
+                  'alternativas': ['(x-2)(x-4)',
+                                   '(x+2)(x+4)',
+                                   '(x-1)(x-8)',
+                                   '(x-8)(x+1)',
+                                   '(x-2)(x+4)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>+x-12, se '
+                               'obtiene:',
+                  'alternativas': ['(x+3)(x-4)',
+                                   '(x-3)(x+4)',
+                                   '(x+12)(x-1)',
+                                   '(x+6)(x-2)',
+                                   '(x-3)(x-4)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-3x-10, se '
+                               'obtiene:',
+                  'alternativas': ['(x+5)(x-2)',
+                                   '(x-5)(x+2)',
+                                   '(x-10)(x+1)',
+                                   '(x+10)(x-1)',
+                                   '(x-5)(x-2)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-8x+15, se '
+                               'obtiene:',
+                  'alternativas': ['(x-5)(x-3)',
+                                   '(x+5)(x+3)',
+                                   '(x-1)(x-15)',
+                                   '(x-15)(x+1)',
+                                   '(x-5)(x+3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>3</super>-8 '
+                               '(diferencia de cubos), se obtiene:',
+                  'alternativas': ['(x-2)(x²+2x+4)',
+                                   '(x-2)(x²-2x+4)',
+                                   '(x-2)³',
+                                   '(x-2)(x²+4)',
+                                   '(x-2)(x+2)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>3</super>+27 (suma de '
+                               'cubos), se obtiene:',
+                  'alternativas': ['(x+3)(x²+3x+9)',
+                                   '(x+3)(x²-3x+9)',
+                                   '(x+3)³',
+                                   '(x+3)(x²+9)',
+                                   '(x+3)(x-3)²'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al factorizar '
+                               'x<super>3</super>-3x<super>2</super>-4x+12, '
+                               'se obtiene:',
+                  'alternativas': ['(x-2)(x-3)(x+2)',
+                                   '(x+2)(x+3)(x-2)',
+                                   '(x-2)(x+3)(x+2)',
+                                   '(x-3)(x-2)(x-2)',
+                                   '(x-3)(x+2)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>4</super>-16, se '
+                               'obtiene:',
+                  'alternativas': ['(x-2)(x+2)(x²+4)',
+                                   '(x-2)²(x+2)²',
+                                   '(x-4)(x+4)(x²+1)',
+                                   '(x-2)(x+2)(x-4)',
+                                   '(x²-4)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>4</super>-1, se '
+                               'obtiene:',
+                  'alternativas': ['(x-1)(x+1)(x²+1)',
+                                   '(x-1)²(x+1)²',
+                                   '(x-1)(x+1)(x²-1)',
+                                   '(x²-1)²',
+                                   '(x-1)(x³+1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-16, se '
+                               'obtiene:',
+                  'alternativas': ['(x-4)(x+4)',
+                                   '(x-2)(x+8)',
+                                   '(x-8)(x+2)',
+                                   '(x-4)²',
+                                   '(x+4)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-25, se '
+                               'obtiene:',
+                  'alternativas': ['(x-5)(x+5)',
+                                   '(x-1)(x+25)',
+                                   '(x-25)(x+1)',
+                                   '(x-5)²',
+                                   '(x+5)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar '
+                               'x<super>3</super>-x<super>2</super>-4x+4, se '
+                               'obtiene:',
+                  'alternativas': ['(x-1)(x-2)(x+2)',
+                                   '(x+1)(x-2)(x+2)',
+                                   '(x-1)(x+2)²',
+                                   '(x-1)(x-2)²',
+                                   '(x-4)(x-1)(x+1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 2x<super>2</super>-3x-2 por '
+                               'aspa simple, se obtiene:',
+                  'alternativas': ['(x-2)(2x+1)',
+                                   '(x+2)(2x-1)',
+                                   '(2x-2)(x+1)',
+                                   '(x-1)(2x+2)',
+                                   '(2x-1)(x+2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 6x<super>2</super>-5x-21 por '
+                               'aspa simple, se obtiene:',
+                  'alternativas': ['(2x+3)(3x-7)',
+                                   '(2x-3)(3x+7)',
+                                   '(3x+3)(2x-7)',
+                                   '(6x-7)(x+3)',
+                                   '(2x+7)(3x-3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 3x<super>2</super>+11x+6, se '
+                               'obtiene:',
+                  'alternativas': ['(x+3)(3x+2)',
+                                   '(x+2)(3x+3)',
+                                   '(x+6)(3x+1)',
+                                   '(x+1)(3x+6)',
+                                   '(3x+2)(x-3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 2x<super>2</super>+7x+3, se '
+                               'obtiene:',
+                  'alternativas': ['(x+3)(2x+1)',
+                                   '(x+1)(2x+3)',
+                                   '(x+3)(2x-1)',
+                                   '(x-1)(2x+3)',
+                                   '(x+3)(2x+3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 5x<super>2</super>+7x-6, se '
+                               'obtiene:',
+                  'alternativas': ['(x+2)(5x-3)',
+                                   '(x-2)(5x+3)',
+                                   '(x+3)(5x-2)',
+                                   '(x-3)(5x+2)',
+                                   '(x+6)(5x-1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 4x<super>2</super>-4x-3, se '
+                               'obtiene:',
+                  'alternativas': ['(2x-3)(2x+1)',
+                                   '(2x+3)(2x-1)',
+                                   '(4x-3)(x+1)',
+                                   '(4x+1)(x-3)',
+                                   '(2x-1)(2x-3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 6x<super>2</super>+x-2, se '
+                               'obtiene:',
+                  'alternativas': ['(2x-1)(3x+2)',
+                                   '(2x+1)(3x-2)',
+                                   '(6x-1)(x+2)',
+                                   '(6x+2)(x-1)',
+                                   '(3x-1)(2x+2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-2x-8, se '
+                               'obtiene:',
+                  'alternativas': ['(x-4)(x+2)',
+                                   '(x+4)(x-2)',
+                                   '(x-8)(x+1)',
+                                   '(x-1)(x+8)',
+                                   '(x-4)(x-2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>+9x+20, se '
+                               'obtiene:',
+                  'alternativas': ['(x+4)(x+5)',
+                                   '(x+2)(x+10)',
+                                   '(x+1)(x+20)',
+                                   '(x-4)(x-5)',
+                                   '(x+20)(x-1)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-11x+30, se '
+                               'obtiene:',
+                  'alternativas': ['(x-6)(x-5)',
+                                   '(x+6)(x+5)',
+                                   '(x-2)(x-15)',
+                                   '(x-1)(x-30)',
+                                   '(x-6)(x+5)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-4x-21, se '
+                               'obtiene:',
+                  'alternativas': ['(x-7)(x+3)',
+                                   '(x+7)(x-3)',
+                                   '(x-21)(x+1)',
+                                   '(x+21)(x-1)',
+                                   '(x-7)(x-3)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar '
+                               'x<super>3</super>+2x<super>2</super>-x-2, se '
+                               'obtiene:',
+                  'alternativas': ['(x-1)(x+1)(x+2)',
+                                   '(x+1)²(x+2)',
+                                   '(x-1)(x+2)²',
+                                   '(x-2)(x+1)²',
+                                   '(x-1)(x-1)(x+2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar '
+                               'x<super>3</super>-2x<super>2</super>-x+2, se '
+                               'obtiene:',
+                  'alternativas': ['(x-2)(x-1)(x+1)',
+                                   '(x-1)²(x-2)',
+                                   '(x-2)(x+1)²',
+                                   '(x+2)(x-1)²',
+                                   '(x-1)(x-1)(x-2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-49, se '
+                               'obtiene:',
+                  'alternativas': ['(x-7)(x+7)',
+                                   '(x-1)(x+49)',
+                                   '(x-49)(x+1)',
+                                   '(x-7)²',
+                                   '(x+7)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar x<super>2</super>-36, se '
+                               'obtiene:',
+                  'alternativas': ['(x-6)(x+6)',
+                                   '(x-1)(x+36)',
+                                   '(x-36)(x+1)',
+                                   '(x-6)²',
+                                   '(x+6)²'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 2x<super>2</super>+5x+2, se '
+                               'obtiene:',
+                  'alternativas': ['(x+2)(2x+1)',
+                                   '(x+1)(2x+2)',
+                                   '(x+2)(2x+2)',
+                                   '(x-2)(2x-1)',
+                                   '(x+4)(2x+0,5)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al factorizar 3x<super>2</super>-5x+2, se '
+                               'obtiene:',
+                  'alternativas': ['(x-1)(3x-2)',
+                                   '(x+1)(3x+2)',
+                                   '(x-2)(3x-1)',
+                                   '(x+2)(3x+1)',
+                                   '(x-1)(3x+2)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Dado el polinomio '
+                               'P(x,y,z)=(x+1)y<super>2</super>(z-1)<super>2</super>, '
+                               'el número de factores primos es:',
+                  'alternativas': ['2', '3', '4', '5', '6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Dado el polinomio '
+                               'P(x,y,z)=(x+1)y<super>2</super>(z-1)<super>2</super>, '
+                               'el número total de factores es:',
+                  'alternativas': ['12', '15', '18', '20', '24'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Dado el polinomio '
+                               'P(x,y,z)=(x+1)y<super>2</super>(z-1)<super>2</super>, '
+                               'el número de factores algebraicos es:',
+                  'alternativas': ['15', '16', '17', '18', '19'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Por las relaciones de Vieta, la suma de '
+                               'raíces de x<super>2</super>-5x+6=0 es:',
+                  'alternativas': ['3', '4', '5', '6', '-5'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Por las relaciones de Vieta, el producto de '
+                               'raíces de x<super>2</super>-5x+6=0 es:',
+                  'alternativas': ['3', '5', '6', '-6', '11'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Por las relaciones de Vieta, la suma de '
+                               'raíces de x<super>2</super>+7x+12=0 es:',
+                  'alternativas': ['7', '12', '-7', '-12', '19'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Por las relaciones de Vieta, la suma de '
+                               'raíces de x<super>2</super>-8x+15=0 es:',
+                  'alternativas': ['-8', '-15', '7', '8', '15'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El polinomio '
+                               'x<super>4</super>+x<super>3</super>-7x<super>2</super>-x+6 '
+                               'se anula en x=1, x=-1, x=2 y x=-3. Su '
+                               'factorización es:',
+                  'alternativas': ['(x-1)(x+1)(x-2)(x+3)',
+                                   '(x+1)(x-1)(x+2)(x-3)',
+                                   '(x-1)²(x-2)(x+3)',
+                                   '(x-1)(x+1)(x+2)(x+3)',
+                                   '(x-1)(x+1)(x-2)(x-3)'],
+                  'correcta': 'A'}],
+  'qr_reto': [{'pregunta': '¿Cuándo se aplica el aspa simple?',
+               'respuesta': 'Cuando el polinomio tiene la forma Ax²ⁿ+Bxⁿ+C'},
+              {'pregunta': '¿Cómo se factoriza x²-9?',
+               'respuesta': '(x-3)(x+3), diferencia de cuadrados'},
+              {'pregunta': 'Si P(2)=0, ¿qué factor tiene P(x)?',
+               'respuesta': '(x-2)'}],
+  'qr_dato': 'Factorizar polinomios es la operación inversa a '
+             'multiplicarlos. El método de Ruffini, usado en la '
+             'factorización por evaluación, fue publicado por el matemático '
+             'italiano Paolo Ruffini en 1804, originalmente para resolver '
+             'ecuaciones de quinto grado.'},
+ {'num': 6,
+  'titulo': 'Racionalización',
+  'secciones': [{'titulo': '6.1 RACIONALIZACIÓN: DEFINICIÓN Y FACTOR '
+                           'RACIONALIZADOR',
+                 'items': ['La <b>racionalización</b> es el proceso que '
+                           'transforma el denominador (o numerador) '
+                           'irracional de una fracción, en una expresión '
+                           'racional.',
+                           'El <b>factor racionalizador</b> (F.R.) es una '
+                           'expresión irracional que, al multiplicar '
+                           'numerador y denominador, transforma el '
+                           'denominador en una expresión racional.',
+                           'Para racionalizar, se multiplica tanto el '
+                           'numerador como el denominador de la fracción por '
+                           'el mismo factor racionalizador.']},
+                {'titulo': '6.2 CASO I: DENOMINADOR MONOMIO (CUALQUIER '
+                           'ORDEN)',
+                 'items': ['Se aplica cuando el denominador irracional es un '
+                           '<b>monomio</b> de índice radical de cualquier '
+                           'orden.',
+                           'El F.R. es un radical con el <b>mismo '
+                           'índice</b>, cuyo radicando tiene exponentes '
+                           'iguales a la diferencia entre el índice original '
+                           'y los exponentes de las variables.',
+                           'Fórmula: para '
+                           '<super>m</super>√a<super>n</super>, el F.R. es '
+                           '<super>m</super>√a<super>m-n</super>.',
+                           'Ejemplo: para racionalizar '
+                           'A/<super>7</super>√(x<super>4</super>y<super>2</super>), '
+                           'el F.R. es '
+                           '<super>7</super>√(x<super>3</super>y<super>5</super>).']},
+                {'titulo': '6.3 CASO II: DENOMINADOR BINOMIO DE SEGUNDO '
+                           'ORDEN',
+                 'items': ['Se aplica cuando el denominador irracional es un '
+                           '<b>binomio</b> (o transformable a binomio) con '
+                           'radicales de <b>segundo orden</b> (índice par).',
+                           'El F.R. es la <b>conjugada</b> del denominador, '
+                           'aplicada tantas veces como sea necesario hasta '
+                           'racionalizar.',
+                           'Si el denominador es (a+√b), el F.R. es (a-√b); '
+                           'si es (a-√b), el F.R. es (a+√b).',
+                           'Ejemplo: para racionalizar A/(√x+5), el F.R. es '
+                           '(√x-5), obteniendo A(√x-5)/(x-25).']},
+                {'titulo': '6.4 CASO III: DENOMINADOR RADICAL DE TERCER '
+                           'ORDEN',
+                 'items': ['Se aplica cuando el denominador irracional es un '
+                           '<b>radical de tercer orden</b> (raíz cúbica), de '
+                           'la forma <super>3</super>√a ± '
+                           '<super>3</super>√b.',
+                           'Se usan las identidades: a+b = '
+                           '(<super>3</super>√a+<super>3</super>√b)(<super>3</super>√a<super>2</super>-<super>3</super>√ab+<super>3</super>√b<super>2</super>).',
+                           'a-b = '
+                           '(<super>3</super>√a-<super>3</super>√b)(<super>3</super>√a<super>2</super>+<super>3</super>√ab+<super>3</super>√b<super>2</super>).',
+                           'Ejemplo: para racionalizar '
+                           'A/(<super>3</super>√6+1), el F.R. es '
+                           '<super>3</super>√6<super>2</super>-<super>3</super>√6+1, '
+                           'obteniendo un denominador racional igual a 7.']}],
+  'ejercicios': [{'enunciado': 'El factor racionalizador de '
+                               'A/<super>7</super>√(x<super>4</super>y²) es '
+                               'un radical de índice 7 con radicando:',
+                  'alternativas': ['x²y³',
+                                   'x³y<super>4</super>',
+                                   'x³y<super>5</super>',
+                                   'x<super>4</super>y³',
+                                   'x<super>5</super>y³'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El factor racionalizador de '
+                               'B/<super>4</super>√(x³) es un radical de '
+                               'índice 4 con radicando:',
+                  'alternativas': ['x', 'x²', 'x³', 'x<super>4</super>', '1'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El factor racionalizador de '
+                               'C/<super>5</super>√(x²y³) es un radical de '
+                               'índice 5 con radicando:',
+                  'alternativas': ['x²y²', 'x³y²', 'x²y³', 'x³y³', 'xy²'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El factor racionalizador de D/³√x es un '
+                               'radical de índice 3 con radicando:',
+                  'alternativas': ['x', 'x²', 'x³', '1', '1/x'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√5+2), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '3', '9'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√7-3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-2', '-1', '2', '4', '16'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al racionalizar 1/(√10+3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '19', '13'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√3+1), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '3', '4', '√3-1'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√6-2), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '4', '6', '8'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√2+√3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '5', '√6'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Al racionalizar 1/(√5-√2), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '3', '7', '√10'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√11+3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '3', '20', '√11'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(4+√15), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '4', '31'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√8-√3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['3', '5', '8', '11', '24'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√13+3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '4', '9', '22'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√6+1), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '3', '5', '7', '6'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√14-2), el denominador '
+                               'resultante es:',
+                  'alternativas': ['4', '6', '8', '10', '12'],
+                  'correcta': 'D'},
+                 {'enunciado': 'Al racionalizar 1/(√17-4), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '3', '33'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√20+4), el denominador '
+                               'resultante es:',
+                  'alternativas': ['2', '4', '6', '16', '36'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√7+√5), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '2', '3', '12', '√35'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√9-√4), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '3', '5', '13', '6'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√15+√6), el denominador '
+                               'resultante es:',
+                  'alternativas': ['6', '9', '15', '21', '√90'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√12-√3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['3', '6', '9', '15', '√36'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(√21+√5), el denominador '
+                               'resultante es:',
+                  'alternativas': ['5', '16', '21', '26', '√105'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√18+√2), el denominador '
+                               'resultante es:',
+                  'alternativas': ['2', '16', '20', '36', '6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√22-√13), el denominador '
+                               'resultante es:',
+                  'alternativas': ['5', '9', '13', '22', '35'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√25-√16), el denominador '
+                               'resultante es:',
+                  'alternativas': ['1', '9', '16', '25', '41'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√30-√5), el denominador '
+                               'resultante es:',
+                  'alternativas': ['5', '25', '30', '35', '√150'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(√6+1), el denominador '
+                               'resultante (usando conjugada √6-1) es:',
+                  'alternativas': ['1', '3', '5', '7', '6'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(2+√3), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '4', '7'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(5-√21), el denominador '
+                               'resultante es:',
+                  'alternativas': ['2', '4', '6', '21', '25'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(3+√7), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-2', '0', '2', '9', '16'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(6-√35), el denominador '
+                               'resultante es:',
+                  'alternativas': ['-1', '0', '1', '11', '36'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El caso de racionalización aplicable cuando '
+                               'el denominador es un monomio irracional de '
+                               'cualquier orden se llama:',
+                  'alternativas': ['Caso I',
+                                   'Caso II',
+                                   'Caso III',
+                                   'Caso IV',
+                                   'Ninguno'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El caso de racionalización aplicable cuando '
+                               'el denominador es un binomio con radicales '
+                               'de segundo orden se llama:',
+                  'alternativas': ['Caso I',
+                                   'Caso II',
+                                   'Caso III',
+                                   'Caso IV',
+                                   'Ninguno'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El caso de racionalización aplicable cuando '
+                               'el denominador es un radical de tercer orden '
+                               'se llama:',
+                  'alternativas': ['Caso I',
+                                   'Caso II',
+                                   'Caso III',
+                                   'Caso IV',
+                                   'Ninguno'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Para racionalizar A/(√x+3), el factor '
+                               'racionalizador es:',
+                  'alternativas': ['√x+3', '√x-3', 'x-9', 'x+9', '3-√x'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Para racionalizar A/(√x-3), el factor '
+                               'racionalizador es:',
+                  'alternativas': ['√x-3', '√x+3', 'x-9', '3-√x', '-√x-3'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√7+1), '
+                               'usando el factor '
+                               '<super>3</super>√49-<super>3</super>√7+1, el '
+                               'denominador resultante es:',
+                  'alternativas': ['6', '7', '8', '9', '10'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√5-1), '
+                               'usando el factor '
+                               '<super>3</super>√25+<super>3</super>√5+1, el '
+                               'denominador resultante es:',
+                  'alternativas': ['3', '4', '5', '6', '7'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√9+2), '
+                               'usando el factor '
+                               '<super>3</super>√81-2<super>3</super>√9+4, '
+                               'el denominador resultante es:',
+                  'alternativas': ['9', '10', '11', '12', '13'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√16-1), '
+                               'usando el factor '
+                               '<super>3</super>√256+<super>3</super>√16+1, '
+                               'el denominador resultante es:',
+                  'alternativas': ['13', '14', '15', '16', '17'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√10+1), '
+                               'usando el factor '
+                               '<super>3</super>√100-<super>3</super>√10+1, '
+                               'el denominador resultante es:',
+                  'alternativas': ['9', '10', '11', '12', '13'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Al racionalizar 1/(<super>3</super>√4-3), '
+                               'usando el factor '
+                               '<super>3</super>√16+3<super>3</super>√4+9, '
+                               'el denominador resultante es:',
+                  'alternativas': ['-1', '0', '1', '4', '7'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El factor racionalizador de '
+                               'E/<super>6</super>√(x<super>4</super>y) es '
+                               'un radical de índice 6 con radicando:',
+                  'alternativas': ['x²y<super>4</super>',
+                                   'x²y<super>5</super>',
+                                   'x³y<super>4</super>',
+                                   'x<super>4</super>y²',
+                                   'xy<super>5</super>'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El factor racionalizador de '
+                               'F/<super>8</super>√(x<super>5</super>) es un '
+                               'radical de índice 8 con radicando:',
+                  'alternativas': ['x²',
+                                   'x³',
+                                   'x<super>4</super>',
+                                   'x<super>5</super>',
+                                   'x<super>8</super>'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El denominador '
+                               '(<super>3</super>√5+<super>3</super>√2) '
+                               'requiere para su racionalización el:',
+                  'alternativas': ['Caso I',
+                                   'Caso II',
+                                   'Caso III',
+                                   'Caso IV',
+                                   'Ningún caso'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El denominador <super>5</super>√(x³y²) '
+                               'requiere para su racionalización el:',
+                  'alternativas': ['Caso I',
+                                   'Caso II',
+                                   'Caso III',
+                                   'Caso IV',
+                                   'Ningún caso'],
+                  'correcta': 'A'}],
+  'qr_reto': [{'pregunta': '¿Qué es el factor racionalizador?',
+               'respuesta': 'Expresión que transforma un denominador '
+                            'irracional en racional'},
+              {'pregunta': '¿Cuál es el FR de 1/(√5+2)?',
+               'respuesta': '(√5-2)'},
+              {'pregunta': '¿Qué caso se usa si el denominador es raíz '
+                           'cúbica?',
+               'respuesta': 'Caso III'}],
+  'qr_dato': 'Antiguamente, antes de las calculadoras, racionalizar era '
+             'esencial para hacer cálculos a mano: dividir entre un número '
+             'irracional (con infinitos decimales) era mucho más difícil que '
+             'dividir entre un número entero — por eso siempre se prefería '
+             'tener el denominador racionalizado.'},
+ {'num': 7,
+  'titulo': 'Ecuaciones de Primer y Segundo Grado con una Variable Real',
+  'secciones': [{'titulo': '7.1.A ECUACIONES: DEFINICIÓN Y CLASIFICACIÓN',
+                 'items': ['Una <b>ecuación</b> es una igualdad condicional '
+                           'de polinomios que contiene una o más variables.',
+                           'El <b>conjunto solución</b> (C.S.) es el '
+                           'conjunto de valores que, sustituidos en la '
+                           'ecuación, la transforman en una identidad.',
+                           '<b>Ecuación compatible determinada</b>: admite '
+                           'un número finito de soluciones.',
+                           '<b>Ecuación compatible indeterminada</b>: admite '
+                           'infinitas soluciones (C.S. = R).',
+                           '<b>Ecuación incompatible</b> (inconsistente): no '
+                           'admite ninguna solución (C.S. = ∅).']},
+                {'titulo': '7.1.B ECUACIÓN DE PRIMER GRADO: ANÁLISIS',
+                 'items': ['La forma general de la ecuación de primer grado '
+                           'es: <b>ax + b = 0</b>, con a ≠ 0.',
+                           'La solución es x = -b/a; el conjunto solución es '
+                           'C.S. = {-b/a}.',
+                           'Si <b>a≠0 y b∈R</b>: la ecuación es compatible '
+                           'determinada, con solución única.',
+                           'Si <b>a=0 y b=0</b>: la ecuación es compatible '
+                           'indeterminada, con infinitas soluciones.',
+                           'Si <b>a=0 y b≠0</b>: la ecuación es '
+                           'incompatible, sin solución.']},
+                {'titulo': '7.2.A ECUACIÓN CUADRÁTICA: DEFINICIÓN',
+                 'items': ['La forma general de la ecuación de segundo grado '
+                           '(cuadrática) es: '
+                           '<b>ax<super>2</super>+bx+c=0</b>, con a≠0.',
+                           'Si a≠0 y b,c∈R: la ecuación cuadrática es '
+                           'compatible determinada.',
+                           'Si a=b=c=0: la ecuación cuadrática es compatible '
+                           'indeterminada.',
+                           'Si a=b=0 y c≠0: la ecuación cuadrática es '
+                           'incompatible.']},
+                {'titulo': '7.2.B MÉTODO DE FACTORIZACIÓN Y FÓRMULA DE '
+                           'BASKARA',
+                 'items': ['Cuando ax<super>2</super>+bx+c es factorizable, '
+                           'se aplica aspa simple, usando el teorema: si '
+                           'p·q=0, entonces p=0 ó q=0.',
+                           'Cuando el trinomio no es factorizable, se usa la '
+                           '<b>Fórmula de Baskara</b>: x = (-b ± '
+                           '√(b<super>2</super>-4ac)) / 2a.',
+                           'El número real b<super>2</super>-4ac se llama '
+                           '<b>discriminante</b> de la ecuación '
+                           'cuadrática.']},
+                {'titulo': '7.3 NATURALEZA DE LAS RAÍCES (SEGÚN EL '
+                           'DISCRIMINANTE)',
+                 'items': ['Si <b>b<super>2</super>-4ac &gt; 0</b>: las '
+                           'raíces x1 y x2 son reales y diferentes.',
+                           'Si <b>b<super>2</super>-4ac = 0</b>: las raíces '
+                           'x1 y x2 son reales e iguales (raíz doble); esto '
+                           'ocurre cuando el trinomio es un cuadrado '
+                           'perfecto.',
+                           'Si <b>b<super>2</super>-4ac &lt; 0</b>: las '
+                           'raíces x1 y x2 son complejas y diferentes '
+                           '(conjugadas).']},
+                {'titulo': '7.3.B PROPIEDADES DE LAS RAÍCES (RELACIONES DE '
+                           'VIETA)',
+                 'items': ['<b>Suma de raíces</b>: x1+x2 = -b/a.',
+                           '<b>Producto de raíces</b>: x1·x2 = c/a.',
+                           '<b>Diferencia de raíces</b>: x1-x2 = '
+                           '√(b<super>2</super>-4ac)/a.',
+                           '<b>Suma de las inversas de las raíces</b>: 1/x1 '
+                           '+ 1/x2 = -b/c, con x1≠0 y x2≠0.']},
+                {'titulo': '7.4 RECONSTRUCCIÓN DE UNA ECUACIÓN CUADRÁTICA',
+                 'items': ['Dadas las raíces x1 y x2, la ecuación cuadrática '
+                           'que las origina es: <b>x<super>2</super> - '
+                           '(x1+x2)x + x1·x2 = 0</b>.',
+                           'Es decir: x<super>2</super> - (suma de raíces)x '
+                           '+ (producto de raíces) = 0.']},
+                {'titulo': '7.4.B ECUACIONES EQUIVALENTES',
+                 'items': ['Dos ecuaciones son <b>equivalentes</b> cuando '
+                           'tienen el mismo conjunto solución.',
+                           'Ejemplo: x+5=3 y 2x+5=1 son equivalentes, pues '
+                           'ambas tienen C.S.={-2}.']}],
+  'ejercicios': [{'enunciado': 'La solución de la ecuación 2x+6=0 es:',
+                  'alternativas': ['-3', '-2', '0', '2', '3'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La solución de la ecuación 3x-9=0 es:',
+                  'alternativas': ['-3', '-1', '1', '3', '9'],
+                  'correcta': 'D'},
+                 {'enunciado': 'La solución de la ecuación 5x+10=0 es:',
+                  'alternativas': ['-2', '-1', '0', '1', '2'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La solución de la ecuación 4x-20=0 es:',
+                  'alternativas': ['4', '5', '6', '16', '20'],
+                  'correcta': 'B'},
+                 {'enunciado': 'La solución de la ecuación 7x+21=0 es:',
+                  'alternativas': ['-3', '-1', '1', '3', '7'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La solución de la ecuación x-8=0 es:',
+                  'alternativas': ['-8', '0', '1', '8', '9'],
+                  'correcta': 'D'},
+                 {'enunciado': 'La solución de la ecuación 6x+18=0 es:',
+                  'alternativas': ['-3', '-1', '1', '3', '6'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La solución de la ecuación 2x-14=0 es:',
+                  'alternativas': ['-7', '2', '6', '7', '14'],
+                  'correcta': 'D'},
+                 {'enunciado': 'La solución de la ecuación 9x+27=0 es:',
+                  'alternativas': ['-3', '-1', '1', '3', '9'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La solución de la ecuación 3x+15=0 es:',
+                  'alternativas': ['-5', '-3', '3', '5', '15'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-5x+6=0 son:',
+                  'alternativas': ['1 y 6',
+                                   '2 y 3',
+                                   '-2 y -3',
+                                   '1 y 5',
+                                   '-1 y -6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-7x+12=0 son:',
+                  'alternativas': ['1 y 12',
+                                   '2 y 6',
+                                   '3 y 4',
+                                   '-3 y -4',
+                                   '1 y 11'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-x-6=0 son:',
+                  'alternativas': ['2 y 3',
+                                   '-2 y 3',
+                                   '2 y -3',
+                                   '-2 y -3',
+                                   '1 y 6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>+2x-15=0 son:',
+                  'alternativas': ['3 y 5',
+                                   '-3 y 5',
+                                   '3 y -5',
+                                   '-5 y 3',
+                                   '-3 y -5'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               '2x<super>2</super>-3x-9=0 son:',
+                  'alternativas': ['3 y -3/2',
+                                   '-3 y 3/2',
+                                   '3 y 3/2',
+                                   '-3 y -3/2',
+                                   '9 y -1/2'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El discriminante de la ecuación '
+                               'x<super>2</super>-5x+6=0 es:',
+                  'alternativas': ['-1', '0', '1', '5', '25'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El discriminante de la ecuación '
+                               '4x<super>2</super>-12x+9=0 es:',
+                  'alternativas': ['-12', '-9', '0', '9', '12'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El discriminante de la ecuación '
+                               'x<super>2</super>-2x+3=0 es:',
+                  'alternativas': ['-8', '-4', '0', '4', '8'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El discriminante de la ecuación '
+                               'x<super>2</super>-4x-5=0 es:',
+                  'alternativas': ['-36', '-16', '16', '36', '41'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El discriminante de la ecuación '
+                               '2x<super>2</super>+3x-2=0 es:',
+                  'alternativas': ['9', '16', '25', '34', '41'],
+                  'correcta': 'C'},
+                 {'enunciado': 'La suma de raíces de '
+                               '2x<super>2</super>-3x-9=0 (usando -b/a) es:',
+                  'alternativas': ['-9/2', '-3/2', '3/2', '9/2', '3'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El producto de raíces de '
+                               '2x<super>2</super>-3x-9=0 (usando c/a) es:',
+                  'alternativas': ['-9/2', '-3/2', '3/2', '9/2', '-9'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La suma de raíces de '
+                               'x<super>2</super>-5x+6=0 es:',
+                  'alternativas': ['1', '5', '6', '-5', '-6'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El producto de raíces de '
+                               'x<super>2</super>-5x+6=0 es:',
+                  'alternativas': ['1', '5', '6', '-5', '-6'],
+                  'correcta': 'C'},
+                 {'enunciado': 'La suma de raíces de '
+                               'x<super>2</super>+7x+10=0 es:',
+                  'alternativas': ['-10', '-7', '7', '10', '17'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El producto de raíces de '
+                               'x<super>2</super>+7x+10=0 es:',
+                  'alternativas': ['-10', '-7', '7', '10', '17'],
+                  'correcta': 'D'},
+                 {'enunciado': 'La ecuación cuadrática con raíces 3 y 5 es:',
+                  'alternativas': ['x²-8x+15=0',
+                                   'x²+8x+15=0',
+                                   'x²-8x-15=0',
+                                   'x²-15x+8=0',
+                                   'x²+15x-8=0'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La ecuación cuadrática con raíces -2 y 4 es:',
+                  'alternativas': ['x²-2x-8=0',
+                                   'x²+2x-8=0',
+                                   'x²-2x+8=0',
+                                   'x²-8x-2=0',
+                                   'x²+8x-2=0'],
+                  'correcta': 'B'},
+                 {'enunciado': 'La ecuación cuadrática con raíces 1 y -6 es:',
+                  'alternativas': ['x²+5x-6=0',
+                                   'x²-5x-6=0',
+                                   'x²+5x+6=0',
+                                   'x²-6x+5=0',
+                                   'x²+6x-5=0'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La ecuación cuadrática con raíces -3 y -7 '
+                               'es:',
+                  'alternativas': ['x²-10x+21=0',
+                                   'x²+10x+21=0',
+                                   'x²-10x-21=0',
+                                   'x²+21x+10=0',
+                                   'x²-21x-10=0'],
+                  'correcta': 'B'},
+                 {'enunciado': 'La ecuación cuadrática con raíz doble en x=2 '
+                               'es:',
+                  'alternativas': ['x²-4x+4=0',
+                                   'x²+4x+4=0',
+                                   'x²-2x+4=0',
+                                   'x²-4x+2=0',
+                                   'x²+2x+4=0'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Según su discriminante (D=1), la ecuación '
+                               'x<super>2</super>-5x+6=0 tiene raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces',
+                                   'Infinitas raíces'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Según su discriminante (D=0), la ecuación '
+                               '4x<super>2</super>-12x+9=0 tiene raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces',
+                                   'Infinitas raíces'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Según su discriminante (D=-8), la ecuación '
+                               'x<super>2</super>-2x+3=0 tiene raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces reales ni complejas',
+                                   'Infinitas raíces'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Según su discriminante, la ecuación '
+                               'x<super>2</super>+4x+4=0 tiene raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces',
+                                   'Infinitas raíces'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Según su discriminante (D=1-4=-3), la '
+                               'ecuación x<super>2</super>+x+1=0 tiene '
+                               'raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces',
+                                   'Infinitas raíces'],
+                  'correcta': 'C'},
+                 {'enunciado': 'Según su discriminante (D=16), la ecuación '
+                               'x<super>2</super>-6x+5=0 tiene raíces:',
+                  'alternativas': ['Reales e iguales',
+                                   'Reales y diferentes',
+                                   'Complejas',
+                                   'No tiene raíces',
+                                   'Infinitas raíces'],
+                  'correcta': 'B'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-9=0 son:',
+                  'alternativas': ['3 y -3',
+                                   '9 y -9',
+                                   '1 y 9',
+                                   '-1 y 9',
+                                   '3 y 9'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-16=0 son:',
+                  'alternativas': ['4 y -4',
+                                   '16 y -16',
+                                   '2 y 8',
+                                   '-2 y 8',
+                                   '4 y 16'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>-3x=0 son:',
+                  'alternativas': ['0 y 3',
+                                   '0 y -3',
+                                   '1 y 3',
+                                   '3 y 3',
+                                   '-3 y 0'],
+                  'correcta': 'A'},
+                 {'enunciado': 'Las raíces de la ecuación '
+                               'x<super>2</super>+5x=0 son:',
+                  'alternativas': ['0 y 5',
+                                   '0 y -5',
+                                   '5 y -5',
+                                   '1 y 5',
+                                   '-1 y -5'],
+                  'correcta': 'B'},
+                 {'enunciado': 'La raíz doble de la ecuación '
+                               'x<super>2</super>-4x+4=0 es:',
+                  'alternativas': ['-2', '0', '1', '2', '4'],
+                  'correcta': 'D'},
+                 {'enunciado': 'La raíz doble de la ecuación '
+                               'x<super>2</super>-8x+16=0 es:',
+                  'alternativas': ['-4', '0', '2', '4', '8'],
+                  'correcta': 'D'},
+                 {'enunciado': 'Si 3x<super>2</super>+7x+2k=0 y '
+                               '(x1+3)(x2+3)=0, el valor de «k» es:',
+                  'alternativas': ['-3', '-1', '0', '1', '3'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La suma de las inversas de las raíces de '
+                               'x<super>2</super>-5x+6=0 (usando -b/c) es:',
+                  'alternativas': ['5/6', '6/5', '-5/6', '1', '5'],
+                  'correcta': 'A'},
+                 {'enunciado': 'La suma de las inversas de las raíces de '
+                               '2x<super>2</super>+3x-2=0 (usando -b/c) es:',
+                  'alternativas': ['-3/2', '2/3', '3/2', '-2/3', '1'],
+                  'correcta': 'C'},
+                 {'enunciado': 'La diferencia de raíces de '
+                               'x<super>2</super>-x-6=0 (usando √D/a) es:',
+                  'alternativas': ['1', '3', '5', '6', '25'],
+                  'correcta': 'C'},
+                 {'enunciado': 'La diferencia de raíces de '
+                               'x<super>2</super>-7x+10=0 (usando √D/a) es:',
+                  'alternativas': ['1', '2', '3', '7', '9'],
+                  'correcta': 'C'}],
+  'qr_reto': [{'pregunta': '¿Cuál es la fórmula de Baskara?',
+               'respuesta': 'x = (-b ± √(b²-4ac)) / 2a'},
+              {'pregunta': 'Si D=0, ¿qué tipo de raíces tiene la ecuación?',
+               'respuesta': 'Reales e iguales'},
+              {'pregunta': '¿Cuánto es la suma de raíces de ax²+bx+c=0?',
+               'respuesta': '-b/a'}],
+  'qr_dato': 'La palabra "Baskara" (o Bhaskara) honra al matemático indio '
+             'Bhaskara II (1114-1185), aunque la fórmula general para '
+             'resolver ecuaciones cuadráticas ya era conocida por los '
+             'babilonios hace más de 3,600 años, mucho antes de que '
+             'existiera la notación algebraica moderna.'},
+ {'num': 8,
+  'titulo': 'Inecuaciones de Primer y Segundo Grado',
+  'secciones': [{'titulo': '8.1.A INECUACIONES DE PRIMER GRADO: DEFINICIÓN',
+                 'items': ['Una <b>inecuación de primer grado</b> con una '
+                           'variable es una desigualdad de la forma general: '
+                           'ax+b&gt;0 (o &lt;0, ≥0, ≤0), con a≠0.',
+                           'El <b>conjunto solución</b> son los valores '
+                           'reales de «x» que satisfacen la desigualdad.',
+                           'Para resolver, se despeja «x» igual que en una '
+                           'ecuación, con una regla clave: si se multiplica '
+                           'o divide por un número <b>negativo</b>, el '
+                           'sentido de la desigualdad se invierte.']},
+                {'titulo': '8.1.B EJEMPLO RESUELTO DE INECUACIÓN LINEAL',
+                 'items': ['Resolver: (x+1)<super>2</super>+2x-1 &lt; '
+                           'x<super>2</super>+8.',
+                           'Desarrollando: x<super>2</super>+2x+1+2x-1 &lt; '
+                           'x<super>2</super>+8, se simplifica a 4x &lt; 8, '
+                           'entonces x &lt; 2.',
+                           'El conjunto solución es: <b>C.S. = (-∞, '
+                           '2)</b>.']},
+                {'titulo': '8.2.A INECUACIONES DE SEGUNDO GRADO: DEFINICIÓN',
+                 'items': ['Una <b>inecuación cuadrática</b> tiene la forma '
+                           'general: ax<super>2</super>+bx+c &gt; 0 (o '
+                           '&lt;0, ≥0, ≤0), con a≠0.',
+                           'Para resolver, se recomienda que a&gt;0; si '
+                           'a&lt;0, se multiplica toda la inecuación por '
+                           '(-1), invirtiendo el sentido de la '
+                           'desigualdad.']},
+                {'titulo': '8.2.B MÉTODO DE PUNTOS CRÍTICOS',
+                 'items': ['Se pasan todas las expresiones a un solo '
+                           'miembro, dejando cero en el otro.',
+                           'Se factoriza la expresión (por aspa simple o '
+                           'Fórmula de Baskara) y se iguala cada factor a '
+                           'cero para obtener los <b>puntos críticos</b>.',
+                           'Los puntos críticos se ubican en la recta real, '
+                           'dividiéndola en intervalos; se asignan signos '
+                           '(+) y (-) alternados, empezando por (+) en el '
+                           'intervalo de la derecha.',
+                           'Si la desigualdad original es &gt; ó ≥, la '
+                           'solución son las <b>zonas positivas</b>; si es '
+                           '&lt; ó ≤, son las <b>zonas negativas</b>.']},
+                {'titulo': '8.2.C EJEMPLO RESUELTO POR PUNTOS CRÍTICOS',
+                 'items': ['Resolver: -x<super>2</super>+13x-30 &gt; 0.',
+                           'Multiplicando por (-1) (se invierte la '
+                           'desigualdad): x<super>2</super>-13x+30 &lt; 0.',
+                           'Factorizando: (x-10)(x-3) &lt; 0; los puntos '
+                           'críticos son x=10 y x=3.',
+                           'Como la desigualdad es &lt;0 (zona negativa), la '
+                           'solución es el intervalo entre los puntos '
+                           'críticos: <b>C.S. = (3,10)</b>.']},
+                {'titulo': '8.2.D CASOS SEGÚN EL DISCRIMINANTE (a&gt;0)',
+                 'items': ['Si <b>b<super>2</super>-4ac &lt; 0</b> '
+                           '(discriminante negativo), el trinomio '
+                           'ax<super>2</super>+bx+c siempre es positivo para '
+                           'todo x∈R (Teorema del trinomio positivo).',
+                           'En este caso: ax<super>2</super>+bx+c &gt; 0 '
+                           'tiene C.S.=R (todos los reales); '
+                           'ax<super>2</super>+bx+c &lt; 0 tiene C.S.=∅ (no '
+                           'hay solución).',
+                           'Si <b>b<super>2</super>-4ac = 0</b>, el trinomio '
+                           'es un cuadrado perfecto que se anula solo en '
+                           'x=-b/2a.',
+                           'En este caso: ax<super>2</super>+bx+c ≥ 0 tiene '
+                           'C.S.=R; ax<super>2</super>+bx+c &gt; 0 tiene '
+                           'C.S.=R, excepto x=-b/2a.',
+                           'Si <b>b<super>2</super>-4ac &gt; 0</b>, el '
+                           'trinomio tiene dos raíces reales diferentes, y '
+                           'se resuelve por el método de puntos críticos.']}],
+  'ejercicios': [{'enunciado': 'El conjunto solución de 2x+4&gt;0 es:',
+                  'alternativas': ['(-∞,-2)',
+                                   '(-2,+∞)',
+                                   '(-∞,2)',
+                                   '(2,+∞)',
+                                   '(-4,+∞)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de 3x-9&lt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-9,+∞)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de 5x-10≥0 es:',
+                  'alternativas': ['(-∞,2]',
+                                   '[2,+∞)',
+                                   '(-∞,-2]',
+                                   '[-2,+∞)',
+                                   '(2,+∞)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de 4x+8≤0 es:',
+                  'alternativas': ['(-∞,2]',
+                                   '[2,+∞)',
+                                   '(-∞,-2]',
+                                   '[-2,+∞)',
+                                   '(-2,+∞)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de -2x+6&gt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-6,+∞)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de -3x-9&lt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-9,+∞)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de 6x-12&gt;0 es:',
+                  'alternativas': ['(-∞,-2)',
+                                   '(-2,+∞)',
+                                   '(-∞,2)',
+                                   '(2,+∞)',
+                                   '(-12,+∞)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de x+5&lt;0 es:',
+                  'alternativas': ['(-∞,-5)',
+                                   '(-5,+∞)',
+                                   '(-∞,5)',
+                                   '(5,+∞)',
+                                   '(0,+∞)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de 7x-21&gt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-21,+∞)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de 8x+16≤0 es:',
+                  'alternativas': ['(-∞,2]',
+                                   '[2,+∞)',
+                                   '(-∞,-2]',
+                                   '[-2,+∞)',
+                                   '(-2,+∞)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de 9x-27≥0 es:',
+                  'alternativas': ['(-∞,3]',
+                                   '[3,+∞)',
+                                   '(-∞,-3]',
+                                   '[-3,+∞)',
+                                   '(3,+∞)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de -4x+12&lt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-12,+∞)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de -5x-15&gt;0 es:',
+                  'alternativas': ['(-∞,-3)',
+                                   '(-3,+∞)',
+                                   '(-∞,3)',
+                                   '(3,+∞)',
+                                   '(-15,+∞)'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-5x+6&gt;0 es:',
+                  'alternativas': ['(2,3)',
+                                   '(-∞,2)∪(3,+∞)',
+                                   '(-∞,-2)∪(-3,+∞)',
+                                   '(-2,-3)',
+                                   'R'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-5x+6&lt;0 es:',
+                  'alternativas': ['(2,3)',
+                                   '(-∞,2)∪(3,+∞)',
+                                   '(-3,-2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-x-6&lt;0 es:',
+                  'alternativas': ['(-2,3)',
+                                   '(-∞,-2)∪(3,+∞)',
+                                   '(-3,2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-x-6&gt;0 es:',
+                  'alternativas': ['(-2,3)',
+                                   '(-∞,-2)∪(3,+∞)',
+                                   '(-3,2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-9&lt;0 es:',
+                  'alternativas': ['(-3,3)',
+                                   '(-∞,-3)∪(3,+∞)',
+                                   '(0,3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-9&gt;0 es:',
+                  'alternativas': ['(-3,3)',
+                                   '(-∞,-3)∪(3,+∞)',
+                                   '(0,3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-4x-5&gt;0 es:',
+                  'alternativas': ['(-1,5)',
+                                   '(-∞,-1)∪(5,+∞)',
+                                   '(1,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-4x-5&lt;0 es:',
+                  'alternativas': ['(-1,5)',
+                                   '(-∞,-1)∪(5,+∞)',
+                                   '(1,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-7x+10&lt;0 es:',
+                  'alternativas': ['(2,5)',
+                                   '(-∞,2)∪(5,+∞)',
+                                   '(-5,-2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+2x-15&lt;0 es:',
+                  'alternativas': ['(-5,3)',
+                                   '(-∞,-5)∪(3,+∞)',
+                                   '(-3,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               '2x<super>2</super>-3x-9&lt;0 es:',
+                  'alternativas': ['(-3/2,3)',
+                                   '(-∞,-3/2)∪(3,+∞)',
+                                   '(-3,3/2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-2x-8&gt;0 es:',
+                  'alternativas': ['(-2,4)',
+                                   '(-∞,-2)∪(4,+∞)',
+                                   '(2,4)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+x+1&gt;0 (discriminante '
+                               'negativo) es:',
+                  'alternativas': ['(-1,1)',
+                                   '(-∞,-1)∪(1,+∞)',
+                                   'R',
+                                   '∅',
+                                   '(0,1)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+x+1&lt;0 (discriminante '
+                               'negativo) es:',
+                  'alternativas': ['(-1,1)',
+                                   '(-∞,-1)∪(1,+∞)',
+                                   'R',
+                                   '∅',
+                                   '(0,1)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+2x+5&gt;0 (discriminante '
+                               'negativo) es:',
+                  'alternativas': ['(-2,5)',
+                                   '(-∞,-2)∪(5,+∞)',
+                                   'R',
+                                   '∅',
+                                   '(0,5)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-2x+3&lt;0 (discriminante '
+                               'negativo) es:',
+                  'alternativas': ['(-3,3)',
+                                   '(-∞,-3)∪(3,+∞)',
+                                   'R',
+                                   '∅',
+                                   '(0,3)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-4x+4≥0 (discriminante '
+                               'cero) es:',
+                  'alternativas': ['{2}', 'R-{2}', 'R', '∅', '(2,+∞)'],
+                  'correcta': 'C'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-6x+9&gt;0 (discriminante '
+                               'cero) es:',
+                  'alternativas': ['{3}', 'R-{3}', 'R', '∅', '(3,+∞)'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-4x+4&lt;0 (discriminante '
+                               'cero) es:',
+                  'alternativas': ['{2}', 'R-{2}', 'R', '∅', '(2,+∞)'],
+                  'correcta': 'D'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-16&lt;0 es:',
+                  'alternativas': ['(-4,4)',
+                                   '(-∞,-4)∪(4,+∞)',
+                                   '(0,4)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-16&gt;0 es:',
+                  'alternativas': ['(-4,4)',
+                                   '(-∞,-4)∪(4,+∞)',
+                                   '(0,4)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-3x-10&gt;0 es:',
+                  'alternativas': ['(-2,5)',
+                                   '(-∞,-2)∪(5,+∞)',
+                                   '(2,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-6x+8&lt;0 es:',
+                  'alternativas': ['(2,4)',
+                                   '(-∞,2)∪(4,+∞)',
+                                   '(-4,-2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-8x+15&gt;0 es:',
+                  'alternativas': ['(3,5)',
+                                   '(-∞,3)∪(5,+∞)',
+                                   '(-5,-3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-8x+15&lt;0 es:',
+                  'alternativas': ['(3,5)',
+                                   '(-∞,3)∪(5,+∞)',
+                                   '(-5,-3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+3x-4&gt;0 es:',
+                  'alternativas': ['(-4,1)',
+                                   '(-∞,-4)∪(1,+∞)',
+                                   '(1,4)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+3x-4&lt;0 es:',
+                  'alternativas': ['(-4,1)',
+                                   '(-∞,-4)∪(1,+∞)',
+                                   '(1,4)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               '3x<super>2</super>-5x+2&lt;0 es:',
+                  'alternativas': ['(2/3,1)',
+                                   '(-∞,2/3)∪(1,+∞)',
+                                   '(1,2/3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               '2x<super>2</super>+x-3&lt;0 es:',
+                  'alternativas': ['(-3/2,1)',
+                                   '(-∞,-3/2)∪(1,+∞)',
+                                   '(1,3/2)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-1&gt;0 es:',
+                  'alternativas': ['(-1,1)',
+                                   '(-∞,-1)∪(1,+∞)',
+                                   '(0,1)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-1&lt;0 es:',
+                  'alternativas': ['(-1,1)',
+                                   '(-∞,-1)∪(1,+∞)',
+                                   '(0,1)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-25&lt;0 es:',
+                  'alternativas': ['(-5,5)',
+                                   '(-∞,-5)∪(5,+∞)',
+                                   '(0,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>-25&gt;0 es:',
+                  'alternativas': ['(-5,5)',
+                                   '(-∞,-5)∪(5,+∞)',
+                                   '(0,5)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+5x+6&gt;0 es:',
+                  'alternativas': ['(-3,-2)',
+                                   '(-∞,-3)∪(-2,+∞)',
+                                   '(2,3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'B'},
+                 {'enunciado': 'El conjunto solución de '
+                               'x<super>2</super>+5x+6&lt;0 es:',
+                  'alternativas': ['(-3,-2)',
+                                   '(-∞,-3)∪(-2,+∞)',
+                                   '(2,3)',
+                                   'R',
+                                   '∅'],
+                  'correcta': 'A'}],
+  'qr_reto': [{'pregunta': '¿Qué pasa con la desigualdad al multiplicar por '
+                           'un número negativo?',
+               'respuesta': 'Se invierte el sentido'},
+              {'pregunta': 'Si D<0 y a>0, ¿qué signo tiene siempre ax²+bx+c?',
+               'respuesta': 'Siempre positivo'},
+              {'pregunta': '¿Cómo se llama el método para resolver '
+                           'inecuaciones cuadráticas?',
+               'respuesta': 'Método de puntos críticos'}],
+  'qr_dato': 'El símbolo de infinito (∞) fue introducido por el matemático '
+             'inglés John Wallis en 1655. Eligió esa forma porque recuerda a '
+             'una cinta que se puede recorrer sin fin, dando vueltas una y '
+             'otra vez.'}]
