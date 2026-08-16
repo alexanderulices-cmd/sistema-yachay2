@@ -34257,9 +34257,14 @@ def tab_musica_eventos(config):
         </div>
         """, unsafe_allow_html=True)
 
-        ruta = os.path.join(os.path.dirname(__file__), "audio", nombre_archivo)
+        base_dir = os.path.dirname(__file__)
+        rutas_candidatas = [
+            os.path.join(base_dir, nombre_archivo),           # raíz del repo
+            os.path.join(base_dir, "audio", nombre_archivo),  # carpeta audio/
+        ]
+        ruta = next((r for r in rutas_candidatas if os.path.exists(r)), None)
 
-        if os.path.exists(ruta):
+        if ruta:
             try:
                 tamano_kb = os.path.getsize(ruta) / 1024
                 with open(ruta, "rb") as f:
@@ -34276,9 +34281,8 @@ def tab_musica_eventos(config):
                 f"⚠️ Todavía no has agregado este archivo. Para que "
                 f"quede guardado de la forma más segura (sin depender "
                 f"de internet el día del evento):\n\n"
-                f"1. Sube tu archivo `{nombre_archivo}` a la carpeta "
-                f"`audio/` de tu repositorio en GitHub (créala si no "
-                f"existe)\n"
+                f"1. Sube tu archivo `{nombre_archivo}` a la raíz de tu "
+                f"repositorio en GitHub, o a una carpeta `audio/`\n"
                 f"2. Vuelve a desplegar el sistema\n"
                 f"3. Aquí aparecerá listo para reproducir"
             )
