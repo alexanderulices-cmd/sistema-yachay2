@@ -33499,10 +33499,13 @@ def main():
                 st.session_state.modulo_activo = "documentos_aux"
 
         # Segunda fila de botones
-        ca6, ca7, ca8 = st.columns(3)
+        ca6, ca7 = st.columns(2)
         with ca6:
             if st.button("📅\n\n**Horarios**", use_container_width=True, key="aux_horarios", type="primary"):
                 st.session_state.modulo_activo = "horarios_aux"
+        with ca7:
+            if st.button("🎵\n\n**Música Eventos**", use_container_width=True, key="aux_musica", type="primary"):
+                st.session_state.modulo_activo = "musica_eventos"
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
@@ -33519,6 +33522,8 @@ def main():
             _seccion_documentos_auxiliar(config)
         elif mod == "horarios_aux":
             _tab_horarios_directivo(config)
+        elif mod == "musica_eventos":
+            tab_musica_eventos(config)
 
     # ========================================
     # DOCENTE — Su grado solamente
@@ -33559,6 +33564,7 @@ def main():
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
+                ("🎵", "Música Eventos", "musica_eventos", "#be123c"),
             ]
 
             # Grid de módulos
@@ -33662,6 +33668,8 @@ def main():
                 tab_aprendo_jugando(config)
             elif mod == "academia_cepru":
                 tab_academia_cepru(config)
+            elif mod == "musica_eventos":
+                tab_musica_eventos(config)
 
     # ========================================
     # ADMIN / DIRECTIVO — Dashboard con íconos
@@ -33710,6 +33718,7 @@ def main():
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
+                ("🎵", "Música Eventos", "musica_eventos", "#be123c"),
             ]
             if st.session_state.rol == "admin":
                 modulos.append(("📕", "Reclamaciones", "reclamaciones", "#92400e"))
@@ -33837,6 +33846,8 @@ def main():
                 tab_aprendo_jugando(config)
             elif mod == "academia_cepru":
                 tab_academia_cepru(config)
+            elif mod == "musica_eventos":
+                tab_musica_eventos(config)
             elif mod == "simulador_nomb":
                 tab_simulador_nombramiento(config)
             elif mod == "predictivo":
@@ -34216,6 +34227,201 @@ lugar del DNI, escriba ese número de celular tal como se lo indiquen.
         st.markdown("1. El padre abre Telegram y escribe `/start [DNI]` al bot.")
         st.markdown("2. El admin hace clic en **Obtener nuevos suscriptores** en la pestaña Configurar Bot.")
         st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
+
+
+def tab_musica_eventos(config):
+    """Reproductor de música para eventos del colegio (Día de la Madre,
+    Día del Padre, aniversario, etc.) + los himnos (Nacional del Perú y
+    del Colegio), con máxima confiabilidad: los himnos se reproducen
+    desde archivos locales incluidos en el propio repositorio (sin
+    depender de internet ni de Google Drive en el momento de la
+    ceremonia), y las demás canciones se guardan en Google Drive con
+    manejo de errores en cada paso."""
+    import os
+
+    st.header("🎵 Música para Eventos")
+
+    def _bloque_himno(titulo, nombre_archivo, color1, color2):
+        """Bloque reutilizable para un himno: se reproduce desde un
+        archivo LOCAL (parte del repositorio), nunca desde internet,
+        para que nunca falle durante la ceremonia."""
+        st.markdown(f"""
+        <div style='background:linear-gradient(135deg,{color1},{color2});
+                    border-radius:14px;padding:16px 20px;color:white;
+                    margin-bottom:12px;'>
+            <div style='font-size:1.3rem;font-weight:800;'>{titulo}</div>
+            <div style='font-size:0.85rem;opacity:0.9;'>
+                Se reproduce desde un archivo guardado directamente en el
+                sistema — funciona incluso sin conexión a internet.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        ruta = os.path.join(os.path.dirname(__file__), "audio", nombre_archivo)
+
+        if os.path.exists(ruta):
+            try:
+                tamano_kb = os.path.getsize(ruta) / 1024
+                with open(ruta, "rb") as f:
+                    audio_bytes = f.read()
+                st.audio(audio_bytes, format="audio/mp3")
+                st.caption(f"✅ Archivo listo ({tamano_kb:.0f} KB). "
+                          f"Recomendación: pruébalo un día antes del "
+                          f"evento, no el mismo día.")
+            except Exception as e:
+                st.error(f"⚠️ El archivo existe pero no se pudo leer: "
+                        f"{e}. Revisa que no esté dañado.")
+        else:
+            st.warning(
+                f"⚠️ Todavía no has agregado este archivo. Para que "
+                f"quede guardado de la forma más segura (sin depender "
+                f"de internet el día del evento):\n\n"
+                f"1. Sube tu archivo `{nombre_archivo}` a la carpeta "
+                f"`audio/` de tu repositorio en GitHub (créala si no "
+                f"existe)\n"
+                f"2. Vuelve a desplegar el sistema\n"
+                f"3. Aquí aparecerá listo para reproducir"
+            )
+
+    # ════════════════════════════════════════════════════════════
+    # HIMNOS — máxima prioridad y confiabilidad (archivo local)
+    # ════════════════════════════════════════════════════════════
+    c_himno1, c_himno2 = st.columns(2)
+    with c_himno1:
+        _bloque_himno("🇵🇪 HIMNO NACIONAL DEL PERÚ", "himno_nacional_peru.mp3",
+                     "#7c2d12", "#b91c1c")
+    with c_himno2:
+        _bloque_himno("🎺 HIMNO DEL COLEGIO", "himno_colegio.mp3",
+                     "#1e3a8a", "#2563eb")
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════
+    # PLAYLISTS DE EVENTOS — guardadas en Google Drive
+    # ════════════════════════════════════════════════════════════
+    st.markdown("### 📅 Playlists por Evento")
+
+    gs = _gs()
+    if not gs or gs._drive is None:
+        st.error("⚠️ No hay conexión con Google Drive en este momento. "
+                 "No se pueden agregar ni reproducir canciones de eventos "
+                 "(el himno de arriba sigue funcionando normalmente, ya "
+                 "que no depende de esto).")
+        return
+
+    with st.expander("🗂️ Ver historial completo (todos los eventos guardados)"):
+        todas_canciones = gs.leer_canciones()
+        if not todas_canciones:
+            st.caption("Todavía no hay ninguna canción guardada en ningún evento.")
+        else:
+            resumen = {}
+            for c in todas_canciones:
+                ev = c.get("evento", "Sin evento")
+                resumen.setdefault(ev, []).append(c.get("nombre_cancion", ""))
+            for ev, nombres in resumen.items():
+                st.markdown(f"**{ev}** — {len(nombres)} canción(es)")
+                for n in nombres:
+                    st.caption(f"　🎵 {n}")
+
+    eventos_comunes = ["Día de la Madre", "Día del Padre", "Aniversario del Colegio",
+                       "Navidad", "Día del Logro", "Clausura", "Otro evento"]
+    c_ev, c_nuevo = st.columns([2, 2])
+    with c_ev:
+        evento_elegido = st.selectbox("Evento:", eventos_comunes, key="me_evento_sel")
+    evento_final = evento_elegido
+    if evento_elegido == "Otro evento":
+        with c_nuevo:
+            evento_final = st.text_input("Nombre del evento:", key="me_evento_custom")
+
+    if not evento_final or evento_final == "Otro evento":
+        st.info("Escribe el nombre del evento para continuar.")
+        return
+
+    with st.expander("➕ Agregar una canción a esta playlist"):
+        nombre_cancion = st.text_input("Nombre de la canción:", key="me_nombre_cancion")
+        archivo_subido = st.file_uploader(
+            "Archivo de audio (MP3, WAV, M4A — máx. 20 MB):",
+            type=["mp3", "wav", "m4a", "ogg"], key="me_uploader")
+
+        if st.button("⬆️ SUBIR CANCIÓN", type="primary",
+                    use_container_width=True, key="me_btn_subir"):
+            if not nombre_cancion.strip():
+                st.error("Ponle un nombre a la canción.")
+            elif archivo_subido is None:
+                st.error("Elige un archivo de audio primero.")
+            elif archivo_subido.size > 20 * 1024 * 1024:
+                st.error("El archivo pesa más de 20 MB. Usa una versión "
+                        "más comprimida (MP3 a 128kbps suele ser suficiente).")
+            else:
+                with st.spinner("Subiendo canción a Google Drive… "
+                               "no cierres esta página."):
+                    bytes_audio = archivo_subido.read()
+                    mime = archivo_subido.type or "audio/mpeg"
+                    file_id = gs.subir_cancion(
+                        f"{evento_final}_{nombre_cancion}", bytes_audio, mime)
+                if file_id is None:
+                    st.error("😕 No se pudo subir el archivo a Google "
+                            "Drive. Intenta de nuevo — si el problema "
+                            "sigue, prueba con un archivo más liviano.")
+                else:
+                    import datetime as _dt_musica
+                    canciones_actuales = gs.leer_canciones(evento_final)
+                    siguiente_orden = len(canciones_actuales) + 1
+                    guardado = gs.guardar_cancion_metadata({
+                        "id": file_id, "evento": evento_final,
+                        "nombre_cancion": nombre_cancion.strip(),
+                        "drive_file_id": file_id, "orden": siguiente_orden,
+                        "fecha_agregado": _dt_musica.datetime.now().strftime("%Y-%m-%d"),
+                        "agregado_por": st.session_state.get("usuario_actual", ""),
+                    })
+                    if guardado:
+                        st.success(f"✅ «{nombre_cancion}» agregada a "
+                                  f"{evento_final}.")
+                        st.rerun()
+                    else:
+                        st.warning("La canción se subió a Drive, pero no "
+                                  "se pudo registrar en la lista. Avisa "
+                                  "si esto se repite.")
+
+    st.markdown(f"#### Canciones de «{evento_final}»")
+    canciones = gs.leer_canciones(evento_final)
+
+    if not canciones:
+        st.caption("Todavía no hay canciones agregadas a este evento.")
+        return
+
+    @st.cache_data(show_spinner=False, ttl=3600)
+    def _descargar_cacheado(file_id):
+        return gs.descargar_cancion(file_id)
+
+    for cancion in canciones:
+        nombre = cancion.get("nombre_cancion", "Sin nombre")
+        file_id = cancion.get("drive_file_id", "")
+        c_nom, c_play, c_del = st.columns([3, 1, 1])
+        with c_nom:
+            st.markdown(f"🎵 **{nombre}**")
+        with c_play:
+            reproducir = st.button("▶️ Reproducir", key=f"me_play_{file_id}",
+                                   use_container_width=True)
+        with c_del:
+            eliminar = st.button("🗑️", key=f"me_del_{file_id}",
+                                 use_container_width=True)
+
+        if reproducir:
+            with st.spinner(f"Cargando «{nombre}»…"):
+                bytes_cancion = _descargar_cacheado(file_id)
+            if bytes_cancion:
+                st.audio(bytes_cancion, format="audio/mp3")
+            else:
+                st.error(f"😕 No se pudo cargar «{nombre}» desde Drive. "
+                        f"Intenta de nuevo en unos segundos.")
+
+        if eliminar:
+            with st.spinner("Eliminando…"):
+                gs.eliminar_cancion_drive(file_id)
+                gs.eliminar_cancion_metadata(file_id)
+            st.toast(f"🗑️ «{nombre}» eliminada.")
+            st.rerun()
 
 
 def tab_bienestar_estudiantil(config, _pfx="bw"):

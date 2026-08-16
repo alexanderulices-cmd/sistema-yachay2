@@ -27,6 +27,7 @@ HOJAS = {
     'historial_eval': 'HistorialEval',
     'portal_credenciales': 'PortalCredenciales',
     'portal_resultados': 'PortalResultados',
+    'musica_eventos': 'MusicaEventos',
 }
 
 COLUMNAS = {
@@ -54,6 +55,8 @@ COLUMNAS = {
                              'activo', 'fecha_creacion', 'creado_por'],
     'portal_resultados': ['usuario', 'fecha', 'tipo', 'area', 'tema_num',
                            'tema_titulo', 'aciertos', 'total', 'nota'],
+    'musica_eventos': ['id', 'evento', 'nombre_cancion', 'drive_file_id',
+                       'orden', 'fecha_agregado', 'agregado_por'],
     'historial_eval': ['eval_id', 'fecha', 'docente', 'titulo', 'grado',
                         'areas_json', 'total_alumnos', 'promedio_general'],
     'config': ['clave', 'valor'],
@@ -70,6 +73,7 @@ class GoogleSync:
         self.client = None
         self.spreadsheet = None
         self.conectado = False
+        self._drive = None
         self._cache = {}
         self._cache_ts = {}
         self._CACHE_TTL = 120  # 2 minutos
@@ -91,6 +95,13 @@ class GoogleSync:
             ]
             creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
             self.client = gspread.authorize(creds)
+            self._creds = creds
+            try:
+                from googleapiclient.discovery import build
+                self._drive = build('drive', 'v3', credentials=creds,
+                                    cache_discovery=False)
+            except Exception:
+                self._drive = None
 
             sheet_id = st.secrets.get('google_sheets', {}).get(
                 'spreadsheet_id', '')
@@ -312,6 +323,132 @@ class GoogleSync:
             return data
         except Exception:
             return []
+
+    # ================================================================
+    # MÚSICA PARA EVENTOS — almacenamiento en Google Drive (el audio,
+    # que puede pesar varios MB, no cabe en una celda de Sheets) +
+    # metadatos en Google Sheets (nombre, evento, referencia al archivo).
+    # ================================================================
+
+    def _carpeta_musica_id(self):
+        """Encuentra (o crea una sola vez) la carpeta 'YachayMusica' en
+        Drive donde se guardan todas las canciones subidas desde el
+        sistema, para mantenerlas organizadas y no mezcladas con otros
+        archivos del Drive de la cuenta de servicio."""
+        if self._drive is None:
+            return None
+        try:
+            resultados = self._drive.files().list(
+                q="name='YachayMusica' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                fields="files(id,name)", pageSize=1).execute()
+            archivos = resultados.get('files', [])
+            if archivos:
+                return archivos[0]['id']
+            carpeta = self._drive.files().create(
+                body={'name': 'YachayMusica',
+                      'mimeType': 'application/vnd.google-apps.folder'},
+                fields='id').execute()
+            return carpeta.get('id')
+        except Exception:
+            return None
+
+    def subir_cancion(self, nombre_archivo, bytes_audio, mime_type="audio/mpeg"):
+        """Sube un archivo de audio a Drive. Devuelve el file_id si tuvo
+        éxito, o None si falló (sin lanzar excepción — quien llama debe
+        revisar el resultado y avisar al usuario, nunca asumir éxito)."""
+        if self._drive is None:
+            return None
+        try:
+            from googleapiclient.http import MediaIoBaseUpload
+            import io as _io_drive
+            carpeta_id = self._carpeta_musica_id()
+            metadata = {'name': nombre_archivo}
+            if carpeta_id:
+                metadata['parents'] = [carpeta_id]
+            media = MediaIoBaseUpload(_io_drive.BytesIO(bytes_audio),
+                                      mimetype=mime_type, resumable=False)
+            archivo = self._drive.files().create(
+                body=metadata, media_body=media, fields='id').execute()
+            return archivo.get('id')
+        except Exception:
+            return None
+
+    def descargar_cancion(self, drive_file_id):
+        """Descarga los bytes de una canción desde Drive por su file_id.
+        Devuelve None si falla, para que quien reproduce pueda mostrar
+        un mensaje claro en vez de romper la app."""
+        if self._drive is None or not drive_file_id:
+            return None
+        try:
+            import io as _io_drive
+            from googleapiclient.http import MediaIoBaseDownload
+            buf = _io_drive.BytesIO()
+            solicitud = self._drive.files().get_media(fileId=drive_file_id)
+            descargador = MediaIoBaseDownload(buf, solicitud)
+            listo = False
+            while not listo:
+                _, listo = descargador.next_chunk()
+            buf.seek(0)
+            return buf.read()
+        except Exception:
+            return None
+
+    def eliminar_cancion_drive(self, drive_file_id):
+        """Elimina (envía a la papelera) un archivo de audio de Drive."""
+        if self._drive is None or not drive_file_id:
+            return False
+        try:
+            self._drive.files().update(
+                fileId=drive_file_id, body={'trashed': True}).execute()
+            return True
+        except Exception:
+            return False
+
+    def guardar_cancion_metadata(self, datos):
+        """Registra en Sheets los metadatos de una canción ya subida a
+        Drive (nombre, evento, referencia al archivo)."""
+        ws = self._get_hoja('musica_eventos')
+        if ws is None:
+            return False
+        try:
+            row = [datos.get(c, '') for c in COLUMNAS['musica_eventos']]
+            ws.append_row(row)
+            return True
+        except Exception:
+            return False
+
+    def leer_canciones(self, evento=None):
+        """Lee la lista de canciones registradas, opcionalmente
+        filtradas por evento (Día de la Madre, Día del Padre, etc.)."""
+        ws = self._get_hoja('musica_eventos')
+        if ws is None:
+            return []
+        try:
+            data = ws.get_all_records()
+            if evento:
+                data = [r for r in data
+                       if str(r.get('evento', '')).strip() == evento.strip()]
+            data.sort(key=lambda r: (str(r.get('evento', '')),
+                                     int(r.get('orden', 0) or 0)))
+            return data
+        except Exception:
+            return []
+
+    def eliminar_cancion_metadata(self, drive_file_id):
+        """Elimina de Sheets la fila de metadatos de una canción, dado
+        su drive_file_id."""
+        ws = self._get_hoja('musica_eventos')
+        if ws is None:
+            return False
+        try:
+            all_data = ws.get_all_records()
+            for i, row in enumerate(all_data):
+                if str(row.get('drive_file_id', '')) == str(drive_file_id):
+                    ws.delete_rows(i + 2)
+                    return True
+            return False
+        except Exception:
+            return False
 
     def leer_asistencias(self, fecha=None, grado=None, mes=None, anio=None):
         """Lee asistencias con filtros opcionales"""

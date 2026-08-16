@@ -19,3 +19,4 @@ referencing==0.37.0
 pyarrow==17.0.0
 gtts==2.5.4
 edge-tts==6.1.19
+google-api-python-client==2.149.0
