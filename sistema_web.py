@@ -34356,6 +34356,29 @@ def tab_musica_eventos(config):
             elif archivo_subido.size > 20 * 1024 * 1024:
                 st.error("El archivo pesa más de 20 MB. Usa una versión "
                         "más comprimida (MP3 a 128kbps suele ser suficiente).")
+            elif gs._carpeta_musica_id() is None:
+                try:
+                    correo_cuenta = st.secrets.get('gcp_service_account', {}).get(
+                        'client_email', '(no encontrado)')
+                except Exception:
+                    correo_cuenta = '(no encontrado)'
+                st.error(
+                    "⚠️ Falta un paso de configuración única (no es un "
+                    "error tuyo). Las cuentas de servicio de Google no "
+                    "tienen espacio propio en Drive, así que hay que "
+                    "compartirles una carpeta tuya con espacio real:\n\n"
+                    "1. En tu Google Drive (con tu cuenta normal), crea "
+                    "una carpeta — por ejemplo «MusicaYachay»\n"
+                    f"2. Click derecho → Compartir → agrega este correo "
+                    f"con permiso de **Editor**:\n`{correo_cuenta}`\n"
+                    "3. Abre esa carpeta y copia el ID que aparece en "
+                    "la URL (la parte después de `/folders/`)\n"
+                    "4. En Streamlit Cloud → Settings → Secrets, agrega "
+                    "esta línea dentro de `[google_sheets]`:\n"
+                    "`carpeta_musica_id = \"ese-id-que-copiaste\"`\n\n"
+                    "Después de guardar el secreto, vuelve a intentar "
+                    "subir la canción."
+                )
             else:
                 with st.spinner("Subiendo canción a Google Drive… "
                                "no cierres esta página."):

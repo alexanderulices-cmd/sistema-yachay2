@@ -331,24 +331,17 @@ class GoogleSync:
     # ================================================================
 
     def _carpeta_musica_id(self):
-        """Encuentra (o crea una sola vez) la carpeta 'YachayMusica' en
-        Drive donde se guardan todas las canciones subidas desde el
-        sistema, para mantenerlas organizadas y no mezcladas con otros
-        archivos del Drive de la cuenta de servicio."""
-        if self._drive is None:
-            return None
+        """Devuelve el ID de la carpeta de Drive donde se guardan las
+        canciones. Las cuentas de servicio de Google NO tienen espacio
+        propio en 'Mi unidad' (0 bytes de cuota) — por eso NO se crea
+        una carpeta nueva desde la cuenta de servicio (eso fallaría por
+        falta de espacio). En su lugar, se usa una carpeta de la cuenta
+        normal del usuario, compartida con la cuenta de servicio, cuyo
+        ID se configura una sola vez en Streamlit Secrets."""
         try:
-            resultados = self._drive.files().list(
-                q="name='YachayMusica' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                fields="files(id,name)", pageSize=1).execute()
-            archivos = resultados.get('files', [])
-            if archivos:
-                return archivos[0]['id']
-            carpeta = self._drive.files().create(
-                body={'name': 'YachayMusica',
-                      'mimeType': 'application/vnd.google-apps.folder'},
-                fields='id').execute()
-            return carpeta.get('id')
+            carpeta_id = st.secrets.get('google_sheets', {}).get(
+                'carpeta_musica_id', '')
+            return carpeta_id if carpeta_id else None
         except Exception:
             return None
 
