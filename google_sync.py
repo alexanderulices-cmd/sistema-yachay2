@@ -369,11 +369,28 @@ class GoogleSync:
             metadata = {'name': nombre_archivo}
             if carpeta_id:
                 metadata['parents'] = [carpeta_id]
+            # resumable=True + subida por partes: mucho mas resistente a
+            # cortes de conexion que un solo envio grande (que es lo que
+            # causaba el error 'Broken pipe'). Si un pedazo falla, se
+            # reintenta ese pedazo solo, no todo el archivo desde cero.
             media = MediaIoBaseUpload(_io_drive.BytesIO(bytes_audio),
-                                      mimetype=mime_type, resumable=False)
-            archivo = self._drive.files().create(
+                                      mimetype=mime_type, resumable=True,
+                                      chunksize=1024 * 1024)  # 1 MB por parte
+            solicitud = self._drive.files().create(
                 body=metadata, media_body=media, fields='id',
-                supportsAllDrives=True).execute()
+                supportsAllDrives=True)
+            archivo = None
+            intentos_fallidos_seguidos = 0
+            while archivo is None:
+                try:
+                    estado, archivo = solicitud.next_chunk()
+                    intentos_fallidos_seguidos = 0
+                except Exception as e_parte:
+                    intentos_fallidos_seguidos += 1
+                    if intentos_fallidos_seguidos >= 3:
+                        raise
+                    import time as _time_reintento
+                    _time_reintento.sleep(1.5 * intentos_fallidos_seguidos)
             return archivo.get('id')
         except Exception as e:
             self._ultimo_error_drive = str(e)
