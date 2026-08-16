@@ -74,6 +74,7 @@ class GoogleSync:
         self.spreadsheet = None
         self.conectado = False
         self._drive = None
+        self._ultimo_error_drive = None
         self._cache = {}
         self._cache_ts = {}
         self._CACHE_TTL = 120  # 2 minutos
@@ -100,8 +101,11 @@ class GoogleSync:
                 from googleapiclient.discovery import build
                 self._drive = build('drive', 'v3', credentials=creds,
                                     cache_discovery=False)
-            except Exception:
+            except Exception as e:
                 self._drive = None
+                self._ultimo_error_drive = (
+                    f"No se pudo inicializar el cliente de Google Drive: "
+                    f"{e}")
 
             sheet_id = st.secrets.get('google_sheets', {}).get(
                 'spreadsheet_id', '')
@@ -347,9 +351,16 @@ class GoogleSync:
 
     def subir_cancion(self, nombre_archivo, bytes_audio, mime_type="audio/mpeg"):
         """Sube un archivo de audio a Drive. Devuelve el file_id si tuvo
-        éxito, o None si falló (sin lanzar excepción — quien llama debe
-        revisar el resultado y avisar al usuario, nunca asumir éxito)."""
+        éxito, o None si falló (quien llama debe revisar el resultado).
+        El motivo exacto del fallo queda en self._ultimo_error_drive
+        para poder mostrarlo al usuario, en vez de un error genérico."""
+        self._ultimo_error_drive = None
         if self._drive is None:
+            self._ultimo_error_drive = (
+                "La conexión con Google Drive no se inicializó. Esto "
+                "suele pasar si falta la librería 'google-api-python-"
+                "client' en requirements.txt, o si hubo un error al "
+                "crear las credenciales.")
             return None
         try:
             from googleapiclient.http import MediaIoBaseUpload
@@ -361,9 +372,11 @@ class GoogleSync:
             media = MediaIoBaseUpload(_io_drive.BytesIO(bytes_audio),
                                       mimetype=mime_type, resumable=False)
             archivo = self._drive.files().create(
-                body=metadata, media_body=media, fields='id').execute()
+                body=metadata, media_body=media, fields='id',
+                supportsAllDrives=True).execute()
             return archivo.get('id')
-        except Exception:
+        except Exception as e:
+            self._ultimo_error_drive = str(e)
             return None
 
     def descargar_cancion(self, drive_file_id):

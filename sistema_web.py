@@ -34398,9 +34398,15 @@ def tab_musica_eventos(config):
                     file_id = gs.subir_cancion(
                         f"{evento_final}_{nombre_cancion}", bytes_audio, mime)
                 if file_id is None:
-                    st.error("😕 No se pudo subir el archivo a Google "
-                            "Drive. Intenta de nuevo — si el problema "
-                            "sigue, prueba con un archivo más liviano.")
+                    detalle = getattr(gs, "_ultimo_error_drive", None)
+                    if detalle:
+                        st.error(f"😕 No se pudo subir el archivo a "
+                                f"Google Drive.\n\n**Motivo exacto:** "
+                                f"{detalle}")
+                    else:
+                        st.error("😕 No se pudo subir el archivo a Google "
+                                "Drive. Intenta de nuevo — si el problema "
+                                "sigue, prueba con un archivo más liviano.")
                 else:
                     import datetime as _dt_musica
                     canciones_actuales = gs.leer_canciones(evento_final)
