@@ -6189,30 +6189,18 @@ def pantalla_login():
                 st.session_state['_portal_estudiante'] = True
                 st.rerun()
 
-        # Acceso rapido a Musica para Eventos (para docentes/admin/auxiliar)
-        st.markdown("---")
-        st.markdown("""
-        <div style='background:linear-gradient(135deg,#be123c,#e11d48);
-                    border-radius:12px;padding:10px 12px;text-align:center;
-                    color:white;margin-bottom:6px;'>
-            <div style='font-size:1rem;font-weight:800;'>🎵 Música para Eventos</div>
-            <div style='font-size:0.75rem;opacity:0.9;margin-top:2px;'>
-                Acceso rápido — inicia sesión arriba con tu cuenta de
-                docente/admin y entrarás directo aquí
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🎵 IR DIRECTO A MÚSICA (inicia sesión arriba)",
-                    use_container_width=True, key="btn_ir_musica"):
-            st.session_state['_ir_directo_musica'] = True
-            st.toast("👆 Listo — ahora inicia sesión arriba con tu "
-                    "usuario y contraseña, y entrarás directo a Música "
-                    "para Eventos.")
-
-        # Libro de reclamaciones
+        # Libro de reclamaciones + acceso rapido a Musica (discretos, chicos)
         st.markdown("---")
         with st.expander("📕 Libro de Reclamaciones Virtual"):
             st.markdown("*Según normativa MINEDU — Complete sus datos para continuar*")
+
+        with st.expander("🎵 Música para Eventos (acceso rápido)"):
+            st.caption("Inicia sesión arriba con tu cuenta de docente/admin "
+                      "y entrarás directo a Música para Eventos.")
+            if st.button("Ir directo a Música", key="btn_ir_musica"):
+                st.session_state['_ir_directo_musica'] = True
+                st.toast("👆 Ahora inicia sesión arriba con tu usuario y "
+                        "contraseña.")
 
             # PASO 1: Verificar identidad
             r_dni   = st.text_input("🔑 DNI (requerido):", key="rl_dni", max_chars=8,
@@ -34267,12 +34255,6 @@ def tab_musica_eventos(config):
 
     st.markdown("""
     <style>
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #0a0a0a !important;
-    }
-    div[data-testid="stAppViewContainer"] .main {
-        background-color: #0d0d0d;
-    }
     .cuadradito-cancion {
         border-radius: 14px;
         padding: 18px 10px;
@@ -34555,6 +34537,87 @@ def tab_musica_eventos(config):
                       "en caché).")
     st.caption("💡 Recomendación: precarga la playlist ANTES de que "
               "empiece el evento, no durante.")
+
+    with st.expander("🔌 Modo Evento Sin Internet (protección extra, "
+                     "recomendado para el himno y canciones críticas)"):
+        st.caption(
+            "Esto va un paso más allá de la precarga normal: incrusta "
+            "el audio directamente en la página con JavaScript, así "
+            "que **cambiar de canción durante el evento ya NO necesita "
+            "comunicarse con el servidor cada vez** — solo la carga "
+            "inicial de esta sección necesita internet. Úsalo unos "
+            "minutos antes de que empiece el evento, y no cierres ni "
+            "recargues la página después.\n\n"
+            "⚠️ Con muchas canciones, esta sección puede tardar un poco "
+            "en cargar la primera vez (está incrustando el audio "
+            "completo en la página)."
+        )
+        if st.button("🔌 Activar Modo Evento Sin Internet para esta playlist",
+                    use_container_width=True, type="primary",
+                    key=f"me_modo_offline_{evento_final}"):
+            with st.spinner("Preparando modo sin internet… esto puede "
+                           "tardar un poco con playlists grandes."):
+                import base64 as _b64_offline
+                piezas_audio, piezas_botones = [], []
+                paleta_offline = ["#e11d48", "#7c3aed", "#0891b2", "#16a34a",
+                                  "#ea580c", "#db2777", "#4f46e5", "#0d9488"]
+                fallaron_offline = []
+                for i, c in enumerate(canciones):
+                    nombre_c = c.get("nombre_cancion", "Sin nombre")
+                    audio_bytes = _descargar_cacheado(c.get("drive_file_id", ""))
+                    if not audio_bytes:
+                        fallaron_offline.append(nombre_c)
+                        continue
+                    b64 = _b64_offline.b64encode(audio_bytes).decode()
+                    color = paleta_offline[i % len(paleta_offline)]
+                    piezas_audio.append(
+                        f'<audio id="ev_audio_{i}" preload="auto" '
+                        f'src="data:audio/mp3;base64,{b64}"></audio>')
+                    nombre_seguro = (nombre_c.replace("<", "").replace(">", ""))
+                    piezas_botones.append(f'''
+                        <div style="background:{color};border-radius:14px;
+                                    padding:20px 10px;text-align:center;
+                                    color:white;font-weight:800;margin:5px;
+                                    cursor:pointer;min-height:90px;
+                                    display:flex;align-items:center;
+                                    justify-content:center;font-size:0.95rem;"
+                             onclick="evPararTodo(); document.getElementById('ev_audio_{i}').play();">
+                            🎵 {nombre_seguro}
+                        </div>''')
+                html_offline = f'''
+                <div style="background:#0d0d0d;padding:14px;border-radius:12px;">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+                    {''.join(piezas_botones)}
+                </div>
+                <div style="text-align:center;margin-top:10px;">
+                    <button onclick="evPararTodo()" style="background:#dc2626;
+                            color:white;border:none;padding:10px 24px;
+                            border-radius:8px;font-weight:800;cursor:pointer;">
+                        ⏹️ DETENER
+                    </button>
+                </div>
+                </div>
+                {''.join(piezas_audio)}
+                <script>
+                function evPararTodo() {{
+                    document.querySelectorAll('audio').forEach(function(a) {{
+                        a.pause(); a.currentTime = 0;
+                    }});
+                }}
+                </script>
+                '''
+            if fallaron_offline:
+                st.warning(f"⚠️ No se pudieron incrustar: "
+                          f"{', '.join(fallaron_offline)} (revisa conexión "
+                          f"e intenta de nuevo).")
+            if piezas_audio:
+                st.success(f"✅ {len(piezas_audio)} canción(es) lista(s) "
+                          f"en modo sin internet. No cierres esta página "
+                          f"hasta terminar el evento.")
+                import streamlit.components.v1 as _components_musica
+                filas_offline = (len(canciones) + 2) // 3  # 3 columnas
+                _components_musica.html(html_offline,
+                                        height=180 + 100 * filas_offline)
 
     # Un solo reproductor compartido: evita que 2 canciones suenen a la
     # vez si alguien toca 'Reproducir' en varias por error.
