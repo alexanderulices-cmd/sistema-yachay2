@@ -6193,15 +6193,6 @@ def pantalla_login():
         st.markdown("---")
         with st.expander("📕 Libro de Reclamaciones Virtual"):
             st.markdown("*Según normativa MINEDU — Complete sus datos para continuar*")
-
-        with st.expander("🎵 Música para Eventos (acceso rápido)"):
-            st.caption("Inicia sesión arriba con tu cuenta de docente/admin "
-                      "y entrarás directo a Música para Eventos.")
-            if st.button("Ir directo a Música", key="btn_ir_musica"):
-                st.session_state['_ir_directo_musica'] = True
-                st.toast("👆 Ahora inicia sesión arriba con tu usuario y "
-                        "contraseña.")
-
             # PASO 1: Verificar identidad
             r_dni   = st.text_input("🔑 DNI (requerido):", key="rl_dni", max_chars=8,
                                      placeholder="8 dígitos")
@@ -6252,6 +6243,16 @@ def pantalla_login():
                                 st.warning("Sistema en modo local.")
                         else:
                             st.error("Complete nombre y detalle del reclamo.")
+
+        with st.expander("🎵 Música para Eventos (acceso rápido)"):
+            st.caption("Inicia sesión arriba con tu cuenta de docente/admin "
+                      "y entrarás directo a Música para Eventos.")
+            if st.button("Ir directo a Música", key="btn_ir_musica"):
+                st.session_state['_ir_directo_musica'] = True
+                st.toast("👆 Ahora inicia sesión arriba con tu usuario y "
+                        "contraseña.")
+
+
 
 
 # ================================================================
