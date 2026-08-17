@@ -34402,11 +34402,16 @@ def tab_musica_eventos(config):
                 "primera canción.")
         return
 
-    with st.expander("➕ Agregar una canción a esta playlist"):
+    if "me_expander_abierto" not in st.session_state:
+        st.session_state["me_expander_abierto"] = True
+
+    with st.expander("➕ Agregar una canción a esta playlist",
+                     expanded=st.session_state["me_expander_abierto"]):
         nombre_cancion = st.text_input("Nombre de la canción:", key="me_nombre_cancion")
         archivo_subido = st.file_uploader(
             "Archivo de audio (MP3, WAV, M4A — máx. 20 MB):",
             type=["mp3", "wav", "m4a", "ogg"], key="me_uploader")
+        st.caption("💡 La fecha se guarda sola, no necesitas escribirla.")
 
         if st.button("⬆️ SUBIR CANCIÓN", type="primary",
                     use_container_width=True, key="me_btn_subir"):
@@ -34475,14 +34480,46 @@ def tab_musica_eventos(config):
                     if guardado:
                         st.success(f"✅ «{nombre_cancion}» agregada a "
                                   f"{evento_final}.")
+                        st.session_state["me_expander_abierto"] = False
                         st.rerun()
                     else:
                         st.warning("La canción se subió a Drive, pero no "
                                   "se pudo registrar en la lista. Avisa "
                                   "si esto se repite.")
 
-    st.markdown(f"#### Canciones de «{evento_final}»")
+    st.markdown(f"""
+    <div style='background:linear-gradient(135deg,#b45309,#f59e0b);
+                border-radius:12px;padding:14px 18px;color:white;
+                margin:10px 0;text-align:center;'>
+        <div style='font-size:1.15rem;font-weight:800;'>
+            ⚠️ Antes del evento: usa "📥 Precargar toda la playlist" (más abajo)
+        </div>
+        <div style='font-size:0.85rem;opacity:0.95;margin-top:2px;'>
+            Así las canciones suenan al instante durante la ceremonia,
+            sin depender de que internet ande bien en ese momento.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     canciones = gs.leer_canciones(evento_final)
+
+    st.markdown(f"""
+    <div style='background:linear-gradient(180deg,#1f2937,#0d0d0d);
+                border-radius:16px 16px 0 0;padding:28px 24px 20px;
+                margin-top:6px;'>
+        <div style='font-size:0.75rem;font-weight:700;color:#9ca3af;
+                    letter-spacing:2px;text-transform:uppercase;'>
+            PLAYLIST
+        </div>
+        <div style='font-size:2.6rem;font-weight:900;color:white;
+                    line-height:1.1;margin-top:4px;'>
+            🎵 {evento_final}
+        </div>
+        <div style='font-size:0.9rem;color:#d1d5db;margin-top:8px;'>
+            {len(canciones)} canción{'es' if len(canciones) != 1 else ''}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if not canciones:
         st.caption("Todavía no hay canciones agregadas a este evento.")
@@ -34626,11 +34663,18 @@ def tab_musica_eventos(config):
 
     if st.session_state["me_cancion_activa"]:
         fid_activo, nombre_activo = st.session_state["me_cancion_activa"]
-        st.markdown(f"**🔊 Reproduciendo ahora: {nombre_activo}**")
+        c_titulo_activo, c_repetir = st.columns([3, 1.5])
+        with c_titulo_activo:
+            st.markdown(f"**🔊 Reproduciendo ahora: {nombre_activo}**")
+        with c_repetir:
+            repetir_cancion = st.checkbox(
+                "🔁 Repetir (para bailes/actuaciones)",
+                key="me_repetir_activa")
         with st.spinner(f"Cargando «{nombre_activo}»…"):
             bytes_cancion = _descargar_cacheado(fid_activo)
         if bytes_cancion:
-            st.audio(bytes_cancion, format="audio/mp3", autoplay=True)
+            st.audio(bytes_cancion, format="audio/mp3", autoplay=True,
+                     loop=repetir_cancion)
         else:
             st.error(f"😕 No se pudo cargar «{nombre_activo}» desde "
                     f"Drive. Intenta de nuevo en unos segundos.")
