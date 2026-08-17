@@ -659,168 +659,6 @@ def generar_ficha_texto(tema, con_claves=False, grado_txt="",
                 st_.append(grid)
                 fila_actual = []
 
-    # ------------------------------------------------------------------
-    # JUEGOS EDUCATIVOS: solo para Historia y Filosofía por ahora.
-    # Van SIEMPRE en página(s) nueva(s) para no cortarse a media hoja
-    # (misma lección aprendida con el sudoku de Álgebra).
-    # ------------------------------------------------------------------
-    _area_normal = (area or "").lower()
-    if ("historia" in _area_normal or "filosof" in _area_normal
-            or "civic" in _area_normal or "cívic" in _area_normal):
-        color_juegos = _color_area(area)
-        semilla_juegos = (tema.get("num", 1) if isinstance(tema.get("num"), int) else 1) * 23
-
-        st_.append(NextPageTemplate("ancho"))
-        st_.append(PageBreak())
-        st_.append(Spacer(1, 4))
-
-        def _titulo_juego(texto):
-            t = Table([[Paragraph(f"<b>{texto}</b>", est["h"])]], colWidths=[ancho_util])
-            t.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ]))
-            return t
-
-        from reportlab.platypus import KeepTogether
-
-        # --- Sudoku: 3 niveles, celdas mas chicas para que quepa mas ---
-        st_.append(_titulo_juego(f"🧩 DESAFÍO SUDOKU · {tema['titulo'].upper()}"))
-        st_.append(Spacer(1, 8))
-        for nivel_nombre, nivel_clave in [("Fácil", "facil"), ("Medio", "medio"),
-                                          ("Difícil", "dificil")]:
-            puzzle, solucion = _sudoku_puzzle(nivel_clave, semilla=semilla_juegos)
-            semilla_juegos += 1
-            bloque_sudoku = [
-                Paragraph(f"<b>Nivel {nivel_nombre}</b>", est["n"]),
-                Spacer(1, 3),
-                _tabla_sudoku(solucion if con_claves else puzzle, color_juegos,
-                             tam_celda=0.8),
-            ]
-            st_.append(KeepTogether(bloque_sudoku))
-            st_.append(Spacer(1, 8))
-
-        # --- Sopa de letras: 2 niveles de dificultad ---
-        st_.append(PageBreak())
-        st_.append(Spacer(1, 4))
-        st_.append(_titulo_juego(f"🔤 SOPA DE LETRAS · {tema['titulo'].upper()}"))
-        st_.append(Spacer(1, 8))
-        palabras_clave = _extraer_palabras_clave(tema, minimo=6, maximo=10)
-        if palabras_clave:
-            # Nivel 1: mas facil (menos palabras, grilla mas grande y despejada)
-            st_.append(Paragraph("<b>Nivel 1 (más fácil)</b>", est["n"]))
-            st_.append(Spacer(1, 3))
-            grilla_facil, colocadas_facil = _generar_sopa_letras(
-                palabras_clave[:6], tamano=15, semilla=semilla_juegos)
-            st_.append(_tabla_sopa_letras(grilla_facil, color_juegos))
-            st_.append(Spacer(1, 4))
-            st_.append(Paragraph("Encuentra: " + " · ".join(colocadas_facil), est["n"]))
-            st_.append(Spacer(1, 12))
-
-            # Nivel 2: mas dificil (mas palabras, grilla mas apretada)
-            st_.append(Paragraph("<b>Nivel 2 (más difícil)</b>", est["n"]))
-            st_.append(Spacer(1, 3))
-            grilla_dificil, colocadas_dificil = _generar_sopa_letras(
-                palabras_clave, tamano=12, semilla=semilla_juegos + 1)
-            st_.append(_tabla_sopa_letras(grilla_dificil, color_juegos, tam_celda=0.55))
-            st_.append(Spacer(1, 4))
-            st_.append(Paragraph("Encuentra: " + " · ".join(colocadas_dificil), est["n"]))
-
-        # --- Mapa Mental para completar (técnica de Tony Buzan, usada
-        # en todo el mundo para repaso y memorización visual) ---
-        ramas_mapa = _armar_ramas_mapa_mental(tema, max_ramas=5, sub_por_rama=2)
-        if len(ramas_mapa) >= 3:
-            st_.append(PageBreak())
-            st_.append(Spacer(1, 4))
-            st_.append(_titulo_juego(f"🧠 MAPA MENTAL PARA COMPLETAR · {tema['titulo'].upper()}"))
-            st_.append(Spacer(1, 6))
-            st_.append(Paragraph(
-                "Completa los espacios en blanco con los términos que faltan, "
-                "usando lo que recuerdas del tema.", est["n"]))
-            st_.append(Spacer(1, 8))
-            dibujo_mapa = _dibujo_mapa_mental(tema["titulo"], ramas_mapa, color_juegos,
-                                              con_claves=con_claves)
-            st_.append(dibujo_mapa)
-
-        # --- Crucigrama (pistas basadas en el contenido real) ---
-        pares_cruci = _extraer_palabras_con_pista(tema, maximo=10)
-        if len(pares_cruci) >= 4:
-            st_.append(PageBreak())
-            st_.append(Spacer(1, 4))
-            st_.append(_titulo_juego(f"✏️ CRUCIGRAMA · {tema['titulo'].upper()}"))
-            st_.append(Spacer(1, 8))
-            grilla_cruci, colocadas_cruci = _generar_crucigrama(
-                pares_cruci, tamano=16, semilla=semilla_juegos + 2)
-            if grilla_cruci:
-                grilla_cruci, colocadas_cruci = _recortar_grilla_crucigrama(
-                    grilla_cruci, colocadas_cruci)
-                numeradas = _numerar_crucigrama(colocadas_cruci)
-                st_.append(_tabla_crucigrama(grilla_cruci, numeradas, color_juegos,
-                                             mostrar_letras=con_claves))
-                st_.append(Spacer(1, 10))
-                horizontales = [f"{n}. {pista}" for n, p, pista, f, c, d in numeradas if d == "H"]
-                verticales = [f"{n}. {pista}" for n, p, pista, f, c, d in numeradas if d == "V"]
-                if horizontales:
-                    st_.append(Paragraph("<b>HORIZONTALES</b>", est["n"]))
-                    for h in horizontales:
-                        st_.append(Paragraph(h, est["n"]))
-                    st_.append(Spacer(1, 6))
-                if verticales:
-                    st_.append(Paragraph("<b>VERTICALES</b>", est["n"]))
-                    for v in verticales:
-                        st_.append(Paragraph(v, est["n"]))
-
-        # --- Relación de columnas (termino <-> definicion real) ---
-        # Cambia a plantilla de 2 columnas (como el cuerpo de la ficha)
-        # para que quepa mas contenido por pagina, en vez de la ancha.
-        if len(pares_cruci) >= 4:
-            st_.append(NextPageTemplate("resto"))
-            st_.append(PageBreak())
-            st_.append(Spacer(1, 4))
-            titulo_rc = Table([[Paragraph(f"<b>🔗 RELACIONA LAS COLUMNAS</b>", est["h"])]],
-                              colWidths=[col_w - 6])
-            titulo_rc.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("TOPPADDING", (0, 0), (-1, -1), 4),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ]))
-            st_.append(titulo_rc)
-            st_.append(Spacer(1, 6))
-            for num, (palabra, pista) in enumerate(pares_cruci[:10], start=1):
-                st_.append(Paragraph(f"{num}. {palabra} → ______", est["n"]))
-            st_.append(Spacer(1, 4))
-            letras_op = "ABCDEFGHIJ"
-            import random as _random_rc
-            _indices_rc = list(range(len(pares_cruci[:10])))
-            _random_rc.shuffle(_indices_rc)
-            for j, idx in enumerate(_indices_rc):
-                st_.append(Paragraph(f"{letras_op[j]}) {pares_cruci[idx][1]}", est["n"]))
-
-            # --- Verdadero o Falso: afirmaciones "casi correctas" ---
-            st_.append(Spacer(1, 10))
-            titulo_vf = Table([[Paragraph(f"<b>✅❌ VERDADERO O FALSO</b>", est["h"])]],
-                              colWidths=[col_w - 6])
-            titulo_vf.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("TOPPADDING", (0, 0), (-1, -1), 4),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ]))
-            st_.append(titulo_vf)
-            st_.append(Spacer(1, 6))
-            afirmaciones_vf = _generar_verdadero_falso(
-                pares_cruci, cantidad=8, semilla=semilla_juegos + 3)
-            for i, (texto_afirmacion, es_verdadera) in enumerate(afirmaciones_vf, start=1):
-                if con_claves:
-                    marca = ("<font color='#2F7A4F'><b>[V]</b></font>" if es_verdadera
-                            else "<font color='#B8390F'><b>[F]</b></font>")
-                    st_.append(Paragraph(f"{i}. {marca} {texto_afirmacion}", est["n"]))
-                else:
-                    st_.append(Paragraph(f"{i}. (  V  /  F  ) {texto_afirmacion}", est["n"]))
-
     doc.build(st_)
     buf.seek(0)
     return _proteger_pdf(buf.getvalue())
@@ -1111,7 +949,13 @@ def _extraer_palabras_con_pista(tema, maximo=10):
     """Extrae pares (palabra, pista) de los items que tienen UNA sola
     palabra clave entre llaves — la pista es la oración con esa palabra
     reemplazada por un espacio, así el estudiante debe recordar/entender
-    el concepto, no solo buscar una palabra suelta."""
+    el concepto, no solo buscar una palabra suelta.
+
+    Se descartan los items donde el término está justo al inicio
+    seguido de dos puntos (ej. 'El {Término}: se refiere a...') — al
+    reemplazar el término, la frase queda sin sujeto y se lee mal
+    ('Se refiere a...'). Solo se usan pistas donde el término queda
+    en medio de una oración completa."""
     import re as _re_pistas
     resultado = []
     for sec in tema.get("secciones", []):
@@ -1124,8 +968,15 @@ def _extraer_palabras_con_pista(tema, maximo=10):
                 continue
             pista = _PATRON.sub("___", it)
             pista = _re_pistas.sub(r"<[^>]+>", "", pista).strip().rstrip(".")
-            if len(pista) > 10:
-                resultado.append((palabra, pista))
+            if len(pista) <= 10:
+                continue
+            # Descartar si el termino esta muy al inicio (posicion < 15
+            # caracteres) Y le sigue ":" -- eso rompe la frase al swappear.
+            pos_blank = pista.find("___")
+            texto_despues = pista[pos_blank + 3:pos_blank + 5].strip()
+            if pos_blank < 15 and texto_despues.startswith(":"):
+                continue
+            resultado.append((palabra, pista))
     return resultado[:maximo]
 
 
@@ -13698,3 +13549,218 @@ BALOTAS = [{'num': 1,
                'respuesta': 'Víctor Raúl Haya de la Torre'}],
   'qr_dato': 'Segundo gobierno de Alan García (2006–2011) y gobierno de '
              'Ollanta Humala (2011–2016).'}]
+
+
+def generar_juegos_educativos(tema, con_claves=False, grado_txt="",
+                              institucion="ACADEMIA YACHAY", area="Historia",
+                              profesor="Prof. Alexander Córdova"):
+    """PDF independiente con los juegos educativos del tema (Sudoku,
+    Sopa de Letras, Mapa Mental, Crucigrama, Relación de Columnas,
+    Verdadero o Falso) — descarga aparte, opcional, para no inflar la
+    ficha principal. Solo tiene contenido real para Historia, Filosofía
+    y Educación Cívica; para las demás áreas devuelve None."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame,
+                                    Paragraph, Spacer, Table, TableStyle,
+                                    NextPageTemplate, PageBreak, KeepTogether)
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+
+    _area_check = (area or "").lower()
+    if not ("historia" in _area_check or "filosof" in _area_check
+            or "civic" in _area_check or "cívic" in _area_check):
+        return None
+
+    est = _estilos()
+    buf = io.BytesIO()
+
+    MX, MY = 1.3 * cm, 1.3 * cm
+    ancho_util = A4[0] - 2 * MX
+    col_w = (ancho_util - 0.7 * cm) / 2
+
+    doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=MX, rightMargin=MX,
+                          topMargin=MY, bottomMargin=1.4 * cm)
+
+    f_ancho = Frame(MX, 1.4 * cm, ancho_util, A4[1] - MY - 1.4 * cm, id="fa",
+                    leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
+    g_c1 = Frame(MX, 1.4 * cm, col_w, A4[1] - MY - 1.4 * cm, id="gc1",
+                leftPadding=0, rightPadding=8, topPadding=0, bottomPadding=0)
+    g_c2 = Frame(MX + col_w + 0.7 * cm, 1.4 * cm, col_w, A4[1] - MY - 1.4 * cm, id="gc2",
+                leftPadding=8, rightPadding=0, topPadding=0, bottomPadding=0)
+    doc.area_actual = area
+    doc.profesor_actual = profesor
+    doc.addPageTemplates([
+        PageTemplate(id="ancho", frames=[f_ancho], onPage=_pie),
+        PageTemplate(id="resto", frames=[g_c1, g_c2], onPage=_pie)])
+
+    st_ = []
+    _banda_titulo(st_, tema,
+                  "JUEGOS EDUCATIVOS · Sudoku · Sopa de Letras · Mapa Mental · "
+                  "Crucigrama · Relación de Columnas · Verdadero o Falso"
+                  + ("  ·  CON CLAVES" if con_claves else ""),
+                  est, ancho_util, con_claves, area)
+
+    # ------------------------------------------------------------------
+    # JUEGOS EDUCATIVOS: solo para Historia y Filosofía por ahora.
+    # Van SIEMPRE en página(s) nueva(s) para no cortarse a media hoja
+    # (misma lección aprendida con el sudoku de Álgebra).
+    # ------------------------------------------------------------------
+    _area_normal = (area or "").lower()
+    if ("historia" in _area_normal or "filosof" in _area_normal
+            or "civic" in _area_normal or "cívic" in _area_normal):
+        color_juegos = _color_area(area)
+        semilla_juegos = (tema.get("num", 1) if isinstance(tema.get("num"), int) else 1) * 23
+
+        st_.append(Spacer(1, 4))
+
+        def _titulo_juego(texto):
+            t = Table([[Paragraph(f"<b>{texto}</b>", est["h"])]], colWidths=[ancho_util])
+            t.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]))
+            return t
+
+        from reportlab.platypus import KeepTogether
+
+        # --- Sudoku: 3 niveles, celdas mas chicas para que quepa mas ---
+        st_.append(_titulo_juego(f"🧩 DESAFÍO SUDOKU · {tema['titulo'].upper()}"))
+        st_.append(Spacer(1, 8))
+        for nivel_nombre, nivel_clave in [("Fácil", "facil"), ("Medio", "medio"),
+                                          ("Difícil", "dificil")]:
+            puzzle, solucion = _sudoku_puzzle(nivel_clave, semilla=semilla_juegos)
+            semilla_juegos += 1
+            bloque_sudoku = [
+                Paragraph(f"<b>Nivel {nivel_nombre}</b>", est["n"]),
+                Spacer(1, 3),
+                _tabla_sudoku(solucion if con_claves else puzzle, color_juegos,
+                             tam_celda=0.8),
+            ]
+            st_.append(KeepTogether(bloque_sudoku))
+            st_.append(Spacer(1, 8))
+
+        # --- Sopa de letras: 2 niveles de dificultad ---
+        st_.append(PageBreak())
+        st_.append(Spacer(1, 4))
+        st_.append(_titulo_juego(f"🔤 SOPA DE LETRAS · {tema['titulo'].upper()}"))
+        st_.append(Spacer(1, 8))
+        palabras_clave = _extraer_palabras_clave(tema, minimo=6, maximo=10)
+        if palabras_clave:
+            # Nivel 1: mas facil (menos palabras, grilla mas grande y despejada)
+            st_.append(Paragraph("<b>Nivel 1 (más fácil)</b>", est["n"]))
+            st_.append(Spacer(1, 3))
+            grilla_facil, colocadas_facil = _generar_sopa_letras(
+                palabras_clave[:6], tamano=15, semilla=semilla_juegos)
+            st_.append(_tabla_sopa_letras(grilla_facil, color_juegos))
+            st_.append(Spacer(1, 4))
+            st_.append(Paragraph("Encuentra: " + " · ".join(colocadas_facil), est["n"]))
+            st_.append(Spacer(1, 12))
+
+            # Nivel 2: mas dificil (mas palabras, grilla mas apretada)
+            st_.append(Paragraph("<b>Nivel 2 (más difícil)</b>", est["n"]))
+            st_.append(Spacer(1, 3))
+            grilla_dificil, colocadas_dificil = _generar_sopa_letras(
+                palabras_clave, tamano=12, semilla=semilla_juegos + 1)
+            st_.append(_tabla_sopa_letras(grilla_dificil, color_juegos, tam_celda=0.55))
+            st_.append(Spacer(1, 4))
+            st_.append(Paragraph("Encuentra: " + " · ".join(colocadas_dificil), est["n"]))
+
+        # --- Mapa Mental para completar (técnica de Tony Buzan, usada
+        # en todo el mundo para repaso y memorización visual) ---
+        ramas_mapa = _armar_ramas_mapa_mental(tema, max_ramas=5, sub_por_rama=2)
+        if len(ramas_mapa) >= 3:
+            st_.append(PageBreak())
+            st_.append(Spacer(1, 4))
+            st_.append(_titulo_juego(f"🧠 MAPA MENTAL PARA COMPLETAR · {tema['titulo'].upper()}"))
+            st_.append(Spacer(1, 6))
+            st_.append(Paragraph(
+                "Completa los espacios en blanco con los términos que faltan, "
+                "usando lo que recuerdas del tema.", est["n"]))
+            st_.append(Spacer(1, 8))
+            dibujo_mapa = _dibujo_mapa_mental(tema["titulo"], ramas_mapa, color_juegos,
+                                              con_claves=con_claves)
+            st_.append(dibujo_mapa)
+
+        # --- Crucigrama (pistas basadas en el contenido real) ---
+        pares_cruci = _extraer_palabras_con_pista(tema, maximo=10)
+        if len(pares_cruci) >= 4:
+            st_.append(PageBreak())
+            st_.append(Spacer(1, 4))
+            st_.append(_titulo_juego(f"✏️ CRUCIGRAMA · {tema['titulo'].upper()}"))
+            st_.append(Spacer(1, 8))
+            grilla_cruci, colocadas_cruci = _generar_crucigrama(
+                pares_cruci, tamano=16, semilla=semilla_juegos + 2)
+            if grilla_cruci:
+                grilla_cruci, colocadas_cruci = _recortar_grilla_crucigrama(
+                    grilla_cruci, colocadas_cruci)
+                numeradas = _numerar_crucigrama(colocadas_cruci)
+                st_.append(_tabla_crucigrama(grilla_cruci, numeradas, color_juegos,
+                                             mostrar_letras=con_claves))
+                st_.append(Spacer(1, 10))
+                horizontales = [f"{n}. {pista}" for n, p, pista, f, c, d in numeradas if d == "H"]
+                verticales = [f"{n}. {pista}" for n, p, pista, f, c, d in numeradas if d == "V"]
+                if horizontales:
+                    st_.append(Paragraph("<b>HORIZONTALES</b>", est["n"]))
+                    for h in horizontales:
+                        st_.append(Paragraph(h, est["n"]))
+                    st_.append(Spacer(1, 6))
+                if verticales:
+                    st_.append(Paragraph("<b>VERTICALES</b>", est["n"]))
+                    for v in verticales:
+                        st_.append(Paragraph(v, est["n"]))
+
+        # --- Relación de columnas (termino <-> definicion real) ---
+        # Cambia a plantilla de 2 columnas (como el cuerpo de la ficha)
+        # para que quepa mas contenido por pagina, en vez de la ancha.
+        if len(pares_cruci) >= 4:
+            st_.append(NextPageTemplate("resto"))
+            st_.append(PageBreak())
+            st_.append(Spacer(1, 4))
+            titulo_rc = Table([[Paragraph(f"<b>🔗 RELACIONA LAS COLUMNAS</b>", est["h"])]],
+                              colWidths=[col_w - 6])
+            titulo_rc.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]))
+            st_.append(titulo_rc)
+            st_.append(Spacer(1, 6))
+            for num, (palabra, pista) in enumerate(pares_cruci[:10], start=1):
+                st_.append(Paragraph(f"{num}. {palabra} → ______", est["n"]))
+            st_.append(Spacer(1, 4))
+            letras_op = "ABCDEFGHIJ"
+            import random as _random_rc
+            _indices_rc = list(range(len(pares_cruci[:10])))
+            _random_rc.shuffle(_indices_rc)
+            for j, idx in enumerate(_indices_rc):
+                st_.append(Paragraph(f"{letras_op[j]}) {pares_cruci[idx][1]}", est["n"]))
+
+            # --- Verdadero o Falso: afirmaciones "casi correctas" ---
+            st_.append(Spacer(1, 10))
+            titulo_vf = Table([[Paragraph(f"<b>✅❌ VERDADERO O FALSO</b>", est["h"])]],
+                              colWidths=[col_w - 6])
+            titulo_vf.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(color_juegos)),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]))
+            st_.append(titulo_vf)
+            st_.append(Spacer(1, 6))
+            afirmaciones_vf = _generar_verdadero_falso(
+                pares_cruci, cantidad=8, semilla=semilla_juegos + 3)
+            for i, (texto_afirmacion, es_verdadera) in enumerate(afirmaciones_vf, start=1):
+                if con_claves:
+                    marca = ("<font color='#2F7A4F'><b>[V]</b></font>" if es_verdadera
+                            else "<font color='#B8390F'><b>[F]</b></font>")
+                    st_.append(Paragraph(f"{i}. {marca} {texto_afirmacion}", est["n"]))
+                else:
+                    st_.append(Paragraph(f"{i}. (  V  /  F  ) {texto_afirmacion}", est["n"]))
+
+
+    doc.build(st_)
+    buf.seek(0)
+    return _proteger_pdf(buf.getvalue())

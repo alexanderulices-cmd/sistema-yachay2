@@ -16,6 +16,7 @@ Integración en sistema_web.py:
 import streamlit as st
 
 from fichas_historia import (generar_ficha_texto, generar_banco_preguntas,
+                             generar_juegos_educativos,
                              balancear, muestrear, TAMANOS_EXAMEN,
                              contar_espacios, LETRAS, _PATRON)
 
@@ -262,63 +263,99 @@ def _generar_paquete_admin(area, tipos, grado_txt, profesor_txt,
 
 
 def _seccion_descarga_masiva_admin():
-    """Panel para que el administrador descargue en un solo lote todo
-    el material de uno o varios cursos: fichas, exámenes y bancos
-    completos, alumno y docente."""
-    st.markdown("### 🗂️ Descarga Masiva — Administrador")
-    st.caption("Genera un solo ZIP con todo el material que marques, "
-              "de uno o de todos los cursos a la vez.")
+    """Centro de Descargas: un solo lugar organizado, con navegación
+    clara paso a paso (elige QUÉ necesitas primero, después solo ves
+    los controles de esa opción — no todo mezclado a la vez)."""
+    st.markdown("""
+    <div style='background:linear-gradient(135deg,#4c1d95,#7c3aed);
+                border-radius:12px;padding:16px 20px;color:white;
+                margin-bottom:10px;'>
+        <div style='font-size:1.2rem;font-weight:800;'>
+            📥 Centro de Descargas
+        </div>
+        <div style='font-size:0.85rem;opacity:0.95;margin-top:4px;'>
+            ¿Quieres el <b>banco completo con TODAS las preguntas</b> de
+            un curso (no solo 20 o 40)? ¿O descargar varios cursos a la
+            vez? Está todo aquí — abre esto primero, antes de buscar
+            entre los temas de abajo.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with st.expander("📦 Abrir panel de descarga masiva", expanded=False):
+    with st.expander("👉 Abrir Centro de Descargas", expanded=True):
+        opcion = st.radio(
+            "¿Qué necesitas descargar?",
+            ["📄 Un tema específico (rápido)",
+             "📚 El banco COMPLETO de preguntas de un curso",
+             "📦 Un curso entero (todos sus temas) en un ZIP",
+             "🗂️ TODOS los cursos juntos (para administración)"],
+            key="admin_dm_opcion")
+
         nombres_todos = [a["nombre"] for a in AREAS_CEPRU]
-        alcance = st.radio("¿Qué cursos incluir?",
-                           ["Un solo curso", "Todos los cursos (más lento)"],
-                           key="admin_dm_alcance", horizontal=True)
 
-        if alcance == "Un solo curso":
+        # ── Opción 1: un tema especifico ──────────────────────────
+        if opcion == "📄 Un tema específico (rápido)":
+            st.info("👇 Para un tema específico, baja hasta el curso que "
+                    "te interesa (más abajo en esta página) y elige el "
+                    "tema en el selector — ahí puedes descargar su "
+                    "ficha y su examen directamente.")
+            return
+
+        # ── Opciones 2, 3 y 4 comparten: elegir curso(s) ──────────
+        if opcion == "🗂️ TODOS los cursos juntos (para administración)":
+            cursos_incluir = AREAS_CEPRU
+            st.warning("⏱️ Con los 7-8 cursos, esto puede tardar varios "
+                      "minutos. No cierres la página mientras genera.")
+        else:
             sel_curso_dm = st.selectbox("Curso:", nombres_todos, key="admin_dm_curso")
             cursos_incluir = [a for a in AREAS_CEPRU if a["nombre"] == sel_curso_dm]
-        else:
-            cursos_incluir = AREAS_CEPRU
-            st.warning("⏱️ Con los 7 cursos, esto puede tardar varios minutos "
-                      "según cuánto marques abajo. No cierres la página "
-                      "mientras genera.")
-
-        st.markdown("**¿Qué incluir por cada tema?**")
-        cc1, cc2, cc3 = st.columns(3)
-        with cc1:
-            inc_ficha_blanco = st.checkbox("Ficha para llenar", value=True,
-                                           key="admin_dm_fb")
-            inc_ficha_completa = st.checkbox("Ficha ya llenada (con respuestas)",
-                                             value=True, key="admin_dm_fc")
-        with cc2:
-            inc_ex20 = st.checkbox("Examen de 20 preguntas (alumno + docente)",
-                                   value=True, key="admin_dm_e20")
-            inc_ex40 = st.checkbox("Examen de 40 preguntas (alumno + docente)",
-                                   value=False, key="admin_dm_e40")
-        with cc3:
-            inc_banco = st.checkbox("Banco COMPLETO del curso (todas las "
-                                    "preguntas en un PDF)", value=True,
-                                    key="admin_dm_banco")
-
-        tipos_sel = {
-            "ficha_blanco": inc_ficha_blanco, "ficha_completa": inc_ficha_completa,
-            "examen20": inc_ex20, "examen40": inc_ex40,
-            "banco_completo": inc_banco,
-        }
 
         c_gr, c_pr = st.columns(2)
         with c_gr:
             grado_dm = st.text_input("Grupo (se imprime en las fichas):",
                                      value="GRUPO CD", key="admin_dm_grado")
         with c_pr:
-            profesor_dm = st.text_input("Profesor:",
-                                        value="Prof. Alexander Córdova",
-                                        key="admin_dm_profesor")
+            profesor_dm = st.text_input(
+                "Nombre del profesor (solo texto impreso en el PDF — "
+                "no filtra contenido):",
+                value="Prof. Alexander Córdova", key="admin_dm_profesor")
+
+        # ── Opción 2: solo el banco completo, sin mas opciones ────
+        if opcion == "📚 El banco COMPLETO de preguntas de un curso":
+            st.caption(f"Vas a descargar **todas** las preguntas de "
+                      f"{cursos_incluir[0]['nombre']} en un solo PDF "
+                      f"(alumno + docente) — no una muestra de 20 o 40, "
+                      f"sino el banco entero.")
+            tipos_sel = {"ficha_blanco": False, "ficha_completa": False,
+                        "examen20": False, "examen40": False,
+                        "banco_completo": True}
+        else:
+            # Opciones 3 y 4: curso(s) completos, eligiendo que incluir
+            st.markdown("**¿Qué incluir por cada tema?**")
+            cc1, cc2, cc3 = st.columns(3)
+            with cc1:
+                inc_ficha_blanco = st.checkbox("Ficha para llenar", value=True,
+                                               key="admin_dm_fb")
+                inc_ficha_completa = st.checkbox("Ficha ya llenada (con respuestas)",
+                                                 value=True, key="admin_dm_fc")
+            with cc2:
+                inc_ex20 = st.checkbox("Examen de 20 preguntas (alumno + docente)",
+                                       value=True, key="admin_dm_e20")
+                inc_ex40 = st.checkbox("Examen de 40 preguntas (alumno + docente)",
+                                       value=False, key="admin_dm_e40")
+            with cc3:
+                inc_banco = st.checkbox("Banco COMPLETO del curso (todas las "
+                                        "preguntas en un PDF)", value=True,
+                                        key="admin_dm_banco")
+            tipos_sel = {
+                "ficha_blanco": inc_ficha_blanco, "ficha_completa": inc_ficha_completa,
+                "examen20": inc_ex20, "examen40": inc_ex40,
+                "banco_completo": inc_banco,
+            }
 
         if not any(tipos_sel.values()):
             st.info("Marca al menos una opción arriba para generar el paquete.")
-        elif st.button("🚀 GENERAR PAQUETE MASIVO", type="primary",
+        elif st.button("🚀 GENERAR", type="primary",
                        use_container_width=True, key="admin_dm_generar"):
             import zipfile, io as _io_mega
 
@@ -339,20 +376,34 @@ def _seccion_descarga_masiva_admin():
             barra.progress(1.0, text="¡Listo!")
             buf_mega.seek(0)
 
-            nombre_zip = ("Yachay_TODO_PREU.zip" if alcance != "Un solo curso"
+            nombre_zip = ("Yachay_TODO_PREU.zip"
+                         if opcion == "🗂️ TODOS los cursos juntos (para administración)"
                          else f"Yachay_{cursos_incluir[0]['prefijo']}_PAQUETE.zip")
             st.success("✅ Paquete generado. Descárgalo abajo antes de salir "
                       "de esta página.")
-            st.download_button("⬇️ Descargar paquete completo",
-                              data=buf_mega.getvalue(), file_name=nombre_zip,
-                              mime="application/zip", use_container_width=True,
-                              type="primary", key="admin_dm_descargar")
+            st.download_button("⬇️ Descargar", data=buf_mega.getvalue(),
+                              file_name=nombre_zip, mime="application/zip",
+                              use_container_width=True, type="primary",
+                              key="admin_dm_descargar")
 
 
 def tab_academia_cepru(config=None):
     st.subheader("🎓 Academia CEPRU — Fichas y bancos de preguntas")
     st.caption("Todas las áreas de la academia preuniversitaria en un "
                "solo lugar. Elige el área y luego la balota o tema.")
+
+    with st.container(border=True):
+        st.markdown("**🧭 Guía rápida — hay 2 formas de descargar:**")
+        c_guia1, c_guia2 = st.columns(2)
+        with c_guia1:
+            st.markdown("**1️⃣ Un tema puntual, ahora mismo**\n\n"
+                       "Baja hasta el curso, elige el tema, descarga su "
+                       "ficha o un examen de 20/40 preguntas.")
+        with c_guia2:
+            st.markdown("**2️⃣ TODO de un curso, o varios cursos**\n\n"
+                       "Usa el morado 📥 **Centro de Descargas** de abajo "
+                       "— banco completo con todas las preguntas, un "
+                       "curso entero en ZIP, o todos los cursos juntos.")
 
     if not AREAS_CEPRU:
         st.error("No se pudo cargar ningún curso. Revisa que los archivos "
@@ -411,50 +462,13 @@ def _render_curso(balotas, area_pie, pfx, combinado=False):
                                   placeholder="GRUPO CD", key=f"{pfx}_grado")
     with c_p:
         profesor_txt = st.text_input(
-            "Profesor (aparece en el pie y en el QR del examen):",
+            "Nombre del profesor (solo texto impreso, no filtra contenido):",
             value="Prof. Alexander Córdova", key=f"{pfx}_prof")
 
-    st.markdown("##### Descargar TODO el curso de una vez")
-    st.caption(
-        "Genera un único archivo ZIP con la ficha y el banco de "
-        "preguntas de **todos los temas** de este curso, listo para "
-        "subir a una carpeta. Usa un examen de 20 preguntas por tema "
-        "para que el ZIP no sea demasiado pesado."
-    )
-    zc1, zc2 = st.columns(2)
-    with zc1:
-        if st.button("📦 ZIP completo — Alumnos", key=f"{pfx}_zip_alu",
-                     use_container_width=True):
-            with st.spinner(f"Generando {len(balotas)} temas × 2 documentos…"):
-                zip_bytes = _generar_zip_curso(
-                    balotas, area_pie, pfx, grado_txt, profesor_txt,
-                    con_claves=False)
-            st.session_state[f"{pfx}_zip_alu_bytes"] = zip_bytes
-        if st.session_state.get(f"{pfx}_zip_alu_bytes"):
-            st.download_button(
-                "⬇️ Descargar ZIP — Alumnos",
-                data=st.session_state[f"{pfx}_zip_alu_bytes"],
-                file_name=f"Yachay_{_NOMBRES_CORTOS_CURSO.get(pfx, pfx)}_TODO_Alumnos.zip",
-                mime="application/zip", use_container_width=True,
-                type="primary", key=f"{pfx}_zip_alu_dl")
-    with zc2:
-        if st.button("📦 ZIP completo — Docentes (con claves)",
-                     key=f"{pfx}_zip_doc", use_container_width=True):
-            with st.spinner(f"Generando {len(balotas)} temas × 2 documentos…"):
-                zip_bytes = _generar_zip_curso(
-                    balotas, area_pie, pfx, grado_txt, profesor_txt,
-                    con_claves=True)
-            st.session_state[f"{pfx}_zip_doc_bytes"] = zip_bytes
-        if st.session_state.get(f"{pfx}_zip_doc_bytes"):
-            st.download_button(
-                "⬇️ Descargar ZIP — Docentes",
-                data=st.session_state[f"{pfx}_zip_doc_bytes"],
-                file_name=f"Yachay_{_NOMBRES_CORTOS_CURSO.get(pfx, pfx)}_TODO_Docentes.zip",
-                mime="application/zip", use_container_width=True,
-                type="primary", key=f"{pfx}_zip_doc_dl")
-
-    st.markdown("---")
-    st.markdown("##### O descarga un tema a la vez")
+    st.markdown("##### Descargar este tema")
+    st.caption("Para descargar el curso completo o el banco de "
+              "preguntas entero, usa el **📥 Centro de Descargas** "
+              "arriba.")
     d1, d2 = st.columns(2)
     with d1:
         st.markdown("**Ficha de texto para completar**")
@@ -522,6 +536,29 @@ def _render_curso(balotas, area_pie, pfx, combinado=False):
         except Exception as e:
             st.error(f"No se pudo generar el banco: {e}")
 
+    _pdf_juegos_prueba = generar_juegos_educativos(tema, False, grado_txt, area=area_pie)
+    if _pdf_juegos_prueba is not None:
+        st.markdown("##### 🎮 Juegos educativos (descarga aparte, opcional)")
+        st.caption("Sudoku · Sopa de Letras · Mapa Mental · Crucigrama · "
+                  "Relación de Columnas · Verdadero o Falso — no van dentro "
+                  "de la ficha, para que puedas imprimirlos por separado "
+                  "si quieres.")
+        dj1, dj2 = st.columns(2)
+        with dj1:
+            st.download_button(
+                "🎮 Juegos — versión alumno",
+                data=_pdf_juegos_prueba,
+                file_name=_nombre_archivo(pfx, tema, "Juegos", "Alumno"),
+                mime="application/pdf", use_container_width=True,
+                type="primary", key=f"{pfx}_ja")
+        with dj2:
+            st.download_button(
+                "🔑 Juegos — con claves (docente)",
+                data=generar_juegos_educativos(tema, True, grado_txt, area=area_pie),
+                file_name=_nombre_archivo(pfx, tema, "Juegos", "Docente"),
+                mime="application/pdf", use_container_width=True,
+                key=f"{pfx}_jd")
+
     with st.expander("Ver el contenido de esta balota / tema"):
         for sec in tema["secciones"]:
             st.markdown(f"**{sec['titulo']}**")
@@ -560,7 +597,7 @@ def _render_curso_combinado(balotas, area_pie, pfx):
                                   placeholder="GRUPO CD", key=f"{pfx}_grado")
     with c_p:
         profesor_txt = st.text_input(
-            "Profesor (aparece en el pie de página):",
+            "Nombre del profesor (solo texto impreso, no filtra contenido):",
             value="Prof. Alexander Córdova", key=f"{pfx}_prof")
 
     st.markdown("---")
