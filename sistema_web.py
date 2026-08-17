@@ -6136,7 +6136,11 @@ def pantalla_login():
                         st.session_state.rol = rol
                     st.session_state.docente_info = datos_u.get('docente_info')
                     st.session_state.usuario_actual = usuario_lower
-                    st.session_state.modulo_activo = None  # Siempre al dashboard al entrar
+                    if st.session_state.get('_ir_directo_musica'):
+                        st.session_state.modulo_activo = "musica_eventos"
+                        st.session_state.pop('_ir_directo_musica', None)
+                    else:
+                        st.session_state.modulo_activo = None  # Siempre al dashboard al entrar
                     st.toast(f"✅ Bienvenido, {datos_u.get('label', usuario_lower)}")
                     st.rerun()
                 else:
@@ -6184,6 +6188,26 @@ def pantalla_login():
                         key="btn_portal_estudiante", type="primary"):
                 st.session_state['_portal_estudiante'] = True
                 st.rerun()
+
+        # Acceso rapido a Musica para Eventos (para docentes/admin/auxiliar)
+        st.markdown("---")
+        st.markdown("""
+        <div style='background:linear-gradient(135deg,#be123c,#e11d48);
+                    border-radius:12px;padding:10px 12px;text-align:center;
+                    color:white;margin-bottom:6px;'>
+            <div style='font-size:1rem;font-weight:800;'>🎵 Música para Eventos</div>
+            <div style='font-size:0.75rem;opacity:0.9;margin-top:2px;'>
+                Acceso rápido — inicia sesión arriba con tu cuenta de
+                docente/admin y entrarás directo aquí
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🎵 IR DIRECTO A MÚSICA (inicia sesión arriba)",
+                    use_container_width=True, key="btn_ir_musica"):
+            st.session_state['_ir_directo_musica'] = True
+            st.toast("👆 Listo — ahora inicia sesión arriba con tu "
+                    "usuario y contraseña, y entrarás directo a Música "
+                    "para Eventos.")
 
         # Libro de reclamaciones
         st.markdown("---")
@@ -34241,6 +34265,36 @@ def tab_musica_eventos(config):
 
     st.header("🎵 Música para Eventos")
 
+    st.markdown("""
+    <style>
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #0a0a0a !important;
+    }
+    div[data-testid="stAppViewContainer"] .main {
+        background-color: #0d0d0d;
+    }
+    .cuadradito-cancion {
+        border-radius: 14px;
+        padding: 18px 10px;
+        text-align: center;
+        color: white;
+        font-weight: 800;
+        font-size: 0.95rem;
+        min-height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        margin-bottom: 6px;
+        word-break: break-word;
+    }
+    .cuadradito-sonando {
+        border: 3px solid #22ff88;
+        box-shadow: 0 0 18px rgba(34,255,136,0.7);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     def _bloque_himno(titulo, nombre_archivo, color1, color2):
         """Bloque reutilizable para un himno: se reproduce desde un
         archivo LOCAL (parte del repositorio), nunca desde internet,
@@ -34336,9 +34390,23 @@ def tab_musica_eventos(config):
     eventos_comunes = sorted(set(eventos_base) | set(eventos_ya_creados)) + \
         ["➕ Crear nueva playlist"]
 
+    # Detectar el evento con la cancion agregada mas recientemente, para
+    # abrir el selector ahi directo (asi el profesor no tiene que buscar
+    # el evento activo en el menu cada vez).
+    indice_por_defecto = 0
+    if todas_las_canciones:
+        cancion_mas_reciente = max(
+            todas_las_canciones,
+            key=lambda c: str(c.get("fecha_agregado", "")))
+        evento_reciente = cancion_mas_reciente.get("evento", "").strip()
+        if evento_reciente in eventos_comunes:
+            indice_por_defecto = eventos_comunes.index(evento_reciente)
+
     c_ev, c_nuevo = st.columns([2, 2])
     with c_ev:
-        evento_elegido = st.selectbox("Playlist:", eventos_comunes, key="me_evento_sel")
+        evento_elegido = st.selectbox("Playlist:", eventos_comunes,
+                                      index=indice_por_defecto,
+                                      key="me_evento_sel")
     evento_final = evento_elegido
     if evento_elegido == "➕ Crear nueva playlist":
         with c_nuevo:
@@ -34440,53 +34508,110 @@ def tab_musica_eventos(config):
 
     c_titulo, c_borrar_todo = st.columns([3, 1])
     with c_borrar_todo:
-        confirmar_borrado = st.checkbox(
-            "Confirmar borrado", key=f"me_confirmar_{evento_final}")
-        if st.button("🗑️ Borrar esta playlist completa",
-                    key=f"me_borrar_todo_{evento_final}",
-                    disabled=not confirmar_borrado,
-                    use_container_width=True):
-            with st.spinner(f"Eliminando las {len(canciones)} canciones "
-                           f"de «{evento_final}»…"):
-                for c in canciones:
-                    fid = c.get("drive_file_id", "")
-                    gs.eliminar_cancion_drive(fid)
-                    gs.eliminar_cancion_metadata(fid)
-            st.toast(f"🗑️ Playlist «{evento_final}» eliminada por completo.")
-            st.rerun()
+        es_admin = st.session_state.get("rol") in ("admin", "directivo")
+        if es_admin:
+            confirmar_borrado = st.checkbox(
+                "Confirmar borrado", key=f"me_confirmar_{evento_final}")
+            if st.button("🗑️ Borrar esta playlist completa",
+                        key=f"me_borrar_todo_{evento_final}",
+                        disabled=not confirmar_borrado,
+                        use_container_width=True):
+                with st.spinner(f"Eliminando las {len(canciones)} canciones "
+                               f"de «{evento_final}»…"):
+                    for c in canciones:
+                        fid = c.get("drive_file_id", "")
+                        gs.eliminar_cancion_drive(fid)
+                        gs.eliminar_cancion_metadata(fid)
+                st.toast(f"🗑️ Playlist «{evento_final}» eliminada por completo.")
+                st.rerun()
+        else:
+            st.caption("Solo un administrador puede borrar la playlist "
+                      "completa.")
 
     @st.cache_data(show_spinner=False, ttl=3600)
     def _descargar_cacheado(file_id):
         return gs.descargar_cancion(file_id)
 
-    for cancion in canciones:
-        nombre = cancion.get("nombre_cancion", "Sin nombre")
-        file_id = cancion.get("drive_file_id", "")
-        c_nom, c_play, c_del = st.columns([3, 1, 1])
-        with c_nom:
-            st.markdown(f"🎵 **{nombre}**")
-        with c_play:
-            reproducir = st.button("▶️ Reproducir", key=f"me_play_{file_id}",
-                                   use_container_width=True)
-        with c_del:
-            eliminar = st.button("🗑️", key=f"me_del_{file_id}",
-                                 use_container_width=True)
+    st.markdown("---")
+    if st.button("📥 Precargar toda la playlist (recomendado antes del evento)",
+                use_container_width=True, key=f"me_precargar_{evento_final}"):
+        barra_precarga = st.progress(0.0, text="Precargando…")
+        fallidas = []
+        for i, c in enumerate(canciones):
+            nombre_c = c.get("nombre_cancion", "")
+            barra_precarga.progress((i + 1) / len(canciones),
+                                    text=f"Precargando «{nombre_c}»…")
+            resultado = _descargar_cacheado(c.get("drive_file_id", ""))
+            if not resultado:
+                fallidas.append(nombre_c)
+        barra_precarga.empty()
+        if fallidas:
+            st.warning(f"⚠️ No se pudieron precargar: {', '.join(fallidas)}. "
+                      f"Revisa tu conexión e intenta de nuevo con esas.")
+        else:
+            st.success("✅ Toda la playlist está lista en memoria — ya "
+                      "puedes reproducir cualquier canción sin depender "
+                      "de la conexión durante el evento (dura ~1 hora "
+                      "en caché).")
+    st.caption("💡 Recomendación: precarga la playlist ANTES de que "
+              "empiece el evento, no durante.")
 
-        if reproducir:
-            with st.spinner(f"Cargando «{nombre}»…"):
-                bytes_cancion = _descargar_cacheado(file_id)
-            if bytes_cancion:
-                st.audio(bytes_cancion, format="audio/mp3")
-            else:
-                st.error(f"😕 No se pudo cargar «{nombre}» desde Drive. "
-                        f"Intenta de nuevo en unos segundos.")
+    # Un solo reproductor compartido: evita que 2 canciones suenen a la
+    # vez si alguien toca 'Reproducir' en varias por error.
+    if "me_cancion_activa" not in st.session_state:
+        st.session_state["me_cancion_activa"] = None
 
-        if eliminar:
-            with st.spinner("Eliminando…"):
-                gs.eliminar_cancion_drive(file_id)
-                gs.eliminar_cancion_metadata(file_id)
-            st.toast(f"🗑️ «{nombre}» eliminada.")
-            st.rerun()
+    if st.session_state["me_cancion_activa"]:
+        fid_activo, nombre_activo = st.session_state["me_cancion_activa"]
+        st.markdown(f"**🔊 Reproduciendo ahora: {nombre_activo}**")
+        with st.spinner(f"Cargando «{nombre_activo}»…"):
+            bytes_cancion = _descargar_cacheado(fid_activo)
+        if bytes_cancion:
+            st.audio(bytes_cancion, format="audio/mp3", autoplay=True)
+        else:
+            st.error(f"😕 No se pudo cargar «{nombre_activo}» desde "
+                    f"Drive. Intenta de nuevo en unos segundos.")
+        st.markdown("---")
+
+    # Paleta de colores vivos para los cuadraditos (rotan por posicion)
+    paleta_colores = [
+        "#e11d48", "#7c3aed", "#0891b2", "#16a34a", "#ea580c",
+        "#db2777", "#4f46e5", "#0d9488", "#ca8a04", "#dc2626",
+    ]
+
+    cancion_activa_id = (st.session_state["me_cancion_activa"][0]
+                        if st.session_state["me_cancion_activa"] else None)
+
+    n_columnas = 4
+    filas = [canciones[i:i + n_columnas] for i in range(0, len(canciones), n_columnas)]
+    idx_global = 0
+    for fila in filas:
+        cols = st.columns(n_columnas)
+        for col, cancion in zip(cols, fila):
+            nombre = cancion.get("nombre_cancion", "Sin nombre")
+            file_id = cancion.get("drive_file_id", "")
+            color = paleta_colores[idx_global % len(paleta_colores)]
+            es_la_que_suena = (file_id == cancion_activa_id)
+            idx_global += 1
+
+            with col:
+                clase_extra = "cuadradito-sonando" if es_la_que_suena else ""
+                icono = "🔊" if es_la_que_suena else "🎵"
+                st.markdown(
+                    f"<div class='cuadradito-cancion {clase_extra}' "
+                    f"style='background:{color};'>{icono} {nombre}</div>",
+                    unsafe_allow_html=True)
+                if st.button("▶️ Tocar", key=f"me_play_{file_id}",
+                            use_container_width=True):
+                    st.session_state["me_cancion_activa"] = (file_id, nombre)
+                    st.rerun()
+                if st.button("🗑️", key=f"me_del_{file_id}",
+                            use_container_width=True):
+                    with st.spinner("Eliminando…"):
+                        gs.eliminar_cancion_drive(file_id)
+                        gs.eliminar_cancion_metadata(file_id)
+                    st.toast(f"🗑️ «{nombre}» eliminada.")
+                    st.rerun()
 
 
 def tab_bienestar_estudiantil(config, _pfx="bw"):
