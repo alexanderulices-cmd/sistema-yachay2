@@ -12551,6 +12551,158 @@ def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx,
     c.save(); buf.seek(0)
     return buf.read()
 
+def tab_modo_kiosco():
+    """MODO KIOSCO: pantalla completa para dejar la computadora prendida
+    en la puerta. Reloj gigante, un solo campo que se auto-enfoca, y el
+    lector de codigo de barras hace todo el trabajo — nadie tiene que
+    tocar el mouse ni el teclado. Pensado para que el auxiliar lo deje
+    puesto y se olvide."""
+    import time as _t_kiosco
+
+    # ── Salir del modo kiosco (boton discreto arriba) ──────────────
+    _c_salir, _c_resto = st.columns([1, 6])
+    with _c_salir:
+        if st.button("← Salir", key="kiosco_salir"):
+            st.session_state['_modo_kiosco'] = False
+            st.rerun()
+
+    # ── Asegurar que el indice de DNIs este cargado ────────────────
+    _idx = st.session_state.get('_indice_dni', {})
+    _idx_ts = st.session_state.get('_indice_dni_ts', 0)
+    if (not _idx) or (_t_kiosco.time() - _idx_ts > 180):
+        with st.spinner("Cargando lista de estudiantes y docentes…"):
+            _construir_indice_dni()
+        _idx = st.session_state.get('_indice_dni', {})
+
+    _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+    _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
+
+    if _n_alu == 0 and _n_doc == 0:
+        st.error("❌ No se pudieron cargar los datos. Revisa la conexión "
+                 "e intenta salir y volver a entrar al modo kiosco.")
+        return
+
+    # ── Determinar el modo actual (entrada/salida) segun la hora ───
+    _ahora = hora_peru()
+    _mins_actual = _ahora.hour * 60 + _ahora.minute
+    _hor_act = _horario_activo()
+    _limite_txt = HORARIOS[_hor_act]['limite']
+
+    if _mins_actual < 8 * 60 + 5:
+        _titulo_modo, _color1, _color2, _icono = "ENTRADA MAÑANA", "#15803d", "#22c55e", "🌅"
+    elif _mins_actual < 13 * 60:
+        _titulo_modo, _color1, _color2, _icono = "REGISTRO TARDANZA", "#b45309", "#f59e0b", "⏰"
+    elif _mins_actual < HORA_ENTRADA_TARDE_MIN:
+        _titulo_modo, _color1, _color2, _icono = "SALIDA MAÑANA", "#1d4ed8", "#3b82f6", "🔵"
+    elif _mins_actual < 15 * 60 + 10:
+        _titulo_modo, _color1, _color2, _icono = "ENTRADA TARDE", "#7c3aed", "#a855f7", "🌤️"
+    elif _mins_actual < 18 * 60 + 40:
+        _titulo_modo, _color1, _color2, _icono = "TURNO TARDE", "#be185d", "#ec4899", "🎓"
+    else:
+        _titulo_modo, _color1, _color2, _icono = "SALIDA TARDE", "#334155", "#64748b", "🌙"
+
+    # ── Reloj gigante + estado del turno ───────────────────────────
+    st.markdown(f"""
+    <div style='background:linear-gradient(135deg,{_color1},{_color2});
+                border-radius:18px;padding:22px 28px;color:white;
+                text-align:center;margin-bottom:14px;'>
+        <div style='font-size:1.4rem;font-weight:800;opacity:0.95;'>
+            {_icono} {_titulo_modo}
+        </div>
+        <div style='font-size:4.6rem;font-weight:900;line-height:1.05;
+                    letter-spacing:2px;margin:4px 0;'>
+            {_ahora.strftime('%H:%M')}
+        </div>
+        <div style='font-size:1.05rem;opacity:0.9;'>
+            {_ahora.strftime('%d/%m/%Y')} · Puntual hasta {_limite_txt}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Campo de escaneo (grande, auto-enfocado) ───────────────────
+    def _on_scan_kiosco():
+        val = st.session_state.get('kiosco_input', '')
+        if val:
+            codigo = normalizar_codigo_estudiante(val)
+            if es_codigo_valido(codigo):
+                st.session_state['_kiosco_pendiente'] = (
+                    codigo[:8] if codigo.isdigit() and len(codigo) == 8 else codigo)
+            st.session_state['kiosco_input'] = ''
+
+    st.markdown("""
+    <style>
+    div[data-testid="stTextInput"] input {
+        font-size: 2rem !important;
+        height: 68px !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+        letter-spacing: 3px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.text_input("Escanee el código", key="kiosco_input",
+                  placeholder="👉 ESCANEE AQUÍ",
+                  on_change=_on_scan_kiosco,
+                  label_visibility="collapsed")
+
+    # ── Procesar el escaneo pendiente ──────────────────────────────
+    _pend = st.session_state.pop('_kiosco_pendiente', None)
+    if _pend:
+        _registrar_asistencia_rapida(_pend)
+        st.rerun()
+
+    # ── Ultimos registros (grande y legible desde lejos) ───────────
+    st.markdown("### Últimos registros")
+    try:
+        _asis_hoy = BaseDatos.obtener_asistencias_hoy()
+    except Exception:
+        _asis_hoy = {}
+
+    if not _asis_hoy:
+        st.info("Todavía no hay registros hoy. Escanee el primer código.")
+    else:
+        _items = []
+        for _dk, _v in _asis_hoy.items():
+            _nombre = _v.get('Nombre', _v.get('nombre', ''))
+            _hora_reg = (_v.get('hora_entrada') or _v.get('Hora')
+                        or _v.get('hora') or '')
+            _estado = _v.get('estado', _v.get('Estado', ''))
+            if _nombre:
+                _items.append((_nombre, _hora_reg, _estado))
+        for _nombre, _hora_reg, _estado in _items[-6:][::-1]:
+            _color_est = ("#16a34a" if "untual" in str(_estado)
+                         else "#d97706" if "ard" in str(_estado) else "#64748b")
+            st.markdown(f"""
+            <div style='border-left:6px solid {_color_est};background:#F8FAFC;
+                        border-radius:8px;padding:10px 14px;margin-bottom:6px;'>
+                <span style='font-size:1.15rem;font-weight:700;'>{_nombre}</span>
+                <span style='float:right;font-size:1.05rem;color:#475569;'>
+                    {_hora_reg} · {_estado}
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ── Auto-foco permanente + auto-refresco del reloj ─────────────
+    st.markdown("""
+    <script>
+    (function() {
+        function enfocarCampo() {
+            try {
+                var inputs = window.parent.document.querySelectorAll(
+                    'input[placeholder*="ESCANEE"]');
+                if (inputs.length > 0 && document.activeElement !== inputs[0]) {
+                    inputs[0].focus();
+                }
+            } catch(e) {}
+        }
+        enfocarCampo();
+        setInterval(enfocarCampo, 800);
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+
+
 def tab_asistencias():
     st.header("📋 Control de Asistencia")
     st.caption(f"🕒 **{hora_peru().strftime('%H:%M:%S')}** | "
@@ -33398,6 +33550,11 @@ def main():
         pantalla_login()
         st.stop()
 
+    # ── Modo Kiosco (pantalla completa para marcar en la puerta) ───
+    if st.session_state.get('_modo_kiosco'):
+        tab_modo_kiosco()
+        st.stop()
+
     _verificar_y_enviar_ausencias_automatico()
 
     # JS global — pinta rojo los botones de peligro por texto
@@ -33519,6 +33676,16 @@ def main():
         with ca7:
             if st.button("🎵\n\n**Música Eventos**", use_container_width=True, key="aux_musica", type="primary"):
                 st.session_state.modulo_activo = "musica_eventos"
+
+        # Modo Kiosco — pantalla completa para dejar en la puerta
+        st.markdown("")
+        if st.button("🖥️  ACTIVAR MODO KIOSCO  —  Pantalla grande para marcar en la puerta",
+                    use_container_width=True, key="aux_kiosco", type="primary"):
+            st.session_state['_modo_kiosco'] = True
+            st.rerun()
+        st.caption("El modo kiosco muestra un reloj gigante y deja el "
+                  "cursor listo para el lector de código de barras — no "
+                  "hay que tocar nada más.")
 
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
@@ -33706,6 +33873,7 @@ def main():
             modulos = [
                 ("📝", "Matrícula", "matricula", "#2563eb"),
                 ("📋", "Asistencia", "asistencia", "#16a34a"),
+                ("🖥️", "Modo Kiosco", "modo_kiosco", "#0f766e"),
                 ("📄", "Documentos", "documentos", "#7c3aed"),
                 ("🪪", "Carnets", "carnets", "#0891b2"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
@@ -33806,6 +33974,10 @@ def main():
                 tab_matricula(config)
             elif mod == "asistencia":
                 tab_asistencias()
+            elif mod == "modo_kiosco":
+                st.session_state['_modo_kiosco'] = True
+                st.session_state.modulo_activo = "asistencia"
+                st.rerun()
             elif mod == "documentos":
                 tab_documentos(config)
             elif mod == "carnets":
