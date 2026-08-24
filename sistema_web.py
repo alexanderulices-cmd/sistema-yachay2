@@ -7831,18 +7831,31 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
     # ── COMPROMISO PADRES ─────────────────────────────────────────────
     elif key == "compromiso":
         st.markdown("#### 📋 Carta Compromiso del Padre/Madre de Familia")
+        en_blanco_comp = st.checkbox(
+            "📝 Generar EN BLANCO (para llenar a mano)",
+            key="doc_blanco_comp",
+            help="Deja los nombres vacíos con líneas para escribir a mano. "
+                 "Útil para imprimir varias copias y llenarlas en la reunión.")
         col_p1, col_p2 = st.columns(2)
         with col_p1:
-            alumno_comp = st.text_input("Nombre del alumno/a:", key="doc_alu_comp", placeholder="Apellidos y Nombres")
+            alumno_comp = st.text_input("Nombre del alumno/a:", key="doc_alu_comp",
+                                        placeholder="Apellidos y Nombres",
+                                        disabled=en_blanco_comp)
             grado_comp  = st.selectbox("Grado:", grados_lista or ["1° Primaria"], key="doc_gr_comp")
         with col_p2:
-            apoderado_comp = st.text_input("Padre/madre/apoderado:", key="doc_apo_comp", placeholder="Apellidos y Nombres")
+            apoderado_comp = st.text_input("Padre/madre/apoderado:", key="doc_apo_comp",
+                                           placeholder="Apellidos y Nombres",
+                                           disabled=en_blanco_comp)
             motivo_comp    = st.selectbox("Motivo:", ["Bajo rendimiento académico","Exceso de inasistencias","Conducta inapropiada","Deudas económicas","Compromiso general"], key="doc_mot_comp")
         if st.button("📄 Generar", type="primary", use_container_width=True, key="btn_comp"):
             try:
-                buf = _generar_carta_compromiso_padres(config, alumno_comp, apoderado_comp, grado_comp, motivo_comp, anio)
+                _alu_final = "" if en_blanco_comp else alumno_comp
+                _apo_final = "" if en_blanco_comp else apoderado_comp
+                buf = _generar_carta_compromiso_padres(config, _alu_final, _apo_final, grado_comp, motivo_comp, anio)
+                _nombre_archivo_comp = (f"Compromiso_EN_BLANCO_{anio}.pdf" if en_blanco_comp
+                                       else f"Compromiso_{alumno_comp[:15]}_{anio}.pdf")
                 st.download_button("⬇️ Descargar", buf,
-                    f"Compromiso_{alumno_comp[:15]}_{anio}.pdf", "application/pdf",
+                    _nombre_archivo_comp, "application/pdf",
                     type="primary", key="dl_comp")
             except Exception as e: st.error(str(e))
 
@@ -35994,7 +36007,20 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
         "Deudas economicas": "regularizar los pagos pendientes en los plazos acordados con la administracion",
         "Compromiso general": "apoyar el proceso educativo integral de su hijo/a durante el anio escolar",
     }
-    texto_compromiso = motivos_texto.get(motivo, motivos_texto["Compromiso general"])
+
+    def _sin_tildes(txt):
+        """Normaliza para que el motivo elegido en el menu (con tildes)
+        coincida con las claves del diccionario (sin tildes) — antes
+        fallaba y siempre caia al texto generico."""
+        reemplazos = {"á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+                      "Á": "A", "É": "E", "Í": "I", "Ó": "O", "Ú": "U"}
+        for viejo, nuevo in reemplazos.items():
+            txt = txt.replace(viejo, nuevo)
+        return txt
+
+    _motivo_normalizado = _sin_tildes(str(motivo or ""))
+    texto_compromiso = motivos_texto.get(_motivo_normalizado,
+                                         motivos_texto["Compromiso general"])
     doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=2.5*cm, bottomMargin=2.5*cm, leftMargin=3*cm, rightMargin=3*cm)
     styles = getSampleStyleSheet()
     def P(txt, bold=False, size=11, align=TA_JUSTIFY, sb=4, sa=4):
