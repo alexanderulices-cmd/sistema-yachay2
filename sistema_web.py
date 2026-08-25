@@ -7269,7 +7269,99 @@ def tab_matricula(config):
             buf.seek(0)
             st.download_button("⬇️ Excel", buf,
                                f"Matricula_{config['anio']}.xlsx", key="dme")
-            # Solo admin puede eliminar
+            st.markdown("---")
+            with st.expander("✏️ Editar un alumno (cambiar grado, sección, nombre, etc.)"):
+                st.caption("Busca por DNI o por nombre, elige al estudiante, y "
+                          "corrige lo que haga falta. El DNI nunca se puede "
+                          "cambiar aquí — es su código de barras.")
+                _busq_edit = st.text_input("Buscar por DNI o nombre:", key="edit_alu_buscar")
+                if _busq_edit:
+                    _df_full_edit = BaseDatos.cargar_matricula()
+                    _coincidencias = _df_full_edit[
+                        _df_full_edit.apply(
+                            lambda r: _busq_edit.lower() in str(r.get("Nombre", "")).lower()
+                            or _busq_edit.strip() == str(r.get("DNI", "")).strip(),
+                            axis=1)]
+                    if _coincidencias.empty:
+                        st.warning("No se encontró ningún estudiante con esa búsqueda.")
+                    else:
+                        _opciones_edit = {
+                            f"{r['Nombre']} — DNI {r['DNI']} ({r.get('Grado', '')} {r.get('Seccion', '')})": r["DNI"]
+                            for _, r in _coincidencias.iterrows()}
+                        _sel_edit = st.selectbox("Selecciona:", list(_opciones_edit.keys()),
+                                                 key="edit_alu_sel")
+                        _dni_sel_edit = _opciones_edit[_sel_edit]
+                        _fila_sel = _df_full_edit[
+                            _df_full_edit["DNI"].astype(str).str.strip() == str(_dni_sel_edit).strip()
+                        ].iloc[0]
+
+                        with st.form("form_editar_alumno"):
+                            _nuevo_nombre = st.text_input("Nombre:", value=_fila_sel.get("Nombre", ""))
+                            _c_ed1, _c_ed2 = st.columns(2)
+                            with _c_ed1:
+                                _nuevo_nivel = st.selectbox(
+                                    "Nivel:", list(NIVELES_GRADOS.keys()),
+                                    index=(list(NIVELES_GRADOS.keys()).index(_fila_sel.get("Nivel"))
+                                          if _fila_sel.get("Nivel") in NIVELES_GRADOS else 0))
+                                _opciones_grado_edit = NIVELES_GRADOS.get(_nuevo_nivel, TODOS_LOS_GRADOS)
+                                _nuevo_grado = st.selectbox(
+                                    "Grado:", _opciones_grado_edit,
+                                    index=(_opciones_grado_edit.index(_fila_sel.get("Grado"))
+                                          if _fila_sel.get("Grado") in _opciones_grado_edit else 0))
+                            with _c_ed2:
+                                _nueva_seccion = st.text_input(
+                                    "Sección:", value=_fila_sel.get("Seccion", ""))
+                                _nuevo_celular = st.text_input(
+                                    "Celular apoderado:", value=_fila_sel.get("Celular_Apoderado", ""))
+                            _nuevo_apoderado = st.text_input(
+                                "Apoderado:", value=_fila_sel.get("Apoderado", ""))
+                            if st.form_submit_button("💾 Guardar cambios", type="primary",
+                                                     use_container_width=True):
+                                _df_guardar_edit = BaseDatos.cargar_matricula()
+                                _mask_edit = _df_guardar_edit["DNI"].astype(str).str.strip() == str(_dni_sel_edit).strip()
+                                _df_guardar_edit.loc[_mask_edit, "Nombre"] = _nuevo_nombre
+                                _df_guardar_edit.loc[_mask_edit, "Nivel"] = _nuevo_nivel
+                                _df_guardar_edit.loc[_mask_edit, "Grado"] = _nuevo_grado
+                                _df_guardar_edit.loc[_mask_edit, "Seccion"] = _nueva_seccion
+                                _df_guardar_edit.loc[_mask_edit, "Celular_Apoderado"] = _nuevo_celular
+                                _df_guardar_edit.loc[_mask_edit, "Apoderado"] = _nuevo_apoderado
+                                BaseDatos.guardar_matricula(_df_guardar_edit)
+                                st.success(f"✅ «{_nuevo_nombre}» actualizado.")
+                                st.rerun()
+
+            with st.expander("🔍 Buscar estudiantes duplicados"):
+                st.caption("Revisa si hay estudiantes que aparecen más de una "
+                          "vez (mismo DNI, o mismo nombre en el mismo grado).")
+                if st.button("🔍 Buscar duplicados ahora", key="btn_buscar_dup"):
+                    _df_dup = BaseDatos.cargar_matricula()
+                    _dup_por_dni = _df_dup[_df_dup.duplicated(subset=["DNI"], keep=False)]
+                    _df_dup["_nombre_grado"] = (_df_dup["Nombre"].astype(str).str.upper().str.strip()
+                                                + "|" + _df_dup["Grado"].astype(str))
+                    _dup_por_nombre = _df_dup[_df_dup.duplicated(subset=["_nombre_grado"], keep=False)]
+                    st.session_state["dup_resultado"] = {
+                        "por_dni": _dup_por_dni.drop(columns=["_nombre_grado"], errors="ignore"),
+                        "por_nombre": _dup_por_nombre.drop(columns=["_nombre_grado"], errors="ignore"),
+                    }
+
+                _dup_res = st.session_state.get("dup_resultado")
+                if _dup_res is not None:
+                    if _dup_res["por_dni"].empty and _dup_res["por_nombre"].empty:
+                        st.success("✅ No se encontró ningún duplicado.")
+                    else:
+                        if not _dup_res["por_dni"].empty:
+                            st.warning(f"⚠️ {len(_dup_res['por_dni'])} fila(s) con "
+                                      f"DNI repetido (esto no debería pasar nunca):")
+                            st.dataframe(_dup_res["por_dni"], use_container_width=True,
+                                       hide_index=True)
+                        if not _dup_res["por_nombre"].empty:
+                            st.warning(f"⚠️ {len(_dup_res['por_nombre'])} fila(s) con "
+                                      f"el mismo nombre en el mismo grado (revisa si "
+                                      f"es la misma persona registrada 2 veces):")
+                            st.dataframe(_dup_res["por_nombre"], use_container_width=True,
+                                       hide_index=True)
+                            st.caption("Para borrar una fila duplicada, copia su DNI "
+                                     "y usa 'Eliminar Alumno' más abajo.")
+
             if puede_borrar():
                 with st.expander("🗑️ Eliminar Alumno"):
                     deld = st.text_input("DNI a eliminar:", key="dd")
@@ -12878,6 +12970,110 @@ def _generar_pdf_onomastico(docente_nombre, cargo, anio, frase, estilo_idx,
     c.save(); buf.seek(0)
     return buf.read()
 
+FRASES_ESTOICAS = [
+    ("No busques que las cosas sucedan como quieres, sino desea que sucedan como suceden, y tendrás paz.", "Epicteto"),
+    ("Tenemos dos oídos y una sola boca para poder escuchar el doble de lo que hablamos.", "Epicteto"),
+    ("La riqueza no consiste en tener grandes posesiones, sino en tener pocas necesidades.", "Epicteto"),
+    ("No es lo que te sucede, sino cómo reaccionas ante ello lo que importa.", "Epicteto"),
+    ("Primero di quién quieres ser, y luego haz lo que tengas que hacer.", "Epicteto"),
+    ("Ningún hombre es libre si no es dueño de sí mismo.", "Epicteto"),
+    ("La felicidad y la libertad comienzan con una clara comprensión de un principio: algunas cosas están bajo nuestro control y otras no.", "Epicteto"),
+    ("Es imposible que un hombre aprenda lo que cree ya saber.", "Epicteto"),
+    ("Las circunstancias no hacen al hombre, solo lo revelan a sí mismo.", "Epicteto"),
+    ("No expliques tu filosofía, encárnala.", "Epicteto"),
+    ("Comienza cada día diciéndote a ti mismo: hoy me encontraré con gente entrometida, ingrata, insolente.", "Marco Aurelio"),
+    ("Tienes poder sobre tu mente, no sobre los eventos externos. Date cuenta de esto y encontrarás fuerza.", "Marco Aurelio"),
+    ("La felicidad de tu vida depende de la calidad de tus pensamientos.", "Marco Aurelio"),
+    ("Lo que no beneficia a la colmena, no beneficia a la abeja.", "Marco Aurelio"),
+    ("Nuestra vida es lo que nuestros pensamientos hacen de ella.", "Marco Aurelio"),
+    ("Cuando te levantes por la mañana, piensa en el privilegio de estar vivo.", "Marco Aurelio"),
+    ("El mejor modo de vengarse es no ser como el que te ofendió.", "Marco Aurelio"),
+    ("Todo lo que oímos es una opinión, no un hecho. Todo lo que vemos es una perspectiva, no la verdad.", "Marco Aurelio"),
+    ("Si no es correcto, no lo hagas. Si no es verdad, no lo digas.", "Marco Aurelio"),
+    ("Muy poco se necesita para hacer una vida feliz; todo está dentro de ti, en tu manera de pensar.", "Marco Aurelio"),
+    ("No actúes como si te quedaran diez mil años por vivir.", "Marco Aurelio"),
+    ("La mejor venganza es no parecerte a quien te hizo daño.", "Marco Aurelio"),
+    ("El obstáculo en el camino se convierte en el camino. Nunca olvides que dentro de cada obstáculo hay una oportunidad.", "Marco Aurelio"),
+    ("Confía en el tiempo, que suele dar dulces salidas a muchas amargas dificultades.", "Séneca"),
+    ("No es que tengamos poco tiempo, sino que perdemos mucho.", "Séneca"),
+    ("Mientras enseñamos, aprendemos.", "Séneca"),
+    ("Ningún viento es favorable para el que no sabe a qué puerto se dirige.", "Séneca"),
+    ("La vida es larga si sabes cómo usarla.", "Séneca"),
+    ("Sufrimos más en la imaginación que en la realidad.", "Séneca"),
+    ("Todo hombre prefiere creer antes que juzgar.", "Séneca"),
+    ("Errar es humano, pero perseverar en el error es diabólico.", "Séneca"),
+    ("Mientras hay vida, hay esperanza.", "Séneca"),
+    ("Es más difícil dominarse a sí mismo que a los demás.", "Séneca"),
+    ("La suerte es lo que sucede cuando la preparación se encuentra con la oportunidad.", "Séneca"),
+    ("No es pobre el que tiene poco, sino el que desea mucho.", "Séneca"),
+    ("Un camino difícil conduce a menudo a un hermoso destino.", "Séneca"),
+    ("Cada nuevo día es una nueva vida entera.", "Séneca"),
+    ("A veces, incluso vivir es un acto de valentía.", "Séneca"),
+    ("La adversidad es la ocasión de la virtud.", "Séneca"),
+    ("El que teme sufrir, ya sufre por lo que teme.", "Séneca"),
+    ("Se dice que la vida es un cuento contado por un idiota, lleno de ruido y furia, que nada significa; para el sabio estoico, la vida es una obra que él mismo escribe con sus decisiones.", "Séneca"),
+    ("Concéntrate en lo que puedes controlar, y suelta lo que no.", "Zenón de Citio"),
+    ("La virtud es suficiente para la felicidad.", "Zenón de Citio"),
+    ("El propósito de la vida es vivir de acuerdo con la naturaleza.", "Zenón de Citio"),
+    ("El bien supremo es vivir de manera coherente con uno mismo.", "Zenón de Citio"),
+    ("La felicidad es un flujo constante de vida de acuerdo con la virtud.", "Zenón de Citio"),
+    ("El día de hoy es el único día que tienes garantizado; úsalo bien.", "Marco Aurelio"),
+    ("No dejes que la mano del tiempo pase sin haber hecho algo de valor.", "Marco Aurelio"),
+    ("El que vive en armonía consigo mismo vive en armonía con el universo.", "Marco Aurelio"),
+    ("La disciplina es el puente entre las metas y los logros.", "Epicteto"),
+    ("Haz lo correcto, no importa lo difícil que sea.", "Epicteto"),
+    ("No pidas que las cosas sucedan como deseas, sino desea que sucedan tal como ocurren.", "Epicteto"),
+    ("Debes construir tu vida acción por acción, y contentarte si cada una logra su propósito según sea posible.", "Marco Aurelio"),
+    ("Nada sucede a nadie que no esté preparado por la naturaleza para soportarlo.", "Marco Aurelio"),
+    ("Acepta lo que te sucede, aunque parezca frío. Es lo correcto.", "Marco Aurelio"),
+    ("Ten en mente siempre lo breve que es la vida.", "Marco Aurelio"),
+    ("Lo que impide la acción, hace avanzar la acción. Lo que se interpone en el camino, se convierte en el camino.", "Marco Aurelio"),
+    ("La perfección del carácter consiste en vivir cada día como si fuera el último.", "Marco Aurelio"),
+    ("Todo lo que existe es, en cierto modo, la semilla de lo que surgirá de ello.", "Marco Aurelio"),
+    ("No pierdas más tiempo discutiendo qué debe ser un buen hombre, sé uno.", "Marco Aurelio"),
+    ("El mejor plan de venganza es no imitar el daño.", "Marco Aurelio"),
+    ("Todo lo que nos rodea es opinión, y la opinión está en nuestro poder.", "Marco Aurelio"),
+    ("Deja que la naturaleza, que te hizo, tome de nuevo lo que te dio.", "Marco Aurelio"),
+    ("La verdadera felicidad radica en la sabiduría y la virtud, no en las circunstancias externas.", "Séneca"),
+    ("Una piedra preciosa no puede pulirse sin fricción, ni un hombre perfeccionarse sin pruebas.", "Séneca"),
+    ("El fuego prueba el oro, la adversidad prueba a los hombres fuertes.", "Séneca"),
+    ("No hay viento favorable para el navegante que no sabe a qué puerto se dirige.", "Séneca"),
+    ("Lo que constituye la felicidad de una vida no es tener grandes cosas, sino desear pocas.", "Séneca"),
+    ("Sabio es el que no se aflige por lo que no tiene, sino que se alegra por lo que tiene.", "Epicteto"),
+    ("No es rico el que tiene mucho, sino el que da mucho.", "San Basilio (espíritu estoico)"),
+    ("Aquellos que saben cómo pensar no necesitan maestros.", "Marco Aurelio"),
+    ("La mente que no está perturbada por las cosas externas encuentra la paz.", "Marco Aurelio"),
+    ("Todo lo que sucede, sucede de manera justa.", "Marco Aurelio"),
+    ("Cuando algo te perturbe, recuerda aplicar este principio: no es esto una desgracia, sino que sobrellevarlo con nobleza es una buena fortuna.", "Marco Aurelio"),
+    ("El único bien real es la virtud; el único mal real es el vicio.", "Zenón de Citio"),
+    ("No busques la felicidad fuera de ti mismo.", "Epicteto"),
+    ("El hombre sabio no lamenta las cosas que no tiene, sino que se alegra por las que tiene.", "Epicteto"),
+    ("La libertad es el único fin digno de vivir para ella.", "Epicteto"),
+    ("No es el hombre quien determina el valor de las cosas, sino la manera en que las usa.", "Epicteto"),
+    ("Cada día decide quién quieres ser y actúa en consecuencia.", "Epicteto"),
+    ("Somos lo que hacemos repetidamente. La excelencia, entonces, no es un acto sino un hábito.", "Atribuido a Aristóteles"),
+    ("El primer paso hacia la sabiduría es reconocer que no lo sabes todo.", "Sócrates"),
+    ("Una vida no examinada no merece la pena ser vivida.", "Sócrates"),
+    ("Solo sé que no sé nada.", "Sócrates"),
+    ("El secreto de la felicidad no se encuentra en buscar más, sino en desarrollar la capacidad de disfrutar menos.", "Sócrates"),
+    ("El conocimiento habla, pero la sabiduría escucha.", "Jimi Hendrix (tradición popular)"),
+    ("No hay camino hacia la felicidad, la felicidad es el camino.", "Buda (tradición sapiencial)"),
+    ("La disciplina es elegir entre lo que quieres ahora y lo que quieres más.", "Tradición estoica moderna"),
+    ("El hombre que se levanta es aún más fuerte que el que nunca cayó.", "Tradición estoica moderna"),
+    ("No cuentes los días, haz que los días cuenten.", "Muhammad Ali (espíritu estoico)"),
+    ("Actúa como si lo que haces marca una diferencia. Marca la diferencia.", "William James"),
+    ("Cada mañana nacemos de nuevo. Lo que hacemos hoy es lo que más importa.", "Buda (tradición sapiencial)"),
+    ("El hombre que mueve una montaña comienza cargando pequeñas piedras.", "Confucio"),
+    ("Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.", "Confucio"),
+    ("El que domina a otros es fuerte; el que se domina a sí mismo es poderoso.", "Lao Tsé"),
+    ("Un viaje de mil millas comienza con un solo paso.", "Lao Tsé"),
+    ("La naturaleza no se apresura, y sin embargo todo se cumple.", "Lao Tsé"),
+    ("El maestro hace lo que quiere hacer, pero eso resulta ser lo mejor.", "Lao Tsé"),
+    ("Quien conoce a los demás es sabio; quien se conoce a sí mismo, es iluminado.", "Lao Tsé"),
+    ("No hay atajo hacia ningún lugar que valga la pena llegar.", "Beverly Sills"),
+]
+
+
 def tab_modo_kiosco():
     """MODO KIOSCO: pantalla completa para dejar la computadora prendida
     en la puerta. Reloj gigante, un solo campo que se auto-enfoca, y el
@@ -12892,37 +13088,6 @@ def tab_modo_kiosco():
         if st.button("← Salir", key="kiosco_salir"):
             st.session_state['_modo_kiosco'] = False
             st.rerun()
-
-    with st.expander("🔊 Configurar sonido de asistencia (opcional)"):
-        _cfg_sonido = _tg_gs_get('kiosco_sonido') or {}
-        _drive_id_sonido = _cfg_sonido.get('drive_file_id')
-        if _drive_id_sonido:
-            st.caption(f"✅ Sonido configurado: «{_cfg_sonido.get('nombre', 'sin nombre')}»")
-        else:
-            st.caption("Sin sonido configurado todavía. Sube un MP3 corto "
-                      "(un timbre, campanita, etc.) — se guarda en la misma "
-                      "carpeta compartida de Drive que ya usas para Música "
-                      "para Eventos.")
-        _archivo_sonido = st.file_uploader(
-            "Subir/cambiar sonido (MP3):", type=["mp3"], key="kiosco_sonido_upload")
-        if _archivo_sonido and st.button("💾 Guardar este sonido",
-                                         key="kiosco_sonido_guardar"):
-            gs_snd = _gs()
-            if gs_snd and gs_snd._carpeta_musica_id():
-                with st.spinner("Subiendo sonido…"):
-                    _fid = gs_snd.subir_cancion(
-                        f"KioscoSonido_{_archivo_sonido.name}",
-                        _archivo_sonido.read(), _archivo_sonido.type or "audio/mpeg")
-                if _fid:
-                    _tg_gs_set('kiosco_sonido', {
-                        'drive_file_id': _fid, 'nombre': _archivo_sonido.name})
-                    st.success("✅ Sonido guardado.")
-                    st.rerun()
-                else:
-                    st.error("No se pudo subir. Revisa la conexión con Drive.")
-            else:
-                st.error("Falta configurar la carpeta compartida de Drive "
-                        "(la misma de Música para Eventos).")
 
     # ── Asegurar que el indice de DNIs este cargado ────────────────
     _idx = st.session_state.get('_indice_dni', {})
@@ -12959,25 +13124,65 @@ def tab_modo_kiosco():
     else:
         _titulo_modo, _color1, _color2, _icono = "SALIDA TARDE", "#334155", "#64748b", "🌙"
 
-    # ── Reloj gigante + estado del turno ───────────────────────────
+    # ── Frase estoica del dia (rota una vez por dia, entre las 100) ─
+    _dia_del_anio = _ahora.timetuple().tm_yday
+    _frase_texto, _frase_autor = FRASES_ESTOICAS[_dia_del_anio % len(FRASES_ESTOICAS)]
+
+    # ── Fondo elegante de toda la pantalla + tipografia refinada ────
+    st.markdown("""
+    <style>
+    div[data-testid="stAppViewContainer"] > .main {
+        background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    }
+    div[data-testid="stTextInput"] input {
+        font-size: 2.1rem !important;
+        height: 74px !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+        letter-spacing: 4px !important;
+        border-radius: 14px !important;
+        border: 3px solid #94a3b8 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ── Encabezado: reloj gigante + fecha + frase estoica ───────────
     st.markdown(f"""
     <div style='background:linear-gradient(135deg,{_color1},{_color2});
-                border-radius:18px;padding:22px 28px;color:white;
-                text-align:center;margin-bottom:14px;'>
-        <div style='font-size:1.4rem;font-weight:800;opacity:0.95;'>
+                border-radius:22px;padding:36px 40px;color:white;
+                text-align:center;margin-bottom:18px;
+                box-shadow:0 12px 34px rgba(0,0,0,0.35);'>
+        <div style='font-size:1.5rem;font-weight:800;opacity:0.95;
+                    letter-spacing:2px;'>
             {_icono} {_titulo_modo}
         </div>
-        <div style='font-size:4.6rem;font-weight:900;line-height:1.05;
-                    letter-spacing:2px;margin:4px 0;'>
+        <div style='font-size:6.2rem;font-weight:900;line-height:1.02;
+                    letter-spacing:3px;margin:8px 0;
+                    text-shadow:0 4px 18px rgba(0,0,0,0.25);
+                    font-variant-numeric:tabular-nums;'>
             {_ahora.strftime('%H:%M')}
         </div>
-        <div style='font-size:1.05rem;opacity:0.9;'>
-            {_ahora.strftime('%d/%m/%Y')} · Puntual hasta {_limite_txt}
+        <div style='font-size:1.3rem;opacity:0.92;font-weight:600;'>
+            {_ahora.strftime('%A, %d de %B de %Y').capitalize()}
+        </div>
+        <div style='font-size:1rem;opacity:0.8;margin-top:2px;'>
+            Puntual hasta {_limite_txt}
+        </div>
+        <div style='margin-top:22px;padding-top:18px;
+                    border-top:1px solid rgba(255,255,255,0.25);'>
+            <div style='font-size:1.15rem;font-style:italic;font-weight:500;
+                        line-height:1.5;max-width:900px;margin:0 auto;'>
+                «{_frase_texto}»
+            </div>
+            <div style='font-size:0.95rem;opacity:0.85;margin-top:8px;
+                        letter-spacing:1px;'>
+                — {_frase_autor}
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Campo de escaneo (grande, auto-enfocado) ───────────────────
+    # ── Campo de escaneo (grande, elegante, auto-enfocado) ──────────
     def _on_scan_kiosco():
         val = st.session_state.get('kiosco_input', '')
         if val:
@@ -12986,18 +13191,6 @@ def tab_modo_kiosco():
                 st.session_state['_kiosco_pendiente'] = (
                     codigo[:8] if codigo.isdigit() and len(codigo) == 8 else codigo)
             st.session_state['kiosco_input'] = ''
-
-    st.markdown("""
-    <style>
-    div[data-testid="stTextInput"] input {
-        font-size: 2rem !important;
-        height: 68px !important;
-        text-align: center !important;
-        font-weight: 700 !important;
-        letter-spacing: 3px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     st.text_input("Escanee el código", key="kiosco_input",
                   placeholder="👉 ESCANEE AQUÍ",
@@ -13008,38 +13201,28 @@ def tab_modo_kiosco():
     _pend = st.session_state.pop('_kiosco_pendiente', None)
     if _pend:
         _registrar_asistencia_rapida(_pend)
-
-        # Sonido de confirmacion (si esta configurado) — se reproduce
-        # con audio embebido en base64 para que suene aunque la pagina
-        # se refresque de inmediato despues.
-        _cfg_snd_play = _tg_gs_get('kiosco_sonido') or {}
-        _fid_snd = _cfg_snd_play.get('drive_file_id')
-        if _fid_snd:
-            @st.cache_data(show_spinner=False, ttl=3600)
-            def _cargar_sonido_kiosco(file_id):
-                gs_local = _gs()
-                return gs_local.descargar_cancion(file_id) if gs_local else None
-
-            _bytes_sonido = _cargar_sonido_kiosco(_fid_snd)
-            if _bytes_sonido:
-                import base64 as _b64_kiosco
-                import streamlit.components.v1 as _comp_kiosco
-                _b64_snd = _b64_kiosco.b64encode(_bytes_sonido).decode()
-                _comp_kiosco.html(
-                    f'<audio autoplay><source src="data:audio/mp3;base64,'
-                    f'{_b64_snd}" type="audio/mp3"></audio>', height=0)
-
         st.rerun()
 
-    # ── Ultimos registros (grande y legible desde lejos) ───────────
-    st.markdown("### Últimos registros")
+    # ── Ultimos registros (elegante, grande y legible desde lejos) ──
+    st.markdown("""
+    <div style='color:#e2e8f0;font-size:1.3rem;font-weight:800;
+                margin:24px 0 12px;letter-spacing:1px;'>
+        📋 Últimos registros
+    </div>
+    """, unsafe_allow_html=True)
     try:
         _asis_hoy = BaseDatos.obtener_asistencias_hoy()
     except Exception:
         _asis_hoy = {}
 
     if not _asis_hoy:
-        st.info("Todavía no hay registros hoy. Escanee el primer código.")
+        st.markdown("""
+        <div style='background:rgba(255,255,255,0.08);border-radius:12px;
+                    padding:16px;color:#cbd5e1;text-align:center;
+                    font-size:1.05rem;'>
+            Todavía no hay registros hoy. Escanee el primer código.
+        </div>
+        """, unsafe_allow_html=True)
     else:
         _items = []
         for _dk, _v in _asis_hoy.items():
@@ -13050,13 +13233,15 @@ def tab_modo_kiosco():
             if _nombre:
                 _items.append((_nombre, _hora_reg, _estado))
         for _nombre, _hora_reg, _estado in _items[-6:][::-1]:
-            _color_est = ("#16a34a" if "untual" in str(_estado)
-                         else "#d97706" if "ard" in str(_estado) else "#64748b")
+            _color_est = ("#22c55e" if "untual" in str(_estado)
+                         else "#f59e0b" if "ard" in str(_estado) else "#94a3b8")
             st.markdown(f"""
-            <div style='border-left:6px solid {_color_est};background:#F8FAFC;
-                        border-radius:8px;padding:10px 14px;margin-bottom:6px;'>
-                <span style='font-size:1.15rem;font-weight:700;'>{_nombre}</span>
-                <span style='float:right;font-size:1.05rem;color:#475569;'>
+            <div style='border-left:6px solid {_color_est};
+                        background:rgba(255,255,255,0.08);
+                        border-radius:10px;padding:14px 18px;margin-bottom:8px;
+                        backdrop-filter:blur(4px);'>
+                <span style='font-size:1.25rem;font-weight:700;color:#f1f5f9;'>{_nombre}</span>
+                <span style='float:right;font-size:1.1rem;color:#cbd5e1;'>
                     {_hora_reg} · {_estado}
                 </span>
             </div>
