@@ -6478,10 +6478,31 @@ def configurar_sidebar():
                             f"&nbsp;&nbsp;`{info['cantidad']} alumno(s)`"
                         )
                     st.warning(f"⚠️ Se modificarán **{total_prev} estudiantes**. ¿Confirmar?")
+
+                    # Respaldo obligatorio: como el sistema no guarda
+                    # historico por año, se descarga un Excel con el
+                    # estado actual ANTES de sobrescribir los grados.
+                    import io as _io_backup_promo
+                    _df_respaldo = BaseDatos.cargar_matricula()
+                    _buf_respaldo = _io_backup_promo.BytesIO()
+                    _df_respaldo.to_excel(_buf_respaldo, index=False, engine="openpyxl")
+                    _buf_respaldo.seek(0)
+                    _anio_respaldo = st.session_state.get("ai", hora_peru().year)
+                    st.download_button(
+                        f"💾 Descargar respaldo antes de promover (Matrícula_{_anio_respaldo}.xlsx)",
+                        data=_buf_respaldo,
+                        file_name=f"Matricula_respaldo_antes_promocion_{_anio_respaldo}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True, key="btn_descargar_respaldo_promo")
+                    _respaldo_confirmado = st.checkbox(
+                        "✅ Ya descargué el respaldo (o no lo necesito)",
+                        key="chk_respaldo_promo")
+
                     c_si, c_no = st.columns(2)
                     with c_si:
                         if st.button("✅ SÍ, PROMOVER AHORA", type="primary",
-                                     use_container_width=True, key="btn_confirmar_promo"):
+                                     use_container_width=True, key="btn_confirmar_promo",
+                                     disabled=not _respaldo_confirmado):
                             with st.spinner("🔄 Promoviendo grados..."):
                                 resultado = BaseDatos.promover_grados()
                             st.session_state.pop('_prev_promo', None)
@@ -14994,8 +15015,31 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
     _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token))
 
 def _tg_obtener_chat_id(token):
-    """Obtiene los últimos updates del bot en hilo con resultado en session_state."""
-    return _tg_llamar_api("getUpdates", token, timeout=10)
+    """Obtiene los últimos updates del bot. Usa 'offset' guardado para
+    decirle a Telegram cuáles ya se procesaron — SIN esto, los mensajes
+    viejos nunca se marcan como leídos y se van acumulando en la cola;
+    con el tiempo, los mensajes nuevos de padres recien suscritos pueden
+    quedar atrapados detrás de esa cola y no aparecer nunca (ese era el
+    bug: por eso el primer suscriptor funcionaba pero los siguientes no)."""
+    _cfg_tg_off = _tg_cargar_config()
+    _offset_guardado = _cfg_tg_off.get("last_update_id")
+    params = {"timeout": 0}
+    if _offset_guardado:
+        try:
+            params["offset"] = int(_offset_guardado) + 1
+        except (TypeError, ValueError):
+            pass
+    resultado = _tg_llamar_api("getUpdates", token, params=params, timeout=10)
+
+    # Guardar el update_id mas alto visto, para la proxima llamada
+    if resultado.get("ok"):
+        _updates = resultado.get("result", [])
+        if _updates:
+            _max_id = max(u.get("update_id", 0) for u in _updates)
+            _cfg_actualizada = _tg_cargar_config()
+            _cfg_actualizada["last_update_id"] = _max_id
+            _tg_guardar_config(_cfg_actualizada)
+    return resultado
 
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia — INSTANTÁNEO: solo usa índice en RAM, nunca GSheets."""
