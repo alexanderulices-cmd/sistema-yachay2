@@ -6728,7 +6728,10 @@ def _tab_importar_directorio(config):
                 for fila in ws.iter_rows(min_row=4, max_row=ws.max_row, values_only=True):
                     if len(fila) < 12:
                         continue
-                    dni_raw, nombre_raw, celular_raw = fila[1], fila[2], fila[11]
+                    dni_raw, nombre_raw = fila[1], fila[2]
+                    dni_apod_raw = fila[6] if len(fila) > 6 else None
+                    apoderado_raw = fila[7] if len(fila) > 7 else None
+                    celular_raw = fila[11] if len(fila) > 11 else None
                     if not nombre_raw or not str(nombre_raw).strip():
                         continue
                     dni_limpio = str(dni_raw).strip() if dni_raw else ""
@@ -6738,31 +6741,59 @@ def _tab_importar_directorio(config):
                         problemas.append(f"Hoja {hoja_nombre}: «{nombre_raw}» "
                                         f"tiene un DNI inválido ({dni_raw!r}) — no se procesó.")
                         continue
+                    dni_apod_limpio = str(dni_apod_raw).strip() if dni_apod_raw else ""
+                    if dni_apod_limpio.endswith(".0"):
+                        dni_apod_limpio = dni_apod_limpio[:-2]
                     estudiantes_excel.append({
                         "dni": dni_limpio,
                         "nombre": str(nombre_raw).strip(),
                         "nivel": nivel, "grado": grado, "seccion": seccion,
                         "celular": str(celular_raw).strip() if celular_raw else "",
+                        "apoderado": str(apoderado_raw).strip() if apoderado_raw else "",
+                        "dni_apoderado": dni_apod_limpio,
                     })
 
-            # Comparar contra la matricula actual
+            # Comparar contra la matricula actual — TODOS los campos, no
+            # solo el nombre, para que subir el mismo Excel mas adelante
+            # (con celulares/apoderados ya llenados) tambien actualice
+            # esos datos, no solo detecte nombres mal escritos.
             df_actual = BaseDatos.cargar_matricula()
-            dni_actuales = {}
+            datos_actuales = {}
             if not df_actual.empty and "DNI" in df_actual.columns:
                 for _, r in df_actual.iterrows():
-                    dni_actuales[str(r["DNI"]).strip()] = str(r.get("Nombre", "")).strip()
+                    datos_actuales[str(r["DNI"]).strip()] = {
+                        "nombre": str(r.get("Nombre", "")).strip(),
+                        "celular": str(r.get("Celular_Apoderado", "")).strip(),
+                        "apoderado": str(r.get("Apoderado", "")).strip(),
+                        "dni_apoderado": str(r.get("DNI_Apoderado", "")).strip(),
+                    }
 
             def _normalizar_nombre(n):
                 return " ".join(n.upper().split())
 
+            def _val_limpio(v):
+                return "" if v in (None, "nan", "None") else str(v).strip()
+
             nuevos, correcciones, sin_cambios = [], [], []
             for e in estudiantes_excel:
-                if e["dni"] not in dni_actuales:
+                if e["dni"] not in datos_actuales:
                     nuevos.append(e)
                 else:
-                    nombre_actual = dni_actuales[e["dni"]]
-                    if _normalizar_nombre(nombre_actual) != _normalizar_nombre(e["nombre"]):
-                        correcciones.append({**e, "nombre_actual": nombre_actual})
+                    actual = datos_actuales[e["dni"]]
+                    cambios = {}
+                    if _normalizar_nombre(actual["nombre"]) != _normalizar_nombre(e["nombre"]):
+                        cambios["nombre"] = (actual["nombre"], e["nombre"])
+                    # Para celular/apoderado/dni_apoderado: solo cuenta como
+                    # cambio si el Excel trae un dato NUEVO que antes estaba
+                    # vacio, o un dato DISTINTO al que ya habia — nunca se
+                    # borra un dato existente aunque el Excel venga vacio.
+                    for campo in ("celular", "apoderado", "dni_apoderado"):
+                        valor_excel = _val_limpio(e[campo])
+                        valor_actual = _val_limpio(actual[campo])
+                        if valor_excel and valor_excel != valor_actual:
+                            cambios[campo] = (valor_actual, valor_excel)
+                    if cambios:
+                        correcciones.append({**e, "cambios": cambios})
                     else:
                         sin_cambios.append(e)
 
@@ -6781,8 +6812,8 @@ def _tab_importar_directorio(config):
 
         c1, c2, c3 = st.columns(3)
         c1.metric("🆕 Nuevos por agregar", len(nuevos))
-        c2.metric("✏️ Nombres para corregir", len(correcciones))
-        c3.metric("✅ Ya están bien", len(sin_cambios))
+        c2.metric("✏️ Con datos para actualizar", len(correcciones))
+        c3.metric("✅ Ya están al día", len(sin_cambios))
 
         if problemas:
             with st.expander(f"⚠️ {len(problemas)} fila(s) con problemas (no se procesan)"):
@@ -6794,12 +6825,17 @@ def _tab_importar_directorio(config):
                 st.dataframe(pd.DataFrame(nuevos)[["dni", "nombre", "grado", "seccion"]],
                            use_container_width=True, hide_index=True)
 
+        _ETIQUETAS_CAMPO = {"nombre": "Nombre", "celular": "Celular",
+                            "apoderado": "Apoderado", "dni_apoderado": "DNI Apoderado"}
         if correcciones:
-            with st.expander(f"✏️ Ver las {len(correcciones)} correcciones de nombre",
-                            expanded=True):
+            with st.expander(f"✏️ Ver los {len(correcciones)} estudiantes con datos "
+                            f"nuevos o corregidos", expanded=True):
                 for c in correcciones:
-                    st.markdown(f"**DNI {c['dni']}**: "
-                              f"~~{c['nombre_actual']}~~ → **{c['nombre']}**")
+                    st.markdown(f"**{c['nombre']}** (DNI {c['dni']})")
+                    for campo, (viejo, nuevo) in c["cambios"].items():
+                        etiqueta = _ETIQUETAS_CAMPO.get(campo, campo)
+                        viejo_txt = viejo if viejo else "_(vacío)_"
+                        st.caption(f"　{etiqueta}: ~~{viejo_txt}~~ → **{nuevo}**")
 
         if nuevos or correcciones:
             st.markdown("---")
@@ -6812,10 +6848,16 @@ def _tab_importar_directorio(config):
                     df_actual = BaseDatos.cargar_matricula()
                     hoy_str = _dt_imp.datetime.now().strftime("%Y-%m-%d")
 
-                    # 1. Aplicar correcciones de nombre (el DNI no se toca)
+                    # 1. Aplicar actualizaciones campo por campo (el DNI del
+                    # estudiante, es decir su codigo de barras, nunca se toca)
+                    _MAPA_COL = {"nombre": "Nombre", "celular": "Celular_Apoderado",
+                                "apoderado": "Apoderado", "dni_apoderado": "DNI_Apoderado"}
                     for c in correcciones:
                         mask = df_actual["DNI"].astype(str).str.strip() == c["dni"]
-                        df_actual.loc[mask, "Nombre"] = c["nombre"]
+                        for campo, (_viejo, nuevo) in c["cambios"].items():
+                            col_df = _MAPA_COL[campo]
+                            if col_df in df_actual.columns:
+                                df_actual.loc[mask, col_df] = nuevo
 
                     # 2. Agregar los nuevos estudiantes
                     filas_nuevas = []
@@ -6823,8 +6865,9 @@ def _tab_importar_directorio(config):
                         filas_nuevas.append({
                             "Nombre": n["nombre"], "DNI": n["dni"],
                             "Nivel": n["nivel"], "Grado": n["grado"],
-                            "Seccion": n["seccion"], "Apoderado": "",
-                            "DNI_Apoderado": "", "Celular_Apoderado": n["celular"],
+                            "Seccion": n["seccion"], "Apoderado": n["apoderado"],
+                            "DNI_Apoderado": n["dni_apoderado"],
+                            "Celular_Apoderado": n["celular"],
                             "fecha_matricula": hoy_str,
                         })
                     if filas_nuevas:
@@ -6837,7 +6880,7 @@ def _tab_importar_directorio(config):
                     BaseDatos.guardar_matricula(df_actual)
 
                 st.success(f"✅ Listo: {len(nuevos)} estudiante(s) agregado(s), "
-                          f"{len(correcciones)} nombre(s) corregido(s).")
+                          f"{len(correcciones)} estudiante(s) actualizado(s).")
                 del st.session_state["dir_sync_resultado"]
                 st.session_state["_forzar_local"] = True
                 st.balloons()
