@@ -14942,20 +14942,25 @@ def _tg_validar_token(token):
     return True, ""
 
 def _tg_gs_set(clave, valor_dict):
-    """Guarda un dict en Google Sheets hoja config — clave→JSON. Permanente."""
+    """Guarda un dict en Google Sheets hoja config — clave→JSON. Permanente.
+    Devuelve True/False para que quien llama sepa si realmente se guardó
+    — antes fallaba en silencio (except: pass) y todo parecia funcionar
+    aunque el suscriptor nunca quedara guardado de verdad."""
     try:
         gs = _gs()
-        if not gs: return
+        if not gs: return False
         ws = gs._get_hoja('config')
-        if not ws: return
+        if not ws: return False
         val_str = json.dumps(valor_dict, ensure_ascii=False)
         all_vals = ws.get_all_values()
         for idx, row in enumerate(all_vals):
             if row and row[0] == clave:
                 ws.update_cell(idx + 1, 2, val_str)
-                return
+                return True
         ws.append_row([clave, val_str])
-    except Exception: pass
+        return True
+    except Exception:
+        return False
 
 def _tg_gs_get(clave):
     """Lee un dict desde Google Sheets hoja config."""
@@ -15028,12 +15033,14 @@ def _tg_cargar_subs():
     return {}
 
 def _tg_guardar_subs(data):
-    """Guarda suscriptores en GSheets Y local — doble respaldo."""
+    """Guarda suscriptores en GSheets Y local — doble respaldo. Devuelve
+    True/False según si el guardado en GSheets (el que de verdad importa,
+    porque es lo que se lee en cada notificación) tuvo éxito."""
     try:
         with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception: pass
-    _tg_gs_set('telegram_suscriptores', data)
+    return _tg_gs_set('telegram_suscriptores', data)
 
 def _tg_llamar_api(endpoint, token, params=None, timeout=8):
     """Llamada genérica a la API de Telegram. Retorna dict con ok/result/error."""
@@ -34677,7 +34684,13 @@ def tab_telegram_notificaciones(config):
                         else:
                             _ya_existian += 1
                     # Guardar suscriptores — formato compatible con _tg_notificar_asistencia
-                    _tg_guardar_subs(_subs_act)
+                    _guardado_ok = _tg_guardar_subs(_subs_act)
+                    if not _guardado_ok:
+                        st.error("🚨 CRÍTICO: los suscriptores NO se pudieron guardar "
+                                "en Google Sheets (falló la conexión). Aunque se "
+                                "detectaron correctamente, no van a recibir "
+                                "notificaciones porque no quedaron guardados de "
+                                "verdad. Vuelve a intentar en unos segundos.")
                     with open("telegram_subs_detalle.json","w",encoding="utf-8") as _fsd:
                         json.dump(_subs_act, _fsd, ensure_ascii=False, indent=2)
                     # Enviar mensaje de bienvenida a los nuevos suscriptores
@@ -34814,6 +34827,44 @@ lugar del DNI, escriba ese número de celular tal como se lo indiquen.
         st.markdown("1. El padre abre Telegram y escribe `/start [DNI]` al bot.")
         st.markdown("2. El admin hace clic en **Obtener nuevos suscriptores** en la pestaña Configurar Bot.")
         st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
+
+        st.markdown("---")
+        st.markdown("#### 🔍 Diagnóstico: revisar un suscriptor específico")
+        st.caption("Escribe el DNI de un estudiante para ver exactamente qué "
+                  "sabe el sistema de su suscripción, y probar un envío real "
+                  "(sin que el resultado se pierda en silencio).")
+        _dni_diag = st.text_input("DNI del estudiante a revisar:", key="tg_diag_dni")
+        if _dni_diag and st.button("🔍 Revisar", key="tg_diag_btn"):
+            _subs_diag = _tg_cargar_subs()
+            _dni_norm_diag = normalizar_codigo_estudiante(_dni_diag) or _dni_diag.strip()
+            _entrada_diag = _subs_diag.get(_dni_norm_diag) or _subs_diag.get(_dni_diag.strip())
+            if not _entrada_diag:
+                st.error(f"❌ No hay ningún suscriptor guardado para el DNI "
+                        f"«{_dni_diag}» (buscado como «{_dni_norm_diag}»). "
+                        f"El padre necesita escribir /start {_dni_diag} al bot, "
+                        f"y luego el admin debe apretar 'Obtener nuevos "
+                        f"suscriptores' en la pestaña Configurar Bot.")
+            else:
+                _chat_id_diag = (_entrada_diag if isinstance(_entrada_diag, (int, str))
+                                 else _entrada_diag.get("chat_id", ""))
+                st.success(f"✅ Sí está suscrito — Chat ID: `{_chat_id_diag}`, "
+                          f"nombre registrado: "
+                          f"«{_entrada_diag.get('nombre_padre', '?') if isinstance(_entrada_diag, dict) else '?'}»")
+                if token and _chat_id_diag:
+                    if st.button("📤 Enviar mensaje de prueba AHORA (resultado real, sin ocultar errores)",
+                                key="tg_diag_test_send"):
+                        with st.spinner("Enviando…"):
+                            _resultado_envio = _tg_llamar_api(
+                                "sendMessage", token,
+                                {"chat_id": str(_chat_id_diag),
+                                 "text": "🔔 Mensaje de prueba desde YACHAY PRO — "
+                                        "si ves esto, las notificaciones funcionan bien."})
+                        if _resultado_envio.get("ok"):
+                            st.success("✅ Telegram confirmó la entrega. Revisa el "
+                                     "celular del padre — debería haber llegado.")
+                        else:
+                            st.error(f"❌ Telegram rechazó el envío. Motivo exacto: "
+                                    f"{_resultado_envio.get('description', _resultado_envio.get('error', 'desconocido'))}")
 
 
 def tab_musica_eventos(config):
