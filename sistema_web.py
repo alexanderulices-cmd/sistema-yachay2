@@ -4355,6 +4355,26 @@ def procesar_examen(image_bytes, num_preguntas):
 # PANTALLA DE LOGIN (Usuario + Contraseña — SEGURO)
 # ================================================================
 
+def _passwords_coinciden(escrita, guardada):
+    """Compara contraseñas de forma segura contra un problema real de
+    Google Sheets: si la contraseña es solo números (ej. '0567'),
+    Sheets a veces la guarda como número y le borra el cero inicial
+    ('567'), o la convierte a decimal ('567.0'). La comparación exacta
+    de texto falla en esos casos aunque la contraseña sea la correcta.
+    Si ambas son puramente numéricas, también se comparan como enteros
+    para que ese problema de formato no bloquee el ingreso."""
+    escrita = str(escrita).strip()
+    guardada = str(guardada).strip()
+    if escrita == guardada:
+        return True
+    if escrita.isdigit() and guardada.replace(".0", "").isdigit():
+        try:
+            return int(escrita) == int(float(guardada))
+        except (ValueError, OverflowError):
+            return False
+    return False
+
+
 def tab_portal_estudiante():
     """Portal del estudiante: Academia Yachay Virtual.
     Fase 1: login (DNI + PIN) y panel básico con sus datos y grupo.
@@ -4514,7 +4534,7 @@ def tab_portal_estudiante():
                 if datos_credencial is None or not datos_credencial['activo']:
                     st.error("Usuario no encontrado o inactivo. Pide a tu "
                              "profesor que verifique tu acceso.")
-                elif password_ingresada != datos_credencial['password']:
+                elif not _passwords_coinciden(password_ingresada, datos_credencial['password']):
                     st.error("Contraseña incorrecta.")
                 else:
                     st.session_state['_portal_est_usuario'] = datos_credencial['usuario']
@@ -6787,6 +6807,9 @@ def _tab_importar_directorio(config):
                         "celular": str(r.get("Celular_Apoderado", "")).strip(),
                         "apoderado": str(r.get("Apoderado", "")).strip(),
                         "dni_apoderado": str(r.get("DNI_Apoderado", "")).strip(),
+                        "grado": str(r.get("Grado", "")).strip(),
+                        "seccion": str(r.get("Seccion", "")).strip(),
+                        "nivel": str(r.get("Nivel", "")).strip(),
                     }
 
             def _normalizar_nombre(n):
@@ -6804,9 +6827,19 @@ def _tab_importar_directorio(config):
                     cambios = {}
                     if _normalizar_nombre(actual["nombre"]) != _normalizar_nombre(e["nombre"]):
                         cambios["nombre"] = (actual["nombre"], e["nombre"])
+                    # Grado/Sección/Nivel: se corrigen igual que el nombre —
+                    # cualquier diferencia real se marca (a diferencia de
+                    # celular/apoderado, el grado nunca deberia estar "vacio"
+                    # sin querer decir nada, asi que no se usa la regla de
+                    # "solo llenar si estaba vacio").
+                    for campo in ("grado", "seccion", "nivel"):
+                        valor_excel = _val_limpio(e[campo])
+                        valor_actual = _val_limpio(actual[campo])
+                        if valor_excel and _normalizar_nombre(valor_excel) != _normalizar_nombre(valor_actual):
+                            cambios[campo] = (valor_actual, valor_excel)
                     # Para celular/apoderado/dni_apoderado: solo cuenta como
                     # cambio si el Excel trae un dato NUEVO que antes estaba
-                    # vacio, o un dato DISTINTO al que ya habia — nunca se
+                    # vacio, o un dato DISTINto al que ya habia — nunca se
                     # borra un dato existente aunque el Excel venga vacio.
                     for campo in ("celular", "apoderado", "dni_apoderado"):
                         valor_excel = _val_limpio(e[campo])
@@ -6847,7 +6880,8 @@ def _tab_importar_directorio(config):
                            use_container_width=True, hide_index=True)
 
         _ETIQUETAS_CAMPO = {"nombre": "Nombre", "celular": "Celular",
-                            "apoderado": "Apoderado", "dni_apoderado": "DNI Apoderado"}
+                            "apoderado": "Apoderado", "dni_apoderado": "DNI Apoderado",
+                            "grado": "Grado", "seccion": "Sección", "nivel": "Nivel"}
         if correcciones:
             with st.expander(f"✏️ Ver los {len(correcciones)} estudiantes con datos "
                             f"nuevos o corregidos", expanded=True):
@@ -6872,7 +6906,8 @@ def _tab_importar_directorio(config):
                     # 1. Aplicar actualizaciones campo por campo (el DNI del
                     # estudiante, es decir su codigo de barras, nunca se toca)
                     _MAPA_COL = {"nombre": "Nombre", "celular": "Celular_Apoderado",
-                                "apoderado": "Apoderado", "dni_apoderado": "DNI_Apoderado"}
+                                "apoderado": "Apoderado", "dni_apoderado": "DNI_Apoderado",
+                                "grado": "Grado", "seccion": "Seccion", "nivel": "Nivel"}
                     for c in correcciones:
                         mask = df_actual["DNI"].astype(str).str.strip() == c["dni"]
                         for campo, (_viejo, nuevo) in c["cambios"].items():
@@ -12858,6 +12893,37 @@ def tab_modo_kiosco():
             st.session_state['_modo_kiosco'] = False
             st.rerun()
 
+    with st.expander("🔊 Configurar sonido de asistencia (opcional)"):
+        _cfg_sonido = _tg_gs_get('kiosco_sonido') or {}
+        _drive_id_sonido = _cfg_sonido.get('drive_file_id')
+        if _drive_id_sonido:
+            st.caption(f"✅ Sonido configurado: «{_cfg_sonido.get('nombre', 'sin nombre')}»")
+        else:
+            st.caption("Sin sonido configurado todavía. Sube un MP3 corto "
+                      "(un timbre, campanita, etc.) — se guarda en la misma "
+                      "carpeta compartida de Drive que ya usas para Música "
+                      "para Eventos.")
+        _archivo_sonido = st.file_uploader(
+            "Subir/cambiar sonido (MP3):", type=["mp3"], key="kiosco_sonido_upload")
+        if _archivo_sonido and st.button("💾 Guardar este sonido",
+                                         key="kiosco_sonido_guardar"):
+            gs_snd = _gs()
+            if gs_snd and gs_snd._carpeta_musica_id():
+                with st.spinner("Subiendo sonido…"):
+                    _fid = gs_snd.subir_cancion(
+                        f"KioscoSonido_{_archivo_sonido.name}",
+                        _archivo_sonido.read(), _archivo_sonido.type or "audio/mpeg")
+                if _fid:
+                    _tg_gs_set('kiosco_sonido', {
+                        'drive_file_id': _fid, 'nombre': _archivo_sonido.name})
+                    st.success("✅ Sonido guardado.")
+                    st.rerun()
+                else:
+                    st.error("No se pudo subir. Revisa la conexión con Drive.")
+            else:
+                st.error("Falta configurar la carpeta compartida de Drive "
+                        "(la misma de Música para Eventos).")
+
     # ── Asegurar que el indice de DNIs este cargado ────────────────
     _idx = st.session_state.get('_indice_dni', {})
     _idx_ts = st.session_state.get('_indice_dni_ts', 0)
@@ -12942,6 +13008,27 @@ def tab_modo_kiosco():
     _pend = st.session_state.pop('_kiosco_pendiente', None)
     if _pend:
         _registrar_asistencia_rapida(_pend)
+
+        # Sonido de confirmacion (si esta configurado) — se reproduce
+        # con audio embebido en base64 para que suene aunque la pagina
+        # se refresque de inmediato despues.
+        _cfg_snd_play = _tg_gs_get('kiosco_sonido') or {}
+        _fid_snd = _cfg_snd_play.get('drive_file_id')
+        if _fid_snd:
+            @st.cache_data(show_spinner=False, ttl=3600)
+            def _cargar_sonido_kiosco(file_id):
+                gs_local = _gs()
+                return gs_local.descargar_cancion(file_id) if gs_local else None
+
+            _bytes_sonido = _cargar_sonido_kiosco(_fid_snd)
+            if _bytes_sonido:
+                import base64 as _b64_kiosco
+                import streamlit.components.v1 as _comp_kiosco
+                _b64_snd = _b64_kiosco.b64encode(_bytes_sonido).decode()
+                _comp_kiosco.html(
+                    f'<audio autoplay><source src="data:audio/mp3;base64,'
+                    f'{_b64_snd}" type="audio/mp3"></audio>', height=0)
+
         st.rerun()
 
     # ── Ultimos registros (grande y legible desde lejos) ───────────
