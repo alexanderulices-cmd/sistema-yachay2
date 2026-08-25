@@ -6666,11 +6666,225 @@ def _gestion_usuarios_admin():
 # TAB: MATRÍCULA (Alumnos + Docentes)
 # ================================================================
 
+def _tab_importar_directorio(config):
+    """Sincroniza la matricula desde el archivo Excel del directorio
+    (una hoja por grado). Compara por DNI contra lo que ya esta en el
+    sistema: agrega los estudiantes nuevos y corrige nombres mal
+    escritos, PERO NUNCA toca el DNI de alguien que ya existe — el DNI
+    es el mismo codigo que ya tienen impreso en su carnet/sticker de
+    codigo de barras, cambiarlo invalidaria lo que ya tienen."""
+    import pandas as pd
+    import datetime as _dt_imp
+
+    st.subheader("📥 Sincronizar Directorio desde Excel")
+    st.caption(
+        "Sube el archivo de directorio (una hoja por grado, como "
+        "DIRECTORIO_YACHAY). El sistema compara con la matrícula actual: "
+        "agrega los estudiantes que falten y corrige nombres mal escritos "
+        "— **nunca cambia el DNI de alguien que ya está registrado**, "
+        "así que su código de barras ya impreso sigue funcionando igual."
+    )
+
+    MAPEO_HOJAS_DIRECTORIO = {
+        "INI-3": ("INICIAL", "Inicial 3 años", "Única"),
+        "INI-4": ("INICIAL", "Inicial 4 años", "Única"),
+        "INI-5": ("INICIAL", "Inicial 5 años", "Única"),
+        "1A-PRIM": ("PRIMARIA", "1° Primaria", "A"),
+        "1B-PRIM": ("PRIMARIA", "1° Primaria", "B"),
+        "2-PRIM": ("PRIMARIA", "2° Primaria", "Única"),
+        "3A-PRIM": ("PRIMARIA", "3° Primaria", "A"),
+        "3B-PRIM": ("PRIMARIA", "3° Primaria", "B"),
+        "4-PRIM": ("PRIMARIA", "4° Primaria", "Única"),
+        "5-PRIM": ("PRIMARIA", "5° Primaria", "Única"),
+        "6-PRIM": ("PRIMARIA", "6° Primaria", "Única"),
+        "1-SEC": ("SECUNDARIA", "1° Secundaria", "Única"),
+        "2-SEC": ("SECUNDARIA", "2° Secundaria", "Única"),
+        "3-SEC": ("SECUNDARIA", "3° Secundaria", "Única"),
+        "4-SEC": ("SECUNDARIA", "4° Secundaria", "Única"),
+        "5-SEC": ("SECUNDARIA", "5° Secundaria", "Única"),
+        "PREU-AB": ("PREUNIVERSITARIO", "GRUPO AB — CEPRE UNSAAC", "Única"),
+        "PREU-CD": ("PREUNIVERSITARIO", "GRUPO CD — CEPRE UNSAAC", "Única"),
+    }
+
+    archivo = st.file_uploader("Archivo Excel del directorio:", type=["xlsx"],
+                               key="dir_upload_archivo")
+
+    if archivo is not None and st.button("🔍 Analizar y comparar con la matrícula actual",
+                                         type="primary", use_container_width=True):
+        with st.spinner("Leyendo el archivo y comparando…"):
+            import openpyxl
+            try:
+                wb = openpyxl.load_workbook(archivo, data_only=True)
+            except Exception as e:
+                st.error(f"No se pudo abrir el archivo: {e}")
+                st.stop()
+
+            estudiantes_excel = []
+            problemas = []
+            for hoja_nombre, (nivel, grado, seccion) in MAPEO_HOJAS_DIRECTORIO.items():
+                if hoja_nombre not in wb.sheetnames:
+                    continue
+                ws = wb[hoja_nombre]
+                for fila in ws.iter_rows(min_row=4, max_row=ws.max_row, values_only=True):
+                    if len(fila) < 12:
+                        continue
+                    dni_raw, nombre_raw, celular_raw = fila[1], fila[2], fila[11]
+                    if not nombre_raw or not str(nombre_raw).strip():
+                        continue
+                    dni_limpio = str(dni_raw).strip() if dni_raw else ""
+                    if dni_limpio.endswith(".0"):
+                        dni_limpio = dni_limpio[:-2]
+                    if not dni_limpio.isdigit() or len(dni_limpio) != 8:
+                        problemas.append(f"Hoja {hoja_nombre}: «{nombre_raw}» "
+                                        f"tiene un DNI inválido ({dni_raw!r}) — no se procesó.")
+                        continue
+                    estudiantes_excel.append({
+                        "dni": dni_limpio,
+                        "nombre": str(nombre_raw).strip(),
+                        "nivel": nivel, "grado": grado, "seccion": seccion,
+                        "celular": str(celular_raw).strip() if celular_raw else "",
+                    })
+
+            # Comparar contra la matricula actual
+            df_actual = BaseDatos.cargar_matricula()
+            dni_actuales = {}
+            if not df_actual.empty and "DNI" in df_actual.columns:
+                for _, r in df_actual.iterrows():
+                    dni_actuales[str(r["DNI"]).strip()] = str(r.get("Nombre", "")).strip()
+
+            def _normalizar_nombre(n):
+                return " ".join(n.upper().split())
+
+            nuevos, correcciones, sin_cambios = [], [], []
+            for e in estudiantes_excel:
+                if e["dni"] not in dni_actuales:
+                    nuevos.append(e)
+                else:
+                    nombre_actual = dni_actuales[e["dni"]]
+                    if _normalizar_nombre(nombre_actual) != _normalizar_nombre(e["nombre"]):
+                        correcciones.append({**e, "nombre_actual": nombre_actual})
+                    else:
+                        sin_cambios.append(e)
+
+            st.session_state["dir_sync_resultado"] = {
+                "nuevos": nuevos, "correcciones": correcciones,
+                "sin_cambios": sin_cambios, "problemas": problemas,
+            }
+            st.rerun()
+
+    resultado = st.session_state.get("dir_sync_resultado")
+    if resultado:
+        nuevos = resultado["nuevos"]
+        correcciones = resultado["correcciones"]
+        sin_cambios = resultado["sin_cambios"]
+        problemas = resultado["problemas"]
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("🆕 Nuevos por agregar", len(nuevos))
+        c2.metric("✏️ Nombres para corregir", len(correcciones))
+        c3.metric("✅ Ya están bien", len(sin_cambios))
+
+        if problemas:
+            with st.expander(f"⚠️ {len(problemas)} fila(s) con problemas (no se procesan)"):
+                for p in problemas:
+                    st.caption(p)
+
+        if nuevos:
+            with st.expander(f"🆕 Ver los {len(nuevos)} estudiantes nuevos", expanded=True):
+                st.dataframe(pd.DataFrame(nuevos)[["dni", "nombre", "grado", "seccion"]],
+                           use_container_width=True, hide_index=True)
+
+        if correcciones:
+            with st.expander(f"✏️ Ver las {len(correcciones)} correcciones de nombre",
+                            expanded=True):
+                for c in correcciones:
+                    st.markdown(f"**DNI {c['dni']}**: "
+                              f"~~{c['nombre_actual']}~~ → **{c['nombre']}**")
+
+        if nuevos or correcciones:
+            st.markdown("---")
+            confirmar = st.checkbox(
+                "Confirmo que revisé los cambios de arriba y quiero aplicarlos",
+                key="dir_confirmar_cambios")
+            if st.button("✅ APLICAR CAMBIOS A LA MATRÍCULA", type="primary",
+                        disabled=not confirmar, use_container_width=True):
+                with st.spinner("Aplicando cambios…"):
+                    df_actual = BaseDatos.cargar_matricula()
+                    hoy_str = _dt_imp.datetime.now().strftime("%Y-%m-%d")
+
+                    # 1. Aplicar correcciones de nombre (el DNI no se toca)
+                    for c in correcciones:
+                        mask = df_actual["DNI"].astype(str).str.strip() == c["dni"]
+                        df_actual.loc[mask, "Nombre"] = c["nombre"]
+
+                    # 2. Agregar los nuevos estudiantes
+                    filas_nuevas = []
+                    for n in nuevos:
+                        filas_nuevas.append({
+                            "Nombre": n["nombre"], "DNI": n["dni"],
+                            "Nivel": n["nivel"], "Grado": n["grado"],
+                            "Seccion": n["seccion"], "Apoderado": "",
+                            "DNI_Apoderado": "", "Celular_Apoderado": n["celular"],
+                            "fecha_matricula": hoy_str,
+                        })
+                    if filas_nuevas:
+                        df_nuevas = pd.DataFrame(filas_nuevas)
+                        for col in df_actual.columns:
+                            if col not in df_nuevas.columns:
+                                df_nuevas[col] = ""
+                        df_actual = pd.concat([df_actual, df_nuevas], ignore_index=True)
+
+                    BaseDatos.guardar_matricula(df_actual)
+
+                st.success(f"✅ Listo: {len(nuevos)} estudiante(s) agregado(s), "
+                          f"{len(correcciones)} nombre(s) corregido(s).")
+                del st.session_state["dir_sync_resultado"]
+                st.session_state["_forzar_local"] = True
+                st.balloons()
+
+    # ── Últimos matriculados (para generar sus stickers aparte) ────
+    st.markdown("---")
+    st.markdown("#### 🆕 Últimos matriculados")
+    dias_atras = st.slider("Ver matriculados en los últimos ___ días:",
+                           1, 30, 5, key="dir_dias_recientes")
+    df_todos = BaseDatos.cargar_matricula()
+    if not df_todos.empty and "fecha_matricula" in df_todos.columns:
+        try:
+            fechas = pd.to_datetime(df_todos["fecha_matricula"], errors="coerce")
+            limite = _dt_imp.datetime.now() - _dt_imp.timedelta(days=dias_atras)
+            df_recientes = df_todos[fechas >= limite]
+        except Exception:
+            df_recientes = pd.DataFrame()
+    else:
+        df_recientes = pd.DataFrame()
+
+    if df_recientes.empty:
+        st.caption("No hay matriculados recientes con fecha registrada en ese rango.")
+    else:
+        st.write(f"**{len(df_recientes)}** estudiante(s) matriculado(s) en los "
+                f"últimos {dias_atras} días.")
+        st.dataframe(df_recientes[["Nombre", "DNI", "Grado", "Seccion"]],
+                    use_container_width=True, hide_index=True)
+        if st.button("🏷️ Generar stickers de código de barras (solo estos)",
+                    type="primary", use_container_width=True, key="btn_stickers_recientes"):
+            lista_st = [{"nombre": r["Nombre"], "dni": r["DNI"], "grado": r["Grado"]}
+                       for _, r in df_recientes.iterrows()]
+            with st.spinner("Generando etiquetas…"):
+                pdf_st = generar_stickers_codigo_barras(
+                    lista_st, config.get("anio", ""))
+            st.download_button(
+                "⬇️ Descargar stickers en PDF", data=pdf_st,
+                file_name=f"stickers_ultimos_{dias_atras}dias.pdf",
+                mime="application/pdf", use_container_width=True,
+                key="dl_stickers_recientes")
+
+
 def tab_matricula(config):
     st.header("📝 Matrícula")
-    tab_est, tab_doc, tab_lista, tab_pdf, tab_portal = st.tabs([
+    tab_est, tab_doc, tab_lista, tab_pdf, tab_portal, tab_import = st.tabs([
         "➕ Registrar Alumno", "DOCENTE Registrar Docente",
-        "📋 Listas", "⬇️ Registros PDF", "🖥️ Portal Virtual"
+        "📋 Listas", "⬇️ Registros PDF", "🖥️ Portal Virtual",
+        "📥 Importar Directorio"
     ])
 
     with tab_est:
@@ -7074,7 +7288,8 @@ def tab_matricula(config):
             else:
                 st.caption("Todavía no se ha creado ningún acceso.")
 
-
+    with tab_import:
+        _tab_importar_directorio(config)
 
 
 def _generar_pdf_acta_libros(config, grado, seccion, anio, tipo_texto, df_mat):
@@ -36031,10 +36246,20 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
     story = [
         P(ie.upper(), bold=True, size=13, align=TA_CENTER, sb=0, sa=2),
         P(f"UGEL {ugel}  |  Anio {anio}", size=9, align=TA_CENTER, sb=0, sa=8),
-        P("CARTA DE COMPROMISO DEL PADRE/MADRE DE FAMILIA", bold=True, size=12, align=TA_CENTER, sb=0, sa=10),
+        P("CARTA DE COMPROMISO DEL PADRE/MADRE DE FAMILIA", bold=True, size=12, align=TA_CENTER, sb=0, sa=4),
+        Table([[P(str(motivo or "COMPROMISO GENERAL").upper(), bold=True,
+                  size=14, align=TA_CENTER, sb=4, sa=4)]],
+              colWidths=[15.6*cm],
+              style=TableStyle([
+                  ('BOX', (0,0), (-1,-1), 1.4, colors.Color(0.1,0.2,0.5)),
+                  ('BACKGROUND', (0,0), (-1,-1), colors.Color(0.93,0.95,0.99)),
+                  ('TOPPADDING', (0,0), (-1,-1), 6),
+                  ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+              ])),
+        Spacer(1, 0.45*cm),
         P(f"Yo, <b>{apoderado or '___________________________________'}</b>, padre/madre/apoderado(a) "
           f"del/la estudiante <b>{alumno or '___________________________________'}</b> del grado "
-          f"<b>{grado}</b>, me comprometo voluntariamente a {texto_compromiso}."),
+          f"<b>{grado or '____________________'}</b>, me comprometo voluntariamente a {texto_compromiso}."),
         Spacer(1, 0.3*cm),
         P("Asimismo, me comprometo a: (1) Asistir a las reuniones de padres convocadas por la institucion; "
           "(2) Mantener comunicacion permanente con el docente tutor; (3) Apoyar desde el hogar el proceso "
