@@ -13143,8 +13143,11 @@ def tab_modo_kiosco():
     # ── Fondo elegante de toda la pantalla + tipografia refinada ────
     st.markdown("""
     <style>
-    div[data-testid="stAppViewContainer"] > .main {
-        background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    div[data-testid="stAppViewContainer"],
+    div[data-testid="stAppViewContainer"] > .main,
+    section[data-testid="stMain"],
+    .stApp {
+        background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0f172a 100%) !important;
     }
     div[data-testid="stTextInput"] input {
         font-size: 2rem !important;
@@ -13245,7 +13248,8 @@ def tab_modo_kiosco():
 
     # ── Ultimos registros (elegante, grande y legible desde lejos) ──
     st.markdown("""
-    <div style='color:#e2e8f0;font-size:1.3rem;font-weight:800;
+    <div style='background:#1e293b;color:#f1f5f9;font-size:1.3rem;
+                font-weight:800;padding:10px 16px;border-radius:10px;
                 margin:24px 0 12px;letter-spacing:1px;'>
         📋 Últimos registros
     </div>
@@ -13257,9 +13261,9 @@ def tab_modo_kiosco():
 
     if not _asis_hoy:
         st.markdown("""
-        <div style='background:rgba(255,255,255,0.08);border-radius:12px;
-                    padding:16px;color:#cbd5e1;text-align:center;
-                    font-size:1.05rem;'>
+        <div style='background:#1e293b;border-radius:12px;
+                    padding:16px;color:#e2e8f0;text-align:center;
+                    font-size:1.05rem;border:1px solid #334155;'>
             Todavía no hay registros hoy. Escanee el primer código.
         </div>
         """, unsafe_allow_html=True)
@@ -13308,9 +13312,8 @@ def tab_modo_kiosco():
                            if _es_el_mas_reciente else "")
             st.markdown(f"""
             <div class='{_clase_anim}' style='border-left:6px solid {_color_est};
-                        background:rgba(255,255,255,0.08);
-                        border-radius:10px;padding:14px 18px;margin-bottom:8px;
-                        backdrop-filter:blur(4px);'>
+                        background:#1e293b;border:1px solid #334155;
+                        border-radius:10px;padding:14px 18px;margin-bottom:8px;'>
                 {_marca_nueva}<span style='font-size:1.25rem;font-weight:700;color:#f1f5f9;'>{_nombre}</span>
                 <span style='float:right;font-size:1.1rem;color:#cbd5e1;'>
                     {_hora_reg} · {_estado}
