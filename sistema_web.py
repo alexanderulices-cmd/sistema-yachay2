@@ -13126,6 +13126,18 @@ def tab_modo_kiosco():
 
     # ── Frase estoica del dia (rota una vez por dia, entre las 100) ─
     _dia_del_anio = _ahora.timetuple().tm_yday
+
+    def _fecha_larga_espanol(fecha):
+        """Formatea la fecha en español manualmente — no depende del
+        idioma configurado en el servidor (que a veces está en inglés
+        y hace que salga 'Tuesday' en vez de 'Martes')."""
+        _dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes",
+                "Sábado", "Domingo"]
+        _meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
+                 "julio", "agosto", "septiembre", "octubre", "noviembre",
+                 "diciembre"]
+        return (f"{_dias[fecha.weekday()]}, {fecha.day} de "
+               f"{_meses[fecha.month - 1]} de {fecha.year}")
     _frase_texto, _frase_autor = FRASES_ESTOICAS[_dia_del_anio % len(FRASES_ESTOICAS)]
 
     # ── Fondo elegante de toda la pantalla + tipografia refinada ────
@@ -13163,7 +13175,7 @@ def tab_modo_kiosco():
             {_ahora.strftime('%H:%M')}
         </div>
         <div style='font-size:1.3rem;opacity:0.92;font-weight:600;'>
-            {_ahora.strftime('%A, %d de %B de %Y').capitalize()}
+            {_fecha_larga_espanol(_ahora)}
         </div>
         <div style='font-size:1rem;opacity:0.8;margin-top:2px;'>
             Puntual hasta {_limite_txt}
@@ -34145,6 +34157,8 @@ def main():
         st.stop()
 
     # ── Modo Kiosco (pantalla completa para marcar en la puerta) ───
+    # Requiere login de personal a proposito — sin esto, cualquiera con
+    # el enlace podria marcar asistencia sin control.
     if st.session_state.get('_modo_kiosco'):
         tab_modo_kiosco()
         st.stop()
