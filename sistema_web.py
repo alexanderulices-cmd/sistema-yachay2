@@ -13170,6 +13170,14 @@ def tab_modo_kiosco():
     </style>
     """, unsafe_allow_html=True)
 
+    # ── Saludo grande segun la hora del dia ─────────────────────────
+    if _ahora.hour < 12:
+        _saludo_dia = "☀️ ¡Que tengas una linda mañana!"
+    elif _ahora.hour < 19:
+        _saludo_dia = "🌤️ ¡Que tengas una linda tarde!"
+    else:
+        _saludo_dia = "🌙 ¡Que tengas una linda noche!"
+
     # ── Encabezado: reloj gigante + fecha + frase estoica ───────────
     st.markdown(f"""
     <div style='background:linear-gradient(135deg,{_color1},{_color2});
@@ -13192,14 +13200,19 @@ def tab_modo_kiosco():
         <div style='font-size:1rem;opacity:0.8;margin-top:2px;'>
             Puntual hasta {_limite_txt}
         </div>
-        <div style='margin-top:22px;padding-top:18px;
+        <div style='font-size:1.9rem;font-weight:800;margin-top:20px;
+                    text-shadow:0 3px 12px rgba(0,0,0,0.2);'>
+            {_saludo_dia}
+        </div>
+        <div style='margin-top:20px;padding-top:20px;
                     border-top:1px solid rgba(255,255,255,0.25);'>
-            <div style='font-size:1.15rem;font-style:italic;font-weight:500;
-                        line-height:1.5;max-width:900px;margin:0 auto;'>
+            <div style='font-size:1.6rem;font-style:italic;font-weight:600;
+                        line-height:1.5;max-width:1000px;margin:0 auto;
+                        text-shadow:0 2px 10px rgba(0,0,0,0.2);'>
                 «{_frase_texto}»
             </div>
-            <div style='font-size:0.95rem;opacity:0.85;margin-top:8px;
-                        letter-spacing:1px;'>
+            <div style='font-size:1.15rem;opacity:0.9;margin-top:10px;
+                        letter-spacing:1px;font-weight:600;'>
                 — {_frase_autor}
             </div>
         </div>
