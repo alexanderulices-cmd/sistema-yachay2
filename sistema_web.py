@@ -13147,13 +13147,22 @@ def tab_modo_kiosco():
         background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
     }
     div[data-testid="stTextInput"] input {
-        font-size: 2.1rem !important;
-        height: 74px !important;
+        font-size: 2rem !important;
+        height: 76px !important;
         text-align: center !important;
         font-weight: 700 !important;
-        letter-spacing: 4px !important;
+        letter-spacing: 1px !important;
         border-radius: 14px !important;
         border: 3px solid #94a3b8 !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+    div[data-testid="stTextInput"] input::placeholder {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 1px !important;
+        color: #64748b !important;
+        opacity: 1 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -13205,7 +13214,7 @@ def tab_modo_kiosco():
             st.session_state['kiosco_input'] = ''
 
     st.text_input("Escanee el código", key="kiosco_input",
-                  placeholder="👉 ESCANEE AQUÍ",
+                  placeholder="👉 Escanee o escriba su código",
                   on_change=_on_scan_kiosco,
                   label_visibility="collapsed")
 
