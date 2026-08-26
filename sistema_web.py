@@ -13218,6 +13218,25 @@ def tab_modo_kiosco():
                   on_change=_on_scan_kiosco,
                   label_visibility="collapsed")
 
+    # Desactivar el autocompletado del navegador en este campo — sin
+    # esto, Chrome sugiere nombres/textos escritos antes, lo cual
+    # distrae durante el escaneo y no se ve profesional en un kiosco.
+    import streamlit.components.v1 as _comp_autocomplete
+    _comp_autocomplete.html("""
+    <script>
+    (function() {
+        var doc = window.parent.document;
+        var campos = doc.querySelectorAll('input[placeholder*="Escanee o escriba"]');
+        campos.forEach(function(c) {
+            c.setAttribute('autocomplete', 'off');
+            c.setAttribute('autocorrect', 'off');
+            c.setAttribute('autocapitalize', 'off');
+            c.setAttribute('spellcheck', 'false');
+        });
+    })();
+    </script>
+    """, height=0)
+
     # ── Procesar el escaneo pendiente ──────────────────────────────
     _pend = st.session_state.pop('_kiosco_pendiente', None)
     if _pend:
@@ -13253,15 +13272,46 @@ def tab_modo_kiosco():
             _estado = _v.get('estado', _v.get('Estado', ''))
             if _nombre:
                 _items.append((_nombre, _hora_reg, _estado))
-        for _nombre, _hora_reg, _estado in _items[-6:][::-1]:
+        st.markdown("""
+        <style>
+        @keyframes kioscoPopIn {
+            0%   { transform: scale(0.85); opacity: 0; }
+            60%  { transform: scale(1.03); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes kioscoBrillo {
+            0%   { box-shadow: 0 0 0px rgba(34,197,94,0.0); }
+            40%  { box-shadow: 0 0 28px rgba(34,197,94,0.75); }
+            100% { box-shadow: 0 0 10px rgba(34,197,94,0.25); }
+        }
+        .kiosco-recien-registrado {
+            animation: kioscoPopIn 0.5s ease-out, kioscoBrillo 1.4s ease-out;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        for _i_reg, (_nombre, _hora_reg, _estado) in enumerate(_items[-6:][::-1]):
             _color_est = ("#22c55e" if "untual" in str(_estado)
                          else "#f59e0b" if "ard" in str(_estado) else "#94a3b8")
+            # Solo animar el de arriba, y solo si es realmente distinto al
+            # ultimo que ya se mostro — sin esto, la animacion se repetiria
+            # en cada auto-refresco del reloj aunque nadie haya escaneado.
+            _es_el_mas_reciente = False
+            if _i_reg == 0:
+                _id_actual = f"{_nombre}|{_hora_reg}"
+                if st.session_state.get("_kiosco_ultimo_animado") != _id_actual:
+                    _es_el_mas_reciente = True
+                    st.session_state["_kiosco_ultimo_animado"] = _id_actual
+            _clase_anim = "kiosco-recien-registrado" if _es_el_mas_reciente else ""
+            _marca_nueva = ("<span style='background:#22c55e;color:white;"
+                           "font-size:0.8rem;font-weight:800;padding:3px 10px;"
+                           "border-radius:20px;margin-right:10px;'>✓ REGISTRADO</span>"
+                           if _es_el_mas_reciente else "")
             st.markdown(f"""
-            <div style='border-left:6px solid {_color_est};
+            <div class='{_clase_anim}' style='border-left:6px solid {_color_est};
                         background:rgba(255,255,255,0.08);
                         border-radius:10px;padding:14px 18px;margin-bottom:8px;
                         backdrop-filter:blur(4px);'>
-                <span style='font-size:1.25rem;font-weight:700;color:#f1f5f9;'>{_nombre}</span>
+                {_marca_nueva}<span style='font-size:1.25rem;font-weight:700;color:#f1f5f9;'>{_nombre}</span>
                 <span style='float:right;font-size:1.1rem;color:#cbd5e1;'>
                     {_hora_reg} · {_estado}
                 </span>
