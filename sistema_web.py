@@ -13113,16 +13113,30 @@ def tab_modo_kiosco():
 
     if _mins_actual < 8 * 60 + 5:
         _titulo_modo, _color1, _color2, _icono = "ENTRADA MAÑANA", "#15803d", "#22c55e", "🌅"
+        _auto_modo = "Entrada"
     elif _mins_actual < 13 * 60:
         _titulo_modo, _color1, _color2, _icono = "REGISTRO TARDANZA", "#b45309", "#f59e0b", "⏰"
+        _auto_modo = "Entrada"
     elif _mins_actual < HORA_ENTRADA_TARDE_MIN:
         _titulo_modo, _color1, _color2, _icono = "SALIDA MAÑANA", "#1d4ed8", "#3b82f6", "🔵"
+        _auto_modo = "Salida"
     elif _mins_actual < 15 * 60 + 10:
         _titulo_modo, _color1, _color2, _icono = "ENTRADA TARDE", "#7c3aed", "#a855f7", "🌤️"
+        _auto_modo = "Entrada"
     elif _mins_actual < 18 * 60 + 40:
         _titulo_modo, _color1, _color2, _icono = "TURNO TARDE", "#be185d", "#ec4899", "🎓"
+        _auto_modo = "Salida"
     else:
         _titulo_modo, _color1, _color2, _icono = "SALIDA TARDE", "#334155", "#64748b", "🌙"
+        _auto_modo = "Salida"
+
+    # IMPORTANTE: _registrar_asistencia_rapida() decide Entrada/Salida
+    # leyendo esta variable de sesion — sin fijarla aqui, el kiosco
+    # siempre quedaba en 'Entrada' (su valor por defecto) sin importar
+    # la hora real, y los registros posteriores fallaban en silencio
+    # (el aviso de 'ya registrado' desaparecia al instante por el
+    # refresco automatico, dando la sensacion de que no pasaba nada).
+    st.session_state['tipo_asistencia'] = _auto_modo
 
     # ── Frase estoica del dia (rota una vez por dia, entre las 100) ─
     _dia_del_anio = _ahora.timetuple().tm_yday
@@ -13256,8 +13270,47 @@ def tab_modo_kiosco():
     # ── Procesar el escaneo pendiente ──────────────────────────────
     _pend = st.session_state.pop('_kiosco_pendiente', None)
     if _pend:
+        _dni_norm_kiosco = normalizar_codigo_estudiante(_pend) or str(_pend).strip()
+        try:
+            _antes = dict(BaseDatos.obtener_asistencias_hoy().get(_dni_norm_kiosco, {}))
+        except Exception:
+            _antes = {}
+
         _registrar_asistencia_rapida(_pend)
+
+        st.session_state['_asis_invalidar'] = True
+        st.session_state.pop('_cache_asis_hoy', None)
+        try:
+            _despues = dict(BaseDatos.obtener_asistencias_hoy().get(_dni_norm_kiosco, {}))
+        except Exception:
+            _despues = {}
+
+        if _despues == _antes:
+            # No se agrego nada nuevo — el registro fue rechazado (ya
+            # tenia entrada/salida hoy, o el codigo no existe). Guardamos
+            # un aviso que SI se alcanza a leer, en vez de un st.warning()
+            # que desaparece al instante con el refresco automatico.
+            _nombre_aviso = None
+            _idx_aviso = st.session_state.get('_indice_dni', {})
+            _d_aviso = _idx_aviso.get(_dni_norm_kiosco)
+            if _d_aviso:
+                _nombre_aviso = _d_aviso.get('Nombre', _d_aviso.get('nombre'))
+            if _nombre_aviso:
+                st.session_state['_kiosco_aviso'] = (
+                    f"⚠️ {_nombre_aviso}: este código ya fue registrado hoy "
+                    f"para este turno, o le falta registrar el paso "
+                    f"anterior (ej. la salida antes de una nueva entrada).")
+            else:
+                st.session_state['_kiosco_aviso'] = (
+                    f"❌ El código «{_pend}» no está en la matrícula. "
+                    f"Pide a un docente/admin que lo revise.")
+        else:
+            st.session_state.pop('_kiosco_aviso', None)
         st.rerun()
+
+    _aviso_pendiente = st.session_state.pop('_kiosco_aviso', None)
+    if _aviso_pendiente:
+        st.warning(_aviso_pendiente)
 
     # ── Ultimos registros (elegante, grande y legible desde lejos) ──
     st.markdown("""
