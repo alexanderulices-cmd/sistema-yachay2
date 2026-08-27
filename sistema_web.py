@@ -1918,7 +1918,16 @@ class BaseDatos:
                                 ws_cfg.append_row(['asistencias_json', _asis_str])
                     except Exception: pass
             except Exception: pass
-        _iniciar_hilo(_sync_bg)
+        # IMPORTANTE: se llama de forma SINCRONA (esperando a que termine),
+        # no como hilo en segundo plano. Antes usaba un hilo 'daemon', que
+        # en Python se mata de inmediato si el script principal termina
+        # antes — y como el kiosco llama a st.rerun() casi al instante
+        # despues de guardar localmente, el hilo casi nunca alcanzaba a
+        # terminar de mandar el registro a Google Sheets/Drive, perdiendo
+        # el historial en cada redeploy (que borra el archivo local).
+        # Cuesta un poco mas de tiempo por registro, pero garantiza que
+        # de verdad quede guardado.
+        _sync_bg()
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -6660,6 +6669,7 @@ def _gestion_usuarios_admin():
         # Solo docentes necesitan grado y nivel
         ne_nivel = "PRIMARIA"
         ne_grado = "N/A"
+        _dni_actual_edit = (datos_edit.get('docente_info') or {}).get('dni', '')
         if ne_rol == "docente":
             niveles_opciones = ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO", "TODOS"]
             nivel_actual = datos_edit.get('docente_info', {}).get('nivel', 'PRIMARIA') if datos_edit.get('docente_info') else 'PRIMARIA'
@@ -6674,8 +6684,14 @@ def _gestion_usuarios_admin():
             else:
                 grados_opts = ["N/A"] + NIVELES_GRADOS.get(ne_nivel, []) + ["ALL_SECUNDARIA"]
             ne_grado = st.selectbox("Grado asignado:", grados_opts, key="ne_grado")
+            ne_dni = st.text_input("🆔 DNI:", value=_dni_actual_edit, key="ne_dni",
+                                   help="Para que aparezca en el kiosco de asistencia")
         else:
             st.caption(f"🔓 **{ne_rol.title()}** tiene acceso completo (sin grado específico)")
+            ne_dni = st.text_input(
+                "🆔 DNI:", value=_dni_actual_edit, key="ne_dni_otros",
+                help="IMPORTANTE: sin esto, no podrá marcar asistencia en "
+                     "el Modo Kiosco — quedará solo con acceso de login.")
         
         c1, c2 = st.columns(2)
         with c1:
@@ -6683,16 +6699,37 @@ def _gestion_usuarios_admin():
                 usuarios[edit_usr]['label'] = ne_label
                 usuarios[edit_usr]['password'] = ne_pass
                 usuarios[edit_usr]['rol'] = ne_rol
+                dni_limpio_edit = ne_dni.strip()
                 if ne_rol == "docente":
-                    # Preservar DNI existente o intentar resolverlo
-                    old_di = datos_edit.get('docente_info') or {}
-                    dni_doc = old_di.get('dni', '')
-                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel, "dni": dni_doc}
+                    di = {"label": ne_label, "grado": ne_grado, "nivel": ne_nivel, "dni": dni_limpio_edit}
                     usuarios[edit_usr]['docente_info'] = di
+                elif dni_limpio_edit:
+                    # Directivo/auxiliar CON dni: se guarda igual, y ademas
+                    # se sincroniza a la lista de docentes/personal para
+                    # que el kiosco de asistencia lo pueda encontrar por
+                    # su DNI (antes esto se perdia por completo).
+                    usuarios[edit_usr]['docente_info'] = {
+                        "label": ne_label, "grado": "N/A",
+                        "nivel": "PRIMARIA", "dni": dni_limpio_edit}
+                    try:
+                        BaseDatos.registrar_docente({
+                            'Nombre': ne_label.strip().upper(), 'DNI': dni_limpio_edit,
+                            'Cargo': ne_rol.title(), 'Especialidad': '',
+                            'Celular': '', 'Grado_Asignado': 'N/A',
+                            'Email': '', 'Nivel': 'PRIMARIA', 'Areas': '',
+                        })
+                    except Exception as _e_sync_dir:
+                        st.warning(f"⚠️ Cuenta guardada, pero no se pudo "
+                                  f"sincronizar al kiosco de asistencia: "
+                                  f"{_e_sync_dir}")
                 else:
                     usuarios[edit_usr]['docente_info'] = None
                 guardar_usuarios(usuarios)
                 st.success(f"✅ {edit_usr} actualizado")
+                if ne_rol != "docente" and dni_limpio_edit:
+                    st.caption("🔔 Su DNI también quedó agregado a la lista "
+                              "de personal, ya puede marcar asistencia en "
+                              "el kiosco.")
                 st.rerun()
         with c2:
             if st.button("🗑️ Eliminar", key="btn_del_usr", type="primary"):
