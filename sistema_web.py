@@ -6432,6 +6432,51 @@ def configurar_sidebar():
                 st.caption("⚠️ **IMPORTANTE:** Streamlit Cloud puede borrar "
                            "tus datos. Haz backup frecuentemente.")
                 st.markdown("---")
+                st.markdown("**🔧 MIGRAR NOTAS ANTIGUAS** (usar solo una vez)")
+                st.caption("Antes del 27/08/2026, las notas se guardaban en "
+                          "un archivo distinto al que el sistema usa ahora "
+                          "para mostrarlas — por eso 'Boletas' y otras "
+                          "partes mostraban 'no hay resultados'. Este botón "
+                          "junta lo que haya en el archivo antiguo con el "
+                          "nuevo, sin duplicar nada.")
+                if st.button("🔧 Migrar notas antiguas ahora", key="btn_migrar_notas"):
+                    with st.spinner("Migrando…"):
+                        _migradas = 0
+                        try:
+                            _antiguas = []
+                            if Path('resultados.json').exists():
+                                with open('resultados.json', 'r', encoding='utf-8') as _fm:
+                                    _antiguas = json.load(_fm)
+                                if isinstance(_antiguas, dict):
+                                    _tmp_m = []
+                                    for _v in _antiguas.values():
+                                        if isinstance(_v, list):
+                                            _tmp_m.extend(_v)
+                                    _antiguas = _tmp_m
+                            _actuales = BaseDatos.cargar_todos_resultados()
+                            _claves_actuales = {
+                                (str(r.get('dni', '')), str(r.get('fecha', '')),
+                                 str(r.get('titulo', '')), str(r.get('periodo', '')))
+                                for r in _actuales}
+                            for _r in _antiguas:
+                                if not isinstance(_r, dict):
+                                    continue
+                                _clave = (str(_r.get('dni', '')), str(_r.get('fecha', '')),
+                                         str(_r.get('titulo', '')), str(_r.get('periodo', '')))
+                                if _clave not in _claves_actuales:
+                                    _actuales.append(_r)
+                                    _claves_actuales.add(_clave)
+                                    _migradas += 1
+                            if _migradas > 0:
+                                with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as _fw:
+                                    json.dump(_actuales, _fw, ensure_ascii=False, indent=2, default=str)
+                                _sync_resultados_a_gs()
+                            st.success(f"✅ {_migradas} registro(s) de notas recuperado(s) "
+                                     f"y agregado(s). Ya deberían verse en Boletas y "
+                                     f"en el Historial.")
+                        except Exception as _e_mig:
+                            st.error(f"No se pudo migrar: {_e_mig}")
+                st.markdown("---")
                 st.markdown("**📥 DESCARGAR BACKUP:**")
                 if st.button("💾 CREAR BACKUP AHORA", type="primary",
                              use_container_width=True, key="btn_backup"):
@@ -22398,18 +22443,14 @@ AREAS_MINEDU = {
     ]
 }
 
-PERIODOS_EVALUACION = [
-    'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4',
-    'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8',
-    'Semana 9', 'Semana 10', 'Semana 11', 'Semana 12',
-    'Semana 13', 'Semana 14', 'Semana 15', 'Semana 16',
-    'Semana 17', 'Semana 18', 'Semana 19', 'Semana 20',
-    'Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
-    'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
-    'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
-    'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
-    'Reforzamiento Pre-U',
-]
+PERIODOS_EVALUACION = (
+    [f'Semana {i}' for i in range(1, 46)] +
+    ['Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
+     'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
+     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
+     'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
+     'Reforzamiento Pre-U']
+)
 BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 
 # ================================================================
@@ -22777,13 +22818,13 @@ def generar_registro_bimestral_pdf(grado, seccion, anio, estudiantes_df,
 # ================================================================
 
 def _sync_resultados_a_gs():
-    """Sincroniza resultados.json a Google Sheets"""
+    """Sincroniza resultados_examenes.json a Google Sheets."""
     try:
         gs = _gs()
         if not gs:
             return
-        if Path('resultados.json').exists():
-            with open('resultados.json', 'r', encoding='utf-8') as f:
+        if Path(ARCHIVO_RESULTADOS).exists():
+            with open(ARCHIVO_RESULTADOS, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             ws = gs._get_hoja('config')
             if ws:
@@ -23312,8 +23353,8 @@ def _restaurar_datos_desde_gs():
                     with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
                         f.write(val)
                     restaurados += 1
-                elif key == 'resultados_json' and not Path('resultados.json').exists():
-                    with open('resultados.json', 'w', encoding='utf-8') as f:
+                elif key == 'resultados_json' and not Path(ARCHIVO_RESULTADOS).exists():
+                    with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
                         f.write(val)
                     restaurados += 1
                 elif key == 'config_horario' and not Path('config_horario.json').exists():
@@ -24205,7 +24246,7 @@ def tab_registrar_notas(config):
                                     'tipo':             'diagnostico',
                                 }
                                 resultados_act.append(reg_d)
-                            with open('resultados.json', 'w', encoding='utf-8') as _fr:
+                            with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as _fr:
                                 json.dump(resultados_act, _fr,
                                           ensure_ascii=False, indent=2, default=str)
                         except Exception:
@@ -24580,9 +24621,9 @@ def tab_registrar_notas(config):
                         # 1. Historial evaluaciones (JSON + GSheets en una llamada)
                         _guardar_historial_evaluaciones(hist_cl)
 
-                        # 2. resultados.json — construir lista completa de una vez
+                        # 2. resultados_examenes.json — construir lista completa de una vez
                         try:
-                            _res_path = 'resultados.json'
+                            _res_path = ARCHIVO_RESULTADOS
                             _res_act = []
                             if Path(_res_path).exists():
                                 with open(_res_path,'r',encoding='utf-8') as _fr2:
@@ -25129,10 +25170,10 @@ def tab_registrar_notas(config):
                                 'promedio_general': data_nota['promedio'],
                                 '_docente': usuario
                             }
-                            # Guardar en resultados.json
+                            # Guardar en resultados_examenes.json
                             resultados_actuales = BaseDatos.cargar_todos_resultados()
                             resultados_actuales.append(reg)
-                            with open('resultados.json', 'w', encoding='utf-8') as f:
+                            with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
                                 json.dump(resultados_actuales, f, ensure_ascii=False, indent=2)
                     except Exception:
                         pass
@@ -29242,7 +29283,7 @@ def _plk_guardar_en_reportes(quiz_data, sesion_id):
                 'tipo': 'qaway'
             }
             resultados.append(reg)
-        with open('resultados.json', 'w', encoding='utf-8') as f:
+        with open(ARCHIVO_RESULTADOS, 'w', encoding='utf-8') as f:
             json.dump(resultados, f, ensure_ascii=False, indent=2, default=str)
         return True
     except Exception:
