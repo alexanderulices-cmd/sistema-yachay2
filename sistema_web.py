@@ -13364,6 +13364,196 @@ def _tab_reconocimientos(config):
             st.markdown("---")
 
 
+def _letra_nota_boleta(n):
+    if n >= 18: return 'AD'
+    elif n >= 14: return 'A'
+    elif n >= 11: return 'B'
+    else: return 'C'
+
+
+def _calcular_boletas_grado(grado, periodo):
+    """Junta todos los resultados de resultados.json para un grado y
+    periodo (ej. 'Semana 4'), agrupados por estudiante. Si un area tiene
+    varias notas en la misma semana (mas de una evaluacion), se promedia."""
+    todos = BaseDatos.cargar_todos_resultados()
+    por_estudiante = {}
+    for r in todos:
+        if str(r.get('grado', '')).strip() != str(grado).strip():
+            continue
+        if str(r.get('periodo', '')).strip() != str(periodo).strip():
+            continue
+        dni = str(r.get('dni', '')).strip()
+        if not dni:
+            continue
+        if dni not in por_estudiante:
+            por_estudiante[dni] = {'nombre': r.get('nombre', ''), 'areas': {}}
+        for a in r.get('areas', []):
+            nombre_area = a.get('nombre', '')
+            nota_area = a.get('nota', 0)
+            if nombre_area not in por_estudiante[dni]['areas']:
+                por_estudiante[dni]['areas'][nombre_area] = []
+            por_estudiante[dni]['areas'][nombre_area].append(nota_area)
+
+    resultado = []
+    for dni, datos in por_estudiante.items():
+        areas_finales = []
+        notas_todas = []
+        for nombre_area, lista_notas in datos['areas'].items():
+            promedio_area = sum(lista_notas) / len(lista_notas)
+            areas_finales.append({'nombre': nombre_area, 'nota': round(promedio_area, 1)})
+            notas_todas.append(promedio_area)
+        promedio_general = sum(notas_todas) / len(notas_todas) if notas_todas else 0
+        resultado.append({
+            'dni': dni, 'nombre': datos['nombre'],
+            'areas': sorted(areas_finales, key=lambda x: x['nombre']),
+            'promedio': round(promedio_general, 1),
+        })
+    resultado.sort(key=lambda x: x['nombre'])
+    return resultado
+
+
+def _tarjeta_boleta_pdf(estudiante, institucion, grado, periodo, ancho):
+    """Arma una tarjeta compacta de boleta para el layout de 4 por hoja."""
+    from reportlab.platypus import Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import cm
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+
+    def p(txt, size, bold=False, align=TA_CENTER, color="#000000"):
+        return Paragraph(txt, ParagraphStyle(
+            'x', fontSize=size, leading=size + 2, alignment=align,
+            fontName='Helvetica-Bold' if bold else 'Helvetica',
+            textColor=colors.HexColor(color)))
+
+    filas_header = [[p(institucion.upper(), 8, bold=True, color="#1F2937")],
+                    [p(f"BOLETA DE NOTAS — {periodo}", 9, bold=True, color="#B45309")]]
+    tabla_header = Table(filas_header, colWidths=[ancho])
+    tabla_header.setStyle(TableStyle([
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2), ('TOPPADDING', (0, 0), (-1, -1), 2),
+    ]))
+
+    filas_notas = [[p("ÁREA", 7.5, bold=True, color="#FFFFFF"),
+                    p("NOTA", 7.5, bold=True, color="#FFFFFF"),
+                    p("", 7.5, bold=True, color="#FFFFFF")]]
+    for area in estudiante['areas']:
+        letra = _letra_nota_boleta(area['nota'])
+        filas_notas.append([p(area['nombre'][:22], 7.5, align=TA_LEFT),
+                            p(str(area['nota']), 7.5, bold=True),
+                            p(letra, 7.5)])
+    tabla_notas = Table(filas_notas, colWidths=[ancho * 0.62, ancho * 0.19, ancho * 0.19])
+    tabla_notas.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1F2937")),
+        ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor("#AAAAAA")),
+        ('TOPPADDING', (0, 0), (-1, -1), 2), ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    contenido = [
+        tabla_header,
+        p(estudiante['nombre'], 9.5, bold=True, color="#1F2937"),
+        p(f"{grado}", 8, color="#4B5563"),
+        Spacer(1, 3),
+        tabla_notas,
+        Spacer(1, 3),
+        p(f"PROMEDIO: {estudiante['promedio']:.1f}  "
+          f"({_letra_nota_boleta(estudiante['promedio'])})", 9, bold=True, color="#15803D"),
+    ]
+    tabla_final = Table([[contenido]], colWidths=[ancho], rowHeights=[6.5 * cm])
+    tabla_final.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 1.3, colors.HexColor("#B45309")),
+        ('TOPPADDING', (0, 0), (-1, -1), 8), ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8), ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    ]))
+    return tabla_final
+
+
+def generar_boletas_pdf(lista_estudiantes, grado, periodo, institucion):
+    """Genera el PDF completo con 4 boletas por hoja (2x2)."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+    from reportlab.lib.units import cm
+    import io as _io_bol
+
+    buf = _io_bol.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=1 * cm, bottomMargin=1 * cm,
+                            leftMargin=1 * cm, rightMargin=1 * cm)
+    ancho_celda = 9.3 * cm
+    story = []
+    for i in range(0, len(lista_estudiantes), 4):
+        grupo = lista_estudiantes[i:i + 4]
+        for j in range(0, len(grupo), 2):
+            par = grupo[j:j + 2]
+            celdas = [_tarjeta_boleta_pdf(e, institucion, grado, periodo, ancho_celda)
+                     for e in par]
+            while len(celdas) < 2:
+                celdas.append("")
+            fila_tabla = Table([celdas], colWidths=[ancho_celda, ancho_celda])
+            fila_tabla.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            story.append(fila_tabla)
+        if i + 4 < len(lista_estudiantes):
+            from reportlab.platypus import PageBreak
+            story.append(PageBreak())
+    doc.build(story)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def _tab_boletas_notas(config):
+    """Panel para generar boletas de notas — 4 estudiantes por hoja,
+    a partir de las notas ya registradas en 'Registrar Notas'."""
+    st.subheader("📊 Boletas de Notas")
+    st.caption("Genera las boletas de un grado completo a partir de las "
+              "notas ya registradas — 4 estudiantes por hoja, para "
+              "ahorrar papel al imprimir.")
+
+    grado_bol = _grados_para_selector("bol_grado")
+    periodo_bol = st.selectbox("Período / Semana:", PERIODOS_EVALUACION, key="bol_periodo")
+
+    if st.button("🔍 Buscar notas", type="primary", use_container_width=True, key="btn_buscar_bol"):
+        with st.spinner("Buscando…"):
+            lista = _calcular_boletas_grado(grado_bol, periodo_bol)
+            st.session_state["_boletas_lista"] = lista
+            st.session_state["_boletas_grado"] = grado_bol
+            st.session_state["_boletas_periodo"] = periodo_bol
+
+    lista_bol = st.session_state.get("_boletas_lista")
+    if lista_bol is not None:
+        if not lista_bol:
+            st.warning(f"No hay notas registradas para {grado_bol} en "
+                      f"{periodo_bol}. Verifica que se hayan guardado "
+                      f"evaluaciones en 'Registrar Notas' con ese período "
+                      f"exacto.")
+        else:
+            st.success(f"✅ {len(lista_bol)} estudiante(s) con notas en "
+                      f"{periodo_bol}.")
+            st.dataframe(
+                [{"Nombre": e["nombre"], "Promedio": e["promedio"],
+                  "N° áreas": len(e["areas"])} for e in lista_bol],
+                use_container_width=True, hide_index=True)
+
+            if st.button("📄 Generar PDF de boletas (4 por hoja)",
+                        type="primary", use_container_width=True, key="btn_gen_bol"):
+                with st.spinner("Generando…"):
+                    inst_nombre = config.get("institucion", "I.E.P. Alternativo Yachay")
+                    pdf_bol = generar_boletas_pdf(
+                        lista_bol, st.session_state["_boletas_grado"],
+                        st.session_state["_boletas_periodo"], inst_nombre)
+                st.session_state["_boletas_pdf_listo"] = pdf_bol
+
+            if st.session_state.get("_boletas_pdf_listo"):
+                st.download_button(
+                    "⬇️ Descargar Boletas PDF",
+                    data=st.session_state["_boletas_pdf_listo"],
+                    file_name=f"Boletas_{grado_bol.replace(' ','_')}_{periodo_bol.replace(' ','_')}.pdf",
+                    mime="application/pdf", use_container_width=True,
+                    key="dl_boletas")
+
+
 def tab_modo_kiosco():
     """MODO KIOSCO: pantalla completa para dejar la computadora prendida
     en la puerta. Reloj gigante, un solo campo que se auto-enfoca, y el
@@ -34779,6 +34969,7 @@ def main():
             # Grid de módulos para docentes — TODOS los permitidos
             modulos = [
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
+                ("📊", "Boletas de Notas", "boletas_notas", "#0891b2"),
                 ("📝", "Registro Auxiliar", "reg_auxiliar", "#2563eb"),
                 ("📋", "Registro de Asistencia", "reg_pdf", "#0891b2"),
                 ("📄", "Registrar Ficha", "aula_virtual", "#7c3aed"),
@@ -34855,6 +35046,8 @@ def main():
                 tab_calificacion_yachay(config)
             elif mod == "reg_notas":
                 tab_registrar_notas(config)
+            elif mod == "boletas_notas":
+                _tab_boletas_notas(config)
             elif mod == "aula_virtual":
                 tab_material_docente(config)
             elif mod == "examenes_sem":
@@ -34929,6 +35122,7 @@ def main():
                 ("📋", "Asistencia", "asistencia", "#16a34a"),
                 ("🖥️", "Modo Kiosco", "modo_kiosco", "#0f766e"),
                 ("🏆", "Reconocimientos", "reconocimientos", "#b45309"),
+                ("📊", "Boletas de Notas", "boletas_notas", "#0891b2"),
                 ("📄", "Documentos", "documentos", "#7c3aed"),
                 ("🪪", "Carnets", "carnets", "#0891b2"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
@@ -35035,6 +35229,8 @@ def main():
                 st.rerun()
             elif mod == "reconocimientos":
                 _tab_reconocimientos(config)
+            elif mod == "boletas_notas":
+                _tab_boletas_notas(config)
             elif mod == "documentos":
                 tab_documentos(config)
             elif mod == "carnets":
