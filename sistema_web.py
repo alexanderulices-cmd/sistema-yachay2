@@ -13276,7 +13276,14 @@ def tab_modo_kiosco():
         except Exception:
             _antes = {}
 
-        _registrar_asistencia_rapida(_pend)
+        try:
+            _registrar_asistencia_rapida(_pend)
+        except Exception as _e_kiosco_reg:
+            st.session_state['_kiosco_aviso'] = (
+                f"🚨 Error técnico al registrar el código «{_pend}»: "
+                f"{_e_kiosco_reg}. Intenta de nuevo — si sigue fallando, "
+                f"avisa al admin.")
+            st.rerun()
 
         st.session_state['_asis_invalidar'] = True
         st.session_state.pop('_cache_asis_hoy', None)
@@ -13394,7 +13401,7 @@ def tab_modo_kiosco():
         function enfocarCampo() {
             try {
                 var inputs = window.parent.document.querySelectorAll(
-                    'input[placeholder*="ESCANEE"]');
+                    'input[placeholder*="Escanee"]');
                 if (inputs.length > 0 && document.activeElement !== inputs[0]) {
                     inputs[0].focus();
                 }
@@ -13405,6 +13412,21 @@ def tab_modo_kiosco():
     })();
     </script>
     """, unsafe_allow_html=True)
+
+    # ── Auto-refresco: sin esto, el reloj y la hora quedan congelados
+    # si nadie escanea nada por varios minutos — solo se actualizaban
+    # cuando alguien escaneaba. Recarga la pagina completa cada 60
+    # segundos para que el reloj siempre este al dia.
+    import streamlit.components.v1 as _comp_autorefresh
+    _comp_autorefresh.html("""
+    <script>
+    (function() {
+        setTimeout(function() {
+            try { window.parent.location.reload(); } catch(e) {}
+        }, 60000);
+    })();
+    </script>
+    """, height=0)
 
 
 def tab_asistencias():
