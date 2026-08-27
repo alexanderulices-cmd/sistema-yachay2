@@ -8294,7 +8294,8 @@ f(); new MutationObserver(f).observe(window.parent.document.body,{childList:true
             try:
                 _alu_final = "" if en_blanco_comp else alumno_comp
                 _apo_final = "" if en_blanco_comp else apoderado_comp
-                buf = _generar_carta_compromiso_padres(config, _alu_final, _apo_final, grado_comp, motivo_comp, anio)
+                _grado_final = "" if en_blanco_comp else grado_comp
+                buf = _generar_carta_compromiso_padres(config, _alu_final, _apo_final, _grado_final, motivo_comp, anio)
                 _nombre_archivo_comp = (f"Compromiso_EN_BLANCO_{anio}.pdf" if en_blanco_comp
                                        else f"Compromiso_{alumno_comp[:15]}_{anio}.pdf")
                 st.download_button("⬇️ Descargar", buf,
@@ -13109,6 +13110,258 @@ FRASES_ESTOICAS = [
     ("Quien conoce a los demás es sabio; quien se conoce a sí mismo, es iluminado.", "Lao Tsé"),
     ("No hay atajo hacia ningún lugar que valga la pena llegar.", "Beverly Sills"),
 ]
+
+
+def _calcular_top_mes_por_categoria():
+    """Calcula el Top del Mes (estudiante mas puntual) separado en 4
+    categorias: Primaria, Secundaria, Academia Pre-U, y Docentes.
+    Reutiliza la hoja 'asistencias' de Google Sheets (la fuente mas
+    confiable, con el arreglo reciente de sincronizacion) y cruza cada
+    DNI contra la matricula/docentes para saber su nivel."""
+    from datetime import datetime as _dt_reco
+    _hoy_reco = hora_peru()
+    _mes_reco, _anio_reco = _hoy_reco.month, _hoy_reco.year
+
+    # Mapa DNI -> Nivel (para estudiantes) usando la matricula actual
+    _mapa_nivel = {}
+    try:
+        _df_mat_reco = BaseDatos.cargar_matricula()
+        if not _df_mat_reco.empty and "DNI" in _df_mat_reco.columns:
+            for _, _r in _df_mat_reco.iterrows():
+                _mapa_nivel[str(_r["DNI"]).strip()] = str(_r.get("Nivel", "")).strip().upper()
+    except Exception:
+        pass
+
+    _conteo = {"PRIMARIA": {}, "SECUNDARIA": {}, "PREUNIVERSITARIO": {}, "DOCENTE": {}}
+
+    try:
+        gs = _gs()
+        if gs:
+            ws_am = gs._get_hoja('asistencias')
+            if ws_am:
+                for _row in ws_am.get_all_records():
+                    _f_gs = str(_row.get('fecha', '')).strip()
+                    _d_gs = str(_row.get('dni', '')).strip()
+                    _nom_g = str(_row.get('nombre', '')).strip()
+                    _tipo_g = str(_row.get('tipo_persona', '')).strip().lower()
+                    _ent_g = str(_row.get('hora_entrada', '')).strip()
+                    if not _f_gs or not _d_gs:
+                        continue
+                    try:
+                        _fdt_g = (datetime.strptime(_f_gs, "%Y-%m-%d")
+                                 if "-" in _f_gs else datetime.strptime(_f_gs, "%d/%m/%Y"))
+                        if _fdt_g.month != _mes_reco or _fdt_g.year != _anio_reco:
+                            continue
+                        if _fdt_g.weekday() >= 5:
+                            continue
+                    except Exception:
+                        continue
+
+                    es_docente = 'doc' in _tipo_g
+                    if es_docente:
+                        categoria = "DOCENTE"
+                    else:
+                        categoria = _mapa_nivel.get(_d_gs, "")
+                        if categoria not in _conteo:
+                            continue  # nivel desconocido, se omite
+
+                    if _d_gs not in _conteo[categoria]:
+                        _conteo[categoria][_d_gs] = {
+                            "nombre": _nom_g, "puntual": 0, "tardanza": 0, "total": 0}
+                    _conteo[categoria][_d_gs]["total"] += 1
+                    _es_tarde = False
+                    try:
+                        if _ent_g:
+                            _h, _m = int(_ent_g[:2]), int(_ent_g[3:5])
+                            _es_tarde = (_h * 60 + _m > 8 * 60 + 5)
+                    except Exception:
+                        pass
+                    if _ent_g and not _es_tarde:
+                        _conteo[categoria][_d_gs]["puntual"] += 1
+                    elif _es_tarde:
+                        _conteo[categoria][_d_gs]["tardanza"] += 1
+    except Exception:
+        pass
+
+    resultado = {}
+    for cat, datos in _conteo.items():
+        ranking = sorted(datos.values(), key=lambda x: (-x["puntual"], x["tardanza"]))
+        resultado[cat] = ranking[:5]
+    return resultado, _mes_reco, _anio_reco
+
+
+def _borde_pagina_docx(doc, color="B45309", ancho=24):
+    """Agrega un borde decorativo alrededor de toda la pagina del docx."""
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+    sectPr = doc.sections[0]._sectPr
+    pgBorders = OxmlElement('w:pgBorders')
+    pgBorders.set(qn('w:offsetFrom'), 'page')
+    for lado in ('top', 'left', 'bottom', 'right'):
+        el = OxmlElement(f'w:{lado}')
+        el.set(qn('w:val'), 'single')
+        el.set(qn('w:sz'), str(ancho))
+        el.set(qn('w:space'), '24')
+        el.set(qn('w:color'), color)
+        pgBorders.append(el)
+    sectPr.append(pgBorders)
+
+
+def generar_diploma_reconocimiento(nombre_ganador, categoria, subcategoria,
+                                   periodo, institucion, stats_texto,
+                                   color_hex="B45309"):
+    """Genera un diploma de reconocimiento en Word, con espacio para
+    agregar una foto despues manualmente."""
+    from docx import Document
+    from docx.shared import Pt, Cm, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+    import io as _io_diploma
+
+    doc = Document()
+    sec = doc.sections[0]
+    sec.page_width = Cm(21.59)
+    sec.page_height = Cm(27.94)
+    sec.top_margin = Cm(1.5)
+    sec.bottom_margin = Cm(1.5)
+    sec.left_margin = Cm(2)
+    sec.right_margin = Cm(2)
+    _borde_pagina_docx(doc, color=color_hex)
+
+    def p_centrado(texto, size, bold=False, color=None, espacio_antes=0,
+                   espacio_despues=0, italic=False):
+        par = doc.add_paragraph()
+        par.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        par.paragraph_format.space_before = Pt(espacio_antes)
+        par.paragraph_format.space_after = Pt(espacio_despues)
+        run = par.add_run(texto)
+        run.font.size = Pt(size)
+        run.font.bold = bold
+        run.font.italic = italic
+        run.font.name = 'Georgia'
+        if color:
+            run.font.color.rgb = RGBColor.from_string(color)
+        return par
+
+    p_centrado(institucion.upper(), 15, bold=True, color=color_hex,
+              espacio_antes=30, espacio_despues=4)
+    p_centrado("Pioneros en la Educación de Calidad", 10, italic=True,
+              color="666666", espacio_despues=40)
+
+    p_centrado("DIPLOMA DE RECONOCIMIENTO", 30, bold=True, color=color_hex,
+              espacio_despues=6)
+    p_centrado("~•~", 14, color=color_hex, espacio_despues=30)
+
+    p_centrado("Se otorga el presente reconocimiento a:", 13, espacio_despues=18)
+    p_centrado(nombre_ganador.upper(), 26, bold=True, color="1F2937",
+              espacio_despues=18)
+
+    p_centrado(f"«{categoria}»", 16, bold=True, italic=True, color=color_hex,
+              espacio_despues=6)
+    p_centrado(subcategoria, 12, color="4B5563", espacio_despues=6)
+    p_centrado(stats_texto, 12, bold=True, color="15803D", espacio_despues=6)
+    p_centrado(f"Correspondiente a {periodo}", 11, italic=True, color="666666",
+              espacio_despues=50)
+
+    tabla_foto = doc.add_table(rows=1, cols=1)
+    tabla_foto.alignment = WD_TABLE_ALIGNMENT.CENTER
+    celda = tabla_foto.cell(0, 0)
+    celda.width = Cm(4)
+    for p_ph in celda.paragraphs:
+        p_ph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r_ph = p_ph.add_run("📷\n[Espacio para foto]")
+        r_ph.font.size = Pt(11)
+        r_ph.font.color.rgb = RGBColor.from_string("999999")
+    trPr = tabla_foto.rows[0]._tr.get_or_add_trPr()
+    trHeight = OxmlElement('w:trHeight')
+    trHeight.set(qn('w:val'), '2400')
+    trHeight.set(qn('w:hRule'), 'atLeast')
+    trPr.append(trHeight)
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(30)
+    p_centrado("_______________________________", 12, espacio_antes=20)
+    p_centrado("Dirección General", 11, bold=True)
+
+    buf = _io_diploma.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+def _tab_reconocimientos(config):
+    """Panel para generar diplomas de reconocimiento por puntualidad,
+    separados en 4 categorias: Primaria, Secundaria, Academia Pre-U,
+    y Docentes."""
+    st.subheader("🏆 Reconocimientos por Puntualidad")
+    st.caption("Genera diplomas en Word listos para imprimir y publicar "
+              "en la dirección — puedes agregarle una foto después "
+              "directamente en Word.")
+
+    if st.button("🔍 Calcular ranking del mes", type="primary",
+                use_container_width=True, key="btn_calc_reco"):
+        with st.spinner("Calculando…"):
+            ranking, mes_n, anio_n = _calcular_top_mes_por_categoria()
+            st.session_state["_reco_ranking"] = ranking
+            st.session_state["_reco_periodo"] = (mes_n, anio_n)
+
+    ranking = st.session_state.get("_reco_ranking")
+    if ranking:
+        _NOMBRES_MES = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                        "julio", "agosto", "septiembre", "octubre", "noviembre",
+                        "diciembre"]
+        mes_n, anio_n = st.session_state.get("_reco_periodo", (8, 2026))
+        periodo_txt = f"{_NOMBRES_MES[mes_n].capitalize()} {anio_n}"
+
+        _CATEGORIAS_UI = [
+            ("PRIMARIA", "🎒 Primaria", "#2563eb"),
+            ("SECUNDARIA", "🎓 Secundaria", "#7c3aed"),
+            ("PREUNIVERSITARIO", "📘 Academia Pre-Universitaria", "#dc2626"),
+            ("DOCENTE", "👨‍🏫 Docentes", "#059669"),
+        ]
+
+        institucion_nombre = config.get("institucion", "I.E.P. Alternativo Yachay")
+
+        for clave_cat, titulo_cat, color_cat in _CATEGORIAS_UI:
+            st.markdown(f"#### {titulo_cat}")
+            top_lista = ranking.get(clave_cat, [])
+            if not top_lista:
+                st.caption("Sin datos suficientes este mes todavía.")
+                continue
+            for i, persona in enumerate(top_lista[:3], start=1):
+                medalla = ["🥇", "🥈", "🥉"][i - 1]
+                c_info, c_btn = st.columns([3, 1.3])
+                with c_info:
+                    st.markdown(f"{medalla} **{persona['nombre']}** — "
+                              f"{persona['puntual']} días puntual, "
+                              f"{persona['tardanza']} tardanza(s)")
+                with c_btn:
+                    if st.button(f"📄 Generar diploma", key=f"btn_diploma_{clave_cat}_{i}"):
+                        total_dias = persona['puntual'] + persona['tardanza']
+                        pct = (persona['puntual'] / total_dias * 100) if total_dias else 0
+                        subcat_txt = ("Nivel " + clave_cat.title() if clave_cat != "DOCENTE"
+                                     else "Personal Docente")
+                        categoria_txt = ("Docente Más Puntual" if clave_cat == "DOCENTE"
+                                         else "Estudiante Más Puntual")
+                        stats_txt = (f"{persona['puntual']} días puntual · "
+                                    f"{pct:.0f}% de puntualidad")
+                        diploma_bytes = generar_diploma_reconocimiento(
+                            nombre_ganador=persona['nombre'],
+                            categoria=categoria_txt, subcategoria=subcat_txt,
+                            periodo=periodo_txt, institucion=institucion_nombre,
+                            stats_texto=stats_txt, color_hex=color_cat.lstrip("#").upper())
+                        st.session_state[f"_diploma_listo_{clave_cat}_{i}"] = diploma_bytes
+            for i in range(1, min(len(top_lista), 3) + 1):
+                _dip = st.session_state.get(f"_diploma_listo_{clave_cat}_{i}")
+                if _dip:
+                    st.download_button(
+                        f"⬇️ Descargar diploma #{i} — {titulo_cat}",
+                        data=_dip,
+                        file_name=f"Diploma_{clave_cat}_{i}_{periodo_txt.replace(' ','_')}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        key=f"dl_diploma_{clave_cat}_{i}")
+            st.markdown("---")
 
 
 def tab_modo_kiosco():
@@ -34482,6 +34735,10 @@ def main():
                   "cursor listo para el lector de código de barras — no "
                   "hay que tocar nada más.")
 
+        if st.button("🏆 Reconocimientos por Puntualidad", use_container_width=True,
+                    key="aux_reconocimientos"):
+            st.session_state.modulo_activo = "reconocimientos"
+
         mod = st.session_state.get('modulo_activo', 'asistencia')
         st.markdown("---")
         if mod == "asistencia":
@@ -34499,6 +34756,8 @@ def main():
             _tab_horarios_directivo(config)
         elif mod == "musica_eventos":
             tab_musica_eventos(config)
+        elif mod == "reconocimientos":
+            _tab_reconocimientos(config)
 
     # ========================================
     # DOCENTE — Su grado solamente
@@ -34669,6 +34928,7 @@ def main():
                 ("📝", "Matrícula", "matricula", "#2563eb"),
                 ("📋", "Asistencia", "asistencia", "#16a34a"),
                 ("🖥️", "Modo Kiosco", "modo_kiosco", "#0f766e"),
+                ("🏆", "Reconocimientos", "reconocimientos", "#b45309"),
                 ("📄", "Documentos", "documentos", "#7c3aed"),
                 ("🪪", "Carnets", "carnets", "#0891b2"),
                 ("📝", "Registrar Notas", "reg_notas", "#059669"),
@@ -34773,6 +35033,8 @@ def main():
                 st.session_state['_modo_kiosco'] = True
                 st.session_state.modulo_activo = "asistencia"
                 st.rerun()
+            elif mod == "reconocimientos":
+                _tab_reconocimientos(config)
             elif mod == "documentos":
                 tab_documentos(config)
             elif mod == "carnets":
@@ -36829,10 +37091,40 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
     motivos_texto = {
         "Bajo rendimiento academico": "mejorar el rendimiento academico de su hijo/a, apoyando las tareas, asistiendo a reuniones y comunicandose periodicamente con los docentes",
         "Exceso de inasistencias": "garantizar la asistencia regular de su hijo/a, justificando las inasistencias oportunamente y evitando ausencias injustificadas",
-        "Conducta inapropiada": "apoyar el desarrollo de conductas positivas en su hijo/a, reforzando en casa los valores y normas de convivencia del colegio",
-        "Deudas economicas": "regularizar los pagos pendientes en los plazos acordados con la administracion",
+        "Conducta inapropiada": "corregir y supervisar de manera activa la conducta de su hijo/a, en atencion a las faltas de disciplina identificadas por la institucion, comprometiendose a reforzar en el hogar el respeto a las normas de convivencia escolar",
+        "Deudas economicas": "regularizar la deuda pendiente por concepto de pension(es) educativa(s), cumpliendo con el cronograma de pagos acordado con la administracion de la institucion",
         "Compromiso general": "apoyar el proceso educativo integral de su hijo/a durante el anio escolar",
     }
+
+    compromisos_especificos = {
+        "Conducta inapropiada": (
+            "Asimismo, me comprometo a: (1) Acudir al colegio de forma inmediata "
+            "cuando sea citado(a) por hechos relacionados con la conducta de mi "
+            "hijo/a; (2) Supervisar su comportamiento dentro y fuera de la "
+            "institucion, y corregir oportunamente las faltas que se me "
+            "informen; (3) Reforzar en el hogar los valores y las normas de "
+            "convivencia establecidas en el Reglamento Interno; (4) Aceptar "
+            "las medidas correctivas que la institucion determine en caso de "
+            "reincidencia."
+        ),
+        "Deudas economicas": (
+            "Asimismo, me comprometo a: (1) Cumplir estrictamente con el "
+            "cronograma de pagos acordado con la administracion; (2) Informar "
+            "oportunamente a la institucion ante cualquier dificultad para "
+            "cumplir con un pago, antes de la fecha de vencimiento; "
+            "(3) Entender que el incumplimiento reiterado de este compromiso "
+            "puede afectar la continuidad de los servicios educativos "
+            "brindados a mi hijo/a; (4) Regularizar la totalidad de la deuda "
+            "antes de la finalizacion del anio escolar."
+        ),
+    }
+    _compromiso_generico = (
+        "Asimismo, me comprometo a: (1) Asistir a las reuniones de padres "
+        "convocadas por la institucion; (2) Mantener comunicacion permanente "
+        "con el docente tutor; (3) Apoyar desde el hogar el proceso de "
+        "aprendizaje de mi hijo/a; (4) Cumplir el presente compromiso "
+        "durante el anio escolar."
+    )
 
     def _sin_tildes(txt):
         """Normaliza para que el motivo elegido en el menu (con tildes)
@@ -36847,6 +37139,8 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
     _motivo_normalizado = _sin_tildes(str(motivo or ""))
     texto_compromiso = motivos_texto.get(_motivo_normalizado,
                                          motivos_texto["Compromiso general"])
+    _texto_lista_compromisos = compromisos_especificos.get(
+        _motivo_normalizado, _compromiso_generico)
     doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=2.5*cm, bottomMargin=2.5*cm, leftMargin=3*cm, rightMargin=3*cm)
     styles = getSampleStyleSheet()
     def P(txt, bold=False, size=11, align=TA_JUSTIFY, sb=4, sa=4):
@@ -36872,9 +37166,7 @@ def _generar_carta_compromiso_padres(config, alumno, apoderado, grado, motivo, a
           f"del/la estudiante <b>{alumno or '___________________________________'}</b> del grado "
           f"<b>{grado or '____________________'}</b>, me comprometo voluntariamente a {texto_compromiso}."),
         Spacer(1, 0.3*cm),
-        P("Asimismo, me comprometo a: (1) Asistir a las reuniones de padres convocadas por la institucion; "
-          "(2) Mantener comunicacion permanente con el docente tutor; (3) Apoyar desde el hogar el proceso "
-          "de aprendizaje de mi hijo/a; (4) Cumplir el presente compromiso durante el anio escolar."),
+        P(_texto_lista_compromisos),
         Spacer(1, 0.3*cm),
         P(f"En caso de incumplimiento, acepto las consecuencias establecidas en el Reglamento Interno "
           f"de {ie}."),
