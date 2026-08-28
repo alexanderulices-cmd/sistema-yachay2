@@ -13727,7 +13727,7 @@ def tab_modo_kiosco():
                     letter-spacing:2px;'>
             {_icono} {_titulo_modo}
         </div>
-        <div style='font-size:6.2rem;font-weight:900;line-height:1.02;
+        <div id="kiosco_reloj_vivo" style='font-size:6.2rem;font-weight:900;line-height:1.02;
                     letter-spacing:3px;margin:8px 0;
                     text-shadow:0 4px 18px rgba(0,0,0,0.25);
                     font-variant-numeric:tabular-nums;'>
@@ -13938,18 +13938,36 @@ def tab_modo_kiosco():
     </script>
     """, unsafe_allow_html=True)
 
-    # ── Auto-refresco: sin esto, el reloj y la hora quedan congelados
-    # si nadie escanea nada por varios minutos — solo se actualizaban
-    # cuando alguien escaneaba. Recarga la pagina completa cada 60
-    # segundos para que el reloj siempre este al dia.
-    import streamlit.components.v1 as _comp_autorefresh
-    _comp_autorefresh.html("""
+    # ── Reloj en vivo, 100% en el navegador — NUNCA recarga la pagina
+    # ni toca el servidor, para no arriesgar la sesion. Antes esto
+    # recargaba la pagina completa cada 60s para que el reloj no se
+    # quedara congelado — pero una recarga de pagina borra TODA la
+    # sesion de Streamlit (incluyendo el login), asi que cada 60s se
+    # cerraba la sesion sola sin que nadie lo pidiera. Ahora el reloj
+    # se calcula con JavaScript puro, tomando como base la hora del
+    # servidor en el momento en que se genero esta pagina, y sumando
+    # el tiempo real transcurrido en el propio navegador.
+    _epoch_ms_servidor = int(_ahora.timestamp() * 1000)
+    import streamlit.components.v1 as _comp_relojvivo
+    _comp_relojvivo.html(f"""
     <script>
-    (function() {
-        setTimeout(function() {
-            try { window.parent.location.reload(); } catch(e) {}
-        }, 60000);
-    })();
+    (function() {{
+        var horaServidorMs = {_epoch_ms_servidor};
+        var capturaJS = Date.now();
+        function actualizarReloj() {{
+            try {{
+                var doc = window.parent.document;
+                var el = doc.getElementById('kiosco_reloj_vivo');
+                if (!el) return;
+                var ahora = new Date(horaServidorMs + (Date.now() - capturaJS));
+                var hh = String(ahora.getHours()).padStart(2, '0');
+                var mm = String(ahora.getMinutes()).padStart(2, '0');
+                el.innerText = hh + ':' + mm;
+            }} catch(e) {{}}
+        }}
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
+    }})();
     </script>
     """, height=0)
 
