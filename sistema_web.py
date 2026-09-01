@@ -13257,6 +13257,87 @@ def _borde_pagina_docx(doc, color="B45309", ancho=24):
     sectPr.append(pgBorders)
 
 
+def generar_lista_ranking_pdf(ranking, periodo_txt, institucion):
+    """PDF de una sola hoja con las 4 categorías y su top 5 completo —
+    para imprimir y publicar en la dirección. Usa texto simple (1°,
+    2°, etc.) en vez de emoji de medallas, que no se ven bien en PDF."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import cm
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    import io as _io_lista
+
+    buf = _io_lista.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=1.3 * cm, bottomMargin=1.3 * cm,
+                            leftMargin=1.5 * cm, rightMargin=1.5 * cm)
+
+    def p(txt, size, bold=False, align=TA_CENTER, color="#000000"):
+        return Paragraph(txt, ParagraphStyle(
+            'x', fontSize=size, leading=size + 3, alignment=align,
+            fontName='Helvetica-Bold' if bold else 'Helvetica',
+            textColor=colors.HexColor(color)))
+
+    story = [
+        p(institucion.upper(), 14, bold=True, color="#1F2937"),
+        p(f"RANKING DE PUNTUALIDAD — {periodo_txt.upper()}", 18, bold=True, color="#B45309"),
+        Spacer(1, 14),
+    ]
+
+    _CATEGORIAS_LISTA = [
+        ("PRIMARIA", "NIVEL PRIMARIA", "#2563eb"),
+        ("SECUNDARIA", "NIVEL SECUNDARIA", "#7c3aed"),
+        ("PREUNIVERSITARIO", "ACADEMIA PRE-UNIVERSITARIA", "#dc2626"),
+        ("DOCENTE", "PERSONAL DOCENTE", "#059669"),
+    ]
+
+    for clave, titulo, color_hex in _CATEGORIAS_LISTA:
+        lista = ranking.get(clave, [])
+        titulo_tabla = Table([[p(titulo, 12, bold=True, color="#FFFFFF")]], colWidths=[18 * cm])
+        titulo_tabla.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor(color_hex)),
+            ('TOPPADDING', (0, 0), (-1, -1), 5), ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ]))
+        story.append(titulo_tabla)
+
+        if not lista:
+            story.append(Spacer(1, 4))
+            story.append(p("Sin datos suficientes este mes.", 10, align=TA_LEFT, color="#6B7280"))
+            story.append(Spacer(1, 10))
+            continue
+
+        filas = [[p("PUESTO", 9, bold=True), p("NOMBRE", 9, bold=True, align=TA_LEFT),
+                 p("DÍAS PUNTUAL", 9, bold=True), p("PROMEDIO", 9, bold=True)]]
+        for i, persona in enumerate(lista[:5]):
+            total_dias = persona['puntual'] + persona['tardanza']
+            pct = (persona['puntual'] / total_dias * 100) if total_dias else 0
+            filas.append([
+                p(f"{i + 1}°", 11, bold=True),
+                p(persona['nombre'], 9.5, align=TA_LEFT),
+                p(str(persona['puntual']), 9.5),
+                p(f"{pct:.0f}%", 9.5, bold=True, color="#15803D"),
+            ])
+        tabla = Table(filas, colWidths=[1.8 * cm, 9.2 * cm, 3.5 * cm, 3.5 * cm])
+        _estilo_tabla = [
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1F2937")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#AAAAAA")),
+            ('TOPPADDING', (0, 0), (-1, -1), 5), ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]
+        if len(lista) >= 1:
+            _estilo_tabla.append(('BACKGROUND', (0, 1), (-1, 1), colors.HexColor("#FEF3C7")))
+        tabla.setStyle(TableStyle(_estilo_tabla))
+        story.append(tabla)
+        story.append(Spacer(1, 14))
+
+    doc.build(story)
+    buf.seek(0)
+    return buf.getvalue()
+
+
 def generar_diploma_reconocimiento(nombre_ganador, categoria, subcategoria,
                                    periodo, institucion, stats_texto,
                                    color_hex="B45309"):
@@ -13389,14 +13470,32 @@ def _tab_reconocimientos(config):
 
         institucion_nombre = config.get("institucion", "I.E.P. Alternativo Yachay")
 
+        st.markdown("---")
+        st.markdown("#### 📋 Lista completa para imprimir y publicar")
+        st.caption("Una sola hoja con las 4 categorías y su top 5, lista "
+                  "para colgar en la dirección.")
+        if st.button("📄 Generar lista en PDF", type="primary",
+                    use_container_width=True, key="btn_gen_lista_ranking"):
+            with st.spinner("Generando…"):
+                lista_pdf = generar_lista_ranking_pdf(ranking, periodo_txt, institucion_nombre)
+            st.session_state["_lista_ranking_pdf"] = lista_pdf
+        if st.session_state.get("_lista_ranking_pdf"):
+            st.download_button(
+                "⬇️ Descargar Lista de Ranking (PDF)",
+                data=st.session_state["_lista_ranking_pdf"],
+                file_name=f"Ranking_Puntualidad_{periodo_txt.replace(' ', '_')}.pdf",
+                mime="application/pdf", use_container_width=True,
+                key="dl_lista_ranking")
+        st.markdown("---")
+
         for clave_cat, titulo_cat, color_cat in _CATEGORIAS_UI:
             st.markdown(f"#### {titulo_cat}")
             top_lista = ranking.get(clave_cat, [])
             if not top_lista:
                 st.caption("Sin datos suficientes este mes todavía.")
                 continue
-            for i, persona in enumerate(top_lista[:3], start=1):
-                medalla = ["🥇", "🥈", "🥉"][i - 1]
+            for i, persona in enumerate(top_lista[:5], start=1):
+                medalla = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"][i - 1]
                 c_info, c_btn = st.columns([3, 1.3])
                 with c_info:
                     st.markdown(f"{medalla} **{persona['nombre']}** — "
@@ -13418,7 +13517,7 @@ def _tab_reconocimientos(config):
                             periodo=periodo_txt, institucion=institucion_nombre,
                             stats_texto=stats_txt, color_hex=color_cat.lstrip("#").upper())
                         st.session_state[f"_diploma_listo_{clave_cat}_{i}"] = diploma_bytes
-            for i in range(1, min(len(top_lista), 3) + 1):
+            for i in range(1, min(len(top_lista), 5) + 1):
                 _dip = st.session_state.get(f"_diploma_listo_{clave_cat}_{i}")
                 if _dip:
                     st.download_button(
