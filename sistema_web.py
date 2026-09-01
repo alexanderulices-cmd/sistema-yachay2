@@ -13308,8 +13308,10 @@ def generar_lista_ranking_pdf(ranking, periodo_txt, institucion):
             story.append(Spacer(1, 10))
             continue
 
-        filas = [[p("PUESTO", 9, bold=True), p("NOMBRE", 9, bold=True, align=TA_LEFT),
-                 p("DÍAS PUNTUAL", 9, bold=True), p("PROMEDIO", 9, bold=True)]]
+        filas = [[p("PUESTO", 9, bold=True, color="#FFFFFF"),
+                 p("NOMBRE", 9, bold=True, align=TA_LEFT, color="#FFFFFF"),
+                 p("DÍAS PUNTUAL", 9, bold=True, color="#FFFFFF"),
+                 p("PROMEDIO", 9, bold=True, color="#FFFFFF")]]
         for i, persona in enumerate(lista[:5]):
             total_dias = persona['puntual'] + persona['tardanza']
             pct = (persona['puntual'] / total_dias * 100) if total_dias else 0
