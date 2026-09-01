@@ -13157,15 +13157,20 @@ FRASES_ESTOICAS = [
 ]
 
 
-def _calcular_top_mes_por_categoria():
+def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
     """Calcula el Top del Mes (estudiante mas puntual) separado en 4
     categorias: Primaria, Secundaria, Academia Pre-U, y Docentes.
     Reutiliza la hoja 'asistencias' de Google Sheets (la fuente mas
     confiable, con el arreglo reciente de sincronizacion) y cruza cada
-    DNI contra la matricula/docentes para saber su nivel."""
+    DNI contra la matricula/docentes para saber su nivel.
+    Si mes_sel/anio_sel no se especifican, usa el mes actual — pero se
+    puede pedir cualquier mes pasado (ej. ver agosto ya en septiembre)."""
     from datetime import datetime as _dt_reco
-    _hoy_reco = hora_peru()
-    _mes_reco, _anio_reco = _hoy_reco.month, _hoy_reco.year
+    if mes_sel is not None and anio_sel is not None:
+        _mes_reco, _anio_reco = mes_sel, anio_sel
+    else:
+        _hoy_reco = hora_peru()
+        _mes_reco, _anio_reco = _hoy_reco.month, _hoy_reco.year
 
     # Mapa DNI -> Nivel (para estudiantes) usando la matricula actual
     _mapa_nivel = {}
@@ -13344,10 +13349,26 @@ def _tab_reconocimientos(config):
               "en la dirección — puedes agregarle una foto después "
               "directamente en Word.")
 
+    _NOMBRES_MES_SEL = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre",
+                        "Diciembre"]
+    _hoy_sel_reco = hora_peru()
+    c_mes, c_anio = st.columns(2)
+    with c_mes:
+        _mes_elegido = st.selectbox(
+            "Mes a calcular:", list(range(1, 13)),
+            index=_hoy_sel_reco.month - 1,
+            format_func=lambda m: _NOMBRES_MES_SEL[m], key="reco_mes_sel")
+    with c_anio:
+        _anio_elegido = st.number_input(
+            "Año:", min_value=2024, max_value=2040,
+            value=_hoy_sel_reco.year, key="reco_anio_sel")
+
     if st.button("🔍 Calcular ranking del mes", type="primary",
                 use_container_width=True, key="btn_calc_reco"):
         with st.spinner("Calculando…"):
-            ranking, mes_n, anio_n = _calcular_top_mes_por_categoria()
+            ranking, mes_n, anio_n = _calcular_top_mes_por_categoria(
+                mes_sel=_mes_elegido, anio_sel=_anio_elegido)
             st.session_state["_reco_ranking"] = ranking
             st.session_state["_reco_periodo"] = (mes_n, anio_n)
 
