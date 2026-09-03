@@ -13164,7 +13164,9 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
     confiable, con el arreglo reciente de sincronizacion) y cruza cada
     DNI contra la matricula/docentes para saber su nivel.
     Si mes_sel/anio_sel no se especifican, usa el mes actual — pero se
-    puede pedir cualquier mes pasado (ej. ver agosto ya en septiembre)."""
+    puede pedir cualquier mes pasado (ej. ver agosto ya en septiembre).
+    Devuelve tambien un dict de diagnostico con conteos en cada paso,
+    para poder ver donde se pierden registros si el ranking sale vacio."""
     from datetime import datetime as _dt_reco
     if mes_sel is not None and anio_sel is not None:
         _mes_reco, _anio_reco = mes_sel, anio_sel
@@ -13172,13 +13174,36 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
         _hoy_reco = hora_peru()
         _mes_reco, _anio_reco = _hoy_reco.month, _hoy_reco.year
 
-    # Mapa DNI -> Nivel (para estudiantes) usando la matricula actual
+    _diag = {"total_leidos": 0, "sin_fecha_o_dni": 0, "fecha_invalida": 0,
+             "otro_mes": 0, "fin_de_semana": 0, "nivel_desconocido": 0,
+             "categorizados_ok": 0}
+
+    def _dni_para_cruce(valor_crudo):
+        """Normaliza un DNI para comparar matricula vs asistencias. Si
+        Google Sheets le quito el cero inicial a un DNI (lo convirtio a
+        numero y perdio ese digito), un DNI numerico de 8 digitos queda
+        con 7 — aqui se rellena de vuelta a 8, asumiendo que faltaba un
+        cero inicial (el unico caso real posible: DNI peruano siempre
+        tiene 8 digitos). No se toca la funcion normalizar_codigo_
+        estudiante() de todo el sistema, para no arriesgar el escaneo
+        del kiosco ni el login del portal, que ya funcionan bien."""
+        v = normalizar_codigo_estudiante(valor_crudo)
+        if v.isdigit() and len(v) == 7:
+            return v.zfill(8)
+        return v
+
+    # Mapa DNI -> Nivel (para estudiantes) usando la matricula actual.
+    # DNI normalizado en ambos lados (aqui y al leer asistencias) --
+    # sin esto, si Google Sheets le quito un cero inicial a un DNI en
+    # cualquiera de las 2 hojas, la busqueda fallaba en silencio y esa
+    # persona desaparecia del ranking sin ningun aviso.
     _mapa_nivel = {}
     try:
         _df_mat_reco = BaseDatos.cargar_matricula()
         if not _df_mat_reco.empty and "DNI" in _df_mat_reco.columns:
             for _, _r in _df_mat_reco.iterrows():
-                _mapa_nivel[str(_r["DNI"]).strip()] = str(_r.get("Nivel", "")).strip().upper()
+                _dni_norm_mat = _dni_para_cruce(_r["DNI"]) or str(_r["DNI"]).strip()
+                _mapa_nivel[_dni_norm_mat] = str(_r.get("Nivel", "")).strip().upper()
     except Exception:
         pass
 
@@ -13190,21 +13215,27 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
             ws_am = gs._get_hoja('asistencias')
             if ws_am:
                 for _row in ws_am.get_all_records():
+                    _diag["total_leidos"] += 1
                     _f_gs = str(_row.get('fecha', '')).strip()
-                    _d_gs = str(_row.get('dni', '')).strip()
+                    _d_gs_crudo = str(_row.get('dni', '')).strip()
+                    _d_gs = _dni_para_cruce(_d_gs_crudo) or _d_gs_crudo
                     _nom_g = str(_row.get('nombre', '')).strip()
                     _tipo_g = str(_row.get('tipo_persona', '')).strip().lower()
                     _ent_g = str(_row.get('hora_entrada', '')).strip()
                     if not _f_gs or not _d_gs:
+                        _diag["sin_fecha_o_dni"] += 1
                         continue
                     try:
                         _fdt_g = (datetime.strptime(_f_gs, "%Y-%m-%d")
                                  if "-" in _f_gs else datetime.strptime(_f_gs, "%d/%m/%Y"))
-                        if _fdt_g.month != _mes_reco or _fdt_g.year != _anio_reco:
-                            continue
-                        if _fdt_g.weekday() >= 5:
-                            continue
                     except Exception:
+                        _diag["fecha_invalida"] += 1
+                        continue
+                    if _fdt_g.month != _mes_reco or _fdt_g.year != _anio_reco:
+                        _diag["otro_mes"] += 1
+                        continue
+                    if _fdt_g.weekday() >= 5:
+                        _diag["fin_de_semana"] += 1
                         continue
 
                     es_docente = 'doc' in _tipo_g
@@ -13213,8 +13244,10 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
                     else:
                         categoria = _mapa_nivel.get(_d_gs, "")
                         if categoria not in _conteo:
+                            _diag["nivel_desconocido"] += 1
                             continue  # nivel desconocido, se omite
 
+                    _diag["categorizados_ok"] += 1
                     if _d_gs not in _conteo[categoria]:
                         _conteo[categoria][_d_gs] = {
                             "nombre": _nom_g, "puntual": 0, "tardanza": 0, "total": 0}
@@ -13237,7 +13270,7 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
     for cat, datos in _conteo.items():
         ranking = sorted(datos.values(), key=lambda x: (-x["puntual"], x["tardanza"]))
         resultado[cat] = ranking[:5]
-    return resultado, _mes_reco, _anio_reco
+    return resultado, _mes_reco, _anio_reco, _diag
 
 
 def _borde_pagina_docx(doc, color="B45309", ancho=24):
@@ -13450,10 +13483,11 @@ def _tab_reconocimientos(config):
     if st.button("🔍 Calcular ranking del mes", type="primary",
                 use_container_width=True, key="btn_calc_reco"):
         with st.spinner("Calculando…"):
-            ranking, mes_n, anio_n = _calcular_top_mes_por_categoria(
+            ranking, mes_n, anio_n, diag = _calcular_top_mes_por_categoria(
                 mes_sel=_mes_elegido, anio_sel=_anio_elegido)
             st.session_state["_reco_ranking"] = ranking
             st.session_state["_reco_periodo"] = (mes_n, anio_n)
+            st.session_state["_reco_diag"] = diag
 
     ranking = st.session_state.get("_reco_ranking")
     if ranking:
@@ -13462,6 +13496,30 @@ def _tab_reconocimientos(config):
                         "diciembre"]
         mes_n, anio_n = st.session_state.get("_reco_periodo", (8, 2026))
         periodo_txt = f"{_NOMBRES_MES[mes_n].capitalize()} {anio_n}"
+
+        _diag_reco = st.session_state.get("_reco_diag")
+        if _diag_reco:
+            with st.expander("🔍 Ver diagnóstico (por qué salió esto)"):
+                st.caption("Muestra cuántos registros se leyeron y en qué "
+                          "paso se descartó cada uno — útil si el ranking "
+                          "sale vacío y no sabes por qué.")
+                st.markdown(f"""
+                - **Total de filas leídas** de la hoja "asistencias": {_diag_reco['total_leidos']}
+                - Descartadas por no tener fecha o DNI: {_diag_reco['sin_fecha_o_dni']}
+                - Descartadas por fecha con formato inválido: {_diag_reco['fecha_invalida']}
+                - Descartadas por ser de **otro mes** (no {periodo_txt}): {_diag_reco['otro_mes']}
+                - Descartadas por caer en fin de semana: {_diag_reco['fin_de_semana']}
+                - Descartadas por **no encontrar su Nivel** en la matrícula: {_diag_reco['nivel_desconocido']}
+                - ✅ **Categorizadas correctamente**: {_diag_reco['categorizados_ok']}
+                """)
+                if _diag_reco['total_leidos'] == 0:
+                    st.error("La hoja 'asistencias' no tiene ninguna fila, o no "
+                            "se pudo conectar a ella.")
+                elif _diag_reco['nivel_desconocido'] > 0 and _diag_reco['categorizados_ok'] == 0:
+                    st.warning("Hay registros de este mes, pero ninguno se pudo "
+                             "ubicar en Primaria/Secundaria/Pre-U — revisa que "
+                             "esos estudiantes tengan el campo 'Nivel' bien "
+                             "llenado en Matrícula.")
 
         _CATEGORIAS_UI = [
             ("PRIMARIA", "🎒 Primaria", "#2563eb"),
