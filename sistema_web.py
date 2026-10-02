@@ -100,6 +100,13 @@ try:
 except ImportError:
     SIMULADOR_NOMB_OK = False
 
+# Simulacros Yachay — lectura óptica de la hoja oficial + ranking + historial
+try:
+    from simulacro_yachay import tab_simulacros_yachay
+    SIMULACROS_YACHAY_OK = True
+except ImportError:
+    SIMULACROS_YACHAY_OK = False
+
 import base64  # Para Aula Virtual
 
 # python-docx para leer archivos Word
@@ -6306,6 +6313,7 @@ ARCHIVOS_BACKUP = [
     "notas.json",                # Notas registradas
     "diagnostico_data.json",      # Exámenes de diagnóstico
     "historial_evaluaciones.json", # Historial evaluaciones
+    "simulacros_yachay.json",      # Simulacros Yachay (claves, hojas leídas)
 ]
 
 
@@ -23518,6 +23526,7 @@ def _restaurar_desde_drive_backups():
         ("asistencias.json", "asistencias.json"),
         ("diagnostico.json", "diagnostico.json"),
         ("resultados.json", "resultados.json"),
+        ("simulacros_yachay.json", "simulacros_yachay.json"),
     ]
     for nombre_drive, nombre_local in archivos:
         try:
@@ -23626,6 +23635,22 @@ def _guardar_historial_evaluaciones(hist_data):
         return True
     except Exception:
         return False
+
+def _abrir_simulacros_yachay(config):
+    """Abre el módulo de Simulacros Yachay conectándolo a la matrícula,
+    al historial de evaluaciones (portal) y al respaldo en Drive."""
+    if not SIMULACROS_YACHAY_OK:
+        st.error("No se encontró simulacro_yachay.py / omr_yachay.py en el servidor.")
+        return
+    tab_simulacros_yachay(
+        config,
+        cargar_matricula=BaseDatos.cargar_matricula,
+        cargar_historial=_cargar_historial_evaluaciones,
+        guardar_historial=_guardar_historial_evaluaciones,
+        backup_json=_drive_backup_json,
+        puede_borrar=puede_borrar,
+    )
+
 
 def _cargar_diagnostico():
     """Carga diagnósticos guardados desde JSON local"""
@@ -35228,6 +35253,7 @@ def main():
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
+                ("🧾", "Simulacros Yachay", "simulacros_yachay", "#7a1f5c"),
                 ("🎵", "Música Eventos", "musica_eventos", "#be123c"),
             ]
 
@@ -35334,6 +35360,8 @@ def main():
                 tab_aprendo_jugando(config)
             elif mod == "academia_cepru":
                 tab_academia_cepru(config)
+            elif mod == "simulacros_yachay":
+                _abrir_simulacros_yachay(config)
             elif mod == "musica_eventos":
                 tab_musica_eventos(config)
 
@@ -35387,6 +35415,7 @@ def main():
                 ("📖", "Fichas Primaria", "fichas_primaria", "#059669"),
                 ("🎮", "Aprendo Jugando", "aprendo_jugando", "#c13d8c"),
                 ("🎓", "Academia CEPRU", "academia_cepru", "#6d28d9"),
+                ("🧾", "Simulacros Yachay", "simulacros_yachay", "#7a1f5c"),
                 ("🎵", "Música Eventos", "musica_eventos", "#be123c"),
             ]
             if st.session_state.rol == "admin":
@@ -35523,6 +35552,8 @@ def main():
                 tab_aprendo_jugando(config)
             elif mod == "academia_cepru":
                 tab_academia_cepru(config)
+            elif mod == "simulacros_yachay":
+                _abrir_simulacros_yachay(config)
             elif mod == "musica_eventos":
                 tab_musica_eventos(config)
             elif mod == "simulador_nomb":
