@@ -990,6 +990,12 @@ def tab_simulacros_yachay(config=None, cargar_matricula=None, cargar_historial=N
                    "guardar_historial": guardar_historial, "backup_json": backup_json,
                    "puede_borrar": puede_borrar})
     st.header("🧾 Simulacros Yachay — Lectura de hojas y ranking")
+    if Path(HOJA_PDF).exists():
+        st.download_button("📄 Descargar HOJA DE RESPUESTAS en blanco (PDF para imprimir)",
+                           Path(HOJA_PDF).read_bytes(), "Hoja_Yachay.pdf", "application/pdf",
+                           key="simy_dl_hoja_top", type="primary")
+    st.caption("Flujo: 1) ⚙️ Configurar el examen (claves y cursos) → 2) 📸 Escanear las hojas → "
+               "3) 🏆 Ranking (imprimir / publicar) → 4) 📚 Historial del estudiante.")
     datos = cargar_datos()
     t = st.tabs(["⚙️ Configurar", "📸 Escanear", "🏆 Ranking", "📚 Historial", "📊 Análisis"])
     with t[0]:

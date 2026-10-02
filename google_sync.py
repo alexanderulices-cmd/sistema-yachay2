@@ -677,6 +677,57 @@ class GoogleSync:
             st.error(f"Error registrando asistencia: {e}")
             return False
 
+    def guardar_asistencias_lote(self, lista):
+        """Sincroniza VARIOS registros de asistencia con UNA sola lectura de
+        la hoja y escrituras agrupadas (batch). Reemplaza a llamar
+        guardar_asistencia() por cada escaneo, que leía toda la hoja y hacía
+        hasta 6 escrituras por alumno (superaba el límite de Google de
+        60 peticiones/min en la hora de entrada). Devuelve True si todo
+        se guardó; lanza excepción si Google falla (para reintentar)."""
+        ws = self._get_hoja('asistencias')
+        if ws is None or not lista:
+            return False
+        cols = COLUMNAS['asistencias']
+        valores = ws.get_all_values()
+        if not valores:
+            ws.append_row(cols)
+            valores = [cols]
+        cab = valores[0]
+        idx_col = {c: (cab.index(c) if c in cab else cols.index(c)) for c in cols}
+        pos = {}
+        for i, row in enumerate(valores[1:], start=2):
+            if len(row) > max(idx_col['fecha'], idx_col['dni']):
+                pos[(str(row[idx_col['fecha']]).strip(), str(row[idx_col['dni']]).strip())] = i
+        actualizaciones, nuevas, nuevas_por_clave = [], [], {}
+        campos = ('hora_entrada', 'hora_salida', 'tardanza',
+                  'hora_entrada_tarde', 'hora_salida_tarde')
+        for datos in lista:
+            clave = (str(datos.get('fecha', '')).strip(), str(datos.get('dni', '')).strip())
+            fila = pos.get(clave)
+            if fila:
+                for campo in campos:
+                    v = datos.get(campo, '')
+                    if v:
+                        c = idx_col[campo] + 1
+                        actualizaciones.append({'range': gspread.utils.rowcol_to_a1(fila, c),
+                                                'values': [[v]]})
+            elif clave in nuevas_por_clave:
+                # Mismo alumno dos veces en la misma tanda: completar la fila nueva
+                fila_nueva = nuevas_por_clave[clave]
+                for campo in campos:
+                    v = datos.get(campo, '')
+                    if v:
+                        fila_nueva[cols.index(campo)] = v
+            else:
+                fila_nueva = [datos.get(c, '') for c in cols]
+                nuevas.append(fila_nueva)
+                nuevas_por_clave[clave] = fila_nueva
+        if actualizaciones:
+            ws.batch_update(actualizaciones, value_input_option='USER_ENTERED')
+        if nuevas:
+            ws.append_rows(nuevas, value_input_option='USER_ENTERED')
+        return True
+
     def guardar_resultados_examen(self, eval_id, titulo, fecha, docente,
                                    grado, areas_info, resultados_lista):
         """Guarda todos los resultados de una evaluación"""

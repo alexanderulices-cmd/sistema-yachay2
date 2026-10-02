@@ -1,0 +1,43 @@
+SISTEMA YACHAY — INSTALACIÓN EN COMPUTADORA (Windows)
+=====================================================
+
+A) USAR EL SISTEMA EN LA PC (recomendado, 3 pasos)
+   1. Instalar Python 3.11 desde https://www.python.org/downloads/
+      ¡Marcar la casilla "Add Python to PATH" al instalar!
+   2. Doble clic en  1_INSTALAR_WINDOWS.bat   (una sola vez, con internet)
+   3. Doble clic en  2_ABRIR_YACHAY.bat       (abre el sistema en el navegador)
+   Los datos se guardan en esta misma carpeta (archivos .json y .xlsx).
+   Haga copia de la carpeta de vez en cuando.
+
+B) CREAR EL PROGRAMA .EXE (para llevarlo a otras PCs sin Python)
+   4. Después de A), doble clic en  3_CREAR_EXE.bat
+      Al terminar aparece la carpeta  dist\SistemaYachay\  con SistemaYachay.exe
+      Copie esa carpeta COMPLETA (no solo el .exe) a la otra computadora.
+   El .exe abre una ventana negra (el servidor) y luego el navegador.
+   No cierre la ventana negra mientras use el sistema.
+
+C) MÓDULO SIMULACROS YACHAY (hoja de respuestas óptica)
+   Configurar (claves y cursos) → Escanear (fotos/PDF) → Ranking (PDF, Excel,
+   imagen, boletas) → Publicar → Historial del estudiante.
+   Fotos: de frente, con luz, que se vean los 4 cuadrados negros de las esquinas.
+
+D) TELEGRAM
+   En Notif. Telegram hay una pestaña nueva "📬 Registro de envíos" que muestra
+   cada intento y el motivo exacto si no llegó (padre no suscrito, bloqueó al
+   bot, token incorrecto, etc.).
+
+E) ASISTENCIA (mejoras de esta versión)
+   - El escaneo ya no espera a Google: la marcación se guarda al instante y un
+     proceso de fondo la sube a Google Sheets/Drive con reintentos. En la
+     pantalla de Asistencia se ve "☁️ ... pendiente(s)" si algo falta por subir
+     y un botón "Reintentar ahora".
+   - El Top del Mes ahora cuenta las tardanzas (antes no las contaba) y
+     funciona sin internet (lee el archivo local).
+   - Los respaldos grandes en Google Sheets se guardan por fragmentos (antes
+     fallaban en silencio al superar 50 000 caracteres por celda).
+
+F) ¿DÓNDE ESTÁ CADA COSA?
+   - Cargar un examen (claves + cursos): Simulacros Yachay → ⚙️ Configurar
+   - Descargar la hoja de respuestas: botón grande arriba en Simulacros Yachay
+   - Escanear hojas: Simulacros Yachay → 📸 Escanear
+   - Ranking e impresión: Simulacros Yachay → 🏆 Ranking

@@ -441,6 +441,96 @@ def _gs():
         return None
 
 # ================================================================
+# HOJA "config" DE GOOGLE SHEETS — GUARDADO POR FRAGMENTOS
+# ================================================================
+# Una celda de Google Sheets admite máximo 50 000 caracteres. Varios
+# respaldos (asistencias_json, historial_evaluaciones, resultados_json...)
+# se guardaban en UNA celda: al crecer durante el año el guardado fallaba
+# en silencio y el respaldo quedaba viejo. Ahora el texto se parte en
+# filas "clave", "clave#2", "clave#3"... y al leer se vuelve a unir.
+_GS_CELL_MAX = 45000
+_GS_CFG_LOCK = _threading_base.Lock()
+
+
+def _gs_config_set(clave, texto, ws=None):
+    """Guarda `texto` (str) bajo `clave` en la hoja config, en fragmentos.
+    Devuelve True/False."""
+    try:
+        if ws is None:
+            gs = _gs()
+            if not gs:
+                return False
+            ws = gs._get_hoja('config')
+            if not ws:
+                return False
+        texto = "" if texto is None else str(texto)
+        partes = [texto[i:i + _GS_CELL_MAX] for i in range(0, len(texto), _GS_CELL_MAX)] or [""]
+        with _GS_CFG_LOCK:
+            filas = ws.get_all_values()
+            pos = {}
+            for i, row in enumerate(filas):
+                if row and row[0] and (row[0] == clave or row[0].startswith(clave + "#")):
+                    pos[row[0]] = i + 1
+            updates, nuevas = [], []
+            for k, parte in enumerate(partes):
+                nombre = clave if k == 0 else f"{clave}#{k + 1}"
+                if nombre in pos:
+                    updates.append({'range': f"A{pos[nombre]}:B{pos[nombre]}", 'values': [[nombre, parte]]})
+                else:
+                    nuevas.append([nombre, parte])
+            # Fragmentos sobrantes de un guardado anterior más largo → vaciar
+            for nombre, fila in pos.items():
+                if "#" in nombre and int(nombre.split("#")[1]) > len(partes):
+                    updates.append({'range': f"A{fila}:B{fila}", 'values': [["", ""]]})
+            if updates:
+                ws.batch_update(updates, value_input_option='RAW')
+            if nuevas:
+                ws.append_rows(nuevas, value_input_option='RAW')
+        return True
+    except Exception:
+        return False
+
+
+def _gs_config_unir(filas):
+    """De las filas de la hoja config devuelve {clave: texto_unido}."""
+    partes = {}
+    for row in filas:
+        if not row or not row[0]:
+            continue
+        k, v = row[0], (row[1] if len(row) > 1 else "")
+        if "#" in k and k.rsplit("#", 1)[1].isdigit():
+            base, n = k.rsplit("#", 1)
+            partes.setdefault(base, {})[int(n)] = v
+        else:
+            partes.setdefault(k, {})[1] = v
+    return {k: "".join(d[i] for i in sorted(d)) for k, d in partes.items()}
+
+
+def _gs_config_get(clave, ws=None):
+    """Lee el texto completo (unido) de `clave` en la hoja config, o None."""
+    try:
+        if ws is None:
+            gs = _gs()
+            if not gs:
+                return None
+            ws = gs._get_hoja('config')
+            if not ws:
+                return None
+        return _gs_config_unir(ws.get_all_values()).get(clave)
+    except Exception:
+        return None
+
+
+def _escribir_json_atomico(ruta, datos):
+    """Escribe JSON en un archivo temporal y luego lo renombra: si el
+    proceso se corta a mitad, el archivo original nunca queda corrupto."""
+    tmp = f"{ruta}.tmp"
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(datos, f, indent=2, ensure_ascii=False, default=str)
+    os.replace(tmp, ruta)
+
+
+# ================================================================
 # ZONA HORARIA PERÚ (UTC-5)
 # ================================================================
 
@@ -1404,6 +1494,120 @@ def puede_borrar():
 # BASE DE DATOS — ALUMNOS Y DOCENTES
 # ================================================================
 
+# ================================================================
+# COLA DE SINCRONIZACIÓN DE ASISTENCIAS (hilo de fondo)
+# ================================================================
+_ASIS_LOCK = _threading_base.Lock()
+_ASIS_PENDIENTES = "asistencias_pendientes.json"
+_ASIS_WORKER = {"hilo": None, "ultimo_backup": 0.0, "ultimo_error": "", "ultimo_ok": ""}
+
+
+def _asis_leer_pendientes():
+    try:
+        if Path(_ASIS_PENDIENTES).exists():
+            with open(_ASIS_PENDIENTES, 'r', encoding='utf-8') as f:
+                d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        pass
+    return []
+
+
+def _asis_escribir_pendientes(lista):
+    try:
+        _escribir_json_atomico(_ASIS_PENDIENTES, lista)
+    except Exception:
+        pass
+
+
+def _asis_encolar(registro):
+    """Agrega un registro a la cola persistente y asegura que el hilo
+    de sincronización esté corriendo."""
+    with _ASIS_LOCK:
+        pend = _asis_leer_pendientes()
+        # Si ya hay un pendiente del mismo día/DNI, se reemplaza (trae horas más completas)
+        pend = [p for p in pend if not (p.get('fecha') == registro['fecha'] and p.get('dni') == registro['dni'])]
+        pend.append(registro)
+        _asis_escribir_pendientes(pend)
+    _asis_arrancar_worker()
+
+
+def _asis_arrancar_worker():
+    h = _ASIS_WORKER.get("hilo")
+    if h is not None and h.is_alive():
+        return
+    _ASIS_WORKER["hilo"] = _iniciar_hilo(_asis_worker_loop)
+
+
+def _asis_sincronizar_pendientes():
+    """Un intento de enviar todo lo pendiente a Google Sheets. Devuelve
+    cuántos registros quedaron pendientes."""
+    with _ASIS_LOCK:
+        pend = _asis_leer_pendientes()
+    if not pend:
+        return 0
+    gs = _gs()
+    if not gs:
+        return len(pend)
+    try:
+        if hasattr(gs, 'guardar_asistencias_lote'):
+            gs.guardar_asistencias_lote(pend)
+        else:
+            for r in pend:
+                gs.guardar_asistencia(r)
+    except Exception as e:
+        _ASIS_WORKER["ultimo_error"] = f"{hora_peru_str()} {str(e)[:120]}"
+        return len(pend)
+    with _ASIS_LOCK:
+        actual = _asis_leer_pendientes()
+        enviados = {(p.get('fecha'), p.get('dni'), json.dumps(p, sort_keys=True)) for p in pend}
+        restantes = [p for p in actual if (p.get('fecha'), p.get('dni'), json.dumps(p, sort_keys=True)) not in enviados]
+        _asis_escribir_pendientes(restantes)
+    _ASIS_WORKER["ultimo_ok"] = hora_peru_str()
+    _ASIS_WORKER["ultimo_error"] = ""
+    return len(restantes)
+
+
+def _asis_respaldo_completo():
+    """Copia asistencias.json completo a Drive y a la hoja config (fragmentado)."""
+    try:
+        with _ASIS_LOCK:
+            if not Path(ARCHIVO_ASISTENCIAS).exists():
+                return
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+        try:
+            _drive_backup_json("asistencias.json", datos)
+        except Exception:
+            pass
+        _gs_config_set('asistencias_json', json.dumps(datos, ensure_ascii=False))
+        _ASIS_WORKER["ultimo_backup"] = time.time()
+    except Exception:
+        pass
+
+
+def _asis_worker_loop():
+    """Hilo de fondo: cada pocos segundos envía lo pendiente; si Google
+    falla, espera más (hasta 2 min) y reintenta. Hace el respaldo completo
+    como máximo una vez por minuto. Termina tras 15 min sin trabajo."""
+    espera, inactivo = 3, 0
+    while inactivo < 900:
+        time.sleep(espera)
+        try:
+            quedan = _asis_sincronizar_pendientes()
+        except Exception:
+            quedan = 1
+        if quedan:
+            inactivo = 0
+            espera = min(espera * 2, 120)
+            continue
+        espera = 3
+        inactivo += espera
+        if (time.time() - _ASIS_WORKER["ultimo_backup"]) > 60 and _ASIS_WORKER.get("hay_cambios", True):
+            _ASIS_WORKER["hay_cambios"] = False
+            _asis_respaldo_completo()
+
+
 class BaseDatos:
 
     @staticmethod
@@ -1860,81 +2064,56 @@ class BaseDatos:
 
     @staticmethod
     def guardar_asistencia(dni, nombre, tipo, hora, es_docente=False):
+        """Guarda la marcación en asistencias.json (con bloqueo y escritura
+        atómica) y la deja en una COLA que un hilo de fondo sincroniza con
+        Google Sheets y Drive. Antes se sincronizaba de forma síncrona en
+        cada escaneo (lectura completa de la hoja + hasta 7 escrituras +
+        subida a Drive): el kiosco tardaba varios segundos por alumno y en
+        la hora punta se superaba el límite de Google (60 peticiones/min),
+        perdiendo registros en silencio. Ahora el escaneo es instantáneo y
+        los registros pendientes se reintentan hasta que de verdad se
+        guardan (la cola se persiste en asistencias_pendientes.json)."""
         fecha_hoy = fecha_peru_str()
-        asistencias = {}
-        if Path(ARCHIVO_ASISTENCIAS).exists():
-            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
-                asistencias = json.load(f)
-        if fecha_hoy not in asistencias:
-            asistencias[fecha_hoy] = {}
-        if dni not in asistencias[fecha_hoy]:
-            asistencias[fecha_hoy][dni] = {
-                'nombre': nombre, 'entrada': '', 'salida': '',
-                'tardanza': '', 'entrada_tarde': '', 'salida_tarde': '',
-                'es_docente': es_docente
-            }
-        # Mapear tipos a campos
-        campo = tipo.lower().replace(' ', '_')
-        if campo in ('entrada', 'salida', 'tardanza', 'entrada_tarde', 'salida_tarde'):
-            asistencias[fecha_hoy][dni][campo] = hora
-        asistencias[fecha_hoy][dni]['nombre'] = nombre
-        with open(ARCHIVO_ASISTENCIAS, 'w', encoding='utf-8') as f:
-            json.dump(asistencias, f, indent=2, ensure_ascii=False)
+        dni = str(dni).strip()
+        with _ASIS_LOCK:
+            asistencias = {}
+            if Path(ARCHIVO_ASISTENCIAS).exists():
+                try:
+                    with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                        asistencias = json.load(f)
+                except Exception:
+                    asistencias = {}
+            if fecha_hoy not in asistencias:
+                asistencias[fecha_hoy] = {}
+            if dni not in asistencias[fecha_hoy]:
+                asistencias[fecha_hoy][dni] = {
+                    'nombre': nombre, 'entrada': '', 'salida': '',
+                    'tardanza': '', 'entrada_tarde': '', 'salida_tarde': '',
+                    'es_docente': es_docente
+                }
+            campo = tipo.lower().replace(' ', '_')
+            if campo in ('entrada', 'salida', 'tardanza', 'entrada_tarde', 'salida_tarde'):
+                asistencias[fecha_hoy][dni][campo] = hora
+            asistencias[fecha_hoy][dni]['nombre'] = nombre
+            _escribir_json_atomico(ARCHIVO_ASISTENCIAS, asistencias)
+            reg = dict(asistencias[fecha_hoy][dni])
         # Invalidar caché inmediatamente para que el render muestre el registro
         st.session_state['_asis_invalidar'] = True
         st.session_state.pop('_cache_asis_hoy', None)
-        # Sync GSheets y Drive en hilo separado — NO bloquea la UI
-        _snap_asis = dict(asistencias)
-        _snap_dni = str(dni)
-        _snap_nom = str(nombre)
-        _snap_doc = bool(es_docente)
-        _snap_fecha = str(fecha_hoy)
-        def _sync_bg():
-            try: _drive_backup_json("asistencias.json", _snap_asis)
-            except Exception: pass
-            try:
-                gs = _gs()
-                if gs:
-                    indice = st.session_state.get('_indice_dni', {})
-                    grado = str(indice.get(_snap_dni, {}).get('Grado', ''))
-                    nivel = str(indice.get(_snap_dni, {}).get('Nivel', ''))
-                    reg = _snap_asis.get(_snap_fecha, {}).get(_snap_dni, {})
-                    gs.guardar_asistencia({
-                        'fecha': _snap_fecha, 'dni': _snap_dni, 'nombre': _snap_nom,
-                        'tipo_persona': 'docente' if _snap_doc else 'alumno',
-                        'hora_entrada': reg.get('entrada', ''),
-                        'hora_salida': reg.get('salida', ''),
-                        'tardanza': reg.get('tardanza', ''),
-                        'hora_entrada_tarde': reg.get('entrada_tarde', ''),
-                        'hora_salida_tarde': reg.get('salida_tarde', ''),
-                        'grado': grado, 'nivel': nivel,
-                    })
-                    # Guardar el JSON completo en hoja config — para restaurar Top del Mes
-                    try:
-                        ws_cfg = gs._get_hoja('config')
-                        if ws_cfg:
-                            import json as _jsg
-                            _asis_str = _jsg.dumps(_snap_asis, ensure_ascii=False)
-                            _rows_cfg = ws_cfg.get_all_values()
-                            _found = False
-                            for _ri, _rw in enumerate(_rows_cfg):
-                                if _rw and _rw[0] == 'asistencias_json':
-                                    ws_cfg.update_cell(_ri+1, 2, _asis_str)
-                                    _found = True; break
-                            if not _found:
-                                ws_cfg.append_row(['asistencias_json', _asis_str])
-                    except Exception: pass
-            except Exception: pass
-        # IMPORTANTE: se llama de forma SINCRONA (esperando a que termine),
-        # no como hilo en segundo plano. Antes usaba un hilo 'daemon', que
-        # en Python se mata de inmediato si el script principal termina
-        # antes — y como el kiosco llama a st.rerun() casi al instante
-        # despues de guardar localmente, el hilo casi nunca alcanzaba a
-        # terminar de mandar el registro a Google Sheets/Drive, perdiendo
-        # el historial en cada redeploy (que borra el archivo local).
-        # Cuesta un poco mas de tiempo por registro, pero garantiza que
-        # de verdad quede guardado.
-        _sync_bg()
+
+        indice = st.session_state.get('_indice_dni', {}) or {}
+        info_p = indice.get(dni, {}) or {}
+        _ASIS_WORKER["hay_cambios"] = True
+        _asis_encolar({
+            'fecha': fecha_hoy, 'dni': dni, 'nombre': str(nombre),
+            'tipo_persona': 'docente' if es_docente else 'alumno',
+            'hora_entrada': reg.get('entrada', ''),
+            'hora_salida': reg.get('salida', ''),
+            'tardanza': reg.get('tardanza', ''),
+            'hora_entrada_tarde': reg.get('entrada_tarde', ''),
+            'hora_salida_tarde': reg.get('salida_tarde', ''),
+            'grado': str(info_p.get('Grado', '')), 'nivel': str(info_p.get('Nivel', '')),
+        })
 
     @staticmethod
     def obtener_asistencias_hoy():
@@ -6314,6 +6493,8 @@ ARCHIVOS_BACKUP = [
     "diagnostico_data.json",      # Exámenes de diagnóstico
     "historial_evaluaciones.json", # Historial evaluaciones
     "simulacros_yachay.json",      # Simulacros Yachay (claves, hojas leídas)
+    "asistencias_pendientes.json", # Cola de asistencias por subir a Google
+    "telegram_envios.json",        # Registro de envíos Telegram
 ]
 
 
@@ -13217,12 +13398,43 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
 
     _conteo = {"PRIMARIA": {}, "SECUNDARIA": {}, "PREUNIVERSITARIO": {}, "DOCENTE": {}}
 
+    # ── Fuente de datos: archivo local (lo más reciente, funciona sin
+    #    internet) + Google Sheets (días que el local no tenga). ──────
+    _filas_reco = []
+    _vistos_reco = set()
+    try:
+        if Path(ARCHIVO_ASISTENCIAS).exists():
+            with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as _fl:
+                _loc = json.load(_fl)
+            for _f_l, _dias in _loc.items():
+                if not isinstance(_dias, dict):
+                    continue
+                for _d_l, _r_l in _dias.items():
+                    if not isinstance(_r_l, dict):
+                        continue
+                    _filas_reco.append({
+                        'fecha': _f_l, 'dni': _d_l, 'nombre': _r_l.get('nombre', ''),
+                        'tipo_persona': 'docente' if _r_l.get('es_docente') else 'alumno',
+                        'hora_entrada': _r_l.get('entrada', ''), 'tardanza': _r_l.get('tardanza', '')})
+                    _vistos_reco.add((str(_f_l), _dni_para_cruce(_d_l)))
+    except Exception:
+        pass
     try:
         gs = _gs()
         if gs:
             ws_am = gs._get_hoja('asistencias')
             if ws_am:
                 for _row in ws_am.get_all_records():
+                    _k_r = (str(_row.get('fecha', '')).strip(), _dni_para_cruce(_row.get('dni', '')))
+                    if _k_r not in _vistos_reco:
+                        _filas_reco.append(_row)
+    except Exception:
+        pass
+
+    try:
+        if True:
+            if True:
+                for _row in _filas_reco:
                     _diag["total_leidos"] += 1
                     _f_gs = str(_row.get('fecha', '')).strip()
                     _d_gs_crudo = str(_row.get('dni', '')).strip()
@@ -13230,6 +13442,7 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
                     _nom_g = str(_row.get('nombre', '')).strip()
                     _tipo_g = str(_row.get('tipo_persona', '')).strip().lower()
                     _ent_g = str(_row.get('hora_entrada', '')).strip()
+                    _tar_g = str(_row.get('tardanza', '')).strip()
                     if not _f_gs or not _d_gs:
                         _diag["sin_fecha_o_dni"] += 1
                         continue
@@ -13260,17 +13473,23 @@ def _calcular_top_mes_por_categoria(mes_sel=None, anio_sel=None):
                         _conteo[categoria][_d_gs] = {
                             "nombre": _nom_g, "puntual": 0, "tardanza": 0, "total": 0}
                     _conteo[categoria][_d_gs]["total"] += 1
-                    _es_tarde = False
-                    try:
-                        if _ent_g:
-                            _h, _m = int(_ent_g[:2]), int(_ent_g[3:5])
-                            _es_tarde = (_h * 60 + _m > 8 * 60 + 5)
-                    except Exception:
-                        pass
-                    if _ent_g and not _es_tarde:
-                        _conteo[categoria][_d_gs]["puntual"] += 1
-                    elif _es_tarde:
+                    # El sistema ya decide al marcar: hora en "hora_entrada" =
+                    # puntual, hora en "tardanza" = tardanza. Antes solo se miraba
+                    # hora_entrada y las tardanzas NUNCA se contaban.
+                    if _tar_g:
                         _conteo[categoria][_d_gs]["tardanza"] += 1
+                    elif _ent_g:
+                        _es_tarde = False
+                        try:
+                            _h, _m = int(_ent_g[:2]), int(_ent_g[3:5])
+                            _lim = HORARIOS.get(_horario_activo(), HORARIOS['normal'])['minutos']
+                            _es_tarde = (_h * 60 + _m > _lim)
+                        except Exception:
+                            pass
+                        if _es_tarde:
+                            _conteo[categoria][_d_gs]["tardanza"] += 1
+                        else:
+                            _conteo[categoria][_d_gs]["puntual"] += 1
     except Exception:
         pass
 
@@ -14183,6 +14402,22 @@ def tab_asistencias():
         _idx  = st.session_state.get('_indice_dni', {})
         _n_doc = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'docente')
         _n_alu = sum(1 for v in _idx.values() if isinstance(v, dict) and v.get('_tipo') == 'alumno')
+
+    # ── Estado de sincronización con Google (cola de fondo) ───────────
+    _pend_sync = _asis_leer_pendientes()
+    if _pend_sync:
+        _asis_arrancar_worker()   # por si el servidor se reinició con pendientes
+        _msg_sync = f"☁️ {len(_pend_sync)} marcación(es) pendiente(s) de subir a Google Sheets (se reintenta solo)."
+        if _ASIS_WORKER.get("ultimo_error"):
+            _msg_sync += f" Último error: {_ASIS_WORKER['ultimo_error']}"
+        st.warning(_msg_sync)
+        if st.button("🔄 Reintentar ahora", key="btn_asis_sync_now"):
+            with st.spinner("Sincronizando..."):
+                _q = _asis_sincronizar_pendientes()
+            (st.success if _q == 0 else st.error)(
+                "✅ Todo sincronizado." if _q == 0 else f"Quedan {_q}. {_ASIS_WORKER.get('ultimo_error','')}")
+    elif _ASIS_WORKER.get("ultimo_ok"):
+        st.caption(f"☁️ Google Sheets al día (última subida {_ASIS_WORKER['ultimo_ok']}).")
 
     # ── Estado visual ──────────────────────────────────────────────────
     _col_a, _col_b = st.columns(2)
@@ -15268,6 +15503,7 @@ def tab_asistencias():
                                     'nombre': _nom,
                                     'entrada': _ent_g,
                                     'salida': _sal_g,
+                                    'tardanza': str(_row.get('tardanza', '')).strip(),
                                     'es_docente': 'doc' in _tipo,
                                 }
             except Exception:
@@ -15283,9 +15519,10 @@ def tab_asistencias():
                 _ent  = _dv.get("entrada","") or _dv.get("tardanza","")
                 _tard = bool(_dv.get("tardanza",""))
                 try:
-                    if _ent:
+                    if _ent and not _tard:
                         _h,_m = int(_ent[:2]),int(_ent[3:5])
-                        _tard = _tard or (_h*60+_m > 8*60+5)
+                        _lim_sem = HORARIOS.get(_horario_activo(), HORARIOS['normal'])['minutos']
+                        _tard = (_h*60+_m > _lim_sem)
                 except Exception:
                     pass
                 _dst = _conteo_doc if _dv.get("es_docente",False) else _conteo_alu
@@ -15484,13 +15721,12 @@ def tab_asistencias():
                 if _gs_inst2 and not _drive_data:
                     _ws_cfg2 = _gs_inst2._get_hoja('config')
                     if _ws_cfg2:
-                        for _row_cfg in _ws_cfg2.get_all_values():
-                            if _row_cfg and _row_cfg[0] == 'asistencias_json' and len(_row_cfg) > 1:
-                                _gs_full = json.loads(_row_cfg[1])
-                                for _fk_g2, _fd_g2 in _gs_full.items():
-                                    if _fk_g2 not in _asis_mes:
-                                        _asis_mes[_fk_g2] = _fd_g2
-                                break
+                        _txt_cfg = _gs_config_get('asistencias_json', _ws_cfg2)
+                        if _txt_cfg:
+                            _gs_full = json.loads(_txt_cfg)
+                            for _fk_g2, _fd_g2 in _gs_full.items():
+                                if _fk_g2 not in _asis_mes:
+                                    _asis_mes[_fk_g2] = _fd_g2
             except Exception:
                 pass
             try:
@@ -16053,27 +16289,87 @@ def _tg_gs_get(clave):
     except Exception: pass
     return None
 
-def _tg_cargar_config():
-    """Carga config del bot: primero GSheets (permanente), fallback local."""
-    # 1. GSheets — persistente entre reinicios de Streamlit Cloud
+# Caché COMPARTIDA (a nivel de proceso, no de sesión) de la configuración
+# y de los suscriptores de Telegram. Antes se leía Google Sheets en CADA
+# marcación de asistencia: con varios escaneos seguidos se superaba el
+# límite de lecturas de Sheets, la lectura fallaba, el token quedaba vacío y
+# la notificación se perdía EN SILENCIO. Ahora se lee como máximo cada 5 min.
+_TG_CACHE = {}
+_TG_CACHE_TTL = 300
+_TG_LOG_PATH = "telegram_envios.json"
+_TG_LOCK = _threading_base.Lock()
+
+
+def _tg_cache_get(clave):
+    v = _TG_CACHE.get(clave)
+    if v and (time.time() - v[1]) < _TG_CACHE_TTL:
+        return v[0]
+    return None
+
+
+def _tg_cache_set(clave, valor):
+    _TG_CACHE[clave] = (valor, time.time())
+
+
+def _tg_registrar_envio(dni, nombre, tipo, ok, detalle):
+    """Deja constancia de cada intento de envío (éxito o error) para que el
+    administrador pueda ver en la pestaña Telegram por qué no llegó."""
+    try:
+        with _TG_LOCK:
+            lista = []
+            if Path(_TG_LOG_PATH).exists():
+                try:
+                    with open(_TG_LOG_PATH, "r", encoding="utf-8") as f:
+                        lista = json.load(f)
+                except Exception:
+                    lista = []
+            lista.append({"fecha": hora_peru().strftime("%d/%m/%Y %H:%M:%S"), "dni": str(dni),
+                          "nombre": str(nombre), "tipo": str(tipo), "ok": bool(ok),
+                          "detalle": str(detalle)[:200]})
+            lista = lista[-300:]
+            with open(_TG_LOG_PATH, "w", encoding="utf-8") as f:
+                json.dump(lista, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
+
+def _tg_leer_log():
+    try:
+        if Path(_TG_LOG_PATH).exists():
+            with open(_TG_LOG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+
+def _tg_cargar_config(forzar=False):
+    """Carga config del bot: caché (5 min) → GSheets → archivo local."""
+    if not forzar:
+        c = _tg_cache_get('cfg')
+        if c is not None:
+            return c
     cfg_gs = _tg_gs_get('telegram_config')
     if cfg_gs:
-        # Sincronizar local también
         try:
             with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as f:
                 json.dump(cfg_gs, f, ensure_ascii=False)
         except Exception: pass
+        _tg_cache_set('cfg', cfg_gs)
         return cfg_gs
-    # 2. Archivo local (si GSheets no disponible)
     try:
         if Path(_TG_CONFIG_PATH).exists():
             with open(_TG_CONFIG_PATH,"r",encoding="utf-8") as f:
-                return json.load(f)
+                cfg_loc = json.load(f)
+            if cfg_loc:
+                _tg_cache_set('cfg', cfg_loc)
+            return cfg_loc
     except Exception: pass
     return {}
 
 def _tg_guardar_config(data):
     """Guarda config en GSheets Y local — doble respaldo."""
+    _tg_cache_set('cfg', data)
     try:
         with open(_TG_CONFIG_PATH,"w",encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -16093,8 +16389,12 @@ def _tg_normalizar_claves_subs(subs_dict):
         normalizado[clave_norm] = valor
     return normalizado
 
-def _tg_cargar_subs():
-    """Carga suscriptores: primero GSheets, fallback local."""
+def _tg_cargar_subs(forzar=False):
+    """Carga suscriptores: caché (5 min) → GSheets → archivo local."""
+    if not forzar:
+        c = _tg_cache_get('subs')
+        if c is not None:
+            return c
     subs_gs = _tg_gs_get('telegram_suscriptores')
     if subs_gs:
         subs_gs = _tg_normalizar_claves_subs(subs_gs)
@@ -16102,18 +16402,23 @@ def _tg_cargar_subs():
             with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
                 json.dump(subs_gs, f, ensure_ascii=False)
         except Exception: pass
+        _tg_cache_set('subs', subs_gs)
         return subs_gs
     try:
         if Path(_TG_SUBS_PATH).exists():
             with open(_TG_SUBS_PATH,"r",encoding="utf-8") as f:
-                return _tg_normalizar_claves_subs(json.load(f))
+                subs_loc = _tg_normalizar_claves_subs(json.load(f))
+            if subs_loc:
+                _tg_cache_set('subs', subs_loc)
+            return subs_loc
     except Exception: pass
     return {}
 
 def _tg_guardar_subs(data):
     """Guarda suscriptores en GSheets Y local — doble respaldo. Devuelve
-    True/False según si el guardado en GSheets (el que de verdad importa,
-    porque es lo que se lee en cada notificación) tuvo éxito."""
+    True/False según si el guardado en GSheets tuvo éxito."""
+    data = _tg_normalizar_claves_subs(data)
+    _tg_cache_set('subs', data)
     try:
         with open(_TG_SUBS_PATH,"w",encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -16137,6 +16442,21 @@ def _tg_llamar_api(endpoint, token, params=None, timeout=8):
             return json.loads(resp.read().decode())
     except Exception as e:
         err = str(e)
+        # Telegram responde 400/401/403 con un JSON que explica el motivo
+        # (ej. "chat not found", "bot was blocked by the user"); léelo.
+        try:
+            cuerpo = e.read().decode() if hasattr(e, "read") else ""
+            if cuerpo:
+                desc = json.loads(cuerpo).get("description", "")
+                if desc:
+                    err = f"{getattr(e, 'code', '')} — {desc}"
+                    if "blocked" in desc:
+                        err += " (el padre bloqueó al bot; debe volver a abrirlo y escribir /start)"
+                    if "chat not found" in desc:
+                        err += " (el padre nunca escribió al bot o el chat_id es incorrecto)"
+                    return {"ok": False, "error": err}
+        except Exception:
+            pass
         # Detectar 401 específicamente y dar mensaje claro
         if "401" in err:
             return {"ok": False, "error": "401 — Token incorrecto. Copia el token completo desde BotFather sin espacios ni saltos de línea."}
@@ -16144,26 +16464,53 @@ def _tg_llamar_api(endpoint, token, params=None, timeout=8):
             return {"ok": False, "error": "404 — Bot no encontrado. Verifica que el token sea correcto."}
         return {"ok": False, "error": err}
 
-def _tg_enviar(chat_id, mensaje, token):
-    """Envía mensaje Telegram. No bloquea (se llama desde hilo)."""
-    try:
-        result = _tg_llamar_api("sendMessage", token,
-                                 {"chat_id": str(chat_id), "text": mensaje, "parse_mode": "HTML"})
-        return result.get("ok", False)
-    except Exception:
-        return False
+def _tg_enviar(chat_id, mensaje, token, registro=None):
+    """Envía mensaje Telegram (2 intentos). Si se pasa `registro`
+    (dni, nombre, tipo) deja constancia del resultado en el log."""
+    ok, detalle = False, ""
+    for intento in range(2):
+        try:
+            result = _tg_llamar_api("sendMessage", token,
+                                     {"chat_id": str(chat_id), "text": mensaje, "parse_mode": "HTML"},
+                                     timeout=12)
+            ok = bool(result.get("ok", False))
+            detalle = "enviado" if ok else result.get("error") or result.get("description") or str(result)
+        except Exception as e:
+            ok, detalle = False, str(e)
+        if ok or ("blocked" in detalle or "not found" in detalle or "401" in detalle):
+            break
+        time.sleep(2)
+    if registro:
+        _tg_registrar_envio(registro[0], registro[1], registro[2], ok, detalle)
+    return ok
+
+
+def _tg_escapar(texto):
+    """Escapa &, < y > para que un nombre raro no rompa el parse_mode HTML."""
+    return (str(texto).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
     """Envía notificación de asistencia al padre si está suscrito. Hilo separado."""
     cfg = _tg_cargar_config()
     token = _tg_limpiar_token(cfg.get("bot_token",""))
-    if not token: return
+    if not token:
+        _tg_registrar_envio(dni_alumno, nombre_alumno, tipo, False,
+                            "Sin token de bot configurado (o no se pudo leer de Google Sheets)")
+        return
     subs = _tg_cargar_subs()
     _cod_norm = normalizar_codigo_estudiante(dni_alumno)
     entry = subs.get(_cod_norm) or subs.get(str(dni_alumno).strip())
-    if not entry: return
+    if not entry:
+        if subs:   # solo registrar cuando sí hay suscriptores (evita llenar el log)
+            _tg_registrar_envio(dni_alumno, nombre_alumno, tipo, False,
+                                "El padre no está suscrito (no escribió /start DNI al bot)")
+        return
     chat_id = entry if isinstance(entry,(int,str)) else entry.get("chat_id","")
-    if not chat_id: return
+    if not chat_id:
+        _tg_registrar_envio(dni_alumno, nombre_alumno, tipo, False, "Suscripción sin chat_id")
+        return
+    nombre_alumno = _tg_escapar(nombre_alumno)
+    grado = _tg_escapar(grado)
 
     iconos = {"entrada":"✅","tardanza":"⏰","salida":"🔵",
               "entrada_tarde":"🌤","salida_tarde":"🌙"}
@@ -16184,7 +16531,7 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"\U0001f4de 084-750071\n\n"
         f"{pie_institucional(turno=tipo)}"
     )
-    _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token))
+    _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token, (dni_alumno, nombre_alumno, tipo)))
 
 def _tg_obtener_chat_id(token):
     """Obtiene los últimos updates del bot. Usa 'offset' guardado para
@@ -23034,16 +23381,7 @@ def _sync_resultados_a_gs():
                 data = json.load(f)
             ws = gs._get_hoja('config')
             if ws:
-                data_str = json.dumps(data, ensure_ascii=False, default=str)
-                all_vals = ws.get_all_values()
-                found = False
-                for idx, row in enumerate(all_vals):
-                    if row and row[0] == 'resultados_json':
-                        ws.update_cell(idx + 1, 2, data_str)
-                        found = True
-                        break
-                if not found:
-                    ws.append_row(['resultados_json', data_str])
+                _gs_config_set('resultados_json', json.dumps(data, ensure_ascii=False, default=str), ws)
     except Exception:
         pass
 
@@ -23551,10 +23889,9 @@ def _restaurar_datos_desde_gs():
             return
         data = ws.get_all_values()
         restaurados = 0
-        for row in data:
-            if not row or len(row) < 2:
+        for key, val in _gs_config_unir(data).items():
+            if not val:
                 continue
-            key, val = row[0], row[1]
             try:
                 if key == 'historial_evaluaciones' and not Path('historial_evaluaciones.json').exists():
                     with open('historial_evaluaciones.json', 'w', encoding='utf-8') as f:
@@ -23616,20 +23953,7 @@ def _guardar_historial_evaluaciones(hist_data):
         except Exception: pass
         # Sync a Google Sheets
         try:
-            gs = _gs()
-            if gs:
-                ws = gs._get_hoja('config')
-                if ws:
-                    data_str = json.dumps(hist_data, ensure_ascii=False, default=str)
-                    all_data = ws.get_all_values()
-                    found = False
-                    for idx, row in enumerate(all_data):
-                        if row and row[0] == 'historial_evaluaciones':
-                            ws.update_cell(idx + 1, 2, data_str)
-                            found = True
-                            break
-                    if not found:
-                        ws.append_row(['historial_evaluaciones', data_str])
+            _gs_config_set('historial_evaluaciones', json.dumps(hist_data, ensure_ascii=False, default=str))
         except Exception:
             pass
         return True
@@ -23672,16 +23996,7 @@ def _guardar_diagnostico(data):
             if gs:
                 ws = gs._get_hoja('config')
                 if ws:
-                    data_str = json.dumps(data, ensure_ascii=False, default=str)
-                    all_data = ws.get_all_values()
-                    found = False
-                    for idx, row in enumerate(all_data):
-                        if row and row[0] == 'diagnostico_data':
-                            ws.update_cell(idx + 1, 2, data_str)
-                            found = True
-                            break
-                    if not found:
-                        ws.append_row(['diagnostico_data', data_str])
+                    _gs_config_set('diagnostico_data', json.dumps(data, ensure_ascii=False, default=str), ws)
         except Exception:
             pass
         # Backup en Drive
@@ -35674,11 +35989,49 @@ def tab_telegram_notificaciones(config):
     st.header("📱 Notificaciones Telegram para Padres")
     st.caption("Los padres reciben notificacion en su celular cada vez que su hijo registra entrada o salida.")
 
-    cfg = _tg_cargar_config()
-    subs = _tg_cargar_subs()
+    cfg = _tg_cargar_config(forzar=True)
+    subs = _tg_cargar_subs(forzar=True)
     token = _tg_limpiar_token(cfg.get("bot_token",""))
 
-    _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres"])
+    _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres",
+                       "📬 Registro de envíos"])
+
+    # ── TAB 4: REGISTRO DE ENVÍOS (diagnóstico real) ─────────────
+    with _sub_tg[3]:
+        st.markdown("#### 📬 Últimos intentos de envío de asistencia")
+        st.caption("Aquí se ve CADA intento: si llegó o por qué no llegó. Antes estos errores "
+                   "quedaban ocultos. Se guarda en este servidor; puede vaciarse al reiniciar.")
+        _log_tg = _tg_leer_log()
+        if not _log_tg:
+            st.info("Todavía no hay envíos registrados. Marca una asistencia de un alumno cuyo padre esté suscrito.")
+        else:
+            import pandas as _pd_log
+            _df_log = _pd_log.DataFrame(_log_tg[::-1][:100])
+            _df_log["estado"] = _df_log["ok"].map({True: "✅ Enviado", False: "❌ Falló"})
+            st.dataframe(_df_log[["fecha", "dni", "nombre", "tipo", "estado", "detalle"]],
+                         use_container_width=True, hide_index=True)
+            _fallos = sum(1 for x in _log_tg if not x.get("ok"))
+            st.caption(f"Total registrados: {len(_log_tg)} · Fallidos: {_fallos}")
+        st.markdown("---")
+        st.markdown("**🧪 Simular la notificación de asistencia de un alumno (envío real):**")
+        _dni_sim = st.text_input("DNI del alumno:", key="tg_sim_dni")
+        if _dni_sim and st.button("📤 Enviar notificación de prueba al padre", key="tg_sim_btn", type="primary"):
+            _subs_sim = _tg_cargar_subs(forzar=True)
+            _e_sim = _subs_sim.get(normalizar_codigo_estudiante(_dni_sim))
+            if not token:
+                st.error("No hay token configurado.")
+            elif not _e_sim:
+                st.error("Ese DNI no tiene padre suscrito. Debe escribir /start DNI al bot y luego "
+                         "pulsar 'Obtener nuevos suscriptores'.")
+            else:
+                _cid_sim = _e_sim if isinstance(_e_sim, (int, str)) else _e_sim.get("chat_id", "")
+                _ok_sim = _tg_enviar(_cid_sim, "✅ <b>YACHAY PRO - Prueba</b>\nLa notificación de asistencia "
+                                     "está funcionando correctamente.", token, registro=(_dni_sim, "PRUEBA", "prueba"))
+                if _ok_sim:
+                    st.success("✅ Enviado. Revisa el celular del padre.")
+                else:
+                    _ult = (_tg_leer_log() or [{}])[-1].get("detalle", "")
+                    st.error(f"❌ No se pudo enviar: {_ult}")
 
     # ── TAB 1: CONFIGURAR TOKEN ──────────────────────────────────
     with _sub_tg[0]:
