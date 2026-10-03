@@ -187,6 +187,63 @@ def alinear(img_bgr):
 
 
 # ----------------------------------------------------------------
+# CÓDIGO QR DE LA HOJA (identifica el simulacro)
+# ----------------------------------------------------------------
+# Zona del QR en la hoja enderezada (esquina derecha del encabezado).
+QR_ZONA = (1960, 80, 2440, 430)        # x0, y0, x1, y1
+QR_PREFIJO = "YCH1|"
+
+
+def leer_qr(img_bgr=None, warped=None):
+    """Lee el QR impreso en la hoja. Devuelve el texto o '' si no hay/no se lee.
+    Prueba primero la zona esperada de la hoja enderezada (rápido y fiable) y
+    luego, como respaldo, la hoja completa y la foto original."""
+    if not HAS_CV2:
+        return ""
+    det = cv2.QRCodeDetector()
+
+    def _probar(g):
+        if g is None or g.size == 0:
+            return ""
+        variantes = [g]
+        try:
+            variantes.append(cv2.threshold(g, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1])
+            variantes.append(cv2.adaptiveThreshold(g, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                   cv2.THRESH_BINARY, 41, 8))
+        except cv2.error:
+            pass
+        for v in variantes:
+            try:
+                txt, _, _ = det.detectAndDecode(v)
+            except cv2.error:
+                txt = ""
+            if txt:
+                return txt
+        return ""
+
+    if warped is not None:
+        g = warped if warped.ndim == 2 else cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
+        x0, y0, x1, y1 = QR_ZONA
+        zona = g[y0:y1, x0:x1]
+        for f in (1.0, 0.6, 1.5):
+            z = zona if f == 1.0 else cv2.resize(zona, None, fx=f, fy=f, interpolation=cv2.INTER_AREA
+                                                 if f < 1 else cv2.INTER_CUBIC)
+            z = cv2.copyMakeBorder(z, 40, 40, 40, 40, cv2.BORDER_REPLICATE)
+            t = _probar(z)
+            if t:
+                return t
+        t = _probar(cv2.resize(g, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA))
+        if t:
+            return t
+    if img_bgr is not None:
+        g = img_bgr if img_bgr.ndim == 2 else cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        t = _probar(g)
+        if t:
+            return t
+    return ""
+
+
+# ----------------------------------------------------------------
 # LECTURA DE BURBUJAS
 # ----------------------------------------------------------------
 def _preparar(warped):
@@ -297,6 +354,7 @@ def leer_hoja(img_bgr, num_preguntas=100):
         res["alertas"].append(f"{n_duda} pregunta(s) con marca débil (revisar)")
     if not alineada:
         res["alertas"].append(msg)
+    res["qr"] = leer_qr(img_bgr, warped)
     res["_warped"] = warped
     return res
 

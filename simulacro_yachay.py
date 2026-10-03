@@ -14,6 +14,7 @@
 # todo el ranking se actualiza solo).
 # ================================================================
 
+import html as _html
 import io
 import json
 import re
@@ -30,6 +31,31 @@ ARCHIVO_SIM = "simulacros_yachay.json"
 HOJA_PDF = "Hoja_Yachay_en_blanco.pdf"
 LOGO = "logo_academia.png"
 GRUPOS = ["A", "B", "C", "D"]
+
+# ----------------------------------------------------------------
+# TEMARIO OFICIAL POR ÁREA (igual que el examen de admisión UNSAAC)
+# (curso, n.º de preguntas) — el orden es el orden del examen
+# ----------------------------------------------------------------
+PLANTILLAS_AREA = {
+    "A": [("Aritmética", 14), ("Álgebra", 10), ("Geometría y Trigonometría", 14),
+          ("Competencia Comunicativa", 14), ("Física", 14), ("Química", 14)],
+    "B": [("Aritmética", 14), ("Álgebra", 10), ("Competencia Comunicativa", 14),
+          ("Biología", 14), ("Física", 14), ("Química", 14)],
+    "C": [("Aritmética", 14), ("Álgebra", 10), ("Competencia Comunicativa", 14),
+          ("Historia", 12), ("Geografía", 12), ("Economía", 10), ("Educación Cívica", 8)],
+    "D": [("Aritmética", 14), ("Álgebra", 10), ("Competencia Comunicativa", 14),
+          ("Historia", 12), ("Geografía", 12), ("Filosofía y Lógica", 10), ("Educación Cívica", 8)],
+}
+MODALIDADES = {
+    "Grupo AB  (áreas A y B juntas)": ["A", "B"],
+    "Grupo CD  (áreas C y D juntas)": ["C", "D"],
+    "Solo Área A": ["A"],
+    "Solo Área B": ["B"],
+    "Solo Área C": ["C"],
+    "Solo Área D": ["D"],
+    "Las 4 áreas (A, B, C y D)": ["A", "B", "C", "D"],
+}
+MOD_PERSONALIZADO = "✏️ Personalizado (cursos y rangos a mi gusto)"
 
 CURSOS_EJEMPLO = [
     ("Razonamiento Matemático", 1, 10), ("Aritmética y Álgebra", 11, 20),
@@ -118,8 +144,70 @@ def _matricula():
 # ================================================================
 # CALIFICACIÓN
 # ================================================================
+def grupos_sim(sim):
+    """Áreas/grupos que participan en este simulacro (['A','B'], ['C'], ...)."""
+    g = sim.get("grupos")
+    if g:
+        return list(g)
+    ca = sim.get("cursos_area")
+    if ca:
+        return [x for x in GRUPOS if x in ca]
+    return list(GRUPOS)
+
+
+def grupo_efectivo(sim, grupo):
+    """Área con la que se califica una hoja. None = no se pudo determinar."""
+    ca = sim.get("cursos_area")
+    if not ca:
+        return grupo                      # simulacros antiguos: un solo esquema
+    if grupo in ca:
+        return grupo
+    if len(ca) == 1:
+        return next(iter(ca))
+    return None
+
+
+def cursos_union(sim):
+    """Todos los cursos del simulacro (sin repetir nombres), en orden."""
+    ca = sim.get("cursos_area")
+    if not ca:
+        return sim.get("cursos", [])
+    vistos, out = set(), []
+    for g in grupos_sim(sim):
+        for c in ca.get(g, []):
+            if c["nombre"] not in vistos:
+                vistos.add(c["nombre"])
+                out.append(c)
+    return out
+
+
+def cursos_de(sim, grupo):
+    ca = sim.get("cursos_area")
+    if not ca:
+        return sim.get("cursos", [])
+    ge = grupo_efectivo(sim, grupo)
+    return ca[ge] if ge else cursos_union(sim)
+
+
+def n_preguntas(sim, grupo=None):
+    ca = sim.get("cursos_area")
+    if not ca:
+        return int(sim.get("num_preguntas", 100))
+    cs = cursos_de(sim, grupo)
+    return max((c["hasta"] for c in cs), default=int(sim.get("num_preguntas", 80)))
+
+
+def etiqueta_modalidad(sim):
+    if sim.get("cursos_area"):
+        return "Áreas " + " + ".join(grupos_sim(sim))
+    return "Personalizado"
+
+
 def clave_para(sim, grupo):
     claves = sim.get("claves", {})
+    if sim.get("cursos_area"):
+        ge = grupo_efectivo(sim, grupo)
+        return claves.get(ge, "") if ge else ""
     if grupo in claves and claves[grupo]:
         return claves[grupo]
     for g in GRUPOS:
@@ -128,16 +216,28 @@ def clave_para(sim, grupo):
     return ""
 
 
-def puntaje_maximo(sim):
-    return sum((c["hasta"] - c["desde"] + 1) * float(c["correcta"]) for c in sim["cursos"])
+def _pmax(cursos):
+    return sum((c["hasta"] - c["desde"] + 1) * float(c["correcta"]) for c in cursos)
+
+
+def puntaje_maximo(sim, grupo=None):
+    ca = sim.get("cursos_area")
+    if not ca:
+        return _pmax(sim["cursos"])
+    if grupo is not None:
+        ge = grupo_efectivo(sim, grupo)
+        if ge:
+            return _pmax(ca[ge])
+    return max((_pmax(v) for v in ca.values()), default=0)
 
 
 def calificar(sim, hoja):
     clave = clave_para(sim, hoja.get("grupo", ""))
+    cursos = cursos_de(sim, hoja.get("grupo", ""))
     resp = hoja.get("respuestas", "")
     blanco = float(sim.get("puntaje_blanco", 0))
     out = {"correctas": 0, "incorrectas": 0, "blancos": 0, "puntaje": 0.0, "cursos": {}}
-    for c in sim["cursos"]:
+    for c in cursos:
         cc = ci = cb = 0
         for q in range(c["desde"] - 1, c["hasta"]):
             k = clave[q] if q < len(clave) else ""
@@ -160,13 +260,14 @@ def calificar(sim, hoja):
         out["blancos"] += cb
         out["puntaje"] += pts
     out["puntaje"] = round(out["puntaje"], 2)
-    mx = puntaje_maximo(sim)
+    mx = puntaje_maximo(sim, hoja.get("grupo", ""))
     out["nota"] = round(max(out["puntaje"], 0) / mx * 20, 2) if mx else 0.0
     return out
 
 
 def tabla_ranking(sim, filtro_aula=None, filtro_grupo=None):
     filas = []
+    nombres_c = [x["nombre"] for x in cursos_union(sim)]
     for hid, h in sim.get("hojas", {}).items():
         if filtro_aula and h.get("aula") != filtro_aula:
             continue
@@ -175,8 +276,8 @@ def tabla_ranking(sim, filtro_aula=None, filtro_grupo=None):
         c = calificar(sim, h)
         f = {"ID": hid, "DNI": h.get("dni", ""), "Apellidos y Nombres": h.get("nombre", "") or "(sin nombre)",
              "Aula": h.get("aula", ""), "Grupo": h.get("grupo", "")}
-        for cn, cv in c["cursos"].items():
-            f[cn] = cv["correctas"]
+        for cn in nombres_c:
+            f[cn] = c["cursos"][cn]["correctas"] if cn in c["cursos"] else None
         f.update({"Correctas": c["correctas"], "Incorrectas": c["incorrectas"],
                   "Blancos": c["blancos"], "Puntaje": c["puntaje"], "Nota": c["nota"]})
         filas.append(f)
@@ -236,7 +337,7 @@ def pdf_ranking(sim, df, titulo_extra="", detalle_cursos=True):
     ancho, alto = pag
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=pag)
-    cursos = [x["nombre"] for x in sim["cursos"]]
+    cursos = [x["nombre"] for x in cursos_union(sim)]
     cols = ["Puesto", "Apellidos y Nombres", "DNI", "Aula", "Grupo"]
     if detalle_cursos:
         cols += cursos
@@ -248,6 +349,10 @@ def pdf_ranking(sim, df, titulo_extra="", detalle_cursos=True):
     cab = [Paragraph("Pto" if x == "Puesto" else x, est_cab) for x in cols]
 
     def _fmt(x, v):
+        if v is None or (isinstance(v, float) and pd.isna(v)):
+            return "-"
+        if x in cursos:
+            return str(int(v))
         if x == "Apellidos y Nombres":
             return str(v)[:40]
         if x == "Nota":
@@ -313,7 +418,7 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
     c.setFillColor(colors.black)
 
     data = [["Curso", "Preg.", "Correctas", "Incorrectas", "En blanco", "Puntaje", "Nota /20"]]
-    for cu in sim["cursos"]:
+    for cu in cursos_de(sim, hoja.get("grupo", "")):
         r = res["cursos"][cu["nombre"]]
         data.append([cu["nombre"], f"{cu['desde']}-{cu['hasta']}", r["correctas"], r["incorrectas"],
                      r["blancos"], f"{r['puntaje']:g}", f"{r['nota']:.2f}"])
@@ -334,7 +439,7 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
     c.setFont("Helvetica-Bold", 9)
     c.drawString(40, y, "Detalle por pregunta (marcada / clave):  ✔ correcta   ✘ incorrecta   — en blanco")
     y -= 14
-    n = sim["num_preguntas"]
+    n = n_preguntas(sim, hoja.get("grupo", ""))
     resp = hoja.get("respuestas", "")
     c.setFont("Helvetica", 7.5)
     col_w, fil_h, por_col = 103, 11.2, 25
@@ -427,7 +532,7 @@ def excel_ranking(sim, df):
             fila["Respuestas"] = h.get("respuestas", "")
             filas.append(fila)
         pd.DataFrame(filas).to_excel(w, sheet_name="Detalle", index=False)
-        pd.DataFrame([{"Grupo": g, "Clave": sim["claves"].get(g, "")} for g in GRUPOS]).to_excel(
+        pd.DataFrame([{"Grupo": g, "Clave": sim["claves"].get(g, "")} for g in grupos_sim(sim)]).to_excel(
             w, sheet_name="Claves", index=False)
     return buf.getvalue()
 
@@ -455,7 +560,7 @@ def publicar_en_historial(sim):
         ranking.append(fila)
     hist[f"SIMYACHAY_{sim['id']}"] = {
         "titulo": sim["titulo"], "fecha": sim.get("fecha", ""), "periodo": sim.get("periodo", ""),
-        "tipo": "simulacro_yachay", "areas": [{"nombre": c["nombre"]} for c in sim["cursos"]],
+        "tipo": "simulacro_yachay", "areas": [{"nombre": c["nombre"]} for c in cursos_union(sim)],
         "ranking": ranking, "total": len(ranking), "puntaje_maximo": puntaje_maximo(sim)}
     return bool(guardar(hist))
 
@@ -470,6 +575,232 @@ def quitar_de_historial(sim):
 
 
 # ================================================================
+# HOJA DE RESPUESTAS CON QR (una hoja por simulacro)
+# ================================================================
+BASE_HOJA = "hoja_yachay_base.jpg"       # hoja limpia (sin código de barras falso)
+_PX = 595.2 / 2480.0                     # píxeles de la hoja (300 dpi) -> puntos PDF
+_PINK = (240, 225, 255)                  # BGR del rosado de la hoja
+_BASE_CACHE = {}
+
+
+def _base_hoja_jpg():
+    """Bytes JPG de la hoja base (2480 x 3508). Si no existe el archivo base, lo
+    construye a partir de la hoja antigua Hoja_Yachay_en_blanco.pdf."""
+    if "jpg" in _BASE_CACHE:
+        return _BASE_CACHE["jpg"]
+    if Path(BASE_HOJA).exists():
+        _BASE_CACHE["jpg"] = Path(BASE_HOJA).read_bytes()
+        return _BASE_CACHE["jpg"]
+    import numpy as np
+    import cv2
+    try:
+        import pymupdf as fitz
+    except ImportError:
+        import fitz
+    doc = fitz.open(HOJA_PDF)
+    raw = doc.extract_image(doc[0].get_images()[0][0])["image"]
+    if "yachay-v2" in str(doc.metadata.get("subject", "")):
+        _BASE_CACHE["jpg"] = raw
+        return raw
+    im = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)
+    out = im.copy()
+    out[3253:3328, 176:730] = _PINK             # código de barras que no servía
+    out[3246:3328, 1860:2300] = _PINK           # número de serie
+    out[3224:3252, 1395:1730] = _PINK           # "SIMULACRO BIMESTRAL"
+    logo = im[176:326, 2076:2276].copy()         # logo derecho -> se corre a la izquierda
+    out[176:326, 2076:2276] = _PINK
+    out[176:326, 1850:2050] = logo
+    ok, buf = cv2.imencode(".jpg", out, [cv2.IMWRITE_JPEG_QUALITY, 92])
+    _BASE_CACHE["jpg"] = buf.tobytes()
+    return _BASE_CACHE["jpg"]
+
+
+def _matriz_qr(texto):
+    """Matriz de módulos del QR (True = oscuro), con 2 módulos de margen."""
+    try:
+        import cv2
+        enc = cv2.QRCodeEncoder.create() if hasattr(cv2.QRCodeEncoder, "create") else cv2.QRCodeEncoder_create()
+        return enc.encode(texto) < 128
+    except Exception:
+        import numpy as np
+        import qrcode                      # respaldo (ya está en requirements.txt)
+        qr = qrcode.QRCode(border=2, error_correction=qrcode.constants.ERROR_CORRECT_M)
+        qr.add_data(texto)
+        qr.make(fit=True)
+        return np.array(qr.get_matrix(), dtype=bool)
+
+
+def codigo_qr(sim):
+    return omr.QR_PREFIJO + str(sim.get("id", ""))
+
+
+def _latin(t, n=60):
+    t = str(t or "").replace("\n", " ").replace("—", "-").replace("–", "-").replace("·", "-").strip()
+    return "".join(ch if ord(ch) < 256 else "?" for ch in t)[:n]
+
+
+def hoja_pdf(sim=None):
+    """PDF A4 de la hoja de respuestas. Con `sim`: lleva el QR del simulacro, su título
+    y su fecha impresos. Sin `sim`: hoja genérica con líneas para escribir a mano."""
+    from reportlab.lib import colors
+    from reportlab.lib.utils import ImageReader
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+    from reportlab.pdfgen import canvas
+    Wp, Hp = 595.2, 841.92
+    X = lambda px: px * _PX
+    Y = lambda py: Hp - py * _PX
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(Wp, Hp))
+    c.setTitle("Hoja de respuestas Yachay")
+    c.setSubject("yachay-v2")
+    c.drawImage(ImageReader(io.BytesIO(_base_hoja_jpg())), 0, 0, Wp, Hp)
+
+    gris = colors.HexColor("#6b7280")
+    negro = colors.HexColor("#111111")
+    # ---- pie de hoja: título y fecha del simulacro ----
+    c.setFillColor(gris)
+    c.setFont("Helvetica-Bold", 6.5)
+    c.drawString(X(232), Y(3266), "SIMULACRO")
+    c.drawString(X(1600), Y(3266), "FECHA")
+    if sim:
+        titulo = _latin(sim.get("titulo"), 70).upper()
+        tam = 12.5
+        while tam > 8 and stringWidth(titulo, "Helvetica-Bold", tam) > X(1280):
+            tam -= 0.5
+        c.setFillColor(negro)
+        c.setFont("Helvetica-Bold", tam)
+        c.drawString(X(232), Y(3314), titulo)
+        c.setFont("Helvetica-Bold", 12.5)
+        c.drawString(X(1600), Y(3314), _latin(sim.get("fecha"), 16))
+        c.setFillColor(gris)
+        c.setFont("Helvetica", 6.5)
+        c.drawRightString(X(2290), Y(3266), "Cód. " + _latin(sim.get("id"), 24))
+    else:
+        c.setStrokeColor(negro)
+        c.setLineWidth(0.6)
+        c.line(X(232), Y(3314), X(1480), Y(3314))
+        c.line(X(1600), Y(3314), X(2090), Y(3314))
+
+    # ---- QR (esquina derecha del encabezado) ----
+    if sim and sim.get("id"):
+        m = _matriz_qr(codigo_qr(sim))
+        n = m.shape[0]
+        mod = 7.6                                   # px por módulo -> QR de ~220 px (18.6 mm)
+        x0, y0 = 2082, 142
+        c.setFillColor(colors.white)
+        c.rect(X(x0 - 6), Y(y0 + n * mod + 6), X(n * mod + 12), X(n * mod + 12), fill=1, stroke=0)
+        c.setFillColor(colors.black)
+        for f in range(n):                         # tramos horizontales: sin rendijas
+            j = 0
+            while j < n:
+                if m[f, j]:
+                    k = j
+                    while k + 1 < n and m[f, k + 1]:
+                        k += 1
+                    c.rect(X(x0 + j * mod), Y(y0 + (f + 1) * mod + 0.4),
+                           X((k - j + 1) * mod + 0.4), X(mod + 0.4), fill=1, stroke=0)
+                    j = k + 1
+                else:
+                    j += 1
+    c.showPage()
+    c.save()
+    return buf.getvalue()
+
+
+def boton_hoja(sim, key, etiqueta=None):
+    """Botón de descarga de la hoja (con QR si hay simulacro guardado)."""
+    try:
+        ck = ("pdf", (sim or {}).get("id"), (sim or {}).get("titulo"), (sim or {}).get("fecha"))
+        if ck not in _BASE_CACHE:
+            _BASE_CACHE[ck] = hoja_pdf(sim)
+        data = _BASE_CACHE[ck]
+    except Exception as e:
+        st.error(f"No se pudo generar la hoja: {e}")
+        return
+    nombre = "Hoja_Yachay_" + re.sub(r"\W+", "_", sim["titulo"]) + ".pdf" if sim else "Hoja_Yachay.pdf"
+    st.download_button(etiqueta or ("🖨️ Hojas de ESTE simulacro (con QR)" if sim else
+                                    "📄 Hoja en blanco (genérica)"),
+                       data, nombre, "application/pdf", key=key)
+
+
+# ================================================================
+# VERIFICACIÓN DE DNI
+# ================================================================
+def analizar_dnis_matricula(df):
+    """Detecta DNI mal escritos en la matrícula: más de 8 dígitos (celular, dígito
+    verificador), menos de 8, vacíos o repetidos. Devuelve un DataFrame."""
+    if df is None or df.empty:
+        return pd.DataFrame()
+    df = df.copy()
+    df.columns = [str(c).strip() for c in df.columns]
+    col_n = "Nombre" if "Nombre" in df.columns else ("Alumno" if "Alumno" in df.columns else None)
+    if "DNI" not in df.columns or not col_n:
+        return pd.DataFrame()
+    filas, vistos = [], {}
+    for _, r in df.iterrows():
+        crudo = str(r.get("DNI") or "").strip()
+        if crudo.lower() in ("nan", "none"):
+            crudo = ""
+        dig = re.sub(r"\D", "", crudo)
+        nom = str(r.get(col_n, "") or "").strip().upper()
+        grado = (str(r.get("Grado", "") or "").strip() + " " + str(r.get("Seccion", "") or "").strip()).strip()
+        grado = grado.replace("nan", "").strip()
+        prob, sug = "", ""
+        if not dig:
+            prob = "Sin DNI"
+        elif len(dig) == 8:
+            vistos.setdefault(dig, []).append(nom)
+            if crudo != dig:
+                prob, sug = "Tiene espacios o símbolos", dig
+        elif len(dig) < 8:
+            prob, sug = f"Faltan dígitos ({len(dig)})", dig.zfill(8)
+        elif len(dig) == 9 and dig[0] == "9":
+            prob = "9 dígitos que empieza con 9: parece un CELULAR, no un DNI"
+        elif len(dig) == 9:
+            prob, sug = "9 dígitos: sobra el dígito verificador (el del guion en el DNI)", dig[:8]
+        else:
+            prob = f"{len(dig)} dígitos: demasiado largo (¿celular o dos números juntos?)"
+        if prob:
+            filas.append({"Alumno": nom, "Grado": grado, "DNI en matrícula": crudo, "Dígitos": len(dig),
+                          "Problema": prob, "DNI sugerido": sug})
+    for dig, noms in vistos.items():
+        if len(noms) > 1:
+            for nom in noms:
+                filas.append({"Alumno": nom, "Grado": "", "DNI en matrícula": dig, "Dígitos": 8,
+                              "Problema": f"DNI repetido en {len(noms)} alumnos", "DNI sugerido": ""})
+    return pd.DataFrame(filas)
+
+
+def resolver_dni(leido, mat):
+    """Cruza el DNI leído de la hoja con la matrícula.
+    Devuelve dict: dni (el que se guarda), info (datos del alumno), avisos, sug (DNI sugerido)."""
+    r = {"dni": leido, "info": mat.get(leido, {}), "avisos": [], "sug": None}
+    if r["info"]:
+        return r
+    d8 = leido if re.fullmatch(r"\d{8}", leido or "") else ""
+    if d8:                                    # matrícula con 9 dígitos = 8 + verificador
+        largos = [k for k in mat if len(k) > 8 and k[:8] == d8]
+        if len(largos) == 1:
+            k = largos[0]
+            r.update({"dni": k, "info": mat[k]})
+            r["avisos"].append(f"En la matrícula su DNI figura como {k} ({len(k)} dígitos); "
+                               "corrígelo a 8 dígitos")
+            return r
+    if len(leido or "") == 8:                 # 1 dígito mal leído (o ilegible '?' / '_')
+        cands = []
+        for k in mat:
+            if len(k) < 8:
+                continue
+            dif = sum(1 for a, b in zip(leido, k[:8]) if a.isdigit() and a != b)
+            if dif <= 1:
+                cands.append((dif, k))
+        cands.sort()
+        if cands and (len(cands) == 1 or cands[0][0] < cands[1][0]):
+            r["sug"] = cands[0][1]
+    return r
+
+
+# ================================================================
 # INTERFAZ
 # ================================================================
 def _selector_simulacro(datos, key):
@@ -478,9 +809,66 @@ def _selector_simulacro(datos, key):
         st.info("Aún no hay simulacros. Créalo en la pestaña ⚙️ Configurar.")
         return None
     ids = sorted(sims, key=lambda i: sims[i].get("creado", ""), reverse=True)
-    etiqueta = {i: f"{sims[i]['titulo']} — {sims[i].get('fecha', '')} ({len(sims[i].get('hojas', {}))} hojas)"
+    etiqueta = {i: f"{sims[i]['titulo']} — {etiqueta_modalidad(sims[i])} — {sims[i].get('fecha', '')} ({len(sims[i].get('hojas', {}))} hojas)"
                 for i in ids}
     return st.selectbox("Simulacro:", ids, format_func=lambda i: etiqueta[i], key=key)
+
+
+def _html_area(g, cursos):
+    """Tabla de un área con el mismo aspecto que el temario del examen UNSAAC."""
+    filas, tot = "", 0
+    for i, c in enumerate(cursos):
+        n = c["hasta"] - c["desde"] + 1
+        tot += n
+        bg = "#f1f1f1" if i % 2 == 0 else "#ffffff"
+        filas += (f"<tr style='background:{bg}'><td style='padding:5px 10px'>{_html.escape(c['nombre'])}</td>"
+                  f"<td style='text-align:center'>{n}</td>"
+                  f"<td style='text-align:center;color:#666'>{c['desde']}–{c['hasta']}</td></tr>")
+    return (f"<table style='width:100%;border-collapse:collapse;font-size:13.5px;color:#111;background:#fff'>"
+            f"<tr><th colspan=3 style='background:#9b1b2f;color:#fff;padding:7px;text-align:center'>"
+            f"ÁREA «{g}»</th></tr>"
+            f"<tr style='background:#f4f4f4;font-weight:700;font-size:12px'><td style='padding:5px 10px'>ASIGNATURA</td>"
+            f"<td style='text-align:center'>N.º DE PREGUNTAS</td><td style='text-align:center'>PREGUNTAS</td></tr>"
+            f"{filas}<tr style='font-weight:800;background:#f4f4f4'><td style='padding:5px 10px'>TOTAL</td>"
+            f"<td style='text-align:center'>{tot}</td><td></td></tr></table>")
+
+
+def _cursos_desde_df(df, correcta, incorrecta):
+    cursos, pos, errores = [], 1, []
+    for _, r in df.iterrows():
+        nom = str(r.get("Curso") or "").strip()
+        if not nom or nom.lower() == "nan":
+            continue
+        try:
+            k = int(r.get("Preguntas") or 0)
+        except Exception:
+            errores.append(f"Preguntas inválidas en '{nom}'.")
+            continue
+        if k <= 0:
+            continue
+        cursos.append({"nombre": nom, "desde": pos, "hasta": pos + k - 1,
+                       "correcta": correcta, "incorrecta": incorrecta})
+        pos += k
+    return cursos, errores
+
+
+def _bloque_final_config(datos, sim, sid, pfx):
+    if sid and (not _HOOKS["puede_borrar"] or _HOOKS["puede_borrar"]()):
+        with st.expander("🗑️ Eliminar simulacro"):
+            if st.checkbox("Confirmo que quiero borrarlo con todas sus hojas", key=pfx + "delok"):
+                if st.button("Eliminar definitivamente", key=pfx + "del"):
+                    quitar_de_historial(sim)
+                    datos["simulacros"].pop(sid, None)
+                    guardar_datos(datos)
+                    st.success("Eliminado.")
+                    st.rerun()
+
+    st.markdown("---")
+    if sid:
+        boton_hoja(sim, pfx + "dl_hoja_cfg")
+        st.caption("Estas hojas llevan el QR de este simulacro, su título y su fecha.")
+    else:
+        st.caption("Guarda el simulacro y aquí aparecerá la hoja con su QR para imprimir.")
 
 
 def _tab_configurar(datos):
@@ -494,15 +882,148 @@ def _tab_configurar(datos):
     else:
         sid = None
         sim = {"titulo": "Simulacro Bimestral", "fecha": datetime.now().strftime("%d/%m/%Y"),
-               "periodo": "", "num_preguntas": 100, "puntaje_blanco": 0, "claves": {},
-               "cursos": [{"nombre": n, "desde": a, "hasta": b, "correcta": 1.0, "incorrecta": 0.0}
-                          for n, a, b in CURSOS_EJEMPLO], "hojas": {}}
+               "periodo": "", "num_preguntas": 80, "puntaje_blanco": 0, "claves": {},
+               "cursos": [], "hojas": {}}
     pfx = f"simy_{sid or 'nuevo'}_"
 
     c1, c2, c3 = st.columns([2, 1, 1])
     titulo = c1.text_input("Nombre del simulacro:", sim["titulo"], key=pfx + "tit")
     fecha = c2.text_input("Fecha:", sim.get("fecha", ""), key=pfx + "fec")
     periodo = c3.text_input("Periodo / Bimestre:", sim.get("periodo", ""), key=pfx + "per")
+
+    # ---- ¿Qué se evalúa? (igual que al postular a la UNSAAC) ----
+    st.markdown("#### 🎯 ¿Qué vas a evaluar?")
+    opciones = list(MODALIDADES) + [MOD_PERSONALIZADO]
+    es_legacy = bool(sid and not sim.get("cursos_area"))
+    if es_legacy:
+        idx = len(opciones) - 1
+    elif sid:
+        actual = list(grupos_sim(sim))
+        idx = next((k for k, (_, v) in enumerate(MODALIDADES.items()) if v == actual), 0)
+    else:
+        idx = 0
+    bloqueado = bool(sid and sim.get("hojas"))
+    eleccion = st.selectbox("Modalidad:", opciones, index=idx, key=pfx + "modalidad", disabled=bloqueado,
+                            help="Cada área ya trae sus cursos y su número de preguntas del temario UNSAAC. "
+                                 "'Grupo AB' califica a los alumnos de las áreas A y B en un mismo ranking.")
+    if bloqueado:
+        st.caption("🔒 La modalidad no se puede cambiar porque el simulacro ya tiene hojas calificadas. "
+                   "Si necesitas otra, crea un simulacro nuevo.")
+
+    if eleccion == MOD_PERSONALIZADO:
+        _config_personalizado(datos, sim, sid, pfx, titulo, fecha, periodo)
+    else:
+        _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, MODALIDADES[eleccion])
+    _bloque_final_config(datos, sim, sid, pfx)
+
+
+def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos):
+    prev = sim.get("cursos_area") or {}
+    pc = next((c for c in sim.get("cursos", []) if prev), None) if prev else None
+    st.markdown("#### 🧮 Puntaje")
+    p1, p2, p3 = st.columns(3)
+    p_ok = p1.number_input("Por respuesta correcta:", -100.0, 100.0, float(pc["correcta"]) if pc else 1.0,
+                           0.25, key=pfx + "p_ok")
+    p_mal = p2.number_input("Por respuesta incorrecta:", -100.0, 100.0, float(pc["incorrecta"]) if pc else 0.0,
+                            0.25, key=pfx + "p_mal")
+    p_bl = p3.number_input("Por pregunta en blanco:", -100.0, 100.0, float(sim.get("puntaje_blanco", 0)),
+                           0.25, key=pfx + "p_bl")
+    st.caption("Estos puntajes valen para todos los cursos. La nota /20 se calcula sobre el puntaje máximo de cada área.")
+
+    st.markdown("#### 📚 Cursos y claves por área")
+    st.caption("Los cursos ya vienen del temario oficial. Si el simulacro tiene menos preguntas de algún curso, "
+               "solo cambia el número: los rangos de preguntas se calculan solos. "
+               "Usa la letra E en la clave para anular una pregunta.")
+    claves, cursos_area, errores = {}, {}, []
+    tabs = st.tabs([f"Área {g}" for g in grupos])
+    for g, tg in zip(grupos, tabs):
+        with tg:
+            guardado = prev.get(g)
+            rk = pfx + f"rst_{g}"
+            ver = st.session_state.get(rk, 0)
+            if guardado and ver == 0:
+                base = [(c["nombre"], c["hasta"] - c["desde"] + 1) for c in guardado]
+            else:
+                base = PLANTILLAS_AREA[g]
+            ca, cb = st.columns([1.2, 1])
+            with ca:
+                st.markdown("**1️⃣ Cursos y n.º de preguntas**")
+                df = pd.DataFrame(base, columns=["Curso", "Preguntas"])
+                df_e = st.data_editor(df, num_rows="dynamic", use_container_width=True, hide_index=True,
+                                      key=pfx + f"cur_{g}_{ver}",
+                                      column_config={"Preguntas": st.column_config.NumberColumn(
+                                          min_value=1, max_value=100, step=1)})
+                if st.button("↩️ Restaurar temario oficial", key=pfx + f"rstb_{g}"):
+                    st.session_state[rk] = ver + 1
+                    st.rerun()
+            cursos_g, err_g = _cursos_desde_df(df_e, float(p_ok), float(p_mal))
+            errores += [f"Área {g}: {e}" for e in err_g]
+            with cb:
+                st.markdown(_html_area(g, cursos_g), unsafe_allow_html=True)
+            cursos_area[g] = cursos_g
+            n_g = cursos_g[-1]["hasta"] if cursos_g else 0
+            if not cursos_g:
+                errores.append(f"Área {g}: no tiene cursos.")
+            if n_g > 100:
+                errores.append(f"Área {g}: tiene {n_g} preguntas y la hoja solo admite 100.")
+            if len({c["nombre"] for c in cursos_g}) != len(cursos_g):
+                errores.append(f"Área {g}: hay cursos con el mismo nombre.")
+
+            st.markdown(f"**2️⃣ Clave de respuestas del Área {g}**  ·  {n_g} preguntas")
+            kk = pfx + "clave_" + g
+            if kk + "_pend" in st.session_state:
+                st.session_state[kk] = st.session_state.pop(kk + "_pend")
+            kw = {} if kk in st.session_state else {"value": sim.get("claves", {}).get(g, "")}
+            txt = st.text_area(f"Pega la clave del Área {g} (ABCD… seguida, con espacios o numerada 1A 2B…):",
+                               height=90, key=kk, **kw)
+            k = limpiar_clave(txt, n_g or 100)
+            claves[g] = k
+            if k:
+                (st.success if len(k) == n_g else st.warning)(f"{len(k)} de {n_g} respuestas leídas.")
+                st.code("  ".join(k[i:i + 10] for i in range(0, len(k), 10)), language=None)
+            else:
+                errores.append(f"Falta la clave del Área {g}.")
+            with st.expander("📸 Leer esta clave desde una hoja rellenada"):
+                st.caption("Rellena una hoja Yachay con las respuestas correctas, tómale foto y súbela.")
+                fk = st.file_uploader("Hoja clave:", type=["jpg", "jpeg", "png", "pdf"], key=pfx + "fk_" + g)
+                if fk is not None and st.button("Leer clave", key=pfx + "lk_" + g):
+                    imgs = omr.imagenes_desde_archivo(fk.name, fk.getvalue())
+                    if imgs:
+                        r = omr.leer_hoja(imgs[0], n_g or 80)
+                        leida = "".join(x if x in "ABCD" else "E" for x in r["respuestas"])
+                        st.session_state[kk + "_pend"] = leida
+                        st.success("Clave leída. Revisa: las preguntas sin marca quedaron como E (anuladas).")
+                        st.rerun()
+
+    for e in errores:
+        st.error(e)
+    if st.button("💾 Guardar simulacro", type="primary", disabled=bool(errores), key=pfx + "save"):
+        nuevo = dict(sim)
+        n_max = max(c[-1]["hasta"] for c in cursos_area.values())
+        nuevo.update({"titulo": titulo.strip() or "Simulacro", "fecha": fecha, "periodo": periodo,
+                      "num_preguntas": int(n_max), "puntaje_blanco": p_bl,
+                      "claves": {g: claves.get(g, "") for g in grupos},
+                      "grupos": list(grupos), "cursos_area": cursos_area,
+                      "cursos": cursos_area[grupos[0]], "modalidad": "".join(grupos)})
+        if not sid:
+            sid = datetime.now().strftime("%Y%m%d") + "_" + uuid.uuid4().hex[:5]
+            nuevo.update({"id": sid, "creado": datetime.now().isoformat(),
+                          "creado_por": st.session_state.get("usuario_actual", ""), "hojas": {}})
+        datos["simulacros"][sid] = nuevo
+        guardar_datos(datos)
+        if nuevo.get("publicado"):
+            publicar_en_historial(nuevo)       # mantener el historial al día
+        mx = " · ".join(f"Área {g}: {puntaje_maximo(nuevo, g):g}" for g in grupos)
+        st.success(f"Simulacro guardado. Puntaje máximo → {mx}. Ya puedes ir a 📸 Escanear.")
+
+
+def _config_personalizado(datos, sim, sid, pfx, titulo, fecha, periodo):
+    if not sim.get("cursos"):
+        sim = dict(sim)
+        sim["num_preguntas"] = 100
+        sim["cursos"] = [{"nombre": n, "desde": a, "hasta": b, "correcta": 1.0, "incorrecta": 0.0}
+                         for n, a, b in CURSOS_EJEMPLO]
+    st.caption("Modo libre: tú defines los cursos y los rangos de preguntas (un solo esquema para todos los grupos).")
     c4, c5 = st.columns(2)
     n = c4.number_input("N.º de preguntas:", 1, 100, int(sim.get("num_preguntas", 100)), key=pfx + "n")
     p_bl = c5.number_input("Puntaje por pregunta en blanco:", -10.0, 10.0,
@@ -584,7 +1105,10 @@ def _tab_configurar(datos):
     if st.button("💾 Guardar simulacro", type="primary", disabled=bool(errores), key=pfx + "save"):
         nuevo = dict(sim)
         nuevo.update({"titulo": titulo.strip() or "Simulacro", "fecha": fecha, "periodo": periodo,
-                      "num_preguntas": int(n), "puntaje_blanco": p_bl, "claves": claves, "cursos": cursos})
+                      "num_preguntas": int(n), "puntaje_blanco": p_bl, "claves": claves, "cursos": cursos,
+                      "modalidad": "PERSONALIZADO"})
+        nuevo.pop("cursos_area", None)
+        nuevo.pop("grupos", None)
         if not sid:
             sid = datetime.now().strftime("%Y%m%d") + "_" + uuid.uuid4().hex[:5]
             nuevo.update({"id": sid, "creado": datetime.now().isoformat(),
@@ -595,32 +1119,61 @@ def _tab_configurar(datos):
             publicar_en_historial(nuevo)       # mantener el historial al día
         st.success(f"Simulacro guardado. Puntaje máximo: {puntaje_maximo(nuevo):g}")
 
-    if sid and (not _HOOKS["puede_borrar"] or _HOOKS["puede_borrar"]()):
-        with st.expander("🗑️ Eliminar simulacro"):
-            if st.checkbox("Confirmo que quiero borrarlo con todas sus hojas", key=pfx + "delok"):
-                if st.button("Eliminar definitivamente", key=pfx + "del"):
-                    quitar_de_historial(sim)
-                    datos["simulacros"].pop(sid, None)
-                    guardar_datos(datos)
-                    st.success("Eliminado.")
-                    st.rerun()
 
-    if Path(HOJA_PDF).exists():
-        st.markdown("---")
-        st.download_button("📄 Descargar hoja de respuestas en blanco (PDF para imprimir)",
-                           Path(HOJA_PDF).read_bytes(), "Hoja_Yachay.pdf", "application/pdf")
+
+def _fecha_tupla(txt):
+    m = re.search(r"(\d{1,2})\D+(\d{1,2})\D+(\d{4})", str(txt or ""))
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3))) if m else None
 
 
 def _procesar_imagen(sim, img, mat, origen):
     r = omr.leer_hoja(img, sim["num_preguntas"])
     resp = "".join({"": "_"}.get(x, x) for x in r["respuestas"])
-    dni = r["dni"] if re.fullmatch(r"\d{8}", r["dni"]) else r["dni"]
-    info = mat.get(dni, {})
-    clave = clave_para(sim, r["grupo"])
+    dni_leido = r["dni"]
+    rr = resolver_dni(dni_leido, mat)
+    dni, info = rr["dni"], rr["info"]
+    grupo = r["grupo"]
+    gs = grupos_sim(sim)
+    alertas = list(r["alertas"]) + rr["avisos"]
+    if sim.get("cursos_area"):
+        if not grupo and len(gs) == 1:
+            grupo = gs[0]
+        elif not grupo:
+            alertas.append("No se leyó el ÁREA (A-D): elígela en la tabla")
+        elif grupo not in gs:
+            alertas.append(f"El área {grupo} no pertenece a este simulacro ({', '.join(gs)})")
+
+    # ---- ¿Es la hoja de ESTE simulacro? (QR; si no hay QR, se compara la fecha marcada) ----
+    otro_sim = False
+    qr = (r.get("qr") or "").strip()
+    if qr.startswith(omr.QR_PREFIJO):
+        sid_q = qr[len(omr.QR_PREFIJO):].strip()
+        if sid_q != sim.get("id"):
+            otro_sim = True
+            ot = cargar_datos()["simulacros"].get(sid_q)
+            alertas.insert(0, "⛔ HOJA DE OTRO SIMULACRO: " +
+                           (f"'{ot['titulo']}' ({ot.get('fecha', '')})" if ot else f"código {sid_q}") +
+                           " — no corresponde al seleccionado")
+    elif qr:
+        alertas.append("QR no reconocido (no es de una hoja Yachay)")
+    else:
+        ft_hoja = (r.get("dia"), r.get("mes"), r.get("anio"))
+        ft_sim = _fecha_tupla(sim.get("fecha"))
+        if None not in ft_hoja and ft_sim and tuple(ft_hoja) != ft_sim:
+            alertas.append(f"La fecha marcada en la hoja ({ft_hoja[0]:02d}/{ft_hoja[1]:02d}/{ft_hoja[2]}) "
+                           f"no coincide con la del simulacro ({sim.get('fecha')})")
+
+    sug = rr["sug"]
+    if not info:
+        alertas.append("DNI no encontrado en matrícula")
+        if sug:
+            alertas.append(f"¿Será {mat[sug]['nombre']} (DNI {sug})? Usa «Aceptar sugerencias» si es correcto")
+    clave = clave_para(sim, grupo)
     return {"tmp_id": uuid.uuid4().hex[:8], "dni": dni, "nombre": info.get("nombre", ""),
-            "grado": info.get("grado", ""), "aula": r["aula"], "grupo": r["grupo"],
+            "grado": info.get("grado", ""), "aula": r["aula"], "grupo": grupo,
             "respuestas": resp, "dudosas": [i + 1 for i, e in enumerate(r["estados"]) if e in ("duda", "doble")],
-            "alertas": r["alertas"] + ([] if info else ["DNI no encontrado en matrícula"]),
+            "alertas": alertas, "otro_sim": otro_sim, "sug_dni": sug if not info else None,
+            "dni_leido": dni_leido,
             "origen": origen, "fecha_examen": f"{r['dia'] or ''}/{r['mes'] or ''}/{r['anio'] or ''}",
             "img": omr.imagen_revision(r, clave)}
 
@@ -632,7 +1185,7 @@ def _guardar_lote(datos, sid, lote):
     nuevos = reemplazados = 0
     for h in lote:
         dni = norm_dni(h["dni"]) if re.fullmatch(r"\d{1,8}", str(h["dni"])) else str(h["dni"])
-        hid = por_dni.get(dni) if re.fullmatch(r"\d{8}", dni) else None
+        hid = por_dni.get(dni) if re.fullmatch(r"\d{8,9}", dni) else None
         if hid:
             reemplazados += 1
         else:
@@ -640,7 +1193,8 @@ def _guardar_lote(datos, sid, lote):
             nuevos += 1
         sim["hojas"][hid] = {"dni": dni, "nombre": (h.get("nombre") or "").strip().upper(),
                              "grado": h.get("grado", ""), "aula": h.get("aula", ""),
-                             "grupo": h.get("grupo", ""), "respuestas": h["respuestas"],
+                             "grupo": h.get("grupo") or (grupos_sim(sim)[0] if sim.get("cursos_area") and len(grupos_sim(sim)) == 1 else ""),
+                             "respuestas": h["respuestas"],
                              "origen": h.get("origen", ""), "leido": datetime.now().isoformat()}
     guardar_datos(datos)
     if sim.get("publicado"):
@@ -660,6 +1214,36 @@ def _tab_escanear(datos):
     mat = _matricula()
     lote_key = f"simy_lote_{sid}"
     st.session_state.setdefault(lote_key, [])
+    ver_key = f"simy_ver_{sid}"
+    st.session_state.setdefault(ver_key, 0)
+
+    # ---- Antes de escanear: hojas del simulacro y verificación de DNI ----
+    b_h, b_v = st.columns(2)
+    with b_h:
+        boton_hoja(sim, "simy_dl_hoja_scan")
+        st.caption("Imprime estas hojas: llevan el QR del simulacro y su título/fecha, "
+                   "así el sistema detecta si te equivocas de examen.")
+    try:
+        df_prob = analizar_dnis_matricula(_HOOKS["cargar_matricula"]() if _HOOKS["cargar_matricula"] else None)
+    except Exception:
+        df_prob = pd.DataFrame()
+    with b_v:
+        if len(df_prob):
+            st.warning(f"⚠️ {df_prob['Alumno'].nunique()} alumno(s) con DNI mal escrito en la matrícula "
+                       "(no se podrán reconocer solos al escanear).")
+        else:
+            st.success("✅ Todos los DNI de la matrícula tienen 8 dígitos.")
+    if len(df_prob):
+        with st.expander("🔎 Ver y corregir los DNI de la matrícula", expanded=False):
+            st.caption("El DNI tiene 8 dígitos; la hoja lee exactamente 8. El noveno número que aparece junto al DNI "
+                       "(después del guion) es el dígito verificador y NO va. Los que empiezan con 9 y tienen 9 dígitos "
+                       "suelen ser celulares. Corrígelos en Matrícula; aquí tienes la lista para hacerlo rápido.")
+            st.dataframe(df_prob, use_container_width=True, hide_index=True)
+            buf_x = io.BytesIO()
+            df_prob.to_excel(buf_x, index=False)
+            st.download_button("📊 Descargar lista (Excel)", buf_x.getvalue(), "DNI_a_corregir.xlsx",
+                               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                               key="simy_dl_dni_prob")
 
     fuente = st.radio("¿Cómo vas a cargar las hojas?",
                       ["📁 Varias fotos o PDF escaneado (lote)", "📷 Cámara (hoja por hoja)", "⌨️ Digitar a mano"],
@@ -696,7 +1280,7 @@ def _tab_escanear(datos):
             m1, m2, m3 = st.columns([1, 2, 1])
             dni = m1.text_input("DNI:")
             nom = m2.text_input("Apellidos y nombres (si no está matriculado):")
-            grp = m3.selectbox("Grupo:", [""] + GRUPOS)
+            grp = m3.selectbox("Área / Grupo:", [""] + grupos_sim(sim))
             txt = st.text_area("Respuestas marcadas (usa _ para blanco):", height=80)
             if st.form_submit_button("➕ Agregar al lote"):
                 d = norm_dni(dni)
@@ -715,13 +1299,27 @@ def _tab_escanear(datos):
     st.markdown(f"### 🧾 Revisión del lote ({len(lote)} hojas sin guardar)")
 
     # Tabla editable de cabeceras
+    ya = {h.get("dni") for h in sim.get("hojas", {}).values()}
+    cuenta = {}
+    for h in lote:
+        cuenta[h["dni"]] = cuenta.get(h["dni"], 0) + 1
+
+    def _extra(h):
+        e = []
+        if h["dni"] and cuenta.get(h["dni"], 0) > 1 and re.fullmatch(r"\d{8,9}", h["dni"] or ""):
+            e.append(f"DNI repetido en el lote ({cuenta[h['dni']]} hojas)")
+        if h["dni"] in ya:
+            e.append("ya tiene hoja en este simulacro (se actualizará)")
+        return e
     vista = pd.DataFrame([{
-        "Quitar": False, "DNI": h["dni"], "Apellidos y Nombres": h["nombre"], "Aula": h["aula"],
+        "Quitar": bool(h.get("otro_sim")), "DNI": h["dni"], "Apellidos y Nombres": h["nombre"], "Aula": h["aula"],
         "Grupo": h["grupo"], "Correctas": calificar(sim, h)["correctas"], "Puntaje": calificar(sim, h)["puntaje"],
-        "Revisar": ", ".join(h["alertas"]), "Origen": h["origen"]} for h in lote])
-    ed = st.data_editor(vista, use_container_width=True, hide_index=True, key=f"simy_ed_{sid}_{len(lote)}",
-                        disabled=["Correctas", "Puntaje", "Revisar", "Origen"],
-                        column_config={"Grupo": st.column_config.SelectboxColumn(options=[""] + GRUPOS)})
+        "Sugerencia DNI": (f"{h['sug_dni']} – {mat[h['sug_dni']]['nombre'][:28]}" if h.get("sug_dni") in mat else ""),
+        "Revisar": ", ".join(h["alertas"] + _extra(h)), "Origen": h["origen"]} for h in lote])
+    ed = st.data_editor(vista, use_container_width=True, hide_index=True,
+                        key=f"simy_ed_{sid}_{len(lote)}_{st.session_state[ver_key]}",
+                        disabled=["Correctas", "Puntaje", "Sugerencia DNI", "Revisar", "Origen"],
+                        column_config={"Grupo": st.column_config.SelectboxColumn("Área", options=[""] + grupos_sim(sim))})
     for h, (_, fila) in zip(lote, ed.iterrows()):
         nd = str(fila["DNI"]).strip()
         if nd != h["dni"]:
@@ -733,6 +1331,20 @@ def _tab_escanear(datos):
         h["aula"] = str(fila["Aula"] or "")
         h["grupo"] = str(fila["Grupo"] or "")
         h["_quitar"] = bool(fila["Quitar"])
+
+    def _limpiar_alertas_dni(h):
+        h["alertas"] = [a for a in h["alertas"] if not a.startswith(("DNI no encontrado", "¿Será"))]
+
+    n_sug = sum(1 for h in lote if h.get("sug_dni") in mat)
+    if n_sug and st.button(f"✅ Aceptar las {n_sug} sugerencia(s) de DNI (revísalas en la columna «Sugerencia DNI»)",
+                           key="simy_acepta_sug"):
+        for h in lote:
+            k = h.get("sug_dni")
+            if k in mat:
+                h.update({"dni": k, "nombre": mat[k]["nombre"], "grado": mat[k]["grado"], "sug_dni": None})
+                _limpiar_alertas_dni(h)
+        st.session_state[ver_key] += 1
+        st.rerun()
 
     # Detalle de cada hoja
     for i, h in enumerate(lote):
@@ -756,11 +1368,27 @@ def _tab_escanear(datos):
                     st.error(f"Debe haber {sim['num_preguntas']} respuestas (hay {len(limpio)}).")
                 cal = calificar(sim, h)
                 st.metric("Puntaje", f"{cal['puntaje']:g}", f"Nota {cal['nota']:.2f}")
+                if mat and h["dni"] not in mat:
+                    st.markdown("**🔗 Este DNI no está en la matrícula. Búscalo por nombre:**")
+                    q = st.text_input("Apellido o nombre:", key=f"simy_bq_{h['tmp_id']}").strip().upper()
+                    if q:
+                        op = [k for k, v in mat.items() if q in v["nombre"]][:20]
+                        if op:
+                            sel = st.selectbox("Alumno:", op, format_func=lambda k: f"{mat[k]['nombre']} — {k}",
+                                               key=f"simy_bs_{h['tmp_id']}")
+                            if st.button("Vincular con este alumno", key=f"simy_bb_{h['tmp_id']}"):
+                                h.update({"dni": sel, "nombre": mat[sel]["nombre"], "grado": mat[sel]["grado"],
+                                          "sug_dni": None})
+                                _limpiar_alertas_dni(h)
+                                st.session_state[ver_key] += 1
+                                st.rerun()
+                        else:
+                            st.caption("Sin coincidencias en la matrícula.")
 
     b1, b2 = st.columns(2)
     if b1.button("💾 Guardar hojas en el simulacro", type="primary", key="simy_guardar_lote"):
         validos = [h for h in lote if not h.get("_quitar")]
-        sin_dni = [h for h in validos if not re.fullmatch(r"\d{8}", norm_dni(h["dni"]) or "")]
+        sin_dni = [h for h in validos if not re.fullmatch(r"\d{8,9}", norm_dni(h["dni"]) or "")]
         if sin_dni:
             st.warning(f"{len(sin_dni)} hoja(s) sin DNI válido se guardan igual; corrígelas luego desde el ranking.")
         nuevos, reemp = _guardar_lote(datos, sid, validos)
@@ -783,15 +1411,20 @@ def _tab_ranking(datos):
     aulas = sorted({h.get("aula", "") for h in sim["hojas"].values() if h.get("aula")})
     f1, f2, f3 = st.columns(3)
     fa = f1.selectbox("Aula:", ["Todas"] + aulas, key="simy_fa")
-    fg = f2.selectbox("Grupo:", ["Todos"] + GRUPOS, key="simy_fg")
+    fg = f2.selectbox("Área / Grupo:", ["Todos"] + grupos_sim(sim), key="simy_fg")
     top = f3.number_input("Top para publicar:", 3, 30, 10, key="simy_top")
     df = tabla_ranking(sim, None if fa == "Todas" else fa, None if fg == "Todos" else fg)
     if df.empty:
         st.info("No hay resultados con ese filtro.")
         return
-    extra = " · ".join(x for x in [f"Aula {fa}" if fa != "Todas" else "", f"Grupo {fg}" if fg != "Todos" else ""] if x) \
-        or "Ranking general"
+    extra = " · ".join(x for x in [f"Aula {fa}" if fa != "Todas" else "", f"Área {fg}" if fg != "Todos" else ""] if x) \
+        or ("Ranking general " + etiqueta_modalidad(sim))
 
+    if sim.get("cursos_area") and len(grupos_sim(sim)) > 1:
+        sin_area = [h for h in sim["hojas"].values() if h.get("grupo") not in grupos_sim(sim)]
+        if sin_area:
+            st.warning(f"{len(sin_area)} hoja(s) sin área válida (obtienen 0). Corrígelas abajo en "
+                       "'Boleta de un estudiante / corregir o eliminar hoja'.")
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Participantes", len(df))
     m2.metric("Puntaje promedio", f"{df['Puntaje'].mean():.2f}")
@@ -821,7 +1454,8 @@ def _tab_ranking(datos):
         e1, e2, e3 = st.columns([1, 2, 1])
         n_dni = e1.text_input("DNI:", h.get("dni", ""), key=f"simy_edni_{hid}")
         n_nom = e2.text_input("Nombre:", h.get("nombre", ""), key=f"simy_enom_{hid}")
-        n_grp = e3.selectbox("Grupo:", [""] + GRUPOS, index=([""] + GRUPOS).index(h.get("grupo", "")) if h.get("grupo", "") in GRUPOS else 0,
+        opc_g = [""] + grupos_sim(sim)
+        n_grp = e3.selectbox("Área / Grupo:", opc_g, index=opc_g.index(h.get("grupo", "")) if h.get("grupo", "") in opc_g else 0,
                              key=f"simy_egrp_{hid}")
         if st.button("💾 Guardar cambios", key=f"simy_esave_{hid}"):
             h.update({"dni": norm_dni(n_dni) or n_dni, "nombre": n_nom.strip().upper(), "grupo": n_grp})
@@ -875,7 +1509,7 @@ def historial_estudiante(datos, dni):
             f = {"Fecha": sim.get("fecha", ""), "Simulacro": sim["titulo"],
                  "Puesto": int(fila_r["Puesto"].iloc[0]) if not fila_r.empty else None,
                  "De": len(df), "Correctas": c["correctas"], "Puntaje": c["puntaje"],
-                 "Máximo": puntaje_maximo(sim), "Nota": c["nota"], "_creado": sim.get("creado", "")}
+                 "Máximo": puntaje_maximo(sim, h.get("grupo", "")), "Nota": c["nota"], "_creado": sim.get("creado", "")}
             for cn, cv in c["cursos"].items():
                 f[cn] = cv["nota"]
             filas.append(f)
@@ -954,12 +1588,25 @@ def _tab_analisis(datos):
     if not hojas:
         st.info("Sin hojas calificadas.")
         return
+    gs = grupos_sim(sim)
+    gsel = None
+    if sim.get("cursos_area"):
+        if len(gs) > 1:
+            gsel = st.selectbox("Área a analizar:", gs, format_func=lambda g: f"Área {g}", key="simy_an_area")
+            hojas = [h for h in hojas if h.get("grupo") == gsel]
+            if not hojas:
+                st.info(f"No hay hojas del Área {gsel}.")
+                return
+        else:
+            gsel = gs[0]
     curso_de = {}
-    for c in sim["cursos"]:
+    for c in cursos_de(sim, gsel or ""):
         for q in range(c["desde"], c["hasta"] + 1):
             curso_de[q] = c["nombre"]
+    nq = n_preguntas(sim, gsel or "")
+    clave_ref = clave_para(sim, gsel or "A")
     filas = []
-    for q in range(sim["num_preguntas"]):
+    for q in range(nq):
         cont = {"A": 0, "B": 0, "C": 0, "D": 0, "Blanco": 0}
         ok = tot = 0
         for h in hojas:
@@ -971,7 +1618,7 @@ def _tab_analisis(datos):
                 tot += 1
                 ok += r == k
         filas.append({"Pregunta": q + 1, "Curso": curso_de.get(q + 1, "-"),
-                      "Clave (A)": (sim["claves"].get("A", "") + " " * 100)[q].strip(),
+                      "Clave": (clave_ref + " " * 100)[q].strip(),
                       "% acierto": round(ok / tot * 100, 1) if tot else None, **cont})
     dfp = pd.DataFrame(filas)
     dfp["% acierto"] = pd.to_numeric(dfp["% acierto"], errors="coerce")
@@ -990,11 +1637,8 @@ def tab_simulacros_yachay(config=None, cargar_matricula=None, cargar_historial=N
                    "guardar_historial": guardar_historial, "backup_json": backup_json,
                    "puede_borrar": puede_borrar})
     st.header("🧾 Simulacros Yachay — Lectura de hojas y ranking")
-    if Path(HOJA_PDF).exists():
-        st.download_button("📄 Descargar HOJA DE RESPUESTAS en blanco (PDF para imprimir)",
-                           Path(HOJA_PDF).read_bytes(), "Hoja_Yachay.pdf", "application/pdf",
-                           key="simy_dl_hoja_top", type="primary")
-    st.caption("Flujo: 1) ⚙️ Configurar el examen (claves y cursos) → 2) 📸 Escanear las hojas → "
+    boton_hoja(None, "simy_dl_hoja_top", "📄 Hoja de respuestas en blanco (genérica, para imprimir)")
+    st.caption("Flujo: 1) ⚙️ Configurar el examen (elige Área A/B/C/D o Grupo AB/CD, pega las claves) → 2) 📸 Escanear las hojas → "
                "3) 🏆 Ranking (imprimir / publicar) → 4) 📚 Historial del estudiante.")
     datos = cargar_datos()
     t = st.tabs(["⚙️ Configurar", "📸 Escanear", "🏆 Ranking", "📚 Historial", "📊 Análisis"])
