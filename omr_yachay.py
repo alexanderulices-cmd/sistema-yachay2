@@ -52,6 +52,30 @@ ANIOS = [2026, 2027, 2028, 2029]
 ANIO_R = 17
 GRUPO_X, GRUPO_Y, GRUPO_R = [520.0, 670.0, 820.0, 970.0], 1016.0, 26
 
+# Marcas de ajuste (cuadraditos negros de 32 px) — como en ZipGrade / hojas OMR profesionales.
+# Van en los márgenes (una por fila de DNI y de respuestas, a cada lado), arriba y en la
+# franja entre la cabecera y las respuestas. Sirven para corregir la distorsión de lente
+# y la curvatura del papel; el lector las usa si están y las ignora si no (hojas antiguas).
+AJ_TAM = 32
+AJ_IZQ_X, AJ_DER_X = 85.5, 2395.5
+AJ_TOP_Y, AJ_BANDA_Y = 72.0, 1133.0
+AJ_X = [280.0 + 192.0 * k for k in range(11)]        # 280 ... 2200
+
+
+def marcas_ajuste():
+    """[(cx, cy, grupo)] de todas las marcas de ajuste de la hoja."""
+    pts = []
+    for r in range(10):                                  # filas de la cabecera (DNI)
+        y = CAB_Y0 + CAB_DY * r
+        pts += [(AJ_IZQ_X, y, "cab"), (AJ_DER_X, y, "cab")]
+    for f in range(RESP_FILAS):                          # filas de respuestas
+        y = RESP_Y0 + RESP_DY * f
+        pts += [(AJ_IZQ_X, y, "res"), (AJ_DER_X, y, "res")]
+    pts += [(x, AJ_TOP_Y, "top") for x in AJ_X]
+    pts += [(x, AJ_BANDA_Y, "banda") for x in AJ_X]
+    return pts
+
+
 # Umbrales de decisión (oscuridad 0..1 dentro de la burbuja)
 UMBRAL_MARCA = 0.42       # por encima: cuenta como marcada
 UMBRAL_DUDA = 0.30        # entre DUDA y MARCA: marca débil -> revisar
@@ -95,6 +119,52 @@ def imagenes_desde_archivo(nombre, datos):
         return out
     arr = cv2.imdecode(np.frombuffer(datos, np.uint8), cv2.IMREAD_COLOR)
     return [arr] if arr is not None else []
+
+
+def contar_paginas(nombre, datos):
+    """Cuántas hojas trae un archivo (un PDF trae una por página)."""
+    if (nombre or "").lower().endswith(".pdf"):
+        try:
+            try:
+                import pymupdf as fitz
+            except ImportError:
+                import fitz
+            return len(fitz.open(stream=datos, filetype="pdf"))
+        except Exception:
+            return 1
+    return 1
+
+
+def iterar_imagenes(nombre, datos):
+    """Igual que imagenes_desde_archivo, pero entrega UNA página a la vez.
+    Así un PDF de cientos de hojas no llena la memoria del servidor."""
+    if not HAS_CV2:
+        return
+    if (nombre or "").lower().endswith(".pdf"):
+        try:
+            import pymupdf as fitz
+        except ImportError:
+            import fitz
+        doc = fitz.open(stream=datos, filetype="pdf")
+        for page in doc:
+            pix = page.get_pixmap(dpi=200)
+            arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
+            if pix.n == 4:
+                arr = cv2.cvtColor(arr, cv2.COLOR_RGBA2BGR)
+            elif pix.n == 3:
+                arr = cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
+            else:
+                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2BGR)
+            del pix
+            try:
+                fitz.TOOLS.store_shrink(100)      # libera la memoria de la página ya leída
+            except Exception:
+                pass
+            yield arr
+        return
+    arr = cv2.imdecode(np.frombuffer(datos, np.uint8), cv2.IMREAD_COLOR)
+    if arr is not None:
+        yield arr
 
 
 # ----------------------------------------------------------------
@@ -178,12 +248,154 @@ def alinear(img_bgr):
         M = cv2.getPerspectiveTransform(np.float32(esq), np.float32(MARCAS))
         warped = cv2.warpPerspective(gray, M, (W, H), borderValue=255)
         if _tiene_barra_tl(warped):
-            return warped, True, "Hoja alineada con las 4 marcas"
+            try:
+                warped, info = _afinar(warped)
+            except Exception as e:                     # el afinado nunca debe impedir la lectura
+                info = f"sin afinado ({e})"
+            return warped, True, "Hoja alineada con las 4 marcas · " + info
         gray = cv2.rotate(gray, cv2.ROTATE_180)   # estaba de cabeza
 
     # Último recurso: asumir que la imagen ya es la hoja recortada
     warped = cv2.resize(gray, (W, H), interpolation=cv2.INTER_LINEAR)
     return warped, False, "No se encontraron las 4 marcas negras: revise la lectura"
+
+
+# ----------------------------------------------------------------
+# AFINADO CON LAS MARCAS DE AJUSTE
+# ----------------------------------------------------------------
+def _buscar_marca(g, cx, cy, mx, my):
+    """Busca un cuadradito negro cerca de (cx, cy) en la hoja enderezada.
+    Devuelve el centro (x, y) con precisión de subpíxel, o None."""
+    x0, x1 = int(round(cx - mx)), int(round(cx + mx)) + 1
+    y0, y1 = int(round(cy - my)), int(round(cy + my)) + 1
+    if x0 < 0 or y0 < 0 or x1 > g.shape[1] or y1 > g.shape[0]:
+        return None
+    sub = g[y0:y1, x0:x1]
+    if int(sub.max()) - int(sub.min()) < 70:
+        return None
+    _, th = cv2.threshold(sub, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    n, _, st, cen = cv2.connectedComponentsWithStats(th, connectivity=8)
+    mejor, dmin = None, 1e18
+    for i in range(1, n):
+        x, y, w, h, a = st[i]
+        if not (AJ_TAM * 0.6 <= w <= AJ_TAM * 1.6 and AJ_TAM * 0.6 <= h <= AJ_TAM * 1.6):
+            continue
+        if a < 0.7 * w * h:
+            continue
+        d = (cen[i][0] - (cx - x0)) ** 2 + (cen[i][1] - (cy - y0)) ** 2
+        if d < dmin:
+            dmin, mejor = d, (x, y, w, h)
+    if mejor is None:
+        return None
+    x, y, w, h = mejor                                     # centroide ponderado por oscuridad
+    pad = 3
+    ya, yb = max(y - pad, 0), min(y + h + pad, sub.shape[0])
+    xa, xb = max(x - pad, 0), min(x + w + pad, sub.shape[1])
+    peso = 255.0 - sub[ya:yb, xa:xb].astype(np.float32)
+    peso = np.clip(peso - float(peso.min()), 0, None)
+    tot = float(peso.sum())
+    if tot <= 0:
+        return None
+    yy, xx = np.mgrid[ya:yb, xa:xb]
+    return (x0 + float((peso * xx).sum()) / tot + 0.5 - 0.5, y0 + float((peso * yy).sum()) / tot)
+
+
+AJ_GRADO = 3
+
+
+def _terminos(u, v):
+    """Base del ajuste: afín + cuadrática + distorsión radial (u·r², v·r²). Es lo bastante
+    flexible para la distorsión de lente (con el centro desplazado) y lo bastante rígida para
+    no inventar formas en el interior de la hoja."""
+    r2 = u * u + v * v
+    base = [np.ones_like(u), u, v, u * u, u * v, v * v]
+    if AJ_GRADO >= 3:
+        base += [u * r2, v * r2]
+    return np.stack(base, axis=1)
+
+
+def _ajustar_desplazamiento(exp, obs):
+    """Ajusta un polinomio de 3.er grado al desplazamiento (obs - exp) con rechazo de
+    valores atípicos. Devuelve (coef_x, coef_y, usados, error_rms) o None."""
+    u = (exp[:, 0] - W / 2.0) / (H / 2.0)
+    v = (exp[:, 1] - H / 2.0) / (H / 2.0)
+    A = _terminos(u, v)
+    d = obs - exp
+    ok = np.ones(len(exp), bool)
+    for _ in range(4):
+        if ok.sum() < 20:
+            return None
+        cx = np.linalg.lstsq(A[ok].T @ A[ok] + 1e-3 * np.eye(A.shape[1]), A[ok].T @ d[ok, 0], rcond=None)[0]
+        cy = np.linalg.lstsq(A[ok].T @ A[ok] + 1e-3 * np.eye(A.shape[1]), A[ok].T @ d[ok, 1], rcond=None)[0]
+        res = np.hypot(A @ cx - d[:, 0], A @ cy - d[:, 1])
+        lim = max(3.0, 3.0 * float(np.median(res[ok])) * 1.4826)
+        nuevo = res <= lim
+        if (nuevo == ok).all():
+            break
+        ok = nuevo
+    if ok.sum() < 20:
+        return None
+    rms = float(np.sqrt(np.mean(res[ok] ** 2)))
+    return cx, cy, int(ok.sum()), rms
+
+
+def _afinar(warped):
+    """Corrige la distorsión residual (lente, curvatura) con las marcas de ajuste.
+    Devuelve (imagen, texto_info). Si la hoja no las tiene (diseño antiguo) o algo no cuadra,
+    devuelve la imagen tal cual."""
+    marcas = marcas_ajuste()
+    exp, obs = [], []
+    # 1.ª pasada: marcas bien separadas entre sí (ventanas amplias)
+    for cx, cy, grp in marcas:
+        if grp == "cab":
+            continue
+        mx, my = (60, 45) if grp in ("res",) else (60, 50)
+        if grp in ("top", "banda"):
+            mx, my = 60, 40
+        p = _buscar_marca(warped, cx, cy, mx, my)
+        if p is not None:
+            exp.append((cx, cy))
+            obs.append(p)
+    if len(exp) < 24:
+        return warped, f"sin afinado ({len(exp)} marcas)"
+    exp, obs = np.float64(exp), np.float64(obs)
+    aj = _ajustar_desplazamiento(exp, obs)
+    if aj is None:
+        return warped, "sin afinado (ajuste inestable)"
+    cx_, cy_ = aj[0], aj[1]
+
+    def _pred(x, y):
+        u, v = (x - W / 2.0) / (H / 2.0), (y - H / 2.0) / (H / 2.0)
+        t = _terminos(np.float64([u]), np.float64([v]))[0]
+        return x + float(t @ cx_), y + float(t @ cy_)
+    # 2.ª pasada: filas de la cabecera (marcas pegadas), buscadas donde las predice el ajuste
+    for cx, cy, grp in marcas:
+        if grp != "cab":
+            continue
+        px, py = _pred(cx, cy)
+        p = _buscar_marca(warped, px, py, 28, 22)
+        if p is not None:
+            exp = np.vstack([exp, (cx, cy)])
+            obs = np.vstack([obs, p])
+    aj = _ajustar_desplazamiento(exp, obs)
+    if aj is None:
+        return warped, "sin afinado (ajuste inestable)"
+    cx_, cy_, usados, rms = aj
+    paso = 8
+    us = (np.arange(0, W + paso, paso, dtype=np.float64) - W / 2.0) / (H / 2.0)
+    vs = (np.arange(0, H + paso, paso, dtype=np.float64) - H / 2.0) / (H / 2.0)
+    uu, vv = np.meshgrid(us, vs)
+    T = _terminos(uu.ravel(), vv.ravel())
+    dx = (T @ cx_).reshape(uu.shape).astype(np.float32)
+    dy = (T @ cy_).reshape(uu.shape).astype(np.float32)
+    mag = float(np.hypot(dx, dy).max())
+    if rms > 4.0 or mag > 70.0:
+        return warped, f"sin afinado: hoja muy deformada o curvada (error {rms:.1f} px, desvío {mag:.0f} px)"
+    dx = cv2.resize(dx, (W + paso, H + paso), interpolation=cv2.INTER_LINEAR)[:H, :W]
+    dy = cv2.resize(dy, (W + paso, H + paso), interpolation=cv2.INTER_LINEAR)[:H, :W]
+    gx, gy = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(H, dtype=np.float32))
+    fino = cv2.remap(warped, gx + dx, gy + dy, cv2.INTER_LINEAR, borderValue=255)
+    return fino, f"afinada con {usados} marcas de ajuste (desvío máx. {mag:.0f} px, error {rms:.1f} px)"
 
 
 # ----------------------------------------------------------------
@@ -194,7 +406,7 @@ QR_ZONA = (1960, 80, 2440, 430)        # x0, y0, x1, y1
 QR_PREFIJO = "YCH1|"
 
 
-def leer_qr(img_bgr=None, warped=None):
+def leer_qr(img_bgr=None, warped=None, alineada=True):
     """Lee el QR impreso en la hoja. Devuelve el texto o '' si no hay/no se lee.
     Prueba primero la zona esperada de la hoja enderezada (rápido y fiable) y
     luego, como respaldo, la hoja completa y la foto original."""
@@ -225,6 +437,11 @@ def leer_qr(img_bgr=None, warped=None):
         g = warped if warped.ndim == 2 else cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
         x0, y0, x1, y1 = QR_ZONA
         zona = g[y0:y1, x0:x1]
+        if alineada:
+            # Un QR impreso deja ~20 % de la zona en negro; la hoja genérica, menos del 5 %.
+            z2 = g[120:380, 2060:2320]
+            if float((z2 < 80).mean()) < 0.10:
+                return ""
         for f in (1.0, 0.6, 1.5):
             z = zona if f == 1.0 else cv2.resize(zona, None, fx=f, fy=f, interpolation=cv2.INTER_AREA
                                                  if f < 1 else cv2.INTER_CUBIC)
@@ -248,8 +465,11 @@ def leer_qr(img_bgr=None, warped=None):
 # ----------------------------------------------------------------
 def _preparar(warped):
     """Normaliza iluminación (sombras de foto) -> imagen 0..1 de 'tinta'."""
-    fondo = cv2.morphologyEx(warped, cv2.MORPH_CLOSE,
-                             cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (61, 61)))
+    h, w = warped.shape[:2]
+    peq = cv2.resize(warped, (w // 4, h // 4), interpolation=cv2.INTER_AREA)
+    fondo_p = cv2.morphologyEx(peq, cv2.MORPH_CLOSE,
+                               cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (17, 17)))
+    fondo = np.maximum(cv2.resize(fondo_p, (w, h), interpolation=cv2.INTER_LINEAR), warped)
     norm = cv2.divide(warped, fondo, scale=255)
     norm = cv2.GaussianBlur(norm, (3, 3), 0)
     return 1.0 - norm.astype(np.float32) / 255.0
@@ -316,13 +536,8 @@ def leer_hoja(img_bgr, num_preguntas=100):
     if not dni_ok:
         res["alertas"].append("DNI incompleto o con doble marca")
 
-    # ---- Aula (fila 1..9, letra A..D) ----
-    mejores = []
-    for f in range(9):
-        for j, x in enumerate(AULA_X):
-            mejores.append((_oscuridad(tinta, x, CAB_Y0 + f * CAB_DY, CAB_R), f"{f + 1}{OPCIONES[j]}"))
-    aula, e = _decidir([m[0] for m in mejores], [m[1] for m in mejores])
-    res["aula"] = aula if e in ("ok", "duda") else ""
+    # ---- Aula: ya no existe en la hoja (el grado/aula sale de la matrícula con el DNI) ----
+    res["aula"] = ""
 
     # ---- Día y mes ----
     def _dos_digitos(xs, max_dec):
@@ -354,7 +569,9 @@ def leer_hoja(img_bgr, num_preguntas=100):
         res["alertas"].append(f"{n_duda} pregunta(s) con marca débil (revisar)")
     if not alineada:
         res["alertas"].append(msg)
-    res["qr"] = leer_qr(img_bgr, warped)
+    res["qr"] = leer_qr(img_bgr, warped, alineada)
+    if "curvada" in str(msg):
+        res["alertas"].append("La hoja está curvada o arrugada: revise bien las lecturas")
     res["_warped"] = warped
     return res
 
@@ -382,5 +599,5 @@ def imagen_revision(res, clave=None, ancho=900):
             cv2.circle(img, (int(cx), int(cy)), 12, (0, 170, 0), -1)
     esc = ancho / float(W)
     img = cv2.resize(img, (ancho, int(H * esc)), interpolation=cv2.INTER_AREA)
-    ok, buf = cv2.imencode(".png", img)
+    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 74])
     return buf.tobytes() if ok else None

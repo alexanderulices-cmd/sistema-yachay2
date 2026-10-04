@@ -14,6 +14,7 @@
 # todo el ranking se actualiza solo).
 # ================================================================
 
+import base64
 import html as _html
 import io
 import json
@@ -209,6 +210,15 @@ def cursos_de(sim, grupo):
     return ca[ge] if ge else cursos_union(sim)
 
 
+def preguntas_validas(sim, grupo):
+    """Números de pregunta (1..n) que rinde esa área. En el examen unificado hay preguntas
+    de otras áreas que no cuentan (p. ej. Filosofía para el Área C)."""
+    v = set()
+    for c in cursos_de(sim, grupo):
+        v.update(range(c["desde"], c["hasta"] + 1))
+    return v
+
+
 def n_preguntas(sim, grupo=None):
     ca = sim.get("cursos_area")
     if not ca:
@@ -221,13 +231,15 @@ def etiqueta_modalidad(sim):
     if sim.get("sin_area"):
         return {"PRIMARIA": "Primaria", "SECUNDARIA": "Secundaria"}.get(sim.get("modalidad"), "Cursos libres")
     if sim.get("cursos_area"):
-        return "Áreas " + " + ".join(grupos_sim(sim))
+        return "Áreas " + " + ".join(grupos_sim(sim)) + (" · todos los cursos" if sim.get("todos_cursos") else "")
     return "Personalizado"
 
 
 def clave_para(sim, grupo):
     claves = sim.get("claves", {})
     if sim.get("cursos_area"):
+        if sim.get("clave_comun"):
+            return next((claves[g] for g in grupos_sim(sim) if claves.get(g)), "")
         ge = grupo_efectivo(sim, grupo)
         return claves.get(ge, "") if ge else ""
     if grupo in claves and claves[grupo]:
@@ -369,7 +381,7 @@ def pdf_ranking(sim, df, titulo_extra="", detalle_cursos=True):
     from reportlab.platypus import Paragraph
     est_cab = ParagraphStyle("cab", fontName="Helvetica-Bold", fontSize=6.5 if detalle_cursos else 8,
                              leading=7.5 if detalle_cursos else 9, alignment=1)
-    cab = [Paragraph("Pto" if x == "Puesto" else x, est_cab) for x in cols]
+    cab = [Paragraph({"Puesto": "Pto", "Aula": "Grado"}.get(x, x), est_cab) for x in cols]
 
     def _fmt(x, v):
         if v is None or (isinstance(v, float) and pd.isna(v)):
@@ -434,7 +446,8 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
     c.drawString(400, y, f"DNI: {hoja.get('dni', '')}")
     y -= 15
     c.setFont("Helvetica", 10)
-    c.drawString(40, y, f"Aula: {hoja.get('aula', '') or '-'}     Grupo: {hoja.get('grupo', '') or '-'}")
+    c.drawString(40, y, f"Grado: {hoja.get('aula', '') or '-'}" +
+                 ("" if sim.get("sin_area") else f"     Área: {hoja.get('grupo', '') or '-'}"))
     c.setFont("Helvetica-Bold", 12)
     c.setFillColor(colors.HexColor("#7a1f5c"))
     c.drawString(330, y - 2, f"PUESTO {fila_rank} de {total}   ·   NOTA {res['nota']:.2f}")
@@ -462,12 +475,14 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
     c.setFont("Helvetica-Bold", 9)
     c.drawString(40, y, "Detalle por pregunta (marcada / clave):  ✔ correcta   ✘ incorrecta   — en blanco")
     y -= 14
-    n = n_preguntas(sim, hoja.get("grupo", ""))
+    validas = sorted(preguntas_validas(sim, hoja.get("grupo", ""))) if sim.get("cursos_area") \
+        else list(range(1, n_preguntas(sim, hoja.get("grupo", "")) + 1))
     resp = hoja.get("respuestas", "")
     c.setFont("Helvetica", 7.5)
     col_w, fil_h, por_col = 103, 11.2, 25
-    for q in range(n):
-        col, fil = divmod(q, por_col)
+    for pos, qn in enumerate(validas):
+        q = qn - 1
+        col, fil = divmod(pos, por_col)
         x0, y0 = 40 + col * col_w, y - fil * fil_h
         r = resp[q] if q < len(resp) else "_"
         k = clave[q] if q < len(clave) else "?"
@@ -563,6 +578,12 @@ def excel_ranking(sim, df):
 # ================================================================
 # PUBLICAR EN HISTORIAL (historial_evaluaciones.json → portal estudiante)
 # ================================================================
+def _fecha_iso(txt):
+    """'02/10/2026' -> '2026-10-02' (formato del historial de evaluaciones del sistema)."""
+    m = re.search(r"(\d{1,2})\D+(\d{1,2})\D+(\d{4})", str(txt or ""))
+    return f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}" if m else str(txt or "")
+
+
 def publicar_en_historial(sim):
     cargar, guardar = _HOOKS["cargar_historial"], _HOOKS["guardar_historial"]
     if not (cargar and guardar):
@@ -582,7 +603,7 @@ def publicar_en_historial(sim):
             fila[cn] = cv["nota"]
         ranking.append(fila)
     hist[f"SIMYACHAY_{sim['id']}"] = {
-        "titulo": sim["titulo"], "fecha": sim.get("fecha", ""), "periodo": sim.get("periodo", ""),
+        "titulo": sim["titulo"], "fecha": _fecha_iso(sim.get("fecha", "")), "periodo": sim.get("periodo", ""),
         "tipo": "simulacro_yachay", "areas": [{"nombre": c["nombre"]} for c in cursos_union(sim)],
         "ranking": ranking, "total": len(ranking), "puntaje_maximo": puntaje_maximo(sim)}
     return bool(guardar(hist))
@@ -600,42 +621,15 @@ def quitar_de_historial(sim):
 # ================================================================
 # HOJA DE RESPUESTAS CON QR (una hoja por simulacro)
 # ================================================================
-BASE_HOJA = "hoja_yachay_base.jpg"       # hoja limpia (sin código de barras falso)
-_PX = 595.2 / 2480.0                     # píxeles de la hoja (300 dpi) -> puntos PDF
-_PINK = (240, 225, 255)                  # BGR del rosado de la hoja
+# ================================================================
+# HOJA DE RESPUESTAS CON QR — dibujada en VECTORES (nítida al imprimir)
+# ================================================================
+# Todo (cuadros, burbujas, textos) se dibuja con trazos vectoriales, no con una foto:
+# queda perfectamente nítido a cualquier tamaño. Las posiciones son las mismas que lee
+# el lector óptico (omr_yachay.py), medidas a 300 dpi sobre una hoja de 2480 x 3508 px.
+_K = 0.24                   # puntos PDF por píxel de la hoja
+_PAG_H = 841.92
 _BASE_CACHE = {}
-
-
-def _base_hoja_jpg():
-    """Bytes JPG de la hoja base (2480 x 3508). Si no existe el archivo base, lo
-    construye a partir de la hoja antigua Hoja_Yachay_en_blanco.pdf."""
-    if "jpg" in _BASE_CACHE:
-        return _BASE_CACHE["jpg"]
-    if Path(BASE_HOJA).exists():
-        _BASE_CACHE["jpg"] = Path(BASE_HOJA).read_bytes()
-        return _BASE_CACHE["jpg"]
-    import numpy as np
-    import cv2
-    try:
-        import pymupdf as fitz
-    except ImportError:
-        import fitz
-    doc = fitz.open(HOJA_PDF)
-    raw = doc.extract_image(doc[0].get_images()[0][0])["image"]
-    if "yachay-v2" in str(doc.metadata.get("subject", "")):
-        _BASE_CACHE["jpg"] = raw
-        return raw
-    im = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)
-    out = im.copy()
-    out[3253:3328, 176:730] = _PINK             # código de barras que no servía
-    out[3246:3328, 1860:2300] = _PINK           # número de serie
-    out[3224:3252, 1395:1730] = _PINK           # "SIMULACRO BIMESTRAL"
-    logo = im[176:326, 2076:2276].copy()         # logo derecho -> se corre a la izquierda
-    out[176:326, 2076:2276] = _PINK
-    out[176:326, 1850:2050] = logo
-    ok, buf = cv2.imencode(".jpg", out, [cv2.IMWRITE_JPEG_QUALITY, 92])
-    _BASE_CACHE["jpg"] = buf.tobytes()
-    return _BASE_CACHE["jpg"]
 
 
 def _matriz_qr(texto):
@@ -662,58 +656,190 @@ def _latin(t, n=60):
     return "".join(ch if ord(ch) < 256 else "?" for ch in t)[:n]
 
 
-def hoja_pdf(sim=None):
-    """PDF A4 de la hoja de respuestas. Con `sim`: lleva el QR del simulacro, su título
-    y su fecha impresos. Sin `sim`: hoja genérica con líneas para escribir a mano."""
-    from reportlab.lib import colors
+def _logo(b64):
     from reportlab.lib.utils import ImageReader
+    return ImageReader(io.BytesIO(base64.b64decode(b64)))
+
+
+def _dibujar_hoja(c, sim=None):
+    from reportlab.lib import colors
     from reportlab.pdfbase.pdfmetrics import stringWidth
-    from reportlab.pdfgen import canvas
-    Wp, Hp = 595.2, 841.92
-    X = lambda px: px * _PX
-    Y = lambda py: Hp - py * _PX
-    buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=(Wp, Hp))
-    c.setTitle("Hoja de respuestas Yachay")
-    c.setSubject("yachay-v2")
-    c.drawImage(ImageReader(io.BytesIO(_base_hoja_jpg())), 0, 0, Wp, Hp)
+    K, PH = _K, _PAG_H
+    X = lambda v: v * K
+    Y = lambda v: PH - v * K
+    rgb = lambda r, g, b: colors.Color(r / 255.0, g / 255.0, b / 255.0)
+    NEGRO, BLANCO = colors.black, colors.white
+    ROSA, ROSA_CAB, ROSA_CLARO = rgb(255, 225, 240), rgb(252, 204, 230), rgb(253, 236, 246)
+    MORADO, MORADO2, GLIFO = rgb(139, 36, 91), rgb(150, 42, 104), rgb(138, 100, 122)
+    TINTA, GRIS = rgb(20, 20, 22), rgb(107, 114, 128)
 
-    gris = colors.HexColor("#6b7280")
-    negro = colors.HexColor("#111111")
-    # ---- pie de hoja: título y fecha del simulacro ----
-    c.setFillColor(gris)
-    c.setFont("Helvetica-Bold", 6.5)
-    c.drawString(X(232), Y(3266), "SIMULACRO")
-    c.drawString(X(1600), Y(3266), "FECHA")
+    def rel(x, y, w, h, color):                       # rectángulo (origen arriba-izquierda, en px)
+        c.setFillColor(color)
+        c.rect(X(x), Y(y + h), X(w), X(h), stroke=0, fill=1)
+
+    def caja(x, y, w, h, bw, fondo=BLANCO):           # marco negro + relleno
+        rel(x, y, w, h, NEGRO)
+        rel(x + bw, y + bw, w - 2 * bw, h - 2 * bw, fondo)
+
+    def anillo(cx, cy, ro, sw, borde, fondo=BLANCO):
+        c.setFillColor(borde)
+        c.circle(X(cx), Y(cy), X(ro), stroke=0, fill=1)
+        c.setFillColor(fondo)
+        c.circle(X(cx), Y(cy), X(ro - sw), stroke=0, fill=1)
+
+    def ancho_nat(t, cap, fuente="Helvetica-Bold"):
+        return stringWidth(t, fuente, cap * K / 0.718) / K
+
+    def texto(t, x, base, cap, ancho=None, color=TINTA, alinea="l", fuente="Helvetica-Bold"):
+        size = cap * K / 0.718
+        w0 = stringWidth(t, fuente, size)
+        sx = (ancho * K / w0) if ancho else 1.0
+        wf = w0 * sx
+        x0 = X(x) - (0 if alinea == "l" else (wf / 2 if alinea == "c" else wf))
+        c.saveState()
+        c.translate(x0, Y(base))
+        c.scale(sx, 1)
+        c.setFillColor(color)
+        c.setFont(fuente, size)
+        c.drawString(0, 0, t)
+        c.restoreState()
+
+    def puntos(x0, x1, y):                             # línea punteada para escribir
+        c.setFillColor(rgb(60, 60, 60))
+        x = x0
+        while x <= x1:
+            c.circle(X(x + 2), Y(y), X(2), stroke=0, fill=1)
+            x += 14
+
+    # ---------- marcas de las 4 esquinas (alinean la hoja al escanear) ----------
+    for (mx, my) in ((40, 40), (2350, 40), (40, 3378), (2350, 3378)):
+        rel(mx, my, 91, 91, NEGRO)
+    rel(40, 150, 91, 26, NEGRO)                        # marca de orientación (arriba-izquierda)
+    h = omr.AJ_TAM
+    for (mx, my, _g) in omr.marcas_ajuste():           # cuadraditos de ajuste (como ZipGrade)
+        rel(mx - h / 2.0, my - h / 2.0, h, h, NEGRO)
+
+    # ---------- encabezado ----------
+    caja(160, 110, 2161, 281, 5, ROSA)
+    c.drawImage(_logo(_LOGO_IZQ_B64), X(184), Y(124 + 252), X(252), X(252), mask="auto")
+    xl = 1857 if (sim and sim.get("id")) else 2092   # con QR el logo se corre a la izquierda
+    c.drawImage(_logo(_LOGO_DER_B64), X(xl), Y(188 + 124), X(176), X(124), mask="auto")
+    texto("INSTITUCIÓN EDUCATIVA", 673, 207, 69, 1140)
+    texto("ALTERNATIVO YACHAY", 734, 302, 69, 1012)
+    texto("ACADEMIA PREUNIVERSITARIA YACHAY", 672, 370, 44, 1136)
+
+    # ---------- apellidos y nombres ----------
+    caja(160, 420, 1128, 401, 4)
+    texto("APELLIDOS:", 191, 519, 41, 326)
+    texto("NOMBRES:", 195, 699, 41, 291)
+    puntos(520, 1251, 529.5)
+    puntos(190, 1243, 609.5)
+    puntos(520, 1251, 709.5)
+    puntos(190, 1243, 789.5)
+
+    # ---------- datos del estudiante (grupo) ----------
+    caja(160, 850, 1128, 251, 4)
+    rel(164, 854, 1120, 67, ROSA_CAB)
+    rel(164, 922, 1120, 4, NEGRO)
+    texto("DATOS DEL ESTUDIANTE", 407, 906, 40, 633)
+    texto("GRUPO:", 193, 1035, 41, 220)
+    for cx, ch in zip(omr.GRUPO_X, "ABCD"):
+        anillo(cx + 0.5, 1015.5, 36.5, 4, NEGRO)
+        texto(ch, cx + 0.5, 1030, 31, color=TINTA, alinea="c")
+    texto("MARCA SOLO", 1160, 1000, 19, 205, alinea="c")
+    texto("UNA LETRA:", 1160, 1030, 19, 205, alinea="c")
+    texto("TU ÁREA", 1160, 1060, 19, 150, alinea="c")
+
+    # ---------- bloque Día / Mes / Año / DNI ----------
+    caja(1317, 420, 1004, 681, 4, ROSA_CLARO)
+    rel(1321, 424, 996, 53, ROSA_CAB)
+    rel(1321, 477, 996, 4, NEGRO)
+    for xd in (1457, 1597, 1827):
+        rel(xd, 424, 7, 673, NEGRO)
+    for t, x0, x1 in (("Día", 1356, 1425), ("Mes", 1487, 1574),
+                      ("Año", 1671, 1757), ("DNI", 2037, 2112)):
+        texto(t, x0, 465, 32, x1 - x0)
+
+    def cuadro(cx):
+        rel(cx - 25, 488, 50, 51, MORADO)
+        rel(cx - 22, 491, 44, 45, BLANCO)
+    for cx in (1360.5, 1420.5, 1500.5, 1560.5):
+        cuadro(cx)
+    for k in range(8):
+        cuadro(omr.DNI_X[k])
+
+    def burbuja(cx, cy, ch):
+        anillo(cx, cy, 19.5, 3, MORADO)
+        texto(ch, cx, cy + 7.5, 16.5, color=GLIFO, alinea="c")
+
+    cy0, dy = omr.CAB_Y0, omr.CAB_DY
+    for r in range(10):                                # Día (decenas 0-3, unidades 0-9) y Mes (0-1, 0-9)
+        cy = cy0 + dy * r
+        if r <= 3:
+            burbuja(omr.DIA_X[0], cy, str(r))
+        burbuja(omr.DIA_X[1], cy, str(r))
+        if r <= 1:
+            burbuja(omr.MES_X[0], cy, str(r))
+        burbuja(omr.MES_X[1], cy, str(r))
+    for r in range(10):                                # DNI: 8 dígitos
+        cy = cy0 + dy * r
+        texto(str(r), 1856, cy + 8.5, 22, alinea="c")
+        for k in range(8):
+            burbuja(omr.DNI_X[k], cy, str(r))
+    for yy, an in zip(omr.ANIO_Y, omr.ANIOS):          # Año
+        anillo(1645.5, yy, 22.5, 3, MORADO)
+        texto(str(an), 1688, yy + 13.5, 29.5, 94)
+
+    # ---------- las 100 respuestas ----------
+    for col, bx in enumerate((160, 700, 1240, 1780)):
+        caja(bx, 1165, 521, 2011, 3)
+        for k in range(0, 25, 2):
+            y = 1175 + 80 * k
+            rel(bx + 3, y, 515, min(81, 3173 - y), ROSA_CLARO)
+        for fil in range(25):
+            q = col * 25 + fil
+            cy = omr.RESP_Y0 + omr.RESP_DY * fil
+            texto(str(q + 1), bx + 86, cy + 12.5, 29, alinea="r")
+            for j, ch in enumerate("ABCD"):
+                cx = omr.RESP_X[col][j]
+                anillo(cx, cy, 27.5, 4, MORADO2)
+                texto(ch, cx, cy + 8.5, 22, color=GLIFO, alinea="c")
+
+    # ---------- pie 1: datos del simulacro ----------
+    caja(160, 3215, 2161, 121, 4, ROSA)
     if sim:
-        titulo = _latin(sim.get("titulo"), 70).upper()
-        tam = 12.5
-        while tam > 8 and stringWidth(titulo, "Helvetica-Bold", tam) > X(1280):
-            tam -= 0.5
-        c.setFillColor(negro)
-        c.setFont("Helvetica-Bold", tam)
-        c.drawString(X(232), Y(3314), titulo)
-        c.setFont("Helvetica-Bold", 12.5)
-        c.drawString(X(1600), Y(3314), _latin(sim.get("fecha"), 16))
-        c.setFillColor(gris)
-        c.setFont("Helvetica", 6.5)
-        c.drawRightString(X(2290), Y(3266), "Cód. " + _latin(sim.get("id"), 24))
+        titulo = _latin(sim.get("titulo"), 80).upper()
+        cap = 40
+        while cap > 26 and ancho_nat(titulo, cap) > 1130:
+            cap -= 1
+        texto("SIMULACRO", 200, 3252, 15, color=GRIS)
+        texto(titulo, 200, 3312, cap, min(ancho_nat(titulo, cap), 1130))
+        if sim.get("sin_area"):
+            area = etiqueta_modalidad(sim).upper()
+        elif sim.get("cursos_area"):
+            area = " + ".join(grupos_sim(sim))
+        else:
+            area = ""
+        if area:
+            texto("ÁREAS" if not sim.get("sin_area") else "NIVEL", 1380, 3252, 15, color=GRIS)
+            texto(_latin(area, 18), 1380, 3312, 40)
+        texto("FECHA", 1760, 3252, 15, color=GRIS)
+        texto(_latin(sim.get("fecha"), 16), 1760, 3312, 40)
+        texto("Cód. " + _latin(sim.get("id"), 24), 2290, 3252, 13, color=GRIS, alinea="r", fuente="Helvetica")
     else:
-        c.setStrokeColor(negro)
-        c.setLineWidth(0.6)
-        c.line(X(232), Y(3314), X(1480), Y(3314))
-        c.line(X(1600), Y(3314), X(2090), Y(3314))
+        # Hoja genérica (impresión por millares): nada que dependa de un examen concreto.
+        texto("SIGE  -  SISTEMA INTEGRAL DE GESTIÓN EDUCATIVA", 1240.5, 3276, 36, 1900, alinea="c")
+        texto("I.E.P. ALTERNATIVO YACHAY   ·   ACADEMIA PREUNIVERSITARIA YACHAY   ·   HOJA DE RESPUESTAS CON LECTURA ÓPTICA",
+              1240.5, 3314, 19, 1900, color=GRIS, alinea="c", fuente="Helvetica")
 
-    # ---- QR (esquina derecha del encabezado) ----
+    # ---------- QR del simulacro (esquina derecha del encabezado) ----------
     if sim and sim.get("id"):
         m = _matriz_qr(codigo_qr(sim))
         n = m.shape[0]
-        mod = 7.6                                   # px por módulo -> QR de ~220 px (18.6 mm)
-        x0, y0 = 2082, 142
-        c.setFillColor(colors.white)
-        c.rect(X(x0 - 6), Y(y0 + n * mod + 6), X(n * mod + 12), X(n * mod + 12), fill=1, stroke=0)
+        mod, x0, y0 = 7.6, 2082, 142                   # QR de ~220 px (18.6 mm)
+        rel(x0 - 6, y0 - 6, n * mod + 12, n * mod + 12, BLANCO)
         c.setFillColor(colors.black)
-        for f in range(n):                         # tramos horizontales: sin rendijas
+        for f in range(n):                             # tramos horizontales: sin rendijas
             j = 0
             while j < n:
                 if m[f, j]:
@@ -725,6 +851,62 @@ def hoja_pdf(sim=None):
                     j = k + 1
                 else:
                     j += 1
+
+    # ---------- pie 2: instrucciones ----------
+    caja(160, 3350, 2161, 121, 4)
+    rel(1009, 3354, 3, 113, NEGRO)
+    rel(1450, 3354, 3, 113, NEGRO)
+    lapiz = [(259, 3410), (253, 3427), (242, 3456), (238, 3461), (233, 3460), (217, 3455),
+             (219, 3445), (234, 3400), (238, 3397), (247, 3400), (258, 3405)]
+    p = c.beginPath()
+    p.moveTo(X(lapiz[0][0]), Y(lapiz[0][1]))
+    for (px, py) in lapiz[1:]:
+        p.lineTo(X(px), Y(py))
+    p.close()
+    c.setFillColor(rgb(249, 221, 121))
+    c.setStrokeColor(rgb(60, 45, 0))
+    c.setLineWidth(3 * K)
+    c.drawPath(p, fill=1, stroke=1)
+    texto("UTILIZAR ÚNICAMENTE:", 303, 3396, 24.5, 400)
+    texto("LÁPIZ 2B  O  LAPICERO NEGRO", 303, 3449, 27, 580)
+    # marcas incorrectas / correcta (ejemplos)
+    cyi = 3398.5
+    for cx in (1070.5, 1148.5):                        # círculo tachado con X
+        anillo(cx, cyi, 26.5, 4, NEGRO)
+        c.setStrokeColor(NEGRO)
+        c.setLineWidth(4 * K)
+        c.line(X(cx - 18.5), Y(cyi - 18.5), X(cx + 18.5), Y(cyi + 18.5))
+        c.line(X(cx - 18.5), Y(cyi + 18.5), X(cx + 18.5), Y(cyi - 18.5))
+    anillo(1226.5, cyi, 26.5, 4, NEGRO)                # punto pequeño dentro del círculo
+    c.setFillColor(rgb(80, 80, 80))
+    c.circle(X(1226.5), Y(cyi), X(16.5), stroke=0, fill=1)
+    anillo(1304.5, cyi, 26.5, 4, NEGRO)                # visto
+    c.setStrokeColor(NEGRO)
+    c.setLineWidth(5 * K)
+    c.setLineCap(1)
+    c.setLineJoin(1)
+    pv = c.beginPath()
+    pv.moveTo(X(1304.5 - 17), Y(cyi + 1))
+    pv.lineTo(X(1304.5 - 7), Y(cyi + 16))
+    pv.lineTo(X(1304.5 + 22), Y(cyi - 24))
+    c.drawPath(pv, fill=0, stroke=1)
+    texto("MARCAS INCORRECTAS", 1029, 3454, 20, 321)
+    texto("Rellene el círculo", 1530, 3392, 19.5, 240)
+    texto("completamente", 1540, 3422, 20, 219)
+    c.setFillColor(NEGRO)
+    c.circle(X(1860.5), Y(cyi), X(28.5), stroke=0, fill=1)
+    texto("MARCA CORRECTA", 1732, 3454, 20, 256)
+
+
+def hoja_pdf(sim=None):
+    """PDF A4 de la hoja de respuestas (vectorial, nítido). Con `sim`: lleva el QR del simulacro,
+    su título, áreas y fecha impresos. Sin `sim`: hoja genérica con líneas para escribir a mano."""
+    from reportlab.pdfgen import canvas
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(595.2, _PAG_H))
+    c.setTitle("Hoja de respuestas Yachay")
+    c.setSubject("yachay-v3-vector")
+    _dibujar_hoja(c, sim)
     c.showPage()
     c.save()
     return buf.getvalue()
@@ -741,9 +923,9 @@ def boton_hoja(sim, key, etiqueta=None):
         st.error(f"No se pudo generar la hoja: {e}")
         return
     nombre = "Hoja_Yachay_" + re.sub(r"\W+", "_", sim["titulo"]) + ".pdf" if sim else "Hoja_Yachay.pdf"
-    st.download_button(etiqueta or ("🖨️ Hojas de ESTE simulacro (con QR)" if sim else
-                                    "📄 Hoja en blanco (genérica)"),
-                       data, nombre, "application/pdf", key=key)
+    st.download_button(etiqueta or ("🏷️ Hoja de ESTE simulacro (opcional, con QR)" if sim else
+                                    "📄 Hoja genérica (para imprimir por millares)"),
+                       data, nombre, "application/pdf", key=key, type="secondary" if sim else "primary")
 
 
 # ================================================================
@@ -893,8 +1075,13 @@ def _bloque_final_config(datos, sim, sid, pfx):
 
     st.markdown("---")
     if sid:
-        boton_hoja(sim, pfx + "dl_hoja_cfg")
-        st.caption("Estas hojas llevan el QR de este simulacro, su título y su fecha.")
+        c_h1, c_h2 = st.columns(2)
+        with c_h1:
+            boton_hoja(None, pfx + "dl_hoja_gen")
+            st.caption("Sirve para todos los simulacros: imprímela por millares.")
+        with c_h2:
+            boton_hoja(sim, pfx + "dl_hoja_cfg")
+            st.caption("Solo si imprimes pocas hojas para este examen: lleva su QR, título y fecha.")
     else:
         st.caption("Guarda el simulacro y aquí aparecerá la hoja con su QR para imprimir.")
 
@@ -953,6 +1140,55 @@ def _tab_configurar(datos):
     _bloque_final_config(datos, sim, sid, pfx)
 
 
+def _union_default(grupos):
+    """Examen único con clave común: cursos de todas las áreas, sin repetir, en el orden del
+    temario. Devuelve [(curso, n.º de preguntas, áreas que lo rinden)]."""
+    orden, info = [], {}
+    for g in grupos:
+        prev = None
+        for nom, n in PLANTILLAS_AREA[g]:
+            if nom not in info:
+                info[nom] = {"n": n, "g": set()}
+                orden.insert(orden.index(prev) + 1 if prev in orden else len(orden), nom)
+            info[nom]["g"].add(g)
+            prev = nom
+    return [(nom, info[nom]["n"], "".join(x for x in grupos if x in info[nom]["g"])) for nom in orden]
+
+
+def _etiquetas_areas(grupos):
+    """{etiqueta visible: 'CD'} para la columna «Áreas» del examen unificado."""
+    todas = "".join(grupos)
+    et = {f"{_unir(list(todas))} (todas)": todas}
+    for g in grupos:
+        et[f"Solo {g}"] = g
+    return et
+
+
+def _union_desde_df(df, grupos, p_ok, p_mal):
+    et = _etiquetas_areas(grupos)
+    cursos_area = {g: [] for g in grupos}
+    union, errores, pos = [], [], 1
+    for _, r in df.iterrows():
+        nom = str(r.get("Curso") or "").strip()
+        if not nom or nom.lower() == "nan":
+            continue
+        try:
+            n = int(r.get("Preguntas") or 0)
+        except Exception:
+            errores.append(f"Preguntas inválidas en '{nom}'.")
+            continue
+        if n <= 0:
+            continue
+        a = et.get(r.get("Áreas"), "".join(grupos))
+        c = {"nombre": nom, "desde": pos, "hasta": pos + n - 1, "correcta": p_ok, "incorrecta": p_mal}
+        for g in grupos:
+            if g in a:
+                cursos_area[g].append(dict(c))
+        union.append({"nombre": nom, "preguntas": n, "areas": a})
+        pos += n
+    return cursos_area, union, pos - 1, errores
+
+
 def _unir(grupos):
     return grupos[0] if len(grupos) == 1 else ", ".join(grupos[:-1]) + " y " + grupos[-1]
 
@@ -983,13 +1219,27 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
 
     # ---- ¿una sola clave para todas las áreas del grupo? ----
     compartida = False
-    if len(grupos) > 1:
+    if len(grupos) == 2:
         previas = [sim.get("claves", {}).get(g, "") for g in grupos]
         ya_igual = bool(sid) and all(previas) and len(set(previas)) == 1
         compartida = st.checkbox(f"🔑 La clave de respuestas es la MISMA para las áreas {_unir(grupos)}",
-                                 value=True if not sid else ya_igual, key=pfx + "misma_clave",
-                                 help="Márcalo si las áreas rinden las mismas 80 respuestas: pegas la clave una sola vez. "
+                                 value=True if not sid else (ya_igual and bool(sim.get("cursos_union"))),
+                                 key=pfx + "misma_clave",
+                                 help="Márcalo si las áreas rinden UN SOLO examen con una sola clave: los cursos que "
+                                      "no comparten (por ejemplo Economía y Filosofía) se suman como preguntas extra y "
+                                      "cada área se califica solo sobre sus propias preguntas. "
                                       "Desmárcalo si cada área tiene su propia clave.")
+
+    todos = False
+    if compartida:
+        todas_ar = "".join(grupos)
+        ya_todos = bool(sim.get("cursos_union")) and all(u["areas"] == todas_ar for u in sim["cursos_union"])
+        extra_n = {"AB": "Geometría y Trigonometría y Biología", "CD": "Economía y Filosofía y Lógica"}.get(todas_ar, "los cursos de cada área")
+        todos = st.checkbox(f"👥 TODOS los alumnos rinden TODOS los cursos ({extra_n}, los dos)",
+                            value=True if not sid else ya_todos, key=pfx + "todos_cursos",
+                            help="Marcado: cada alumno, sea del área que sea, se califica sobre todas las preguntas del examen y "
+                                 "no hace falta que marque bien su área. Desmarcado: cada área se califica solo sobre sus "
+                                 "propios cursos (80 preguntas).")
 
     claves, cursos_area, errores = {}, {}, []
 
@@ -1058,19 +1308,65 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
             claves[g] = _bloque_clave(g, "2️⃣ Clave de respuestas" if unico else f"2️⃣ Clave de respuestas del Área {g}",
                                       n_g, sim.get("claves", {}).get(g, ""))
 
+    union_guardar = None
     if unico:
         _bloque_area(grupos[0])
+    elif compartida:
+        # Un solo examen: cursos de todas las áreas; cada área rinde los suyos.
+        et = _etiquetas_areas(grupos)
+        inv = {v: k for k, v in et.items()}
+        rk = pfx + f"rst_uni_{mk}"
+        ver = st.session_state.get(rk, 0)
+        if sim.get("cursos_union") and ver == 0:
+            base = [(u["nombre"], u["preguntas"], inv.get(u["areas"], list(et)[0])) for u in sim["cursos_union"]]
+        else:
+            base = [(n, q, inv[a]) for n, q, a in _union_default(grupos)]
+        st.markdown("**1️⃣ Cursos del examen**" + ("" if todos else " (la columna «Áreas» dice quién rinde cada curso)"))
+        ca, cb = st.columns([1.15, 1])
+        with ca:
+            if todos:
+                df_u = pd.DataFrame([(n, q) for n, q, _a in base], columns=["Curso", "Preguntas"])
+                cfg = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1)}
+            else:
+                df_u = pd.DataFrame(base, columns=["Curso", "Preguntas", "Áreas"])
+                cfg = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1),
+                       "Áreas": st.column_config.SelectboxColumn("Áreas", options=list(et), required=False)}
+            df_ue = st.data_editor(df_u, num_rows="dynamic", use_container_width=True, hide_index=True,
+                                   key=pfx + f"uni_{mk}_{ver}_{int(todos)}", column_config=cfg)
+            if st.button("↩️ Restaurar temario oficial", key=pfx + f"rstb_uni_{mk}"):
+                st.session_state[rk] = ver + 1
+                st.rerun()
+        cursos_area, union_guardar, n_total, err_u = _union_desde_df(df_ue, grupos, float(p_ok), float(p_mal))
+        errores.extend(err_u)
+        with cb:
+            for g in grupos:
+                st.markdown(_html_area(g, cursos_area[g]), unsafe_allow_html=True)
+                st.write("")
+        tot = {g: sum(c["hasta"] - c["desde"] + 1 for c in cursos_area[g]) for g in grupos}
+        if todos:
+            st.info(f"📄 El examen tiene **{n_total} preguntas** y **todos los alumnos se califican sobre las {n_total}**, "
+                    "sin importar el área que marquen.")
+        else:
+            st.info(f"📄 El examen tiene **{n_total} preguntas** en total. "
+                    + " · ".join(f"Área {g}: {tot[g]} preguntas" for g in grupos)
+                    + ". Cada área se califica solo sobre las suyas.")
+        if n_total > 100:
+            errores.append(f"El examen tiene {n_total} preguntas y la hoja solo admite 100.")
+        for g in grupos:
+            if not cursos_area[g]:
+                errores.append(f"Área {g}: no tiene cursos (revisa la columna «Áreas»).")
+            if len({c["nombre"] for c in cursos_area[g]}) != len(cursos_area[g]):
+                errores.append(f"Área {g}: hay cursos con el mismo nombre.")
+        st.markdown("---")
+        ini = next((sim.get("claves", {}).get(g) for g in grupos if sim.get("claves", {}).get(g)), "")
+        k = _bloque_clave("comun", f"2️⃣ 🔑 Clave de respuestas (la misma para las áreas {_unir(grupos)})",
+                          n_total, ini)
+        for g in grupos:
+            claves[g] = k
     else:
         for g, tg in zip(grupos, st.tabs([f"Área {g}" for g in grupos])):
             with tg:
                 _bloque_area(g)
-        if compartida:
-            st.markdown("---")
-            n_ref = max((c[-1]["hasta"] for c in cursos_area.values() if c), default=80)
-            ini = next((sim.get("claves", {}).get(g) for g in grupos if sim.get("claves", {}).get(g)), "")
-            k = _bloque_clave("comun", f"🔑 Clave de respuestas (la misma para las áreas {_unir(grupos)})", n_ref, ini)
-            for g in grupos:
-                claves[g] = k
 
     for e in errores:
         st.error(e)
@@ -1082,6 +1378,12 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
                       "claves": {g: claves.get(g, "") for g in grupos},
                       "grupos": list(grupos), "cursos_area": cursos_area,
                       "cursos": cursos_area[grupos[0]], "modalidad": mk, "clave_comun": bool(compartida)})
+        if compartida and union_guardar:
+            nuevo["cursos_union"] = union_guardar
+            nuevo["todos_cursos"] = bool(todos)
+        else:
+            nuevo.pop("cursos_union", None)
+            nuevo.pop("todos_cursos", None)
         if unico:
             nuevo["sin_area"] = True
         else:
@@ -1203,12 +1505,63 @@ def _config_personalizado(datos, sim, sid, pfx, titulo, fecha, periodo):
 
 
 
+def _area_por_respuestas(sim, resp):
+    """En un examen unificado (AB o CD con clave única) cada área tiene cursos propios
+    (Economía vs Filosofía, Geometría vs Biología). Si el alumno respondió los de un área y dejó
+    en blanco los de la otra, ese es su área. Devuelve (área o None, {área: proporción respondida})."""
+    gs = grupos_sim(sim)
+    if sim.get("sin_area") or not sim.get("cursos_area") or len(gs) < 2:
+        return None, {}
+    val = {g: preguntas_validas(sim, g) for g in gs}
+    excl = {}
+    for g in gs:
+        otros = set()
+        for o in gs:
+            if o != g:
+                otros |= val[o]
+        excl[g] = val[g] - otros
+        if not excl[g]:
+            return None, {}                  # no hay preguntas exclusivas: no se puede deducir
+    share = {g: sum(1 for q in excl[g] if q - 1 < len(resp) and resp[q - 1] in ("A", "B", "C", "D", "*")) / len(excl[g])
+             for g in gs}
+    best = max(share, key=share.get)
+    if share[best] >= 0.5 and all(share[g] <= 0.2 for g in gs if g != best):
+        return best, share
+    return None, share
+
+
+def _areas_previas(datos, sim):
+    """{dni: área} según simulacros anteriores con las mismas áreas (la más reciente gana)."""
+    gs = set(grupos_sim(sim))
+    out = {}
+    otros = sorted((x for x in datos.get("simulacros", {}).values() if x.get("id") != sim.get("id")),
+                   key=lambda x: str(x.get("creado", "")))
+    for x in otros:
+        for h in x.get("hojas", {}).values():
+            d, g = norm_dni(h.get("dni")), h.get("grupo")
+            if d and g in gs:
+                out[d] = g
+    return out
+
+
+def _aula_de(info):
+    """Grado/aula del alumno según la matrícula (la hoja ya no trae el campo Aula).
+    Ej.: 'GRUPO AB', '5° Primaria A', '3° Secundaria B'."""
+    if not info:
+        return ""
+    g = str(info.get("grado0") or info.get("grado") or "").split("—")[0].strip()
+    se = str(info.get("seccion") or "").strip()
+    if se and se.lower() not in ("única", "unica"):
+        g = f"{g} {se}".strip()
+    return g
+
+
 def _fecha_tupla(txt):
     m = re.search(r"(\d{1,2})\D+(\d{1,2})\D+(\d{4})", str(txt or ""))
     return (int(m.group(1)), int(m.group(2)), int(m.group(3))) if m else None
 
 
-def _procesar_imagen(sim, img, mat, origen):
+def _procesar_imagen(sim, img, mat, origen, previas=None):
     r = omr.leer_hoja(img, sim["num_preguntas"])
     resp = "".join({"": "_"}.get(x, x) for x in r["respuestas"])
     dni_leido = r["dni"]
@@ -1220,12 +1573,27 @@ def _procesar_imagen(sim, img, mat, origen):
     if sim.get("sin_area"):
         grupo = gs[0]                         # colegio: se ignora el casillero de grupo de la hoja
     elif sim.get("cursos_area"):
-        if not grupo and len(gs) == 1:
+        ded, _share = _area_por_respuestas(sim, resp)
+        if sim.get("todos_cursos"):
+            pass                              # todos se califican igual: el área solo sirve para el filtro del ranking
+        elif not grupo and len(gs) == 1:
             grupo = gs[0]
         elif not grupo:
-            alertas.append("No se leyó el ÁREA (A-D): elígela en la tabla")
+            prev = (previas or {}).get(norm_dni(dni))
+            if ded:
+                grupo = ded
+                alertas.append(f"No marcó el área (o marcó más de una): se dedujo el Área {ded} por los cursos que "
+                               "respondió. Verifícala")
+            elif prev in gs:
+                grupo = prev
+                alertas.append(f"No marcó el área: se usó el Área {prev} de un simulacro anterior. Verifícala")
+            else:
+                alertas.append("No se leyó el ÁREA (marcó más de una o ninguna): elígela en la tabla")
         elif grupo not in gs:
             alertas.append(f"El área {grupo} no pertenece a este simulacro ({', '.join(gs)})")
+        elif ded and ded != grupo:
+            alertas.append(f"⚠️ Marcó el Área {grupo}, pero respondió los cursos del Área {ded}: "
+                           "¿se equivocó de área? Corrígela en la tabla")
 
     # ---- ¿Es la hoja de ESTE simulacro? (QR; si no hay QR, se compara la fecha marcada) ----
     otro_sim = False
@@ -1238,14 +1606,12 @@ def _procesar_imagen(sim, img, mat, origen):
             alertas.insert(0, "⛔ HOJA DE OTRO SIMULACRO: " +
                            (f"'{ot['titulo']}' ({ot.get('fecha', '')})" if ot else f"código {sid_q}") +
                            " — no corresponde al seleccionado")
-    elif qr:
-        alertas.append("QR no reconocido (no es de una hoja Yachay)")
-    else:
+    else:                                      # hoja genérica: se verifica con la fecha marcada
         ft_hoja = (r.get("dia"), r.get("mes"), r.get("anio"))
         ft_sim = _fecha_tupla(sim.get("fecha"))
         if None not in ft_hoja and ft_sim and tuple(ft_hoja) != ft_sim:
             alertas.append(f"La fecha marcada en la hoja ({ft_hoja[0]:02d}/{ft_hoja[1]:02d}/{ft_hoja[2]}) "
-                           f"no coincide con la del simulacro ({sim.get('fecha')})")
+                           f"no coincide con la del simulacro ({sim.get('fecha')}): ¿es de otro examen?")
 
     sug = rr["sug"]
     if not info:
@@ -1253,9 +1619,13 @@ def _procesar_imagen(sim, img, mat, origen):
         if sug:
             alertas.append(f"¿Será {mat[sug]['nombre']} (DNI {sug})? Usa «Aceptar sugerencias» si es correcto")
     clave = clave_para(sim, grupo)
+    validas = preguntas_validas(sim, grupo) if sim.get("cursos_area") and grupo else None
+    if validas is not None:               # preguntas de otras áreas: no se pintan ni se marcan como dudosas
+        clave = "".join(k if (i + 1) in validas else "E" for i, k in enumerate(clave))
     return {"tmp_id": uuid.uuid4().hex[:8], "dni": dni, "nombre": info.get("nombre", ""),
-            "grado": info.get("grado", ""), "aula": r["aula"], "grupo": grupo,
-            "respuestas": resp, "dudosas": [i + 1 for i, e in enumerate(r["estados"]) if e in ("duda", "doble")],
+            "grado": info.get("grado", ""), "aula": _aula_de(info), "grupo": grupo,
+            "respuestas": resp, "dudosas": [i + 1 for i, e in enumerate(r["estados"])
+                        if e in ("duda", "doble") and (validas is None or (i + 1) in validas)],
             "alertas": alertas, "otro_sim": otro_sim, "sug_dni": sug if not info else None,
             "dni_leido": dni_leido,
             "origen": origen, "fecha_examen": f"{r['dia'] or ''}/{r['mes'] or ''}/{r['anio'] or ''}",
@@ -1319,9 +1689,9 @@ def _tab_escanear(datos):
     # ---- Antes de escanear: hojas del simulacro y verificación de DNI ----
     b_h, b_v = st.columns(2)
     with b_h:
-        boton_hoja(sim, "simy_dl_hoja_scan")
-        st.caption("Imprime estas hojas: llevan el QR del simulacro y su título/fecha, "
-                   "así el sistema detecta si te equivocas de examen.")
+        boton_hoja(None, "simy_dl_hoja_scan")
+        st.caption("Hoja genérica para imprimir. El sistema comprueba la fecha que el alumno marca "
+                   "para avisarte si una hoja es de otro examen.")
     try:
         df_prob = analizar_dnis_matricula(_HOOKS["cargar_matricula"]() if _HOOKS["cargar_matricula"] else None)
     except Exception:
@@ -1353,18 +1723,31 @@ def _tab_escanear(datos):
         archivos = st.file_uploader("Sube las hojas (JPG, PNG o PDF con varias páginas):",
                                     type=["jpg", "jpeg", "png", "pdf"], accept_multiple_files=True,
                                     key=f"simy_up_{sid}")
+        if archivos:
+            st.caption("💡 Para muchas hojas: escanea todo en **un solo PDF** (en escala de grises, 200 dpi) "
+                       "y súbelo aquí. Lo ideal son lotes de hasta 100-150 hojas por PDF.")
         if archivos and st.button("🔍 Leer hojas", type="primary", key="simy_leer"):
             barra = st.progress(0.0, "Leyendo…")
-            todas = []
+            previas = _areas_previas(datos, sim)
+            total = sum(omr.contar_paginas(a.name, a.getvalue()) for a in archivos)
+            hechas, fallos = 0, []
             for a in archivos:
+                es_pdf = a.name.lower().endswith(".pdf")
                 try:
-                    for p, img in enumerate(omr.imagenes_desde_archivo(a.name, a.getvalue())):
-                        todas.append((img, f"{a.name}" + (f" pág.{p + 1}" if a.name.lower().endswith('.pdf') else "")))
+                    for p, img in enumerate(omr.iterar_imagenes(a.name, a.getvalue())):
+                        org = f"{a.name}" + (f" pág.{p + 1}" if es_pdf else "")
+                        try:
+                            st.session_state[lote_key].append(_procesar_imagen(sim, img, mat, org, previas))
+                        except Exception as e:                 # una página dañada no detiene el lote
+                            fallos.append(f"{org}: no se pudo leer ({e})")
+                        del img
+                        hechas += 1
+                        barra.progress(min(hechas / max(total, 1), 1.0), f"Hoja {hechas} de {total}")
                 except Exception as e:
-                    st.error(f"{a.name}: {e}")
-            for i, (img, org) in enumerate(todas):
-                st.session_state[lote_key].append(_procesar_imagen(sim, img, mat, org))
-                barra.progress((i + 1) / max(len(todas), 1), f"Hoja {i + 1} de {len(todas)}")
+                    fallos.append(f"{a.name}: {e}")
+            # las hojas con problemas van primero, para revisarlas sin buscar
+            st.session_state[lote_key].sort(key=lambda h: 0 if (h["alertas"] or h["dudosas"]) else 1)
+            st.session_state["simy_fallos"] = fallos
             st.rerun()
 
     elif fuente.startswith("📷"):
@@ -1387,7 +1770,7 @@ def _tab_escanear(datos):
                 resp = resp.ljust(sim["num_preguntas"], "_")[:sim["num_preguntas"]]
                 st.session_state[lote_key].append({
                     "tmp_id": uuid.uuid4().hex[:8], "dni": d, "nombre": nom.upper() or mat.get(d, {}).get("nombre", ""),
-                    "grado": mat.get(d, {}).get("grado", ""), "aula": "", "grupo": grp, "respuestas": resp,
+                    "grado": mat.get(d, {}).get("grado", ""), "aula": _aula_de(mat.get(d)), "grupo": grp, "respuestas": resp,
                     "dudosas": [], "alertas": [], "origen": "manual", "img": None})
                 st.rerun()
 
@@ -1396,6 +1779,11 @@ def _tab_escanear(datos):
         return
     st.markdown("---")
     st.markdown(f"### 🧾 Revisión del lote ({len(lote)} hojas sin guardar)")
+    _n_prob = sum(1 for h in lote if h["alertas"] or h["dudosas"])
+    st.caption(f"✅ {len(lote) - _n_prob} sin problemas · ⚠️ {_n_prob} para revisar (aparecen primero). "
+               "Revisa lo marcado y luego guarda.")
+    for _f in st.session_state.get("simy_fallos", []):
+        st.error(_f)
 
     # Tabla editable de cabeceras
     ya = {h.get("dni") for h in sim.get("hojas", {}).values()}
@@ -1412,7 +1800,7 @@ def _tab_escanear(datos):
         return e
     _sa = bool(sim.get("sin_area"))
     vista = pd.DataFrame([{
-        "Quitar": bool(h.get("otro_sim")), "DNI": h["dni"], "Apellidos y Nombres": h["nombre"], "Aula": h["aula"],
+        "Quitar": bool(h.get("otro_sim")), "DNI": h["dni"], "Apellidos y Nombres": h["nombre"], "Grado": h["aula"],
         "Grupo": h["grupo"], "Correctas": calificar(sim, h)["correctas"], "Puntaje": calificar(sim, h)["puntaje"],
         "Sugerencia DNI": (f"{h['sug_dni']} – {mat[h['sug_dni']]['nombre'][:28]}" if h.get("sug_dni") in mat else ""),
         "Revisar": ", ".join(h["alertas"] + _extra(h)), "Origen": h["origen"]} for h in lote])
@@ -1431,7 +1819,7 @@ def _tab_escanear(datos):
                 h["nombre"] = mat[norm_dni(nd)]["nombre"]
         if str(fila["Apellidos y Nombres"]).strip() and fila["Apellidos y Nombres"] != h["nombre"]:
             h["nombre"] = str(fila["Apellidos y Nombres"]).strip().upper()
-        h["aula"] = str(fila["Aula"] or "")
+        h["aula"] = str(fila["Grado"] or "")
         if not _sa:
             h["grupo"] = str(fila["Grupo"] or "")
         h["_quitar"] = bool(fila["Quitar"])
@@ -1445,13 +1833,25 @@ def _tab_escanear(datos):
         for h in lote:
             k = h.get("sug_dni")
             if k in mat:
-                h.update({"dni": k, "nombre": mat[k]["nombre"], "grado": mat[k]["grado"], "sug_dni": None})
+                h.update({"dni": k, "nombre": mat[k]["nombre"], "grado": mat[k]["grado"],
+                          "aula": _aula_de(mat[k]), "sug_dni": None})
                 _limpiar_alertas_dni(h)
         st.session_state[ver_key] += 1
         st.rerun()
 
-    # Detalle de cada hoja
-    for i, h in enumerate(lote):
+    # Detalle de cada hoja (con cientos de hojas se muestran solo las que necesitan revisión)
+    prob_idx = [i for i, h in enumerate(lote) if h["alertas"] or h["dudosas"]]
+    modo_det = st.radio("Ver el detalle de:", [f"⚠️ Solo las que necesitan revisión ({len(prob_idx)})",
+                                               f"📄 Todas ({len(lote)})"], horizontal=True, key=f"simy_detmodo_{sid}")
+    idxs = prob_idx if modo_det.startswith("⚠️") else list(range(len(lote)))
+    POR_PAG, pag = 20, 0
+    if len(idxs) > POR_PAG:
+        npag = (len(idxs) + POR_PAG - 1) // POR_PAG
+        pag = int(st.number_input(f"Página del detalle (de {npag})", 1, npag, 1, key=f"simy_detpag_{sid}")) - 1
+    if not idxs:
+        st.success("Ninguna hoja necesita revisión. Puedes guardar el lote.")
+    for i in idxs[pag * POR_PAG:(pag + 1) * POR_PAG]:
+        h = lote[i]
         icono = "⚠️" if h["alertas"] or h["dudosas"] else "✅"
         with st.expander(f"{icono} {i + 1}. {h['nombre'] or '(sin nombre)'} — DNI {h['dni']} — {h['origen']}"):
             ca, cb = st.columns([1, 1])
@@ -1482,7 +1882,7 @@ def _tab_escanear(datos):
                                                key=f"simy_bs_{h['tmp_id']}")
                             if st.button("Vincular con este alumno", key=f"simy_bb_{h['tmp_id']}"):
                                 h.update({"dni": sel, "nombre": mat[sel]["nombre"], "grado": mat[sel]["grado"],
-                                          "sug_dni": None})
+                                          "aula": _aula_de(mat[sel]), "sug_dni": None})
                                 _limpiar_alertas_dni(h)
                                 st.session_state[ver_key] += 1
                                 st.rerun()
@@ -1497,9 +1897,11 @@ def _tab_escanear(datos):
             st.warning(f"{len(sin_dni)} hoja(s) sin DNI válido se guardan igual; corrígelas luego desde el ranking.")
         nuevos, reemp = _guardar_lote(datos, sid, validos)
         st.session_state[lote_key] = []
+        st.session_state["simy_fallos"] = []
         st.success(f"Guardado: {nuevos} hojas nuevas, {reemp} actualizadas (mismo DNI).")
     if b2.button("🗑️ Vaciar lote sin guardar", key="simy_vaciar"):
         st.session_state[lote_key] = []
+        st.session_state["simy_fallos"] = []
         st.rerun()
 
 
@@ -1514,17 +1916,17 @@ def _tab_ranking(datos):
         return
     aulas = sorted({h.get("aula", "") for h in sim["hojas"].values() if h.get("aula")})
     f1, f2, f3 = st.columns(3)
-    fa = f1.selectbox("Aula:", ["Todas"] + aulas, key="simy_fa")
+    fa = f1.selectbox("Grado / aula:", ["Todas"] + aulas, key="simy_fa")
     fg = "Todos" if sim.get("sin_area") else f2.selectbox("Área / Grupo:", ["Todos"] + grupos_sim(sim), key="simy_fg")
     top = f3.number_input("Top para publicar:", 3, 30, 10, key="simy_top")
     df = tabla_ranking(sim, None if fa == "Todas" else fa, None if fg == "Todos" else fg)
     if df.empty:
         st.info("No hay resultados con ese filtro.")
         return
-    extra = " · ".join(x for x in [f"Aula {fa}" if fa != "Todas" else "", f"Área {fg}" if fg != "Todos" else ""] if x) \
+    extra = " · ".join(x for x in [f"{fa}" if fa != "Todas" else "", f"Área {fg}" if fg != "Todos" else ""] if x) \
         or ("Ranking general " + etiqueta_modalidad(sim))
 
-    if sim.get("cursos_area") and len(grupos_sim(sim)) > 1:
+    if sim.get("cursos_area") and len(grupos_sim(sim)) > 1 and not sim.get("todos_cursos"):
         sin_area = [h for h in sim["hojas"].values() if h.get("grupo") not in grupos_sim(sim)]
         if sin_area:
             st.warning(f"{len(sin_area)} hoja(s) sin área válida (obtienen 0). Corrígelas abajo en "
@@ -1697,7 +2099,7 @@ def _tab_analisis(datos):
         return
     gs = grupos_sim(sim)
     gsel = None
-    if sim.get("cursos_area"):
+    if sim.get("cursos_area") and not sim.get("todos_cursos"):
         if len(gs) > 1:
             gsel = st.selectbox("Área a analizar:", gs, format_func=lambda g: f"Área {g}", key="simy_an_area")
             hojas = [h for h in hojas if h.get("grupo") == gsel]
@@ -1712,8 +2114,11 @@ def _tab_analisis(datos):
             curso_de[q] = c["nombre"]
     nq = n_preguntas(sim, gsel or "")
     clave_ref = clave_para(sim, gsel or "A")
+    validas = preguntas_validas(sim, gsel or "") if sim.get("cursos_area") and gsel else None
     filas = []
     for q in range(nq):
+        if validas is not None and (q + 1) not in validas:
+            continue
         cont = {"A": 0, "B": 0, "C": 0, "D": 0, "Blanco": 0}
         ok = tot = 0
         for h in hojas:
@@ -2010,7 +2415,7 @@ def tab_simulacros_yachay(config=None, cargar_matricula=None, cargar_historial=N
                    "guardar_historial": guardar_historial, "backup_json": backup_json,
                    "puede_borrar": puede_borrar})
     st.header("🧾 Simulacros Yachay — Lectura de hojas y ranking")
-    boton_hoja(None, "simy_dl_hoja_top", "📄 Hoja de respuestas en blanco (genérica, para imprimir)")
+    boton_hoja(None, "simy_dl_hoja_top")
     st.caption("Flujo: 1) ⚙️ Configurar el examen (elige Área A/B/C/D o Grupo AB/CD, pega las claves) → 2) 📸 Escanear las hojas → "
                "3) 📋 Lista de control (¿falta alguien?) → 4) 🏆 Ranking (imprimir / publicar) → 5) 📚 Historial del estudiante.")
     datos = cargar_datos()
@@ -2027,3 +2432,14 @@ def tab_simulacros_yachay(config=None, cargar_matricula=None, cargar_historial=N
         _tab_historial(datos)
     with t[5]:
         _tab_analisis(datos)
+
+
+# ================================================================
+# LOGOS DE LA HOJA (PNG con fondo transparente, incrustados para no depender de más archivos)
+# ================================================================
+_LOGO_IZQ_B64 = (
+    "iVBORw0KGgoAAAANSUhEUgAAAPwAAAD8CAMAAABkdTlVAAACf1BMVEXun6SnYVnVY1jgppSoWyEfZ5Wn0+esmV5hkqnVmHCZoKSYtM/QTifd2eT919tnq84jUGfn25sth6dTb5LlJSV2JBxTYWWtjSenOUUhNVfeozL+xsj+2OAWJjTQa3HWe4OwXGFkWzKgISzeeYX+usPf1WDbxDb5ucNzxeLINkWsxq4sj8iqdob9wr27e4h7OkB1gk2KOz6+wFLWgX794+36+/iuFRDOGRaUFAuUCwnoJCXRqEjPJBeoCw3RJifw1mzXtk7GmDW0iC2wJinpxlXOpjfwyWn76evQGiTpuFGzJBbmGRnrHCT76NS6lDP++NbmJBuwGiSQJQnOmUf819DrqFCRJyl4FQqvNjHWtTPLDBF2CQTIiTTV+f6seijq1FjqmFKzlk7NNCz2t7D1uGn+2+T243TMNRfQ5/n7yMkuZ42peRnktzariUkWR27+2+UvVnTx1owqSWuSGiTt2K+TNjSwR0nLZzCWdzARKU3/4+cwdpPaxFLQdnIVNlXMdzTOtm3+2NuyV1LZx2+VNgbvl5H2xrbUiEfmxTjz5rP/5OnzqKmxNhPSlpDpiU3KV1KrRxH3qWlOiKv/1df+2+X+y9NPdpPXxo+x1u/QiInNaGrNWCxxlrD1yIoQOWavRS8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUyIh/AAAAoHRSTlOw8/P9/v/////+///+/xz////////5///0//+hWP+7u7n/4/Ck//////j///+vt///v/+/AP/+//7///////7//////f////////7////////+/v////v9/f///v////////7//0L///////////8Q/////P/7/f///0b///7///9F/v////////8w//////3///9gMGD//////v/////+4JyNBQAAYf9JREFUeNrdvQdDG8myNqwEQgQbTHTcXXvD2XPufb9kjUZpEBqhBEIo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"
+)
+_LOGO_DER_B64 = (
+    "iVBORw0KGgoAAAANSUhEUgAAALAAAAB8CAMAAAD+Q8qjAAACf1BMVEXWmxtToGKeXgsmWyLi26Omnlueo5T63t6ikCDW29LZ0l2b3KxcZVddXiffawX857MdnE8imzL939raslIbMR9RzWyy58lv24385cebLxJNKgSfIhySdFTXGCF2oottiRMuZUbKtp+4xBHc9w83zFrJFyNuJByoymJEM12wRwA9PkLrlCv+4e/4+vf2+ArmAwTXBQPz6A/05y35+Cz22S0OBwLNFQT12RLz5074+EwvJgDu6u772+3x2UwPhy2zFwP45242NgFORwFRBAD957MoFwD86I1wBQANeSpuaQRIOAAWFgL5+dWOhwf95df6yCv959WOCABWVgISljDW1y795sfLJgKyJgH+5ehoWAHY+uuRFgK0CgHU1w51dQT2yBSJeQSupwbOxy7qFQgFdxUvBgD75Oj+58VvFQCWlgkGZhL92un46K0vp0yzNgDKOAD02Wz96ar3lw3s59Iul0vOyQ3V2Ez6tyz+2tgFVw/LRgDRVwH69W30hgn3pxD9thQphzSqmAja5wq1t7QGhhmztgbJuDAOaCmOJgGwqS0wtlBwNwCzti/RaAXreQMPJwRRFgDvykr8840vhUmOZwXKtw7a5C376JX99q4VpDZtJwAIRw1xdXTQ+dcteElxRgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMfO6PAAAAoHRSTlP+////8f//Jf/9/P////+q//9U//////+l//+/////////////v7///7//vwD///////7//v////3///8Q/v//+f///7L/8v////////9O/2D/////nf//Sv////////////////8wsf///0j3////9M////////9M////+f///////////////////////////PH/////z/b/////////c8kwngAAIi9JREFUeNrNfIdDGunW/lBFEHtJclN29+73u19ZkWkwM0qZQaSJBEQNoiiWRI0tscVeEms0aixpm+Rf/Z0zg4qmGZN7d9+96wo3gWfOnPc5zynvEH/89JVz7+HDh/fuNTTc/+PfsIifjTbnbtODBw9qcTXdvf+3B5zT0JQ7WOegYHHc6KuChr854JqGB6/r3A6KxEVRjrran27knwq45t6DwTmOIukIoc6PUHaScb9quve3BVyTc7dgcI6xW+jFnWFXS/5jQExxr5ty/qaAa540PXrJMRQVIWZcbTabdWSe6SAp5lXx/Zq/I+CaJ+AODEkzkflmm9VaVWW1Nr/oIO127hWwRc7fDjC4bx0PO42Zyrd1VyFcq7XNld9B0hTnflRwN6fmbwYY8MJuI5mFERmvAtnlml1kaJ5x1z36aZ78kwAXF7yU8RIjNtsJXKvNamsbIRi7bOS7fyvADTJeKpLf4pL9twrRyquteZ4BT+HcwMg1fxfA9+/WjjLovsMtGZiZhXa2jbyIkBaKcWuvNdT8HQCjeHjlBsq1Px5ptp0HLNvaNrITsdM0I4e9mr8ccE1DAbCv3U535CObWauqTrdc5nerzTUzRdnt4Mjapoc1fzHgmie1dW4Kbvki4O3urqr6FHB3t615+EUEoh6wxYN7NX8lYAjGtXUcA1gWZlwZ+v0EMCybzZUfYVBa1D24m5PzlwGuaWjS1jkYkurIl7cbckPGi20ulwt/BavDdXRX2ZpnHgPtgX77UUYmfgRv7Us3w5D2xdlmZY+BJV1Rn6/PoyyfzxeNInA0cvNwPtjYzrgfFdf8NYBr7oE7UHaKeqx2AdZbYNNo1Ofx7N0IJmAFAoeH6udv+xC1DS3vGp5l7HY7M1r7Q3H66oAhGDO0xc7MtwCWlmTS59nb+2hYPmK6OI6jaJqieLeb6+ggDt/ueXzR5uYR18xjBvnaWPAD/HZVwDkNYF8avj1/uLl5xgeWfXtocHA0bbGsxqROCG4Wul8Kw0sIGpuHe2BnQKwmgC1Iyv2o6cpscVXADQVuyNtAmw23tCBaNeFwcA7egoKtk+1N0e0k+RvbSVsAOE3xDkLd54sOJ4fzI5g8ccBv/1HAEIw5wOt4PDsynPR4nhNGN5MOSOEu2aLGG6yQplYspLiMgEmS7jBMufcBcrJleAeCCGiLKyMmrmZeLeAlmRczLS5f3yHBdxkOpVhYZIUJAGxhpCAbNFKWdmkVX1pIvrM3QVloCiBvJNVTpMxvtcX3/0OAwbxuhqIhuLW0JH3XCY4nwywb5vj+ENtF2y2WiaDByyYm6XaxCy1soZc/9gbof1os9oja59tQL4Cww0B97SopNXEF875yM8BmC7NJV3RD7eApOx2PsYBolRXgOigAbNz0ejvp30Q3ugg9EUiwMmDazhDXPcnr81NwfygegkhDzr8dcIMcjCnm8XCyJare55bDdrjn2yHBCD8MNKREpD3Wxa+xof60OEfRFro9th0GwGjr9qN9Ixp5J4Jhj3s5WPvdiL8X8D1wB1BekR1g3g2CZzqDUjtYkRNZtUEQDACLtkxIDprf7PUKAQougJT6+TtsgEei+02QiH3iui+pJuQEhft+yfldgGsUqW6npmaTyeRwCXcUSPen8baTnV5WFFg2ZQFuphJdNM2HWW8ACM2ekgKGVCjAUHAt6VgqkYg41ODIOxyQhZ17+ajp+wLfdwG+12TkqI4OirgebdnYKTF+DK5aeFrm2jTL6uoMsPcgxk2wEmxKPhBKwItUYKLfLLIBLF9ZyHZqm71hcKuT0ZGZKQbMz7x8rW16UvPvAXzvmpazd0Cm2afe6FM7IsHeIA8u2g6ISYeXNRiNKZYNxOMxrzQ6B4E5EOZXxWAX3d4lyT5MtlvIuBgSgp1uYiPa0jLP2DF3eq299h2Iie9hs1HAa4/sbLQk3xLuzs6w1xvmf0vJZEslWHEzbgyExE23DtZmv2FyMs5tSyluot0IgCncdCQFf2ebFzvniCQEkdlF8B9m9PXgg8vvPeLy7gBsRtrti+CAyT6C6hQm5iSvmIot03CrLfGwl40ZOKNRZ5YEryAIkhjSxCSDbnMyzix7WenYAqGv3RFkw3Mrq6Kd2u9LNo+gSKY4Rx2wRc1PBixrSZCzxEbyehTw2qUYTc9pWKETTNfeH+dSbGxy0iB6vcE8/VPt2Fhl5ZhWrzMHpUC/0ZjweruQJuJBVuJXaDrWDnFnI+pqnnnRAZDd34GYuDxe0k5GXrS0XI/6Stx2+qidXqEnBW8CpGSXkJoMp8AfQnn63MrK6kpcmZ96sygmdDopHF8hqYDXuwqkAlxN0txUX9Rla95ZpMHI7rrahp8HGFM3NwWRdWrE1nzd97bEHQ5MgAaDoNDv9Rrck+Fg2KiLsWZE++nS6s2CaJg8bv8tIAiKL2N8CR/te8DGzTMLDMgS7uUldT3xbbRP7jY9GmUA70Kz7ZbN10c4OgUhDfsMroGKsUIgFTPqpJBZKxu1+lPE1ZW5eSFN/PgO6w06aNx7FprvFCS+xBNtbrONPLajtnj56NpligDfBNzQ9OCR2wEhyz5vs3a3JT0EZ2AljoY9BN9Md3lDoYAx4JX0lV9e1bmVY2Y2Vqf2pngSOYXmwNgpkG++aFszpNQERR9T7sHLIP4W4Jym15BpgssxO21V3d0uzyHjCHqDxng7Woom+XBQpwuGdPWVX13VldW/mlmdkUcDW0AsCcEucA7qra+lGTK+/AVUTe7BS4jkbwCuKX70kgd2IBdGrJCxt/me2+nOG7B3wv14Y0maN27rBCG3/htwceXqWEMct9zctigkMMxZLJG+pMvaXWWDbA/3Xt23yYL4Rt1MZjOGedwCH1vVHPWs0e3CMtcpeGPwDSSwE29g8zKgqr8CuRqJTusFOUTD3w6lODmg93ct+1w2a1WVbWQ+Aha/hBgivl4oQfcl7ZHZlmbAa416DBSZSABBdAlsMM6nw6AYWPBemcuqK7+5xkSB5xNCKMxT6BlGUQQh1CaXjJrzF+WyLGjkmqsCbnhQ52BgTY00y3WnW77nFN2etiOROhIQKFIpfhXwjlVeetXHJF0I8KLCs3BSSOxy+NqsSs0wfwFzJ2DkryoL4iva4RqWJZnIi2EsT8sGXgPqpVHjwn4JsIKwOSmAfceyI0XlJ7+ff8cspPqVxAkyvVA/RREZxN3Abx2kBR35a4i/CDjnmvYl1s0Wd1psSk0ddhyPgEGio4H4sJAwCrrK6i8g/Dze6kpB5Ek5c1oTWAMPV94XVcqG1m5wC2ztfbU29CXAOcXaOYjyzMKsq00pTN+KehhZccn/AxqmuwBv/Tms4Mh6WLnKe7lP9U9xL56/JG0oLF90O4hkfgXitaHPdisDGWtDkM/MvSr4opE/DzjnLkhfiqTt8yOuTCndavOpZftaLJhOYi7EBcQLdJabV/rnU0Ccp6+u1Ofl/Qn/5j09b+DKSj17hJWsGCvFgd9p3vE8egIYe3sRys44vlxIJj4f3YAd4EoXlSaL0q1wIaVNMDJeC7V8RFOBkDbbwLkAT38ieQCpIizgN13uGWT8z02Rp+MiKxn59vhaeJlHakMnlu0idyMZh/ZLbkF8Prq5HQzFLM6O2E7bKy7fR75d9IZpeYN3BSV+06s7AQI/cv+XLX16xm36vDOz/1lq/jP37MpyK6VUPCiwolkD0tkr0NT1aKa5h4hds4vA/I7RR5/PnIjPaTNwB8D7eFauSWfK6UnPMr0qCruafg7SuK5gwBE0V57IHQTMhnLPrF39NFtb5Jayf2bZuF4bMwisVwzcuZNOHx2RNBF12U4r97bm4QW7wm+fkxbEp3CbHnEMw0VejLQp9Kv0gpJ7FGiAeErjDR6mQU9s6lgZ4NiJvmHZbHH5NC/bt0vZcy8r86QSnYM/XrHI8Znk+lxn7UiAPEzIpe+6B8WfugVxsUoNmRBnp7ipfJvSG8xc+C0PbDlZPhwFgpABBY3Czazw1vq0lA1lU9vTP7MBQmaif59t8pBRlm2kQjm0uu902ylbL3+KohjsL3xiZOJ83aH4wWusmzGPZ5QWbAYxkLAnTa+Q8leA9g4GDbpgxra5ra2tpl80mt2vAQ6VajQmU5725A1zAGMzfN4KcjLZ0efqzgIMW2/2MTglGvlioCYuNFkgWFBUZH7YdYI085/oHiOzvRyk+O1+XtIpX63SlLeqDg5UgOlrFtbkacZV71Stla0KGYtxuXRFUV0cqEH+eTQbMC5UQ3Ih+QJi4lyTBc1LdUR2hl0n2zYD+FZUTaGBKQoSIwvVPxEXZGlQmat5Z6oYcI6r8kK7lV8EnMdqVH6namna9F5VLu+72CoED8dyEOJ7LM6DkrddAGwdedGhKM7z/HYGuObhg9ccyA/7wmyLzWatygZss/kMMp0B4YNPbIfiKcXArab1g/HxrTdDftW70i8D/jOkOXA6fx+aVlXsqmS/1wUofi3YCwlWQhAZqqTvAmBk5NkIFvnd5x2ZOMN7DaWvhXqs9NyqTj8AAbd5juj21eN2ilsLpyHCTYqDiv+WT48PbW0VbTlVu6Vfs3DeQWPjm997hgCz/M6gNOlOsF4DR/GTYifv6HNZs31YIbhZTEQYcIsskUyc9mALEC/FvBjOIocMYKvN9ZaKS6xXEIE/gzGvzhCrR0Pl3S5fb9x6U/R7o99U+jWXCKlUA2/e/N74zLmkkumiPqArYYU1SJlIelUCn4haq7I7qcpIC0gLzKizRTJxWoeqw+02tdPSJl+gfKmnf98afc5TXpYFtEEgNUkXkD0id1djcva8KXqz5Rx//zUL60N603RjY1FhT8/0B3nb1et0OnYZiytYsY/Ty77rtnOA8fdua/O8XEkGtjhxC0Kpoha8wqYF9XjGdRorTnxJdgkQPhNCMMjGdKNd6fbjuDSIssdUur7U6Cx8U+ifLm/d/eW8DDoHmNW3fvA3vtnqeTagapXDtDZhENrlfUGlBcpy5LluPd+gxlfdNhswMvgpqKFMoCbQe5se1XGQGdvzT/Cem3iQlRpBW7rck6mQEObgO1YlWaa1/jJd9KzH6fSvq1pbQ3mnSjIDuDrLwrcrTdPOxi1nz7TKpCnHbClmEJWiChcLUha7J2k9Z9/TxvrMY2y3OrTX7uUogIHN6txYD1980XLGvucAVzV7jCgtQaR5vZ2gv8NmhSNUA0VFRYVO/weAkB19wYA3x06CNlyFnr2NjD1e1FimOljXaNHGZoO4hhwJWWEnZaHeJrPiarad22bmGcZOOUZrZcVJ/HEfdhvDoFRvySKz84BdHshyLfYVC18iAGI+kSG12++WirbKKj6A0qkGwNWKhXNv6Md+vVmf+2v1mUsA4PeqpaIyU8XS+sF73HdmQ8C7ycQnYmywC0zxsU+ZD8kQ25lf2GyuF1Mg6xm3XH4j/rj7isOmxfyMy2b9FLDiIa4blBJIwZuCrMEd1OP9NulNmh5nWYXql1wF8Mm6qb55/XqJuvcUcS6otdxKkx/+cJH/4IOskvJSk0H2xg1vCJtj/7QkfCfKsCobsYzBNQvZHolt9ft/EPcLsIy6+GLEZj0fabLWrbbnx2BguUlIx6WPbuFXtG/eO9XSwABQK263ataMGv7PvLyb+pvX1eqNjbc3tfBS/xTgaVFeVpaPO9+UFfX4D1qRKHSxOaOEnZu4XKLo9GQBPqMnZciwrXm+w85woJHvE/dqgR0WdpqtWbb9BHT0oyWzgDapCU7UyltOs7T0zDngXMdYMAaAc/NYeXk28vNn1W/f9sqvzL+COvuzGjzevwXUVuRXld8GxFrpmKYcaxO0oqjC5wBnhwH8YYP8FBgZvAIA0yS4r+s84KqLgOWmsZJ+WshjsU7WPaWaoZ6eAf87k3zXzWOlCt7e3uv5OzuzG70KYJbV56K/AOA3z94M9fhVeaVodZHHWG/JfGi/58SHrefhZsiiZWeBtHMFDcSTWoYYttlO/Nf62YWAMxbGH5OCQsMa59bQVqNf9slctlQAbKUAOtSrJvJfzKtPAbMo4IEr/I2NZWVOp0qTBxYeE7jT2waeBoCrsk2cRRnId7eaN9QdDCdbmOqYUSa4rF9CbINAlwWYnGQxMOeaCteHfi/7XSWrg3IF2X//d+ku+1xNEMT8DrpEKBSS/w/cke8P/P7GsqEhpwZdYhBrtoqJwScowxngT4M05KeumQXITWvvAWBOLpZ0K4N8n0ccfc5lAzay6MP6dweFQ2/ebBUeyFmxXt5eoByNBl3JwsLCY0Kt1lZqtVr9U8j8n8rSzgmA/Y3jckwcFE8tjJtuMwvwqXFPvdjmmo3gVBYAfljgpuiO+WYF7wnqiz789uzD0cIhrLabdj8UDjU+6+lZLz+NbyAStOGwgTCAiQlDp2Gwvv6sLGEa73H2IOAP78+7xDnA2TN6p9OFLS8gD7JzdcASOdfcHEkz86cZvbXqVtVFOo7uOc4BFtDC7zUD/qEtZ+PQgem01lf/WpcwoEPIa/nwUPf6tNYCsRmieMX4eOEHjR43XbYRsgBnkVoGr2v4MUhjZu5l7T05cODkJLMw03YuuJ1DDIDpLMAcllghcr2bdg4NOIemT1P6em2g0xGhKWw4Y5eBIw51gycGLtcUOgd6Kvx+1QdUE3rpHGD04YvrZAvNLjKUnZl71dSAke5ebd2oHDvyXRcBnyKOevbPAVZqgCZIe8oae3r85a0neM064xqDTWV50R37JYGbJ1dTPr5e6HealsbHUXpA4OCzAYf7zgO+dRo4sHJM2x0vlREW4o+cpsFBnO+zL867bNYLgukLgCUzAH6vUZU5t8qcA0Om25lilFn3WmfoQMAyZHvHprHErM84samw0DldZBpwHnyQtUQqC/AK3dn3qYVlJTHyAiSxnXuZKaugWmvKHdSOorx4PPKJwFMAuzyGLMCQhHrRYu/8ZWWqoSLnkEqjkqVl7s36wddraaXigICPRuvrb95UvFh1UFhRODBUsT6uQlarFDfPWTjhs1VdjHEYlIexKYaNx3tnejin+FqBdtRht3dE8tusn+h+GbCayv70Li+YtHV6wD+gKnrXOI56GI2o1VXWD7qX208AM2uv6+t1CmD9h1/8hf4Bv98/rlEhSYjxbBvQz5NZgBW2wIMKsyDUSLlRmpVx/JGT87C4QOtg6A4804CUfEEuQcZBkdk+4cUyperdEuTuTuAq54GcvP+qRz9OnwLu2qwfq/9VPVgPakcFcJ3jflzIEZU6McvAkFPsJW1VF9NQYDNgBw4rQBdzOkxCtRxDMw4cu7ddRGzzveWyAVMJs8xr7/zTPUtOZ6PTWVEuN7bAL14TExnA1FpJfWU9KON6k6l83O9cHweKcE6vY2CujAXODAzbc8LTYr0AGNz3MYMnml4/yBq/OkvzIW12c5BVT83YbArmrFuU9DBkNhN3hfA+l/8y/W6grGLaOT2kwugxBgF4rN5AKIenSOoIAet09VqNRqUq9K9XmOCWjJsQ71ho+xzgdDZgzD9tbbbZqQ6sS7y+9tm6BB51ee2Ow5+I4HC4zXYO8HUPkQ3YwokyselNqgGVyg+uPA65WmW9Xg+xgzgFvFxSX6/N09abNEtOSKT8FRVL/sLCDxhndFlxDuVlwGc7B9gG7jBFIftqzzd0ifOlNbcD/hCVf+sCvwFgdbZLWBiDhDvpF5VqYACcs0dV5HQCEK3518HBEgOjACYNJa+1YGDIjcadjYBYo/H7C9c1oCuqxWxSI8mVYNJlza6EtI3M22mLHQcIz5dciQtTMsDIQNLEzAULu3x92bvOQjsEzJKe7k7f6fFX+Ae2GnuALG5j5ChRE7CxFcBrgzqzSqsaAC9vNKnWDwaczoF1NPBTlsv6PJJs7205ITIFNbovjmh+0gIjPhmjc+McXWTHZTuTnLABkhd8ggrLJlZNLxU1bm31bL3peTbk9Ku0WoOBUGcsHA//S3vnzlLRs8ZnjQMVrbc/LPkh3zChL0nmf2YLbPoQm3WnVQXUkhAsqLmz+skXK/ANDwbluWvmRUubNavG5sIeUrZTTIZ+BUpohcDV+AxUOYB69mxoQKNCE3dkAAd0Ok1Rz7OiZ05/kcn04Rens0dVjoydK/62cu7yn0flRlWmMIbuC3jdn6lnf9rjaKiFQM1B2j8/jG3r02Qw2kdlwcVywg2Uk60HS6DXyoYai970ALstaUol3eERiT5BdZnNmvXx8Ubns7Kh8XEnarUPmveygQPZUc5iOfJET3VMd3PLfAfFONyvPntGjPhcz2tw1AFusTiTZWGby0PQ2YAph1fuipe/QyIeKnr2+5seZ2PRknlXIy0rgNMaiIWIs6K8ELKjZ07nQeltFBY6MU6eC/WHHqXGYMWRDBy1sju+dHiJ+FxX8cHrUbmwnd9s7e7ObAMIdlyGgpQfnMGLTebW2+vTIDGHGstMbzDoqTQazR34Rrs9ntJo1gsrhpyF5YVOuAXPBqZ/uS2X371r/LkN4diLnvUvla6X+0tDS5/t092T+8yUPYKN0BMTJz0l9Alg2SycHO7AjTUD0/4iuO9lPc+2nD09S5pYHI/ydGneTa+XVWw5C3FBfl+myNB6b5iiT1NwRQu7ToSsKz9CMQxX98XjbMQXBjsg7CE5nZyAkX3iVE9ARoN5bomgVKzem1QaYNqexkZQm1s9A9OabQS8LYL+rCgDSgO8b5wqOcKBB5sDfPs5D7Y/l6MGRIu2FqyjMXWPar94PIX40iGNB1pMRMgOkPXdihLxefZP4rPcXhM7jV5lkur9e5XqwL/kf9PYs1WhUt3RbGL1a7NUY6qAtxobCxsbi4Y0GV38qziXPq1GyB925HEp39A2u8AwjGO0tvjLx+S/1M2veXhtcA5CrAWyPWVaAk2cUUDy7VyRvF1G7xiCaM0Fx9UcwAZr7HE6Vf/6151wqnMZXHjcCWSHe/EZRDm5HgeMpjWIJxaW24q8zGn4BS8gk8c285XmJbBqPMeTOIutlAmtbRkvPvHhICtxmyElZSvX533QaAZ6IEL7BwY0qdX2iXRMfLcO6swJis6pUslDeGOVWkFnFM1UlvDhDT40cLfVNd8BSYTjVUHD1SZSIFAXaN0MQ1OLO662brxjHjX9z9NvOhZYMcyHxcExpSHaWm4yqcaXlsDW5i65Nyai2VUqk8n0Hjtkcua8u80FhBR/BphyvMVco7tteLEjc/An5+pTVbK2IOmpF3Lnwxb1pJUBO7yb6ZC3C9R1WC4Myu3xynLV+rvS0nelBrnXMhnbhVcaze1MMxE12q6BpuOSUvNRSJJX41xVt2t2yg7abLTgyQ/NrYHkrOPw1MXjYTwL7vI9l2ujMuAYK/E0zXMpkEGK+Vr1pe9Uem2uOY2+SRnNKpNelffLn7knZfm80CSW3PuFzVPAFOFL4skqcAea+ca4z6UG7e49wOPrHczCcNTa1hbtO+TlcWELHRdYyPPododbJ6jqIYTkZio/kA+nKZq20LxZh+9UK++D+4qi1rGMB32CYfpU9V3Hs2AuPGzHQCb/7aHcS8xePnLj+cgpdZsVowdBKw14g9eL01H0sjRpFEVtds9IB6jgXvMx7dn8R2Vl3m7Avf/xRucczwcke4ZrqHxwCHncwMKMXupYxzcB43QgxhAKM2pbm5zc0STNBb1sJzmRTolCO2+M7ZrHzuZ6tIl9B8MZdbHBMXn4o76yul4v7vZzzEfvDUG60x9g05nLnupLtoD7MiSkFpc763OZ+WE8a9K+QjNES9utNp+aocF1t4PeWCCV6k+vQsr5T35bEG5qT6toWp0Rlk51WlfTi6GUkW4n7UedQW8oxArCpHzMKjKcHN7Ij8izEbWXm9y/1IT2kybt3DFpjxAjruZoMp+jw5LkFRw8z1MQ80jL8W+Tbl1QjOnGKuvP6oInVAbWFVJudxdOC5EUsxwTvSyrOV4hScdsNKnG6RMKxcPlZsovBRgfdYFhz87ku4b7fAT4Q1BI85QycUfyd3a9mzw/EdgVzTrtWPaUWnUujpSn4se/idIaDgLAzaGP06LglcQ0nY9HZvAMo7tu8LJnWy85A1/TgIixmnV9Y8ND7N/o7aSV+SoL3RUQWO8abJuV4/5AIhiMxW7q9E9zn+p1N/PMQSm1PUm107+FWLafzzRgYAewXokh9vp2CKQgHNp/8nMBy2fo5lANLag3PJ4SQs3TGYG4GksJrOAg7Ssrx1yddtSxHQ4kJBH+iaU6N42jRuPqimVlVRDYUCceV0Mnote87L7xxnMiArp7v+7Rg2uXxXt5wDU5xQVzGEQW1Rs+T0kJpcx7HIeFsNvsvYEnJ4+57UQwkegH36a5uTlujqK6+lOitAoX1i6YzSzbiUJYnqNKHBJ7H+VxfRAPxU8ufxzpu472YBCBjDp/o89DRBAvNRnwBqljCWQQ5kRqlg0cLUtCeoJJBwJSYIJKB9lQjLZbyHYx7E6FWGmNV/jXod47lPOoUe2/8/CUfPaPAUfu8xxSFrJTEoIJYYLSsAHOTsXDaEKS7hKFNJ0GF0jxQNFePE9lt7SLd4xGUegVOnGyG65tzyDjNdZ+50ny7ztPh+eRHLD1ptR9e2pmwguWpdLhBAClKcYI/BqX53R7N2nawIbCGO8kNsDTdooSAv+KSVKw1xtMQE6s3iPkI4C1dxu+81T29x4AbKh1O5iOCEM896j3dQmwKNkVBAKYoLgYy96h5aMSgS6ILCwb5kFQJLzSpJ2m4rGQlDLOjSa8vTfWiBt7wA6U3X2FR0Nd5Yilg2GoCKHufV7SlU4DrYEr/AZhK8SGtvF200h4tDHk7eTjE/3AIG4aIrsUa0fdE+49LDHsfSRwWtJ9laPCVzrEOrqPe+9jr9fgOJogmViIXSXJdoAWJ+UEVT5aIrDBmCSKIstiYZURExSeZ+0sMX7sVUdwIm30Skebvx9wzv2717T74Aodhr3e5wRNLrOsBGBAb+7KgJXFi6zQP0FS27usAbtgweA2Wp/T9fYa8Jgb9/LBw//UQWwcasKnjDAlb3tvBCYcUohNAySJDSnynlYAhyQcmedENkbRQLyscERTxHO4xkiHnXK8una1o+NXO+oOQWQfJ2b3D/d6g2qjMRYGL+1nQwZ5BLQdzzACPQjoBABYxEFewWvgStS9e4cRyt4BqVvxFZ/k8QMPE+jAIidxo7f3RqcxQjGROCRNIMmo1WAYFVFCdmmak0Kh2OpqurOkRO3xfCTwGROO0dorP0Lnys+XkNkCHIFQ4wM7PhJIHQlBCIclIYFjK1zAG0oDX6S9ghRe7VpTP8dnJEzJz8Sou7x0+HmAMezhOQ8GEG8kffjAhi7HWn8qkTBwOP8wCYJMOKKYNcLhnjJ89HhASu4sMHjqwX3tB56e8wPPSLlfXICz/dTiDuROLp/HA+5cMsnxKCLp48l+w9qmY3+KkJ8sEY26WmbyQZsxjtGvHNL49wJGR65zROz2jnxbm+vW9SQ+IaX3xsfOcP9yOhw2GNRq9du+Pp8v2nYLEvmR+QgWdtw/9oiUHwOc01Cr3ZcRD7coj6lqcyV9Pt9eLyz5OTTJZBs+hsZma8HRM7v8WLAfgfvDT1JqaHo16nBw+8T//OMf/yWvf+D6f7j+oSzlnf/5PyNHcZy24EcfvPaDgPHRWrUFBU3FTx4+fFiM6yH+cg/XkycPlTcfwj9PGooLamuvFRfn/LWAce8Btst4Zc394ns/4SGY/x/wlt1p3ZXLxwAAAABJRU5ErkJggg=="
+)
