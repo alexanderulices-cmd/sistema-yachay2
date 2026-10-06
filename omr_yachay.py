@@ -56,6 +56,7 @@ GRUPO_X, GRUPO_Y, GRUPO_R = [520.0, 670.0, 820.0, 970.0], 1016.0, 26
 # Van en los márgenes (una por fila de DNI y de respuestas, a cada lado), arriba y en la
 # franja entre la cabecera y las respuestas. Sirven para corregir la distorsión de lente
 # y la curvatura del papel; el lector las usa si están y las ignora si no (hojas antiguas).
+NOMBRE_ZONA = (190, 470, 1258, 762)      # x0, y0, x1, y1: recuadros de apellidos y nombres
 AJ_TAM = 32
 AJ_IZQ_X, AJ_DER_X = 85.5, 2395.5
 AJ_TOP_Y, AJ_BANDA_Y = 72.0, 1133.0
@@ -175,9 +176,12 @@ def _candidatos_marca(gray):
     lado = min(alto, ancho)
     cands = []
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    papel = float(np.percentile(blur, 92))                 # nivel del papel blanco en esta foto
     umbrales = [cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1],
                 cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
                                       cv2.THRESH_BINARY_INV, 51, 15)]
+    for frac in (0.30, 0.42):                              # solo lo casi negro respecto al papel
+        umbrales.append(((blur < papel * frac).astype(np.uint8)) * 255)
     for th in umbrales:
         cs, _ = cv2.findContours(th, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         for c in cs:
@@ -201,21 +205,69 @@ def _candidatos_marca(gray):
 
 
 def _esquinas(gray):
+    """Elige los 4 cuadrados grandes de las esquinas. No basta con tomar el candidato más
+    cercano a cada esquina de la foto: si uno de los 4 no se detecta se colaría otro objeto.
+    Se exige que los 4 tengan tamaño parecido y formen un cuadrilátero razonable."""
     alto, ancho = gray.shape[:2]
     cands = _candidatos_marca(gray)
     if len(cands) < 4:
         return None
-    esquinas_img = [(0, 0), (ancho, 0), (0, alto), (ancho, alto)]
-    elegidos = []
-    for ex, ey in esquinas_img:
-        mejor = min(cands, key=lambda c: (c[0] - ex) ** 2 + (c[1] - ey) ** 2)
-        # debe estar en el cuadrante correcto
-        if abs(mejor[0] - ex) > ancho * 0.5 or abs(mejor[1] - ey) > alto * 0.5:
-            return None
-        elegidos.append((mejor[0], mejor[1]))
-    if len(set(elegidos)) < 4:
+    # quitar duplicados (mismo cuadrado hallado con varios umbrales)
+    unicos = []
+    for c in sorted(cands, key=lambda q: -q[2]):
+        if all((c[0] - u[0]) ** 2 + (c[1] - u[1]) ** 2 > 25 ** 2 for u in unicos):
+            unicos.append(c)
+    if len(unicos) < 4:
         return None
-    return elegidos
+    # las esquinas son los cuadrados más grandes y de tamaño parecido
+    areas = sorted(c[2] for c in unicos)
+    ref = areas[-4] if len(areas) >= 4 else areas[0]
+    grandes = [c for c in unicos if c[2] >= 0.55 * ref] or unicos
+    esquinas_img = [(0, 0), (ancho, 0), (0, alto), (ancho, alto)]
+    mejor_conj, mejor_costo = None, 1e18
+    import itertools
+    pool = sorted(grandes, key=lambda q: -q[2])[:10]
+    if len(pool) < 4:
+        return None
+    for conj in itertools.combinations(pool, 4):
+        # asignar cada uno a su esquina de la foto (TL, TR, BL, BR) por posición
+        pts = sorted(conj, key=lambda q: q[1])
+        sup = sorted(pts[:2], key=lambda q: q[0])
+        inf = sorted(pts[2:], key=lambda q: q[0])
+        tl, tr, bl, br = sup[0], sup[1], inf[0], inf[1]
+        ar = [tl[2], tr[2], bl[2], br[2]]
+        if max(ar) > 2.6 * min(ar):
+            continue
+        # el cuadrilátero debe ser convexo y con proporciones de hoja A4 (con margen por perspectiva)
+        P = np.float32([[tl[0], tl[1]], [tr[0], tr[1]], [br[0], br[1]], [bl[0], bl[1]]])
+        if cv2.contourArea(P) < 0.12 * alto * ancho:
+            continue
+        top = np.hypot(tr[0] - tl[0], tr[1] - tl[1]); bot = np.hypot(br[0] - bl[0], br[1] - bl[1])
+        izq = np.hypot(bl[0] - tl[0], bl[1] - tl[1]); der = np.hypot(br[0] - tr[0], br[1] - tr[1])
+        lado_h, lado_v = 0.5 * (top + bot), 0.5 * (izq + der)
+        prop = max(lado_h, lado_v) / max(min(lado_h, lado_v), 1)
+        if not (1.15 <= prop <= 1.75):
+            continue
+        if not cv2.isContourConvex(P.astype(np.int32)):
+            continue
+        # preferir los más grandes y los más cercanos a las esquinas de la foto
+        costo = -sum(ar) + 0.02 * sum((c[0] - ex) ** 2 + (c[1] - ey) ** 2 for c, (ex, ey) in zip((tl, tr, bl, br), esquinas_img)) ** 0.5
+        if costo < mejor_costo:
+            mejor_costo, mejor_conj = costo, (tl, tr, bl, br)
+    if mejor_conj is None:
+        return None
+    return [(c[0], c[1]) for c in mejor_conj]
+
+
+def _esquinas_ok(warped):
+    """Comprueba que en la hoja ya enderezada los 4 cuadrados grandes están donde deben."""
+    buenos = 0
+    for (ex, ey) in MARCAS:
+        x0, y0 = int(ex - 30), int(ey - 30)
+        n = warped[max(y0, 0):y0 + 60, max(x0, 0):x0 + 60]
+        if n.size and float((n < 100).mean()) > 0.75:
+            buenos += 1
+    return buenos >= 4
 
 
 def _tiene_barra_tl(warped):
@@ -247,7 +299,7 @@ def alinear(img_bgr):
             break
         M = cv2.getPerspectiveTransform(np.float32(esq), np.float32(MARCAS))
         warped = cv2.warpPerspective(gray, M, (W, H), borderValue=255)
-        if _tiene_barra_tl(warped):
+        if _tiene_barra_tl(warped) and _esquinas_ok(warped):
             try:
                 warped, info = _afinar(warped)
             except Exception as e:                     # el afinado nunca debe impedir la lectura
@@ -494,7 +546,7 @@ def _oscuridad(tinta, cx, cy, r):
 
 
 def _decidir(valores, etiquetas):
-    """Devuelve (valor, estado) con estado en ok / blanco / doble / duda."""
+    """Decisión con umbrales fijos (se conserva por compatibilidad)."""
     orden = sorted(range(len(valores)), key=lambda k: valores[k], reverse=True)
     v1 = valores[orden[0]]
     v2 = valores[orden[1]] if len(orden) > 1 else 0.0
@@ -507,32 +559,82 @@ def _decidir(valores, etiquetas):
     return etiquetas[orden[0]], "ok"
 
 
+class _Calib:
+    """Calibración de UNA hoja: nivel del papel sin marcas (base), ruido y fuerza típica de una
+    marca firme. Así una marca clara de lápiz o de lapicero se acepta igual que una oscura, y
+    una foto con sombras no confunde burbujas vacías con marcadas."""
+
+    def __init__(self, *matrices):
+        resto, s1 = [], []
+        for m in matrices:
+            for fila in m:
+                ord_ = sorted(fila)
+                resto += ord_[:-1]
+        arr = np.array(resto, dtype=np.float64) if resto else np.array([0.15])
+        self.base = float(np.median(arr))
+        mad = float(np.median(np.abs(arr - self.base))) * 1.4826
+        self.sigma = max(mad, 0.012)
+        for m in matrices:
+            s1 += [max(f) - self.base for f in m]
+        firmes = [s for s in s1 if s >= 0.20]
+        self.fuerza = float(np.median(firmes)) if len(firmes) >= 3 else 0.42
+        self.t_blanco = max(0.04, 3.5 * self.sigma)
+        self.t_ok = min(0.30, max(0.15, 0.42 * self.fuerza))
+
+    def decidir(self, valores, etiquetas):
+        """(valor, estado) con estado en ok / blanco / doble / duda."""
+        orden = sorted(range(len(valores)), key=lambda k: valores[k], reverse=True)
+        s1 = valores[orden[0]] - self.base
+        s2 = (valores[orden[1]] - self.base) if len(orden) > 1 else 0.0
+        if s1 < self.t_blanco:
+            return "", "blanco"
+        if s2 >= max(0.15, 0.5 * s1):
+            return "*", "doble"
+        if s1 >= self.t_ok:
+            return etiquetas[orden[0]], "ok"
+        return etiquetas[orden[0]], "duda"
+
+
 def leer_hoja(img_bgr, num_preguntas=100):
     """Lee una hoja Yachay. Devuelve dict con todos los campos."""
     warped, alineada, msg = alinear(img_bgr)
     tinta = _preparar(warped)
     res = {"alineada": alineada, "mensaje": msg, "alertas": []}
 
+    # ---- valores de oscuridad de todas las burbujas ----
+    v_resp = [[_oscuridad(tinta, *posicion_respuesta(i, j), RESP_R) for j in range(4)] for i in range(num_preguntas)]
+    v_dni = [[_oscuridad(tinta, x, CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)] for x in DNI_X]
+    v_dia = [[_oscuridad(tinta, DIA_X[0], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(4)],
+             [_oscuridad(tinta, DIA_X[1], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]]
+    v_mes = [[_oscuridad(tinta, MES_X[0], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(2)],
+             [_oscuridad(tinta, MES_X[1], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]]
+    v_anio = [_oscuridad(tinta, ANIO_X, y, ANIO_R) for y in ANIO_Y]
+    v_grupo = [_oscuridad(tinta, x, GRUPO_Y, GRUPO_R) for x in GRUPO_X]
+    cal_r = _Calib(v_resp)                                   # respuestas
+    cal_c = _Calib(v_dni, v_dia, v_mes)                      # casilleros de la cabecera
+    res["calibracion"] = {"base": round(cal_r.base, 3), "ruido": round(cal_r.sigma, 3),
+                          "fuerza": round(cal_r.fuerza, 3)}
+
     # ---- Respuestas ----
     resp, estados = [], []
-    for i in range(num_preguntas):
-        vals = [_oscuridad(tinta, *posicion_respuesta(i, j), RESP_R) for j in range(4)]
-        v, e = _decidir(vals, OPCIONES)
+    for vals in v_resp:
+        v, e = cal_r.decidir(vals, OPCIONES)
         resp.append(v)
         estados.append(e)
     res["respuestas"] = resp
     res["estados"] = estados
 
     # ---- DNI ----
-    dni, dni_ok = "", True
-    for x in DNI_X:
-        vals = [_oscuridad(tinta, x, CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]
-        v, e = _decidir(vals, [str(d) for d in range(10)])
+    dni, dni_ok, dni_det = "", True, []
+    for k, vals in enumerate(v_dni):
+        v, e = cal_c.decidir(vals, [str(d) for d in range(10)])
+        dni_det.append((v, e, int(np.argmax(vals))))
         if e != "ok":
             dni_ok = False
             v = "?" if e != "blanco" else "_"
         dni += v
     res["dni"] = dni
+    res["dni_det"] = dni_det
     if not dni_ok:
         res["alertas"].append("DNI incompleto o con doble marca")
 
@@ -540,26 +642,23 @@ def leer_hoja(img_bgr, num_preguntas=100):
     res["aula"] = ""
 
     # ---- Día y mes ----
-    def _dos_digitos(xs, max_dec):
-        vd = [_oscuridad(tinta, xs[0], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(max_dec + 1)]
-        vu = [_oscuridad(tinta, xs[1], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]
-        d, ed = _decidir(vd, [str(k) for k in range(max_dec + 1)])
-        u, eu = _decidir(vu, [str(k) for k in range(10)])
+    def _dos_digitos(vv, max_dec):
+        d, ed = cal_c.decidir(vv[0], [str(k) for k in range(max_dec + 1)])
+        u, eu = cal_c.decidir(vv[1], [str(k) for k in range(10)])
         if ed == "ok" and eu == "ok":
-            return int(d + u)
-        return None
-    res["dia"] = _dos_digitos(DIA_X, 3)
-    res["mes"] = _dos_digitos(MES_X, 1)
+            return int(d + u), (int(d), int(u))
+        return None, None
+    res["dia"], res["dia_idx"] = _dos_digitos(v_dia, 3)
+    res["mes"], res["mes_idx"] = _dos_digitos(v_mes, 1)
 
     # ---- Año ----
-    va = [_oscuridad(tinta, ANIO_X, y, ANIO_R) for y in ANIO_Y]
-    a, e = _decidir(va, [str(x) for x in ANIOS])
+    a, e = cal_c.decidir(v_anio, [str(x) for x in ANIOS])
     res["anio"] = int(a) if e == "ok" else None
 
     # ---- Grupo ----
-    vg = [_oscuridad(tinta, x, GRUPO_Y, GRUPO_R) for x in GRUPO_X]
-    g, e = _decidir(vg, OPCIONES)
+    g, e = cal_c.decidir(v_grupo, OPCIONES)
     res["grupo"] = g if e == "ok" else ""
+    res["grupo_estado"] = e
 
     n_doble = estados.count("doble")
     n_duda = estados.count("duda")
@@ -576,10 +675,41 @@ def leer_hoja(img_bgr, num_preguntas=100):
     return res
 
 
-def imagen_revision(res, clave=None, ancho=900):
+_FUENTES = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "C:/Windows/Fonts/arialbd.ttf",
+            "C:/Windows/Fonts/arial.ttf", "/Library/Fonts/Arial Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
+
+
+def _fuente(px):
+    from PIL import ImageFont
+    for ruta in _FUENTES:
+        try:
+            return ImageFont.truetype(ruta, px)
+        except Exception:
+            continue
+    return None
+
+
+def _texto(img, t, x, y, esc, color=(30, 30, 30), grosor=2):
+    """Escribe texto sobre la imagen (con tildes y Ñ si hay una fuente disponible)."""
+    t = str(t)
+    f = _fuente(int(esc * 34))
+    if f is not None:
+        from PIL import Image, ImageDraw
+        pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        ImageDraw.Draw(pil).text((int(x), int(y) - int(esc * 30)), t, font=f, fill=(color[2], color[1], color[0]))
+        img[:] = cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
+        return
+    import unicodedata
+    t = unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode()
+    cv2.putText(img, t, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, esc, color, grosor, cv2.LINE_AA)
+
+
+def imagen_revision(res, clave=None, ancho=900, nombre=None):
     """Imagen de la hoja enderezada con las lecturas pintadas encima.
-    Verde = correcta, rojo = incorrecta, azul = leída (sin clave),
-    naranja = revisar (duda/doble). Devuelve bytes PNG."""
+    Verde = correcta, rojo = incorrecta, azul = leída (sin clave), naranja = revisar.
+    En la cabecera, puntitos verdes sobre el DNI, el día, el mes, el año y el área leídos,
+    y una franja arriba con el DNI y los datos leídos. Devuelve bytes JPEG."""
     img = cv2.cvtColor(res["_warped"], cv2.COLOR_GRAY2BGR)
     n = len(res["respuestas"])
     for i in range(n):
@@ -597,7 +727,56 @@ def imagen_revision(res, clave=None, ancho=900):
         if k in OPCIONES and r != k:
             cx, cy = posicion_respuesta(i, OPCIONES.index(k))
             cv2.circle(img, (int(cx), int(cy)), 12, (0, 170, 0), -1)
+
+    # ---- cabecera: lo que se leyó (puntitos verdes) ----
+    VERDE, NARANJA = (0, 190, 0), (0, 140, 255)
+    for k, x in enumerate(DNI_X):
+        det = res.get("dni_det", [])
+        if k < len(det):
+            v, e, idx = det[k]
+            cy = CAB_Y0 + idx * CAB_DY
+            if e == "ok":
+                cv2.circle(img, (int(x), int(cy)), 11, VERDE, -1)
+            elif e in ("duda", "doble"):
+                cv2.circle(img, (int(x), int(cy)), 25, NARANJA, 5)
+            else:
+                cv2.circle(img, (int(x), int(CAB_Y0 - 38)), 10, (0, 0, 230), -1)      # columna sin marca
+    for xs, idx in ((DIA_X, res.get("dia_idx")), (MES_X, res.get("mes_idx"))):
+        if idx:
+            for x, d in zip(xs, idx):
+                cv2.circle(img, (int(x), int(CAB_Y0 + d * CAB_DY)), 11, VERDE, -1)
+    if res.get("anio") in ANIOS:
+        cv2.circle(img, (int(ANIO_X), int(ANIO_Y[ANIOS.index(res["anio"])])), 14, VERDE, -1)
+    if res.get("grupo") in OPCIONES:
+        cv2.circle(img, (int(GRUPO_X[OPCIONES.index(res["grupo"])]), int(GRUPO_Y)), 24, VERDE, 7)
+
+    # ---- franja superior con los datos leídos ----
+    dni = res.get("dni", "")
+    fecha = "{}/{}/{}".format(*(("%02d" % res["dia"]) if res.get("dia") else "??",
+                               ("%02d" % res["mes"]) if res.get("mes") else "??",
+                               res.get("anio") or "????"))
+    banda = np.full((190, W, 3), 255, np.uint8)
+    cv2.rectangle(banda, (0, 0), (W - 1, 189), (245, 235, 245), -1)
+    ok_dni = "?" not in dni and "_" not in dni and len(dni) == 8
+    _texto(banda, "DNI leido: " + (dni if dni else "-"), 60, 85, 2.4, (0, 120, 0) if ok_dni else (0, 0, 220), 6)
+    _texto(banda, "Area: %s    Fecha: %s" % (res.get("grupo") or "?", fecha), 60, 160, 1.7, (60, 60, 60), 4)
+    if nombre:
+        _texto(banda, str(nombre)[:34], 1250, 85, 1.8, (30, 30, 30), 4)
+    img = np.vstack([banda, img])
     esc = ancho / float(W)
-    img = cv2.resize(img, (ancho, int(H * esc)), interpolation=cv2.INTER_AREA)
-    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 74])
+    img = cv2.resize(img, (ancho, int(img.shape[0] * esc)), interpolation=cv2.INTER_AREA)
+    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 76])
+    return buf.tobytes() if ok else None
+
+
+def recorte_nombre(res):
+    """Recorte (JPEG, escala de grises) de la zona donde el alumno escribió sus apellidos y
+    nombres: sirve cuando no hay DNI (examen relámpago), como hace ZipGrade."""
+    w = res.get("_warped")
+    if w is None:
+        return None
+    x0, y0, x1, y1 = NOMBRE_ZONA
+    zona = w[y0:y1, x0:x1]
+    zona = cv2.resize(zona, None, fx=0.55, fy=0.55, interpolation=cv2.INTER_AREA)
+    ok, buf = cv2.imencode(".jpg", zona, [cv2.IMWRITE_JPEG_QUALITY, 62])
     return buf.tobytes() if ok else None
