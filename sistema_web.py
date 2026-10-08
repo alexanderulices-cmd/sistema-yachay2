@@ -940,7 +940,7 @@ st.markdown("""
     background-size: 400% 400%;
     color: white; border-radius: 15px; margin-bottom: 2rem;
     box-shadow: 0 8px 25px rgba(0,30,124,0.35);
-    animation: gradient 8s ease infinite, fadeInUp 0.6s ease-out;
+    animation: fadeInUp 0.4s ease-out;
 }
 
 /* === TABS ANIMADOS === */
@@ -962,7 +962,7 @@ st.markdown("""
     background: linear-gradient(135deg, #1a56db, #0052cc) !important;
     color: white !important;
     box-shadow: 0 4px 12px rgba(26,86,219,0.3);
-    animation: glow 2s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(245,158,11,0.55);
 }
 
 /* === BOTONES CON EFECTO === */
@@ -1018,7 +1018,7 @@ st.markdown("""
     border-radius: 8px; padding: 8px 12px;
     text-align: center; font-weight: 600;
     color: #166534; font-size: 0.85rem;
-    animation: pulse 2s infinite;
+    animation: none;
 }
 .gs-offline {
     background: #fef3c7; border-radius: 8px;
@@ -1589,7 +1589,7 @@ def _asis_respaldo_completo():
 def _asis_worker_loop():
     """Hilo de fondo: cada pocos segundos envía lo pendiente; si Google
     falla, espera más (hasta 2 min) y reintenta. Hace el respaldo completo
-    como máximo una vez por minuto. Termina tras 15 min sin trabajo."""
+    como máximo una vez cada 5 minutos (releer y subir el archivo entero frena la app). Termina tras 15 min sin trabajo."""
     espera, inactivo = 3, 0
     while inactivo < 900:
         time.sleep(espera)
@@ -1603,7 +1603,7 @@ def _asis_worker_loop():
             continue
         espera = 3
         inactivo += espera
-        if (time.time() - _ASIS_WORKER["ultimo_backup"]) > 60 and _ASIS_WORKER.get("hay_cambios", True):
+        if (time.time() - _ASIS_WORKER["ultimo_backup"]) > 300 and _ASIS_WORKER.get("hay_cambios", True):
             _ASIS_WORKER["hay_cambios"] = False
             _asis_respaldo_completo()
 
@@ -35280,6 +35280,15 @@ def _verificar_y_enviar_ausencias_automatico():
         flags = _cargar_ausencias_auto_flags()
         flags.setdefault(fecha_hoy, {})
 
+        # Salida rápida: esta función corre en CADA clic de cualquier usuario. Casi siempre no hay
+        # nada que enviar (antes de las 9:00, o ya se avisó), así que no se leen la configuración
+        # de Telegram, los suscriptores, las asistencias (archivo enorme) ni la matrícula.
+        _toca_manana = mins_ahora >= 9 * 60 and not flags[fecha_hoy].get('manana_enviado')
+        _toca_tarde = (mins_ahora >= 16 * 60 and ahora.weekday() != 5
+                       and not flags[fecha_hoy].get('tarde_enviado'))
+        if not (_toca_manana or _toca_tarde):
+            return
+
         cfg_tg = _tg_cargar_config()
         token = _tg_limpiar_token(cfg_tg.get("bot_token", ""))
         subs_tg = _tg_cargar_subs() if token else {}
@@ -35385,48 +35394,59 @@ def main():
             color: 'white'
         };
         var KEYWORDS = ['BORRAR','Cerrar Pausa','CERRAR'];
+        var W = window.parent;
+        function estilar(btn) {
+            var txt = btn.innerText || btn.textContent || '';
+            if (btn.getAttribute('data-yfx') === txt) { return; }       // ya pintado: no tocar
+            btn.setAttribute('data-yfx', txt);
+            for (var i=0; i<KEYWORDS.length; i++) {
+                if (txt.indexOf(KEYWORDS[i]) !== -1) {
+                    btn.style.setProperty('background', ROJO.bg, 'important');
+                    btn.style.setProperty('background-color', ROJO.bgColor, 'important');
+                    btn.style.setProperty('color', ROJO.color, 'important');
+                    btn.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
+                    btn.style.setProperty('border', ROJO.border, 'important');
+                    btn.style.setProperty('font-weight', '900', 'important');
+                    btn.style.setProperty('min-height', '52px', 'important');
+                    btn.style.setProperty('font-size', '1rem', 'important');
+                    var p = btn.querySelector('p');
+                    if (p) {
+                        p.style.setProperty('color', ROJO.color, 'important');
+                        p.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
+                    }
+                    return;
+                }
+            }
+            // Botones WORD/DOCX — azul
+            if (txt.indexOf('Word') !== -1 || txt.indexOf('docx') !== -1 || txt.indexOf('.docx') !== -1) {
+                btn.style.setProperty('background', 'linear-gradient(135deg,#1d4ed8,#2563eb)', 'important');
+                btn.style.setProperty('background-color', '#1d4ed8', 'important');
+                btn.style.setProperty('color', 'white', 'important');
+                btn.style.setProperty('-webkit-text-fill-color', 'white', 'important');
+                btn.style.setProperty('font-weight', '700', 'important');
+                btn.style.setProperty('opacity', '1', 'important');
+                var p2 = btn.querySelector('p');
+                if (p2) { p2.style.setProperty('color', 'white', 'important'); p2.style.setProperty('-webkit-text-fill-color', 'white', 'important'); }
+            }
+        }
         function apply() {
             try {
-                var btns = window.parent.document.querySelectorAll('button, a[download], a[data-testid="stDownloadButton"]');
-                btns.forEach(function(btn) {
-                    var txt = btn.innerText || btn.textContent || '';
-                    // Botones ROJOS
-                    for (var i=0; i<KEYWORDS.length; i++) {
-                        if (txt.indexOf(KEYWORDS[i]) !== -1) {
-                            btn.style.setProperty('background', ROJO.bg, 'important');
-                            btn.style.setProperty('background-color', ROJO.bgColor, 'important');
-                            btn.style.setProperty('color', ROJO.color, 'important');
-                            btn.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
-                            btn.style.setProperty('border', ROJO.border, 'important');
-                            btn.style.setProperty('font-weight', '900', 'important');
-                            btn.style.setProperty('min-height', '52px', 'important');
-                            btn.style.setProperty('font-size', '1rem', 'important');
-                            var p = btn.querySelector('p');
-                            if (p) {
-                                p.style.setProperty('color', ROJO.color, 'important');
-                                p.style.setProperty('-webkit-text-fill-color', ROJO.color, 'important');
-                            }
-                            return;
-                        }
-                    }
-                    // Botones WORD/DOCX — verde oscuro
-                    if (txt.indexOf('Word') !== -1 || txt.indexOf('docx') !== -1 || txt.indexOf('.docx') !== -1) {
-                        btn.style.setProperty('background', 'linear-gradient(135deg,#1d4ed8,#2563eb)', 'important');
-                        btn.style.setProperty('background-color', '#1d4ed8', 'important');
-                        btn.style.setProperty('color', 'white', 'important');
-                        btn.style.setProperty('-webkit-text-fill-color', 'white', 'important');
-                        btn.style.setProperty('font-weight', '700', 'important');
-                        btn.style.setProperty('opacity', '1', 'important');
-                        var p2 = btn.querySelector('p');
-                        if (p2) { p2.style.setProperty('color', 'white', 'important'); p2.style.setProperty('-webkit-text-fill-color', 'white', 'important'); }
-                    }
-                });
+                W.document.querySelectorAll('button, a[download], a[data-testid="stDownloadButton"]').forEach(estilar);
             } catch(e) {}
         }
+        // Un solo observador activo (antes se sumaba uno nuevo en cada ejecución) y con pausa de 200 ms.
+        try { if (W.__yachayObs) { W.__yachayObs.disconnect(); } } catch(e) {}
+        var pendiente = null;
+        var obs = new MutationObserver(function(muts){
+            var hay = false;
+            for (var k=0; k<muts.length; k++) { if (muts[k].addedNodes && muts[k].addedNodes.length) { hay = true; break; } }
+            if (!hay || pendiente) { return; }
+            pendiente = setTimeout(function(){ pendiente = null; apply(); }, 200);
+        });
+        W.__yachayObs = obs;
         apply();
-        [100, 300, 600, 1200, 2500].forEach(function(t){ setTimeout(apply, t); });
-        var obs = new MutationObserver(function(){ setTimeout(apply, 100); });
-        try { obs.observe(window.parent.document.body, {childList:true, subtree:true}); } catch(e){}
+        [150, 700].forEach(function(t){ setTimeout(apply, t); });
+        try { obs.observe(W.document.body, {childList:true, subtree:true}); } catch(e){}
     })();
     </script>""", height=0)
 
