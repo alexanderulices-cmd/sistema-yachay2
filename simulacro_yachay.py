@@ -489,8 +489,8 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
     c.setFont("Helvetica-Bold", 9)
     c.drawString(40, y, "Detalle por pregunta (marcada / clave):  ✔ correcta   ✘ incorrecta   — en blanco")
     y -= 14
-    validas = sorted(preguntas_validas(sim, hoja.get("grupo", ""))) if sim.get("cursos_area") \
-        else list(range(1, n_preguntas(sim, hoja.get("grupo", "")) + 1))
+    validas = sorted(preguntas_validas(sim, hoja.get("grupo", ""))) \
+        or list(range(1, n_preguntas(sim, hoja.get("grupo", "")) + 1))
     resp = hoja.get("respuestas", "")
     c.setFont("Helvetica", 7.5)
     col_w, fil_h, por_col = 103, 11.2, 25
@@ -977,7 +977,17 @@ def pdf_hojas_corregidas(sim, ids):
         c.doForm("hojabase")
         grupo = h.get("grupo", "")
         clave = clave_para(sim, grupo)
-        val = preguntas_validas(sim, grupo) if sim.get("cursos_area") else None
+        val = preguntas_validas(sim, grupo) or None
+        if val is not None:
+            c.saveState()
+            c.setFillColor(colors.Color(.85, .85, .85))
+            c.setFillAlpha(0.62)
+            for i_ in range(100):
+                if (i_ + 1) not in val:
+                    col_, fila_ = divmod(i_, omr.RESP_FILAS)
+                    yy_ = omr.RESP_Y0 + omr.RESP_DY * fila_
+                    c.rect(X(omr.RESP_X[col_][0] - 75), Y(yy_ + 38), X(omr.RESP_X[col_][3] + 45 - (omr.RESP_X[col_][0] - 75)), X(76), stroke=0, fill=1)
+            c.restoreState()
         resp = h.get("respuestas", "")
         res = calificar(sim, h)
         for i in range(len(resp)):
@@ -1449,10 +1459,18 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
                 for nm_, n_ in plantilla:
                     base.append((nm_, pos, pos + n_ - 1))
                     pos += n_
-        elif guardado and ver == 0:
-            base = [(c["nombre"], c["hasta"] - c["desde"] + 1) for c in guardado]
         else:
-            base = PLANTILLAS_AREA[g]
+            plant_g = list(PLANTILLAS_AREA[g])
+            guard_g = ({c["nombre"]: c["hasta"] - c["desde"] + 1 for c in guardado} if (guardado and ver == 0) else {})
+            op_g = [n for n, _q in plant_g] + [n for n in guard_g if n not in {x[0] for x in plant_g}]
+            pn_g = dict(plant_g)
+            pn_g.update(guard_g)
+            sel_g = st.multiselect(f"✅ Cursos que vas a evaluar en el Área {g} (quita los que no entran)", op_g,
+                                   default=[n for n in op_g if n in guard_g] if guard_g else op_g,
+                                   key=pfx + f"sel_{mk}_{g}_{ver}")
+            if not sel_g:
+                errores.append(f"Área {g}: elige al menos un curso.")
+            base = [(n, pn_g[n]) for n in op_g if n in sel_g]
         ca, cb = st.columns([1.2, 1])
         with ca:
             if unico:
@@ -1466,7 +1484,7 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
                 df = pd.DataFrame(base, columns=["Curso", "Preguntas"])
                 cfg_cur = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1)}
             df_e = st.data_editor(df, num_rows="dynamic", use_container_width=True, hide_index=True,
-                                  key=pfx + f"cur_{mk}_{g}_{ver}", column_config=cfg_cur)
+                                  key=pfx + f"cur_{mk}_{g}_{ver}_{abs(hash(tuple(x[0] for x in base)))}", column_config=cfg_cur)
             if st.button("↩️ Restaurar cursos originales" if unico else "↩️ Restaurar temario oficial",
                          key=pfx + f"rstb_{mk}_{g}"):
                 st.session_state[rk] = ver + 1
@@ -1500,10 +1518,19 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
         inv = {v: k for k, v in et.items()}
         rk = pfx + f"rst_uni_{mk}"
         ver = st.session_state.get(rk, 0)
-        if sim.get("cursos_union") and ver == 0:
-            base = [(u["nombre"], u["preguntas"], inv.get(u["areas"], list(et)[0])) for u in sim["cursos_union"]]
-        else:
-            base = [(n, q, inv[a]) for n, q, a in _union_default(grupos)]
+        plant_u = [(n, q, inv[a]) for n, q, a in _union_default(grupos)]
+        guard_u = ({u["nombre"]: (u["nombre"], u["preguntas"], inv.get(u["areas"], list(et)[0]))
+                    for u in sim["cursos_union"]} if (sim.get("cursos_union") and ver == 0) else {})
+        op_u = [x[0] for x in plant_u] + [n for n in guard_u if n not in {x[0] for x in plant_u}]
+        por_u = {x[0]: x for x in plant_u}
+        por_u.update(guard_u)
+        elegidos_u = st.multiselect("✅ Cursos que vas a evaluar (quita los que no entran en este examen)", op_u,
+                                    default=[n for n in op_u if n in guard_u] if guard_u else op_u,
+                                    key=pfx + f"sel_{mk}_{ver}")
+        if not elegidos_u:
+            errores.append("Elige al menos un curso para evaluar.")
+        base = [por_u[n] for n in op_u if n in elegidos_u]
+        sig_u = abs(hash(tuple(elegidos_u)))
         st.markdown("**1️⃣ Cursos del examen**" + ("" if todos else " (la columna «Áreas» dice quién rinde cada curso)"))
         ca, cb = st.columns([1.15, 1])
         with ca:
@@ -1515,7 +1542,7 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
                 cfg = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1),
                        "Áreas": st.column_config.SelectboxColumn("Áreas", options=list(et), required=False)}
             df_ue = st.data_editor(df_u, num_rows="dynamic", use_container_width=True, hide_index=True,
-                                   key=pfx + f"uni_{mk}_{ver}_{int(todos)}", column_config=cfg)
+                                   key=pfx + f"uni_{mk}_{ver}_{int(todos)}_{sig_u}", column_config=cfg)
             if st.button("↩️ Restaurar temario oficial", key=pfx + f"rstb_uni_{mk}"):
                 st.session_state[rk] = ver + 1
                 st.rerun()
@@ -1745,7 +1772,15 @@ def _fecha_tupla(txt):
 
 
 def _procesar_imagen(sim, img, mat, origen, previas=None):
-    r = omr.leer_hoja(img, sim["num_preguntas"])
+    _union_v = set()
+    for _c in cursos_union(sim):
+        _union_v.update(range(_c["desde"], _c["hasta"] + 1))
+    nlee = max(_union_v) if _union_v else int(sim["num_preguntas"])
+    r = omr.leer_hoja(img, nlee)
+    for _i in range(len(r["respuestas"])):          # preguntas que no son de ningún curso: se ignoran
+        if (_i + 1) not in _union_v:
+            r["respuestas"][_i] = ""
+            r["estados"][_i] = "blanco"
     resp = "".join({"": "_"}.get(x, x) for x in r["respuestas"])
     dni_leido = r["dni"]
     _an = _lista_auto_nombre(sim)
@@ -1808,9 +1843,8 @@ def _procesar_imagen(sim, img, mat, origen, previas=None):
         if sug:
             alertas.append(f"¿Será {mat[sug]['nombre']} (DNI {sug})? Usa «Aceptar sugerencias» si es correcto")
     clave = clave_para(sim, grupo)
-    validas = preguntas_validas(sim, grupo) if sim.get("cursos_area") and grupo else None
-    if validas is not None:               # preguntas de otras áreas: no se pintan ni se marcan como dudosas
-        clave = "".join(k if (i + 1) in validas else "E" for i, k in enumerate(clave))
+    validas = preguntas_validas(sim, grupo) or _union_v
+    clave = "".join(k if (i + 1) in validas else "E" for i, k in enumerate(clave))
     return {"tmp_id": uuid.uuid4().hex[:8], "dni": dni, "nombre": info.get("nombre", ""),
             "grado": info.get("grado", ""), "aula": _aula_de(info), "grupo": grupo,
             "respuestas": resp, "dudosas": [i + 1 for i, e in enumerate(r["estados"])
@@ -1819,7 +1853,7 @@ def _procesar_imagen(sim, img, mat, origen, previas=None):
             "dni_leido": dni_leido,
             "origen": origen, "fecha_examen": f"{r['dia'] or ''}/{r['mes'] or ''}/{r['anio'] or ''}",
             "nombre_img": (base64.b64encode(omr.recorte_nombre(r)).decode() if (not info and omr.recorte_nombre(r)) else ""),
-            "img": omr.imagen_revision(r, clave, nombre=info.get("nombre", ""))}
+            "img": omr.imagen_revision(r, clave, nombre=info.get("nombre", ""), validas=validas)}
 
 
 def _guardar_lote(datos, sid, lote):
@@ -2345,7 +2379,7 @@ def _tab_analisis(datos):
             curso_de[q] = c["nombre"]
     nq = n_preguntas(sim, gsel or "")
     clave_ref = clave_para(sim, gsel or "A")
-    validas = preguntas_validas(sim, gsel or "") if sim.get("cursos_area") and gsel else None
+    validas = preguntas_validas(sim, gsel or "") or None
     filas = []
     for q in range(nq):
         if validas is not None and (q + 1) not in validas:

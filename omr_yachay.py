@@ -705,14 +705,26 @@ def _texto(img, t, x, y, esc, color=(30, 30, 30), grosor=2):
     cv2.putText(img, t, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, esc, color, grosor, cv2.LINE_AA)
 
 
-def imagen_revision(res, clave=None, ancho=900, nombre=None):
+def imagen_revision(res, clave=None, ancho=900, nombre=None, validas=None):
     """Imagen de la hoja enderezada con las lecturas pintadas encima.
     Verde = correcta, rojo = incorrecta, azul = leída (sin clave), naranja = revisar.
     En la cabecera, puntitos verdes sobre el DNI, el día, el mes, el año y el área leídos,
     y una franja arriba con el DNI y los datos leídos. Devuelve bytes JPEG."""
     img = cv2.cvtColor(res["_warped"], cv2.COLOR_GRAY2BGR)
     n = len(res["respuestas"])
+    if validas is not None:
+        # Las preguntas que NO forman parte del examen se opacan con un velo gris y no se marcan.
+        velo = img.copy()
+        for i in range(100):
+            if (i + 1) not in validas:
+                col, fila = divmod(i, RESP_FILAS)
+                y = int(RESP_Y0 + RESP_DY * fila)
+                x0, x1 = int(RESP_X[col][0] - 75), int(RESP_X[col][3] + 45)
+                cv2.rectangle(velo, (x0, y - 38), (x1, y + 38), (215, 215, 215), -1)
+        img = cv2.addWeighted(velo, 0.62, img, 0.38, 0)
     for i in range(n):
+        if validas is not None and (i + 1) not in validas:
+            continue
         r = res["respuestas"][i]
         e = res["estados"][i]
         k = clave[i] if clave and i < len(clave) else None
