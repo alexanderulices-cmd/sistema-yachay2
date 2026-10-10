@@ -67,12 +67,29 @@ PLANTILLAS_NIVEL = {
                    ("Inglés", 10)],
     "OTRO": [("Matemática", 20), ("Comunicación", 20)],
 }
+# Todos los cursos que se pueden elegir (áreas del MINEDU + cursos de preuniversitario y refuerzo)
+CURSOS_CATALOGO = [
+    "Comunicación", "Matemática", "Personal Social", "Ciencia y Tecnología", "Ciencias Sociales",
+    "Desarrollo Personal, Ciudadanía y Cívica", "Educación para el Trabajo", "Arte y Cultura", "Educación Física",
+    "Educación Religiosa", "Inglés", "Castellano como segunda lengua", "Computación",
+    "Razonamiento Matemático", "Razonamiento Verbal", "Aritmética", "Álgebra", "Geometría", "Trigonometría",
+    "Lenguaje", "Literatura", "Competencia Comunicativa", "Física", "Química", "Biología", "Anatomía",
+    "Historia", "Historia del Perú", "Historia Universal", "Geografía", "Economía", "Educación Cívica",
+    "Filosofía y Lógica", "Psicología", "Cultura General",
+]
 MODALIDADES_NIVEL = {
     "🏫 Primaria (Comunicación, Matemática, Personal Social, Ciencia y Tecnología)": "PRIMARIA",
     "🏫 Secundaria (Comunicación, Matemática, C. Sociales, DPCC, Ciencia y Tec., Inglés)": "SECUNDARIA",
     "🏫 Otro nivel o ciclo (cursos a mi gusto, una sola clave)": "OTRO",
 }
 MOD_PERSONALIZADO = "✏️ Personalizado (cursos y rangos a mi gusto)"
+
+# Nombres de evaluación ya listos (para que todos los docentes los escriban igual)
+EVALUACIONES = ([f"Simulacro {i}" for i in range(1, 11)] + [f"Semana {i}" for i in range(1, 61)] +
+                ["Primer bimestre", "Segundo bimestre", "Tercer bimestre", "Cuarto bimestre",
+                 "Evaluación bimestral", "Evaluación final"])
+OTRO_NOMBRE = "✏️ Otro nombre (escribir)"
+PERIODOS = ["(sin periodo)", "Primer bimestre", "Segundo bimestre", "Tercer bimestre", "Cuarto bimestre"]
 
 CURSOS_EJEMPLO = [
     ("Razonamiento Matemático", 1, 10), ("Aritmética y Álgebra", 11, 20),
@@ -298,6 +315,8 @@ def calificar(sim, hoja):
         out["blancos"] += cb
         out["puntaje"] += pts
     out["puntaje"] = round(out["puntaje"], 2)
+    _notas = [v["nota"] for v in out["cursos"].values()]
+    out["promedio"] = round(sum(_notas) / len(_notas), 2) if _notas else 0.0
     mx = puntaje_maximo(sim, hoja.get("grupo", ""))
     out["nota"] = round(max(out["puntaje"], 0) / mx * 20, 2) if mx else 0.0
     return out
@@ -315,9 +334,10 @@ def tabla_ranking(sim, filtro_aula=None, filtro_grupo=None):
         f = {"ID": hid, "DNI": h.get("dni", ""), "Apellidos y Nombres": h.get("nombre", "") or "(sin nombre)",
              "Aula": h.get("aula", ""), "Grupo": "" if sim.get("sin_area") else h.get("grupo", "")}
         for cn in nombres_c:
-            f[cn] = c["cursos"][cn]["correctas"] if cn in c["cursos"] else None
+            f[cn] = round(c["cursos"][cn]["nota"], 2) if cn in c["cursos"] else None     # nota del curso, base 20
         f.update({"Correctas": c["correctas"], "Incorrectas": c["incorrectas"],
-                  "Blancos": c["blancos"], "Puntaje": c["puntaje"], "Nota": c["nota"]})
+                  "Blancos": c["blancos"], "Puntaje": c["puntaje"], "Nota": c["nota"],
+                  "Promedio": c["promedio"]})
         filas.append(f)
     if not filas:
         return pd.DataFrame()
@@ -380,21 +400,21 @@ def pdf_ranking(sim, df, titulo_extra="", detalle_cursos=True):
     cols = list(base_cols)
     if detalle_cursos:
         cols += cursos
-    cols += ["Correctas", "Incorrectas", "Puntaje", "Nota"]
+    cols += ["Correctas", "Incorrectas", "Puntaje", "Nota", "Promedio"]
     from reportlab.lib.styles import ParagraphStyle
     from reportlab.platypus import Paragraph
     est_cab = ParagraphStyle("cab", fontName="Helvetica-Bold", fontSize=6.5 if detalle_cursos else 8,
                              leading=7.5 if detalle_cursos else 9, alignment=1)
-    cab = [Paragraph({"Puesto": "Pto", "Aula": "Grado"}.get(x, x), est_cab) for x in cols]
+    cab = [Paragraph({"Puesto": "Pto", "Aula": "Grado", "Promedio": "Prom. /20", "Nota": "Nota /20"}.get(x, x), est_cab) for x in cols]
 
     def _fmt(x, v):
         if v is None or (isinstance(v, float) and pd.isna(v)):
             return "-"
         if x in cursos:
-            return str(int(v))
+            return f"{float(v):.1f}"                  # nota del curso sobre 20
         if x == "Apellidos y Nombres":
             return str(v)[:40]
-        if x == "Nota":
+        if x in ("Nota", "Promedio"):
             return f"{float(v):.2f}"
         if x == "Puntaje":
             return f"{float(v):g}"
@@ -411,7 +431,7 @@ def pdf_ranking(sim, df, titulo_extra="", detalle_cursos=True):
         return _fmt("Apellidos y Nombres", r["Apellidos y Nombres"])
     filas = [[(_celda_nombre(r) if x == "Apellidos y Nombres" else _fmt(x, r[x])) for x in cols] for _, r in df.iterrows()]
     por_pag = 22 if detalle_cursos else 34
-    sub = f"{sim.get('fecha', '')}  ·  {titulo_extra}  ·  Puntaje máximo: {puntaje_maximo(sim):g}"
+    sub = f"{sim.get('fecha', '')}  ·  {titulo_extra}  ·  Notas por curso sobre 20 · Puntaje máximo: {puntaje_maximo(sim):g}"
     for ini in range(0, max(len(filas), 1), por_pag):
         _encabezado(c, ancho, alto, f"RANKING — {sim['titulo']}", sub)
         data = [cab] + filas[ini:ini + por_pag]
@@ -472,14 +492,15 @@ def _boleta_en_canvas(c, sim, hoja, fila_rank, total):
         r = res["cursos"][cu["nombre"]]
         data.append([cu["nombre"], f"{cu['desde']}-{cu['hasta']}", r["correctas"], r["incorrectas"],
                      r["blancos"], f"{r['puntaje']:g}", f"{r['nota']:.2f}"])
-    data.append(["TOTAL", "", res["correctas"], res["incorrectas"], res["blancos"],
+    data.append(["TOTAL (puntaje sobre 20)", "", res["correctas"], res["incorrectas"], res["blancos"],
                  f"{res['puntaje']:g}", f"{res['nota']:.2f}"])
+    data.append(["PROMEDIO GENERAL (de los cursos)", "", "", "", "", "", f"{res['promedio']:.2f}"])
     t = Table(data, colWidths=[170, 50, 60, 65, 60, 55, 55])
     t.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, -2), (-1, -1), "Helvetica-Bold"),
         ("FONTSIZE", (0, 0), (-1, -1), 8.5),
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f3d1e6")),
-        ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#fde68a")),
+        ("BACKGROUND", (0, -2), (-1, -1), colors.HexColor("#fde68a")),
         ("GRID", (0, 0), (-1, -1), 0.4, colors.grey), ("ALIGN", (1, 0), (-1, -1), "CENTER")]))
     tw, th = t.wrapOn(c, ancho, alto)
     t.drawOn(c, (ancho - tw) / 2, y - 25 - th)
@@ -611,7 +632,7 @@ def publicar_en_historial(sim):
         c = calificar(sim, h)
         fila = {"Puesto": int(r["Puesto"]), "DNI": h.get("dni", ""), "Nombre": h.get("nombre", ""),
                 "Aula": h.get("aula", ""), "Grupo": "" if sim.get("sin_area") else h.get("grupo", ""),
-                "Puntaje": c["puntaje"], "Correctas": c["correctas"], "Promedio": c["nota"],
+                "Puntaje": c["puntaje"], "Correctas": c["correctas"], "Promedio": c["promedio"], "Nota": c["nota"],
                 "Medalla": {1: "🥇", 2: "🥈", 3: "🥉"}.get(int(r["Puesto"]), "")}
         for cn, cv in c["cursos"].items():
             fila[cn] = cv["nota"]
@@ -1050,8 +1071,8 @@ def mensaje_whatsapp(sim, fila, hoja, total):
     res = calificar(sim, hoja)
     lineas = [f"*I.E.P. ALTERNATIVO YACHAY*", f"*{sim['titulo']}* ({sim.get('fecha', '')})", "",
               f"Alumno: {fila['Apellidos y Nombres']}",
-              f"Puntaje: {fila['Puntaje']:g}/{puntaje_maximo(sim, hoja.get('grupo', '')):g}  |  Nota: {fila['Nota']:.2f}/20",
-              f"Puesto: {int(fila['Puesto'])} de {total}", ""]
+              f"Puntaje: {fila['Puntaje']:g}/{puntaje_maximo(sim, hoja.get('grupo', '')):g}",
+              f"Promedio general: {res['promedio']:.2f}/20", f"Puesto: {int(fila['Puesto'])} de {total}", ""]
     for cn, cv in res["cursos"].items():
         lineas.append(f"• {cn}: {cv['nota']:.1f}/20 ({cv['correctas']} correctas)")
     lineas += ["", "Gracias por su apoyo. 📚"]
@@ -1190,6 +1211,42 @@ def _html_area(g, cursos, titulo=None):
             f"<td style='text-align:center'>{tot}</td><td></td></tr></table>")
 
 
+def _cursos_por_conteo(df, correcta, incorrecta):
+    """Cursos con «Preguntas» y un «Empieza en» opcional (si está vacío, sigue a continuación del anterior)."""
+    cursos, errores, usadas, pos = [], [], {}, 1
+    for _, r in df.iterrows():
+        nom = str(r.get("Curso") or "").strip()
+        if not nom or nom.lower() == "nan":
+            continue
+        try:
+            n = int(r.get("Preguntas"))
+        except Exception:
+            errores.append(f"'{nom}': escribe cuántas preguntas tiene.")
+            continue
+        if n < 1:
+            errores.append(f"'{nom}': debe tener al menos 1 pregunta.")
+            continue
+        emp = r.get("Empieza en")
+        try:
+            ini = int(emp) if emp is not None and not pd.isna(emp) else pos
+        except Exception:
+            ini = pos
+        fin = ini + n - 1
+        if fin > 100:
+            errores.append(f"'{nom}': llega hasta la pregunta {fin} y la hoja solo tiene 100.")
+            continue
+        choque = [usadas[q] for q in range(ini, fin + 1) if q in usadas]
+        if choque:
+            errores.append(f"'{nom}' se cruza con '{choque[0]}': una pregunta no puede ser de dos cursos.")
+            continue
+        for q in range(ini, fin + 1):
+            usadas[q] = nom
+        cursos.append({"nombre": nom, "desde": ini, "hasta": fin, "correcta": correcta, "incorrecta": incorrecta})
+        pos = fin + 1
+    cursos.sort(key=lambda c: c["desde"])
+    return cursos, errores
+
+
 def _cursos_desde_rangos(df, correcta, incorrecta):
     """Cursos escritos como «Curso | Desde | Hasta» (para Primaria, Secundaria y otros)."""
     cursos, errores, usadas = [], [], {}
@@ -1278,9 +1335,22 @@ def _tab_configurar(datos):
     pfx = f"simy_{sid or 'nuevo'}_"
 
     c1, c2, c3 = st.columns([2, 1, 1])
-    titulo = c1.text_input("Nombre del simulacro:", sim["titulo"], key=pfx + "tit")
+    _ops_n = [OTRO_NOMBRE] + EVALUACIONES
+    _ini_n = sim["titulo"] if sim["titulo"] in EVALUACIONES else (OTRO_NOMBRE if (sid and sim["titulo"]) else EVALUACIONES[0])
+    _elec = c1.selectbox("Evaluación (elige de la lista o escribe otro nombre):", _ops_n,
+                         index=_ops_n.index(_ini_n), key=pfx + "tit_sel")
+    if _elec == OTRO_NOMBRE:
+        titulo = c1.text_input("Escribe el nombre:", sim["titulo"] if sid and sim["titulo"] not in EVALUACIONES else "",
+                               key=pfx + "tit")
+    else:
+        titulo = _elec
     fecha = c2.text_input("Fecha:", sim.get("fecha", ""), key=pfx + "fec")
-    periodo = c3.text_input("Periodo / Bimestre:", sim.get("periodo", ""), key=pfx + "per")
+    _pops = PERIODOS + ([sim["periodo"]] if sim.get("periodo") and sim["periodo"] not in PERIODOS else [])
+    _per = c3.selectbox("Periodo / Bimestre:", _pops, index=_pops.index(sim["periodo"]) if sim.get("periodo") in _pops else 0,
+                        key=pfx + "per_sel")
+    periodo = "" if _per == PERIODOS[0] else _per
+    if not sid and any(x.get("titulo") == titulo and x.get("fecha") == fecha for x in datos["simulacros"].values()):
+        st.warning("⚠️ Ya existe un simulacro con este mismo nombre y fecha. Cámbialo si no quieres duplicarlo.")
 
     # ---- ¿Qué se evalúa? (igual que al postular a la UNSAAC) ----
     st.markdown("#### 🎯 ¿Qué vas a evaluar?")
@@ -1419,30 +1489,91 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
 
     claves, cursos_area, errores = {}, {}, []
 
-    def _bloque_clave(suf, rotulo, n_ref, inicial):
+    def _bloque_clave(suf, rotulo, n_ref, inicial, cursos_ref=None):
+        """Clave de respuestas en TABLA: cada pregunta con su número y su curso, y la respuesta se elige de una
+        lista. Para ir rápido se puede pegar la clave completa; la tabla sirve para comprobarla y corregir."""
         kk = pfx + f"clave_{mk}_{suf}"
-        if kk + "_pend" in st.session_state:
-            st.session_state[kk] = st.session_state.pop(kk + "_pend")
-        kw = {} if kk in st.session_state else {"value": inicial}
-        st.markdown(f"**{rotulo}**  ·  {n_ref} preguntas")
-        txt = st.text_area("Pega la clave (ABCD… seguida, con espacios o numerada 1A 2B…):",
-                           height=90, key=kk, **kw)
-        k = limpiar_clave(txt, n_ref or 100)
-        if k:
-            (st.success if len(k) == n_ref else st.warning)(f"{len(k)} de {n_ref} respuestas leídas.")
-            st.code("  ".join(k[i:i + 10] for i in range(0, len(k), 10)), language=None)
-        else:
+        kv, kver = kk + "_val", kk + "_ver"
+        preg = sorted({q for c_ in (cursos_ref or []) for q in range(c_["desde"], c_["hasta"] + 1)}) \
+            or list(range(1, int(n_ref or 0) + 1))
+        curso_q = {q: c_["nombre"] for c_ in (cursos_ref or []) for q in range(c_["desde"], c_["hasta"] + 1)}
+        top = max(preg) if preg else 0
+        sig = tuple((c_["nombre"], c_["desde"], c_["hasta"]) for c_ in (cursos_ref or [])) or (int(n_ref or 0),)
+        ksig = kk + "_sig"
+        if kv not in st.session_state:
+            st.session_state[kv] = inicial or ""
+        elif st.session_state.get(ksig) not in (None, sig):
+            # cambiaron los cursos o el número de preguntas: las respuestas de antes ya no corresponden
+            st.session_state[kv] = ""
+            st.session_state[kver] = st.session_state.get(kver, 0) + 1
+            st.info("Cambiaste los cursos o el número de preguntas: vuelve a pegar la clave o elígela en la tabla.")
+        st.session_state[ksig] = sig
+        canon = st.session_state[kv]
+        ver = st.session_state.get(kver, 0)
+
+        def _pegado():
+            k_ = limpiar_clave(st.session_state.get(kk, ""), len(preg))     # una letra por pregunta del examen
+            if k_:
+                full_ = ["E"] * top                      # números que no son del examen: anulados
+                for q_ in preg:
+                    full_[q_ - 1] = "?"                  # preguntas del examen: vacías hasta tener respuesta
+                for q_, ch_ in zip(preg, k_):
+                    full_[q_ - 1] = ch_
+                st.session_state[kv] = "".join(full_)
+                st.session_state[kver] = st.session_state.get(kver, 0) + 1
+
+        st.markdown(f"**{rotulo}**  ·  {len(preg)} preguntas")
+        st.text_area("Pega la clave (ABCD… seguida, con espacios o numerada 1A 2B…):", height=70, key=kk,
+                     on_change=_pegado,
+                     help="Pega aquí la clave completa y haz clic fuera de la caja: se llena la tabla de abajo. "
+                          "Después comprueba cada respuesta en la tabla y corrige la que haga falta.")
+        kdf = f"{kk}_df_{ver}"
+        if kdf not in st.session_state:
+            filas = []
+            for q in preg:
+                ch = canon[q - 1] if q - 1 < len(canon) else "?"
+                filas.append({"N.º": q, "Curso": curso_q.get(q, ""),
+                              "Respuesta": "Anulada" if ch == "E" else (ch if ch in "ABCD" else None)})
+            st.session_state[kdf] = pd.DataFrame(filas, columns=["N.º", "Curso", "Respuesta"])
+        ed = st.data_editor(st.session_state[kdf], hide_index=True, use_container_width=True, num_rows="fixed",
+                            disabled=["N.º", "Curso"], key=f"{kk}_tab_{ver}",
+                            height=int(min(430, 36 * len(preg) + 42)),
+                            column_config={"Respuesta": st.column_config.SelectboxColumn(
+                                "Respuesta correcta", options=["A", "B", "C", "D", "Anulada"], required=False)})
+        full = ["E"] * top
+        faltan = []
+        for q, v_ in zip(preg, ed["Respuesta"]):
+            if v_ in ("A", "B", "C", "D"):
+                full[q - 1] = v_
+            elif v_ == "Anulada":
+                full[q - 1] = "E"
+            else:
+                full[q - 1] = "?"
+                faltan.append(q)
+        k = "".join(full)
+        st.session_state[kv] = k
+        puestas = len(preg) - len(faltan)
+        if not faltan:
+            st.success(f"✅ Clave completa: {puestas} de {len(preg)} respuestas.")
+        elif puestas == 0:
             errores.append("Falta la clave de respuestas." if (unico or suf == "comun") else f"Falta la clave del Área {suf}.")
+        else:
+            st.warning(f"Faltan {len(faltan)} respuestas (preguntas {', '.join(map(str, faltan[:12]))}"
+                       + ("…" if len(faltan) > 12 else "") + "). Elígelas en la tabla.")
+            errores.append(f"Falta completar la clave ({len(faltan)} preguntas sin respuesta).")
         with st.expander("📸 Leer esta clave desde una hoja rellenada"):
             st.caption("Rellena una hoja Yachay con las respuestas correctas, tómale foto y súbela.")
             fk = st.file_uploader("Hoja clave:", type=["jpg", "jpeg", "png", "pdf"], key=pfx + f"fk_{mk}_{suf}")
             if fk is not None and st.button("Leer clave", key=pfx + f"lk_{mk}_{suf}"):
                 imgs = omr.imagenes_desde_archivo(fk.name, fk.getvalue())
                 if imgs:
-                    r = omr.leer_hoja(imgs[0], n_ref or 80)
-                    leida = "".join(x if x in "ABCD" else "E" for x in r["respuestas"])
-                    st.session_state[kk + "_pend"] = leida
-                    st.success("Clave leída. Revisa: las preguntas sin marca quedaron como E (anuladas).")
+                    r = omr.leer_hoja(imgs[0], top or 80)
+                    leida = ["E"] * top
+                    for q_ in preg:
+                        x_ = r["respuestas"][q_ - 1] if q_ - 1 < len(r["respuestas"]) else ""
+                        leida[q_ - 1] = x_ if x_ in ("A", "B", "C", "D") else "?"
+                    st.session_state[kv] = "".join(leida)
+                    st.session_state[kver] = ver + 1
                     st.rerun()
         return k
 
@@ -1452,13 +1583,26 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
         rk = pfx + f"rst_{mk}_{g}"
         ver = st.session_state.get(rk, 0)
         if unico:
-            if guardado and ver == 0:
-                base = [(c["nombre"], c["desde"], c["hasta"]) for c in guardado]
-            else:
-                base, pos = [], 1
-                for nm_, n_ in plantilla:
-                    base.append((nm_, pos, pos + n_ - 1))
-                    pos += n_
+            guard_u = {c["nombre"]: c for c in (guardado or [])} if (guardado and ver == 0) else {}
+            op_c = list(CURSOS_CATALOGO) + [n for n in guard_u if n not in CURSOS_CATALOGO]
+            ini_c = sorted(guard_u, key=lambda n: guard_u[n]["desde"]) if guard_u else [n for n, _q in plantilla]
+            sel_c = st.multiselect("✅ Elige los cursos de este examen (puedes buscar escribiendo)", op_c, default=ini_c,
+                                   key=pfx + f"selc_{mk}_{ver}")
+            otro_c = st.text_input("¿Falta un curso? Escríbelo aquí y pulsa Enter:", key=pfx + f"otroc_{mk}_{ver}").strip()
+            if otro_c and otro_c not in sel_c:
+                sel_c = sel_c + [otro_c]
+            pl = dict(plantilla)
+            base, fin_prev = [], 0
+            for nm_ in sel_c:
+                if nm_ in guard_u:
+                    c_ = guard_u[nm_]
+                    npg = c_["hasta"] - c_["desde"] + 1
+                    emp = c_["desde"] if c_["desde"] != fin_prev + 1 else None
+                    fin_prev = c_["hasta"]
+                else:
+                    npg, emp = pl.get(nm_, 10), None
+                    fin_prev = fin_prev + npg
+                base.append((nm_, npg, emp))
         else:
             plant_g = list(PLANTILLAS_AREA[g])
             guard_g = ({c["nombre"]: c["hasta"] - c["desde"] + 1 for c in guardado} if (guardado and ver == 0) else {})
@@ -1474,23 +1618,26 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
         ca, cb = st.columns([1.2, 1])
         with ca:
             if unico:
-                st.markdown("**1️⃣ Cursos: escribe de qué pregunta a qué pregunta va cada uno**")
-                st.caption("Agrega todos los cursos que necesites con el **+** al final de la tabla.")
-                df = pd.DataFrame(base, columns=["Curso", "Desde", "Hasta"])
-                cfg_cur = {"Desde": st.column_config.NumberColumn(min_value=1, max_value=100, step=1),
-                           "Hasta": st.column_config.NumberColumn(min_value=1, max_value=100, step=1)}
+                st.markdown("**1️⃣ ¿Cuántas preguntas tiene cada curso?**")
+                st.caption("Las preguntas se numeran seguidas (1, 2, 3…) en el orden de la tabla. Si un curso debe empezar "
+                           "en otro número, escríbelo en «Empieza en»; si no, déjalo vacío.")
+                df = pd.DataFrame(base, columns=["Curso", "Preguntas", "Empieza en"])
+                cfg_cur = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1),
+                           "Empieza en": st.column_config.NumberColumn(min_value=1, max_value=100, step=1,
+                                                                        help="Opcional: n.º de la primera pregunta")}
             else:
                 st.markdown("**1️⃣ Cursos y n.º de preguntas**")
                 df = pd.DataFrame(base, columns=["Curso", "Preguntas"])
                 cfg_cur = {"Preguntas": st.column_config.NumberColumn(min_value=1, max_value=100, step=1)}
-            df_e = st.data_editor(df, num_rows="dynamic", use_container_width=True, hide_index=True,
+            df_e = st.data_editor(df, num_rows="fixed" if unico else "dynamic", use_container_width=True, hide_index=True,
+                                  disabled=["Curso"] if unico else False,
                                   key=pfx + f"cur_{mk}_{g}_{ver}_{abs(hash(tuple(x[0] for x in base)))}", column_config=cfg_cur)
             if st.button("↩️ Restaurar cursos originales" if unico else "↩️ Restaurar temario oficial",
                          key=pfx + f"rstb_{mk}_{g}"):
                 st.session_state[rk] = ver + 1
                 st.rerun()
         if unico:
-            cursos_g, err_g = _cursos_desde_rangos(df_e, float(p_ok), float(p_mal))
+            cursos_g, err_g = _cursos_por_conteo(df_e, float(p_ok), float(p_mal))
         else:
             cursos_g, err_g = _cursos_desde_df(df_e, float(p_ok), float(p_mal))
         pre = "" if unico else f"Área {g}: "
@@ -1507,7 +1654,7 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
             errores.append(pre + "hay cursos con el mismo nombre.")
         if not compartida:
             claves[g] = _bloque_clave(g, "2️⃣ Clave de respuestas" if unico else f"2️⃣ Clave de respuestas del Área {g}",
-                                      n_g, sim.get("claves", {}).get(g, ""))
+                                      n_g, sim.get("claves", {}).get(g, ""), cursos_ref=cursos_g)
 
     union_guardar = None
     if unico:
@@ -1570,7 +1717,7 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
         st.markdown("---")
         ini = next((sim.get("claves", {}).get(g) for g in grupos if sim.get("claves", {}).get(g)), "")
         k = _bloque_clave("comun", f"2️⃣ 🔑 Clave de respuestas (la misma para las áreas {_unir(grupos)})",
-                          n_total, ini)
+                          n_total, ini, cursos_ref=[c_ for g_ in grupos for c_ in cursos_area[g_]])
         for g in grupos:
             claves[g] = k
     else:
@@ -2316,8 +2463,43 @@ def pdf_historial(nombre, dni, df):
     return buf.getvalue()
 
 
+def _administrar_simulacros(datos):
+    """Lista de todos los simulacros guardados, con opción de retirarlos de las familias o borrarlos."""
+    with st.expander("🗂️ Administrar simulacros guardados (retirar de padres o borrar)"):
+        sims = sorted(datos["simulacros"].values(), key=lambda x: str(x.get("creado", "")), reverse=True)
+        if not sims:
+            st.caption("No hay simulacros guardados.")
+            return
+        st.dataframe(pd.DataFrame([{"Evaluación": x["titulo"], "Fecha": x.get("fecha", ""), "Hojas": len(x.get("hojas", {})),
+                                    "Tipo": etiqueta_modalidad(x),
+                                    "Visible para padres": "Sí" if x.get("publicado") else "No"} for x in sims]),
+                     use_container_width=True, hide_index=True)
+        ids = [x["id"] for x in sims]
+        sid = st.selectbox("Elige un simulacro:", ids, key="simy_adm_sel",
+                           format_func=lambda i: f"{datos['simulacros'][i]['titulo']} — {datos['simulacros'][i].get('fecha', '')}")
+        sim = datos["simulacros"][sid]
+        a, b = st.columns(2)
+        if sim.get("publicado") and a.button("🙈 Quitar de la vista de padres y alumnos", key="simy_adm_unpub"):
+            quitar_de_historial(sim)
+            sim["publicado"] = False
+            guardar_datos(datos)
+            st.success("Ya no lo ven los padres ni los estudiantes. Se conserva en el sistema.")
+            st.rerun()
+        if not _HOOKS["puede_borrar"] or _HOOKS["puede_borrar"]():
+            ok = b.checkbox("Confirmo que quiero borrarlo con todas sus hojas", key="simy_adm_ok")
+            if ok and b.button("🗑️ Borrar este simulacro definitivamente", key="simy_adm_del"):
+                quitar_de_historial(sim)
+                datos["simulacros"].pop(sid, None)
+                guardar_datos(datos)
+                st.success("Simulacro borrado.")
+                st.rerun()
+        else:
+            b.caption("Solo la administración puede borrar simulacros.")
+
+
 def _tab_historial(datos):
     st.subheader("📚 Historial del estudiante")
+    _administrar_simulacros(datos)
     personas = {}
     for sim in datos["simulacros"].values():
         for h in sim.get("hojas", {}).values():

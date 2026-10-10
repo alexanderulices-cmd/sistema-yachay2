@@ -22997,13 +22997,24 @@ AREAS_MINEDU = {
 }
 
 PERIODOS_EVALUACION = (
-    [f'Semana {i}' for i in range(1, 46)] +
-    ['Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
+    [f'Semana {i}' for i in range(1, 61)] +
+    [f'Simulacro {i}' for i in range(1, 11)] +
+    ['Primer bimestre', 'Segundo bimestre', 'Tercer bimestre', 'Cuarto bimestre',
+     'Evaluación bimestral', 'Evaluación Final',
+     'Quincenal 1', 'Quincenal 2', 'Quincenal 3', 'Quincenal 4',
      'I Bimestre', 'II Bimestre', 'III Bimestre', 'IV Bimestre',
-     'Evaluación Parcial', 'Evaluación Final', 'Práctica Calificada',
+     'Evaluación Parcial', 'Práctica Calificada',
      'Ciclo Verano', 'Ciclo Regular', 'Ciclo Intensivo',
      'Reforzamiento Pre-U']
 )
+
+# Cursos adicionales que también se pueden evaluar en Primaria y Secundaria (además de las áreas del MINEDU)
+CURSOS_EXTRA_EVALUACION = [
+    'Razonamiento Matemático', 'Razonamiento Verbal', 'Aritmética', 'Álgebra', 'Geometría', 'Trigonometría',
+    'Lenguaje', 'Literatura', 'Física', 'Química', 'Biología', 'Historia', 'Historia del Perú',
+    'Historia Universal', 'Geografía', 'Economía', 'Educación Cívica', 'Filosofía y Lógica', 'Psicología',
+    'Computación', 'Cultura General',
+]
 BIMESTRES_LISTA = PERIODOS_EVALUACION  # Alias
 
 # ================================================================
@@ -25291,6 +25302,7 @@ def tab_registrar_notas(config):
         with c2:
             tipo_eval_cfg = st.selectbox("📋 Tipo de evaluación:", [
                 "Evaluación Semanal",
+                "Simulacro",
                 "Práctica Calificada",
                 "Evaluación Mensual",
                 "Examen Parcial",
@@ -25315,7 +25327,7 @@ def tab_registrar_notas(config):
         if 'Inicial' in grado_str_cfg or '3 años' in grado_str_cfg or '4 años' in grado_str_cfg or '5 años' in grado_str_cfg:
             areas_disp = AREAS_MINEDU.get('INICIAL', [])
         elif any(x in grado_str_cfg for x in ['Secundaria','° Sec']):
-            areas_disp = AREAS_MINEDU.get('SECUNDARIA', [])
+            areas_disp = list(AREAS_MINEDU.get('SECUNDARIA', [])) + [c for c in CURSOS_EXTRA_EVALUACION if c not in AREAS_MINEDU.get('SECUNDARIA', [])]
         elif 'GRUPO AB' in grado_str_cfg or 'Grupo AB' in grado_str_cfg:
             areas_disp = AREAS_CEPRE_UNSAAC.get('GRUPO AB', [])
         elif 'GRUPO CD' in grado_str_cfg or 'Grupo CD' in grado_str_cfg:
@@ -25324,9 +25336,9 @@ def tab_registrar_notas(config):
             _areas_preu = AREAS_CEPRE_UNSAAC.get('GRUPO AB',[]) + AREAS_CEPRE_UNSAAC.get('GRUPO CD',[])
             areas_disp = sorted(set(_areas_preu))
         elif any(x in grado_str_cfg for x in ['Primaria','° Primaria','1°','2°','3°','4°','5°','6°']):
-            areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
+            areas_disp = list(AREAS_MINEDU.get('PRIMARIA', [])) + [c for c in CURSOS_EXTRA_EVALUACION if c not in AREAS_MINEDU.get('PRIMARIA', [])]
         else:
-            areas_disp = AREAS_MINEDU.get('PRIMARIA', [])
+            areas_disp = list(AREAS_MINEDU.get('PRIMARIA', [])) + [c for c in CURSOS_EXTRA_EVALUACION if c not in AREAS_MINEDU.get('PRIMARIA', [])]
 
         # Si no hay áreas definidas, usar básicas
         if not areas_disp:
