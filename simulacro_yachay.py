@@ -2044,6 +2044,9 @@ def _tab_escanear(datos):
     ver_key = f"simy_ver_{sid}"
     st.session_state.setdefault(ver_key, 0)
 
+    if st.session_state.get("simy_msg_ok"):
+        st.success(st.session_state.pop("simy_msg_ok"))
+
     # ---- Avance de la lista de control (siempre a la vista) ----
     if mat:
         _an = _lista_auto_nombre(sim)
@@ -2059,23 +2062,14 @@ def _tab_escanear(datos):
             st.markdown(_txt + "  \n_Mira quiénes faltan en la pestaña **📋 Lista de control**._")
             st.progress(min(1.0, (_r["ok"] + _r["falto"]) / _r["total"]))
 
-    # ---- Antes de escanear: hojas del simulacro y verificación de DNI ----
-    b_h, b_v = st.columns(2)
-    with b_h:
-        boton_hoja(None, "simy_dl_hoja_scan")
-        st.caption("Hoja genérica para imprimir. El sistema comprueba la fecha que el alumno marca "
-                   "para avisarte si una hoja es de otro examen.")
+    # ---- Aviso de DNI mal escritos en la matrícula (solo aparece si los hay) ----
     try:
         df_prob = analizar_dnis_matricula(_HOOKS["cargar_matricula"]() if _HOOKS["cargar_matricula"] else None)
     except Exception:
         df_prob = pd.DataFrame()
-    with b_v:
-        if len(df_prob):
-            st.warning(f"⚠️ {df_prob['Alumno'].nunique()} alumno(s) con DNI mal escrito en la matrícula "
-                       "(no se podrán reconocer solos al escanear).")
-        else:
-            st.success("✅ Todos los DNI de la matrícula tienen 8 dígitos.")
     if len(df_prob):
+        st.warning(f"⚠️ {df_prob['Alumno'].nunique()} alumno(s) tienen el DNI mal escrito en la matrícula "
+                   "(no se reconocerán solos al escanear).")
         with st.expander("🔎 Ver y corregir los DNI de la matrícula", expanded=False):
             st.caption("El DNI tiene 8 dígitos; la hoja lee exactamente 8. El noveno número que aparece junto al DNI "
                        "(después del guion) es el dígito verificador y NO va. Los que empiezan con 9 y tienen 9 dígitos "
@@ -2087,50 +2081,58 @@ def _tab_escanear(datos):
                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                                key="simy_dl_dni_prob")
 
-    fuente = st.radio("¿Cómo vas a cargar las hojas?",
-                      ["📁 Varias fotos o PDF escaneado (lote)", "📷 Cámara (hoja por hoja)", "⌨️ Digitar a mano"],
-                      horizontal=True, key="simy_fuente")
-    st.caption("Consejo: foto de frente, con buena luz, que se vean los 4 cuadrados negros de las esquinas.")
+    # ---- Subir las hojas: se leen SOLAS al subirlas (sin botón) ----
+    up_key, firma_key = f"simy_upver_{sid}", f"simy_firma_{sid}"
+    st.session_state.setdefault(up_key, 0)
+    st.markdown("#### 📸 Sube las hojas escaneadas")
+    archivos = st.file_uploader("Arrastra aquí el PDF con todas las hojas (o fotos sueltas). Se leen solas.",
+                                type=["jpg", "jpeg", "png", "pdf"], accept_multiple_files=True,
+                                key=f"simy_up_{sid}_{st.session_state[up_key]}")
+    st.caption("💡 Lo más fácil: escanea todas las hojas en **un solo PDF** (grises, 200 dpi), de hasta 100-150 hojas. "
+               "Si usas fotos: de frente, con buena luz y con los 4 cuadrados negros de las esquinas a la vista.")
+    firmas = tuple((a_.name, a_.size) for a_ in (archivos or []))
+    if archivos and firmas != st.session_state.get(firma_key):
+        st.session_state[firma_key] = firmas
+        barra = st.progress(0.0, "Leyendo…")
+        previas = _areas_previas(datos, sim)
+        total = sum(omr.contar_paginas(a.name, a.getvalue()) for a in archivos)
+        hechas, fallos = 0, []
+        for a in archivos:
+            es_pdf = a.name.lower().endswith(".pdf")
+            try:
+                for p, img in enumerate(omr.iterar_imagenes(a.name, a.getvalue())):
+                    org = f"{a.name}" + (f" pág.{p + 1}" if es_pdf else "")
+                    try:
+                        st.session_state[lote_key].append(_procesar_imagen(sim, img, mat, org, previas))
+                    except Exception as e:                 # una página dañada no detiene el lote
+                        fallos.append(f"{org}: no se pudo leer ({e})")
+                    del img
+                    hechas += 1
+                    barra.progress(min(hechas / max(total, 1), 1.0), f"Hoja {hechas} de {total}")
+            except Exception as e:
+                fallos.append(f"{a.name}: {e}")
+        # las hojas con problemas van primero, para revisarlas sin buscar
+        st.session_state[lote_key].sort(key=lambda h: 0 if (h["alertas"] or h["dudosas"]) else 1)
+        st.session_state["simy_fallos"] = fallos
+        st.rerun()
 
-    if fuente.startswith("📁"):
-        archivos = st.file_uploader("Sube las hojas (JPG, PNG o PDF con varias páginas):",
-                                    type=["jpg", "jpeg", "png", "pdf"], accept_multiple_files=True,
-                                    key=f"simy_up_{sid}")
-        if archivos:
-            st.caption("💡 Para muchas hojas: escanea todo en **un solo PDF** (en escala de grises, 200 dpi) "
-                       "y súbelo aquí. Lo ideal son lotes de hasta 100-150 hojas por PDF.")
-        if archivos and st.button("🔍 Leer hojas", type="primary", key="simy_leer"):
-            barra = st.progress(0.0, "Leyendo…")
-            previas = _areas_previas(datos, sim)
-            total = sum(omr.contar_paginas(a.name, a.getvalue()) for a in archivos)
-            hechas, fallos = 0, []
-            for a in archivos:
-                es_pdf = a.name.lower().endswith(".pdf")
-                try:
-                    for p, img in enumerate(omr.iterar_imagenes(a.name, a.getvalue())):
-                        org = f"{a.name}" + (f" pág.{p + 1}" if es_pdf else "")
-                        try:
-                            st.session_state[lote_key].append(_procesar_imagen(sim, img, mat, org, previas))
-                        except Exception as e:                 # una página dañada no detiene el lote
-                            fallos.append(f"{org}: no se pudo leer ({e})")
-                        del img
-                        hechas += 1
-                        barra.progress(min(hechas / max(total, 1), 1.0), f"Hoja {hechas} de {total}")
-                except Exception as e:
-                    fallos.append(f"{a.name}: {e}")
-            # las hojas con problemas van primero, para revisarlas sin buscar
-            st.session_state[lote_key].sort(key=lambda h: 0 if (h["alertas"] or h["dudosas"]) else 1)
-            st.session_state["simy_fallos"] = fallos
-            st.rerun()
+    with st.expander("🛠️ Otras opciones: cámara, digitar a mano, hoja en blanco para imprimir"):
+        otra = st.radio("¿Una sola hoja o no tienes PDF?",
+                        ["Solo con el PDF o las fotos de arriba", "📷 Cámara (hoja por hoja)", "⌨️ Digitar a mano"],
+                        key="simy_fuente2")
+        boton_hoja(None, "simy_dl_hoja_scan")
+        st.caption("Hoja genérica para imprimir. El sistema comprueba la fecha que el alumno marca "
+                   "para avisarte si una hoja es de otro examen.")
+    fuente = "📁" if otra.startswith("Solo") else otra
 
-    elif fuente.startswith("📷"):
+    if fuente.startswith("📷"):
         foto = st.camera_input("Toma la foto de la hoja", key=f"simy_cam_{sid}")
         if foto is not None and st.button("➕ Leer y agregar al lote", type="primary", key="simy_cam_ok"):
             img = omr.imagenes_desde_archivo("cam.jpg", foto.getvalue())[0]
             st.session_state[lote_key].append(_procesar_imagen(sim, img, mat, "cámara"))
             st.rerun()
 
-    else:
+    elif fuente.startswith("⌨️"):
         with st.form("simy_manual", clear_on_submit=True):
             m1, m2, m3 = st.columns([1, 2, 1])
             dni = m1.text_input("DNI:")
@@ -2218,8 +2220,11 @@ def _tab_escanear(datos):
 
     # Detalle de cada hoja (con cientos de hojas se muestran solo las que necesitan revisión)
     prob_idx = [i for i, h in enumerate(lote) if h["alertas"] or h["dudosas"]]
-    modo_det = st.radio("Ver el detalle de:", [f"⚠️ Solo las que necesitan revisión ({len(prob_idx)})",
-                                               f"📄 Todas ({len(lote)})"], horizontal=True, key=f"simy_detmodo_{sid}")
+    if len(lote) > 6:
+        modo_det = st.radio("Ver el detalle de:", [f"⚠️ Solo las que necesitan revisión ({len(prob_idx)})",
+                                                   f"📄 Todas ({len(lote)})"], horizontal=True, key=f"simy_detmodo_{sid}")
+    else:
+        modo_det = "📄 Todas"                      # pocas hojas: se muestran todas, sin preguntar
     idxs = prob_idx if modo_det.startswith("⚠️") else list(range(len(lote)))
     POR_PAG, pag = 20, 0
     if len(idxs) > POR_PAG:
@@ -2277,10 +2282,16 @@ def _tab_escanear(datos):
         nuevos, reemp = _guardar_lote(datos, sid, validos)
         st.session_state[lote_key] = []
         st.session_state["simy_fallos"] = []
-        st.success(f"Guardado: {nuevos} hojas nuevas, {reemp} actualizadas (mismo DNI).")
+        st.session_state[up_key] += 1
+        st.session_state.pop(firma_key, None)
+        st.session_state["simy_msg_ok"] = (f"✅ Guardado: {nuevos} hojas nuevas y {reemp} actualizadas (mismo DNI). "
+                                           "Siguiente paso: mira quién falta en 📋 Lista de control o ve a 🏆 Ranking.")
+        st.rerun()
     if b2.button("🗑️ Vaciar lote sin guardar", key="simy_vaciar"):
         st.session_state[lote_key] = []
         st.session_state["simy_fallos"] = []
+        st.session_state[up_key] += 1
+        st.session_state.pop(firma_key, None)
         st.rerun()
 
 
