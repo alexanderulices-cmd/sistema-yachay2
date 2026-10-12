@@ -2,8 +2,8 @@
 # OMR YACHAY — Lector óptico de la "Hoja de Respuestas Yachay"
 # (Academia Preuniversitaria Yachay — Simulacro, 100 preguntas)
 # ================================================================
-# Lee: DNI (8 dígitos), Aula (1-9 + A-D), Día, Mes, Año, Grupo (A-D)
-#      y las 100 respuestas (A-D) de la hoja oficial A4.
+# Lee: DNI (8 dígitos), Día, Mes, Año, Grupo (A-D) y las 100 respuestas (A-E en la hoja nueva,
+#      A-D en la hoja antigua) de la hoja oficial A4.
 #
 # Funciona con: foto de celular, escaneo JPG/PNG o PDF escaneado
 # (una hoja por página). Usa los 4 cuadrados negros de las esquinas
@@ -15,6 +15,7 @@
 # ================================================================
 
 import io
+import math
 import numpy as np
 
 try:
@@ -37,6 +38,11 @@ RESP_X = [[310.5, 410.5, 510.5, 610.5],
           [850.5, 950.5, 1050.5, 1150.5],
           [1390.5, 1490.5, 1590.5, 1690.5],
           [1930.5, 2030.5, 2130.5, 2230.5]]
+# Hoja versión 2: cinco alternativas (A-E) por pregunta. Las burbujas se juntan un poco (87,5 px) para
+# que quepa la E dentro de cada bloque. La versión 1 (A-D) se sigue leyendo igual que siempre.
+OPCIONES5 = ["A", "B", "C", "D", "E"]
+RESP_X5 = [[bx + 130.5 + 87.5 * j for j in range(5)] for bx in (160, 700, 1240, 1780)]
+MARCA_V2 = (2350, 150, 2441, 176)       # barrita bajo el cuadrado de arriba-derecha: distingue la hoja v2
 RESP_Y0, RESP_DY, RESP_FILAS = 1215.5, 80.0, 25
 RESP_R = 22            # radio de muestreo (burbuja ≈ 26 px)
 
@@ -83,10 +89,18 @@ UMBRAL_DUDA = 0.30        # entre DUDA y MARCA: marca débil -> revisar
 MARGEN_DOBLE = 0.18       # si la 2.ª opción está a menos de esto -> doble marca
 
 
-def posicion_respuesta(i, j):
-    """Centro (x, y) de la pregunta i (0..99), opción j (0..3)."""
+def posicion_respuesta(i, j, version=2):
+    """Centro (x, y) de la pregunta i (0..99), opción j (0..4 en la hoja v2, 0..3 en la v1)."""
     col, fila = divmod(i, RESP_FILAS)
-    return RESP_X[col][j], RESP_Y0 + fila * RESP_DY
+    xs = RESP_X5 if version == 2 else RESP_X
+    return xs[col][j], RESP_Y0 + fila * RESP_DY
+
+
+def _version_hoja(warped):
+    """2 si la hoja trae la barrita de la versión 2 (con alternativa E), 1 si es la hoja antigua (A-D)."""
+    x0, y0, x1, y1 = MARCA_V2
+    zona = warped[y0:y1, x0:x1]
+    return 2 if zona.size and float((zona < 110).mean()) > 0.6 else 1
 
 
 # ----------------------------------------------------------------
@@ -185,17 +199,26 @@ def _candidatos_marca(gray):
     for th in umbrales:
         cs, _ = cv2.findContours(th, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         for c in cs:
-            x, y, w, h = cv2.boundingRect(c)
-            if not (lado * 0.018 <= w <= lado * 0.09 and lado * 0.018 <= h <= lado * 0.09):
+            if len(c) < 4:
                 continue
-            if not (0.7 <= w / float(h) <= 1.4):
+            # Se mide con el rectángulo ROTADO: un cuadrado de una hoja torcida sigue siendo un cuadrado
+            (_rx, _ry), (rw, rh), _ang = cv2.minAreaRect(c)
+            if rw < 1 or rh < 1:
+                continue
+            if not (lado * 0.018 <= rw <= lado * 0.09 and lado * 0.018 <= rh <= lado * 0.09):
+                continue
+            if not (0.7 <= rw / float(rh) <= 1.4):
                 continue
             area = cv2.contourArea(c)
-            if area < 0.80 * w * h:
+            if area < 0.80 * rw * rh:
                 continue
-            # debe ser oscuro por dentro
+            x, y, w, h = cv2.boundingRect(c)
             roi = gray[y:y + h, x:x + w]
-            if roi.size == 0 or roi.mean() > 110:
+            if roi.size == 0:
+                continue
+            mask = np.zeros(roi.shape, np.uint8)
+            cv2.drawContours(mask, [c - np.array([x, y])], -1, 255, -1)
+            if cv2.mean(roi, mask)[0] > 110:                # debe ser oscuro por dentro
                 continue
             m = cv2.moments(c)
             if m["m00"] == 0:
@@ -230,11 +253,15 @@ def _esquinas(gray):
     if len(pool) < 4:
         return None
     for conj in itertools.combinations(pool, 4):
-        # asignar cada uno a su esquina de la foto (TL, TR, BL, BR) por posición
-        pts = sorted(conj, key=lambda q: q[1])
-        sup = sorted(pts[:2], key=lambda q: q[0])
-        inf = sorted(pts[2:], key=lambda q: q[0])
-        tl, tr, bl, br = sup[0], sup[1], inf[0], inf[1]
+        # ordenar las 4 esquinas por su posición alrededor del centro (vale con CUALQUIER giro de la hoja):
+        # el lado corto de la hoja es el que une la esquina de arriba-izquierda con la de arriba-derecha
+        mcx = sum(q[0] for q in conj) / 4.0
+        mcy = sum(q[1] for q in conj) / 4.0
+        ciclo = sorted(conj, key=lambda q: math.atan2(q[1] - mcy, q[0] - mcx))   # sentido horario en pantalla
+        d01 = math.hypot(ciclo[1][0] - ciclo[0][0], ciclo[1][1] - ciclo[0][1])
+        d12 = math.hypot(ciclo[2][0] - ciclo[1][0], ciclo[2][1] - ciclo[1][1])
+        ini = 0 if d01 <= d12 else 1
+        tl, tr, br, bl = (ciclo[(ini + k) % 4] for k in range(4))
         ar = [tl[2], tr[2], bl[2], br[2]]
         if max(ar) > 2.6 * min(ar):
             continue
@@ -527,13 +554,17 @@ def _preparar(warped):
     return 1.0 - norm.astype(np.float32) / 255.0
 
 
-def _oscuridad(tinta, cx, cy, r):
+PASOS_CORTO = (-6, 0, 6)
+PASOS_AMPLIO = (-12, -6, 0, 6, 12)
+
+
+def _oscuridad(tinta, cx, cy, r, pasos=PASOS_AMPLIO):
     r = int(r)
     cx, cy = int(round(cx)), int(round(cy))
-    # pequeña búsqueda local (±6 px) para tolerar errores de alineación
+    # búsqueda local para tolerar errores de alineación (papel curvado, foto de celular)
     mejor = 0.0
-    for dx in (-6, 0, 6):
-        for dy in (-6, 0, 6):
+    for dx in pasos:
+        for dy in pasos:
             x, y = cx + dx, cy + dy
             roi = tinta[y - r:y + r + 1, x - r:x + r + 1]
             if roi.shape[0] != 2 * r + 1 or roi.shape[1] != 2 * r + 1:
@@ -560,37 +591,44 @@ def _decidir(valores, etiquetas):
 
 
 class _Calib:
-    """Calibración de UNA hoja: nivel del papel sin marcas (base), ruido y fuerza típica de una
-    marca firme. Así una marca clara de lápiz o de lapicero se acepta igual que una oscura, y
-    una foto con sombras no confunde burbujas vacías con marcadas."""
+    """Calibración de UNA hoja. Cada marca se compara con las otras burbujas de SU MISMA FILA (que comparten
+    la misma luz y el mismo fondo): así una foto oscura o de poco contraste, o un lápiz suave, se leen igual
+    que una foto perfecta. Además se calcula el nivel del papel (base), para el informe de calibración."""
 
     def __init__(self, *matrices):
-        resto, s1 = [], []
+        resto, brechas, dispersion = [], [], []
         for m in matrices:
             for fila in m:
-                ord_ = sorted(fila)
-                resto += ord_[:-1]
+                ord_ = sorted(fila, reverse=True)
+                otros = np.array(ord_[1:], dtype=np.float64)
+                resto += list(otros)
+                med = float(np.median(otros)) if len(otros) else 0.0
+                brechas.append(ord_[0] - med)
+                if len(otros):
+                    dispersion.append(float(np.median(np.abs(otros - med))) * 1.4826)
         arr = np.array(resto, dtype=np.float64) if resto else np.array([0.15])
         self.base = float(np.median(arr))
         mad = float(np.median(np.abs(arr - self.base))) * 1.4826
         self.sigma = max(mad, 0.012)
-        for m in matrices:
-            s1 += [max(f) - self.base for f in m]
-        firmes = [s for s in s1 if s >= 0.20]
-        self.fuerza = float(np.median(firmes)) if len(firmes) >= 3 else 0.42
-        self.t_blanco = max(0.04, 3.5 * self.sigma)
-        self.t_ok = min(0.30, max(0.15, 0.42 * self.fuerza))
+        self.sigma_fila = max(float(np.median(dispersion)) if dispersion else 0.0, 0.008)
+        firmes = [g for g in brechas if g >= 0.08]
+        self.fuerza = float(np.median(firmes)) if len(firmes) >= 3 else 0.30      # brecha típica de una marca firme
+        self.t_blanco = max(0.04, 4.0 * self.sigma_fila)
+        self.t_ok = min(0.30, max(0.07, 0.45 * self.fuerza))
 
     def decidir(self, valores, etiquetas):
         """(valor, estado) con estado en ok / blanco / doble / duda."""
         orden = sorted(range(len(valores)), key=lambda k: valores[k], reverse=True)
-        s1 = valores[orden[0]] - self.base
-        s2 = (valores[orden[1]] - self.base) if len(orden) > 1 else 0.0
-        if s1 < self.t_blanco:
+        v = [valores[k] for k in orden]
+        otros = v[1:]
+        med = float(np.median(otros)) if otros else 0.0
+        g1 = v[0] - med
+        g2 = (v[1] - med) if len(v) > 1 else 0.0
+        if g1 < self.t_blanco:
             return "", "blanco"
-        if s2 >= max(0.15, 0.5 * s1):
+        if g2 >= max(self.t_blanco, 0.5 * g1):
             return "*", "doble"
-        if s1 >= self.t_ok:
+        if g1 >= self.t_ok:
             return etiquetas[orden[0]], "ok"
         return etiquetas[orden[0]], "duda"
 
@@ -599,26 +637,33 @@ def leer_hoja(img_bgr, num_preguntas=100):
     """Lee una hoja Yachay. Devuelve dict con todos los campos."""
     warped, alineada, msg = alinear(img_bgr)
     tinta = _preparar(warped)
-    res = {"alineada": alineada, "mensaje": msg, "alertas": []}
+    ver = _version_hoja(warped)
+    opc = OPCIONES5 if ver == 2 else OPCIONES
+    res = {"alineada": alineada, "mensaje": msg, "alertas": [], "version": ver, "opciones": len(opc)}
 
     # ---- valores de oscuridad de todas las burbujas ----
-    v_resp = [[_oscuridad(tinta, *posicion_respuesta(i, j), RESP_R) for j in range(4)] for i in range(num_preguntas)]
-    v_dni = [[_oscuridad(tinta, x, CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)] for x in DNI_X]
-    v_dia = [[_oscuridad(tinta, DIA_X[0], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(4)],
-             [_oscuridad(tinta, DIA_X[1], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]]
-    v_mes = [[_oscuridad(tinta, MES_X[0], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(2)],
-             [_oscuridad(tinta, MES_X[1], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]]
-    v_anio = [_oscuridad(tinta, ANIO_X, y, ANIO_R) for y in ANIO_Y]
-    v_grupo = [_oscuridad(tinta, x, GRUPO_Y, GRUPO_R) for x in GRUPO_X]
+    P = PASOS_CORTO
+    v_resp = [[_oscuridad(tinta, *posicion_respuesta(i, j, ver), RESP_R, P) for j in range(len(opc))]
+              for i in range(num_preguntas)]
+    v_dni = [[_oscuridad(tinta, x, CAB_Y0 + d * CAB_DY, CAB_R, P) for d in range(10)] for x in DNI_X]
+    v_dia = [[_oscuridad(tinta, DIA_X[0], CAB_Y0 + d * CAB_DY, CAB_R, P) for d in range(4)],
+             [_oscuridad(tinta, DIA_X[1], CAB_Y0 + d * CAB_DY, CAB_R, P) for d in range(10)]]
+    v_mes = [[_oscuridad(tinta, MES_X[0], CAB_Y0 + d * CAB_DY, CAB_R, P) for d in range(2)],
+             [_oscuridad(tinta, MES_X[1], CAB_Y0 + d * CAB_DY, CAB_R, P) for d in range(10)]]
+    v_anio = [_oscuridad(tinta, ANIO_X, y, ANIO_R, P) for y in ANIO_Y]
+    v_grupo = [_oscuridad(tinta, x, GRUPO_Y, GRUPO_R, P) for x in GRUPO_X]
     cal_r = _Calib(v_resp)                                   # respuestas
     cal_c = _Calib(v_dni, v_dia, v_mes)                      # casilleros de la cabecera
     res["calibracion"] = {"base": round(cal_r.base, 3), "ruido": round(cal_r.sigma, 3),
                           "fuerza": round(cal_r.fuerza, 3)}
 
-    # ---- Respuestas ----
+    # ---- Respuestas ----  (si una fila no queda clara con la búsqueda corta, se repite con la amplia)
     resp, estados = [], []
-    for vals in v_resp:
-        v, e = cal_r.decidir(vals, OPCIONES)
+    for i, vals in enumerate(v_resp):
+        v, e = cal_r.decidir(vals, opc)
+        if e != "ok":
+            vals = [_oscuridad(tinta, *posicion_respuesta(i, j, ver), RESP_R) for j in range(len(opc))]
+            v, e = cal_r.decidir(vals, opc)
         resp.append(v)
         estados.append(e)
     res["respuestas"] = resp
@@ -628,6 +673,9 @@ def leer_hoja(img_bgr, num_preguntas=100):
     dni, dni_ok, dni_det = "", True, []
     for k, vals in enumerate(v_dni):
         v, e = cal_c.decidir(vals, [str(d) for d in range(10)])
+        if e != "ok":
+            vals = [_oscuridad(tinta, DNI_X[k], CAB_Y0 + d * CAB_DY, CAB_R) for d in range(10)]
+            v, e = cal_c.decidir(vals, [str(d) for d in range(10)])
         dni_det.append((v, e, int(np.argmax(vals))))
         if e != "ok":
             dni_ok = False
@@ -712,6 +760,9 @@ def imagen_revision(res, clave=None, ancho=900, nombre=None, validas=None):
     y una franja arriba con el DNI y los datos leídos. Devuelve bytes JPEG."""
     img = cv2.cvtColor(res["_warped"], cv2.COLOR_GRAY2BGR)
     n = len(res["respuestas"])
+    ver = res.get("version", 1)
+    opc = OPCIONES5 if ver == 2 else OPCIONES
+    xs_ = RESP_X5 if ver == 2 else RESP_X
     if validas is not None:
         # Las preguntas que NO forman parte del examen se opacan con un velo gris y no se marcan.
         velo = img.copy()
@@ -719,7 +770,7 @@ def imagen_revision(res, clave=None, ancho=900, nombre=None, validas=None):
             if (i + 1) not in validas:
                 col, fila = divmod(i, RESP_FILAS)
                 y = int(RESP_Y0 + RESP_DY * fila)
-                x0, x1 = int(RESP_X[col][0] - 75), int(RESP_X[col][3] + 45)
+                x0, x1 = int(xs_[col][0] - 75), int(xs_[col][-1] + 45)
                 cv2.rectangle(velo, (x0, y - 38), (x1, y + 38), (215, 215, 215), -1)
         img = cv2.addWeighted(velo, 0.62, img, 0.38, 0)
     for i in range(n):
@@ -729,15 +780,15 @@ def imagen_revision(res, clave=None, ancho=900, nombre=None, validas=None):
         e = res["estados"][i]
         k = clave[i] if clave and i < len(clave) else None
         if e in ("duda", "doble"):
-            for j in range(4):
-                cv2.circle(img, tuple(int(v) for v in posicion_respuesta(i, j)), 30, (0, 140, 255), 4)
-        if r in OPCIONES:
+            for j in range(len(opc)):
+                cv2.circle(img, tuple(int(v) for v in posicion_respuesta(i, j, ver)), 30, (0, 140, 255), 4)
+        if r in opc:
             col = (255, 120, 0)
-            if k in OPCIONES:
+            if k in opc:
                 col = (0, 170, 0) if r == k else (0, 0, 230)
-            cv2.circle(img, tuple(int(v) for v in posicion_respuesta(i, OPCIONES.index(r))), 30, col, 6)
-        if k in OPCIONES and r != k:
-            cx, cy = posicion_respuesta(i, OPCIONES.index(k))
+            cv2.circle(img, tuple(int(v) for v in posicion_respuesta(i, opc.index(r), ver)), 30, col, 6)
+        if k in opc and r != k:
+            cx, cy = posicion_respuesta(i, opc.index(k), ver)
             cv2.circle(img, (int(cx), int(cy)), 12, (0, 170, 0), -1)
 
     # ---- cabecera: lo que se leyó (puntitos verdes) ----
@@ -779,6 +830,15 @@ def imagen_revision(res, clave=None, ancho=900, nombre=None, validas=None):
     img = cv2.resize(img, (ancho, int(img.shape[0] * esc)), interpolation=cv2.INTER_AREA)
     ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 76])
     return buf.tobytes() if ok else None
+
+
+def recortes_campos_nombre(res):
+    """Los dos recuadros (apellidos y nombres) a resolución completa, en gris, para leer la letra a mano.
+    Solo existen en la hoja versión 2."""
+    w = res.get("_warped")
+    if w is None or res.get("version") != 2:
+        return []
+    return [w[476:584, 196:1252].copy(), w[651:759, 196:1252].copy()]
 
 
 def recorte_nombre(res):

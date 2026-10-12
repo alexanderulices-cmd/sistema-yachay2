@@ -22,3 +22,4 @@ edge-tts==6.1.19
 google-api-python-client==2.149.0
 
 pymupdf==1.24.10
+rapidocr-onnxruntime==1.4.4
