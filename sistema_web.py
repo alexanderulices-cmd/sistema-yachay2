@@ -14020,6 +14020,49 @@ def tab_modo_kiosco():
         if st.button("← Salir", key="kiosco_salir"):
             st.session_state['_modo_kiosco'] = False
             st.rerun()
+    with _c_resto:
+        import streamlit.components.v1 as _comp_fs
+        _comp_fs.html("""
+        <div style="font-family:Arial,sans-serif;display:flex;gap:14px;align-items:center;">
+          <button id="fsbtn" style="cursor:pointer;border:2px solid #94a3b8;background:#1e293b;color:#f1f5f9;
+                  font-size:15px;font-weight:700;padding:9px 16px;border-radius:10px;">⛶ Pantalla completa</button>
+          <span id="wl" style="color:#cbd5e1;font-size:13px;"></span>
+        </div>
+        <script>
+        (function() {
+          var P = window.parent;
+          document.getElementById('fsbtn').onclick = function() {
+            try {
+              var d = P.document;
+              if (!d.fullscreenElement) { d.documentElement.requestFullscreen(); } else { d.exitFullscreen(); }
+            } catch (e) {}
+          };
+          // Pantalla siempre encendida: se pide en la página principal (así el navegador lo permite) y se vuelve a
+          // pedir cada vez que la pestaña vuelve a estar visible.
+          try {
+            if (!P.document.getElementById('yachay-wakelock')) {
+              var sc = P.document.createElement('script');
+              sc.id = 'yachay-wakelock';
+              sc.text = "(function(){var lock=null;window.__yachayWL='pidiendo';" +
+                "async function pedir(){try{if(!('wakeLock' in navigator)){window.__yachayWL='no';return;}" +
+                "lock=await navigator.wakeLock.request('screen');window.__yachayWL='ok';" +
+                "lock.addEventListener('release',function(){window.__yachayWL='soltada';});}catch(e){window.__yachayWL='error';}}" +
+                "pedir();document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){pedir();}});" +
+                "setInterval(function(){if(document.visibilityState==='visible'&&window.__yachayWL!=='ok'){pedir();}},60000);})();";
+              P.document.head.appendChild(sc);
+            }
+          } catch (e) {}
+          function estado() {
+            var e = ''; try { e = P.__yachayWL; } catch (x) {}
+            var t = document.getElementById('wl');
+            if (e === 'ok') { t.textContent = '🔆 Pantalla siempre encendida'; t.style.color = '#86efac'; }
+            else if (e === 'no' || e === 'error') { t.textContent = '⚠️ El navegador no puede mantener la pantalla encendida: pon la suspensión de Windows en «Nunca»'; t.style.color = '#fcd34d'; }
+            else { t.textContent = ''; }
+          }
+          setInterval(estado, 1500); estado();
+        })();
+        </script>
+        """, height=58)
 
     # ── Asegurar que el indice de DNIs este cargado ────────────────
     _idx = st.session_state.get('_indice_dni', {})
@@ -14089,6 +14132,9 @@ def tab_modo_kiosco():
     # ── Fondo elegante de toda la pantalla + tipografia refinada ────
     st.markdown("""
     <style>
+    section[data-testid="stSidebar"], div[data-testid="stSidebarCollapsedControl"],
+    div[data-testid="collapsedControl"], header[data-testid="stHeader"], div[data-testid="stToolbar"],
+    div[data-testid="stDecoration"], footer { display: none !important; }
     div[data-testid="stAppViewContainer"],
     div[data-testid="stAppViewContainer"] > .main,
     section[data-testid="stMain"],
@@ -16826,19 +16872,19 @@ def _tg_procesar_updates(token, timeout=10):
 
 _TG_AUTO = {"ultimo": 0.0}
 _TG_AUTO_LOCK = _threading_base.Lock()
-_TG_INTERVALOS = {"Cada 1 minuto": 60, "Cada 2 minutos (recomendado)": 120, "Cada 10 minutos": 600,
+_TG_INTERVALOS = {"Cada 1 minuto": 60, "Cada 2 minutos": 120, "Cada 10 minutos (recomendado)": 600,
                   "Cada 3 horas": 10800, "Desactivado (solo con el botón)": 0}
 
 
 @st.fragment(run_every=30)
 def _tg_auto_suscripciones(mostrar=False):
     """Revisa si algún padre escribió al bot y lo registra. Es liviano: cada 30 s solo compara la hora (sin red);
-    la consulta a Telegram se hace SOLO cuando pasó el intervalo elegido (por defecto 2 minutos), una sola vez
+    la consulta a Telegram se hace SOLO cuando pasó el intervalo elegido (por defecto 10 minutos), una sola vez
     para todo el sistema aunque haya varias pantallas abiertas, con un tiempo máximo corto, y nunca justo
     después de un escaneo del kiosco. Si Telegram falla, se pausa 5 minutos."""
     try:
         cfg = _tg_cargar_config()
-        intervalo = int(cfg.get("auto_cada_seg", 120) or 0)            # 0 = desactivado
+        intervalo = int(cfg.get("auto_cada_seg", 600) or 0)            # 0 = desactivado
         tok = _tg_limpiar_token(cfg.get("bot_token", ""))
         ahora = time.time()
         if (tok and intervalo > 0 and ahora - _TG_AUTO["ultimo"] >= intervalo
@@ -16863,6 +16909,16 @@ def _tg_auto_suscripciones(mostrar=False):
                           "Todavía no llegó ningún mensaje."))
     except Exception:
         pass
+    if not mostrar:
+        # Solo en el kiosco: si la lista de alumnos va a vencer (3 minutos) y nadie está escaneando, se refresca ahora,
+        # en reposo, y no justo en el siguiente escaneo (así no hay demora después de un rato sin usar).
+        try:
+            ahora = time.time()
+            if (ahora - st.session_state.get('_indice_dni_ts', 0) > 150
+                    and ahora - st.session_state.get('_kiosco_ultimo_scan', 0) > 15):
+                _construir_indice_dni()
+        except Exception:
+            pass
 
 
 def _registrar_asistencia_rapida(dni):
@@ -36384,7 +36440,7 @@ def tab_telegram_notificaciones(config):
     token = _tg_limpiar_token(cfg.get("bot_token",""))
 
     _tg_auto_suscripciones(True)             # registra solo a quien escriba /start DNI, cada cierto tiempo
-    _act_seg = int(cfg.get("auto_cada_seg", 120) or 0)
+    _act_seg = int(cfg.get("auto_cada_seg", 600) or 0)
     _etqs = list(_TG_INTERVALOS)
     _lab_act = next((k for k, v in _TG_INTERVALOS.items() if v == _act_seg), _etqs[1])
     _sel_int = st.selectbox("⏱️ ¿Cada cuánto revisar si algún padre escribió al bot?", _etqs, index=_etqs.index(_lab_act),
