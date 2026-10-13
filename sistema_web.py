@@ -14166,6 +14166,7 @@ def tab_modo_kiosco():
     """, unsafe_allow_html=True)
 
     # ── Campo de escaneo (grande, elegante, auto-enfocado) ──────────
+    _tg_auto_suscripciones(False)            # registra a los padres que escriben al bot, sin que nadie pulse nada
     _ok_k = st.session_state.pop('_kiosco_ok', None)
     if _ok_k:
         import html as _html_k
@@ -16679,7 +16680,12 @@ def _tg_notificar_asistencia(dni_alumno, nombre_alumno, grado, tipo, hora):
         f"\U0001f4de 084-750071\n\n"
         f"{pie_institucional(turno=tipo)}"
     )
-    _iniciar_hilo(_tg_enviar, args=(chat_id, msg, token, (dni_alumno, nombre_alumno, tipo)))
+    _destinos = [str(chat_id)]
+    if isinstance(entry, dict):                       # papá, mamá u otros celulares registrados para el mismo hijo
+        _destinos += [str(o.get("chat_id")) for o in (entry.get("otros_chats") or [])
+                      if isinstance(o, dict) and o.get("chat_id")]
+    for _ch in dict.fromkeys(_destinos):
+        _iniciar_hilo(_tg_enviar, args=(_ch, msg, token, (dni_alumno, nombre_alumno, tipo)))
 
 def _tg_obtener_chat_id(token):
     """Obtiene los últimos updates del bot. Usa 'offset' guardado para
@@ -16707,6 +16713,137 @@ def _tg_obtener_chat_id(token):
             _cfg_actualizada["last_update_id"] = _max_id
             _tg_guardar_config(_cfg_actualizada)
     return resultado
+
+def _tg_procesar_updates(token):
+    """Lee los mensajes nuevos del bot y registra AL INSTANTE a quien escribió «/start DNI» (o solo el DNI).
+    Contesta a cada persona: si quedó registrada, si ya lo estaba o si el DNI no existe. Si ya hay un celular
+    registrado para ese alumno, el nuevo se agrega como contacto adicional (papá y mamá). El mensaje se marca
+    como leído SOLO después de guardar, para no perder registros si algo falla."""
+    res = {"ok": True, "mensajes": 0, "registrados": 0, "error": ""}
+    cfg = _tg_cargar_config()
+    params = {"timeout": 0}
+    if cfg.get("last_update_id"):
+        try:
+            params["offset"] = int(cfg["last_update_id"]) + 1
+        except (TypeError, ValueError):
+            pass
+    r = _tg_llamar_api("getUpdates", token, params=params, timeout=10)
+    if not r.get("ok"):
+        res.update(ok=False, error=str(r.get("error") or r.get("description") or "sin respuesta"))
+        return res
+    ups = r.get("result", [])
+    if not ups:
+        return res
+    max_id = max(u.get("update_id", 0) for u in ups)
+    subs = _tg_cargar_subs(forzar=True)
+    try:
+        df_m, df_d = BaseDatos.cargar_matricula(), BaseDatos.cargar_docentes()
+    except Exception:
+        df_m, df_d = None, None
+
+    def _nombre_de(cod):
+        for df_ in (df_m, df_d):
+            try:
+                if df_ is not None and not df_.empty and 'DNI' in df_.columns:
+                    f = df_[df_['DNI'].astype(str).str.strip().str.upper() == cod]
+                    if not f.empty:
+                        for c_ in ('Nombre', 'Nombres', 'Apellidos y Nombres'):
+                            if c_ in f.columns and str(f.iloc[0][c_]).strip():
+                                return str(f.iloc[0][c_]).strip()
+                        return cod
+            except Exception:
+                continue
+        return ""
+
+    def _responder(chat, texto, cod="", nom="", ok=True, det=""):
+        _iniciar_hilo(_tg_enviar, args=(chat, texto, token))
+        if cod:
+            try:
+                _tg_registrar_envio(cod, nom or "-", "registro", ok, det)
+            except Exception:
+                pass
+
+    cambios = False
+    for u in ups:
+        m = u.get("message") or u.get("edited_message") or {}
+        chat_d = m.get("chat") or {}
+        txt = str(m.get("text") or "").strip()
+        if not txt or chat_d.get("id") is None or chat_d.get("type") not in (None, "private"):
+            continue
+        chat = str(chat_d["id"])
+        res["mensajes"] += 1
+        de = m.get("from") or {}
+        quien = f"{de.get('first_name', '')} {de.get('last_name', '')}".strip() or chat_d.get("first_name", "") or "Padre/Madre"
+        toks = txt.split()
+        arg = (toks[1] if len(toks) > 1 else "") if toks[0].lower().startswith("/start") else toks[0]
+        cod = normalizar_codigo_estudiante(arg)
+        if not cod:
+            _responder(chat, "Hola 👋 Soy el bot de asistencia de la <b>I.E.P. Alternativo Yachay</b>.\n\n"
+                             "Para recibir los avisos de su hijo(a), escriba <b>/start</b> y el <b>DNI del estudiante</b>, "
+                             "por ejemplo:\n<code>/start 12345678</code>")
+            continue
+        nom = _nombre_de(cod)
+        if not nom:
+            _responder(chat, f"No encontramos el código <b>{_tg_escapar(cod)}</b> en el colegio. Escriba <b>/start</b> y el "
+                             "DNI del estudiante (8 dígitos), por ejemplo:\n<code>/start 12345678</code>\n"
+                             "Si el problema continúa, llame al 084-750071.", cod, "-", False,
+                       "código no encontrado en la matrícula")
+            continue
+        nom_h = _tg_escapar(nom)
+        entry = subs.get(cod)
+        if entry is None:
+            subs[cod] = {"chat_id": chat, "nombre_padre": quien, "fecha": fecha_peru_str(), "bienvenida_enviada": True}
+            cambios = True
+            res["registrados"] += 1
+            _responder(chat, f"✅ <b>Registrado</b>\n\nDesde ahora recibirá los avisos de asistencia de:\n<b>{nom_h}</b>\n\n"
+                             "<i>I.E.P. Alternativo Yachay</i>", cod, nom, True, f"registrado ({quien})")
+            continue
+        primario = entry.get("chat_id") if isinstance(entry, dict) else entry
+        otros = entry.get("otros_chats", []) if isinstance(entry, dict) else []
+        if str(primario) == chat or any(str(o.get("chat_id")) == chat for o in otros if isinstance(o, dict)):
+            _responder(chat, f"✅ Ya estaba registrado: recibe los avisos de <b>{nom_h}</b>.")
+        elif len(otros) >= 4:
+            _responder(chat, f"Ya hay varios celulares registrados para <b>{nom_h}</b>. Comuníquese con el colegio "
+                             "(084-750071).", cod, nom, False, "máximo de celulares alcanzado")
+        else:
+            if not isinstance(entry, dict):
+                entry = {"chat_id": str(entry)}
+            entry.setdefault("otros_chats", []).append({"chat_id": chat, "nombre": quien, "fecha": fecha_peru_str()})
+            subs[cod] = entry
+            cambios = True
+            res["registrados"] += 1
+            _responder(chat, f"✅ <b>Registrado</b>\n\nSu celular también recibirá los avisos de:\n<b>{nom_h}</b>\n\n"
+                             "<i>I.E.P. Alternativo Yachay</i>", cod, nom, True, f"celular adicional ({quien})")
+    if cambios and not _tg_guardar_subs(subs):
+        res.update(ok=False, error="No se pudo guardar (falló Google Sheets): se reintentará.")
+        return res                                  # no se marca como leído: se vuelve a intentar
+    cfg2 = _tg_cargar_config()
+    cfg2["last_update_id"] = max_id
+    _tg_guardar_config(cfg2)
+    return res
+
+
+@st.fragment(run_every=20)
+def _tg_auto_suscripciones(mostrar=False):
+    """Cada 20 segundos (mientras el kiosco o la pantalla de Telegram estén abiertos) revisa si algún padre escribió
+    al bot y lo registra al momento."""
+    try:
+        tok = _tg_limpiar_token(_tg_cargar_config().get("bot_token", ""))
+        if not tok:
+            return
+        r = _tg_procesar_updates(tok)
+        if r.get("mensajes") or r.get("error"):
+            st.session_state['_tg_auto_info'] = (hora_peru_str(), r)
+        if mostrar:
+            info = st.session_state.get('_tg_auto_info')
+            st.caption("🔄 El sistema revisa el bot solo, cada 20 segundos. "
+                       + (f"Última actividad {info[0]}: {info[1].get('mensajes', 0)} mensaje(s), "
+                          f"{info[1].get('registrados', 0)} registro(s)"
+                          + (f" — ⚠️ {info[1]['error']}" if info[1].get('error') else "") if info else
+                          "Todavía no llegó ningún mensaje."))
+    except Exception:
+        pass
+
 
 def _registrar_asistencia_rapida(dni):
     """Registra asistencia — INSTANTÁNEO: solo usa índice en RAM, nunca GSheets."""
@@ -36226,6 +36363,7 @@ def tab_telegram_notificaciones(config):
     subs = _tg_cargar_subs(forzar=True)
     token = _tg_limpiar_token(cfg.get("bot_token",""))
 
+    _tg_auto_suscripciones(True)             # revisa el bot solo cada 20 s y registra a quien escriba /start DNI
     _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres",
                        "📬 Registro de envíos"])
 
@@ -36532,7 +36670,8 @@ en lugar del DNI. Ejemplo: /start PROV0001
 ⚠️ Si Secretaría le indica que se registró su número de celular en
 lugar del DNI, escriba ese número de celular tal como se lo indiquen.
 
-✅ Listo. Desde ese momento recibirá notificaciones automáticas de asistencia.
+✅ Listo. En unos segundos el bot le responderá confirmando el registro, y desde ese momento recibirá los avisos de asistencia.
+👨‍👩‍👧 Si tiene más hijos, repita el paso 3 con el DNI de cada uno, desde el mismo celular.
 
 📞 Consultas: Dirección del colegio — I.E.P. Alternativo Yachay, Chinchero"""
 
@@ -36542,7 +36681,8 @@ lugar del DNI, escriba ese número de celular tal como se lo indiquen.
         st.markdown("---")
         st.markdown("#### 📊 Como ver el Chat ID de un padre manualmente")
         st.markdown("1. El padre abre Telegram y escribe `/start [DNI]` al bot.")
-        st.markdown("2. El admin hace clic en **Obtener nuevos suscriptores** en la pestaña Configurar Bot.")
+        st.markdown("2. El sistema lo registra solo (revisa el bot cada 20 segundos mientras el kiosco o esta pantalla estén abiertos) "
+                    "y el bot le contesta al padre. El botón **Obtener nuevos suscriptores** queda como respaldo.")
         st.markdown("3. El sistema registra automáticamente el DNI con su chat_id.")
 
         st.markdown("---")
