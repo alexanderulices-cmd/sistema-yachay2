@@ -14236,6 +14236,7 @@ def tab_modo_kiosco():
     # ── Procesar el escaneo pendiente ──────────────────────────────
     _pend = st.session_state.pop('_kiosco_pendiente', None)
     if _pend:
+        st.session_state['_kiosco_ultimo_scan'] = time.time()
         _dni_norm_kiosco = normalizar_codigo_estudiante(_pend) or str(_pend).strip()
         try:
             _antes = dict(BaseDatos.obtener_asistencias_hoy().get(_dni_norm_kiosco, {}))
@@ -16714,7 +16715,7 @@ def _tg_obtener_chat_id(token):
             _tg_guardar_config(_cfg_actualizada)
     return resultado
 
-def _tg_procesar_updates(token):
+def _tg_procesar_updates(token, timeout=10):
     """Lee los mensajes nuevos del bot y registra AL INSTANTE a quien escribió «/start DNI» (o solo el DNI).
     Contesta a cada persona: si quedó registrada, si ya lo estaba o si el DNI no existe. Si ya hay un celular
     registrado para ese alumno, el nuevo se agrega como contacto adicional (papá y mamá). El mensaje se marca
@@ -16727,7 +16728,7 @@ def _tg_procesar_updates(token):
             params["offset"] = int(cfg["last_update_id"]) + 1
         except (TypeError, ValueError):
             pass
-    r = _tg_llamar_api("getUpdates", token, params=params, timeout=10)
+    r = _tg_llamar_api("getUpdates", token, params=params, timeout=timeout)
     if not r.get("ok"):
         res.update(ok=False, error=str(r.get("error") or r.get("description") or "sin respuesta"))
         return res
@@ -16823,20 +16824,39 @@ def _tg_procesar_updates(token):
     return res
 
 
-@st.fragment(run_every=20)
+_TG_AUTO = {"ultimo": 0.0}
+_TG_AUTO_LOCK = _threading_base.Lock()
+_TG_INTERVALOS = {"Cada 1 minuto": 60, "Cada 2 minutos (recomendado)": 120, "Cada 10 minutos": 600,
+                  "Cada 3 horas": 10800, "Desactivado (solo con el botón)": 0}
+
+
+@st.fragment(run_every=30)
 def _tg_auto_suscripciones(mostrar=False):
-    """Cada 20 segundos (mientras el kiosco o la pantalla de Telegram estén abiertos) revisa si algún padre escribió
-    al bot y lo registra al momento."""
+    """Revisa si algún padre escribió al bot y lo registra. Es liviano: cada 30 s solo compara la hora (sin red);
+    la consulta a Telegram se hace SOLO cuando pasó el intervalo elegido (por defecto 2 minutos), una sola vez
+    para todo el sistema aunque haya varias pantallas abiertas, con un tiempo máximo corto, y nunca justo
+    después de un escaneo del kiosco. Si Telegram falla, se pausa 5 minutos."""
     try:
-        tok = _tg_limpiar_token(_tg_cargar_config().get("bot_token", ""))
-        if not tok:
-            return
-        r = _tg_procesar_updates(tok)
-        if r.get("mensajes") or r.get("error"):
-            st.session_state['_tg_auto_info'] = (hora_peru_str(), r)
+        cfg = _tg_cargar_config()
+        intervalo = int(cfg.get("auto_cada_seg", 120) or 0)            # 0 = desactivado
+        tok = _tg_limpiar_token(cfg.get("bot_token", ""))
+        ahora = time.time()
+        if (tok and intervalo > 0 and ahora - _TG_AUTO["ultimo"] >= intervalo
+                and ahora - st.session_state.get('_kiosco_ultimo_scan', 0) > 15
+                and _TG_AUTO_LOCK.acquire(blocking=False)):
+            try:
+                _TG_AUTO["ultimo"] = ahora
+                r = _tg_procesar_updates(tok, timeout=4)
+                if r.get("error"):
+                    _TG_AUTO["ultimo"] = ahora + 300                   # falló: pausa extra de 5 minutos
+                if r.get("mensajes") or r.get("error"):
+                    st.session_state['_tg_auto_info'] = (hora_peru_str(), r)
+            finally:
+                _TG_AUTO_LOCK.release()
         if mostrar:
             info = st.session_state.get('_tg_auto_info')
-            st.caption("🔄 El sistema revisa el bot solo, cada 20 segundos. "
+            etiqueta = next((k for k, v in _TG_INTERVALOS.items() if v == intervalo), f"cada {intervalo} s")
+            st.caption(f"🔄 Revisión automática del bot: **{etiqueta.split(' (')[0].lower()}**. "
                        + (f"Última actividad {info[0]}: {info[1].get('mensajes', 0)} mensaje(s), "
                           f"{info[1].get('registrados', 0)} registro(s)"
                           + (f" — ⚠️ {info[1]['error']}" if info[1].get('error') else "") if info else
@@ -36363,7 +36383,19 @@ def tab_telegram_notificaciones(config):
     subs = _tg_cargar_subs(forzar=True)
     token = _tg_limpiar_token(cfg.get("bot_token",""))
 
-    _tg_auto_suscripciones(True)             # revisa el bot solo cada 20 s y registra a quien escriba /start DNI
+    _tg_auto_suscripciones(True)             # registra solo a quien escriba /start DNI, cada cierto tiempo
+    _act_seg = int(cfg.get("auto_cada_seg", 120) or 0)
+    _etqs = list(_TG_INTERVALOS)
+    _lab_act = next((k for k, v in _TG_INTERVALOS.items() if v == _act_seg), _etqs[1])
+    _sel_int = st.selectbox("⏱️ ¿Cada cuánto revisar si algún padre escribió al bot?", _etqs, index=_etqs.index(_lab_act),
+                            key="tg_auto_sel",
+                            help="La revisión es muy liviana y se hace una sola vez para todo el sistema. Si eliges "
+                                 "«3 horas» o «Desactivado», el padre esperará más para recibir la confirmación; "
+                                 "el botón «Obtener nuevos suscriptores» la hace al instante.")
+    if _TG_INTERVALOS[_sel_int] != _act_seg:
+        cfg["auto_cada_seg"] = _TG_INTERVALOS[_sel_int]
+        _tg_guardar_config(cfg)
+        st.rerun()
     _sub_tg = st.tabs(["⚙️ Configurar Bot","👨‍👩‍👧 Suscriptores","📋 Instrucciones para Padres",
                        "📬 Registro de envíos"])
 
