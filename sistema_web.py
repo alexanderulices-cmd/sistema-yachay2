@@ -16485,6 +16485,55 @@ def _tg_guardar_subs(data):
     except Exception: pass
     return _tg_gs_set('telegram_suscriptores', data)
 
+def _migrar_dni_provisional(dni_viejo, dni_nuevo, nombre=""):
+    """Cuando un alumno pasa de un código provisional (PROV0021) o de un DNI mal escrito a su DNI verdadero,
+    traslada al DNI nuevo todo lo que se había registrado con el código viejo: la asistencia de todos los días,
+    el registro de Telegram de los padres y las hojas de simulacro. Devuelve cuántos registros se trasladaron."""
+    viejo, nuevo = str(dni_viejo).strip(), str(dni_nuevo).strip()
+    res = {"asistencia": 0, "telegram": 0, "simulacros": 0}
+    if not viejo or not nuevo or viejo == nuevo:
+        return res
+    try:                                                  # asistencia (todos los días)
+        with _ASIS_LOCK:
+            if Path(ARCHIVO_ASISTENCIAS).exists():
+                with open(ARCHIVO_ASISTENCIAS, 'r', encoding='utf-8') as f:
+                    asis = json.load(f)
+                for _dia in asis.values():
+                    if isinstance(_dia, dict) and viejo in _dia:
+                        reg = _dia.pop(viejo)
+                        if nuevo in _dia and isinstance(_dia[nuevo], dict) and isinstance(reg, dict):
+                            for k_, v_ in reg.items():       # si ya había algo con el DNI nuevo, se completan los vacíos
+                                if v_ and not _dia[nuevo].get(k_):
+                                    _dia[nuevo][k_] = v_
+                        else:
+                            _dia[nuevo] = reg
+                        res["asistencia"] += 1
+                if res["asistencia"]:
+                    _escribir_json_atomico(ARCHIVO_ASISTENCIAS, asis)
+                    try:
+                        _ASIS_WORKER["hay_cambios"] = True
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    try:                                                  # Telegram de los padres
+        subs = _tg_cargar_subs(forzar=True)
+        for k_ in list(subs):
+            if str(k_).strip().upper() == viejo.upper() and nuevo.upper() not in {str(x).strip().upper() for x in subs}:
+                subs[nuevo] = subs.pop(k_)
+                res["telegram"] += 1
+        if res["telegram"]:
+            _tg_guardar_subs(subs)
+    except Exception:
+        pass
+    try:                                                  # hojas de simulacro
+        from simulacro_yachay import migrar_dni_simulacros
+        res["simulacros"] = migrar_dni_simulacros(viejo, nuevo, nombre)
+    except Exception:
+        pass
+    return res
+
+
 def _tg_llamar_api(endpoint, token, params=None, timeout=8):
     """Llamada genérica a la API de Telegram. Retorna dict con ok/result/error."""
     import urllib.request as _ur
@@ -18297,6 +18346,7 @@ def tab_base_datos():
                         df_full = BaseDatos.cargar_matricula()
                         df_full['DNI'] = df_full['DNI'].astype(str).str.strip()
                         n_cambios = 0
+                        _migraciones = []
                         # edited has same length as df_vista — iterate positionally
                         df_vista_reset = df_vista.reset_index(drop=True)
                         edited_reset = edited.reset_index(drop=True)
@@ -18319,8 +18369,22 @@ def tab_base_datos():
                                 new_dni = str(row_e.get('DNI','')).strip()
                                 if new_dni and len(new_dni)==8 and new_dni.isdigit():
                                     df_full.loc[mask, '_provisional'] = 'NO'
+                                    if orig_dni and orig_dni.lower() not in ('nan', 'none') and orig_dni != new_dni:
+                                        _migraciones.append((orig_dni, new_dni, str(row_e.get('Nombre', '')).strip()))
                                 n_cambios += 1
                         BaseDatos.guardar_matricula(df_full)
+                        # Lo registrado con el código viejo (asistencia, Telegram, simulacros) pasa al DNI verdadero.
+                        # Solo si ningún otro alumno conserva el código viejo (para no mezclar con otra persona).
+                        _mig_tot = {"asistencia": 0, "telegram": 0, "simulacros": 0}
+                        for _v, _n, _nom in _migraciones:
+                            if not (df_full['DNI'].astype(str).str.strip() == _v).any():
+                                _r = _migrar_dni_provisional(_v, _n, _nom)
+                                for _k in _mig_tot:
+                                    _mig_tot[_k] += _r.get(_k, 0)
+                        if any(_mig_tot.values()):
+                            st.toast(f"🔄 Se trasladó al DNI nuevo: {_mig_tot['asistencia']} día(s) de asistencia, "
+                                     f"{_mig_tot['telegram']} registro(s) de Telegram y {_mig_tot['simulacros']} hoja(s) de simulacro.",
+                                     icon="✅")
                     if n_cambios > 0:
                         st.success(f"✅ {n_cambios} registro(s) actualizados correctamente.")
                     else:

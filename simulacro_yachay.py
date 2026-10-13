@@ -3467,6 +3467,64 @@ def _tab_escanear(datos):
         st.rerun()
 
 
+def migrar_dni_simulacros(viejo, nuevo, nombre=""):
+    """Un alumno pasó de un código provisional (o un DNI mal escrito) a su DNI verdadero: sus hojas de todos los
+    simulacros pasan al DNI nuevo y se actualiza su grado. Devuelve cuántas hojas cambiaron."""
+    viejo, nuevo = str(viejo).strip(), str(nuevo).strip()
+    # el código provisional PROV0021 se guardó en los simulacros como «00000021» (solo sus números)
+    antiguos = {viejo, norm_dni(viejo)}
+    datos = cargar_datos()
+    mat = _matricula()
+    info = mat.get(norm_dni(nuevo)) or mat.get(nuevo) or {}
+    n = 0
+    for sim in datos["simulacros"].values():
+        cambio = False
+        for h in sim.get("hojas", {}).values():
+            if str(h.get("dni", "")).strip() in antiguos or norm_dni(h.get("dni")) in antiguos:
+                h["dni"] = norm_dni(nuevo)
+                if info:
+                    h.update({"nombre": h.get("nombre") or info["nombre"], "aula": _aula_de(info), "grado": info["grado"]})
+                n += 1
+                cambio = True
+        if cambio and sim.get("publicado"):
+            publicar_en_historial(sim)
+    if n:
+        guardar_datos(datos)
+    return n
+
+
+def reconciliar_por_nombre(datos):
+    """Hojas cuyo DNI ya no está en la matrícula (porque se corrigió) pero cuyo nombre coincide EXACTAMENTE con
+    un solo alumno de la matrícula: se les pone su DNI verdadero. Devuelve cuántas hojas se actualizaron."""
+    mat = _matricula()
+    if not mat:
+        return 0
+    base8 = {k[:8] for k in mat}
+    por_nombre = {}
+    for d, a in mat.items():
+        por_nombre.setdefault(_norm_nombre(a["nombre"]), []).append(d)
+    total = 0
+    for sim in datos["simulacros"].values():
+        if sim.get("abierto"):
+            continue
+        cambio = False
+        for h in sim.get("hojas", {}).values():
+            d = norm_dni(h.get("dni"))
+            if not h.get("nombre") or d in mat or (len(d) > 8 and d[:8] in base8):
+                continue
+            cand = por_nombre.get(_norm_nombre(h["nombre"]), [])
+            if len(cand) == 1 and cand[0] not in {norm_dni(x.get("dni")) for x in sim["hojas"].values()}:
+                a = mat[cand[0]]
+                h.update({"dni": cand[0], "aula": _aula_de(a), "grado": a["grado"]})
+                cambio = True
+                total += 1
+        if cambio and sim.get("publicado"):
+            publicar_en_historial(sim)
+    if total:
+        guardar_datos(datos)
+    return total
+
+
 def _crops_de_imagen_guardada(b64):
     """Recuadros de apellidos y nombres a partir de la imagen reducida que se guarda con la hoja."""
     import cv2
@@ -4229,6 +4287,13 @@ def tab_simulacros_yachay(config=None, cargar_matricula=None, cargar_historial=N
     st.caption("Flujo: 1) ⚙️ Configurar el examen (elige Área A/B/C/D o Grupo AB/CD, pega las claves) → 2) 📸 Escanear las hojas → "
                "3) 📋 Lista de control (¿falta alguien?) → 4) 🏆 Ranking (imprimir / publicar) → 5) 📚 Historial del estudiante.")
     datos = cargar_datos()
+    try:
+        _n_rec = reconciliar_por_nombre(datos)
+        if _n_rec:
+            st.toast(f"🔄 Se actualizó el DNI de {_n_rec} hoja(s) de simulacro: el alumno ya tiene su DNI verdadero en la matrícula.",
+                     icon="✅")
+    except Exception:
+        pass
     if _ESTADO["backup_error"]:
         st.error("⚠️ No se pudo hacer la copia de seguridad en Drive (" + _ESTADO["backup_error"] + "). Tus datos están "
                  "guardados en el sistema, pero descarga una copia en 📚 Historial → «Administrar simulacros guardados».")
