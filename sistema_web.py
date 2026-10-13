@@ -16534,6 +16534,45 @@ def _migrar_dni_provisional(dni_viejo, dni_nuevo, nombre=""):
     return res
 
 
+def _tg_agregar_hijo(dni_padre, dni_hijo, df_mat=None):
+    """Hace que un hijo (o hermano) reciba sus avisos en el MISMO Telegram de un padre o docente que ya está
+    suscrito, sin que tenga que escribir /start al bot. Devuelve (ok, mensaje)."""
+    padre = normalizar_codigo_estudiante(dni_padre)
+    hijo = normalizar_codigo_estudiante(dni_hijo)
+    if not padre or not hijo:
+        return False, "Escribe los dos DNI."
+    if padre == hijo:
+        return False, "El DNI del padre y el del hijo son el mismo."
+    subs = _tg_cargar_subs(forzar=True)
+    base = subs.get(padre)
+    if not base:
+        return False, (f"El DNI {padre} todavía no está suscrito a Telegram. Primero esa persona debe escribir "
+                       f"/start {padre} al bot y pulsar «Obtener nuevos suscriptores».")
+    nombre_hijo = ""
+    if df_mat is not None and not df_mat.empty and 'DNI' in df_mat.columns:
+        f = df_mat[df_mat['DNI'].astype(str).str.strip().str.upper() == hijo]
+        if f.empty:
+            return False, f"El DNI {hijo} no está en la matrícula: revisa que esté bien escrito."
+        nombre_hijo = str(f.iloc[0].get('Nombre', '')).strip()
+    if hijo in subs:
+        return False, f"El DNI {hijo} ya estaba suscrito: no hace falta agregarlo."
+    nuevo = dict(base) if isinstance(base, dict) else {"chat_id": base}
+    nuevo.update({"fecha": fecha_peru_str(), "agregado_desde": padre, "bienvenida_enviada": True})
+    subs[hijo] = nuevo
+    if not _tg_guardar_subs(subs):
+        return False, "No se pudo guardar en Google Sheets (falló la conexión). Vuelve a intentar en unos segundos."
+    try:                                                  # aviso de confirmación al celular del padre
+        cfg = _tg_cargar_config()
+        tok = _tg_limpiar_token(cfg.get("bot_token", ""))
+        chat = nuevo.get("chat_id", "")
+        if tok and chat:
+            _iniciar_hilo(_tg_enviar, args=(chat, "✅ Listo: desde ahora también recibirá los avisos de asistencia de "
+                                                  f"{nombre_hijo or hijo}.\nI.E.P. Alternativo Yachay", tok))
+    except Exception:
+        pass
+    return True, f"Listo: {nombre_hijo or hijo} recibirá sus avisos en el mismo Telegram del DNI {padre}."
+
+
 def _tg_llamar_api(endpoint, token, params=None, timeout=8):
     """Llamada genérica a la API de Telegram. Retorna dict con ok/result/error."""
     import urllib.request as _ur
@@ -36422,6 +36461,23 @@ def tab_telegram_notificaciones(config):
     # ── TAB 2: SUSCRIPTORES ──────────────────────────────────────
     with _sub_tg[1]:
         st.markdown(f"#### 👨‍👩‍👧 Padres suscritos a notificaciones: **{len(subs)}**")
+
+        with st.expander("➕ Agregar un hijo al mismo Telegram de un padre o docente ya registrado"):
+            st.caption("Si una persona ya recibe sus avisos (o los de otro hijo) y quiere recibir también los de un hijo "
+                       "nuevo, escribe su DNI y el del hijo. No hace falta usar el bot. Un mismo celular puede recibir "
+                       "los avisos de todos sus hijos.")
+            _ta, _tb = st.columns(2)
+            _dni_pa = _ta.text_input("DNI ya registrado (padre, docente u otro hijo):", key="tg_add_padre", max_chars=10)
+            _dni_hi = _tb.text_input("DNI del hijo a agregar:", key="tg_add_hijo", max_chars=10)
+            if _dni_hi:
+                _ok_h = normalizar_codigo_estudiante(_dni_hi) in subs
+                st.caption(("✅ Ese hijo ya está suscrito." if _ok_h else "⚠️ Ese hijo todavía NO está suscrito: "
+                            "por eso no le llegan avisos."))
+            if st.button("➕ Agregar al mismo Telegram", key="tg_add_btn", type="primary"):
+                _okk, _msgk = _tg_agregar_hijo(_dni_pa, _dni_hi, BaseDatos.cargar_matricula())
+                (st.success if _okk else st.error)(("✅ " if _okk else "❌ ") + _msgk)
+                if _okk:
+                    st.rerun()
 
         if not subs:
             st.info("📭 Aún no hay padres suscritos. Comparte las instrucciones de la pestaña 3.")
