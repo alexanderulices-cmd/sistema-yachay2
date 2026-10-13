@@ -14166,6 +14166,39 @@ def tab_modo_kiosco():
     """, unsafe_allow_html=True)
 
     # ── Campo de escaneo (grande, elegante, auto-enfocado) ──────────
+    _ok_k = st.session_state.pop('_kiosco_ok', None)
+    if _ok_k:
+        import html as _html_k
+        _nom_h = _html_k.escape(str(_ok_k.get("nombre", "")))
+        _det_h = _html_k.escape(str(_ok_k.get("detalle", "")))
+        _hora_estado = " · ".join(x for x in (str(_ok_k.get("hora", "")), str(_ok_k.get("estado", ""))) if x)
+        st.markdown(f"""
+        <style>
+        @keyframes kioscoGrande {{
+            0%   {{ transform: scale(0.88); opacity: 0; max-height: 900px; }}
+            8%   {{ transform: scale(1.03); opacity: 1; }}
+            14%  {{ transform: scale(1); }}
+            90%  {{ opacity: 1; max-height: 900px; }}
+            100% {{ opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; }}
+        }}
+        </style>
+        <div id="kiosco_tarjeta_{int(float(_ok_k.get('marca', 0)) * 1000)}" style='animation: kioscoGrande 14s ease-out forwards;
+                    overflow:hidden;background:linear-gradient(135deg,{_ok_k.get("c1", "#15803d")},{_ok_k.get("c2", "#22c55e")});
+                    border-radius:28px;padding:34px 24px;color:white;text-align:center;margin:4px 0 20px;
+                    box-shadow:0 14px 40px rgba(0,0,0,0.45);'>
+            <div style='font-size:2.1rem;font-weight:900;letter-spacing:3px;opacity:0.97;'>
+                {_ok_k.get("emoji", "")} {_html_k.escape(str(_ok_k.get("titulo", "")))}
+            </div>
+            <div style='font-size:clamp(2.8rem,7vw,6.4rem);font-weight:900;line-height:1.04;margin:16px 0 10px;
+                        text-transform:uppercase;text-shadow:0 5px 20px rgba(0,0,0,0.30);word-break:break-word;'>
+                {_nom_h}
+            </div>
+            <div style='font-size:2.1rem;font-weight:700;opacity:0.97;'>{_det_h}</div>
+            <div style='font-size:3.4rem;font-weight:900;margin-top:12px;font-variant-numeric:tabular-nums;'>{_hora_estado}</div>
+            <div style='font-size:1.8rem;font-weight:700;margin-top:6px;opacity:0.95;'>{_html_k.escape(str(_ok_k.get("saludo", "")))}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
     def _on_scan_kiosco():
         val = st.session_state.get('kiosco_input', '')
         if val:
@@ -14235,16 +14268,43 @@ def tab_modo_kiosco():
             if _d_aviso:
                 _nombre_aviso = _d_aviso.get('Nombre', _d_aviso.get('nombre'))
             if _nombre_aviso:
-                st.session_state['_kiosco_aviso'] = (
-                    f"⚠️ {_nombre_aviso}: este código ya fue registrado hoy "
-                    f"para este turno, o le falta registrar el paso "
-                    f"anterior (ej. la salida antes de una nueva entrada).")
+                st.session_state['_kiosco_ok'] = {
+                    "nombre": _nombre_aviso, "emoji": "⚠️", "titulo": "YA ESTÁ REGISTRADO",
+                    "detalle": "Este código ya se registró para este turno, o falta el paso anterior "
+                               "(por ejemplo la salida antes de una nueva entrada).",
+                    "hora": "", "estado": "", "saludo": "", "c1": "#b45309", "c2": "#f59e0b",
+                    "marca": time.time()}
             else:
-                st.session_state['_kiosco_aviso'] = (
-                    f"❌ El código «{_pend}» no está en la matrícula. "
-                    f"Pide a un docente/admin que lo revise.")
+                st.session_state['_kiosco_ok'] = {
+                    "nombre": str(_pend).strip(), "emoji": "❌", "titulo": "CÓDIGO NO ENCONTRADO",
+                    "detalle": "Este código no está en la matrícula. Pide a un docente o al administrador que lo revise.",
+                    "hora": "", "estado": "", "saludo": "", "c1": "#b91c1c", "c2": "#ef4444",
+                    "marca": time.time()}
         else:
             st.session_state.pop('_kiosco_aviso', None)
+            # ── Tarjeta GRANDE de confirmación con el nombre ────────────
+            _cam = {k: v for k, v in _despues.items() if _antes.get(k) != v}
+            _kt = next((k for k in ('tardanza', 'entrada_tarde', 'entrada', 'salida_tarde', 'salida') if k in _cam), '')
+            _pers = st.session_state.get('_indice_dni', {}).get(_dni_norm_kiosco, {}) or {}
+            _nom_ok = str(_despues.get('Nombre', _despues.get('nombre',
+                          _pers.get('Nombre', _pers.get('nombre', _pend)))) or _pend).strip()
+            _es_doc = str(_pers.get('_tipo', '')) == 'docente'
+            _gr = str(_pers.get('Grado', _pers.get('grado', '')) or '').strip()
+            _det = "DOCENTE" if _es_doc else _gr
+            _hr = str(_cam.get(_kt, '') or hora_peru_str())
+            import re as _re_k
+            if _re_k.fullmatch(r'\d{1,2}:\d{2}:\d{2}', _hr):
+                _hr = _hr[:5]                      # solo hora y minutos
+            if _kt == 'tardanza':
+                _tj = dict(emoji="⏰", titulo="ENTRADA REGISTRADA", estado="TARDANZA", saludo="Llegó después de la hora",
+                           c1="#b45309", c2="#f59e0b")
+            elif _kt.startswith('salida'):
+                _tj = dict(emoji="👋", titulo="SALIDA REGISTRADA", estado="", saludo="¡Hasta pronto!",
+                           c1="#1d4ed8", c2="#3b82f6")
+            else:
+                _tj = dict(emoji="✅", titulo="ENTRADA REGISTRADA", estado="PUNTUAL" if _kt == 'entrada' else "",
+                           saludo="¡Bienvenido(a)!", c1="#15803d", c2="#22c55e")
+            st.session_state['_kiosco_ok'] = {"nombre": _nom_ok, "detalle": _det, "hora": _hr, "marca": time.time(), **_tj}
         st.rerun()
 
     _aviso_pendiente = st.session_state.pop('_kiosco_aviso', None)
@@ -23725,6 +23785,42 @@ def _drive_restaurar_json(nombre_archivo):
     except Exception:
         return None
 
+def _drive_guardar_archivo(nombre, data_bytes, mime="application/octet-stream"):
+    """Sube (o actualiza) un archivo en la carpeta raíz de Drive. Devuelve el id o None si falla."""
+    try:
+        svc = _drive_service()
+        if not svc:
+            return None
+        folder_id = _drive_get_folder("YACHAY_BACKUP")
+        q = f"name='{nombre}' and trashed=false" + (f" and '{folder_id}' in parents" if folder_id else "")
+        existing = svc.list_files(q=q)
+        if existing:
+            return svc.update(existing[0]["id"], data_bytes, mime)
+        return svc.upload(nombre, data_bytes, mime, parent_id=folder_id)
+    except Exception:
+        return None
+
+
+def _drive_bajar_archivo(nombre):
+    """Descarga un archivo de Drive por su nombre. Devuelve los bytes o None."""
+    try:
+        import urllib.request as _ur
+        svc = _drive_service()
+        if not svc:
+            return None
+        folder_id = _drive_get_folder("YACHAY_BACKUP")
+        q = f"name='{nombre}' and trashed=false" + (f" and '{folder_id}' in parents" if folder_id else "")
+        files = svc.list_files(q=q, fields="files(id,name)")
+        if not files:
+            return None
+        req = _ur.Request(f"https://www.googleapis.com/drive/v3/files/{files[0]['id']}?alt=media",
+                          headers={"Authorization": f"Bearer {_drive_get_token()}"})
+        with _ur.urlopen(req, timeout=60) as resp:
+            return resp.read()
+    except Exception:
+        return None
+
+
 def _drive_subir_mp3(modelo_id, audio_bytes, extension="mp3"):
     """Sube MP3 a Google Drive y retorna el file_id."""
     try:
@@ -23984,6 +24080,8 @@ def _abrir_simulacros_yachay(config):
         guardar_historial=_guardar_historial_evaluaciones,
         backup_json=_drive_backup_json,
         puede_borrar=puede_borrar,
+        backup_archivo=_drive_guardar_archivo,
+        bajar_archivo=_drive_bajar_archivo,
     )
 
 

@@ -2482,6 +2482,28 @@ def _tab_configurar(datos):
         st.caption("🔒 La modalidad no se puede cambiar porque el simulacro ya tiene hojas calificadas. "
                    "Si necesitas otra, crea un simulacro nuevo.")
 
+    # ---- ¿Quiénes lo rinden? (grados y grupos creados en el sistema) ----
+    mat_d = _matricula()
+    ops_d = _opciones_destinatarios(mat_d) if mat_d else []
+    st.markdown("#### 👥 ¿Quiénes rinden este examen?")
+    st.checkbox("🌐 Examen abierto: los alumnos NO están matriculados (se identifican por el nombre que escriben)",
+                value=bool(sim.get("abierto", False)), key=pfx + "abierto",
+                help="Úsalo cuando rinden alumnos de afuera o sin matrícula. En el ranking sale la imagen del nombre "
+                     "escrito a mano y tú lo transcribes. No se arma lista de control.")
+    if not st.session_state.get(pfx + "abierto", False):
+        if ops_d:
+            dic = dict(ops_d)
+            ini_d = [k for k in (sim.get("destinatarios") or _dest_sugeridos(eleccion, ops_d)) if k in dic]
+            sel_d = st.multiselect("Elige los grados o grupos creados (así el sistema ya sabe quiénes están matriculados):",
+                                   list(dic), default=ini_d, format_func=dic.get,
+                                   key=pfx + "dest_" + str(abs(hash(eleccion))))   # cambia con la modalidad: se re-sugiere
+            st.session_state[pfx + "dest"] = sel_d
+            n_al = len(_alumnos_de_destinatarios(mat_d, sel_d))
+            st.caption(f"👥 {n_al} alumno(s) matriculados rinden este examen." if n_al else
+                       "Si no eliges ninguno, el sistema busca a cada alumno en toda la matrícula.")
+        else:
+            st.caption("No hay alumnos en la matrícula todavía; el examen se podrá calificar igual.")
+
     if eleccion == MOD_PERSONALIZADO:
         _config_personalizado(datos, sim, sid, pfx, titulo, fecha, periodo)
     elif eleccion in MODALIDADES_NIVEL:
@@ -2867,6 +2889,7 @@ def _config_areas(datos, sim, sid, pfx, titulo, fecha, periodo, grupos, plantill
             sid = datetime.now().strftime("%Y%m%d") + "_" + uuid.uuid4().hex[:5]
             nuevo.update({"id": sid, "creado": datetime.now().isoformat(),
                           "creado_por": st.session_state.get("usuario_actual", ""), "hojas": {}})
+        nuevo.update(_leer_destinatarios(pfx))
         datos["simulacros"][sid] = nuevo
         guardar_datos(datos)
         if nuevo.get("publicado"):
@@ -2972,6 +2995,7 @@ def _config_personalizado(datos, sim, sid, pfx, titulo, fecha, periodo):
             sid = datetime.now().strftime("%Y%m%d") + "_" + uuid.uuid4().hex[:5]
             nuevo.update({"id": sid, "creado": datetime.now().isoformat(),
                           "creado_por": st.session_state.get("usuario_actual", ""), "hojas": {}})
+        nuevo.update(_leer_destinatarios(pfx))
         datos["simulacros"][sid] = nuevo
         guardar_datos(datos)
         if nuevo.get("publicado"):
@@ -3107,7 +3131,7 @@ def _procesar_imagen(sim, img, mat, origen, previas=None):
 
     sug = rr["sug"]
     nombre_ocr = ""
-    if not info and mat and reconocimiento_disponible():
+    if not info and mat and reconocimiento_disponible() and not sim.get("abierto"):
         # Sin DNI válido: se lee el nombre escrito y se compara con la matrícula
         try:
             nombre_ocr, _motor = reconocer_nombre(omr.recortes_campos_nombre(r))
@@ -3126,7 +3150,9 @@ def _procesar_imagen(sim, img, mat, origen, previas=None):
     if info and _del_grupo and rr["dni"] not in _del_grupo:
         alertas.append(f"Este alumno es de otro grupo ({_aula_de(info) or info.get('grado', '')}), "
                        f"no de {_an}: verifica")
-    if not info:
+    if not info and sim.get("abierto"):
+        alertas.append("Examen abierto: lee el nombre en la imagen y escríbelo en «Apellidos y Nombres»")
+    elif not info:
         alertas.append("DNI no encontrado en matrícula" if re.fullmatch(r"\d{8}", dni_leido or "")
                        else ("No marcó el DNI: escribe el nombre mirando la imagen «Nombre escrito»"
                              if not any(ch.isdigit() for ch in (dni_leido or ""))
@@ -3193,7 +3219,7 @@ def _tab_escanear(datos):
         st.success(st.session_state.pop("simy_msg_ok"))
 
     # ---- Avance de la lista de control (siempre a la vista) ----
-    if mat:
+    if mat and not sim.get("abierto"):
         _an = _lista_auto_nombre(sim)
         _al = _alumnos_de_lista(mat, "auto", sim) if _an else {}
         if not _al:
@@ -3457,21 +3483,25 @@ def _crops_de_imagen_guardada(b64):
 
 
 def _resolver_sin_identificar(datos, sim):
-    """Alumnos cuya hoja no coincide con la matrícula (DNI mal marcado o sin DNI): se lee el nombre escrito y se
-    propone vincularlos con el alumno de la matrícula."""
+    """Hojas cuyo alumno no coincide con la matrícula (DNI mal marcado o sin DNI). Se ve la imagen del nombre
+    escrito y se elige al alumno en una lista (si hay lector de letra, ya viene sugerido)."""
+    if sim.get("abierto"):
+        return
     mat = _matricula()
     if not mat:
         return
+    base8 = {k[:8] for k in mat}
     sin = [(hid, h) for hid, h in sim.get("hojas", {}).items()
-           if h.get("nombre_img") and not any(k in mat for k in (norm_dni(h.get("dni")),))
-           and not (len(norm_dni(h.get("dni"))) > 8 and norm_dni(h.get("dni"))[:8] in {k[:8] for k in mat})]
+           if h.get("nombre_img") and norm_dni(h.get("dni")) not in mat
+           and not (len(norm_dni(h.get("dni"))) > 8 and norm_dni(h.get("dni"))[:8] in base8)]
     if not sin:
         return
-    with st.expander(f"🧩 Alumnos sin identificar ({len(sin)}): vincular con la matrícula por su nombre escrito"):
-        st.caption("Estas hojas no coincidieron con la matrícula por el DNI. El sistema lee el nombre que escribió el "
-                   "alumno y lo compara con la matrícula. **Mira la imagen antes de vincular.**")
+    with st.expander(f"🧩 Alumnos sin identificar ({len(sin)}): vincularlos con la matrícula"):
+        st.caption("Estas hojas no coincidieron con la matrícula por el DNI. Mira el **nombre escrito** y elige al "
+                   "alumno en la lista (puedes escribir para buscar). Al final pulsa «Vincular».")
         pendientes = [hid for hid, h in sin if not h.get("nombre_ocr")]
-        if pendientes and reconocimiento_disponible():
+        reconoce = reconocimiento_disponible()
+        if pendientes and reconoce:
             if st.button(f"🔎 Leer los nombres escritos a mano ({len(pendientes)})", key="simy_res_leer"):
                 barra = st.progress(0.0, "Leyendo nombres…")
                 for k, hid in enumerate(pendientes):
@@ -3484,43 +3514,47 @@ def _resolver_sin_identificar(datos, sim):
                     barra.progress((k + 1) / len(pendientes))
                 guardar_datos(datos)
                 st.rerun()
-        elif pendientes:
-            st.info("Para que el sistema lea los nombres escritos a mano hay que activar el lector: instala "
-                    "`rapidocr-onnxruntime` (gratis) o configura `ANTHROPIC_API_KEY` (IA, mucho más preciso).")
-        pref = set(_alumnos_de_lista(mat, "auto", sim)) if _lista_auto_nombre(sim) else set()
+        pref = set(_alumnos_de_lista(mat, "auto", sim))
+        pool = sorted(pref or mat, key=lambda d: mat[d]["nombre"])
         usados = ya_dnis(sim)
-        filas, info = [], {}
+        etiqueta = {d: f"{mat[d]['nombre']} — {_aula_de(mat[d])} ({d})" for d in pool}
+        NINGUNO = "— no vincular —"
+        filas, hids = [], []
         for hid, h in sin:
             txt = h.get("nombre_ocr", "")
             txt = "" if txt == "-" else txt
-            res = sugerir_por_nombre(txt, mat, pref) if txt else []
-            niv, mj = veredicto_nombre(res)
-            dni_s = mj[1] if mj else ""
-            dup = bool(dni_s) and dni_s in usados
-            info[hid] = dni_s
-            filas.append({"hid": hid, "Nombre escrito": "data:image/jpeg;base64," + h["nombre_img"], "Leído": txt or "—",
-                          "Alumno sugerido": (f"{mj[2]} — {_aula_de(mat[dni_s])}" if mj else "(sin coincidencia clara)")
-                                             + (" · YA TIENE HOJA" if dup else ""),
-                          "Seguridad": (f"{mj[0] * 100:.0f} % ({niv})" if mj else ""),
-                          "Vincular": bool(mj) and not dup and niv in ("alta", "media")})
+            niv, mj = veredicto_nombre(sugerir_por_nombre(txt, mat, pref)) if (txt and reconoce) else (None, None)
+            pre = etiqueta.get(mj[1], NINGUNO) if (mj and mj[1] not in usados and niv in ("alta", "media")) else NINGUNO
+            fila = {"Nombre escrito": "data:image/jpeg;base64," + h["nombre_img"]}
+            if reconoce:
+                fila["Leído"] = txt or "—"
+                fila["Seguridad"] = f"{mj[0] * 100:.0f} % ({niv})" if mj else ""
+            fila["Elegir alumno"] = pre
+            filas.append(fila)
+            hids.append(hid)
         dfv = pd.DataFrame(filas)
-        ed = st.data_editor(dfv.drop(columns=["hid"]), hide_index=True, use_container_width=True,
-                            disabled=["Nombre escrito", "Leído", "Alumno sugerido", "Seguridad"],
+        ed = st.data_editor(dfv, hide_index=True, use_container_width=True,
+                            disabled=[c for c in dfv.columns if c != "Elegir alumno"],
                             key=f"simy_res_ed_{sim['id']}_{len(sin)}",
-                            column_config={"Nombre escrito": st.column_config.ImageColumn("Nombre escrito", width="large")})
-        marcar = [dfv.iloc[i]["hid"] for i, v in enumerate(ed["Vincular"]) if v and info.get(dfv.iloc[i]["hid"])]
-        if marcar and st.button(f"✅ Vincular los {len(marcar)} marcado(s) con la matrícula", type="primary",
-                                key="simy_res_vincular"):
-            for hid in marcar:
-                d = info[hid]
+                            column_config={"Nombre escrito": st.column_config.ImageColumn("Nombre escrito", width="large"),
+                                           "Elegir alumno": st.column_config.SelectboxColumn(
+                                               "Elegir alumno", options=[NINGUNO] + [etiqueta[d] for d in pool], width="large")})
+        inv = {v: k for k, v in etiqueta.items()}
+        elegidos = [(hids[i], inv[v]) for i, v in enumerate(ed["Elegir alumno"]) if v in inv]
+        dup = [d for _, d in elegidos if d in usados or [x for _, x in elegidos].count(d) > 1]
+        if dup:
+            st.warning("Algún alumno elegido ya tiene hoja en este simulacro o está elegido dos veces: revísalo.")
+        if elegidos and st.button(f"✅ Vincular {len(elegidos)} alumno(s) con la matrícula", type="primary",
+                                  key="simy_res_vincular"):
+            for hid, d in elegidos:
                 sim["hojas"][hid].update({"dni": d, "nombre": mat[d]["nombre"], "aula": _aula_de(mat[d]),
                                           "grado": mat[d]["grado"], "nombre_img": "", "nombre_ocr": ""})
             guardar_datos(datos)
             if sim.get("publicado"):
                 publicar_en_historial(sim)
-            st.session_state["simy_msg_rank"] = f"✅ {len(marcar)} alumno(s) vinculados con la matrícula."
+            st.session_state["simy_msg_rank"] = f"✅ {len(elegidos)} alumno(s) vinculados con la matrícula."
             st.rerun()
-        st.caption("Si el sistema no reconoce a alguien, corrígelo a mano en «🧾 Boleta de un estudiante / corregir o "
+        st.caption("Si el alumno no está en la lista, corrígelo a mano en «🧾 Boleta de un estudiante / corregir o "
                    "eliminar hoja» (el DNI y el nombre).")
 
 
@@ -3874,6 +3908,17 @@ def _nivel_auto(sim):
 
 
 def _lista_auto_nombre(sim):
+    if sim.get("abierto"):
+        return "Examen abierto"
+    if sim.get("destinatarios"):
+        nombres = []
+        for k in sim["destinatarios"]:
+            if k.startswith("gs:"):
+                niv, gr, se = (k[3:].split("|") + ["", ""])[:3]
+                nombres.append((gr.split("—")[0].strip() + (f" {se}" if se and se.lower() not in ("única", "unica") else "")).strip())
+            else:
+                nombres.append(k.replace("nivel:", "").title())
+        return " + ".join(nombres[:3]) + (f" y {len(nombres) - 3} más" if len(nombres) > 3 else "")
     g = _lista_auto(sim)
     if g:
         return f"Grupo {g}"
@@ -3917,8 +3962,55 @@ def _tabla_control(sim, mat, lote, alumnos):
     return df
 
 
+def _opciones_destinatarios(mat):
+    """[(clave, texto)] con los grados y secciones creados en la matrícula (con su cantidad de alumnos)."""
+    orden = ["INICIAL", "PRIMARIA", "SECUNDARIA", "PREUNIVERSITARIO", ""]
+    por_gs = {}
+    for a in mat.values():
+        k = (a.get("nivel", ""), a.get("grado0", ""), a.get("seccion", ""))
+        por_gs[k] = por_gs.get(k, 0) + 1
+    rk = lambda n: orden.index(n) if n in orden else len(orden)
+    nat = lambda t: [int(x) if x.isdigit() else x for x in re.split(r"(\d+)", t)]
+    ops = []
+    for (n, g, se) in sorted(por_gs, key=lambda k: (rk(k[0]), nat(k[1]), k[2])):
+        if not g:
+            continue
+        sec = f" {se}" if se and se.lower() not in ("única", "unica") else ""
+        ops.append((f"gs:{n}|{g}|{se}", f"{(n.title() + ' › ') if n else ''}{g}{sec} — {por_gs[(n, g, se)]} alumnos"))
+    return ops
+
+
+def _dest_sugeridos(eleccion, ops):
+    """Grados o grupos que se sugieren según la modalidad elegida (por ejemplo Grupo CD → «GRUPO CD»)."""
+    grupos = MODALIDADES.get(eleccion)
+    if not grupos:
+        return []
+    gs = set(grupos)
+    quiere = "AB" if gs & {"A", "B"} and not gs & {"C", "D"} else ("CD" if gs & {"C", "D"} and not gs & {"A", "B"} else None)
+    if not quiere:
+        return []
+    return [k for k, t in ops if _es_grupo(t.split("›")[-1], quiere)]
+
+
+def _leer_destinatarios(pfx):
+    """Destinatarios y 'examen abierto' tal como están en pantalla (se guardan junto con el simulacro)."""
+    ab = bool(st.session_state.get(pfx + "abierto", False))
+    return {"abierto": ab, "destinatarios": [] if ab else list(st.session_state.get(pfx + "dest", []))}
+
+
+def _alumnos_de_destinatarios(mat, claves):
+    out = {}
+    for k in claves:
+        out.update(_alumnos_de_lista(mat, k, None))
+    return out
+
+
 def _alumnos_de_lista(mat, opcion, sim=None):
     """Alumnos de la lista elegida: 'auto' (según el simulacro), 'todos', 'nivel:X' o 'gs:nivel|grado|sección'."""
+    if opcion == "auto" and sim and sim.get("abierto"):
+        return {}                                   # examen abierto: no hay lista de matrícula
+    if opcion == "auto" and sim and sim.get("destinatarios"):
+        return _alumnos_de_destinatarios(mat, sim["destinatarios"])
     if opcion == "auto":
         g = _lista_auto(sim or {})
         n = _nivel_auto(sim or {})
@@ -4022,6 +4114,10 @@ def _tab_lista(datos):
     mat = _matricula()
     if not mat:
         st.warning("No hay alumnos en la matrícula, así que no se puede armar la lista.")
+        return
+    if sim.get("abierto"):
+        st.info("🌐 Este es un **examen abierto**: no hay alumnos matriculados que controlar. Los resultados salen en el "
+                "ranking con la imagen del nombre escrito.")
         return
     lote = st.session_state.get(f"simy_lote_{sid}", [])
     auto = _lista_auto(sim)
